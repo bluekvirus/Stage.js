@@ -9,7 +9,7 @@
  * @author Tim.Liu
  * @updated 
  * 
- * @generated on Thu Jan 17 2013 00:06:32 GMT+0800 (CST) 
+ * @generated on Thu Jan 17 2013 17:25:02 GMT+0800 (中国标准时间) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
@@ -19,6 +19,9 @@
     var module = app.module("Field");
 
     /**
+     *
+     * **Model**
+     * 
      * We use Backbone.RelationalModel instead of the original Backbone.Model
      * for better has-many relation management.
      * 
@@ -69,7 +72,7 @@
 
             editor: {
                 type: "Select",
-                options: ["Text", "Number", "Password", "TextArea", "Checkbox", "Checkboxes", "Hidden", "Select", "Radio", "Object", "NestedModel", "Date", "DateTime", "List", "CUSTOM_GRID", "CUSTOM_PICKER", "File", "FileList"]
+                options: ["Text", "Number", "Password", "TextArea", "Checkbox", "Checkboxes", "Hidden", "Select", "Radio", "Object", "NestedModel", "Date", "DateTime", "List", "CUSTOM_GRID", "CUSTOM_PICKER", "File"]
             },
 
             editorOpt: {
@@ -83,6 +86,9 @@
 
 
     /**
+     *
+     * **Collection**
+     * 
      * Backbone.PageableCollection is a strict superset of Backbone.Collection
      * We instead use the Backbone.PageableCollection for better paginate ability.
      *
@@ -95,5 +101,48 @@
         url: '/api/Field'
 
     });
+
+
+    /**
+     * Start defining the View objects. e.g,
+     *
+     * - Single Entry View - for list or grid.
+     * - Multi/List View - just wrap around single entry view.
+     * - Grid View - with controlls and columns.
+     * - Form View - another single entry view but editable. [Generated]
+     * 
+     * @type {Backbone.View or Backbone.Marionette.ItemView/CollectionView/CompositeView}
+     */
+    module.View = {};
+
+    /**
+     *
+     * **View.Form**
+     * 
+     * Backbone.Marionette.ItemView is used to wrap up the form view and 
+     * related interactions. We do this in the onRender callback.
+     *
+     * @class Application.Field.View.Form
+     */
+    module.View.Form = Backbone.Marionette.ItemView.extend({
+
+        template: '#basic-form-view-wrap-tpl',
+
+        ui: {
+            header: '.form-header-container',
+            body: '.form-body-container',
+            ctrlbar: '.form-control-bar',
+        },
+
+        //Might create zombie views...let's see.
+        onRender: function() {
+            this.ui.body.html(new Backbone.Form({
+                model: this.model
+            }).render().el);
+        }
+
+
+    });
+
 
 })(Application);
