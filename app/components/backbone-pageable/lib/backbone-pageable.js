@@ -2,7 +2,7 @@
   backbone-pageable
   http://github.com/wyuenho/backbone-pageable
 
-  Copyright (c) 2012 Jimmy Yuen Ho Wong
+  Copyright (c) 2013 Jimmy Yuen Ho Wong
   Licensed under the MIT @license.
 */
 
@@ -49,12 +49,43 @@
 
   "use strict";
 
+  var _extend = _.extend;
+  var _omit = _.omit;
+  var _clone = _.clone;
+  var _each = _.each;
+  var _pick = _.pick;
+  var _contains = _.contains;
+  var _isEmpty = _.isEmpty;
+  var _pairs = _.pairs;
+  var _invert = _.invert;
+  var _isArray = _.isArray;
+  var _isFunction = _.isFunction;
+  var _keys = _.keys;
+  var _isUndefined = _.isUndefined;
+  var ceil = Math.ceil;
+
+  var BBColProto = Backbone.Collection.prototype;
+
   function finiteInt (val, name) {
     val *= 1;
     if (!_.isNumber(val) || _.isNaN(val) || !_.isFinite(val) || ~~val !== val) {
       throw new TypeError("`" + name + "` must be a finite integer");
     }
     return val;
+  }
+
+  function queryStringToParams (qs) {
+    var kvp, k, v, ls, params = {}, decode = decodeURIComponent;
+    var kvps = qs.split('&');
+    for (var i = 0, l = kvps.length; i < l; i++) {
+      var param = kvps[i];
+      kvp = param.split('='), k = kvp[0], v = kvp[1] || true;
+      k = decode(k), ls = params[k];
+      if (_isArray(ls)) ls.push(v);
+      else if (ls) params[k] = [ls, v];
+      else params[k] = v;
+    }
+    return params;
   }
 
   // Quickly reset a collection by temporarily detaching the comparator of the
@@ -173,7 +204,7 @@
        @property {string} [queryParams.currentPage="page"]
        @property {string} [queryParams.pageSize="per_page"]
        @property {string} [queryParams.totalPages="total_pages"]
-       @property {string} [queryParams.totalRecords="total"]
+       @property {string} [queryParams.totalRecords="total_entries"]
        @property {string} [queryParams.sortKey="sort_by"]
        @property {string} [queryParams.order="order"]
        @property {string} [queryParams.directions={"-1": "asc", "1": "desc"}] A
@@ -194,21 +225,6 @@
     },
 
     /**
-       __INFINITE MODE ONLY__
-
-       This property is only available under infinite paging mode to record link
-       information. This object is also __read only__.
-
-       @readonly
-
-       @property {Object} [links]
-       @property {string} [links.first]
-       @property {string} [links.prev]
-       @property {string} [links.next]
-       @property {string} [links.last]
-    */
-
-    /**
        __CLIENT MODE ONLY__
 
        This collection is the internal storage for the bootstrapped or fetched
@@ -218,9 +234,11 @@
     */
 
     /**
-       Given a list of models or model attributues, bootstrap the full
-       collection in client mode, or just the page you want in server mode. If
-       you want to initialize this collection to a different state than the
+       Given a list of models or model attributues, bootstraps the full
+       collection in client mode or infinite mode, or just the page you want in
+       server mode.
+
+       If you want to initialize a collection to a different state than the
        default, you can specify them in `options.state`. Any state parameters
        supplied will be merged with the default. If you want to change the
        default mapping from #state keys to your server API's query parameter
@@ -239,12 +257,13 @@
        @param {Object} [options]
 
        @param {function(*, *): number} [options.comparator] If specified, this
-       comparator is set to the collection(s) instead.
+       comparator is set to the current page under server mode, or the
+       #fullCollection otherwise.
 
-       @param {boolean} [options.full] If `true`, and if #this.mode == "client" is
-       `true, and either a `options.comparator` or `sortKey` is defined, the
-       comparator is attached to the full collection instead of just the parent
-       collection containing the current page.
+       @param {boolean} [options.full] If `false` and either a
+       `options.comparator` or `sortKey` is defined, the comparator is attached
+       to the current page. Default is `true` under client or infinite mode and
+       the comparator will be attached to the #fullCollection.
 
        @param {Object} [options.state] The state attributes overriding the defaults.
 
@@ -265,62 +284,59 @@
 
       var mode = this.mode = options.mode || this.mode || PageableProto.mode;
 
-      var queryParams = _.extend({}, PageableProto.queryParams, this.queryParams,
-                                 options.queryParams || {});
+      var queryParams = _extend({}, PageableProto.queryParams, this.queryParams,
+                                options.queryParams || {});
 
-      queryParams.directions = _.extend({},
-                                        PageableProto.queryParams.directions,
-                                        this.queryParams.directions,
-                                        queryParams.directions || {});
+      queryParams.directions = _extend({},
+                                       PageableProto.queryParams.directions,
+                                       this.queryParams.directions,
+                                       queryParams.directions || {});
 
       this.queryParams = queryParams;
 
-      var state = this.state = _.extend({}, PageableProto.state, this.state,
-                                        options.state || {});
+      var state = this.state = _extend({}, PageableProto.state, this.state,
+                                       options.state || {});
 
       state.currentPage = state.currentPage == null ?
         state.firstPage :
         state.currentPage;
 
-      this.switchMode(mode, _.extend({fetch: false, resetState: false, models: models}, options));
+      if (mode != "server" && state.totalRecords == null && !_isEmpty(models)) {
+        state.totalRecords = models.length;
+      }
 
-      if (mode == "client") {
+      this.switchMode(mode, _extend({fetch: false,
+                                     resetState: false,
+                                     models: models}, options));
 
-        if (state.totalRecords == null && !_.isEmpty(models)) {
-          state.totalRecords = models.length;
-        }
+      var comparator = options.comparator;
 
-        this.state = this._checkState(state);
+      if (state.sortKey && !comparator) {
+        this.setSorting(state.sortKey, state.order, options);
+      }
 
-        var comparator = options.comparator;
-        if (state.sortKey && !comparator) {
-          comparator = this.makeComparator(state.sortKey, state.order, options);
-        }
+      if (mode != "server") {
 
-        if (comparator) {
-          if (options.full) {
-            var fullCollection = this.fullCollection;
-            fullCollection.comparator = comparator;
-            fullCollection.sort();
-          }
-          else this.comparator = comparator;
+        if (comparator && options.full) {
+          delete this.comparator;
+          var fullCollection = this.fullCollection;
+          fullCollection.comparator = comparator;
+          fullCollection.sort();
         }
 
         // make sure the models in the current page and full collection have the
         // same references
-        if (models && !_.isEmpty(models)) {
+        if (models && !_isEmpty(models)) {
           this.getPage(state.currentPage);
           models.splice.apply(models, [0, models.length].concat(this.models));
         }
       }
-      else this.state = this._checkState(state);
 
-      this._initState = _.clone(this.state);
+      this._initState = _clone(this.state);
     },
 
     /**
-       Makes a Backbone.Collection that contains all the pages and connect event
-       handlers to it.
+       Makes a Backbone.Collection that contains all the pages.
 
        @private
        @param {Array.<Object|Backbone.Model>} models
@@ -336,154 +352,167 @@
       var proto = {};
       for (i = 0, length = properties.length; i < length; i++) {
         prop = properties[i];
-        if (!_.isUndefined(thisProto[prop])) {
+        if (!_isUndefined(thisProto[prop])) {
           proto[prop] = thisProto[prop];
         }
       }
 
       var fullCollection = new (Backbone.Collection.extend(proto))(models, options);
 
-      var self = this;
       for (i = 0, length = properties.length; i < length; i++) {
         prop = properties[i];
-        if (self[prop] !== thisProto[prop]) {
+        if (this[prop] !== thisProto[prop]) {
           fullCollection[prop] = prop;
         }
       }
-
-      fullCollection._onFullCollectionEvent = this._onFullCollectionEvent;
-      fullCollection.on("all", fullCollection._onFullCollectionEvent, fullCollection);
-      fullCollection.pageableCollection = this;
 
       return fullCollection;
     },
 
     /**
-       Event handler that propagates events from the current page to #fullCollection.
+       Factory method that returns a Backbone event handler that responses to
+       the `all` event. The returned event handler will synchronize the current
+       page collection and the full collection's models.
 
        @private
+
+       @param {Backbone.PageableCollection} pageCol
+       @param {Backbone.Collection} fullCol
+
+       @return {function(string, Backbone.Model, Backbone.Collection, Object)}
+       Collection event handler
     */
-    _onPageableCollectionEvent: function (event, model, collection, options) {
+    _makeCollectionEventHandler: function (pageCol, fullCol) {
 
-      var fullCollection = this.fullCollection;
+      return function collectionEventHandler (event, model, collection, options) {
 
-      this.off("all", this._onPageableCollectionEvent, this);
-      fullCollection.off("all", fullCollection._onFullCollectionEvent,
-                         fullCollection);
+        var handlers = pageCol._handlers;
+        _each(_keys(handlers), function (event) {
+          var handler = handlers[event];
+          pageCol.off(event, handler);
+          fullCol.off(event, handler);
+        });
 
-      var state = _.clone(this.state);
-      var firstPage = state.firstPage;
-      var currentPage = firstPage === 0 ?
-        state.currentPage :
-        state.currentPage - 1;
-      var pageSize = state.pageSize;
-      var pageStart = currentPage * pageSize, pageEnd = pageStart + pageSize;
+        var state = _clone(pageCol.state);
+        var firstPage = state.firstPage;
+        var currentPage = firstPage === 0 ?
+          state.currentPage :
+          state.currentPage - 1;
+        var pageSize = state.pageSize;
+        var pageStart = currentPage * pageSize, pageEnd = pageStart + pageSize;
 
-      if (event == "add") {
-        var fullIndex = pageStart + this.indexOf(model);
-        fullCollection.add(model, _.extend({}, options || {}, {at: fullIndex}));
-        this.pop();
-        state.totalRecords++;
-      }
+        if (event == "add") {
+          var pageIndex, fullIndex, addAt, colToAdd, options = options || {};
+          if (collection == fullCol) {
+            fullIndex = fullCol.indexOf(model);
+            if (fullIndex >= pageStart && fullIndex < pageEnd) {
+              colToAdd = pageCol;
+              pageIndex = addAt = fullIndex - pageStart;
+            }
+          }
+          else {
+            pageIndex = pageCol.indexOf(model);
+            fullIndex = pageStart + pageIndex;
+            colToAdd = fullCol;
+            var addAt = !_isUndefined(options.at) ?
+              options.at + pageStart :
+              fullIndex;
+          }
 
-      if (event == "remove") {
-        var nextModel = fullCollection.at(pageEnd);
-        if (nextModel) this.push(nextModel);
-        fullCollection.remove(model);
-        if (!--state.totalRecords) {
-          state.totalRecords = null;
-          state.totalPages = null;
+          ++state.totalRecords;
+          pageCol.state = pageCol._checkState(state);
+
+          if (colToAdd) {
+            colToAdd.add(model, _extend({}, options || {}, {at: addAt}));
+            var modelToRemove = pageIndex >= pageSize ?
+              model :
+              !_isUndefined(options.at) && addAt < pageEnd && pageCol.length > pageSize ?
+              pageCol.at(pageSize) :
+              null;
+            if (modelToRemove) {
+              var addHandlers = collection._events.add,
+              popOptions = {onAdd: true};
+              if (addHandlers.length) {
+                var lastAddHandler = addHandlers[addHandlers.length - 1];
+                var oldCallback = lastAddHandler.callback;
+                lastAddHandler.callback = function () {
+                  try {
+                    oldCallback.apply(this, arguments);
+                    pageCol.remove(modelToRemove, popOptions);
+                  }
+                  finally {
+                    lastAddHandler.callback = oldCallback;
+                  }
+                };
+              }
+              else pageCol.remove(modelToRemove, popOptions);
+            }
+          }
         }
-        else {
-          var totalPages = state.totalPages = Math.ceil(state.totalRecords / pageSize);
-          state.lastPage = firstPage === 0 ? totalPages - 1 : totalPages;
-          if (state.currentPage > totalPages) state.currentPage = state.lastPage;
+
+        // remove the model from the other collection as well
+        if (event == "remove") {
+          if (!options.onAdd) {
+            // decrement totalRecords and update totalPages and lastPage
+            if (!--state.totalRecords) {
+              state.totalRecords = null;
+              state.totalPages = null;
+            }
+            else {
+              var totalPages = state.totalPages = ceil(state.totalRecords / pageSize);
+              state.lastPage = firstPage === 0 ? totalPages - 1 : totalPages;
+              if (state.currentPage > totalPages) state.currentPage = state.lastPage;
+            }
+            pageCol.state = pageCol._checkState(state);
+
+            var nextModel, removedIndex = options.index;
+            if (collection == pageCol) {
+              if (nextModel = fullCol.at(pageEnd)) pageCol.push(nextModel);
+              fullCol.remove(model);
+            }
+            else if (removedIndex >= pageStart && removedIndex < pageEnd) {
+              pageCol.remove(model);
+              nextModel = fullCol.at(currentPage * (pageSize + removedIndex));
+              if (nextModel) pageCol.push(nextModel);
+            }
+          }
+          else delete options.onAdd;
         }
-      }
 
-      if (event == "reset") {
-        var head = fullCollection.models.slice(0, pageStart);
-        var tail = fullCollection.models.slice(pageStart + this.models.length);
-        resetQuickly(fullCollection, head.concat(this.models).concat(tail));
-        resetQuickly(this, fullCollection.models.slice(pageStart, pageEnd),
-                     {silent: true});
-        state.totalRecords = fullCollection.models.length;
-      }
+        if (event == "reset" || event == "sort") {
+          options = collection;
+          collection = model;
 
-      this.state = this._checkState(state);
+          if (collection == pageCol && event == "reset") {
+            var head = fullCol.models.slice(0, pageStart);
+            var tail = fullCol.models.slice(pageStart + pageCol.models.length);
+            options = _extend(options, {silent: true});
+            resetQuickly(fullCol, head.concat(pageCol.models).concat(tail),
+                         options);
+          }
 
-      fullCollection.on("all", fullCollection._onFullCollectionEvent,
-                        fullCollection);
-
-      this.on("all", this._onPageableCollectionEvent, this);
-    },
-
-    /**
-       Event handler that sychronizes events from #fullCollection to its parent
-       pageable collection holding the current page. This event handler will be
-       bound to #fullCollection.
-
-       @private
-    */
-    _onFullCollectionEvent: function (event, model, collection, options) {
-
-      var pageableCollection = this.pageableCollection;
-
-      this.off("all", this._onFullCollectionEvent, this);
-      pageableCollection.off("all",
-                             pageableCollection._onPageableCollectionEvent,
-                             pageableCollection);
-
-      var state = _.clone(pageableCollection.state);
-      var firstPage = state.firstPage;
-      var currentPage = firstPage === 0 ?
-        state.currentPage :
-        state.currentPage - 1;
-      var pageSize = state.pageSize;
-      var pageStart = currentPage * pageSize, pageEnd = pageStart + pageSize;
-
-      if (event == "add") {
-        var fullIndex = this.indexOf(model);
-        if (fullIndex >= pageStart && fullIndex < pageEnd) {
-          var pageIndex = fullIndex - pageStart;
-          pageableCollection.pop();
-          pageableCollection.add(model, _.extend({}, options || {},
-                                                 {at: pageIndex}));
+          if (event == "reset" || collection == fullCol) {
+            if (!(state.totalRecords = fullCol.models.length)) {
+              state.totalRecords = null;
+              state.totalPages = null;
+              state.lastPage = state.currentPage = state.firstPage;
+            }
+            pageCol.state = pageCol._checkState(state);
+            if (collection == pageCol) fullCol.trigger(event, fullCol, options);
+            resetQuickly(pageCol, fullCol.models.slice(pageStart, pageEnd),
+                         options);
+          }
         }
-        state.totalRecords++;
-      }
 
-      if (event == "remove") {
-        if (options.index >= pageStart && options.index < pageEnd) {
-          pageableCollection.remove(model);
-          var nextModel = this.at(currentPage * (pageSize + options.index));
-          if (nextModel) pageableCollection.push(nextModel);
-        }
-        if (!--state.totalRecords) {
-          state.totalRecords = null;
-          state.totalPages = null;
-        }
-        else {
-          var totalPages = state.totalPages = Math.ceil(state.totalRecords / pageSize);
-          state.lastPage = firstPage === 0 ? totalPages - 1 : totalPages;
-          if (state.currentPage > totalPages) state.currentPage = state.lastPage;
-        }
-      }
-
-      if (event == "reset" || event == "sort") {
-        options = collection;
-        resetQuickly(pageableCollection, this.models.slice(pageStart, pageEnd),
-                     options);
-        state.totalRecords = this.models.length;
-      }
-
-      pageableCollection.state = pageableCollection._checkState(state);
-
-      pageableCollection.on("all",
-                            pageableCollection._onPageableCollectionEvent,
-                            pageableCollection);
-
-      this.on("all", this._onFullCollectionEvent, this);
+        _each(_keys(handlers), function (event) {
+          var handler = handlers[event];
+          _each([pageCol, fullCol], function (col) {
+            col.on(event, handler);
+            var callbacks = col._events[event];
+            callbacks.unshift(callbacks.pop());
+          });
+        });
+      };
     },
 
     /**
@@ -505,6 +534,8 @@
     */
     _checkState: function (state) {
 
+      var mode = this.mode;
+      var links = this.links;
       var totalRecords = state.totalRecords;
       var pageSize = state.pageSize;
       var currentPage = state.currentPage;
@@ -512,7 +543,7 @@
       var totalPages = state.totalPages;
 
       if (totalRecords != null && pageSize != null && currentPage != null &&
-          firstPage != null) {
+          firstPage != null && (mode == "infinite" ? links : true)) {
 
         totalRecords = finiteInt(totalRecords, "totalRecords");
         pageSize = finiteInt(pageSize, "pageSize");
@@ -523,23 +554,27 @@
           throw new RangeError("`pageSize` must be >= 1");
         }
 
-        totalPages = state.totalPages = Math.ceil(totalRecords / pageSize);
+        totalPages = state.totalPages = ceil(totalRecords / pageSize);
 
-        if (firstPage === 0) {
-          if (currentPage < firstPage || currentPage >= totalPages) {
-            throw new RangeError("`currentPage` must be firstPage <= currentPage < totalPages if 0-based.");
-          }
-        }
-        else if (firstPage === 1) {
-          if (currentPage < firstPage || currentPage > totalPages) {
-            throw new RangeError("`currentPage` must be firstPage <= currentPage <= totalPages if 1-based.");
-          }
-        }
-        else {
+        if (firstPage < 0 || firstPage > 1) {
           throw new RangeError("`firstPage must be 0 or 1`");
         }
 
         state.lastPage = firstPage === 0 ? totalPages - 1 : totalPages;
+
+        if (mode == "infinite") {
+          if (!links[currentPage + '']) {
+            throw new RangeError("No link found for page " + currentPage);
+          }
+        }
+        else {
+          if (firstPage === 0 && (currentPage < firstPage || currentPage >= totalPages)) {
+            throw new RangeError("`currentPage` must be firstPage <= currentPage < totalPages if 0-based. Got " + currentPage + '.');
+          }
+          else if (firstPage === 1 && (currentPage < firstPage || currentPage > totalPages)) {
+            throw new RangeError("`currentPage` must be firstPage <= currentPage <= totalPages if 1-based. Got " + currentPage + '.');
+          }
+        }
       }
 
       return state;
@@ -566,20 +601,17 @@
        @throws {RangeError} If `pageSize` is less than 1.
 
        @chainable
-       @return {jQuery.jqXHR|Backbone.PageableCollection} The jqXHR from fetch
-       or this.
+       @return {XMLHttpRequest|Backbone.PageableCollection} The XMLHttpRequest
+       from fetch or this.
     */
     setPageSize: function (pageSize, options) {
-
       pageSize = finiteInt(pageSize, "pageSize");
 
       options = options || {};
 
-      this.state = this._checkState(_.extend({}, this.state, {
+      this.state = this._checkState(_extend({}, this.state, {
         pageSize: pageSize,
-        totalPages: this.mode == "client" ?
-          Math.ceil(this.fullCollection.size() / pageSize) :
-          Math.ceil(this.state.totalRecords / pageSize)
+        totalPages: ceil(this.state.totalRecords / pageSize)
       }));
 
       return this.getPage(this.state.currentPage, options);
@@ -592,8 +624,9 @@
        first and then deleted and a fetch is immediately issued for the current
        page from the server. Pass `false` to `options.fetch` to skip fetching.
 
-       If switching to infinite mode, #links.first will be set to the the #url
-       of this collection.
+       If switching to infinite mode, and if `options.models` is given for an
+       array of models, #links will be populated with a URL per page, using the
+       default URL for this collection.
 
        If switching from server to client mode, all of the pages are immediately
        refetched. If you have too many pages, you can pass `false` to
@@ -611,59 +644,96 @@
        reset, but checked for sanity instead.
 
        @chainable
-       @return {jQuery.jqXHR|Backbone.PageableCollection} The jqXHR from fetch
-       or this if `options.fetch` is `false`.
+       @return {XMLHttpRequest|Backbone.PageableCollection} The XMLHttpRequest
+       from fetch or this if `options.fetch` is `false`.
     */
     switchMode: function (mode, options) {
 
-      if (!_.contains(["server", "client", "infinite"], mode)) {
+      if (!_contains(["server", "client", "infinite"], mode)) {
         throw new TypeError('`mode` must be one of "server", "client" or "infinite"');
       }
 
       options = options || {fetch: true, resetState: true};
 
-      var fullCollection;
+      var state = this.state = options.resetState ?
+        _clone(this._initState) :
+        this._checkState(_extend({}, this.state));
 
-      this.state = options.resetState ?
-        _.clone(this._initState) :
-        this._checkState(_.extend({}, this.state));
+      this.mode = mode;
 
-      if (mode == "client") {
-
-        if (this.links) delete this.links;
-
-        fullCollection = this.fullCollection = this._makeFullCollection(options.models || []);
+      var self = this;
+      var fullCollection = this.fullCollection;
+      var handlers = this._handlers = this._handlers || {}, handler;
+      if (mode != "server" && !fullCollection) {
+        fullCollection = this._makeFullCollection(options.models || []);
+        fullCollection.pageableCollection = this;
+        this.fullCollection = fullCollection;
+        var allHandler = this._makeCollectionEventHandler(this, fullCollection);
+        _each(["add", "remove", "reset", "sort"], function (event) {
+          handlers[event] = handler = _.bind(allHandler, {}, event);
+          self.on(event, handler);
+          fullCollection.on(event, handler);
+        });
         fullCollection.comparator = this._fullComparator;
-        this.on("all", this._onPageableCollectionEvent, this);
       }
-      else if (this.fullCollection) {
-
-        fullCollection = this.fullCollection;
-        fullCollection.off("all", fullCollection._onFullCollectionEvent,
-                           fullCollection);
-        this.off("all", this._onPageableCollectionEvent, this);
+      else if (mode == "server" && fullCollection) {
+        _each(_keys(handlers), function (event) {
+          handler = handlers[event];
+          self.off(event, handler);
+          fullCollection.off(event, handler);
+        });
+        delete this._handlers;
         this._fullComparator = fullCollection.comparator;
         delete this.fullCollection;
-
-        if (mode == "server" && this.links) delete this.links;
       }
 
-      if (mode == "infinite") this.links = {first: this.url, next: this.url};
+      if (mode == "infinite") {
+        var links = this.links = {};
+        var firstPage = state.firstPage;
+        var totalPages = ceil(state.totalRecords / state.pageSize);
+        var lastPage = firstPage === 0 ? totalPages - 1 : totalPages || firstPage;
+        for (var i = state.firstPage; i <= lastPage; i++) {
+          links[i] = this.url;
+        }
+      }
+      else if (this.links) delete this.links;
 
       return options.fetch ?
-        this.fetch(_.omit(options, ["fetch", "resetState"])):
+        this.fetch(_omit(options, "fetch", "resetState")) :
         this;
     },
 
     /**
+       @return {boolean} `true` if this collection can page backward, `false`
+       otherwise.
+    */
+    hasPrevious: function () {
+      var state = this.state;
+      var currentPage = state.currentPage;
+      if (this.mode != "infinite") return currentPage > state.firstPage;
+      return !!this.links[currentPage - 1];
+    },
+
+    /**
+       @return {boolean} `true` if this collection can page forward, `false`
+       otherwise.
+    */
+    hasNext: function () {
+      var state = this.state;
+      var currentPage = this.state.currentPage;
+      if (this.mode != "infinite") return currentPage < state.lastPage;
+      return !!this.links[currentPage + 1];
+    },
+
+    /**
        Fetch the first page in server mode, or reset the current page of this
-       collection to the first page in client mode.
+       collection to the first page in client or infinite mode.
 
        @param {Object} options {@link #getPage} options.
 
        @chainable
-       @return {jQuery.jqXHR|Backbone.PageableCollection} The jqXHR from fetch
-       or this.
+       @return {XMLHttpRequest|Backbone.PageableCollection} The XMLHttpRequest
+       from fetch or this.
     */
     getFirstPage: function (options) {
       return this.getPage("first", options);
@@ -671,13 +741,13 @@
 
     /**
        Fetch the previous page in server mode, or reset the current page of this
-       collection to the previous page in client mode.
+       collection to the previous page in client or infinite mode.
 
        @param {Object} options {@link #getPage} options.
 
        @chainable
-       @return {jQuery.jqXHR|Backbone.PageableCollection} The jqXHR from fetch
-       or this.
+       @return {XMLHttpRequest|Backbone.PageableCollection} The XMLHttpRequest
+       from fetch or this.
     */
     getPreviousPage: function (options) {
       return this.getPage("prev", options);
@@ -690,8 +760,8 @@
        @param {Object} options {@link #getPage} options.
 
        @chainable
-       @return {jQuery.jqXHR|Backbone.PageableCollection} The jqXHR from fetch
-       or this.
+       @return {XMLHttpRequest|Backbone.PageableCollection} The XMLHttpRequest
+       from fetch or this.
     */
     getNextPage: function (options) {
       return this.getPage("next", options);
@@ -704,8 +774,8 @@
        @param {Object} options {@link #getPage} options.
 
        @chainable
-       @return {jQuery.jqXHR|Backbone.PageableCollection} The jqXHR from fetch
-       or this.
+       @return {XMLHttpRequest|Backbone.PageableCollection} The XMLHttpRequest
+       from fetch or this.
     */
     getLastPage: function (options) {
       return this.getPage("last", options);
@@ -715,10 +785,12 @@
        Given a page index, set #state.currentPage to that index. If this
        collection is in server mode, fetch the page using the updated state,
        otherwise, reset the current page of this collection to the page
-       specified by `pageIndex` in client mode. If `options.fetch` is true, a
-       fetch can be forced in client mode before resetting the current
-       page. Under infinite mode, the index is the page name for looking up a
-       URL from #links.
+       specified by `index` in client mode. If `options.fetch` is true, a fetch
+       can be forced in client mode before resetting the current page. Under
+       infinite mode, if the index is less than the current page, a reset is
+       done as in client mode. If the index is greater than the current page
+       number, a fetch is made with the results **appended** to
+       #fullCollection. The current page will then be reset after fetching.
 
        @param {number|string} index The page index to go to, or the page name to
        look up from #links in infinite mode.
@@ -734,10 +806,12 @@
        @throws {RangeError} If `index` is out of bounds.
 
        @chainable
-       @return {jQuery.jqXHR|Backbone.PageableCollection} The jqXHR from fetch
-       or this.
+       @return {XMLHttpRequest|Backbone.PageableCollection} The XMLHttpRequest
+       from fetch or this.
     */
     getPage: function (index, options) {
+
+      var mode = this.mode, fullCollection = this.fullCollection;
 
       options = options || {fetch: false};
 
@@ -749,71 +823,126 @@
 
       var pageNum = index;
       switch (index) {
-      case "first": pageNum = firstPage; break;
-      case "prev": pageNum = currentPage - 1; break;
-      case "next": pageNum = currentPage + 1; break;
-      case "last": pageNum = lastPage; break;
-      default: pageNum = finiteInt(index, "index");
+        case "first": pageNum = firstPage; break;
+        case "prev": pageNum = currentPage - 1; break;
+        case "next": pageNum = currentPage + 1; break;
+        case "last": pageNum = lastPage; break;
+        default: pageNum = finiteInt(index, "index");
       }
 
-      this.state = this._checkState(_.extend({}, state, {currentPage: pageNum}));
+      this.state = this._checkState(_extend({}, state, {currentPage: pageNum}));
 
-      if (this.mode == "client" && !options.fetch) {
-        var pageStart = (firstPage === 0 ? pageNum : pageNum - 1) * pageSize;
-        var pageEnd = pageStart + pageSize;
-        return this.reset(this.fullCollection.models.slice(pageStart, pageEnd),
-                          _.omit(options, "fetch"));
-      }
-      else if (this.mode == "infinite") {
-        var links = this.links;
-        if (!links[index]) throw new TypeError("No link found for '" + index + "'");
-
-        var self = this;
-        return this.fetch(_.extend({url: this.links[index]}, options)).done(
-          function (resp, status, xhr) {
-            self.links = self.parseLinks(resp, xhr);
-          }
-        );
+      var pageStart = (firstPage === 0 ? pageNum : pageNum - 1) * pageSize;
+      var pageModels = fullCollection && fullCollection.length ?
+        fullCollection.models.slice(pageStart, pageStart + pageSize) :
+        [];
+      if ((mode == "client" || (mode == "infinite" && !_isEmpty(pageModels))) &&
+          !options.fetch) {
+        return resetQuickly(this, pageModels, _omit(options, "fetch"));
       }
 
-      return this.fetch(options, "fetch");
+      if (mode == "infinite") options.url = this.links[pageNum];
+
+      return this.fetch(_omit(options, "fetch"));
+    },
+
+    /**
+       Overidden to make `getPage` compatible with Zepto.
+
+       @param {string} method
+       @param {Backbone.Model|Backbone.Collection} model
+       @param {Object} [options]
+
+       @return {XMLHttpRequest}
+    */
+    sync: function (method, model, options) {
+      var self = this;
+      if (self.mode == "infinite") {
+        var success = options.success;
+        var currentPage = self.state.currentPage;
+        options.success = function (resp, status, xhr) {
+          var links = self.links;
+          var newLinks = self.parseLinks(resp, _extend({xhr: xhr}, options));
+          if (newLinks.first) links[self.state.firstPage] = newLinks.first;
+          if (newLinks.prev) links[currentPage - 1] = newLinks.prev;
+          if (newLinks.next) links[currentPage + 1] = newLinks.next;
+          if (success) success(resp, status, xhr);
+        };
+      }
+
+      return (BBColProto.sync || Backbone.sync).call(self, method, model, options);
     },
 
     /**
        Parse pagination links from the server response. Only valid under
        infinite mode.
 
-       Given a response body and a jqXHR object, extract pagination links from
-       them for infinite paging. This default implementation parses the RFC 5988
-       `Link` header and extract 4 links from it - `first`, `prev`, `next`,
-       `last`. If a `previous` link is found, it is will be found in the `prev`
-       key in the returned object hash. Any subclasses overriding this method
-       __must__ return an object hash with the above keys. Any keys missing will
-       result in a failure to traverse to that page. An empty object hash must
-       be returned if there are no links found.
+       Given a response body and a XMLHttpRequest object, extract pagination
+       links from them for infinite paging.
+
+       This default implementation parses the RFC 5988 `Link` header and extract
+       3 links from it - `first`, `prev`, `next`. If a `previous` link is found,
+       it will be found in the `prev` key in the returned object hash. Any
+       subclasses overriding this method __must__ return an object hash having
+       only the keys above. If `first` is missing, the collection's default URL
+       is assumed to be the `first` URL. If `prev` or `next` is missing, it is
+       assumed to be `null`. An empty object hash must be returned if there are
+       no links found. If either the response or the header contains information
+       pertaining to the total number of records on the server,
+       #state.totalRecords must be set to that number. The default
+       implementation uses the `last` link from the header to calculate it.
 
        @param {*} resp The deserialized response body.
-       @param {jQuery.jqXHR} xhr The jqXHR object for this response.
+       @param {Object} [options]
+       @param {XMLHttpRequest} [options.xhr] The XMLHttpRequest object for this
+       response.
        @return {Object}
     */
-    parseLinks: function (resp, xhr) {
-      var linkHeader = xhr.getResponseHeader("Link");
+    parseLinks: function (resp, options) {
+      var linkHeader = options.xhr.getResponseHeader("Link");
       var relations = ["first", "prev", "previous", "next", "last"];
       var links = {};
-      _.each(linkHeader.split(","), function (linkValue) {
+      _each(linkHeader.split(","), function (linkValue) {
         var linkParts = linkValue.split(";");
         var url = linkParts[0].replace(URL_TRIM_RE, '');
         var params = linkParts.slice(1);
-        _.each(params, function (param) {
+        _each(params, function (param) {
           var paramParts = param.split("=");
           var key = paramParts[0].replace(PARAM_TRIM_RE, '');
           var value = paramParts[1].replace(PARAM_TRIM_RE, '');
-          if (key == "rel" && _.contains(relations, value)) {
+          if (key == "rel" && _contains(relations, value)) {
             if (value == "previous") links.prev = url;
             else links[value] = url;
           }
         });
       });
+
+      var last = links.last || '', qsi, qs;
+      if (qs = (qsi = last.indexOf('?')) ? last.slice(qsi + 1) : '') {
+        var params = queryStringToParams(qs);
+
+        var state = _clone(this.state);
+        var queryParams = this.queryParams;
+        var pageSize = state.pageSize;
+
+        var totalRecords = params[queryParams.totalRecords] * 1;
+        var pageNum = params[queryParams.currentPage] * 1;
+        var totalPages = params[queryParams.totalPages];
+
+        if (!totalRecords) {
+          if (pageNum) totalRecords = (state.firstPage === 0 ?
+                                       pageNum + 1 :
+                                       pageNum) * pageSize;
+          else if (totalPages) totalRecords = totalPages * pageSize;
+        }
+
+        if (totalRecords) state.totalRecords = totalRecords;
+
+        this.state = this._checkState(state);
+      }
+
+      delete links.last;
+
       return links;
     },
 
@@ -849,23 +978,23 @@
     */
     parse: function (resp) {
 
-      if (!_.isArray(resp)) {
+      if (!_isArray(resp)) {
         return new TypeError("The server response must be an array");
       }
 
-      if (resp.length === 2 && _.isObject(resp[0]) && _.isArray(resp[1])) {
+      if (resp.length === 2 && _.isObject(resp[0]) && _isArray(resp[1])) {
 
         var queryParams = this.queryParams;
-        var newState = _.clone(this.state);
+        var newState = _clone(this.state);
         var serverState = resp[0];
 
-        _.each(_.pairs(_.omit(queryParams, "directions")), function (kvp) {
+        _each(_pairs(_omit(queryParams, "directions")), function (kvp) {
           var k = kvp[0], v = kvp[1];
           newState[k] = serverState[v];
         });
 
         if (serverState.order) {
-          newState.order = _.invert(queryParams.directions)[serverState.order] * 1;
+          newState.order = _invert(queryParams.directions)[serverState.order] * 1;
         }
 
         this.state = this._checkState(newState);
@@ -878,34 +1007,54 @@
 
     /**
        Fetch a page from the server in server mode, or all the pages in client
-       mode. The query string is constructed by translating the current
-       pagination state to your server API query parameter using #queryParams.
-       The current page will reset after fetch.
+       mode. Under infinite mode, the current page is refetched by default and
+       then reset.
+
+       The query string is constructed by translating the current pagination
+       state to your server API query parameter using #queryParams.  The current
+       page will reset after fetch.
 
        @param {Object} [options] Accepts all
        [Backbone.Collection#fetch](http://backbonejs.org/#Collection-fetch)
        options.
 
-       @return {jQuery.jqXHR}
+       @return {XMLHttpRequest}
     */
     fetch: function (options) {
-      options = options || {};
-      var data = options.data = options.data || {};
 
-      if (this.mode == "infinite" && !options.url) return this.getNextPage();
+      options = options || {};
 
       var state = this._checkState(this.state);
 
+      var mode = this.mode;
+
+      if (mode == "infinite" && !options.url) {
+        options.url = this.links[state.currentPage];
+      }
+
+      var data = options.data || {};
+
+      // dedup query params
+      var url = options.url || _.result(this, "url") || '';
+      var qsi = url.indexOf('?');
+      if (qsi != -1) {
+        _extend(data, queryStringToParams(url.slice(qsi + 1)));
+        url = url.slice(0, qsi);
+      }
+
+      options.url = url;
+      options.data = data;
+
       // map params except directions
       var queryParams = this.mode == "client" ?
-        _.pick(this.queryParams, "sortKey", "order") :
-        _.omit(_.pick(this.queryParams, _.keys(PageableProto.queryParams)),
-               "directions");
+        _pick(this.queryParams, "sortKey", "order") :
+        _omit(_pick(this.queryParams, _keys(PageableProto.queryParams)),
+              "directions");
 
-      var i, kvp, k, v, kvps = _.pairs(queryParams), thisCopy = _.clone(this);
+      var i, kvp, k, v, kvps = _pairs(queryParams), thisCopy = _clone(this);
       for (i = 0; i < kvps.length; i++) {
         kvp = kvps[i], k = kvp[0], v = kvp[1];
-        v = _.isFunction(v) ? v.call(thisCopy) : v;
+        v = _isFunction(v) ? v.call(thisCopy) : v;
         if (state[k] != null && v != null) {
           data[v] = state[k];
         }
@@ -918,28 +1067,57 @@
       else if (!state.sortKey) delete data[queryParams.order];
 
       // map extra query parameters
-      var extraKvps = _.pairs(_.omit(this.queryParams,
-                                     _.keys(PageableProto.queryParams)));
+      var extraKvps = _pairs(_omit(this.queryParams,
+                                   _keys(PageableProto.queryParams)));
       for (i = 0; i < extraKvps.length; i++) {
         kvp = extraKvps[i];
         v = kvp[1];
-        v = _.isFunction(v) ? v.call(thisCopy) : v;
+        v = _isFunction(v) ? v.call(thisCopy) : v;
         data[kvp[0]] = v;
       }
 
-      var BBColProto = Backbone.Collection.prototype;
-      if (this.mode == "client") {
+      var fullCollection = this.fullCollection, links = this.links;
+
+      if (mode != "server") {
+
         var self = this;
         var success = options.success;
         options.success = function (col, resp, opts) {
+
           // make sure the caller's intent is obeyed
           opts = opts || {};
-          opts.silent = options.silent;
-          self.fullCollection.reset(col.models, opts);
+          if (_isUndefined(options.silent)) delete opts.silent;
+          else opts.silent = options.silent;
+
+          var models = col.models;
+          var currentPage = state.currentPage;
+
+          if (mode == "client") resetQuickly(fullCollection, models, opts);
+          else if (links[currentPage]) { // refetching a page
+            var pageSize = state.pageSize;
+            var pageStart = (state.firstPage === 0 ?
+                             currentPage :
+                             currentPage - 1) * pageSize;
+            var fullModels = fullCollection.models;
+            var head = fullModels.slice(0, pageStart);
+            var tail = fullModels.slice(pageStart + pageSize);
+            fullModels = head.concat(models).concat(tail);
+            fullCollection.update(fullModels,
+                                  _extend({silent: true, sort: false}, opts));
+            if (fullCollection.comparator) fullCollection.sort();
+            fullCollection.trigger("reset", fullCollection, opts);
+          }
+          else { // fetching new page
+            fullCollection.add(models, _extend({at: fullCollection.length,
+                                                silent: true}, opts));
+            fullCollection.trigger("reset", fullCollection, opts);
+          }
+
           if (success) success(col, resp, opts);
         };
+
         // silent the first reset from backbone
-        return BBColProto.fetch.call(this, _.extend({}, options, {silent: true}));
+        return BBColProto.fetch.call(self, _extend({}, options, {silent: true}));
       }
 
       return BBColProto.fetch.call(this, options);
@@ -964,26 +1142,90 @@
        recommended that you set #state.sortKey and optionally #state.order, and
        then call #fetch.
 
+       @protected
+
        @param {string} [sortKey=this.state.sortKey] See `state.sortKey`.
        @param {number} [order=this.state.order] See `state.order`.
 
        See [Backbone.Collection.comparator](http://backbonejs.org/#Collection-comparator).
     */
-    makeComparator: function (sortKey, order) {
-      sortKey = sortKey == null ? this.state.sortKey : sortKey;
-      order = order == null ? this.state.order : order;
+    _makeComparator: function (sortKey, order) {
+
+      var state = this.state;
+
+      sortKey = sortKey || state.sortKey;
+      order = order || state.order;
 
       if (!sortKey || !order) return;
 
-      var comparator = function (left, right) {
+      return function (left, right) {
         var l = left.get(sortKey), r = right.get(sortKey), t;
         if (order === 1) t = l, l = r, r = t;
         if (l === r) return 0;
         else if (l < r) return -1;
         return 1;
       };
+    },
 
-      return comparator;
+    /**
+       Adjusts the sorting for this pageable collection.
+
+       Given a `sortKey` and an `order`, sets `state.sortKey` and
+       `state.order`. A comparator can be applied on the client side to sort in
+       the order defined if `options.side` is `"client"`. By default the
+       comparator is applied to the #fullCollection. Set `options.full` to
+       `false` to apply a comparator to the current page under any mode. Setting
+       `sortKey` to `null` removes the comparator from both the current page and
+       the full collection.
+
+       @chainable
+
+       @param {string} sortKey See `state.sortKey`.
+       @param {number} [order=this.state.order] See `state.order`.
+       @param {Object} [options]
+       @param {"server"|"client"} [options.side] By default, `"client"` if
+       `mode` is `"client"`, `"server"` otherwise.
+       @param {boolean} [options.full=true]
+    */
+    setSorting: function (sortKey, order, options) {
+
+      var state = this.state;
+
+      state.sortKey = sortKey;
+      state.order = order = order || state.order;
+
+      var fullCollection = this.fullCollection;
+
+      var delComp = false, delFullComp = false;
+
+      if (!sortKey) delComp = delFullComp = true;
+
+      var mode = this.mode;
+      options = _extend({side: mode == "client" ? mode : "server", full: true},
+                        options);
+
+      var comparator = this._makeComparator(sortKey, order);
+
+      var full = options.full, side = options.side;
+
+      if (side == "client") {
+        if (full) {
+          if (fullCollection) fullCollection.comparator = comparator;
+          delComp = true;
+        }
+        else {
+          this.comparator = comparator;
+          delFullComp = true;
+        }
+      }
+      else if (side == "server" && !full) {
+        this.comparator = comparator;
+      }
+
+      if (delComp) delete this.comparator;
+      if (delFullComp && fullCollection) delete fullCollection.comparator;
+
+      return this;
     }
 
   });

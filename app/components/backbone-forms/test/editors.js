@@ -1,8 +1,10 @@
 var same = deepEqual;
 
-(function() {
-  module('Base');
-  
+;(function(Form, Field, editors) {
+
+module('Base');
+
+(function() {  
   test('initialize() - sets the "name" attribute on the element, if key is available', function() {
     var editor = new editors.Text({
       model: new Post,
@@ -86,7 +88,7 @@ var same = deepEqual;
       key: 'title'
     }).render();
     
-    var err = editor.commit();
+    var err = editor.commit({ validate: true });
     
     equal(err, 'ERROR');
   });
@@ -113,7 +115,15 @@ var same = deepEqual;
 })();
 
 
-module('Text');
+module('Text', {
+    setup: function() {
+        this.sinon = sinon.sandbox.create();
+    },
+
+    teardown: function() {
+        this.sinon.restore();
+    }
+});
 
 (function() {
     
@@ -153,6 +163,188 @@ module('Text');
         equal(field.getValue(), 'foobar');
         equal($(field.el).val(), 'foobar');
     });
+    
+    test("focus() - gives focus to editor and its input", function() {
+        var field = window.form.fields.email.editor;
+
+        field.focus();
+        
+        ok(field.hasFocus);
+        ok(field.$el.is(':focus'));
+    });
+
+    test("focus() - triggers the 'focus' event", function() {
+        var field = new editor({
+            model: new Post,
+            key: 'title'
+        }).render();
+
+        var spy = this.sinon.spy();
+
+        field.on('focus', spy);
+
+        field.focus();
+        
+        ok(spy.called);
+        ok(spy.calledWith(field));
+    });
+
+    test("blur() - removes focus from the editor and its input", function() {
+        var field = window.form.fields.email.editor;
+
+        field.focus();
+
+        field.blur();
+        
+        ok(!field.hasFocus);
+        ok(!field.$el.is(':focus'));
+    });
+
+    test("blur() - triggers the 'blur' event", function() {
+        var field = new editor({
+            model: new Post,
+            key: 'title'
+        }).render();
+        
+        field.focus()
+
+        var spy = this.sinon.spy();
+
+        field.on('blur', spy);
+
+        field.blur();
+        
+        ok(spy.called);
+        ok(spy.calledWith(field));
+    });
+    
+    test("select() - triggers the 'select' event", function() {
+        var field = new editor({
+            model: new Post,
+            key: 'title'
+        }).render();
+        
+        var spy = this.sinon.spy();
+
+        field.on('select', spy);
+
+        field.select();
+        
+        ok(spy.called);
+        ok(spy.calledWith(field));
+    });
+    
+    test("'change' event - is triggered when value of input changes", function() {
+        var field = new editor({
+            model: new Post,
+            key: 'title'
+        }).render();
+        
+        callCount = 0;
+
+        var spy = this.sinon.spy();
+        
+        field.on('change', spy);
+        
+        // Pressing a key
+        field.$el.keypress();
+        field.$el.val('a');
+        
+        stop();
+        setTimeout(function(){
+            callCount++;
+        
+            field.$el.keyup();
+        
+            // Keeping a key pressed for a longer time
+            field.$el.keypress();
+            field.$el.val('ab');
+            
+            setTimeout(function(){
+                callCount++;
+                
+                field.$el.keypress();
+                field.$el.val('abb');
+                
+                setTimeout(function(){
+                    callCount++;
+                    
+                    field.$el.keyup();
+        
+                    // Cmd+A; Backspace: Deleting everything
+                    field.$el.keyup();
+                    field.$el.val('');
+                    field.$el.keyup();
+                    callCount++;
+        
+                    // Cmd+V: Pasting something
+                    field.$el.val('abdef');
+                    field.$el.keyup();
+                    callCount++;
+        
+                    // Left; Right: Pointlessly moving around
+                    field.$el.keyup();
+                    field.$el.keyup();
+
+                    ok(spy.callCount == callCount);
+                    ok(spy.alwaysCalledWith(field));
+            
+                    start();
+                }, 0);
+            }, 0);
+        }, 0);
+    });
+    
+    test("'focus' event - bubbles up from the input", function() {
+        var field = new editor({
+            model: new Post,
+            key: 'title'
+        }).render();
+
+        var spy = this.sinon.spy();
+        
+        field.on('focus', spy);
+        
+        field.$el.focus();
+        
+        ok(spy.calledOnce);
+        ok(spy.alwaysCalledWith(field));
+    });
+    
+    test("'blur' event - bubbles up from the input", function() {
+        var field = new editor({
+            model: new Post,
+            key: 'title'
+        }).render();
+
+        field.$el.focus();
+
+        var spy = this.sinon.spy();
+        
+        field.on('blur', spy);
+        
+        field.$el.blur();
+
+        ok(spy.calledOnce);
+        ok(spy.alwaysCalledWith(field));
+    });
+
+    test("'select' event - bubbles up from the input", function() {
+        var field = new editor({
+            model: new Post,
+            key: 'title'
+        }).render();
+
+
+        var spy = this.sinon.spy();
+        
+        field.on('select', spy);
+        
+        field.$el.select();
+
+        ok(spy.calledOnce);
+        ok(spy.alwaysCalledWith(field));
+    });
 
     test('Default type is text', function() {
         var field = new editor().render();
@@ -173,7 +365,15 @@ module('Text');
 
 
 
-module('Number');
+module('Number', {
+    setup: function() {
+        this.sinon = sinon.sandbox.create();
+    },
+
+    teardown: function() {
+        this.sinon.restore();
+    }
+});
 
 (function() {
     
@@ -218,7 +418,7 @@ module('Number');
     });
     
     test("TODO: Restricts non-numeric characters", function() {
-
+        ok(1);
     });
 
     test("setValue() - updates the input value", function() {
@@ -254,6 +454,58 @@ module('Number');
         //For Firefox
         field.setValue('heuo46fuek');
         same(field.getValue(), null);
+    });
+    
+    test("'change' event - is triggered when value of input changes and is valid", function() {
+        var field = new editor({
+            model: new Post,
+            key: 'title'
+        }).render();
+        
+        callCount = 0;
+
+        var spy = this.sinon.spy();
+        
+        field.on('change', spy);
+        
+        // Pressing a valid key
+        field.$el.keypress($.Event("keypress", { charCode: 48 }));
+        field.$el.val('0');
+        
+        stop();
+        setTimeout(function(){
+            callCount++;
+        
+            field.$el.keyup();
+        
+            // Pressing an invalid key
+            field.$el.keypress($.Event("keypress", { charCode: 65 }));
+            
+            setTimeout(function(){
+                field.$el.keyup();
+                
+                // Pressing a valid key
+                field.$el.keypress($.Event("keypress", { charCode: 49 }));
+                field.$el.val('01');
+                
+                setTimeout(function(){
+                    callCount++;
+                    
+                    field.$el.keyup();
+        
+                    // Cmd+A; Backspace: Deleting everything
+                    field.$el.keyup();
+                    field.$el.val('');
+                    field.$el.keyup();
+                    callCount++;
+
+                    ok(spy.callCount == callCount);
+                    ok(spy.alwaysCalledWith(field));
+            
+                    start();
+                }, 0);
+            }, 0);
+        }, 0);
     });
 
 })();
@@ -364,7 +616,15 @@ module('TextArea');
 
 
 
-module('checkbox');
+module('Checkbox', {
+    setup: function() {
+        this.sinon = sinon.sandbox.create();
+    },
+
+    teardown: function() {
+        this.sinon.restore();
+    }
+});
 
 (function() {
     
@@ -431,6 +691,110 @@ module('checkbox');
         deepEqual($(field.el).attr('checked'), 'checked');
     });
     
+    test("focus() - gives focus to editor and its checkbox", function() {
+        var field = window.form.fields.checkbox.editor;
+
+        field.focus();
+        
+        ok(field.hasFocus);
+        ok(field.$el.is(':focus'));
+    });
+
+    test("focus() - triggers the 'focus' event", function() {
+        var field = new editor({
+            model: new Model,
+            key: 'enabled'
+        }).render();
+
+        var spy = this.sinon.spy();
+
+        field.on('focus', spy);
+
+        field.focus();
+        
+        ok(spy.called);
+        ok(spy.calledWith(field));
+    });
+
+    test("blur() - removes focus from the editor and its checkbox", function() {
+        var field = window.form.fields.checkbox.editor;
+
+        field.focus();
+
+        field.blur();
+        
+        ok(!field.hasFocus);
+        ok(!field.$el.is(':focus'));
+    });
+
+    test("blur() - triggers the 'blur' event", function() {
+        var field = new editor({
+            model: new Model,
+            key: 'enabled'
+        }).render();
+        
+        field.focus()
+
+        var spy = this.sinon.spy();
+
+        field.on('blur', spy);
+
+        field.blur();
+        
+        ok(spy.called);
+        ok(spy.calledWith(field));
+    });
+    
+    test("'change' event - is triggered when the checkbox is clicked", function() {
+        var field = new editor({
+            model: new Model,
+            key: 'enabled'
+        }).render();
+
+        var spy = this.sinon.spy();
+        
+        field.on('change', spy);
+        
+        field.$el.click();
+        
+        ok(spy.calledOnce);
+        ok(spy.alwaysCalledWith(field));
+    });
+    
+    test("'focus' event - bubbles up from the checkbox", function() {
+        var field = new editor({
+            model: new Model,
+            key: 'enabled'
+        }).render();
+
+        var spy = this.sinon.spy();
+        
+        field.on('focus', spy);
+        
+        field.$el.focus();
+        
+        ok(spy.calledOnce);
+        ok(spy.alwaysCalledWith(field));
+    });
+    
+    test("'blur' event - bubbles up from the checkbox", function() {
+        var field = new editor({
+            model: new Model,
+            key: 'enabled'
+        }).render();
+
+        field.$el.focus();
+
+        var spy = this.sinon.spy();
+        
+        field.on('blur', spy);
+        
+        field.$el.blur();
+
+        ok(spy.calledOnce);
+        ok(spy.alwaysCalledWith(field));
+    });
+    
 })();
 
 
@@ -486,11 +850,29 @@ module('Hidden');
 
 
 
-module('Select');
+module('Select', {
+    setup: function() {
+        this.sinon = sinon.sandbox.create();
+    },
+
+    teardown: function() {
+        this.sinon.restore();
+    }
+});
 
 (function() {
     
-    var editor = editors.Select,
+    var OptionModel = Backbone.Model.extend({
+            toString: function() {
+                return this.get('name');
+            }
+        }),
+    
+        OptionCollection = Backbone.Collection.extend({
+            model: OptionModel
+        }),
+    
+        editor = editors.Select,
         schema = {
             options: ['Sterling', 'Lana', 'Cyril', 'Cheryl', 'Pam']
         };
@@ -529,28 +911,126 @@ module('Select');
         
         equal($(field.el).get(0).tagName, 'SELECT');
     });
-    
-    test('TODO: Options as array of items', function() {
 
+    test('setOptions() - updates the options on a rendered select', function() {
+        var field = new editor({
+            schema: schema
+        }).render();
+
+        field.setOptions([1,2,3]);
+
+        var newOptions = field.$el.find('option');
+
+        equal(newOptions.length, 3);
+        equal(newOptions.first().html(), 1);
+        equal(newOptions.last().html(), 3);
     });
     
-    test('TODO: Options as array of objects', function() {
-
-    });
-
-    test('TODO: Options as function that calls back with options', function() {
-
-    });
-
-    test('TODO: Options as string of HTML', function() {
-
-    });
-
-    test('TODO: Options as a pre-populated collection', function() {
-
+    test('Options as array of items', function() {
+        var field = new editor({
+            schema: {
+                options: ['Matilda', 'Larry']
+            }
+        }).render();
+        
+        var newOptions = field.$el.find('option');
+        
+        equal(newOptions.first().html(), 'Matilda');
+        equal(newOptions.last().html(), 'Larry');
     });
     
-    test('TODO: Options as a new collection (needs to be fetched)', function() {
+    test('Options as array of objects', function() {
+        var field = new editor({
+            schema: {
+                options: [
+                    { val: 'kid1', label: 'Teo' },
+                    { val: 'kid2', label: 'Lilah' },
+                ]
+            }
+        }).render();
+        
+        var newOptions = field.$el.find('option');
+        
+        equal(newOptions.first().val(), 'kid1');
+        equal(newOptions.last().val(), 'kid2');
+        equal(newOptions.first().html(), 'Teo');
+        equal(newOptions.last().html(), 'Lilah');
+    });
+
+    test('Options as function that calls back with options', function() {
+        var field = new editor({
+            schema: {
+                options: function(callback, thisEditor) {
+                    ok(thisEditor instanceof editor);
+                    ok(thisEditor instanceof editors.Base);
+                    callback(['Melony', 'Frank']);
+                }
+            }
+        }).render();
+        
+        var newOptions = field.$el.find('option');
+        
+        equal(newOptions.first().html(), 'Melony');
+        equal(newOptions.last().html(), 'Frank');
+    });
+
+    test('Options as string of HTML', function() {
+        var field = new editor({
+            schema: {
+                options: '<option>Howard</option><option>Bree</option>'
+            }
+        }).render();
+        
+        var newOptions = field.$el.find('option');
+        
+        equal(newOptions.first().html(), 'Howard');
+        equal(newOptions.last().html(), 'Bree');
+    });
+
+    test('Options as a pre-populated collection', function() {
+        var options = new OptionCollection([
+            { id: 'kid1', name: 'Billy' },
+            { id: 'kid2', name: 'Sarah' }
+        ]);
+
+        var field = new editor({
+            schema: {
+                options: options
+            }
+        }).render();
+        
+        var newOptions = field.$el.find('option');
+        
+        equal(newOptions.first().val(), 'kid1');
+        equal(newOptions.last().val(), 'kid2');
+        equal(newOptions.first().html(), 'Billy');
+        equal(newOptions.last().html(), 'Sarah');
+    });
+    
+    test('Options as a new collection (needs to be fetched)', function() {
+        OptionCollection.prototype.sync = function(method, collection, options) {
+            if (method === 'read') {
+                options.success(collection, [
+                    { id: 'kid1', name: 'Barbara' },
+                    { id: 'kid2', name: 'Phil' }
+                ], options);
+            }
+        };
+                
+        var options = new OptionCollection();
+
+        var field = new editor({
+            schema: {
+                options: options
+            }
+        }).render();
+        
+        var newOptions = field.$el.find('option');
+        
+        equal(newOptions.first().val(), 'kid1');
+        equal(newOptions.last().val(), 'kid2');
+        equal(newOptions.first().html(), 'Barbara');
+        equal(newOptions.last().html(), 'Phil');
 
     });
     
@@ -565,19 +1045,165 @@ module('Select');
         equal(field.getValue(), 'Lana');
         equal($(field.el).val(), 'Lana');
     });
+    
+    test("focus() - gives focus to editor and its selectbox", function() {
+        var field = window.form.fields.select.editor;
+
+        field.focus();
+        
+        ok(field.hasFocus);
+        ok(field.$el.is(':focus'));
+    });
+
+    test("focus() - triggers the 'focus' event", function() {
+        var field = new editor({
+            value: 'Pam',
+            schema: schema
+        }).render();
+
+        var spy = this.sinon.spy();
+
+        field.on('focus', spy);
+
+        field.focus();
+        
+        ok(spy.called);
+        ok(spy.calledWith(field));
+    });
+
+    test("blur() - removes focus from the editor and its selectbox", function() {
+        var field = window.form.fields.select.editor;
+
+        field.focus();
+
+        field.blur();
+        
+        ok(!field.hasFocus);
+        ok(!field.$el.is(':focus'));
+    });
+
+    test("blur() - triggers the 'blur' event", function() {
+        var field = new editor({
+            value: 'Pam',
+            schema: schema
+        }).render();
+        
+        field.focus()
+
+        var spy = this.sinon.spy();
+
+        field.on('blur', spy);
+
+        field.blur();
+        
+        ok(spy.called);
+        ok(spy.calledWith(field));
+    });
+    
+    test("'change' event - bubbles up from the selectbox", function() {
+        var field = new editor({
+            value: 'Pam',
+            schema: schema
+        }).render();
+
+        var spy = this.sinon.spy();
+        
+        field.on('change', spy);
+        
+        field.$el.val('Cyril');
+        field.$el.change();
+        
+        ok(spy.calledOnce);
+        ok(spy.alwaysCalledWith(field));
+    });
+    
+    test("'focus' event - bubbles up from the selectbox", function() {
+        var field = new editor({
+            value: 'Pam',
+            schema: schema
+        }).render();
+
+        var spy = this.sinon.spy();
+        
+        field.on('focus', spy);
+        
+        field.$el.focus();
+        
+        ok(spy.calledOnce);
+        ok(spy.alwaysCalledWith(field));
+    });
+    
+    test("'blur' event - bubbles up from the selectbox", function() {
+        var field = new editor({
+            value: 'Pam',
+            schema: schema
+        }).render();
+
+        field.$el.focus();
+
+        var spy = this.sinon.spy();
+        
+        field.on('blur', spy);
+        
+        field.$el.blur();
+
+        ok(spy.calledOnce);
+        ok(spy.alwaysCalledWith(field));
+    });
 
 })();
 
 
 
 
-module('Radio');
+module('Radio', {
+    setup: function() {
+        this.sinon = sinon.sandbox.create();
+    },
+
+    teardown: function() {
+        this.sinon.restore();
+    }
+});
 
 (function() {
     var editor = editors.Radio,
         schema = {
             options: ['Sterling', 'Lana', 'Cyril', 'Cheryl', 'Pam']
         };
+
+    test('Options as array of objects', function() {
+        var field = new editor({
+            schema: {
+                options: [
+                    {
+                        val: 0,
+                        label: "Option 1"
+                    },
+                    {
+                        val: 1,
+                        label: "Option 2"
+                    },
+                    {
+                        val: 2,
+                        label: "Option 3"
+                    }
+                ]
+            }
+        }).render();
+
+        var radios = field.$el.find("input[type=radio]");
+        var labels = field.$el.find("label");
+
+        equal(radios.length, 3);
+        equal(radios.length, labels.length);
+
+        equal(labels.first().html(), "Option 1");
+        equal(labels.last().html(), "Option 3");
+
+        equal(radios.first().val(), "0");
+        equal(radios.last().val(), "2");
+    });
 
     test('Default value', function() {
         var field = new editor({
@@ -618,17 +1244,269 @@ module('Radio');
         equal($(field.el).get(0).tagName, 'UL');
         notEqual($(field.el).find('input[type=radio]').length, 0);
     });
+    
+    test("focus() - gives focus to editor and its first radiobutton when no radiobutton is checked", function() {
+        var field = window.form.fields.radio.editor;
+
+        field.focus();
+        
+        ok(field.hasFocus);
+        ok(field.$('input[type=radio]').first().is(':focus'));
+        
+        field.blur();
+        
+        stop();
+        setTimeout(function() {
+          start();
+        }, 0);
+    });
+    
+    test("focus() - gives focus to editor and its checked radiobutton when a radiobutton is checked", function() {
+        var field = window.form.fields.radio.editor;
+        
+        field.$('input[type=radio]').val([field.$('input[type=radio]').eq(1).val()]);
+
+        field.focus();
+        
+        ok(field.hasFocus);
+        ok(field.$('input[type=radio]').eq(1).is(':focus'));
+        
+        field.$('input[type=radio]').val([null]);
+        
+        field.blur();
+        
+        stop();
+        setTimeout(function() {
+          start();
+        }, 0);
+    });
+
+    test("focus() - triggers the 'focus' event", function() {
+        var field = window.form.fields.radio.editor;
+
+        var spy = this.sinon.spy();
+
+        field.on('focus', spy);
+
+        field.focus();
+
+        stop();
+        setTimeout(function() {
+          ok(spy.called);
+          ok(spy.calledWith(field));
+
+          field.blur();
+
+          setTimeout(function() {
+            start();
+          }, 0);
+        }, 0);
+    });
+
+    test("blur() - removes focus from the editor and its focused radiobutton", function() {
+        var field = window.form.fields.radio.editor;
+
+        field.focus();
+
+        field.blur();
+
+        stop();
+        setTimeout(function() {
+          ok(!field.hasFocus);
+          ok(!field.$('input[type=radio]').first().is(':focus'));
+
+          start();
+        }, 0);
+    });
+
+    test("blur() - triggers the 'blur' event", function() {
+        var field = window.form.fields.radio.editor;
+
+        field.focus();
+
+        var spy = this.sinon.spy();
+
+        field.on('blur', spy);
+
+        field.blur();
+
+        stop();
+        setTimeout(function() {
+          ok(spy.called);
+          ok(spy.calledWith(field));
+
+          start();
+        }, 0);
+    });
+
+    test("'change' event - is triggered when a non-checked radiobutton is clicked", function() {
+        var field = window.form.fields.radio.editor;
+
+        var spy = this.sinon.spy();
+
+        field.on('change', spy);
+        
+        field.$("input[type=radio]:not(:checked)").first().click();
+
+        ok(spy.called);
+        ok(spy.calledWith(field));
+        
+        field.$("input[type=radio]").val([null]);
+    });
+
+    test("'focus' event - bubbles up from radiobutton when editor doesn't have focus", function() {
+        var field = window.form.fields.radio.editor;
+
+        var spy = this.sinon.spy();
+
+        field.on('focus', spy);
+
+        field.$("input[type=radio]").first().focus();
+
+        ok(spy.called);
+        ok(spy.calledWith(field));
+        
+        field.blur();
+        
+        stop();
+        setTimeout(function() {
+          start();
+        }, 0);
+    });
+
+    test("'focus' event - doesn't bubble up from radiobutton when editor already has focus", function() {
+        var field = window.form.fields.radio.editor;
+
+        field.focus();
+
+        var spy = this.sinon.spy();
+
+        field.on('focus', spy);
+
+        field.$("input[type=radio]").focus();
+
+        ok(!spy.called);
+        
+        field.blur();
+        
+        stop();
+        setTimeout(function() {
+          start();
+        }, 0);
+    });
+
+    test("'blur' event - bubbles up from radiobutton when editor has focus and we're not focusing on another one of the editor's radiobuttons", function() {
+        var field = window.form.fields.radio.editor;
+
+        field.focus();
+
+        var spy = this.sinon.spy();
+
+        field.on('blur', spy);
+
+        field.$("input[type=radio]").first().blur();
+
+        stop();
+        setTimeout(function() {
+            ok(spy.called);
+            ok(spy.calledWith(field));
+
+            start();
+        }, 0);
+    });
+
+    test("'blur' event - doesn't bubble up from radiobutton when editor has focus and we're focusing on another one of the editor's radiobuttons", function() {
+        var field = window.form.fields.radio.editor;
+
+        field.focus();
+
+        var spy = this.sinon.spy();
+
+        field.on('blur', spy);
+
+        field.$("input[type=radio]:eq(0)").blur();
+        field.$("input[type=radio]:eq(1)").focus();
+
+        stop();
+        setTimeout(function() {
+            ok(!spy.called);
+
+            field.blur();
+
+            setTimeout(function() {
+              start();
+            }, 0);
+        }, 0);
+    });
+
+    test("'blur' event - doesn't bubble up from radiobutton when editor doesn't have focus", function() {
+        var field = window.form.fields.radio.editor;
+
+        var spy = this.sinon.spy();
+
+        field.on('blur', spy);
+
+        field.$("input[type=radio]").blur();
+
+        stop();
+        setTimeout(function() {
+            ok(!spy.called);
+
+            start();
+        }, 0);
+    });
 
 })();
 
 
-module('Checkboxes');
+module('Checkboxes', {
+    setup: function() {
+        this.sinon = sinon.sandbox.create();
+    },
+
+    teardown: function() {
+        this.sinon.restore();
+    }
+});
 
 (function() {
     var editor = editors.Checkboxes,
         schema = {
             options: ['Sterling', 'Lana', 'Cyril', 'Cheryl', 'Pam', 'Doctor Krieger']
         };
+
+    test('Options as array of objects', function() {
+        var field = new editor({
+            schema: {
+                options: [
+                    {
+                        val: 0,
+                        label: "Option 1"
+                    },
+                    {
+                        val: 1,
+                        label: "Option 2"
+                    },
+                    {
+                        val: 2,
+                        label: "Option 3"
+                    }
+                ]
+            }
+        }).render();
+
+        var checkboxes = field.$el.find("input[type=checkbox]");
+        var labels = field.$el.find("label");
+
+        equal(checkboxes.length, 3);
+        equal(checkboxes.length, labels.length);
+
+        equal(labels.first().html(), "Option 1");
+        equal(labels.last().html(), "Option 3");
+
+        equal(checkboxes.first().val(), "0");
+        equal(checkboxes.last().val(), "2");
+    });
 
     test('Default value', function() {
         var field = new editor({
@@ -687,13 +1565,212 @@ module('Checkboxes');
         deepEqual(field.getValue(), ['Lana', 'Doctor Krieger']);
         equal($(field.el).find('input[type=checkbox]:checked').length, 2);
     });
+    
+    test("focus() - gives focus to editor and its first checkbox", function() {
+        var field = window.form.fields.checkboxes.editor;
+
+        field.focus();
+        
+        ok(field.hasFocus);
+        ok(field.$('input[type=checkbox]').first().is(':focus'));
+        
+        field.blur();
+        
+        stop();
+        setTimeout(function() {
+          start();
+        }, 0);
+    });
+
+    test("focus() - triggers the 'focus' event", function() {
+        var field = window.form.fields.checkboxes.editor;
+
+        var spy = this.sinon.spy();
+
+        field.on('focus', spy);
+
+        field.focus();
+
+        stop();
+        setTimeout(function() {
+          ok(spy.called);
+          ok(spy.calledWith(field));
+
+          field.blur();
+
+          setTimeout(function() {
+            start();
+          }, 0);
+        }, 0);
+    });
+
+    test("blur() - removes focus from the editor and its focused checkbox", function() {
+        var field = window.form.fields.checkboxes.editor;
+
+        field.focus();
+
+        field.blur();
+
+        stop();
+        setTimeout(function() {
+          ok(!field.hasFocus);
+          ok(!field.$('input[type=checkbox]').first().is(':focus'));
+
+          start();
+        }, 0);
+    });
+
+    test("blur() - triggers the 'blur' event", function() {
+        var field = window.form.fields.checkboxes.editor;
+
+        field.focus();
+
+        var spy = this.sinon.spy();
+
+        field.on('blur', spy);
+
+        field.blur();
+
+        stop();
+        setTimeout(function() {
+          ok(spy.called);
+          ok(spy.calledWith(field));
+
+          start();
+        }, 0);
+    });
+
+    test("'change' event - is triggered when a checkbox is clicked", function() {
+        var field = window.form.fields.checkboxes.editor;
+
+        var spy = this.sinon.spy();
+
+        field.on('change', spy);
+        
+        field.$("input[type=checkbox]").first().click();
+
+        ok(spy.called);
+        ok(spy.calledWith(field));
+        
+        field.$("input[type=checkbox]").val([null]);
+    });
+
+    test("'focus' event - bubbles up from checkbox when editor doesn't have focus", function() {
+        var field = window.form.fields.checkboxes.editor;
+
+        var spy = this.sinon.spy();
+
+        field.on('focus', spy);
+
+        field.$("input[type=checkbox]").first().focus();
+
+        ok(spy.called);
+        ok(spy.calledWith(field));
+        
+        field.blur();
+        
+        stop();
+        setTimeout(function() {
+          start();
+        }, 0);
+    });
+
+    test("'focus' event - doesn't bubble up from checkbox when editor already has focus", function() {
+        var field = window.form.fields.checkboxes.editor;
+
+        field.focus();
+
+        var spy = this.sinon.spy();
+
+        field.on('focus', spy);
+
+        field.$("input[type=checkbox]").focus();
+
+        ok(!spy.called);
+        
+        field.blur();
+        
+        stop();
+        setTimeout(function() {
+          start();
+        }, 0);
+    });
+
+    test("'blur' event - bubbles up from checkbox when editor has focus and we're not focusing on another one of the editor's checkboxes", function() {
+        var field = window.form.fields.checkboxes.editor;
+
+        field.focus();
+
+        var spy = this.sinon.spy();
+
+        field.on('blur', spy);
+
+        field.$("input[type=checkbox]").first().blur();
+
+        stop();
+        setTimeout(function() {
+            ok(spy.called);
+            ok(spy.calledWith(field));
+
+            start();
+        }, 0);
+    });
+
+    test("'blur' event - doesn't bubble up from checkbox when editor has focus and we're focusing on another one of the editor's checkboxes", function() {
+        var field = window.form.fields.checkboxes.editor;
+
+        field.focus();
+
+        var spy = this.sinon.spy();
+
+        field.on('blur', spy);
+
+        field.$("input[type=checkbox]:eq(0)").blur();
+        field.$("input[type=checkbox]:eq(1)").focus();
+
+        stop();
+        setTimeout(function() {
+            ok(!spy.called);
+
+            field.blur();
+
+            setTimeout(function() {
+              start();
+            }, 0);
+        }, 0);
+    });
+
+    test("'blur' event - doesn't bubble up from checkbox when editor doesn't have focus", function() {
+        var field = window.form.fields.checkboxes.editor;
+
+        var spy = this.sinon.spy();
+
+        field.on('blur', spy);
+
+        field.$("input[type=checkbox]").blur();
+
+        stop();
+        setTimeout(function() {
+            ok(!spy.called);
+
+            start();
+        }, 0);
+    });
 
 })();
 
 
 
 
-module('Object');
+module('Object', {
+    setup: function() {
+        this.sinon = sinon.sandbox.create();
+    },
+
+    teardown: function() {
+        this.sinon.restore();
+    }
+});
 
 (function() {
     
@@ -743,15 +1820,15 @@ module('Object');
     });
     
     test("TODO: idPrefix is added to child form elements", function() {
-        
+        ok(1);
     });
     
     test("TODO: remove() - Removes embedded form", function() {
-        
+        ok(1);
     });
 
     test('TODO: uses the nestedField template, unless overridden in field schema', function() {
-
+        ok(1);
     });
     
     test("setValue() - updates the input value", function() {
@@ -795,6 +1872,184 @@ module('Object');
       equal(errs.email.type, 'email');
     });
 
+
+    test("focus() - gives focus to editor and its form", function() {
+        var field = new editor({
+            schema: schema
+        }).render();
+
+        field.focus();
+
+        stop();
+        setTimeout(function() {
+          ok(field.hasFocus);
+          ok(field.form.hasFocus);
+
+          start();
+        }, 0);
+    });
+
+    test("focus() - triggers the 'focus' event", function() {
+        var field = new editor({
+            schema: schema
+        }).render();
+
+        var spy = this.sinon.spy();
+
+        field.on('focus', spy);
+
+        field.focus();
+
+        stop();
+        setTimeout(function() {
+          ok(spy.called);
+          ok(spy.calledWith(field));
+
+          start();
+        }, 0);
+    });
+
+    test("blur() - removes focus from the editor and its form", function() {
+        var field = new editor({
+            schema: schema
+        }).render();
+
+        field.focus();
+
+        field.blur();
+
+        stop();
+        setTimeout(function() {
+          ok(!field.hasFocus);
+          ok(!field.form.hasFocus);
+
+          start();
+        }, 0);
+    });
+
+    test("blur() - triggers the 'blur' event", function() {
+        var field = new editor({
+            schema: schema
+        }).render();
+
+        field.focus();
+
+        var spy = this.sinon.spy();
+
+        field.on('blur', spy);
+
+        field.blur();
+
+        stop();
+        setTimeout(function() {
+          ok(spy.called);
+          ok(spy.calledWith(field));
+
+          start();
+        }, 0);
+    });
+
+    test("'change' event - bubbles up from the form", function() {
+        var field = new editor({
+            schema: schema
+        }).render();
+
+        var spy = this.sinon.spy();
+
+        field.on('change', spy);
+
+        field.form.trigger('change', field.form);
+
+        ok(spy.called);
+        ok(spy.calledWith(field));
+    });
+
+    test("'focus' event - bubbles up from the form when editor doesn't have focus", function() {
+        var field = new editor({
+            schema: schema
+        }).render();
+
+        var spy = this.sinon.spy();
+
+        field.on('focus', spy);
+
+        field.form.focus();
+
+        ok(spy.called);
+        ok(spy.calledWith(field));
+    });
+
+    test("'focus' event - doesn't bubble up from the field when editor already has focus", function() {
+        var field = new editor({
+            schema: schema
+        }).render();
+
+        field.focus();
+
+        var spy = this.sinon.spy();
+
+        field.on('focus', spy);
+
+        field.form.focus();
+
+        ok(!spy.called);
+    });
+
+    test("'blur' event - bubbles up from the form when editor has focus", function() {
+        var field = new editor({
+            schema: schema
+        }).render();
+
+        field.focus();
+
+        var spy = this.sinon.spy();
+
+        field.on('blur', spy);
+
+        field.form.blur();
+
+        stop();
+        setTimeout(function() {
+            ok(spy.called);
+            ok(spy.calledWith(field));
+
+            start();
+        }, 0);
+    });
+
+    test("'blur' event - doesn't bubble up from the form when editor doesn't have focus", function() {
+        var field = new editor({
+            schema: schema
+        }).render();
+
+        var spy = this.sinon.spy();
+
+        field.on('blur', spy);
+
+        field.form.blur();
+
+        stop();
+        setTimeout(function() {
+            ok(!spy.called);
+
+            start();
+        }, 0);
+    });
+
+    test("Events bubbling up from the form", function() {
+        var field = new editor({
+            schema: schema
+        }).render();
+
+        var spy = this.sinon.spy();
+
+        field.on('whatever', spy);
+
+        field.form.trigger('whatever', field.form);
+
+        ok(spy.called);
+        ok(spy.calledWith(field));
+    });
 })();
 
 
@@ -808,6 +2063,10 @@ module('NestedModel');
         schema: {
             id: { type: 'Number' },
             name: {}
+        },
+        defaults: {
+            id: 8,
+            name: 'Marklar'
         }
     });
     
@@ -815,13 +2074,11 @@ module('NestedModel');
         schema = { model: ChildModel };
     
     test('Default value', function() {
-        /*
         var field = new editor({
             schema: schema
         }).render();
         
-        deepEqual(field.getValue(), { id: 0, name: '' });
-        */
+        deepEqual(field.getValue(), { id: 8, name: 'Marklar' });
     });
 
     test('Custom value', function() {
@@ -834,6 +2091,38 @@ module('NestedModel');
         }).render();
 
         deepEqual(field.getValue(), { id: 42, name: "Krieger" });
+    });
+
+    test('Custom value overrides default value (issue #99)', function() {
+        var Person = Backbone.Model.extend({
+            schema: { firstName: 'Text', lastName: 'Text' },
+            defaults: { firstName: '', lastName: '' }
+        });
+
+        var Duo = Backbone.Model.extend({
+            schema: {
+                name: { type: 'Text' },
+                hero: { type: 'NestedModel', model: Person },
+                sidekick: { type: 'NestedModel', model: Person}
+            }
+        });
+
+        var batman = new Person({ firstName: 'Bruce', lastName: 'Wayne' });
+        var robin = new Person({ firstName: 'Dick', lastName: 'Grayson' });
+
+        var duo = new Duo({
+            name: "The Dynamic Duo", 
+            hero: batman, 
+            sidekick: robin
+        });
+
+        var duoForm = new Backbone.Form({ model: duo }).render();
+        var batmanForm = new Backbone.Form({ model: batman }).render();
+
+        same(duoForm.getValue().hero, {
+            firstName: 'Bruce', 
+            lastName: 'Wayne'
+        });
     });
 
     test('Value from model', function() {
@@ -854,19 +2143,19 @@ module('NestedModel');
     });
     
     test("TODO: idPrefix is added to child form elements", function() {
-
+        ok(1);
     });
     
     test("TODO: Validation on nested model", function() {
-
+        ok(1);
     });
 
     test('TODO: uses the nestedField template, unless overridden in field schema', function() {
-
+        ok(1);
     });
 
     test("TODO: remove() - Removes embedded form", function() {
-
+        ok(1);
     });
     
     test("setValue() - updates the input value", function() {
@@ -984,6 +2273,20 @@ module('Date', {
         same(editor.$month.find('option:last').html(), '12');
     });
 
+    test('render() - with yearStart after yearEnd', function() {
+        var editor = new Editor({
+            schema: {
+                yearStart: 2000,
+                yearEnd: 1990
+            }
+        }).render();
+
+        same(editor.$year.find('option:first').val(), editor.schema.yearStart.toString());
+        same(editor.$year.find('option:last').val(), editor.schema.yearEnd.toString());
+        same(editor.$year.find('option:first').html(), editor.schema.yearStart.toString());
+        same(editor.$year.find('option:last').html(), editor.schema.yearEnd.toString());
+    });
+
     test('getValue() - returns a Date', function() {
         var date = new Date(2010, 5, 5),
             editor = new Editor({ value: date }).render();
@@ -1035,6 +2338,197 @@ module('Date', {
         same(hiddenVal.getFullYear(), 2020);
         same(hiddenVal.getMonth(), 6);
         same(hiddenVal.getDate(), 13);
+    });
+    
+    
+    test("focus() - gives focus to editor and its first selectbox", function() {
+        var field = window.form.fields.date.editor;
+
+        field.focus();
+        
+        ok(field.hasFocus);
+        ok(field.$('select').first().is(':focus'));
+        
+        field.blur();
+        
+        stop();
+        setTimeout(function() {
+          start();
+        }, 0);
+    });
+
+    test("focus() - triggers the 'focus' event", function() {
+        var field = window.form.fields.date.editor;
+
+        var spy = this.sinon.spy();
+
+        field.on('focus', spy);
+
+        field.focus();
+
+        stop();
+        setTimeout(function() {
+          ok(spy.called);
+          ok(spy.calledWith(field));
+
+          field.blur();
+
+          setTimeout(function() {
+            start();
+          }, 0);
+        }, 0);
+    });
+
+    test("blur() - removes focus from the editor and its focused selectbox", function() {
+        var field = window.form.fields.date.editor;
+
+        field.focus();
+
+        field.blur();
+
+        stop();
+        setTimeout(function() {
+          ok(!field.hasFocus);
+          ok(!field.$('input[type=selectbox]').first().is(':focus'));
+
+          start();
+        }, 0);
+    });
+
+    test("blur() - triggers the 'blur' event", function() {
+        var field = window.form.fields.date.editor;
+
+        field.focus();
+
+        var spy = this.sinon.spy();
+
+        field.on('blur', spy);
+
+        field.blur();
+
+        stop();
+        setTimeout(function() {
+          ok(spy.called);
+          ok(spy.calledWith(field));
+
+          start();
+        }, 0);
+    });
+
+    test("'change' event - bubbles up from the selectbox", function() {
+        var field = window.form.fields.date.editor;
+
+        var spy = this.sinon.spy();
+
+        field.on('change', spy);
+        
+        field.$("select").first().val('31');
+        field.$("select").first().change();
+
+        ok(spy.called);
+        ok(spy.calledWith(field));
+    });
+
+    test("'focus' event - bubbles up from selectbox when editor doesn't have focus", function() {
+        var field = window.form.fields.date.editor;
+
+        var spy = this.sinon.spy();
+
+        field.on('focus', spy);
+
+        field.$("select").first().focus();
+
+        ok(spy.called);
+        ok(spy.calledWith(field));
+        
+        field.blur();
+        
+        stop();
+        setTimeout(function() {
+          start();
+        }, 0);
+    });
+
+    test("'focus' event - doesn't bubble up from selectbox when editor already has focus", function() {
+        var field = window.form.fields.date.editor;
+
+        field.focus();
+
+        var spy = this.sinon.spy();
+
+        field.on('focus', spy);
+
+        field.$("select").focus();
+
+        ok(!spy.called);
+        
+        field.blur();
+        
+        stop();
+        setTimeout(function() {
+          start();
+        }, 0);
+    });
+
+    test("'blur' event - bubbles up from selectbox when editor has focus and we're not focusing on another one of the editor's selectboxes", function() {
+        var field = window.form.fields.date.editor;
+
+        field.focus();
+
+        var spy = this.sinon.spy();
+
+        field.on('blur', spy);
+
+        field.$("select").first().blur();
+
+        stop();
+        setTimeout(function() {
+            ok(spy.called);
+            ok(spy.calledWith(field));
+
+            start();
+        }, 0);
+    });
+
+    test("'blur' event - doesn't bubble up from selectbox when editor has focus and we're focusing on another one of the editor's selectboxes", function() {
+        var field = window.form.fields.date.editor;
+
+        field.focus();
+
+        var spy = this.sinon.spy();
+
+        field.on('blur', spy);
+
+        field.$("select:eq(0)").blur();
+        field.$("select:eq(1)").focus();
+
+        stop();
+        setTimeout(function() {
+            ok(!spy.called);
+
+            field.blur();
+
+            setTimeout(function() {
+              start();
+            }, 0);
+        }, 0);
+    });
+
+    test("'blur' event - doesn't bubble up from selectbox when editor doesn't have focus", function() {
+        var field = window.form.fields.date.editor;
+
+        var spy = this.sinon.spy();
+
+        field.on('blur', spy);
+
+        field.$("select").blur();
+
+        stop();
+        setTimeout(function() {
+            ok(!spy.called);
+
+            start();
+        }, 0);
     });
 })();
 
@@ -1199,4 +2693,211 @@ module('DateTime', {
         same(hiddenVal.getHours(), 5);
         same(hiddenVal.getMinutes(), 15);
     });
+
+    test('remove() - removes the date editor and self', function() {
+        this.sinon.spy(DateEditor.prototype, 'remove');
+        this.sinon.spy(editors.Base.prototype, 'remove');
+
+        var editor = new Editor().render();
+
+        editor.remove();
+
+        ok(DateEditor.prototype.remove.calledOnce);
+        ok(editors.Base.prototype.remove.calledOnce);
+    });
+    
+    
+    test("focus() - gives focus to editor and its first selectbox", function() {
+        var field = window.form.fields.dateTime.editor;
+
+        field.focus();
+        
+        ok(field.hasFocus);
+        ok(field.$('select').first().is(':focus'));
+        
+        field.blur();
+        
+        stop();
+        setTimeout(function() {
+          start();
+        }, 0);
+    });
+
+    test("focus() - triggers the 'focus' event", function() {
+        var field = window.form.fields.dateTime.editor;
+
+        var spy = this.sinon.spy();
+
+        field.on('focus', spy);
+
+        field.focus();
+
+        stop();
+        setTimeout(function() {
+          ok(spy.called);
+          ok(spy.calledWith(field));
+
+          field.blur();
+
+          setTimeout(function() {
+            start();
+          }, 0);
+        }, 0);
+    });
+
+    test("blur() - removes focus from the editor and its focused selectbox", function() {
+        var field = window.form.fields.dateTime.editor;
+
+        field.focus();
+
+        field.blur();
+
+        stop();
+        setTimeout(function() {
+          ok(!field.hasFocus);
+          ok(!field.$('input[type=selectbox]').first().is(':focus'));
+
+          start();
+        }, 0);
+    });
+
+    test("blur() - triggers the 'blur' event", function() {
+        var field = window.form.fields.dateTime.editor;
+
+        field.focus();
+
+        var spy = this.sinon.spy();
+
+        field.on('blur', spy);
+
+        field.blur();
+
+        stop();
+        setTimeout(function() {
+          ok(spy.called);
+          ok(spy.calledWith(field));
+
+          start();
+        }, 0);
+    });
+
+    test("'change' event - bubbles up from the selectbox", function() {
+        var field = window.form.fields.dateTime.editor;
+
+        var spy = this.sinon.spy();
+
+        field.on('change', spy);
+        
+        field.$("select").first().val('31');
+        field.$("select").first().change();
+
+        ok(spy.called);
+        ok(spy.calledWith(field));
+    });
+
+    test("'focus' event - bubbles up from selectbox when editor doesn't have focus", function() {
+        var field = window.form.fields.dateTime.editor;
+
+        var spy = this.sinon.spy();
+
+        field.on('focus', spy);
+
+        field.$("select").first().focus();
+
+        ok(spy.called);
+        ok(spy.calledWith(field));
+        
+        field.blur();
+        
+        stop();
+        setTimeout(function() {
+          start();
+        }, 0);
+    });
+
+    test("'focus' event - doesn't bubble up from selectbox when editor already has focus", function() {
+        var field = window.form.fields.dateTime.editor;
+
+        field.focus();
+
+        var spy = this.sinon.spy();
+
+        field.on('focus', spy);
+
+        field.$("select").focus();
+
+        ok(!spy.called);
+        
+        field.blur();
+        
+        stop();
+        setTimeout(function() {
+          start();
+        }, 0);
+    });
+
+    test("'blur' event - bubbles up from selectbox when editor has focus and we're not focusing on another one of the editor's selectboxes", function() {
+        var field = window.form.fields.dateTime.editor;
+
+        field.focus();
+
+        var spy = this.sinon.spy();
+
+        field.on('blur', spy);
+
+        field.$("select").first().blur();
+
+        stop();
+        setTimeout(function() {
+            ok(spy.called);
+            ok(spy.calledWith(field));
+
+            start();
+        }, 0);
+    });
+
+    test("'blur' event - doesn't bubble up from selectbox when editor has focus and we're focusing on another one of the editor's selectboxes", function() {
+        var field = window.form.fields.dateTime.editor;
+
+        field.focus();
+
+        var spy = this.sinon.spy();
+
+        field.on('blur', spy);
+
+        field.$("select:eq(0)").blur();
+        field.$("select:eq(1)").focus();
+
+        stop();
+        setTimeout(function() {
+            ok(!spy.called);
+
+            field.blur();
+
+            setTimeout(function() {
+              start();
+            }, 0);
+        }, 0);
+    });
+
+    test("'blur' event - doesn't bubble up from selectbox when editor doesn't have focus", function() {
+        var field = window.form.fields.dateTime.editor;
+
+        var spy = this.sinon.spy();
+
+        field.on('blur', spy);
+
+        field.$("select").blur();
+
+        stop();
+        setTimeout(function() {
+            ok(!spy.called);
+
+            start();
+        }, 0);
+    });
 })();
+
+
+
+})(Backbone.Form, Backbone.Form.Field, Backbone.Form.editors);

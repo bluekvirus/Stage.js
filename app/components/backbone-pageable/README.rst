@@ -42,7 +42,18 @@ No surprising behavior
   ``Backbone.PageableCollection`` performs internal state sanity checks at
   appropriate times, so it is next to impossible to get into a weird state.
 Light-weight
-  Less than 2.9k minified and gzipped.
+  The library is only 4 kb minified and gzipped.
+
+
+Playable Demos
+--------------
+
+The following examples utilizes `Backgrid.js
+<http://wyuenho.github.com/backgrid/>`_ to render the collections.
+
+- `Server Mode <http://wyuenho.github.com/backbone-pageable/examples/server-mode.html>`_
+- `Client Mode <http://wyuenho.github.com/backbone-pageable/examples/client-mode.html>`_
+- `Infinite Mode <http://wyuenho.github.com/backbone-pageable/examples/infinite-mode.html>`_
 
 
 Installation
@@ -203,15 +214,16 @@ unusual circumstances where you need to modify the ``state`` object directly, a
 sanity check will be performed at the next time you perform any
 pagination-specific operations to ensure internal state consistency.
 
-================== ===============================
-Method             Use When
-================== ===============================
-``setPageSize``    Changing the page size
-``makeComparator`` Changing the sorting
-``switchMode``     Switching between modes
-``state``          Need to read the internal state
-``get*Page``       Need to go to a different page
-================== ===============================
+======================== ===============================================
+Method                   Use When
+======================== ===============================================
+``setPageSize``          Changing the page size
+``setSorting``           Changing the sorting
+``switchMode``           Switching between modes
+``state``                Need to read the internal state
+``get*Page``             Need to go to a different page
+``hasPrevious, hasNext`` Check if paging backward or forward is possible
+======================== ===============================================
 
 In addition to the above methods, you can also synchronize the state with the
 server during a fetch. ``Backbone.PageableCollection`` overrides the default
@@ -278,26 +290,82 @@ All of the ``get*Page`` methods accept the same options
 `Backbone.Collection#fetch <http://backbonejs.org/#Collection-fetch>`_ accepts
 under server-mode.
 
-Infinite-Mode
-+++++++++++++
 
-Infinite paging mode is a special case of server mode. You cannot call
-``getPage`` directly with a page number under this mode as there is no notion of
-a "page number". As a substitute, you have to make use of ``getFirstPage``,
-``getPreviousPage``, ``getNextPage``, and ``getLastPage``. For the same reason,
-most of the ``state`` attribute is also meaningless under this mode. By default,
-``Backbone.PageableCollection`` parses the response headers to find out what the
-``first``, ``last``, ``next`` and ``prev`` links are. The parsed links are
-available in the ``links`` field.
+Client-Mode
++++++++++++
+
+Client-mode is a very convenient mode for paginating a handful of pages entirely
+on the client side without going through the network page-by-page. This mode is
+best suited if you only have a small number of pages so sending all of the data
+to the client is not too time-consuming.
 
 .. code-block:: javascript
 
-   var Issue = Backbone.Model.extend({});
+  var book = new Book([
+    // Bootstrap all the records for all the pages here
+  ], { mode: "client" });
+
+
+All of the ``get*Page`` methods reset the pageable collection's data to the models
+belonging to the current page and return the collection itself instead of a
+``jqXHR``.
+
+.. code-block:: javascript
+
+  // You can immediately operate on the collection without waiting for jQuery to
+  // call your `done` callback.
+  var json = JSON.stringify(books.getLastPage());
+
+  // You can force a fetch in client-mode to get the most updated data if the
+  // collection has gone stale.
+  books.getFirstPage({ fetch: true });
+
+  // Do something interesting with books...
+
+
+Infinite-Mode
++++++++++++++
+
+Infinite paging mode is a hybrid of server mode and client mode. Once
+initialized and bootstrapped, paging backwards will be done on the client-side
+by default while paging forward will be done by fetching.
+
+As before, you can make use of ``getFirstPage``, ``getPreviousPage``,
+``getNextPage``, and ``getLastPage`` for navigation under infinite-mode. If a
+page has been fetched, you can use ``getPage`` directly with the page number, an
+error will be thrown if the page has not been fetched yet.
+
+By default, ``Backbone.PageableCollection`` parses the response headers to find
+out what the ``first``, ``last``, ``next`` and ``prev`` links are. The parsed
+links are available in the ``links`` field.
+
+.. code-block:: javascript
 
    var Issues = Backbone.PageableCollection.extend({
-     model: Issue,
      url: "https://api.github.com/repos/documentclound/backbone/issues?state=closed",
      mode: "infinite"
+
+     // Initial pagination states
+     state: {
+       pageSize: 15,
+       sortKey: "updated",
+       order: 1
+     },
+
+     // You can remap the query parameters from ``state`` keys from the default
+     // to those your server supports. Setting ``null`` on queryParams removed them
+     // from being appended to the request URLs.
+     queryParams: {
+       totalPages: null,
+       totalRecords: null,
+       sortKey: "sort",
+       order: "direction",
+       directions: {
+         "-1": "asc",
+         "1": "desc"
+       }
+     }
+
    });
 
    var issues = new Issues();
@@ -339,156 +407,73 @@ return a links object.
      // Facebook's `paging` object is in the exact format
      // `Backbone.PageableCollection` accepts.
      parseLinks: function (resp, xhr) {
-       this.state.currentPage++;
        return resp.comments.paging;
      }
    });
 
 
-Client-Mode
-+++++++++++
-
-Client-mode is a very convenient mode for paginating a handful of pages entirely
-on the client side without going through the network page-by-page. This mode is
-best suited if you only have a small number of pages so sending all of the data
-to the client is not too time-consuming.
-
-.. code-block:: javascript
-
-  var book = new Book([
-    // Bootstrap all the records for all the pages here
-  ], { mode: "client" });
-
-
-All of the ``get*Page`` methods reset the pageable collection's data to the models
-belonging to the current page and return the collection itself instead of a
-``jqXHR``.
-
-.. code-block:: javascript
-
-  // You can immediately operate on the collection without waiting for jQuery to
-  // call your `done` callback.
-  var json = JSON.stringify(books.getLastPage());
-
-  // You can force a fetch in client-mode to get the most updated data if the
-  // collection has gone stale.
-  books.getFirstPage({ fetch: true }).done(function () {
-    // ...
-  });
-
-
 Sorting
 -------
 
-There are three ways you can sort a pageable collection. You can sort on the
-client-side by either supplying a ``comparator`` like you can do with a plain
-``Backbone.Collection``, by setting a ``sortKey`` and ``order`` to ``state``, or
-call the convenient method ``makeComparator`` with a ``sortKey`` and ``order``
-at any time.
+Sorting has been drastically simplified in the 1.0 release while retaining the
+full power it had in older versions.
 
-Each sorting method is valid for both server-mode and client-mode
-operations. Both modes are capable of sorting on either the current page or all
-of the pages.
+The main way to define a sorting for a pageable collection is to utilize the
+``setSorting`` method.  Given a ``sortKey`` and an ``order``, ``setSorting``
+sets ``state.sortKey`` and ``state.order`` to the given values. If ``order`` is
+not given, ``state.order`` is assumed. By default a comparator is applied to the
+full collection under client mode. Calling ``sort`` on the full collection will
+then get the entire pageable collection sorted globally. When operating under
+server or infinite mode, no comparator will be applied to the collection as
+sorting is assumed to be done on the server by default. Set ``options.full`` to
+``false`` to apply a comparator to the current page under any mode. To sort a
+pageable collection under infinite mode on the client side, set ``options.side``
+to ``"client"`` will apply a comparator to the full collection.
 
-The following matrices will help you understand all of the different ways you
-can sort on a pageable collection.
+Setting ``sortKey`` to ``null`` removes the comparator from both the current
+page and the full collection.
 
-Server-Mode
-+++++++++++
+.. code-block:: javascript
 
-+--------------+-----------------------------------------------+-------------------------------------+
-|              |Server-Current                                 |Server-Full                          |
-+==============+===============================================+=====================================+
-|comparator    | .. code-block:: javascript                    | N/A                                 |
-|              |                                               |                                     |
-|              |   var books = new Books([], {                 |                                     |
-|              |     comparator: function (l, r)  {            |                                     |
-|              |       var lv = l.get("name");                 |                                     |
-|              |       var rv = r.get("name");                 |                                     |
-|              |       if (lv == rv) return 0;                 |                                     |
-|              |       else if (lv < rv) return 1;             |                                     |
-|              |       else return -1;                         |                                     |
-|              |     }                                         |                                     |
-|              |   });                                         |                                     |
-|              |                                               |                                     |
-+--------------+-----------------------------------------------+-------------------------------------+
-|state         | N/A                                           | .. code-block:: javascript          |
-|              |                                               |                                     |
-|              |                                               |   // You need to bootstrap the      |
-|              |                                               |   // first page in a globally       |
-|              |                                               |   // sorted order                   |
-|              |                                               |   var books = new Books([], {       |
-|              |                                               |     state: {                        |
-|              |                                               |       sortKey: "name",              |
-|              |                                               |       order: 1                      |
-|              |                                               |     }                               |
-|              |                                               |   });                               |
-|              |                                               |   // Or perform a fetch using a     |
-|              |                                               |   // query string having the sort   |
-|              |                                               |   // key and order for a globally   |
-|              |                                               |   // sorted page                    |
-|              |                                               |   books.getPage(1);                 |
-|              |                                               |                                     |
-+--------------+-----------------------------------------------+-------------------------------------+
-|makeComparator| .. code-block:: javascript                    | N/A                                 |
-|              |                                               |                                     |
-|              |   var books = new Books([]);                  |                                     |
-|              |   var comp = books.makeComparator("name", 1); |                                     |
-|              |   books.comparator = comp;                    |                                     |
-|              |                                               |                                     |
-|              |                                               |                                     |
-+--------------+-----------------------------------------------+-------------------------------------+
+   var books = new Books([
+     ...
+   ], {
+     mode: "client"
+   });
 
-Client-Mode
-+++++++++++
+   // Sets a comparator on `#fullCollection` that sorts the title in ascending
+   // order
+   books.setSorting("title");
 
-+--------------+------------------------------------+---------------------------------------------+
-|              |Client-Current                      |Client-Full                                  |
-+==============+====================================+=============================================+
-|comparator    | Same as Server-Current. Set        | .. code-block:: javascript                  |
-|              | ``mode`` to ``"client"``.          |                                             |
-|              |                                    |   var books = new Books([], {               |
-|              |                                    |     comparator: function (l, r) {           |
-|              |                                    |       var lv = l.get("name");               |
-|              |                                    |       var rv = r.get("name");               |
-|              |                                    |       if (lv == rv) return 0;               |
-|              |                                    |       else if (lv < rv) return 1;           |
-|              |                                    |       else return -1;                       |
-|              |                                    |     },                                      |
-|              |                                    |     mode: "client",                         |
-|              |                                    |     full: true                              |
-|              |                                    |   });                                       |
-|              |                                    |                                             |
-+--------------+------------------------------------+---------------------------------------------+
-|state         | Same as Server-Full. Set           | .. code-block:: javascript                  |
-|              | ``mode`` to ``"client"``.          |                                             |
-|              |                                    |   var books = new Books([], {               |
-|              |                                    |     state: {                                |
-|              |                                    |       sortKey: "name",                      |
-|              |                                    |       order: 1                              |
-|              |                                    |     },                                      |
-|              |                                    |     mode: "client",                         |
-|              |                                    |     full: true                              |
-|              |                                    |   };                                        |
-|              |                                    |                                             |
-+--------------+------------------------------------+---------------------------------------------+
-|makeComparator| Same as Server-Current. Set        | .. code-block:: javascript                  |
-|              | ``mode`` to ``"client"``.          |                                             |
-|              |                                    |   var books = new Books([], {               |
-|              |                                    |     mode: "client",                         |
-|              |                                    |     full: true                              |
-|              |                                    |   });                                       |
-|              |                                    |   var comp = books.makeComparator("name");  |
-|              |                                    |   books.fullCollection.comparator = comp;   |
-|              |                                    |                                             |
-+--------------+------------------------------------+---------------------------------------------+
+   // Don't forget to call `sort` just like you would on a `Backbone.Collection`
+   books.fullCollection.sort();
+
+   // Clears the comparator
+   books.setSorting(null);
+
+   // Sets a comparator on the current page that sorts the title in descending
+   // order
+   books.setSorting("title", 1, {full: false})
+   books.sort();
+
+   books.switchMode("infinite");
+
+   // Sorts the books collection under infinite paging mode on the client side
+   books.setSorting("title", -1, {side: "client"});
+   books.fullCollection.sort();
+
+   books.switchMode("server");
+
+   // Sets a comparator on the current page under server mode
+   books.setSorting("title", {side: "client", full: false});
+   books.sort();
 
 Manipulation
 ------------
 
 This is one of the areas where ``Backbone.PageableCollection`` truely shines. A
 ``Backbone.PageableCollection`` instance not only can do everything a plain
-``Backbone.Collection`` is can for the current page, in client-mode, it can also
+``Backbone.Collection`` can for the current page, in client-mode, it can also
 synchronize changes and events across all of the pages. For example, you can add
 or remove a model from either a ``Backbone.PageableCollection`` instance, which
 is holding the current page, or the
@@ -519,10 +504,12 @@ communicated between all the pages throught the two collections.
    books.at(0).get("name");
    >>> "Oliver Twist"
 
+
 API Reference
 -------------
 
 See `here <http://wyuenho.github.com/backbone-pageable/>`_.
+
 
 FAQ
 ---
@@ -555,6 +542,72 @@ FAQ
 
 Change Log
 ----------
+
+1.1.6
+  Bugs Fixed
+    - Fixed bug where a page of models disappeared after adding an array of
+      models to the current page under client mode. `(Issue #43)
+      <https://github.com/wyuenho/backbone-pageable/issues/43>`_.
+
+1.1.5
+  Bugs Fixed
+    - Add event handlers should be triggered before remove handlers during
+      client mode. `(Issue #42)
+      <https://github.com/wyuenho/backbone-pageable/issues/42>`_.
+
+1.1.4
+  Changes
+    - Dropped Backbone 0.9.2 support
+  Bugs Fixed
+    - TypeError thrown when adding a model to an empty client mode
+      collection. `(Issue #38)
+      <https://github.com/wyuenho/backbone-pageable/issues/38>`_.
+    - Adding with an index inserts into the wrong page under client
+      mode. `(Issue #39)
+      <https://github.com/wyuenho/backbone-pageable/issues/39>`_.
+
+1.1.3
+  Bugs Fixed
+    - Updating after fetching under infinite mode should not create useless
+      ``add``, ``remove`` and ``sort`` events. `(Issue #34)
+      <https://github.com/wyuenho/backbone-pageable/issues/34>`_.
+    - RangeError when emptying fullCollection during reset `(Issue #37)
+      <https://github.com/wyuenho/backbone-pageable/issues/37>`_.
+
+1.1.2
+  Bugs Fixed
+    - Fix off by 1 error with ``hasNext`` and ``hasPrevious`` `(Issue #32)
+      <https://github.com/wyuenho/backbone-pageable/issues/32>`_.
+
+1.1.1
+  Bugs Fixed
+    - Fix regression where ``fetch`` errors out if ``url`` is a function `(Issue
+      #30) <https://github.com/wyuenho/backbone-pageable/issues/30>`_.
+    - Fix temperatory state inconsistency when accessing ``state`` in event
+      handlers during client mode. `(Issue #27)
+      <https://github.com/wyuenho/backbone-pageable/issues/27>`_.
+
+1.1
+  Bugs Fixed
+    - Lots of fixes for infinite paging.
+    - Fixed incompatibility with Zepto.
+  Enhancements
+    - Introduced ``hasPrevious`` and ``hasNext`` for checking if the pageable
+      collection can be paged backward or forward.
+    - Tested against Backbone 0.9.10, jQuery 1.9 and Zepto 1.0rc1.
+
+1.0
+  Bugs Fixed
+    - Regression from 0.9.9 where ``mode`` wasn't saved after called ``switchMode``.
+  Changed
+    - ``makeComparator`` has been renamed to ``_makeComparator`` and is now a
+      protected method.
+  Enhancements
+    - Improved infinite-mode. Infinite paging mode now runs in a hybrid
+      mode. `(Issue #17)
+      <https://github.com/wyuenho/backbone-pageable/issues/17>`_.
+    - Greatly simplified sorting. `(Issue #19)
+      <https://github.com/wyuenho/backbone-pageable/issues/19>`_.
 
 0.9.13
   Bugs Fixed

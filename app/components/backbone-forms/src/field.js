@@ -51,6 +51,29 @@ Form.Field = (function() {
       }, options.schema);
     },
 
+
+    /**
+     * Provides the context for rendering the field
+     * Override this to extend the default context
+     *
+     * @param {Object} schema
+     * @param {View} editor
+     *
+     * @return {Object}     Locals passed to the template
+     */
+    renderingContext: function(schema, editor) {
+      return {
+        key: this.key,
+        title: schema.title,
+        id: editor.id,
+        type: schema.type,
+        editor: '<b class="bbf-tmp-editor"></b>',
+        help: '<b class="bbf-tmp-help"></b>',
+        error: '<b class="bbf-tmp-error"></b>'
+      };
+    },
+
+
     /**
      * Renders the field
      */
@@ -78,14 +101,12 @@ Form.Field = (function() {
       var editor = this.editor = helpers.createEditor(schema.type, options);
       
       //Create the element
-      var $field = $(templates[schema.template]({
-        key: this.key,
-        title: schema.title,
-        id: editor.id,
-        type: schema.type,
-        editor: '<b class="bbf-tmp-editor"></b>',
-        help: '<b class="bbf-tmp-help"></b>'
-      }));
+      var $field = $(templates[schema.template](this.renderingContext(schema, editor)));
+
+      //Remove <label> if it's not wanted
+      if (schema.title === false) {
+        $field.find('label[for="'+editor.id+'"]').first().remove();
+      }
       
       //Render editor
       $field.find('.bbf-tmp-editor').replaceWith(editor.render().el);
@@ -94,7 +115,11 @@ Form.Field = (function() {
       this.$help = $('.bbf-tmp-help', $field).parent();
       this.$help.empty();
       if (this.schema.help) this.$help.html(this.schema.help);
-      
+
+      //Create error container
+      this.$error = $($('.bbf-tmp-error', $field).parent()[0]);
+      if (this.$error) this.$error.empty();
+
       //Add custom CSS class names
       if (this.schema.fieldClass) $field.addClass(this.schema.fieldClass);
       
@@ -159,7 +184,11 @@ Form.Field = (function() {
 
       this.$el.addClass(errClass);
       
-      if (this.$help) this.$help.html(msg);
+      if (this.$error) {
+        this.$error.html(msg);
+      } else if (this.$help) {
+        this.$help.html(msg);
+      }
     },
     
     /**
@@ -171,7 +200,9 @@ Form.Field = (function() {
       this.$el.removeClass(errClass);
       
       // some fields (e.g., Hidden), may not have a help el
-      if (this.$help) {
+      if (this.$error) {
+        this.$error.empty();
+      } else if (this.$help) {
         this.$help.empty();
       
         //Reset help text if available
@@ -203,6 +234,14 @@ Form.Field = (function() {
      */
     setValue: function(value) {
       this.editor.setValue(value);
+    },
+    
+    focus: function() {
+      this.editor.focus();
+    },
+    
+    blur: function() {
+      this.editor.blur();
     },
 
     /**

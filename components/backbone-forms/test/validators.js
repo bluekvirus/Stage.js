@@ -1,3 +1,7 @@
+;(function(Form, Field, editors) {
+
+
+
 ;(function() {
 
   module('general')
@@ -23,9 +27,10 @@
   
   var required = Form.validators.required()
 
-  test('error if field is null or undefined', function() {
+  test('error if field is null or undefined or false', function() {
     ok(required(null))
     ok(required())
+    ok(required(false))
   })
   
   test('error if field is empty string', function() {
@@ -37,8 +42,7 @@
     equal(required(0), undefined)
   })
   
-  test('ok if field is boolean', function() {
-    equal(required(false), undefined)
+  test('ok if field is boolean true', function() {
     equal(required(true), undefined)
   })
 
@@ -97,6 +101,7 @@
     equal(fn('john.smith@example.com'), undefined)
     equal(fn('john.smith@example.co.uk'), undefined)
     equal(fn('john-smith@example.com'), undefined)
+    equal(fn('john+smith@example.com'), undefined)
   })
   
 })();
@@ -169,3 +174,7 @@
     equal(err.message, 'Must match field "confirm"')
   })
 })();
+
+
+
+})(Backbone.Form, Backbone.Form.Field, Backbone.Form.editors);
