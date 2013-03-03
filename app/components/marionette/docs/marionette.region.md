@@ -73,11 +73,11 @@ If you replace the current view with a new view by calling `show`,
 it will automatically close the previous view.
 
 ```js
-// Show the first view.
+// show the first view
 var myView = new MyView();
 MyApp.mainRegion.show(myView);
 
-// Replace the view with another. The
+// replace view with another. the
 // `close` method is called for you
 var anotherView = new AnotherView();
 MyApp.mainRegion.show(anotherView);
@@ -112,8 +112,8 @@ Marionette.Region.prototype.open = function(view){
 ```
 
 This will replace the contents of the region with the view's
-`el` / content. However, `open`'s behaviour can be overriden 
-to facilitate transition effects and more.
+`el` / content. You can change to this be anything you wish,
+though, facilitating transition effects and more.
 
 ```js
 Marionette.Region.prototype.open = function(view){
@@ -168,15 +168,15 @@ MyApp.someRegion.attachView(myView);
 
 ## Region Events And Callbacks
 
-A region manager will raise a few events when showing and
-closing views:
+A region manager will raise a few events during its showing and
+closing of views:
 
-* "show" / `onShow` - Called on the view instance when the view has been rendered and displayed.
-* "show" / `onShow` - Called on the region instance when the view has been rendered and displayed.
-* "close" / `onClose` - Called when the view has been closed.
+* "show" / `onShow` - called on the view instance when the view has been rendered and displayed
+* "show" / `onShow` - called on the region instance when the view has been rendered and displayed
+* "close" / `onClose` - when the view has been closed
 
-These events can be used to run code when your region manager
-opens and closes views.
+You can bind to these events and add code that needs to run with
+your region manager, opening and closing views.
 
 ```js
 MyApp.mainRegion.on("show", function(view){
@@ -236,7 +236,8 @@ or provide a base set of functionality for your app.
 
 Once you define a region manager type, you can attach the
 new region type by specifying the region type as the
-value. In this case, `addRegions` expects the constructor itself, not an instance.
+value - not an instance of it, but the actual constructor
+function.
 
 ```js
 var FooterRegion = Backbone.Marionette.Region.extend({

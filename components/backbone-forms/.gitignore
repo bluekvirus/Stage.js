@@ -1,4 +1,2 @@
-/node_modules/
-*.iml
-*.ipr
-*.iws
+/node_modules/*
+!/node_modules/buildify

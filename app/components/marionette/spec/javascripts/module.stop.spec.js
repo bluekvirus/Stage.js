@@ -8,17 +8,15 @@ describe("module stop", function(){
   });
 
   describe("when stopping a module that has been started", function(){
-    var mod1, mod2, mod3, beforeStop, stop, isMod1;
+    var mod1, mod2, mod3, beforeStop, stop;
 
     beforeEach(function(){
       beforeStop = jasmine.createSpy("before:stop");
       stop = jasmine.createSpy("stop");
-			isMod1 = jasmine.createSpy("isMod1");
 
       mod1 = App.module("Mod1", function(Mod1){
         Mod1.addFinalizer(function(){
           Mod1.isDead = true;
-					isMod1(this);
         });
       });
 
@@ -45,10 +43,6 @@ describe("module stop", function(){
 
     it("should run all finalizers for the module", function(){
       expect(mod1.isDead).toBe(true);
-    });
-
-    it("should run all finalizers for the module in the context of the module", function(){
-			expect(isMod1).toHaveBeenCalledWith(mod1);
     });
 
     it("should stop all sub-modules", function(){

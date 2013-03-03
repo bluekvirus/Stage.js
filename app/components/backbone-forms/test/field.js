@@ -1,7 +1,3 @@
-;(function(Form, Field, editors) {
-
-
-
 module('Field');
 
 test("'schema' option - can be a string representing the type", function() {
@@ -68,16 +64,6 @@ test("'schema.title' option - Defaults to formatted version of 'key' option", fu
     }).render();
     
     equal($('label', field.el).html(), 'Camel Cased Title');
-});
-
-test("'schema.title' false option - does not render a <label>", function() {
-    var field = new Field({
-        value: 'test',
-        key: 'title',
-        schema: { title: false }
-    }).render();
-
-    equal($('label', field.el).length, 0);
 });
 
 test("'schema.help' option - Specifies help text", function() {
@@ -306,7 +292,7 @@ test('setError() - sets field error class name and error message', function() {
   
   field.setError('foo');
   ok($(field.el).hasClass(errorClass));
-  equal(field.$error.html(), 'foo');
+  equal(field.$help.html(), 'foo');
 });
 
 test('setError() - returns if the editor is a "nested" type', function() {
@@ -407,7 +393,7 @@ test("keys can be paths to nested objects if using DeepModel", function() {
 
   field.setValue('foo');
 
-  var $input = field.$('#user_name_first');
+  var $input = field.$el.find('#user_name_first');
 
   equal(field.getValue(), 'foo');
   equal($input.val(), 'foo');
@@ -416,9 +402,4 @@ test("keys can be paths to nested objects if using DeepModel", function() {
   //TODO: Test with DeepModel
   field.commit();
   equal(model.attributes.user.name.first, 'foo');
-  equal(model.get('user.name.first'), 'foo');
 });
-
-
-
-})(Backbone.Form, Backbone.Form.Field, Backbone.Form.editors);

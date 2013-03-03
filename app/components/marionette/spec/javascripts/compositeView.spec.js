@@ -642,6 +642,7 @@ describe("composite view", function(){
         beforeEach(function(){
 
           gridView.onBeforeRender = function() {
+            expect(gridView.ui.headersRow.find("th:first-child").text()).toEqual("Username");
             called = true;
           };
           spyOn(gridView, "onBeforeRender").andCallThrough();
@@ -655,10 +656,6 @@ describe("composite view", function(){
         it("should return its jQuery selector", function() {
           expect(gridView.onBeforeRender).toHaveBeenCalled();
         })
-
-        it("should set the username", function(){
-          expect($(gridView.ui.headersRow).find("th:first-child").text()).toEqual("Username");
-        });
 
       });
 

@@ -14,11 +14,22 @@
 
         <link rel="stylesheet" href="components/bootstrap/docs/assets/css/bootstrap.css">
         <link rel="stylesheet" href="styles/main.css">
-
         <script src="scripts/vendor/modernizr.min.js"></script>
-        <script type="text/javascript" src="components/jquery/jquery.js"></script>
     </head>
     <body>
+    <div class="container" style="margin-top:50px">
+        <div class="hero-unit">
+            <h1>Wotcha!</h1>
+            <p>You now have</p>
+            <ul>
+                <li>HTML5 Boilerplate</li>
+                <li>Twitter Bootstrap</li>
+                <li>Twitter Bootstrap plugins</li>
+            </ul>
+            <p>installed.</p>
+            <h3>Enjoy coding! - Yeoman</h3>
+        </div>
+    </div>
 
         <!--[if lt IE 7]>
             <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
@@ -26,17 +37,7 @@
 
         <!-- Add your site or application content here -->
         
-        <div class="application-container" style="margin-top:50px">
-            <div class="banner"></div>
-            <div class="body">
-                <div class="promotion"></div>
-                <div class="default row-fluid">
-                    <div class="sidebar span4"></div>
-                    <div class="content span8"></div>
-                </div>
-            </div>
-            <div class="footer"></div>
-        </div>        
+        
 
         <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. 
         <script>
@@ -47,9 +48,8 @@
         </script>
         -->
 
-        <!-- View (Layout/Widget) templates -->
-
     <!-- build:js scripts/lib.js -->
+        <script type="text/javascript" src="components/jquery/jquery.js"></script>
         <script type="text/javascript" src="components/underscore/underscore.js"></script>
         <script type="text/javascript" src="components/backbone/backbone.js"></script>
         <script type="text/javascript" src="components/handlebars/handlebars.js"></script>
@@ -66,15 +66,14 @@
     <!-- endbuild -->
 
     <!-- build:js scripts/tpl.js -->
-        <script type="text/javascript" src="templates/vendor/backbone-form-bootstrap-tpl.js"></script>
-        <script type="text/javascript" src="templates/loader.js"></script>
-        <script type="text/javascript" src="templates/widgets/basic-form-view-wrap-tpl.js"></script>
+        <script type="text/javascript" src="templates/backbone-form-bootstrap-tpl.js"></script>
+        <script type="text/javascript" src="templates/basic-form-view-wrap-tpl.js"></script>
 
     <!-- endbuild -->
 
     <!-- build:js scripts/application.js -->
         <script type="text/javascript" src="scripts/main.js"></script>
-        <script type="text/javascript" src="scripts/modules/field.module.js"></script>
+        <script type="text/javascript" src="scripts/modules/field.js"></script>
         
     <!-- endbuild -->
 

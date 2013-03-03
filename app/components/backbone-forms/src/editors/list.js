@@ -17,7 +17,7 @@
     events: {
       'click [data-action="add"]': function(event) {
         event.preventDefault();
-        this.addItem(null, true);
+        this.addItem();
       }
     },
 
@@ -26,12 +26,6 @@
 
       var schema = this.schema;
       if (!schema) throw "Missing required option 'schema'";
-
-      //List schema defaults
-      this.schema = _.extend({
-        listTemplate: 'list',
-        listItemTemplate: 'listItem'
-      }, schema);
 
       //Determine the editor to use
       this.Editor = (function() {
@@ -55,7 +49,7 @@
           value = this.value || [];
 
       //Create main element
-      var $el = $(Form.templates[this.schema.listTemplate]({
+      var $el = $(Form.templates.list({
         items: '<b class="bbf-tmp"></b>'
       }));
 
@@ -77,18 +71,15 @@
       this.setElement($el);
       this.$el.attr('id', this.id);
       this.$el.attr('name', this.key);
-            
-      if (this.hasFocus) this.trigger('blur', this);
       
       return this;
     },
 
     /**
      * Add a new item to the list
-     * @param {Mixed} [value]           Value for the new item editor
-     * @param {Boolean} [userInitiated] If the item was added by the user clicking 'add'
+     * @param {Mixed} [value]     Value for the new item editor
      */
-    addItem: function(value, userInitiated) {
+    addItem: function(value) {
       var self = this;
 
       //Create the item
@@ -99,66 +90,20 @@
         Editor: this.Editor,
         key: this.key
       }).render();
-      
-      var _addItem = function() {
-        self.items.push(item);
-        self.$list.append(item.el);
-        
-        item.editor.on('all', function(event) {
-          if (event === 'change') return;
-
-          // args = ["key:change", itemEditor, fieldEditor]
-          var args = _.toArray(arguments);
-          args[0] = 'item:' + event;
-          args.splice(1, 0, self);
-          // args = ["item:key:change", this=listEditor, itemEditor, fieldEditor]
-
-          editors.List.prototype.trigger.apply(this, args);
-        }, self);
-
-        item.editor.on('change', function() {
-          if (!item.addEventTriggered) {
-            item.addEventTriggered = true;
-            this.trigger('add', this, item.editor);
-          }
-          this.trigger('item:change', this, item.editor);
-          this.trigger('change', this);
-        }, self);
-
-        item.editor.on('focus', function() {
-          if (this.hasFocus) return;
-          this.trigger('focus', this);
-        }, self);
-        item.editor.on('blur', function() {
-          if (!this.hasFocus) return;
-          var self = this;
-          setTimeout(function() {
-            if (_.find(self.items, function(item) { return item.editor.hasFocus; })) return;
-            self.trigger('blur', self);
-          }, 0);
-        }, self);
-        
-        if (userInitiated || value) {
-          item.addEventTriggered = true;
-        }
-        
-        if (userInitiated) {
-          self.trigger('add', self, item.editor);
-          self.trigger('change', self);
-        }
-      };
 
       //Check if we need to wait for the item to complete before adding to the list
       if (this.Editor.isAsync) {
-        item.editor.on('readyToAdd', _addItem, this);
+        item.editor.on('readyToAdd', function() {
+          self.items.push(item);
+          self.$list.append(item.el);
+        });
       }
 
       //Most editors can be added automatically
       else {
-        _addItem();
+        this.items.push(item);
+        this.$list.append(item.el);
       }
-      
-      return item;
     },
 
     /**
@@ -174,11 +119,6 @@
 
       this.items[index].remove();
       this.items.splice(index, 1);
-      
-      if (item.addEventTriggered) {
-        this.trigger('remove', this, item.editor);
-        this.trigger('change', this);
-      }
 
       if (!this.items.length && !this.Editor.isAsync) this.addItem();
     },
@@ -195,20 +135,6 @@
     setValue: function(value) {
       this.value = value;
       this.render();
-    },
-    
-    focus: function() {
-      if (this.hasFocus) return;
-
-      if (this.items[0]) this.items[0].editor.focus();
-    },
-    
-    blur: function() {
-      if (!this.hasFocus) return;
-
-      var focusedItem = _.find(this.items, function(item) { return item.editor.hasFocus; });
-      
-      if (focusedItem) focusedItem.editor.blur();
     },
 
     /**
@@ -263,12 +189,6 @@
       'click [data-action="remove"]': function(event) {
         event.preventDefault();
         this.list.removeItem(this);
-      },
-      'keydown input[type=text]': function(event) {
-        if(event.keyCode !== 13) return;
-        event.preventDefault();
-        this.list.addItem();
-        this.list.$list.find("> li:last input").focus();
       }
     },
 
@@ -291,7 +211,7 @@
       }).render();
 
       //Create main element
-      var $el = $(Form.templates[this.schema.listItemTemplate]({
+      var $el = $(Form.templates.listItem({
         editor: '<b class="bbf-tmp"></b>'
       }));
 
@@ -309,14 +229,6 @@
 
     setValue: function(value) {
       this.editor.setValue(value);
-    },
-    
-    focus: function() {
-      this.editor.focus();
-    },
-    
-    blur: function() {
-      this.editor.blur();
     },
 
     remove: function() {
@@ -338,15 +250,11 @@
       _.every(validators, function(validator) {
         error = getValidator(validator)(value, formValues);
 
-        return error ? false : true;
+        return continueLoop = error ? false : true;
       });
 
       //Show/hide error
-      if (error){
-        this.setError(error);
-      } else {
-        this.clearError();
-      }
+      error ? this.setError(error) : this.clearError();
 
       //Return error to be aggregated by list
       return error ? error : null;
@@ -395,14 +303,14 @@
       if (!editors.List.Modal.ModalAdapter) throw 'A ModalAdapter is required';
 
       //Get nested schema if Object
-      if (schema.itemType === 'Object') {
+      if (schema.itemType == 'Object') {
         if (!schema.subSchema) throw 'Missing required option "schema.subSchema"';
 
         this.nestedSchema = schema.subSchema;
       }
 
       //Get nested schema if NestedModel
-      if (schema.itemType === 'NestedModel') {
+      if (schema.itemType == 'NestedModel') {
         if (!schema.model) throw 'Missing required option "schema.model"';
 
         this.nestedSchema = schema.model.prototype.schema;
@@ -429,8 +337,6 @@
           self.trigger('readyToAdd');
         }, 0);
       }
-
-      if (this.hasFocus) this.trigger('blur', this);
 
       return this;
     },
@@ -483,7 +389,7 @@
       if (schema.itemToString) return schema.itemToString(value);
       
       //Otherwise check if it's NestedModel with it's own toString() method
-      if (schema.itemType === 'NestedModel') {
+      if (schema.itemType == 'NestedModel') {
         return new (schema.model)(value).toString();
       }
       
@@ -499,21 +405,11 @@
         data: this.value
       });
 
-      var modal = this.modal = new Backbone.BootstrapModal({
+      var modal = new Backbone.BootstrapModal({
         content: form,
         animate: true
       }).open();
 
-      this.trigger('open', this);
-      this.trigger('focus', this);
-
-      modal.on('cancel', function() {
-        this.modal = null;
-
-        this.trigger('close', this);
-        this.trigger('blur', this);
-      }, this);
-      
       modal.on('ok', _.bind(this.onModalSubmitted, this, form, modal));
     },
 
@@ -522,12 +418,11 @@
      * Runs validation and tells the list when ready to add the item
      */
     onModalSubmitted: function(form, modal) {
-      var isNew = !this.value;
+      var isNew = _.isEmpty(this.value);
 
       //Stop if there are validation errors
       var error = form.validate();
       if (error) return modal.preventClose();
-      this.modal = null;
 
       //If OK, render the list item
       this.value = form.getValue();
@@ -535,11 +430,6 @@
       this.renderSummary();
 
       if (isNew) this.trigger('readyToAdd');
-      
-      this.trigger('change', this);
-      
-      this.trigger('close', this);
-      this.trigger('blur', this);
     },
 
     getValue: function() {
@@ -548,21 +438,6 @@
 
     setValue: function(value) {
       this.value = value;
-    },
-    
-    focus: function() {
-      if (this.hasFocus) return;
-
-      this.openEditor();
-    },
-    
-    blur: function() {
-      if (!this.hasFocus) return;
-      
-      if (this.modal) {
-        this.modal.trigger('cancel');
-        this.modal.close();
-      }
     }
   }, {
     //STATICS

@@ -1,4 +1,4 @@
- // Backbone.Marionette, v1.0.0-rc6
+ // Backbone.Marionette, v1.0.0-rc3
  // Copyright (c)2013 Derick Bailey, Muted Solutions, LLC.
  // Distributed under MIT license
  // http://github.com/marionettejs/backbone.marionette
@@ -30,7 +30,7 @@ Marionette.getOption = function(target, optionName){
   if (!target || !optionName){ return; }
   var value;
 
-  if (target.options && (optionName in target.options) && (target.options[optionName] !== undefined)){
+  if (target.options && target.options[optionName]){
     value = target.options[optionName];
   } else {
     value = target[optionName];
@@ -157,6 +157,56 @@ Marionette.MonitorDOMRefresh = (function(){
   };
 })();
 
+
+// addEventBinder
+// --------------
+//
+// Mixes in Backbone.Events to the target object, if it is not present
+// already. Also adjusts the listenTo method to accept a 4th parameter
+// for the callback context.
+
+(function(Backbone, Marionette, _){
+
+  // grab a reference to the original listenTo
+  var listenTo = Backbone.Events.listenTo;
+
+  // Fix the listenTo method on the target object, allowing the 4th
+  // context parameter to be specified
+  Marionette.addEventBinder = function(target){
+    // If the target is not already extending Backbone.Events,
+    // then extend that on to it first
+    if (!target.on && !target.off && !target.listenTo && !target.stopListening){
+      _.extend(target, Backbone.Events);
+    }
+
+    // Override the built-in listenTo method to make sure we 
+    // account for context
+    target.listenTo = function(evtSource, events, callback, context){
+      context = context || this;
+      return listenTo.call(this, evtSource, events, _.bind(callback, context));
+    };
+  };
+
+})(Backbone, Marionette, _);
+
+
+// Event Aggregator
+// ----------------
+// A pub-sub object that can be used to decouple various parts
+// of an application through event-driven architecture.
+//
+// Extends [Backbone.Wreqr.EventAggregator](https://github.com/marionettejs/backbone.wreqr)
+// and mixes in an EventBinder from [Backbone.EventBinder](https://github.com/marionettejs/backbone.eventbinder).
+Marionette.EventAggregator = Backbone.Wreqr.EventAggregator.extend({
+
+  constructor: function(){
+    Marionette.addEventBinder(this);
+
+    var args = Array.prototype.slice.apply(arguments);
+    Backbone.Wreqr.EventAggregator.prototype.constructor.apply(this, args);
+  }
+
+});
 
 // Marionette.bindEntityEvents & unbindEntityEvents
 // ---------------------------
@@ -306,6 +356,8 @@ Marionette.Controller = function(options){
   this.triggerMethod = Marionette.triggerMethod;
   this.options = options || {};
 
+  Marionette.addEventBinder(this);
+
   if (_.isFunction(this.initialize)){
     this.initialize(this.options);
   }
@@ -333,6 +385,8 @@ _.extend(Marionette.Controller.prototype, Backbone.Events, {
 
 Marionette.Region = function(options){
   this.options = options || {};
+
+  Marionette.addEventBinder(this);
 
   this.el = Marionette.getOption(this, "el");
 
@@ -548,7 +602,7 @@ _.extend(Marionette.TemplateCache, {
 // and know whether or not it has been loaded
 _.extend(Marionette.TemplateCache.prototype, {
 
-  // Internal method to load the template
+  // Internal method to load the template asynchronously.
   load: function(){
     var that = this;
 
@@ -565,10 +619,8 @@ _.extend(Marionette.TemplateCache.prototype, {
   },
 
   // Load a template from the DOM, by default. Override
-  // this method to provide your own template retrieval
-  // For asynchronous loading with AMD/RequireJS, consider
-  // using a template-loader plugin as described here: 
-  // https://github.com/marionettejs/backbone.marionette/wiki/Using-marionette-with-requirejs
+  // this method to provide your own template retrieval,
+  // such as asynchronous loading from a server.
   loadTemplate: function(templateId){
     var template = $(templateId).html();
 
@@ -620,6 +672,7 @@ Marionette.View = Backbone.View.extend({
 
   constructor: function(){
     _.bindAll(this, "render");
+    Marionette.addEventBinder(this);
 
     var args = Array.prototype.slice.apply(arguments);
     Backbone.View.prototype.constructor.apply(this, args);
@@ -684,7 +737,7 @@ Marionette.View = Backbone.View.extend({
         };
 
         // trigger the event
-        that.triggerMethod(value, args);
+        that.trigger(value, args);
       };
 
     });
@@ -906,16 +959,8 @@ Marionette.CollectionView = Marionette.View.extend({
   // the collection view.
   render: function(){
     this.isClosed = false;
-    this.triggerBeforeRender();
-    this._renderChildren();
-    this.triggerRendered();
-    return this;
-  },
 
-  // Internal method. Separated so that CompositeView can have
-  // more control over events being triggered, around the rendering
-  // process
-  _renderChildren: function(){
+    this.triggerBeforeRender();
     this.closeEmptyView();
     this.closeChildren();
 
@@ -924,6 +969,9 @@ Marionette.CollectionView = Marionette.View.extend({
     } else {
       this.showEmptyView();
     }
+
+    this.triggerRendered();
+    return this;
   },
 
   // Internal method to loop through each item in the
@@ -999,14 +1047,14 @@ Marionette.CollectionView = Marionette.View.extend({
     // remove and/or close it later
     this.children.add(view);
 
-    // Render it and show it
-    this.renderItemView(view, index);
-
     // call the "show" method if the collection view
     // has already been shown
     if (this._isShown){
       Marionette.triggerMethod.call(view, "show");
     }
+
+    // Render it and show it
+    var renderResult = this.renderItemView(view, index);
 
     // this view was added
     this.triggerMethod("after:item:added", view);
@@ -1045,7 +1093,6 @@ Marionette.CollectionView = Marionette.View.extend({
   removeItemView: function(item){
     var view = this.children.findByModel(item);
     this.removeChildView(view);
-    this.checkEmpty();
   },
 
   // Remove the child view and close it
@@ -1063,16 +1110,13 @@ Marionette.CollectionView = Marionette.View.extend({
       this.children.remove(view);
     }
 
-    this.triggerMethod("item:removed", view);
-  },
-
-  // helper to show the empty view if the collection is empty
-  checkEmpty: function() {
     // check if we're empty now, and if we are, show the
     // empty view
     if (!this.collection || this.collection.length === 0){
       this.showEmptyView();
     }
+
+    this.triggerMethod("item:removed", view);
   },
 
   // Append the HTML to the collection's `el`.
@@ -1107,7 +1151,9 @@ Marionette.CollectionView = Marionette.View.extend({
     this.children.each(function(child){
       this.removeChildView(child);
     }, this);
-    this.checkEmpty();
+
+    // re-initialize to clean up after ourselves
+    this._initChildViewStorage();
   }
 });
 
@@ -1133,7 +1179,7 @@ Marionette.CompositeView = Marionette.CollectionView.extend({
     if (this.collection){
       this.listenTo(this.collection, "add", this.addChildView, this);
       this.listenTo(this.collection, "remove", this.removeItemView, this);
-      this.listenTo(this.collection, "reset", this._renderChildren, this);
+      this.listenTo(this.collection, "reset", this.renderCollection, this);
     }
   },
 
@@ -1171,27 +1217,22 @@ Marionette.CompositeView = Marionette.CollectionView.extend({
   // but the collection will not re-render.
   render: function(){
     this.isClosed = false;
+
     this.resetItemViewContainer();
 
-    this.triggerBeforeRender();
     var html = this.renderModel();
     this.$el.html(html);
+
     // the ui bindings is done here and not at the end of render since they 
     // will not be available until after the model is rendered, but should be
     // available before the collection is rendered.
     this.bindUIElements();
+
     this.triggerMethod("composite:model:rendered");
 
-    this._renderChildren();
-
+    this.renderCollection();
     this.triggerMethod("composite:rendered");
-    this.triggerRendered();
     return this;
-  },
-
-  _renderChildren: function(){
-    Marionette.CollectionView.prototype._renderChildren.call(this);
-    this.triggerMethod("composite:collection:rendered");
   },
 
   // Render the collection for the composite view
@@ -1199,6 +1240,7 @@ Marionette.CompositeView = Marionette.CollectionView.extend({
     var args = Array.prototype.slice.apply(arguments);
     Marionette.CollectionView.prototype.render.apply(this, args);
 
+    this.triggerMethod("composite:collection:rendered");
   },
 
   // Render an individual model, if we have one, as
@@ -1449,13 +1491,14 @@ Marionette.AppRouter = Backbone.Router.extend({
 // event aggregator as `app.vent`
 Marionette.Application = function(options){
   this.initCallbacks = new Marionette.Callbacks();
-  this.vent = new Backbone.Wreqr.EventAggregator();
+  this.vent = new Marionette.EventAggregator();
   this.commands = new Backbone.Wreqr.Commands();
   this.reqres = new Backbone.Wreqr.RequestResponse();
   this.submodules = {};
 
   _.extend(this, options);
 
+  Marionette.addEventBinder(this);
   this.triggerMethod = Marionette.triggerMethod;
 };
 
@@ -1542,6 +1585,8 @@ Marionette.Module = function(moduleName, app){
   this.app = app;
   this.startWithParent = true;
 
+  // extend this module with an event binder
+  Marionette.addEventBinder(this);
   this.triggerMethod = Marionette.triggerMethod;
 };
 
@@ -1602,7 +1647,7 @@ _.extend(Marionette.Module.prototype, Backbone.Events, {
     _.each(this.submodules, function(mod){ mod.stop(); });
 
     // run the finalizers
-    this._finalizerCallbacks.run(undefined,this);
+    this._finalizerCallbacks.run();
 
     // reset the initializers and finalizers
     this._initializerCallbacks.reset();

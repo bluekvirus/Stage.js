@@ -1,4 +1,6 @@
-var same = deepEqual;
+var Form = Backbone.Form,
+    Field = Form.Field,
+    editors = Form.editors;
 
 var Post = Backbone.Model.extend({
     defaults: {

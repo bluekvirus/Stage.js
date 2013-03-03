@@ -16,21 +16,18 @@
     ',
 
     field: '\
-      <div class="control-group field-{{key}}">\
+      <div class="control-group">\
         <label class="control-label" for="{{id}}">{{title}}</label>\
         <div class="controls">\
-          {{editor}}\
-          <div class="help-inline">{{error}}</div>\
+          <div class="input-xlarge">{{editor}}</div>\
           <div class="help-block">{{help}}</div>\
         </div>\
       </div>\
     ',
 
     nestedField: '\
-      <div class="field-{{key}}">\
-        <div title="{{title}}" class="input-xlarge">{{editor}}\
-          <div class="help-inline">{{error}}</div>\
-        </div>\
+      <div>\
+        <div title="{{title}}" class="input-xlarge">{{editor}}</div>\
         <div class="help-block">{{help}}</div>\
       </div>\
     ',
@@ -38,14 +35,14 @@
     list: '\
       <div class="bbf-list">\
         <ul class="unstyled clearfix">{{items}}</ul>\
-        <button class="btn bbf-add" data-action="add">Add</button>\
+        <button class="btn bbf-add" data-action="add">Add</div>\
       </div>\
     ',
 
     listItem: '\
       <li class="clearfix">\
         <div class="pull-left">{{editor}}</div>\
-        <button type="button" class="btn bbf-del" data-action="remove">&times;</button>\
+        <button class="btn bbf-del" data-action="remove">x</button>\
       </li>\
     ',
 

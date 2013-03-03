@@ -8,6 +8,8 @@ Marionette.Controller = function(options){
   this.triggerMethod = Marionette.triggerMethod;
   this.options = options || {};
 
+  Marionette.addEventBinder(this);
+
   if (_.isFunction(this.initialize)){
     this.initialize(this.options);
   }

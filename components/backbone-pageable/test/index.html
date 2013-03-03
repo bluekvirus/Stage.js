@@ -8,6 +8,8 @@
   <script src="vendor/jquery.js"></script>
   <script src="vendor/qunit.js"></script>
   <script src="vendor/sinon.js"></script>
+  <script src="vendor/sinon-ie.js"></script>
+  <script src="vendor/sinon-qunit.js"></script>
   <script src="vendor/underscore.js"></script>
   <script src="vendor/backbone.js"></script>
   <script src="../lib/backbone-pageable.js"></script>
@@ -18,7 +20,17 @@
   <script src="client-pageable.js"></script>
   <script src="infinite-pageable.js"></script>
   <script src="switchmode.js"></script>
-  <script src="setsorting.js"></script>
+  <script>
+    _.extend(QUnit.config, {
+
+      noglobals: true,
+
+      urlConfig: _.filter(QUnit.config.urlConfig, function(option) {
+        return option.id !== 'noglobals';
+      })
+
+    });
+  </script>
 </head>
 <body>
   <div id="qunit"></div>

@@ -64,16 +64,8 @@ Marionette.CollectionView = Marionette.View.extend({
   // the collection view.
   render: function(){
     this.isClosed = false;
-    this.triggerBeforeRender();
-    this._renderChildren();
-    this.triggerRendered();
-    return this;
-  },
 
-  // Internal method. Separated so that CompositeView can have
-  // more control over events being triggered, around the rendering
-  // process
-  _renderChildren: function(){
+    this.triggerBeforeRender();
     this.closeEmptyView();
     this.closeChildren();
 
@@ -82,6 +74,9 @@ Marionette.CollectionView = Marionette.View.extend({
     } else {
       this.showEmptyView();
     }
+
+    this.triggerRendered();
+    return this;
   },
 
   // Internal method to loop through each item in the
@@ -157,14 +152,14 @@ Marionette.CollectionView = Marionette.View.extend({
     // remove and/or close it later
     this.children.add(view);
 
-    // Render it and show it
-    this.renderItemView(view, index);
-
     // call the "show" method if the collection view
     // has already been shown
     if (this._isShown){
       Marionette.triggerMethod.call(view, "show");
     }
+
+    // Render it and show it
+    var renderResult = this.renderItemView(view, index);
 
     // this view was added
     this.triggerMethod("after:item:added", view);
@@ -203,7 +198,6 @@ Marionette.CollectionView = Marionette.View.extend({
   removeItemView: function(item){
     var view = this.children.findByModel(item);
     this.removeChildView(view);
-    this.checkEmpty();
   },
 
   // Remove the child view and close it
@@ -221,16 +215,13 @@ Marionette.CollectionView = Marionette.View.extend({
       this.children.remove(view);
     }
 
-    this.triggerMethod("item:removed", view);
-  },
-
-  // helper to show the empty view if the collection is empty
-  checkEmpty: function() {
     // check if we're empty now, and if we are, show the
     // empty view
     if (!this.collection || this.collection.length === 0){
       this.showEmptyView();
     }
+
+    this.triggerMethod("item:removed", view);
   },
 
   // Append the HTML to the collection's `el`.
@@ -265,7 +256,9 @@ Marionette.CollectionView = Marionette.View.extend({
     this.children.each(function(child){
       this.removeChildView(child);
     }, this);
-    this.checkEmpty();
+
+    // re-initialize to clean up after ourselves
+    this._initChildViewStorage();
   }
 });
 

@@ -25,7 +25,7 @@ clean:
 
 doc:
 	jsduck $(JS_FILE) \
-		--external=Backbone.Model,Backbone.Collection,XMLHttpRequest \
+		--external=Backbone.Model,Backbone.Collection,jQuery.jqXHR \
 		--title=backbone-pageable \
 		--no-source \
 		--categories=categories.json \
@@ -34,6 +34,5 @@ doc:
 		--output api
 
 test: FORCE
-	phantomjs test/runner.js test/index.html?noglobals=true
-	phantomjs test/runner.js test/test-zepto.html?noglobals=true
-	phantomjs test/runner.js test/index.0.9.9.html?noglobals=true
+	phantomjs test/run-qunit.js test/index.html
+	phantomjs test/run-qunit.js test/index.0.9.2.html

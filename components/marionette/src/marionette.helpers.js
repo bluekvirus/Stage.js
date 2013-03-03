@@ -19,7 +19,7 @@ Marionette.getOption = function(target, optionName){
   if (!target || !optionName){ return; }
   var value;
 
-  if (target.options && (optionName in target.options) && (target.options[optionName] !== undefined)){
+  if (target.options && target.options[optionName]){
     value = target.options[optionName];
   } else {
     value = target[optionName];

@@ -22,7 +22,7 @@ Form.helpers = (function() {
       result = result[fields[i]];
     }
     return result;
-  };
+  }
   
   /**
    * This function is used to transform the key from a schema into the title used in a label.
@@ -63,7 +63,7 @@ Form.helpers = (function() {
       _.templateSettings.interpolate = _interpolateBackup;
 
       return template;
-  };
+  }
 
   /**
    * Helper to create a template with the {{mustache}} style tags.
@@ -73,7 +73,7 @@ Form.helpers = (function() {
    * @return {Template|String}   Compiled template or the evaluated string
    */
   helpers.createTemplate = function(str, context) {
-    var template = helpers.compileTemplate($.trim(str));
+    var template = helpers.compileTemplate(str);
     
     if (!context) {
       return template;
@@ -89,7 +89,7 @@ Form.helpers = (function() {
    */
   helpers.setTemplateCompiler = function(compiler) {
     helpers.compileTemplate = compiler;
-  };
+  }
   
   
   /**
@@ -143,6 +143,33 @@ Form.helpers = (function() {
     return new constructorFn(options);
   };
   
+  /**
+   * Triggers an event that can be cancelled. Requires the user to invoke a callback. If false
+   * is passed to the callback, the action does not run.
+   *
+   * NOTE: This helper uses private Backbone apis so can break when Backbone is upgraded
+   * 
+   * @param {Mixed}       Instance of Backbone model, view, collection to trigger event on
+   * @param {String}      Event name
+   * @param {Array}       Arguments to pass to the event handlers
+   * @param {Function}    Callback to run after the event handler has run.
+   *                      If any of them passed false or error, this callback won't run
+   */ 
+  helpers.triggerCancellableEvent = function(subject, event, args, callback) { 
+    //Return if there are no event listeners
+    if (!subject._callbacks || !subject._callbacks[event]) return callback();
+    
+    var next = subject._callbacks[event].next;
+    if (!next) return callback();
+    
+    var fn = next.callback,
+        context = next.context || this;
+    
+    //Add the callback that will be used when done
+    args.push(callback);
+    
+    fn.apply(context, args);
+  }
   
   /**
    * Returns a validation function based on the type defined in the schema
