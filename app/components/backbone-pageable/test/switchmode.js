@@ -22,10 +22,11 @@ $(document).ready(function () {
 
   test("switchMode", function () {
 
-    this.stub(col, "fetch");
+    sinon.stub(col, "fetch");
 
     col.switchMode("client");
 
+    strictEqual(col.mode, "client");
     ok(col.fullCollection instanceof Backbone.Collection);
     ok(col.fetch.calledOnce);
 
@@ -37,6 +38,7 @@ $(document).ready(function () {
 
     col.switchMode("server");
 
+    strictEqual(col.mode, "server");
     ok(_.isUndefined(col.fullCollection));
     ok(col.fetch.calledOnce);
 
@@ -45,8 +47,8 @@ $(document).ready(function () {
     col.state.totalRecords = 20;
     col.switchMode("client", {fetch: false, resetState: false});
 
-    ok(col.state.totalRecords === 20);
-    ok(col.fullCollection.comparator === comparator);
+    strictEqual(col.state.totalRecords, 20);
+    strictEqual(col.fullCollection.comparator, comparator);
 
     ok(col.fetch.notCalled);
 
@@ -54,8 +56,9 @@ $(document).ready(function () {
 
     col.switchMode("infinite");
 
-    ok(col.state.totalRecords == null);
-    ok(_.isUndefined(col.fullCollection));
+    strictEqual(col.mode, "infinite");
+    strictEqual(col.state.totalRecords, null);
+    ok(col.fullCollection);
     ok(col.fetch.calledOnce);
 
     col.fetch.reset();

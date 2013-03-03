@@ -1,3 +1,44 @@
+### v1.0.0-rc6 [view commit logs](https://github.com/marionettejs/backbone.marionette/compare/v1.0.0-rc5...v1.0.0-rc6)
+
+* CompositeView
+  * Corrected the timing of the "before:render" event / `onBeforeRender` callback, so that it will be called before serializing the data for the model / template
+
+### v1.0.0-rc5 [view commit logs](https://github.com/marionettejs/backbone.marionette/compare/v1.0.0-rc4...v1.0.0-rc5)
+
+* CollectionView / ItemView
+  * Corrected the timing on the "show" event / `onShow` callback for itemView instances that are added after the CollectionView is in the DOM
+
+### v1.0.0-rc4 [view commit logs](https://github.com/marionettejs/backbone.marionette/compare/v1.0.0-rc3...v1.0.0-rc4)
+
+* EventBinder
+  * **BREAKING:** Removed `Marionette.addEventBinder` function.
+
+* EventAggregator
+  * **BREAKING:** Removed `Marionette.EventAggregator` object. Use `Backbone.Wreqr.EventAggregator` instead
+
+* CollectionView / CompositeView
+  * Fixed several issues related to resetting the collection, and producing zombie "empty" views
+  * Fixed a bug that caused multiple emptyView instances when resetting the collection
+  * Forwarded events from child views are now called with `triggerMethod`, meaning they trigger the event and call the corresponding "onEventName" method
+
+* Modules
+  * Finalizers now run with the module as the `this` context
+
+* Marionette.getOption
+  * Fixed support for "falsey" values in an object's `options`
+
+* Build process
+  * Fixed build process to work on case-sensitive file systems (Linux, for example)
+
+### v1.0.0-rc3 [view commit logs](https://github.com/marionettejs/backbone.marionette/compare/v1.0.0-rc2...v1.0.0-rc3)
+
+* Updated Backbone v0.9.10
+
+* Updated jQuery to v1.9.0
+  * Fixed a few minor unit test issues w/ jQuery update
+
+* Read [the upgrade guide](https://github.com/marionettejs/backbone.marionette/blob/master/upgradeGuide.md) for upgrading from v1.0.0-rc2 to v1.0.0-rc3
+
 ### v1.0.0-rc3 [view commit logs](https://github.com/marionettejs/backbone.marionette/compare/v1.0.0-rc2...v1.0.0-rc3)
 
 * **IMPORTANT:** Be sure to read [the upgrade guide](https://github.com/marionettejs/backbone.marionette/blob/master/upgradeGuide.md) for upgrading from v1.0.0-rc2 to v1.0.0-rc3

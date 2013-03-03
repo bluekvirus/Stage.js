@@ -29,13 +29,19 @@ jQuery(document).ready(function($) {
 	//Config application regions for views:
 	//Note that these regions selectors must already be on the index.html page.
 	Application.addRegions({
-		main: '.container',
+		main: '.application-container',
+		banner: '.application-container .banner',
+		body: '.application-container .body',
+		sidebar: '.application-container .body .sidebar',
+		content: '.application-container .body .content',
+		footer: '.application-container .footer',
+
 	});
 	
 	//Kick start the application
 	Application.start();
 
 	//a little test here.
-	Application.main.show(new Application.Field.View.Form({model:new Application.Field.Model()}));
+	Application.content.show(new Application.Field.View.Form({model:new Application.Field.Model()}));
 
 });

@@ -16,16 +16,17 @@
   "jquery": true,
   "browser": true,
   "nonstandard": true,
-  "node": true,
 
   "globals": {
     "ok": false,
     "test": false,
     "module": false,
     "equal": false,
+    "strictEqual": false,
     "deepEqual": false,
     "expect": false,
     "throws": false,
+    "sinon": false,
     "Backbone": false,
     "_": false
   }
