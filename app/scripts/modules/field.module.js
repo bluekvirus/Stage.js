@@ -9,7 +9,7 @@
  * @author Tim.Liu
  * @updated 
  * 
- * @generated on Sat Mar 02 2013 22:53:18 GMT+0800 (CST) 
+ * @generated on Mon Mar 04 2013 01:00:29 GMT+0800 (CST) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
@@ -30,7 +30,9 @@
     module.Model = Backbone.RelationalModel.extend({
 
         //url
-        urlRoot: '/Fields',
+        urlRoot: '/api/Field',
+        //the id attribute to use
+        idAttribute: '_id',
 
         //relations:
         relations: [],
@@ -101,7 +103,7 @@
 
         //model ref
         model: module.Model,
-        url: '/Fields'
+        url: '/api/Field'
 
     });
 
@@ -145,7 +147,7 @@
             this.ui.body.html(this.form.render().el);
 
             //bind the validators:
-            //Backbone.Validation.bind(this.form);
+            Backbone.Validation.bind(this.form);
         },
 
         events: {
@@ -154,11 +156,18 @@
 
         //event listeners:
         submitForm: function(e) {
-            var error = this.form.commit();
+            var error = this.form.validate();
             if (error) {
                 console.log(error);
             } else {
-                this.model.save(); //save the model to server
+                this.model.save(this.form.getValue(), {
+                    error: function(model, res) {
+                        var err = $.parseJSON(res.responseText).error;
+                        console.log('!Possible Hack!', err);
+                        //[optional]TODO::highlight error back to form fields
+                    },
+
+                }); //save the model to server
             }
         }
 
