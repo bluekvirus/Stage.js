@@ -9,7 +9,7 @@
  * @author Tim.Liu
  * @updated 
  * 
- * @generated on Mon Mar 04 2013 01:00:29 GMT+0800 (CST) 
+ * @generated on Wed Mar 06 2013 16:13:50 GMT+0800 (中国标准时间) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
@@ -133,6 +133,21 @@
 
         template: '#basic-form-view-wrap-tpl',
 
+        fieldsets: [{
+            legend: "General",
+            fields: ["name"]
+        },
+
+        {
+            legend: "Form",
+            fields: ["label", "condition", "editor", "editorOpt"]
+        },
+
+        {
+            legend: "Database",
+            fields: ["type"]
+        }],
+
         ui: {
             header: '.form-header-container',
             body: '.form-body-container',
@@ -142,7 +157,8 @@
         //Might create zombie views...let's see.
         onRender: function() {
             this.form = new Backbone.Form({
-                model: this.model
+                model: this.model,
+                fieldsets: this.fieldsets
             });
             this.ui.body.html(this.form.render().el);
 

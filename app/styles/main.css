@@ -59,3 +59,20 @@
   padding: 10px;
   padding-left: 180px;
 }
+
+fieldset {
+  border-radius: 6px;
+  margin: 10px;
+  padding-top: 20px;
+  padding-bottom: 10px;
+  box-shadow: 1px 1px 2px black;
+}
+
+legend {
+  margin-bottom: 0px;
+}
+
+/*by hacking the backbone-form's fieldset template*/
+legend > span {
+  padding: 5px 20px;
+}

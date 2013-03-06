@@ -22,7 +22,7 @@
 
     fieldset: '\
       <fieldset>\
-        <legend>{{legend}}</legend>\
+        <legend><span>{{legend}}</span></legend>\
         {{fields}}\
       </fieldset>\
     ',

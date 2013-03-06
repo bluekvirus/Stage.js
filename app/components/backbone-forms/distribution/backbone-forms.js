@@ -156,6 +156,9 @@ var Form = (function() {
       }
 
       var $fieldsContainer = $('.bbf-tmp-fields', $fieldset);
+      //Tim.Liu hack in our custom fieldset template.
+      console.log($fieldsContainer);
+      //Tim.Liu
 
       //Render fields
       _.each(fieldset.fields, function(key) {
