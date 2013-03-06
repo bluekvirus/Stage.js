@@ -4,12 +4,25 @@
  * 
  * 
  *
+ *
+ * **General Note**
+ * A module has a Model a Collection (with pagination support) and a few View objects to render itself
+ * on different occations. The most common ones are View.Form and View.DataGrid:
+ *
+ * View.Form - Used to render a form to create a new model object from user inputs. The fieldset tpl are
+ * 			   there to help to override the default 'append' operation when adding field editors. tpl 
+ * 			   names are the 'id' of <script type="text/tpl">...</script> tags. tpl should use 
+ * 			   <tag target="fieldname">...</tag> to identify the placeholder for certain field editor.
+ *
+ * View.DataGrid - Used to render a grid widget for displaying records of this module. It will call 
+ * 				   collection.fetch() to populate the grid data upon rendering.
+ * 
  * 
  * @module Field
  * @author Tim.Liu
  * @updated 
  * 
- * @generated on Wed Mar 06 2013 16:13:50 GMT+0800 (中国标准时间) 
+ * @generated on Wed Mar 06 2013 21:28:59 GMT+0800 (CST) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
@@ -135,17 +148,20 @@
 
         fieldsets: [{
             legend: "General",
-            fields: ["name"]
+            fields: ["name"],
+            tpl: "custom-tpl-Field-form-fieldset-General"
         },
 
         {
             legend: "Form",
-            fields: ["label", "condition", "editor", "editorOpt"]
+            fields: ["label", "condition", "editor", "editorOpt"],
+            tpl: "custom-tpl-Field-form-fieldset-Form"
         },
 
         {
             legend: "Database",
-            fields: ["type"]
+            fields: ["type"],
+            tpl: "custom-tpl-Field-form-fieldset-Database"
         }],
 
         ui: {

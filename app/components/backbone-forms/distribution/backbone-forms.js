@@ -156,8 +156,18 @@ var Form = (function() {
       }
 
       var $fieldsContainer = $('.bbf-tmp-fields', $fieldset);
-      //Tim.Liu hack in our custom fieldset template.
-      console.log($fieldsContainer);
+      //Tim.Liu a bit of hack here to autoload our fieldset templates.
+      //Optional.
+      //
+      var tempCustomCt = $('#'+fieldset.tpl);
+      if(tempCustomCt.length > 0){
+        console.log(fieldset.tpl, 'found!');
+        $fieldsContainer.html(tempCustomCt.html());
+      }else {
+        tempCustomCt = undefined;
+      }
+        
+      //
       //Tim.Liu
 
       //Render fields
@@ -207,8 +217,15 @@ var Form = (function() {
           }, 0);
         }, self);
         
+        //Tim.Liu continued hacking to add custom fieldset tpl.
         if (itemSchema.type !== 'Hidden') {
-          $fieldsContainer.append(fieldEl);
+          if(!tempCustomCt)
+            $fieldsContainer.append(fieldEl);
+          else {
+            console.log('regroup ',key);
+            $fieldsContainer.find('[target='+key+']').html(fieldEl);
+          }
+            
         }
       });
 
