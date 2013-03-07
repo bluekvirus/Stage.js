@@ -13,6 +13,7 @@
         <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
         <link rel="stylesheet" href="components/bootstrap/docs/assets/css/bootstrap.css">
+        <link rel="stylesheet" href="components/backgrid/lib/backgrid.min.css">
         <link rel="stylesheet" href="styles/main.css">
 
         <script src="scripts/vendor/modernizr.min.js"></script>
@@ -48,13 +49,19 @@
         -->
 
         <!-- View (Layout/Widget) templates -->
+        <script type="text/tpl" id="custom-tpl-module-layout">
+            <div class="tpl-module-wrapper">
+                <div class="list-view-region"></div>
+                <div class="details-view-region"></div>
+            </div>
+        </script>
 
     <!-- build:js scripts/lib.js -->
         <script type="text/javascript" src="components/underscore/underscore.js"></script>
         <script type="text/javascript" src="components/backbone/backbone.js"></script>
         <script type="text/javascript" src="components/handlebars/handlebars.js"></script>
 
-        <script type="text/javascript" src="components/backbone-forms/distribution/backbone-forms.js"></script>
+        <script type="text/javascript" src="scripts/vendor/modified/backbone-forms/backbone-forms.js"></script>
         <script type="text/javascript" src="components/backbone-forms/distribution/editors/list.js"></script>
 
         <script type="text/javascript" src="components/backbone-pageable/lib/backbone-pageable.js"></script>
@@ -63,13 +70,15 @@
         <script type="text/javascript" src="components/marionette/lib/backbone.marionette.js"></script>
 
         <script type="text/javascript" src="components/bootstrap/docs/assets/js/bootstrap.js"></script>
+        <script type="text/javascript" src="components/backgrid/lib/backgrid.js"></script>
     <!-- endbuild -->
 
     <!-- build:js scripts/tpl.js -->
         <script type="text/javascript" src="templates/vendor/backbone-form-bootstrap-tpl.js"></script>
         <script type="text/javascript" src="templates/loader.js"></script>
         <script type="text/javascript" src="templates/widgets/basic-form-view-wrap-tpl.js"></script>
-        <script type="text/javascript" src="templates/widgets/custom-form-fieldsets/field-group-form.js"></script>
+        <script type="text/javascript" src="templates/widgets/basic-grid-view-wrap-tpl.js"></script>
+        <!-- <script type="text/javascript" src="templates/widgets/custom-form-fieldsets/field-group-form.js"></script> -->
 
     <!-- endbuild -->
 

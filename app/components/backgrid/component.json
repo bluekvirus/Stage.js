@@ -1,0 +1,8 @@
+{
+  "name": "backgrid",
+  "version": "0.1.4",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/wyuenho/backgrid.git"
+  }
+}
