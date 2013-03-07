@@ -76,3 +76,11 @@ legend {
 legend > span {
   padding: 5px 20px;
 }
+
+.boolean-cell input[type="checkbox"] {
+  margin: 0;
+} 
+
+.datagrid-body-container {
+  padding: 10px 20px;
+}

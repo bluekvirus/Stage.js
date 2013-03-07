@@ -22,7 +22,7 @@
  * @author Tim.Liu
  * @updated 
  * 
- * @generated on Wed Mar 06 2013 21:28:59 GMT+0800 (CST) 
+ * @generated on Thu Mar 07 2013 21:11:48 GMT+0800 (CST) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
@@ -116,9 +116,20 @@
 
         //model ref
         model: module.Model,
-        url: '/api/Field'
+        url: '/api/Field',
+        parse: function(response) {
+            return response.payload; //to use mers on server.
+        },
 
     });
+
+    /**
+     * **collection** 
+     * An instance of Application.Field.Collection
+     * 
+     * @type Application.Field.Collection
+     */
+    module.collection = new module.Collection();
 
 
     /**
@@ -205,6 +216,142 @@
 
 
     });
+
+
+
+    /**
+     *
+     * **View.DataGrid**
+     * 
+     * Backbone.Marionette.ItemView is used to wrap up the datagrid view and 
+     * related interactions. We do this in the onRender callback.
+     *
+     * @class Application.Field.View.DataGrid
+     */
+    module.View.DataGrid = Backbone.Marionette.ItemView.extend({
+
+        template: '#basic-datagrid-view-wrap-tpl',
+
+        ui: {
+            header: '.datagrid-header-container',
+            body: '.datagrid-body-container',
+            footer: '.datagrid-footer-container'
+        },
+
+        columns: [{
+            name: "_selected_",
+            label: "",
+            sortable: false,
+            cell: "boolean"
+        },
+
+        {
+            name: "name",
+            label: "Field Name",
+            cell: "string"
+        },
+
+        {
+            name: "label",
+            label: "Label",
+            cell: "string"
+        },
+
+        {
+            name: "type",
+            label: "Type",
+            cell: "string"
+        },
+
+        {
+            name: "condition",
+            label: "Only Shown When",
+            cell: "string"
+        },
+
+        {
+            name: "editor",
+            label: "Editor",
+            cell: "string"
+        },
+
+        {
+            name: "editorOpt",
+            label: "Editoropt",
+            cell: "string"
+        }],
+
+        //remember the parent layout. So later on a 'new' or 'modify'
+        //event will have a container region to render the form.
+        initialize: function(options) {
+            this.parentCt = options.layout;
+            this.editable = options.editable;
+            var that = this;
+            _.each(this.columns, function(col) {
+                col.editable = that.editable;
+            });
+        },
+
+        //Add a backgrid.js grid into the body 
+        onRender: function() {
+            this.grid = new Backgrid.Grid({
+                columns: this.columns,
+                collection: this.collection
+            });
+
+            this.ui.body.html(this.grid.render().el);
+            this.collection.fetch();
+        },
+
+        //datagrid actions.
+        events: {
+
+        },
+
+    });
+
+
+    /**
+     * **View.AdminLayout**
+     *
+     * Basic Backbone.Marionette.Layout (basically an ItemView with region markers.) to
+     * show a datagrid and a form/property grid stacked vertically. This view is mainly
+     * there to respond to user's admin menu selection event.
+     *
+     * @class Application.Field.View.AdminLayout
+     */
+    module.View.AdminLayout = Backbone.Marionette.Layout.extend({
+
+        template: '#custom-tpl-module-layout',
+
+        regions: {
+            list: '.list-view-region',
+            detail: '.details-view-region'
+        },
+
+        onRender: function() {
+            this.list.show(new module.View.DataGrid({
+                collection: module.collection,
+                layout: this,
+                editable: false //in-place edit default off.
+            }));
+        }
+    });
+
+
+    /**
+     * **View.EditorLayout**
+     *
+     * This is similar to AdminLayout but only using a different tpl to make datagrid
+     * and form slide together thus fit into a parent form.
+     *
+     * @class Application.Field.View.EditorLayout
+     */
+    module.View.EditorLayout = Backbone.Marionette.Layout.extend({
+        template: '#custom-tpl-module-layout'
+    });
+
+
 
 
 })(Application);

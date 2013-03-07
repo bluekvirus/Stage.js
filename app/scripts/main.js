@@ -42,6 +42,7 @@ jQuery(document).ready(function($) {
 	Application.start();
 
 	//a little test here.
-	Application.content.show(new Application.Field.View.Form({model:new Application.Field.Model()}));
+	//Application.content.show(new Application.Field.View.Form({model:new Application.Field.Model()}));
+	Application.content.show(new Application.Field.View.AdminLayout());
 
 });
