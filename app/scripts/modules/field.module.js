@@ -22,7 +22,7 @@
  * @author Tim.Liu
  * @updated 
  * 
- * @generated on Thu Mar 07 2013 21:11:48 GMT+0800 (CST) 
+ * @generated on Fri Mar 08 2013 17:11:49 GMT+0800 (中国标准时间) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
@@ -121,6 +121,13 @@
             return response.payload; //to use mers on server.
         },
 
+        //register sync event::
+        initialize: function() {
+            this.on('error', function() {
+                error('Server Error', 'API::collection::Field');
+            })
+        }
+
     });
 
     /**
@@ -156,6 +163,8 @@
     module.View.Form = Backbone.Marionette.ItemView.extend({
 
         template: '#basic-form-view-wrap-tpl',
+
+        className: 'basic-form-view-wrap',
 
         fieldsets: [{
             legend: "General",
@@ -195,14 +204,25 @@
 
         events: {
             'click button[action="submit"]': 'submitForm',
+            'click button[action="cancel"]': 'closeForm',
         },
 
         //event listeners:
         submitForm: function(e) {
             var error = this.form.validate();
             if (error) {
+                //output error and scroll to first error field.
                 console.log(error);
+                for (var key in error) {
+                    $('html').animate({
+                        scrollTop: this.form.$el.find('.invalid[name=' + key + ']').offset().top - 30
+                    },
+
+                    400);
+                    break;
+                }
             } else {
+                var that = this;
                 this.model.save(this.form.getValue(), {
                     error: function(model, res) {
                         var err = $.parseJSON(res.responseText).error;
@@ -210,8 +230,27 @@
                         //[optional]TODO::highlight error back to form fields
                     },
 
+                    success: function(model, res) {
+                        if (res.payload) {
+                            module.collection.fetch();
+
+                            //ToDo::If it has no child grid 'open' as editor we can close it.
+                            //otherwise we need to keep the form open and let it edit the 
+                            //grid member, when the user is done, submit will close the form
+                            //if the user didn't modify any other fields on it. Else it would
+                            //still need to upload the form value (changed only) and most importantly
+                            //trigger the 'update' event instead of 'create' again.
+
+                            //that.close();
+
+                        } else error('Server Error', 'Not yet saved...');
+                    }
                 }); //save the model to server
             }
+        },
+
+        closeForm: function(e) {
+            this.close();
         }
 
 
@@ -231,6 +270,8 @@
     module.View.DataGrid = Backbone.Marionette.ItemView.extend({
 
         template: '#basic-datagrid-view-wrap-tpl',
+
+        className: 'basic-datagrid-view-wrap',
 
         ui: {
             header: '.datagrid-header-container',
@@ -305,7 +346,13 @@
 
         //datagrid actions.
         events: {
+            'click [action=new]': 'newRecord',
+        },
 
+        newRecord: function() {
+            this.parentCt.detail.show(new module.View.Form({
+                model: new module.Model()
+            }));
         },
 
     });
@@ -323,6 +370,8 @@
     module.View.AdminLayout = Backbone.Marionette.Layout.extend({
 
         template: '#custom-tpl-module-layout',
+
+        className: 'module-admin-layout-wrap',
 
         regions: {
             list: '.list-view-region',

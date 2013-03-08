@@ -37,12 +37,14 @@ jQuery(document).ready(function($) {
 		footer: '.application-container .footer',
 
 	});
+
+	//Application init
+	
 	
 	//Kick start the application
 	Application.start();
 
 	//a little test here.
-	//Application.content.show(new Application.Field.View.Form({model:new Application.Field.Model()}));
 	Application.content.show(new Application.Field.View.AdminLayout());
 
 });
