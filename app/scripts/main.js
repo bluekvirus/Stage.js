@@ -13,13 +13,6 @@
  * @author Tim.Liu
  */
 
-//Create the global Application var for modules to be registered on.
-window.Application = new Backbone.Marionette.Application();
-//Override to use Handlebars templating engine with Backbone.Marionette
-Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTemplate) {
-  return Handlebars.compile(rawTemplate);
-};
-
 
 //When page is ready...
 

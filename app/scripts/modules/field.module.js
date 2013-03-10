@@ -22,7 +22,7 @@
  * @author Tim.Liu
  * @updated 
  * 
- * @generated on Fri Mar 08 2013 17:11:49 GMT+0800 (中国标准时间) 
+ * @generated on Sat Mar 09 2013 23:01:09 GMT+0800 (CST) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
@@ -124,7 +124,7 @@
         //register sync event::
         initialize: function() {
             this.on('error', function() {
-                error('Server Error', 'API::collection::Field');
+                Application.error('Server Error', 'API::collection::Field');
             })
         }
 
@@ -227,6 +227,10 @@
                     error: function(model, res) {
                         var err = $.parseJSON(res.responseText).error;
                         console.log('!Possible Hack!', err);
+                        if (err.db) {
+                            //server db error::
+                            Application.error('Server DB Error', err.db);
+                        }
                         //[optional]TODO::highlight error back to form fields
                     },
 
@@ -240,10 +244,8 @@
                             //if the user didn't modify any other fields on it. Else it would
                             //still need to upload the form value (changed only) and most importantly
                             //trigger the 'update' event instead of 'create' again.
-
                             //that.close();
-
-                        } else error('Server Error', 'Not yet saved...');
+                        } else Application.error('Server Error', 'Not yet saved...');
                     }
                 }); //save the model to server
             }

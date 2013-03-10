@@ -8,6 +8,13 @@
 
 (function(){
 
+	//Create the global Application var for modules to be registered on.
+	window.Application = new Backbone.Marionette.Application();
+	//Override to use Handlebars templating engine with Backbone.Marionette
+	Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTemplate) {
+	  return Handlebars.compile(rawTemplate);
+	};	
+
 	//Message & Notifycations:
 	var console = console || {log:function(){},error:function(){}};
 
@@ -19,7 +26,7 @@
 		 * @arguments Error Type
 		 * @arguments Messages ,...,
 		 */
-		window.error = function(){
+		Application.error = function(){
 			noty({
 				text: '<span class="label label-inverse">'+arguments[0]+'</span> '+_.toArray(arguments).slice(1).join(' '),
 				type: 'error',
