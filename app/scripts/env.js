@@ -34,6 +34,31 @@
 			});
 		};
 
+		/**
+		 * Prompt the user is they are sure about this...
+		 */
+		Application.prompt = function(question, type, okCb, cancelCb){
+
+			//TODO:: Mask/Disable user interactions first.
+
+			noty({
+				text: question,
+				type: type,
+				layout: 'center',
+				buttons: [
+					{addClass: 'btn btn-primary', text: 'Yes', onClick:function($noty){
+						$noty.close();
+						okCb();
+					}},
+					{addClass: 'btn', text: 'Cancel', onClick:function($noty){
+						$noty.close();
+						if(cancelCb)
+							cancelCb();
+					}}
+				]
+			});
+		}
+
 
 	}
 

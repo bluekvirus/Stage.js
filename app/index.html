@@ -55,6 +55,14 @@
                 <div class="details-view-region"></div>
             </div>
         </script>
+        <script type="text/tpl" id="custom-tpl-grid-actioncell">
+            <div>
+                <span class="label label-warning" action="edit" target="{{_id}}">Edit</span>
+                <span class="label label-important" action="delete" target="{{_id}}">Delete</span>
+            </div>
+        </script>        
+
+
 
     <!-- build:js scripts/lib.js -->
         <script type="text/javascript" src="components/underscore/underscore.js"></script>

@@ -22,7 +22,7 @@
  * @author Tim.Liu
  * @updated 
  * 
- * @generated on Sat Mar 09 2013 23:01:09 GMT+0800 (CST) 
+ * @generated on Sun Mar 10 2013 18:45:36 GMT+0800 (CST) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
@@ -146,10 +146,13 @@
      * - Multi/List View - just wrap around single entry view.
      * - Grid View - with controlls and columns.
      * - Form View - another single entry view but editable. [Generated]
+     *
+     * - Extension - all the extension/sub-class/sub-comp goes here.
      * 
      * @type {Backbone.View or Backbone.Marionette.ItemView/CollectionView/CompositeView}
      */
     module.View = {};
+    module.View.Extension = {};
 
     /**
      *
@@ -160,6 +163,7 @@
      *
      * @class Application.Field.View.Form
      */
+    module.View.Extension.Form = {};
     module.View.Form = Backbone.Marionette.ItemView.extend({
 
         template: '#basic-form-view-wrap-tpl',
@@ -269,6 +273,16 @@
      *
      * @class Application.Field.View.DataGrid
      */
+    module.View.Extension.DataGrid = {};
+    module.View.Extension.DataGrid.ActionCell = Backbone.Marionette.ItemView.extend({
+        className: 'action-cell',
+        template: '#custom-tpl-grid-actioncell',
+        initialize: function(options) {
+            this.column = options.column;
+        },
+
+    });
+
     module.View.DataGrid = Backbone.Marionette.ItemView.extend({
 
         template: '#basic-datagrid-view-wrap-tpl',
@@ -322,6 +336,13 @@
             name: "editorOpt",
             label: "Editoropt",
             cell: "string"
+        },
+
+        {
+            name: "_actions_",
+            label: "",
+            sortable: false,
+            cell: module.View.Extension.DataGrid.ActionCell
         }],
 
         //remember the parent layout. So later on a 'new' or 'modify'
@@ -349,6 +370,8 @@
         //datagrid actions.
         events: {
             'click [action=new]': 'newRecord',
+            'click .action-cell span[action=edit]': 'editRecord',
+            'click .action-cell span[action=delete]': 'deleteRecord'
         },
 
         newRecord: function() {
@@ -356,6 +379,34 @@
                 model: new module.Model()
             }));
         },
+
+        editRecord: function(e) {
+            var info = e.currentTarget.attributes;
+            //find target and show form.
+            var m = this.collection.get(info['target'].value);
+            this.parentCt.detail.show(new module.View.Form({
+                model: m
+            }));
+        },
+
+        deleteRecord: function(e) {
+            var info = e.currentTarget.attributes;
+            //find target and ask user
+            var m = this.collection.get(info['target'].value);
+            //promp user [TBI]
+            var that = this;
+            Application.prompt('Are you sure?', 'error', function() {
+                m.destroy({
+                    success: function(model, resp) {
+                        that.collection.fetch(); //refresh
+                    },
+
+                    error: function(model, resp) {
+                        Application.error('Server Error', 'Can NOT remove this record...');
+                    }
+                });
+            })
+        }
 
     });
 
