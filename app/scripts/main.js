@@ -38,6 +38,6 @@ jQuery(document).ready(function($) {
 	Application.start();
 
 	//a little test here.
-	Application.content.show(new Application.Field.View.AdminLayout());
+	Application.content.show(new Application.Entity.View.AdminLayout());
 
 });

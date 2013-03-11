@@ -1,8 +1,8 @@
 /**
- * Generated through `models/field.json` for Backbone module **Field**
+ * Generated through `models/entity.json` for Backbone module **Entity**
  *
  * 
- * 
+ * Mother of All Models
  *
  *
  * **General Note**
@@ -18,18 +18,18 @@
  * 				   collection.fetch() to populate the grid data upon rendering.
  * 
  * 
- * @module Field
- * @author Tim.Liu
+ * @module Entity
+ * @author Tim.Liu (zhiyuanliu@fortinet.com)
  * @updated 
  * 
- * @generated on Mon Mar 11 2013 17:58:07 GMT+0800 (中国标准时间) 
+ * @generated on Mon Mar 11 2013 17:58:04 GMT+0800 (中国标准时间) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
 
 (function(app) {
 
-    var module = app.module("Field");
+    var module = app.module("Entity");
 
     /**
      *
@@ -38,7 +38,7 @@
      * We use Backbone.RelationalModel instead of the original Backbone.Model
      * for better has-many relation management.
      * 
-     * @class Application.Field.Model
+     * @class Application.Entity.Model
      */
     module.Model = Backbone.RelationalModel.extend({
 
@@ -46,18 +46,29 @@
         idAttribute: '_id',
 
         //relations:
-        relations: [],
+        relations: [{
+            type: "HasMany",
+            key: "fields",
+            relatedModel: "Application.Field.Model",
+            collectionType: "Application.Field.Collection",
+            collectionOptions: function(model) {
+                return {
+                    url: '/api/' + that.name + '/' + model.id + '/' + f.memberModel
+                };
+            },
+
+            reverseRelation: {
+                key: "belongsTo"
+            }
+        },
+
+        ],
 
         //validation:
         validation: {
 
             name: {
                 required: true,
-                rangeLength: [1, 32]
-            },
-
-            label: {
-                required: false,
                 rangeLength: [1, 32]
             },
 
@@ -68,38 +79,36 @@
 
             name: {
                 type: "Text",
-                title: "Field Name"
+                title: "Model"
             },
 
-            label: {
-                type: "Text"
+            description: {
+                type: "TextArea"
             },
 
             type: {
                 type: "Select",
-                options: ["String", "Number", "Date", "Buffer", "Boolean", "Mixed", "ObjectId", "Array"]
+                options: [{
+                    val: "table",
+                    label: "Table"
+                },
+
+                {
+                    val: "complex",
+                    label: "Complex"
+                }]
             },
 
-            condition: {
-                type: "List",
-                title: "Only Shown When",
-                itemType: "Text"
-            },
-
-            editor: {
-                type: "Select",
-                options: ["Text", "Number", "Password", "TextArea", "Checkbox", "Checkboxes", "Hidden", "Select", "Radio", "Object", "NestedModel", "Date", "DateTime", "List", "CUSTOM_GRID", "CUSTOM_PICKER", "File"]
-            },
-
-            editorOpt: {
-                type: "List",
-                itemType: "TextArea"
+            fields: {
+                type: "CUSTOM_GRID",
+                header: ["name", "label", "type", "editor"],
+                moduleRef: "Field"
             },
 
         },
 
         initialize: function(data, options) {
-            this.urlRoot = (options && (options.urlRoot || options.url)) || '/api/Field';
+            this.urlRoot = (options && (options.urlRoot || options.url)) || '/api/Entity';
         }
 
     });
@@ -112,7 +121,7 @@
      * Backbone.PageableCollection is a strict superset of Backbone.Collection
      * We instead use the Backbone.PageableCollection for better paginate ability.
      *
-     * @class Application.Field.Collection
+     * @class Application.Entity.Collection
      */
     module.Collection = Backbone.PageableCollection.extend({
 
@@ -125,9 +134,9 @@
         //register sync event::
         initialize: function(data, options) {
             //support for Backbone.Relational - collectionOptions
-            this.url = (options && options.url) || '/api/Field';
+            this.url = (options && options.url) || '/api/Entity';
             this.on('error', function() {
-                Application.error('Server Error', 'API::collection::Field');
+                Application.error('Server Error', 'API::collection::Entity');
             })
         }
 
@@ -135,10 +144,10 @@
 
     /**
      * **collection** 
-     * An instance of Application.Field.Collection
+     * An instance of Application.Entity.Collection
      * This collection is not nested in other models.
      * 
-     * @type Application.Field.Collection
+     * @type Application.Entity.Collection
      */
     module.collection = new module.Collection();
 
@@ -165,7 +174,7 @@
      * Backbone.Marionette.ItemView is used to wrap up the form view and 
      * related interactions. We do this in the onRender callback.
      *
-     * @class Application.Field.View.Form
+     * @class Application.Entity.View.Form
      */
     module.View.Extension.Form = {};
     module.View.Form = Backbone.Marionette.ItemView.extend({
@@ -174,23 +183,9 @@
 
         className: 'basic-form-view-wrap',
 
-        fieldsets: [{
-            legend: "General",
-            fields: ["name"],
-            tpl: "custom-tpl-Field-form-fieldset-General"
-        },
-
-        {
-            legend: "Form",
-            fields: ["label", "condition", "editor", "editorOpt"],
-            tpl: "custom-tpl-Field-form-fieldset-Form"
-        },
-
-        {
-            legend: "Database",
-            fields: ["type"],
-            tpl: "custom-tpl-Field-form-fieldset-Database"
-        }],
+        fieldsets: [
+            ["name", "description", "type", "fields"]
+        ],
 
         ui: {
             header: '.form-header-container',
@@ -277,7 +272,7 @@
      * Backbone.Marionette.ItemView is used to wrap up the datagrid view and 
      * related interactions. We do this in the onRender callback.
      *
-     * @class Application.Field.View.DataGrid
+     * @class Application.Entity.View.DataGrid
      */
     module.View.Extension.DataGrid = {};
     module.View.Extension.DataGrid.ActionCell = Backbone.Marionette.ItemView.extend({
@@ -310,37 +305,13 @@
 
         {
             name: "name",
-            label: "Field Name",
-            cell: "string"
-        },
-
-        {
-            name: "label",
-            label: "Label",
+            label: "Model",
             cell: "string"
         },
 
         {
             name: "type",
             label: "Type",
-            cell: "string"
-        },
-
-        {
-            name: "condition",
-            label: "Only Shown When",
-            cell: "string"
-        },
-
-        {
-            name: "editor",
-            label: "Editor",
-            cell: "string"
-        },
-
-        {
-            name: "editorOpt",
-            label: "Editoropt",
             cell: "string"
         },
 
@@ -424,7 +395,7 @@
      * show a datagrid and a form/property grid stacked vertically. This view is mainly
      * there to respond to user's admin menu selection event.
      *
-     * @class Application.Field.View.AdminLayout
+     * @class Application.Entity.View.AdminLayout
      */
     module.View.AdminLayout = Backbone.Marionette.Layout.extend({
 
@@ -453,7 +424,7 @@
      * This is similar to AdminLayout but only using a different tpl to make datagrid
      * and form slide together thus fit into a parent form.
      *
-     * @class Application.Field.View.EditorLayout
+     * @class Application.Entity.View.EditorLayout
      */
     module.View.EditorLayout = Backbone.Marionette.Layout.extend({
         template: '#custom-tpl-module-layout',

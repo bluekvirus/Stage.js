@@ -84,7 +84,8 @@
       <div class="bbf-list-modal">\
         {{summary}}\
       </div>\
-    '
+    ',
+
   }, {
   
     //CLASSNAMES

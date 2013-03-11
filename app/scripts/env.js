@@ -8,15 +8,106 @@
 
 (function(){
 
+	/**
+	 * ============================
+	 * Application & Global Events:
+	 * ============================
+	 */
 	//Create the global Application var for modules to be registered on.
 	window.Application = new Backbone.Marionette.Application();
+	
+
+
+	/**
+	 * =========================
+	 * Overriden and Extensions:
+	 * =========================
+	 */
 	//Override to use Handlebars templating engine with Backbone.Marionette
 	Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTemplate) {
 	  return Handlebars.compile(rawTemplate);
-	};	
+	};
 
-	//Message & Notifycations:
-	var console = console || {log:function(){},error:function(){}};
+	//New Backbone.Form editor 'CUSTOM_GRID'
+	Backbone.Form.editors['CUSTOM_GRID'] = Backbone.Form.editors.Base.extend({
+
+	    className: 'custom-form-editor-datagrid',
+
+	    events: {
+	        'change': function() {
+	            // The 'change' event should be triggered whenever something happens
+	            // that affects the result of `this.getValue()`.
+	            this.trigger('change', this);
+	        },
+	        'focus': function() {
+	            // The 'focus' event should be triggered whenever an input within
+	            // this editor becomes the `document.activeElement`.
+	            this.trigger('focus', this);
+	            // This call automatically sets `this.hasFocus` to `true`.
+	        },
+	        'blur': function() {
+	            // The 'blur' event should be triggered whenever an input within
+	            // this editor stops being the `document.activeElement`.
+	            this.trigger('blur', this);
+	            // This call automatically sets `this.hasFocus` to `false`.
+	        }
+	    },
+
+	    initialize: function(options) {
+	        // Call parent constructor
+	        Backbone.Form.editors.Base.prototype.initialize.call(this, options);
+
+	        // Custom setup code.
+	        // Need to delegate the EditorLayout(Datagrid) view to the module later in render.
+	        this.moduleRef = Application[options.schema.moduleRef];
+
+	    },
+
+	    render: function() {
+	        this.setValue(this.value);
+
+	        //delegating the datagrid display
+	        this.$el.html(new this.moduleRef.View.EditorLayout({
+	        	collection: this.value //should be a collection passed by Backbone.Relationals
+	        }).render().el)
+
+	        return this;
+	    },
+
+	    getValue: function() {
+	        return this.$el.val();
+	    },
+
+	    setValue: function(value) {
+	        this.$el.val(value);
+	    },
+
+	    focus: function() {
+	        if (this.hasFocus) return;
+
+	        // This method call should result in an input within this edior
+	        // becoming the `document.activeElement`.
+	        // This, in turn, should result in this editor's `focus` event
+	        // being triggered, setting `this.hasFocus` to `true`.
+	        // See above for more detail.
+	        this.$el.focus();
+	    },
+
+	    blur: function() {
+	        if (!this.hasFocus) return;
+
+	        this.$el.blur();
+	    }
+	});
+
+
+
+	/**
+	 * ========================
+	 * Message & Notifycations:
+	 * ========================
+	 */
+	console = window.console || {log:function(){},error:function(){}};
 
 	if(noty){
 		if(window.error) console.log('!!WARNING::error notification function conflict!!');
@@ -62,6 +153,12 @@
 
 	}
 
-	//RESTful data interfacing
+
+
+	/**
+	 * =========================
+	 * RESTful data interfacing:
+	 * =========================
+	 */
 
 })();
