@@ -22,7 +22,7 @@
  * @author Tim.Liu (zhiyuanliu@fortinet.com)
  * @updated 
  * 
- * @generated on Mon Mar 11 2013 17:58:04 GMT+0800 (中国标准时间) 
+ * @generated on Mon Mar 11 2013 19:06:53 GMT+0800 (CST) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
@@ -53,7 +53,7 @@
             collectionType: "Application.Field.Collection",
             collectionOptions: function(model) {
                 return {
-                    url: '/api/' + that.name + '/' + model.id + '/' + f.memberModel
+                    url: '/api/Entity/' + model.id + '/Field'
                 };
             },
 
@@ -247,9 +247,7 @@
                             //if the user didn't modify any other fields on it. Else it would
                             //still need to upload the form value (changed only) and most importantly
                             //trigger the 'update' event instead of 'create' again.
-
                             //that.close();
-
                         } else Application.error('Server Error', 'Not yet saved...');
                     }
                 }); //save the model to server
@@ -441,7 +439,7 @@
         },
 
         onRender: function() {
-            this.front.show(new module.View.DataGrid({
+            this.list.show(new module.View.DataGrid({
                 collection: this.collectionRef,
                 layout: this,
                 editable: false //in-place edit default off.
