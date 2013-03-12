@@ -22,7 +22,7 @@
  * @author Tim.Liu (zhiyuanliu@fortinet.com)
  * @updated 
  * 
- * @generated on Mon Mar 11 2013 19:06:53 GMT+0800 (CST) 
+ * @generated on Tue Mar 12 2013 18:24:03 GMT+0800 (中国标准时间) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
@@ -53,7 +53,7 @@
             collectionType: "Application.Field.Collection",
             collectionOptions: function(model) {
                 return {
-                    url: '/api/Entity/' + model.id + '/Field'
+                    url: '/api/Entity/' + model.id + '/fields'
                 };
             },
 
@@ -193,6 +193,12 @@
             ctrlbar: '.form-control-bar',
         },
 
+        initialize: function(options) {
+            //This is usually a datagrid (view object).
+            //We are delegating the create/update action to it.
+            this.recordManager = options.recordManager;
+        },
+
         //Might create zombie views...let's see.
         onRender: function() {
             this.form = new Backbone.Form({
@@ -206,12 +212,13 @@
         },
 
         events: {
-            'click button[action="submit"]': 'submitForm',
-            'click button[action="cancel"]': 'closeForm',
+            'click .btn[action="submit"]': 'submitForm',
+            'click .btn[action="cancel"]': 'closeForm',
         },
 
         //event listeners:
         submitForm: function(e) {
+            e.stopPropagation();
             var error = this.form.validate();
             if (error) {
                 //output error and scroll to first error field.
@@ -225,36 +232,14 @@
                     break;
                 }
             } else {
-                var that = this;
-                this.model.save(this.form.getValue(), {
-                    error: function(model, res) {
-                        var err = $.parseJSON(res.responseText).error;
-                        console.log('!Possible Hack!', err);
-                        if (err.db) {
-                            //server db error::
-                            Application.error('Server DB Error', err.db);
-                        }
-                        //[optional]TODO::highlight error back to form fields
-                    },
 
-                    success: function(model, res) {
-                        if (res.payload) {
-                            module.collection.fetch();
-
-                            //ToDo::If it has no child grid 'open' as editor we can close it.
-                            //otherwise we need to keep the form open and let it edit the 
-                            //grid member, when the user is done, submit will close the form
-                            //if the user didn't modify any other fields on it. Else it would
-                            //still need to upload the form value (changed only) and most importantly
-                            //trigger the 'update' event instead of 'create' again.
-                            //that.close();
-                        } else Application.error('Server Error', 'Not yet saved...');
-                    }
-                }); //save the model to server
+                //delegating the save/upate action to the recordManager.
+                this.recordManager.$el.trigger('event_SaveRecord', this);
             }
         },
 
         closeForm: function(e) {
+            e.stopPropagation();
             this.close();
         }
 
@@ -329,6 +314,7 @@
             _.each(this.columns, function(col) {
                 col.editable = that.editable;
             });
+
         },
 
         //Add a backgrid.js grid into the body 
@@ -340,31 +326,72 @@
 
             this.ui.body.html(this.grid.render().el);
             this.collection.fetch();
+
+            //Do **NOT** register any event listeners here.
+            //It might got registered again and again. 
         },
 
-        //datagrid actions.
+        //datagrid actions DOM-events.
         events: {
-            'click [action=new]': 'newRecord',
-            'click .action-cell span[action=edit]': 'editRecord',
-            'click .action-cell span[action=delete]': 'deleteRecord'
+            'click .btn[action=new]': 'showForm',
+            'click .action-cell span[action=edit]': 'showForm',
+            'click .action-cell span[action=delete]': 'deleteRecord',
+            'event_SaveRecord': 'saveRecord'
         },
 
-        newRecord: function() {
-            this.parentCt.detail.show(new module.View.Form({
-                model: new module.Model()
-            }));
-        },
+        //DOM event listeners:
 
-        editRecord: function(e) {
+        showForm: function(e) {
+            e.stopPropagation();
             var info = e.currentTarget.attributes;
-            //find target and show form.
-            var m = this.collection.get(info['target'].value);
+
+            if (info['target']) {
+                //edit mode.
+                var m = this.collection.get(info['target'].value);
+            } else //create mode.
+            var m = new module.Model();
+
             this.parentCt.detail.show(new module.View.Form({
-                model: m
+                model: m,
+                recordManager: this
             }));
+        },
+
+        saveRecord: function(e, sheet) {
+            e.stopPropagation();
+            //1.if this grid is used as top-level record holder:
+            var that = this;
+            if (!this.parentCt.collectionRef) {
+                sheet.model.save(sheet.form.getValue(), {
+                    error: function(model, res) {
+                        var err = $.parseJSON(res.responseText).error;
+                        console.log('!Possible Hack!', err);
+                        if (err.db) {
+                            //server db error::
+                            Application.error('Server DB Error', err.db);
+                        }
+                        //[optional]TODO::highlight error back to form fields
+                    },
+
+                    success: function(model, res) {
+                        if (res.payload) {
+                            that.collection.fetch();
+                            sheet.close();
+                        } else Application.error('Server Error', 'Not yet saved...');
+                    }
+                }); //save the model to server
+            } else {
+                //2.else if this grid is used as an editor for sub-field:
+                //add or update the model into the referenced collection:
+                this.collection.add(sheet.form.getValue(), {
+                    merge: true
+                });
+                sheet.close();
+            }
         },
 
         deleteRecord: function(e) {
+            e.stopPropagation();
             var info = e.currentTarget.attributes;
             //find target and ask user
             var m = this.collection.get(info['target'].value);
@@ -381,7 +408,7 @@
                     }
                 });
             })
-        }
+        },
 
     });
 

@@ -10,8 +10,8 @@ Template.extend(
 		'<div class="form-header-container"></div>',
 		'<div class="form-body-container"></div>',
 		'<div class="form-control-bar">',
-			'<button class="btn btn-primary" type="button" action="submit">Submit</button> ',
-			'<button class="btn" type="button" action="cancel">Cancel</button>',
+			'<a class="btn btn-primary" action="submit">Submit</a> ',
+			'<a class="btn" action="cancel">Cancel</a>',
 		'</div>'
 	]
 );

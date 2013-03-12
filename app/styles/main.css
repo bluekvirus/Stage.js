@@ -49,6 +49,9 @@
 
 /* End of imports */
 
+/**
+ * Form styles::;
+ */
 .form-body-container {
   padding: 10px 5px 10px 5px;
   border-top: 1px solid #eee;
@@ -77,6 +80,9 @@ legend > span {
   padding: 5px 20px;
 }
 
+/**
+ * Datagrid styles::;
+ */
 .boolean-cell input[type="checkbox"] {
   margin: 0;
 } 
@@ -91,4 +97,8 @@ legend > span {
 
 .action-cell span[action]:hover {
   box-shadow: 1px 1px 3px #1a1a1a;
+}
+
+.edit-later-info {
+  margin-right: 20px;
 }

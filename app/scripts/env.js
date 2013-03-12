@@ -64,22 +64,27 @@
 	    },
 
 	    render: function() {
-	        this.setValue(this.value);
+	        //this.setValue(this.value);
 
+	        if(this.model.id){
 	        //delegating the datagrid display
-	        this.$el.html(new this.moduleRef.View.EditorLayout({
-	        	collection: this.value //should be a collection passed by Backbone.Relationals
-	        }).render().el)
+		        this.$el.html(new this.moduleRef.View.EditorLayout({
+		        	collection: this.value //should be a collection passed by Backbone.Relationals
+		        }).render().el)
+		    }else {
+		    	this.$el.addClass('alert alert-info edit-later-info');
+		    	this.$el.html("Once you've created this record, you can come back to edit this field.");
+		    }
 
 	        return this;
 	    },
 
 	    getValue: function() {
-	        return this.$el.val();
+	    	return this.value; //return the collection.
 	    },
 
 	    setValue: function(value) {
-	        this.$el.val(value);
+	        //this.$el.val(value);
 	    },
 
 	    focus: function() {
@@ -126,7 +131,7 @@
 		};
 
 		/**
-		 * Prompt the user is they are sure about this...
+		 * Prompt the user if they are sure about this...
 		 */
 		Application.prompt = function(question, type, okCb, cancelCb){
 
