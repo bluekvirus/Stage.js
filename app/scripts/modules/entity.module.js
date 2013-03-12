@@ -22,7 +22,7 @@
  * @author Tim.Liu (zhiyuanliu@fortinet.com)
  * @updated 
  * 
- * @generated on Tue Mar 12 2013 18:24:03 GMT+0800 (中国标准时间) 
+ * @generated on Tue Mar 12 2013 22:37:14 GMT+0800 (CST) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
@@ -55,10 +55,6 @@
                 return {
                     url: '/api/Entity/' + model.id + '/fields'
                 };
-            },
-
-            reverseRelation: {
-                key: "belongsTo"
             }
         },
 
@@ -234,6 +230,7 @@
             } else {
 
                 //delegating the save/upate action to the recordManager.
+                this.model.set(this.form.getValue());
                 this.recordManager.$el.trigger('event_SaveRecord', this);
             }
         },
@@ -241,6 +238,7 @@
         closeForm: function(e) {
             e.stopPropagation();
             this.close();
+            this.recordManager.$el.trigger('event_RefreshRecords');
         }
 
 
@@ -265,6 +263,10 @@
             this.column = options.column;
         },
 
+        //patch-in the id property for action locator.
+        onRender: function() {
+            this.$el.find('span[action]').attr('target', this.model.id || this.model.cid);
+        }
     });
 
     module.View.DataGrid = Backbone.Marionette.ItemView.extend({
@@ -325,10 +327,10 @@
             });
 
             this.ui.body.html(this.grid.render().el);
-            this.collection.fetch();
+            if (!this.parentCt.collectionRef) this.collection.fetch();
 
             //Do **NOT** register any event listeners here.
-            //It might got registered again and again. 
+            //It might get registered again and again. 
         },
 
         //datagrid actions DOM-events.
@@ -336,11 +338,11 @@
             'click .btn[action=new]': 'showForm',
             'click .action-cell span[action=edit]': 'showForm',
             'click .action-cell span[action=delete]': 'deleteRecord',
-            'event_SaveRecord': 'saveRecord'
+            'event_SaveRecord': 'saveRecord',
+            'event_RefreshRecords': 'refreshRecords',
         },
 
         //DOM event listeners:
-
         showForm: function(e) {
             e.stopPropagation();
             var info = e.currentTarget.attributes;
@@ -362,7 +364,9 @@
             //1.if this grid is used as top-level record holder:
             var that = this;
             if (!this.parentCt.collectionRef) {
-                sheet.model.save(sheet.form.getValue(), {
+                sheet.model.save({},
+
+                {
                     error: function(model, res) {
                         var err = $.parseJSON(res.responseText).error;
                         console.log('!Possible Hack!', err);
@@ -383,7 +387,7 @@
             } else {
                 //2.else if this grid is used as an editor for sub-field:
                 //add or update the model into the referenced collection:
-                this.collection.add(sheet.form.getValue(), {
+                this.collection.add(sheet.model, {
                     merge: true
                 });
                 sheet.close();
@@ -398,7 +402,7 @@
             //promp user [TBI]
             var that = this;
             Application.prompt('Are you sure?', 'error', function() {
-                m.destroy({
+                if (!that.parentCt.collectionRef) m.destroy({
                     success: function(model, resp) {
                         that.collection.fetch(); //refresh
                     },
@@ -407,8 +411,14 @@
                         Application.error('Server Error', 'Can NOT remove this record...');
                     }
                 });
+                else that.collection.remove(m);
             })
         },
+
+        refreshRecords: function(e) {
+            e.stopPropagation();
+            if (!this.parentCt.collectionRef) this.collection.fetch();
+        }
 
     });
 
@@ -462,6 +472,8 @@
         },
 
         initialize: function(options) {
+            //This is also used as a flag by datagrid to
+            //check if it is working in 'editor-mode'
             this.collectionRef = options.collection;
         },
 
