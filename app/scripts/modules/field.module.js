@@ -22,7 +22,7 @@
  * @author Tim.Liu
  * @updated 
  * 
- * @generated on Wed Mar 13 2013 16:40:55 GMT+0800 (中国标准时间) 
+ * @generated on Thu Mar 14 2013 00:02:10 GMT+0800 (CST) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
@@ -195,28 +195,42 @@
         };
 
         this.f = function(field) {
-                if (formCt.form.fields[field].$el.css('display') !== 'none') return formCt.form.getValue(field);
-                return undefined;
-            };
+            if (formCt.form.fields[field].$el.css('display') !== 'none') return formCt.form.getValue(field);
+            return undefined;
+        };
 
         this.fin = function(field, values) {
-                if (formCt.form.fields[field].$el.css('display') !== 'none') return _.contains(values, formCt.form.getValue(field));
-                return undefined;
-            };
+            if (formCt.form.fields[field].$el.css('display') !== 'none') return _.contains(values, formCt.form.getValue(field));
+            return undefined;
+        };
 
-        //tell the fields that i control to check themselves.
-        this.notify = function(fieldname) {
-            if (this.changeNotifyMap[fieldname]) {
-                _.each(this.changeNotifyMap[fieldname], this.check, this);
+        //1st round checking, when the form is first displayed.
+        //[unconditional-fields] -> [level-1 conditional fields] -> [level 2]
+        //till the number of fields to be checked is reduced to 0.
+        this.initRound = function() {
+            var queue = [],
+                that = this;
+            _.each(formCt.form.fields, function(f) {
+                if (!that.conditions[f.key] && that.changeNotifyMap[f.key]) {
+                    queue = _.union(queue, that.changeNotifyMap[f.key]);
+                }
+            });
+
+            while (queue.length > 0) {
+                var fName = queue.pop();
+                this.check(fName);
+                if (this.changeNotifyMap[fName]) queue = _.union(queue, this.changeNotifyMap[fName]);
             }
+
         };
 
         //see if this field can show itself.
-        this.check = function(fieldname){
-            if(this.conditions[fieldname](this.f))
-                formCt.form.fields[fieldname].$el.show();
-            else
-                formCt.form.fields[fieldname].$el.hide();
+        //Only those that appears in the changeNotifyMap will
+        //get checked, so there is no this.conditions[f] === undefined
+        //check...since it is not needed.
+        this.check = function(fieldname) {
+            if (this.conditions[fieldname](this.f)) formCt.form.fields[fieldname].$el.show();
+            else formCt.form.fields[fieldname].$el.hide();
         };
 
     };
@@ -261,10 +275,7 @@
             Backbone.Validation.bind(this.form);
 
             //field show/hide according to pre-set conditions:
-            var that = this;
-            _.each(this.form.fields, function(f) {
-                that.displayManager.notify(f.key);
-            })
+            this.displayManager.initRound();
         },
         events: {
             'click .btn[action="submit"]': 'submitForm',
@@ -272,13 +283,12 @@
             'change': 'onFieldValueChange',
         },
         //event listeners:
-        onFieldValueChange: function(e) {
+        onFieldValueChange: function(e) { //using a loop-implemented recursive way to check affected fields.
             var queue = _.clone(this.displayManager.changeNotifyMap[e.target.name]);
-            while(queue && queue.length > 0){
+            while (queue && queue.length > 0) {
                 var fieldName = queue.pop();
                 this.displayManager.check(fieldName);
-                if(this.displayManager.changeNotifyMap[fieldName])
-                    queue = queue.concat(_.clone(this.displayManager.changeNotifyMap[fieldName]));
+                if (this.displayManager.changeNotifyMap[fieldName]) queue = queue.concat(this.displayManager.changeNotifyMap[fieldName]);
             }
         },
         submitForm: function(e) {
@@ -424,7 +434,6 @@
             'event_RefreshRecords': 'refreshRecords',
         },
         //DOM event listeners:
-
         showForm: function(e) {
             e.stopPropagation();
             var info = e.currentTarget.attributes;
