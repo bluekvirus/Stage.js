@@ -22,13 +22,12 @@
  * @author Tim.Liu
  * @updated 
  * 
- * @generated on Tue Mar 12 2013 22:37:11 GMT+0800 (CST) 
+ * @generated on Wed Mar 13 2013 16:40:55 GMT+0800 (中国标准时间) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
 
 (function(app) {
-
     var module = app.module("Field");
 
     /**
@@ -40,64 +39,73 @@
      * 
      * @class Application.Field.Model
      */
-    module.Model = Backbone.RelationalModel.extend({
-
-        //the id attribute to use
+    module.Model = Backbone.RelationalModel.extend({ //the id attribute to use
         idAttribute: '_id',
 
         //relations:
         relations: [],
-
         //validation:
         validation: {
-
             name: {
                 required: true,
                 rangeLength: [1, 32]
             },
-
             label: {
                 required: false,
                 rangeLength: [1, 32]
             },
-
         },
-
         //form:
         schema: {
-
             name: {
                 type: "Text",
                 title: "Field Name"
             },
-
             label: {
                 type: "Text"
             },
-
             type: {
                 type: "Select",
                 options: ["String", "Number", "Date", "Buffer", "Boolean", "Mixed", "ObjectId", "Array"]
             },
-
+            tom: {
+                type: "Radio",
+                title: "Type or Model",
+                options: [{
+                    val: "true",
+                    label: "Type"
+                }, {
+                    val: "false",
+                    label: "Model"
+                }]
+            },
+            memberType: {
+                type: "Select",
+                title: "Member Type",
+                options: ["String", "Number", "Date", "Buffer", "Boolean", "Mixed", "ObjectId"]
+            },
+            memberModel: {
+                type: "Text",
+                title: "Member Model"
+            },
+            refModel: {
+                type: "Text",
+                title: "Reference Model"
+            },
             condition: {
                 type: "List",
                 title: "Only Shown When",
                 itemType: "Text"
             },
-
             editor: {
                 type: "Select",
                 options: ["Text", "Number", "Password", "TextArea", "Checkbox", "Checkboxes", "Hidden", "Select", "Radio", "Object", "NestedModel", "Date", "DateTime", "List", "CUSTOM_GRID", "CUSTOM_PICKER", "File"]
             },
-
             editorOpt: {
                 type: "List",
                 itemType: "TextArea"
             },
-
         },
-
         initialize: function(data, options) {
             this.urlRoot = (options && (options.urlRoot || options.url)) || '/api/Field';
         }
@@ -114,17 +122,13 @@
      *
      * @class Application.Field.Collection
      */
-    module.Collection = Backbone.PageableCollection.extend({
-
-        //model ref
+    module.Collection = Backbone.PageableCollection.extend({ //model ref
         model: module.Model,
         parse: function(response) {
             return response.payload; //to use mers on server.
         },
-
         //register sync event::
-        initialize: function(data, options) {
-            //support for Backbone.Relational - collectionOptions
+        initialize: function(data, options) { //support for Backbone.Relational - collectionOptions
             this.url = (options && options.url) || '/api/Field';
             this.on('error', function() {
                 Application.error('Server Error', 'API::collection::Field');
@@ -168,8 +172,56 @@
      * @class Application.Field.View.Form
      */
     module.View.Extension.Form = {};
-    module.View.Form = Backbone.Marionette.ItemView.extend({
+    module.View.Extension.Form.ConditionalDisplay = function(formCt) {
+        this.conditions = {
+            tom: function(f) {
+                return f('type') === 'Array';
+            },
+            memberType: function(f) {
+                return f('tom') === 'true';
+            },
+            memberModel: function(f) {
+                return f('tom') === 'false';
+            },
+            refModel: function(f) {
+                return f('type') === 'ObjectId' || f('memberType') === 'ObjectId';
+            },
+        };
 
+        this.changeNotifyMap = {
+            type: ["tom", "refModel"],
+            tom: ["memberType", "memberModel"],
+            memberType: ["refModel"]
+        };
+
+        this.f = function(field) {
+                if (formCt.form.fields[field].$el.css('display') !== 'none') return formCt.form.getValue(field);
+                return undefined;
+            };
+
+        this.fin = function(field, values) {
+                if (formCt.form.fields[field].$el.css('display') !== 'none') return _.contains(values, formCt.form.getValue(field));
+                return undefined;
+            };
+
+        //tell the fields that i control to check themselves.
+        this.notify = function(fieldname) {
+            if (this.changeNotifyMap[fieldname]) {
+                _.each(this.changeNotifyMap[fieldname], this.check, this);
+            }
+        };
+
+        //see if this field can show itself.
+        this.check = function(fieldname){
+            if(this.conditions[fieldname](this.f))
+                formCt.form.fields[fieldname].$el.show();
+            else
+                formCt.form.fields[fieldname].$el.hide();
+        };
+
+    };
+
+    module.View.Form = Backbone.Marionette.ItemView.extend({
         template: '#basic-form-view-wrap-tpl',
 
         className: 'basic-form-view-wrap',
@@ -178,32 +230,25 @@
             legend: "General",
             fields: ["name"],
             tpl: "custom-tpl-Field-form-fieldset-General"
-        },
-
-        {
+        }, {
             legend: "Form",
             fields: ["label", "condition", "editor", "editorOpt"],
             tpl: "custom-tpl-Field-form-fieldset-Form"
-        },
-
-        {
+        }, {
             legend: "Database",
-            fields: ["type"],
+            fields: ["type", "tom", "memberType", "memberModel", "refModel"],
             tpl: "custom-tpl-Field-form-fieldset-Database"
         }],
-
         ui: {
             header: '.form-header-container',
             body: '.form-body-container',
             ctrlbar: '.form-control-bar',
         },
-
-        initialize: function(options) {
-            //This is usually a datagrid (view object).
+        initialize: function(options) { //This is usually a datagrid (view object).
             //We are delegating the create/update action to it.
             this.recordManager = options.recordManager;
+            this.displayManager = new module.View.Extension.Form.ConditionalDisplay(this);
         },
-
         //Might create zombie views...let's see.
         onRender: function() {
             this.form = new Backbone.Form({
@@ -214,36 +259,44 @@
 
             //bind the validators:
             Backbone.Validation.bind(this.form);
-        },
 
+            //field show/hide according to pre-set conditions:
+            var that = this;
+            _.each(this.form.fields, function(f) {
+                that.displayManager.notify(f.key);
+            })
+        },
         events: {
             'click .btn[action="submit"]': 'submitForm',
             'click .btn[action="cancel"]': 'closeForm',
+            'change': 'onFieldValueChange',
         },
-
         //event listeners:
+        onFieldValueChange: function(e) {
+            var queue = _.clone(this.displayManager.changeNotifyMap[e.target.name]);
+            while(queue && queue.length > 0){
+                var fieldName = queue.pop();
+                this.displayManager.check(fieldName);
+                if(this.displayManager.changeNotifyMap[fieldName])
+                    queue = queue.concat(_.clone(this.displayManager.changeNotifyMap[fieldName]));
+            }
+        },
         submitForm: function(e) {
             e.stopPropagation();
             var error = this.form.validate();
-            if (error) {
-                //output error and scroll to first error field.
+            if (error) { //output error and scroll to first error field.
                 console.log(error);
                 for (var key in error) {
                     $('html').animate({
                         scrollTop: this.form.$el.find('.invalid[name=' + key + ']').offset().top - 30
-                    },
-
-                    400);
+                    }, 400);
                     break;
                 }
-            } else {
-
-                //delegating the save/upate action to the recordManager.
+            } else { //delegating the save/upate action to the recordManager.
                 this.model.set(this.form.getValue());
                 this.recordManager.$el.trigger('event_SaveRecord', this);
             }
         },
-
         closeForm: function(e) {
             e.stopPropagation();
             this.close();
@@ -271,7 +324,6 @@
         initialize: function(options) {
             this.column = options.column;
         },
-
         //patch-in the id property for action locator.
         onRender: function() {
             this.$el.find('span[action]').attr('target', this.model.id || this.model.cid);
@@ -279,7 +331,6 @@
     });
 
     module.View.DataGrid = Backbone.Marionette.ItemView.extend({
-
         template: '#basic-datagrid-view-wrap-tpl',
 
         className: 'basic-datagrid-view-wrap',
@@ -289,57 +340,57 @@
             body: '.datagrid-body-container',
             footer: '.datagrid-footer-container'
         },
-
         columns: [{
             name: "_selected_",
             label: "",
             sortable: false,
             cell: "boolean"
-        },
-
-        {
+        }, {
             name: "name",
             label: "Field Name",
             cell: "string"
-        },
-
-        {
+        }, {
             name: "label",
             label: "Label",
             cell: "string"
-        },
-
-        {
+        }, {
             name: "type",
             label: "Type",
             cell: "string"
-        },
-
-        {
+        }, {
+            name: "tom",
+            label: "Type or Model",
+            cell: "boolean"
+        }, {
+            name: "memberType",
+            label: "Member Type",
+            cell: "string"
+        }, {
+            name: "memberModel",
+            label: "Member Model",
+            cell: "string"
+        }, {
+            name: "refModel",
+            label: "Reference Model",
+            cell: "string"
+        }, {
             name: "condition",
             label: "Only Shown When",
             cell: "string"
-        },
-
-        {
+        }, {
             name: "editor",
             label: "Editor",
             cell: "string"
-        },
-
-        {
+        }, {
             name: "editorOpt",
             label: "Editoropt",
             cell: "string"
-        },
-
-        {
+        }, {
             name: "_actions_",
             label: "",
             sortable: false,
             cell: module.View.Extension.DataGrid.ActionCell
         }],
-
         //remember the parent layout. So later on a 'new' or 'modify'
         //event will have a container region to render the form.
         initialize: function(options) {
@@ -351,7 +402,6 @@
             });
 
         },
-
         //Add a backgrid.js grid into the body 
         onRender: function() {
             this.grid = new Backgrid.Grid({
@@ -365,7 +415,6 @@
             //Do **NOT** register any event listeners here.
             //It might get registered again and again. 
         },
-
         //datagrid actions DOM-events.
         events: {
             'click .btn[action=new]': 'showForm',
@@ -374,14 +423,13 @@
             'event_SaveRecord': 'saveRecord',
             'event_RefreshRecords': 'refreshRecords',
         },
-
         //DOM event listeners:
+
         showForm: function(e) {
             e.stopPropagation();
             var info = e.currentTarget.attributes;
 
-            if (info['target']) {
-                //edit mode.
+            if (info['target']) { //edit mode.
                 var m = this.collection.get(info['target'].value);
             } else //create mode.
             var m = new module.Model();
@@ -391,25 +439,20 @@
                 recordManager: this
             }));
         },
-
         saveRecord: function(e, sheet) {
             e.stopPropagation();
             //1.if this grid is used as top-level record holder:
             var that = this;
             if (!this.parentCt.collectionRef) {
-                sheet.model.save({},
-
-                {
+                sheet.model.save({}, {
                     error: function(model, res) {
                         var err = $.parseJSON(res.responseText).error;
                         console.log('!Possible Hack!', err);
-                        if (err.db) {
-                            //server db error::
+                        if (err.db) { //server db error::
                             Application.error('Server DB Error', err.db);
                         }
                         //[optional]TODO::highlight error back to form fields
                     },
-
                     success: function(model, res) {
                         if (res.payload) {
                             that.collection.fetch();
@@ -417,8 +460,7 @@
                         } else Application.error('Server Error', 'Not yet saved...');
                     }
                 }); //save the model to server
-            } else {
-                //2.else if this grid is used as an editor for sub-field:
+            } else { //2.else if this grid is used as an editor for sub-field:
                 //add or update the model into the referenced collection:
                 this.collection.add(sheet.model, {
                     merge: true
@@ -426,7 +468,6 @@
                 sheet.close();
             }
         },
-
         deleteRecord: function(e) {
             e.stopPropagation();
             var info = e.currentTarget.attributes;
@@ -439,7 +480,6 @@
                     success: function(model, resp) {
                         that.collection.fetch(); //refresh
                     },
-
                     error: function(model, resp) {
                         Application.error('Server Error', 'Can NOT remove this record...');
                     }
@@ -447,7 +487,6 @@
                 else that.collection.remove(m);
             })
         },
-
         refreshRecords: function(e) {
             e.stopPropagation();
             if (!this.parentCt.collectionRef) this.collection.fetch();
@@ -466,7 +505,6 @@
      * @class Application.Field.View.AdminLayout
      */
     module.View.AdminLayout = Backbone.Marionette.Layout.extend({
-
         template: '#custom-tpl-module-layout',
 
         className: 'module-admin-layout-wrap',
@@ -475,7 +513,6 @@
             list: '.list-view-region',
             detail: '.details-view-region'
         },
-
         onRender: function() {
             this.list.show(new module.View.DataGrid({
                 collection: module.collection,
@@ -503,13 +540,10 @@
             list: '.list-view-region',
             detail: '.details-view-region'
         },
-
-        initialize: function(options) {
-            //This is also used as a flag by datagrid to
+        initialize: function(options) { //This is also used as a flag by datagrid to
             //check if it is working in 'editor-mode'
             this.collectionRef = options.collection;
         },
-
         onRender: function() {
             this.list.show(new module.View.DataGrid({
                 collection: this.collectionRef,
