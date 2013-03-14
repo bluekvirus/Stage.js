@@ -1,4 +1,13 @@
-/* Will be compiled down to a single stylesheet with your sass files */
+/**
+ * Basic region layout style::;
+ */
+.application-container .body .sidebar {
+  padding: 0 20px;
+}
+
+.application-container .body .content {
+  padding: 10px 20px 10px 0;
+}
 
 /**
  * Imported from backbone-forms template
@@ -53,7 +62,7 @@
  * Form styles::;
  */
 .form-body-container {
-  padding: 10px 5px 10px 5px;
+  padding: 10px 12px 10px 5px;
   border-top: 1px solid #eee;
   border-bottom: 1px solid #eee;
 }
@@ -88,7 +97,7 @@ legend > span {
 } 
 
 .datagrid-body-container {
-  padding: 10px 20px;
+  padding: 10px 20px 10px 10px;
 }
 
 .action-cell span[action] {
@@ -101,4 +110,29 @@ legend > span {
 
 .edit-later-info {
   margin-right: 20px;
+}
+
+
+/**
+ * Menu styles::;
+ */
+.menu-item-wrapper {
+  cursor: pointer;
+}
+
+ul.menu-tree > li {
+  font-weight: bold;
+}
+
+ul.menu-tree-leaf > li {
+  font-style: italic;
+}
+
+.menu-accordion-item .menu-accordion-item-header {
+  font-style: italic;
+  cursor:pointer;
+}
+
+.menu-accordion-item .menu-accordion-item-content {
+  padding: 5px 10px;
 }

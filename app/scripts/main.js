@@ -31,13 +31,44 @@ jQuery(document).ready(function($) {
 
 	});
 
-	//Application init
-	
+	//Application init:1 
+	Application.addInitializer(function(options){
+		//init menu,(banner, footer) and dashboard/welcome view.
+		Application.sidebar.show(new Application.Menu.View.AccordionView());
+	});
+
+	//Application init:2
+	Application.on("initialize:after", function(options){
+		//init client page router and history:
+		var _Router_ = Backbone.Marionette.AppRouter.extend({
+			appRoutes: {
+				'config/:module': 'navigateToModule', //navigate to this module's default view.
+			},
+			controller: {
+				navigateToModule: (function(){
+					var currentModule = '';
+					return function(module){
+							console.log(module);
+							if(Application[module]){
+								if(currentModule !== module){
+									Application.content.show(new Application[module].View.Default());
+									currentModule = module;
+								}
+							}else
+								Application.error('Applicaton Routes Error', 'The module','<em class="label">', module,'</em>','you requested does not exist');
+						}
+				})(),
+			}
+		});
+
+		new _Router_();
+		if(Backbone.history)
+			Backbone.history.start();
+
+	});
+
 	
 	//Kick start the application
 	Application.start();
-
-	//a little test here.
-	Application.content.show(new Application.Entity.View.AdminLayout());
 
 });

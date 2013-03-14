@@ -22,7 +22,7 @@
  * @author Tim.Liu
  * @updated 
  * 
- * @generated on Thu Mar 14 2013 00:02:10 GMT+0800 (CST) 
+ * @generated on Thu Mar 14 2013 16:03:05 GMT+0800 (中国标准时间) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
@@ -368,32 +368,12 @@
             label: "Type",
             cell: "string"
         }, {
-            name: "tom",
-            label: "Type or Model",
-            cell: "boolean"
-        }, {
-            name: "memberType",
-            label: "Member Type",
-            cell: "string"
-        }, {
-            name: "memberModel",
-            label: "Member Model",
-            cell: "string"
-        }, {
-            name: "refModel",
-            label: "Reference Model",
-            cell: "string"
-        }, {
             name: "condition",
             label: "Only Shown When",
             cell: "string"
         }, {
             name: "editor",
             label: "Editor",
-            cell: "string"
-        }, {
-            name: "editorOpt",
-            label: "Editoropt",
             cell: "string"
         }, {
             name: "_actions_",
@@ -434,6 +414,7 @@
             'event_RefreshRecords': 'refreshRecords',
         },
         //DOM event listeners:
+
         showForm: function(e) {
             e.stopPropagation();
             var info = e.currentTarget.attributes;
@@ -563,6 +544,16 @@
     });
 
 
+
+
+    /**
+     * **View.Default**
+     * 
+     * The default view used with menu.
+     * 
+     * @class Application.Field.View.Default
+     */
+    module.View.Default = module.View.AdminLayout;
 
 
 })(Application);

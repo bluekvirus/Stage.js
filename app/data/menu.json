@@ -1,0 +1,24 @@
+[{
+    "label": "System",
+    "items": [{
+        "label": "Dashboard",
+        "module": "Dashboard"
+    }, {
+        "label": "Content",
+        "items": [{
+            "label": "Modules",
+            "module": "Entity"
+        }, {
+            "label": "Users",
+            "module": "User"
+        }]
+    }]
+}, {
+    "label": "Miscellaneous",
+    "items": [
+        {
+            "label": "Other",
+            "module": "Nothing"
+        }
+    ]
+}]

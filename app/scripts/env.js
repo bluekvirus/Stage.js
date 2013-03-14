@@ -126,7 +126,8 @@
 			noty({
 				text: '<span class="label label-inverse">'+arguments[0]+'</span> '+_.toArray(arguments).slice(1).join(' '),
 				type: 'error',
-				layout: 'bottom'
+				layout: 'bottom',
+				dismissQueue: true,
 			});
 		};
 
