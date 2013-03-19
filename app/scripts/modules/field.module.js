@@ -22,7 +22,7 @@
  * @author Tim.Liu
  * @updated 
  * 
- * @generated on Thu Mar 14 2013 16:03:05 GMT+0800 (中国标准时间) 
+ * @generated on Wed Mar 20 2013 00:00:11 GMT+0800 (CST) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
@@ -269,6 +269,12 @@
                 model: this.model,
                 fieldsets: this.fieldsets
             });
+            var that = this;
+            //Yes :(( it does, need to wire up the clean-ups.
+            this.form.listenTo(this, 'close', function() {
+                that.form.trigger('close'); //this is for the EditorLayouts (sub-grids, custom editors) to close off.
+                that.form.remove();
+            });
             this.ui.body.html(this.form.render().el);
 
             //bind the validators:
@@ -405,6 +411,10 @@
             //Do **NOT** register any event listeners here.
             //It might get registered again and again. 
         },
+        //Clean up zombie views.
+        onBeforeClose: function() {
+            this.grid.remove();
+        },
         //datagrid actions DOM-events.
         events: {
             'click .btn[action=new]': 'showForm',
@@ -414,7 +424,6 @@
             'event_RefreshRecords': 'refreshRecords',
         },
         //DOM event listeners:
-
         showForm: function(e) {
             e.stopPropagation();
             var info = e.currentTarget.attributes;
@@ -530,9 +539,9 @@
             list: '.list-view-region',
             detail: '.details-view-region'
         },
-        initialize: function(options) { //This is also used as a flag by datagrid to
-            //check if it is working in 'editor-mode'
+        initialize: function(options) { //This is also used as a flag by datagrid to check if it is working in 'editor-mode'
             this.collectionRef = options.collection;
+            this.listenTo(options.parentForm, 'close', this.close);
         },
         onRender: function() {
             this.list.show(new module.View.DataGrid({

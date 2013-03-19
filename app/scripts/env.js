@@ -69,6 +69,7 @@
 	        if(this.model.id){
 	        //delegating the datagrid display
 		        this.$el.html(new this.moduleRef.View.EditorLayout({
+		        	parentForm: this.form, //the parent form needs to be passed in at all times.
 		        	collection: this.value //should be a collection passed by Backbone.Relationals
 		        }).render().el)
 		    }else {
