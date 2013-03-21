@@ -22,7 +22,7 @@
  * @author Tim.Liu
  * @updated 
  * 
- * @generated on Wed Mar 20 2013 00:00:11 GMT+0800 (CST) 
+ * @generated on Thu Mar 21 2013 12:24:52 GMT+0800 (CST) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
@@ -105,6 +105,13 @@
                 type: "List",
                 itemType: "TextArea"
             },
+        },
+        //backbone.model.save will use this to merge server response back to model.
+        //this behaviour is not even optional...We really don't want the model to have
+        //this pre-set behaviour...
+        parse: function(response) {
+            if (response.payload) return response.payload; //to use mers on server.
+            return response;
         },
         initialize: function(data, options) {
             this.urlRoot = (options && (options.urlRoot || options.url)) || '/api/Field';

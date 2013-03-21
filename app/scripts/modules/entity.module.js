@@ -22,7 +22,7 @@
  * @author Tim.Liu (zhiyuanliu@fortinet.com)
  * @updated 
  * 
- * @generated on Wed Mar 20 2013 00:00:14 GMT+0800 (CST) 
+ * @generated on Thu Mar 21 2013 12:24:41 GMT+0800 (CST) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
@@ -85,6 +85,13 @@
                 header: ["name", "label", "type", "editor"],
                 moduleRef: "Field"
             },
+        },
+        //backbone.model.save will use this to merge server response back to model.
+        //this behaviour is not even optional...We really don't want the model to have
+        //this pre-set behaviour...
+        parse: function(response) {
+            if (response.payload) return response.payload; //to use mers on server.
+            return response;
         },
         initialize: function(data, options) {
             this.urlRoot = (options && (options.urlRoot || options.url)) || '/api/Entity';
@@ -295,7 +302,7 @@
         },
         //patch-in the id property for action locator.
         onRender: function() {
-            this.$el.find('div').append(' <span class="label" action="json">JSON</span>')
+            this.$el.find('div').append(' <span class="label" action="json">JSON</span>');
             this.$el.find('span[action]').attr('target', this.model.id || this.model.cid);
         }
     });
@@ -367,13 +374,11 @@
             'event_RefreshRecords': 'refreshRecords',
         },
         //DOM event listeners:
-        //
+
         generateDefJSON: function(e){
             e.stopPropagation();
             var info = e.currentTarget.attributes;
             var m = this.collection.get(info['target'].value);
-
-            console.log(m);
 
             jQuery.post('/generateDefJSON', m.toJSON(), function(data, textStatus, xhr) {
               //optional stuff to do after success
@@ -381,7 +386,7 @@
             });
             
         },
-        
+
         showForm: function(e) {
             e.stopPropagation();
             var info = e.currentTarget.attributes;
