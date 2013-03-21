@@ -19,6 +19,7 @@ Application.Entity.View.DataGrid = _.extend(Application.Entity.View.DataGrid, {
             'click .btn[action=new]': 'showForm',
             'click .action-cell span[action=edit]': 'showForm',
             'click .action-cell span[action=delete]': 'deleteRecord',
+            'click .action-cell span[action=json]': 'generateDefJSON',
             'event_SaveRecord': 'saveRecord',
             'event_RefreshRecords': 'refreshRecords',
         },

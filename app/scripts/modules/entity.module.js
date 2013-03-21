@@ -302,6 +302,7 @@
         },
         //patch-in the id property for action locator.
         onRender: function() {
+            this.$el.find('div').append(' <span class="label" action="json">JSON</span>');
             this.$el.find('span[action]').attr('target', this.model.id || this.model.cid);
         }
     });
@@ -368,10 +369,22 @@
             'click .btn[action=new]': 'showForm',
             'click .action-cell span[action=edit]': 'showForm',
             'click .action-cell span[action=delete]': 'deleteRecord',
+            'click .action-cell span[action=json]': 'generateDefJSON',
             'event_SaveRecord': 'saveRecord',
             'event_RefreshRecords': 'refreshRecords',
         },
         //DOM event listeners:
+        generateDefJSON: function(e){
+            e.stopPropagation();
+            var info = e.currentTarget.attributes;
+            var m = this.collection.get(info['target'].value);
+
+            jQuery.post('/generateDefJSON', m.toJSON(), function(data, textStatus, xhr) {
+              //optional stuff to do after success
+              console.log(data);
+            });
+            
+        },
 
         showForm: function(e) {
             e.stopPropagation();
