@@ -22,7 +22,7 @@
  * @author Tim.Liu (zhiyuanliu@fortinet.com)
  * @updated 
  * 
- * @generated on Thu Mar 21 2013 12:24:41 GMT+0800 (CST) 
+ * @generated on Thu Mar 21 2013 17:21:20 GMT+0800 (中国标准时间) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
@@ -34,26 +34,14 @@
      *
      * **Model**
      * 
-     * We use Backbone.RelationalModel instead of the original Backbone.Model
-     * for better has-many relation management.
+     * We use the original Backbone.Model
+     * [Not Backbone.RelationalModel, since it offers more trouble than solved]
      * 
      * @class Application.Entity.Model
      */
-    module.Model = Backbone.RelationalModel.extend({ //the id attribute to use
+    module.Model = Backbone.Model.extend({ //the id attribute to use
         idAttribute: '_id',
 
-        //relations:
-        relations: [{
-            type: "HasMany",
-            key: "fields",
-            relatedModel: "Application.Field.Model",
-            collectionType: "Application.Field.Collection",
-            collectionOptions: function(model) {
-                return {
-                    url: '/api/Entity/' + model.id + '/fields'
-                };
-            }
-        }, ],
         //validation:
         validation: {
             name: {
@@ -66,6 +54,9 @@
             name: {
                 type: "Text",
                 title: "Model"
+            },
+            author: {
+                type: "Text"
             },
             description: {
                 type: "TextArea"
@@ -80,9 +71,12 @@
                     label: "Complex"
                 }]
             },
+            header: {
+                type: "List",
+                itemType: "Text"
+            },
             fields: {
                 type: "CUSTOM_GRID",
-                header: ["name", "label", "type", "editor"],
                 moduleRef: "Field"
             },
         },
@@ -160,9 +154,15 @@
      */
     module.View.Extension.Form = {};
     module.View.Extension.Form.ConditionalDisplay = function(formCt) {
-        this.conditions = {};
+        this.conditions = {
+            header: function(f) {
+                return f('type') === 'table';
+            },
+        };
 
-        this.changeNotifyMap = {};
+        this.changeNotifyMap = {
+            type: ["header"]
+        };
 
         this.f = function(field) {
             if (formCt.form.fields[field].$el.css('display') !== 'none') return formCt.form.getValue(field);
@@ -211,7 +211,7 @@
         className: 'basic-form-view-wrap',
 
         fieldsets: [
-            ["name", "description", "type", "fields"]
+            ["name", "author", "description", "type", "header", "fields"]
         ],
         ui: {
             header: '.form-header-container',
@@ -302,7 +302,6 @@
         },
         //patch-in the id property for action locator.
         onRender: function() {
-            this.$el.find('div').append(' <span class="label" action="json">JSON</span>');
             this.$el.find('span[action]').attr('target', this.model.id || this.model.cid);
         }
     });
@@ -369,23 +368,10 @@
             'click .btn[action=new]': 'showForm',
             'click .action-cell span[action=edit]': 'showForm',
             'click .action-cell span[action=delete]': 'deleteRecord',
-            'click .action-cell span[action=json]': 'generateDefJSON',
             'event_SaveRecord': 'saveRecord',
             'event_RefreshRecords': 'refreshRecords',
         },
         //DOM event listeners:
-
-        generateDefJSON: function(e){
-            e.stopPropagation();
-            var info = e.currentTarget.attributes;
-            var m = this.collection.get(info['target'].value);
-
-            jQuery.post('/generateDefJSON', m.toJSON(), function(data, textStatus, xhr) {
-              //optional stuff to do after success
-              console.log(data);
-            });
-            
-        },
 
         showForm: function(e) {
             e.stopPropagation();
@@ -394,7 +380,9 @@
             if (info['target']) { //edit mode.
                 var m = this.collection.get(info['target'].value);
             } else //create mode.
-            var m = new module.Model();
+            var m = new module.Model({}, {
+                url: this.collection.url
+            });
 
             this.parentCt.detail.show(new module.View.Form({
                 model: m,
@@ -503,8 +491,9 @@
             detail: '.details-view-region'
         },
         initialize: function(options) { //This is also used as a flag by datagrid to check if it is working in 'editor-mode'
-            this.collectionRef = options.collection;
-            this.listenTo(options.parentForm, 'close', this.close);
+            this.collectionRef = new module.Collection(options.data, {
+                url: options.apiUrl
+            });
         },
         onRender: function() {
             this.list.show(new module.View.DataGrid({

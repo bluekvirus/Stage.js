@@ -68,10 +68,12 @@
 
 	        if(this.model.id){
 	        //delegating the datagrid display
-		        this.$el.html(new this.moduleRef.View.EditorLayout({
-		        	parentForm: this.form, //the parent form needs to be passed in at all times.
-		        	collection: this.value //should be a collection passed by Backbone.Relationals
-		        }).render().el)
+	        	this.delegatedEditor = new this.moduleRef.View.EditorLayout({
+		        	data: this.value, //this is the subDoc/refDoc array [NOT YET a collection].
+		        	apiUrl: this.model.urlRoot+'/'+this.model.id+'/'+this.key, //collection url.
+		        });
+		        this.delegatedEditor.listenTo(this.form, 'close', this.delegatedEditor.close);
+		        this.$el.html(this.delegatedEditor.render().el);
 		    }else {
 		    	this.$el.addClass('alert alert-info edit-later-info');
 		    	this.$el.html("Once you've created this record, you can come back to edit this field.");
@@ -81,7 +83,7 @@
 	    },
 
 	    getValue: function() {
-	    	return this.value; //return the collection.
+	    	return this.delegatedEditor.collectionRef.toJSON(); //return the collection.
 	    },
 
 	    setValue: function(value) {

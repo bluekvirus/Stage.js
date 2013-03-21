@@ -22,7 +22,7 @@
  * @author Tim.Liu
  * @updated 
  * 
- * @generated on Thu Mar 21 2013 12:24:52 GMT+0800 (CST) 
+ * @generated on Thu Mar 21 2013 17:26:40 GMT+0800 (中国标准时间) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
@@ -34,16 +34,14 @@
      *
      * **Model**
      * 
-     * We use Backbone.RelationalModel instead of the original Backbone.Model
-     * for better has-many relation management.
+     * We use the original Backbone.Model
+     * [Not Backbone.RelationalModel, since it offers more trouble than solved]
      * 
      * @class Application.Field.Model
      */
-    module.Model = Backbone.RelationalModel.extend({ //the id attribute to use
+    module.Model = Backbone.Model.extend({ //the id attribute to use
         idAttribute: '_id',
 
-        //relations:
-        relations: [],
         //validation:
         validation: {
             name: {
@@ -60,6 +58,10 @@
             name: {
                 type: "Text",
                 title: "Field Name"
+            },
+            verify: {
+                type: "TextArea",
+                title: "Validation"
             },
             label: {
                 type: "Text"
@@ -102,8 +104,11 @@
                 options: ["Text", "Number", "Password", "TextArea", "Checkbox", "Checkboxes", "Hidden", "Select", "Radio", "Object", "NestedModel", "Date", "DateTime", "List", "CUSTOM_GRID", "CUSTOM_PICKER", "File"]
             },
             editorOpt: {
-                type: "List",
-                itemType: "TextArea"
+                type: "TextArea"
+            },
+            group: {
+                type: "Text",
+                title: "Belongs To (Fieldset?)"
             },
         },
         //backbone.model.save will use this to merge server response back to model.
@@ -249,11 +254,11 @@
 
         fieldsets: [{
             legend: "General",
-            fields: ["name"],
+            fields: ["name", "verify"],
             tpl: "custom-tpl-Field-form-fieldset-General"
         }, {
             legend: "Form",
-            fields: ["label", "condition", "editor", "editorOpt"],
+            fields: ["label", "condition", "editor", "editorOpt", "group"],
             tpl: "custom-tpl-Field-form-fieldset-Form"
         }, {
             legend: "Database",
@@ -431,6 +436,7 @@
             'event_RefreshRecords': 'refreshRecords',
         },
         //DOM event listeners:
+
         showForm: function(e) {
             e.stopPropagation();
             var info = e.currentTarget.attributes;
@@ -438,7 +444,9 @@
             if (info['target']) { //edit mode.
                 var m = this.collection.get(info['target'].value);
             } else //create mode.
-            var m = new module.Model();
+            var m = new module.Model({}, {
+                url: this.collection.url
+            });
 
             this.parentCt.detail.show(new module.View.Form({
                 model: m,
@@ -547,8 +555,9 @@
             detail: '.details-view-region'
         },
         initialize: function(options) { //This is also used as a flag by datagrid to check if it is working in 'editor-mode'
-            this.collectionRef = options.collection;
-            this.listenTo(options.parentForm, 'close', this.close);
+            this.collectionRef = new module.Collection(options.data, {
+                url: options.apiUrl
+            });
         },
         onRender: function() {
             this.list.show(new module.View.DataGrid({
