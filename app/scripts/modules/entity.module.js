@@ -382,6 +382,15 @@
             jQuery.post('/generateDefJSON', m.toJSON(), function(data, textStatus, xhr) {
               //optional stuff to do after success
               console.log(data);
+              if(data.file){
+                var drone = $('#hiddenframe');
+                if(drone.length > 0){
+                }else{
+                    $('body').append('<iframe id="hiddenframe" style="display:none"></iframe>');
+                    drone = $('#hiddenframe');
+                }
+                drone.attr('src', '/generateDefJSON?file='+data.file);
+              }
             });
             
         },

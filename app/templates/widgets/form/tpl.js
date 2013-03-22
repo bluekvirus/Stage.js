@@ -16,6 +16,18 @@ Template.extend(
 	]
 );
 
+Template.extend(
+	'basic-form-only-view-wrap-tpl',
+	[
+		'<div class="form-header-container"></div>',
+		'<div class="form-body-container"></div>',
+		'<div class="form-control-bar">',
+			'<a class="btn btn-primary" action="submit">Submit</a> ',
+			'<a class="btn" action="refresh">Refresh</a>',
+		'</div>'
+	]
+);
+
 
 /**
  * Fieldsets Template.
