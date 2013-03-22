@@ -11,6 +11,9 @@
         }, {
             "label": "Users",
             "module": "User"
+        },{
+            "label": "Status",
+            "module": "StatusPanel"
         }]
     }]
 }, {

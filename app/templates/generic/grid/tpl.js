@@ -24,3 +24,26 @@ Template.extend(
         '</div>'
 	]
 );
+
+/**
+ *
+ * Basic Property Grid Outline.
+ * 
+ */
+
+Template.extend(	
+	'property-item-tpl',
+	[
+		'<td>{{key}}</td>',
+		'<td>{{val}}</td>'
+	]
+);
+
+Template.extend(	
+	'basic-propertygrid-view-wrap-tpl',
+	[
+		'<table class="table">',
+		'<tbody></tbody>',
+		'</table>'
+	]
+);

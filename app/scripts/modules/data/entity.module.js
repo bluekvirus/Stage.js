@@ -1,8 +1,8 @@
 /**
- * Generated through `models/field.json` for Backbone module **Field**
+ * Generated through `models/entity.json` for Backbone module **Entity**
  *
  * 
- * 
+ * Mother of All Models
  *
  *
  * **General Note**
@@ -18,17 +18,17 @@
  * 				   collection.fetch() to populate the grid data upon rendering.
  * 
  * 
- * @module Field
- * @author Tim.Liu
+ * @module Entity
+ * @author Tim.Liu (zhiyuanliu@fortinet.com)
  * @updated 
  * 
- * @generated on Thu Mar 21 2013 17:26:40 GMT+0800 (中国标准时间) 
+ * @generated on Thu Mar 21 2013 17:21:20 GMT+0800 (中国标准时间) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
 
 (function(app) {
-    var module = app.module("Field");
+    var module = app.module("Entity");
 
     /**
      *
@@ -37,7 +37,7 @@
      * We use the original Backbone.Model
      * [Not Backbone.RelationalModel, since it offers more trouble than solved]
      * 
-     * @class Application.Field.Model
+     * @class Application.Entity.Model
      */
     module.Model = Backbone.Model.extend({ //the id attribute to use
         idAttribute: '_id',
@@ -48,67 +48,36 @@
                 required: true,
                 rangeLength: [1, 32]
             },
-            label: {
-                required: false,
-                rangeLength: [1, 32]
-            },
         },
         //form:
         schema: {
             name: {
                 type: "Text",
-                title: "Field Name"
+                title: "Model"
             },
-            verify: {
-                type: "TextArea",
-                title: "Validation"
-            },
-            label: {
+            author: {
                 type: "Text"
+            },
+            description: {
+                type: "TextArea"
             },
             type: {
                 type: "Select",
-                options: ["String", "Number", "Date", "Buffer", "Boolean", "Mixed", "ObjectId", "Array"]
-            },
-            tom: {
-                type: "Radio",
-                title: "Type or Model",
                 options: [{
-                    val: "true",
-                    label: "Type"
+                    val: "table",
+                    label: "Table"
                 }, {
-                    val: "false",
-                    label: "Model"
+                    val: "complex",
+                    label: "Complex"
                 }]
             },
-            memberType: {
-                type: "Select",
-                title: "Member Type",
-                options: ["String", "Number", "Date", "Buffer", "Boolean", "Mixed", "ObjectId"]
-            },
-            memberModel: {
-                type: "Text",
-                title: "Member Model"
-            },
-            refModel: {
-                type: "Text",
-                title: "Reference Model"
-            },
-            condition: {
+            header: {
                 type: "List",
-                title: "Only Shown When",
                 itemType: "Text"
             },
-            editor: {
-                type: "Select",
-                options: ["Text", "Number", "Password", "TextArea", "Checkbox", "Checkboxes", "Hidden", "Select", "Radio", "Object", "NestedModel", "Date", "DateTime", "List", "CUSTOM_GRID", "CUSTOM_PICKER", "File"]
-            },
-            editorOpt: {
-                type: "TextArea"
-            },
-            group: {
-                type: "Text",
-                title: "Belongs To (Fieldset?)"
+            fields: {
+                type: "CUSTOM_GRID",
+                moduleRef: "Field"
             },
         },
         //backbone.model.save will use this to merge server response back to model.
@@ -119,7 +88,7 @@
             return response;
         },
         initialize: function(data, options) {
-            this.urlRoot = (options && (options.urlRoot || options.url)) || '/api/Field';
+            this.urlRoot = (options && (options.urlRoot || options.url)) || '/api/Entity';
         }
 
     });
@@ -132,7 +101,7 @@
      * Backbone.PageableCollection is a strict superset of Backbone.Collection
      * We instead use the Backbone.PageableCollection for better paginate ability.
      *
-     * @class Application.Field.Collection
+     * @class Application.Entity.Collection
      */
     module.Collection = Backbone.PageableCollection.extend({ //model ref
         model: module.Model,
@@ -141,9 +110,9 @@
         },
         //register sync event::
         initialize: function(data, options) { //support for Backbone.Relational - collectionOptions
-            this.url = (options && options.url) || '/api/Field';
+            this.url = (options && options.url) || '/api/Entity';
             this.on('error', function() {
-                Application.error('Server Error', 'API::collection::Field');
+                Application.error('Server Error', 'API::collection::Entity');
             })
         }
 
@@ -151,10 +120,10 @@
 
     /**
      * **collection** 
-     * An instance of Application.Field.Collection
+     * An instance of Application.Entity.Collection
      * This collection is not nested in other models.
      * 
-     * @type Application.Field.Collection
+     * @type Application.Entity.Collection
      */
     module.collection = new module.Collection();
 
@@ -181,29 +150,18 @@
      * Backbone.Marionette.ItemView is used to wrap up the form view and 
      * related interactions. We do this in the onRender callback.
      *
-     * @class Application.Field.View.Form
+     * @class Application.Entity.View.Form
      */
     module.View.Extension.Form = {};
     module.View.Extension.Form.ConditionalDisplay = function(formCt) {
         this.conditions = {
-            tom: function(f) {
-                return f('type') === 'Array';
-            },
-            memberType: function(f) {
-                return f('tom') === 'true';
-            },
-            memberModel: function(f) {
-                return f('tom') === 'false';
-            },
-            refModel: function(f) {
-                return f('type') === 'ObjectId' || f('memberType') === 'ObjectId';
+            header: function(f) {
+                return f('type') === 'table';
             },
         };
 
         this.changeNotifyMap = {
-            type: ["tom", "refModel"],
-            tom: ["memberType", "memberModel"],
-            memberType: ["refModel"]
+            type: ["header"]
         };
 
         this.f = function(field) {
@@ -252,19 +210,9 @@
 
         className: 'basic-form-view-wrap',
 
-        fieldsets: [{
-            legend: "General",
-            fields: ["name", "verify"],
-            tpl: "custom-tpl-Field-form-fieldset-General"
-        }, {
-            legend: "Form",
-            fields: ["label", "condition", "editor", "editorOpt", "group"],
-            tpl: "custom-tpl-Field-form-fieldset-Form"
-        }, {
-            legend: "Database",
-            fields: ["type", "tom", "memberType", "memberModel", "refModel"],
-            tpl: "custom-tpl-Field-form-fieldset-Database"
-        }],
+        fieldsets: [
+            ["name", "author", "description", "type", "header", "fields"]
+        ],
         ui: {
             header: '.form-header-container',
             body: '.form-body-container',
@@ -343,10 +291,11 @@
      * Backbone.Marionette.ItemView is used to wrap up the datagrid view and 
      * related interactions. We do this in the onRender callback.
      *
-     * @class Application.Field.View.DataGrid
+     * @class Application.Entity.View.DataGrid
      */
     module.View.Extension.DataGrid = {};
     module.View.Extension.DataGrid.ActionCell = Backbone.Marionette.ItemView.extend({
+        tagName: 'td',
         className: 'action-cell',
         template: '#custom-tpl-grid-actioncell',
         initialize: function(options) {
@@ -354,6 +303,7 @@
         },
         //patch-in the id property for action locator.
         onRender: function() {
+            this.$el.find('div').append(' <span class="label" action="json">JSON</span>');
             this.$el.find('span[action]').attr('target', this.model.id || this.model.cid);
         }
     });
@@ -375,23 +325,11 @@
             cell: "boolean"
         }, {
             name: "name",
-            label: "Field Name",
-            cell: "string"
-        }, {
-            name: "label",
-            label: "Label",
+            label: "Model",
             cell: "string"
         }, {
             name: "type",
             label: "Type",
-            cell: "string"
-        }, {
-            name: "condition",
-            label: "Only Shown When",
-            cell: "string"
-        }, {
-            name: "editor",
-            label: "Editor",
             cell: "string"
         }, {
             name: "_actions_",
@@ -432,10 +370,31 @@
             'click .btn[action=new]': 'showForm',
             'click .action-cell span[action=edit]': 'showForm',
             'click .action-cell span[action=delete]': 'deleteRecord',
+            'click .action-cell span[action=json]': 'generateDefJSON',
             'event_SaveRecord': 'saveRecord',
             'event_RefreshRecords': 'refreshRecords',
         },
         //DOM event listeners:
+        generateDefJSON: function(e){
+            e.stopPropagation();
+            var info = e.currentTarget.attributes;
+            var m = this.collection.get(info['target'].value);
+
+            jQuery.post('/generateDefJSON', m.toJSON(), function(data, textStatus, xhr) {
+              //optional stuff to do after success
+              console.log(data);
+              if(data.file){
+                var drone = $('#hiddenframe');
+                if(drone.length > 0){
+                }else{
+                    $('body').append('<iframe id="hiddenframe" style="display:none"></iframe>');
+                    drone = $('#hiddenframe');
+                }
+                drone.attr('src', '/generateDefJSON?file='+data.file);
+              }
+            });
+            
+        },
 
         showForm: function(e) {
             e.stopPropagation();
@@ -516,7 +475,7 @@
      * show a datagrid and a form/property grid stacked vertically. This view is mainly
      * there to respond to user's admin menu selection event.
      *
-     * @class Application.Field.View.AdminLayout
+     * @class Application.Entity.View.AdminLayout
      */
     module.View.AdminLayout = Backbone.Marionette.Layout.extend({
         template: '#custom-tpl-module-layout',
@@ -543,7 +502,7 @@
      * This is similar to AdminLayout but only using a different tpl to make datagrid
      * and form slide together thus fit into a parent form.
      *
-     * @class Application.Field.View.EditorLayout
+     * @class Application.Entity.View.EditorLayout
      */
     module.View.EditorLayout = Backbone.Marionette.Layout.extend({
         template: '#custom-tpl-module-layout',
@@ -576,7 +535,7 @@
      * 
      * The default view used with menu.
      * 
-     * @class Application.Field.View.Default
+     * @class Application.Entity.View.Default
      */
     module.View.Default = module.View.AdminLayout;
 

@@ -80,19 +80,27 @@
     <!-- build:js scripts/tpl.js -->
         <script type="text/javascript" src="templates/vendor/backbone-form-bootstrap-tpl.js"></script>
         <script type="text/javascript" src="templates/loader.js"></script>
-        <script type="text/javascript" src="templates/widgets/menu/tpl.js"></script>
-        <script type="text/javascript" src="templates/widgets/layout/tpl.js"></script>
-        <script type="text/javascript" src="templates/widgets/grid/tpl.js"></script>
-        <script type="text/javascript" src="templates/widgets/form/tpl.js"></script>
+        <script type="text/javascript" src="templates/generic/layout/tpl.js"></script>
+        <script type="text/javascript" src="templates/generic/grid/tpl.js"></script>
+        <script type="text/javascript" src="templates/generic/form/tpl.js"></script>
 
     <!-- endbuild -->
 
     <!-- build:js scripts/application.js -->
         <script type="text/javascript" src="scripts/env.js"></script>
         <script type="text/javascript" src="scripts/main.js"></script>
-        <script type="text/javascript" src="scripts/modules/menu.js"></script>
-        <script type="text/javascript" src="scripts/modules/field.module.js"></script>
-        <script type="text/javascript" src="scripts/modules/entity.module.js"></script>
+
+        <script type="text/javascript" src="scripts/modules/registry/widgets.js"></script>
+        <script type="text/javascript" src="scripts/widgets/property-grid.js"></script>
+
+        <script type="text/javascript" src="scripts/modules/active/menu.js"></script>
+
+        <script type="text/javascript" src="scripts/modules/readonly/example.propertygrid.js"></script>
+
+        <script type="text/javascript" src="scripts/modules/data/field.module.js"></script>
+        <script type="text/javascript" src="scripts/modules/data/entity.module.js"></script>
+
+        
         
     <!-- endbuild -->
 

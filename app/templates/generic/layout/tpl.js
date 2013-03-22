@@ -1,3 +1,6 @@
+/**
+ * The genaric AdminLayout and EditorLayout tpl for data modules
+ */
 Template.extend(
 	'custom-tpl-module-layout',
 	[
