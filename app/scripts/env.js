@@ -60,7 +60,7 @@
 	        // Custom setup code.
 	        // Need to delegate the EditorLayout(Datagrid) view to the module later in render.
 	        this.moduleRef = Application[options.schema.moduleRef];
-
+	        this.datagridMode = options.schema.mode;
 	    },
 
 	    render: function() {
@@ -71,6 +71,7 @@
 	        	this.delegatedEditor = new this.moduleRef.View.EditorLayout({
 		        	data: this.value, //this is the subDoc/refDoc array [NOT YET a collection].
 		        	apiUrl: this.model.urlRoot+'/'+this.model.id+'/'+this.key, //collection url.
+		        	datagridMode: this.datagridMode,
 		        });
 		        this.delegatedEditor.listenTo(this.form, 'close', this.delegatedEditor.close);
 		        this.$el.html(this.delegatedEditor.render().el);
@@ -83,7 +84,8 @@
 	    },
 
 	    getValue: function() {
-	    	return this.delegatedEditor.collectionRef.toJSON(); //return the collection.
+	    	if(this.delegatedEditor)
+	    		return this.delegatedEditor.collectionRef.toJSON(); //return the collection.
 	    },
 
 	    setValue: function(value) {

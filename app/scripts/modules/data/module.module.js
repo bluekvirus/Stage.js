@@ -1,8 +1,8 @@
 /**
- * Generated through `models/entity.json` for Backbone module **Entity**
+ * Generated through `models/module.json` for Backbone module **Module**
  *
  * 
- * Mother of All Models
+ * The mother of all modules. This is to extend the original Entity for module generation purposes. Of course it will still be a table of modules.
  *
  *
  * **General Note**
@@ -18,17 +18,17 @@
  * 				   collection.fetch() to populate the grid data upon rendering.
  * 
  * 
- * @module Entity
+ * @module Module
  * @author Tim.Liu (zhiyuanliu@fortinet.com)
  * @updated 
  * 
- * @generated on Thu Mar 21 2013 17:21:20 GMT+0800 (中国标准时间) 
+ * @generated on Fri Mar 22 2013 22:38:36 GMT+0800 (CST) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
 
 (function(app) {
-    var module = app.module("Entity");
+    var module = app.module("Module");
 
     /**
      *
@@ -37,7 +37,7 @@
      * We use the original Backbone.Model
      * [Not Backbone.RelationalModel, since it offers more trouble than solved]
      * 
-     * @class Application.Entity.Model
+     * @class Application.Module.Model
      */
     module.Model = Backbone.Model.extend({ //the id attribute to use
         idAttribute: '_id',
@@ -53,16 +53,19 @@
         schema: {
             name: {
                 type: "Text",
-                title: "Model"
+                title: "Module Name"
             },
             author: {
-                type: "Text"
+                type: "Text",
+                title: "Author"
             },
             description: {
-                type: "TextArea"
+                type: "TextArea",
+                title: "Description"
             },
             type: {
                 type: "Select",
+                title: "Type",
                 options: [{
                     val: "table",
                     label: "Table"
@@ -73,12 +76,14 @@
             },
             header: {
                 type: "List",
+                title: "Table Headers",
                 itemType: "Text"
             },
             fields: {
                 type: "CUSTOM_GRID",
+                title: "Fields",
                 moduleRef: "Field",
-                mode:"subDoc"
+                mode: "refDoc"
             },
         },
         //backbone.model.save will use this to merge server response back to model.
@@ -89,7 +94,7 @@
             return response;
         },
         initialize: function(data, options) {
-            this.urlRoot = (options && (options.urlRoot || options.url)) || '/api/Entity';
+            this.urlRoot = (options && (options.urlRoot || options.url)) || '/api/Module';
         }
 
     });
@@ -102,7 +107,7 @@
      * Backbone.PageableCollection is a strict superset of Backbone.Collection
      * We instead use the Backbone.PageableCollection for better paginate ability.
      *
-     * @class Application.Entity.Collection
+     * @class Application.Module.Collection
      */
     module.Collection = Backbone.PageableCollection.extend({ //model ref
         model: module.Model,
@@ -111,9 +116,9 @@
         },
         //register sync event::
         initialize: function(data, options) { //support for Backbone.Relational - collectionOptions
-            this.url = (options && options.url) || '/api/Entity';
+            this.url = (options && options.url) || '/api/Module';
             this.on('error', function() {
-                Application.error('Server Error', 'API::collection::Entity');
+                Application.error('Server Error', 'API::collection::Module');
             })
         }
 
@@ -121,10 +126,10 @@
 
     /**
      * **collection** 
-     * An instance of Application.Entity.Collection
+     * An instance of Application.Module.Collection
      * This collection is not nested in other models.
      * 
-     * @type Application.Entity.Collection
+     * @type Application.Module.Collection
      */
     module.collection = new module.Collection();
 
@@ -151,7 +156,7 @@
      * Backbone.Marionette.ItemView is used to wrap up the form view and 
      * related interactions. We do this in the onRender callback.
      *
-     * @class Application.Entity.View.Form
+     * @class Application.Module.View.Form
      */
     module.View.Extension.Form = {};
     module.View.Extension.Form.ConditionalDisplay = function(formCt) {
@@ -209,6 +214,7 @@
     module.View.Form = Backbone.Marionette.ItemView.extend({
         template: '#basic-form-view-wrap-tpl',
 
+
         className: 'basic-form-view-wrap',
 
         fieldsets: [
@@ -246,7 +252,9 @@
         },
         events: {
             'click .btn[action="submit"]': 'submitForm',
+
             'click .btn[action="cancel"]': 'closeForm',
+
             'change': 'onFieldValueChange',
         },
         //event listeners:
@@ -272,6 +280,7 @@
             } else { //delegating the save/upate action to the recordManager.
                 this.model.set(this.form.getValue());
                 this.recordManager.$el.trigger('event_SaveRecord', this);
+
             }
         },
         closeForm: function(e) {
@@ -279,6 +288,7 @@
             this.close();
             this.recordManager.$el.trigger('event_RefreshRecords');
         }
+
 
 
     });
@@ -292,7 +302,7 @@
      * Backbone.Marionette.ItemView is used to wrap up the datagrid view and 
      * related interactions. We do this in the onRender callback.
      *
-     * @class Application.Entity.View.DataGrid
+     * @class Application.Module.View.DataGrid
      */
     module.View.Extension.DataGrid = {};
     module.View.Extension.DataGrid.ActionCell = Backbone.Marionette.ItemView.extend({
@@ -304,7 +314,6 @@
         },
         //patch-in the id property for action locator.
         onRender: function() {
-            this.$el.find('div').append(' <span class="label" action="json">JSON</span>');
             this.$el.find('span[action]').attr('target', this.model.id || this.model.cid);
         }
     });
@@ -326,7 +335,11 @@
             cell: "boolean"
         }, {
             name: "name",
-            label: "Model",
+            label: "Module Name",
+            cell: "string"
+        }, {
+            name: "description",
+            label: "Description",
             cell: "string"
         }, {
             name: "type",
@@ -371,32 +384,10 @@
             'click .btn[action=new]': 'showForm',
             'click .action-cell span[action=edit]': 'showForm',
             'click .action-cell span[action=delete]': 'deleteRecord',
-            'click .action-cell span[action=json]': 'generateDefJSON',
             'event_SaveRecord': 'saveRecord',
             'event_RefreshRecords': 'refreshRecords',
         },
         //DOM event listeners:
-        generateDefJSON: function(e){
-            e.stopPropagation();
-            var info = e.currentTarget.attributes;
-            var m = this.collection.get(info['target'].value);
-
-            jQuery.post('/generateDefJSON', m.toJSON(), function(data, textStatus, xhr) {
-              //optional stuff to do after success
-              console.log(data);
-              if(data.file){
-                var drone = $('#hiddenframe');
-                if(drone.length > 0){
-                }else{
-                    $('body').append('<iframe id="hiddenframe" style="display:none"></iframe>');
-                    drone = $('#hiddenframe');
-                }
-                drone.attr('src', '/generateDefJSON?file='+data.file);
-              }
-            });
-            
-        },
-
         showForm: function(e) {
             e.stopPropagation();
             var info = e.currentTarget.attributes;
@@ -476,7 +467,7 @@
      * show a datagrid and a form/property grid stacked vertically. This view is mainly
      * there to respond to user's admin menu selection event.
      *
-     * @class Application.Entity.View.AdminLayout
+     * @class Application.Module.View.AdminLayout
      */
     module.View.AdminLayout = Backbone.Marionette.Layout.extend({
         template: '#custom-tpl-module-layout',
@@ -503,7 +494,7 @@
      * This is similar to AdminLayout but only using a different tpl to make datagrid
      * and form slide together thus fit into a parent form.
      *
-     * @class Application.Entity.View.EditorLayout
+     * @class Application.Module.View.EditorLayout
      */
     module.View.EditorLayout = Backbone.Marionette.Layout.extend({
         template: '#custom-tpl-module-layout',
@@ -536,7 +527,7 @@
      * 
      * The default view used with menu.
      * 
-     * @class Application.Entity.View.Default
+     * @class Application.Module.View.Default
      */
     module.View.Default = module.View.AdminLayout;
 

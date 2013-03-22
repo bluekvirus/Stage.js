@@ -6,9 +6,15 @@
     }, {
         "label": "Content",
         "items": [{
-            "label": "Modules",
+            "label": "Generator",
             "module": "Entity"
-        }, {
+        },{
+            "label": "Modules",
+            "module": "Module"
+        },{
+            "label": "Fields",
+            "module": "Field"
+        },{
             "label": "Users",
             "module": "User"
         },{
