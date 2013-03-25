@@ -116,16 +116,27 @@ legend > span {
 /**
  * Menu styles::;
  */
-.menu-item-wrapper {
+.menu-item {
   cursor: pointer;
 }
 
 ul.menu-tree > li {
   font-weight: bold;
+  cursor: pointer;
 }
 
 ul.menu-tree-leaf > li {
   font-style: italic;
+  padding: 2px;
+  border-radius: 6px;
+}
+
+ul.menu-tree-leaf > li:hover {
+  background-color: #ddd;
+}
+
+ul.menu-tree-leaf > li.selected {
+  background-color: #F89406;
 }
 
 .menu-accordion-item .menu-accordion-item-header {

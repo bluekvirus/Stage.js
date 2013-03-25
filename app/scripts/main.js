@@ -48,11 +48,12 @@ jQuery(document).ready(function($) {
 				navigateToModule: (function(){
 					var currentModule = '';
 					return function(module){
-							console.log(module);
+							//console.log(module);
 							if(Application[module]){
 								if(currentModule !== module){
 									Application.content.show(new Application[module].View.Default());
 									currentModule = module;
+									Application.trigger('navigateToModule', module);
 								}
 							}else
 								Application.error('Applicaton Routes Error', 'The module','<em class="label">', module,'</em>','you requested does not exist');
