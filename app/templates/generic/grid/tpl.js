@@ -42,6 +42,7 @@ Template.extend(
 Template.extend(	
 	'basic-propertygrid-view-wrap-tpl',
 	[
+		'<div region="title" class="alert alert-info">{{title}}</div>',
 		'<table class="table">',
 		'<tbody></tbody>',
 		'</table>'

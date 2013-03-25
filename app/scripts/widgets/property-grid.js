@@ -23,7 +23,8 @@ Application.Widget.register('PropertyGrid', function(){
 		 		this.collection = new Backbone.Collection();
 			 	_.each(options.data,function(val,key){
 			 		this.collection.add({key:key,val:val});
-			 	}, this);				
+			 	}, this);
+			 	this.model = new Backbone.Model(options.meta);				
 			}		
 	});
 
