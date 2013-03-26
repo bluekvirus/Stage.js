@@ -1,4 +1,9 @@
 /**
+ *
+ * =====================
+ * Module Definition
+ * =====================
+ * 
  * Generated through `models/field.json` for Backbone module **Field**
  *
  * 
@@ -22,13 +27,28 @@
  * @author Tim.Liu
  * @updated 
  * 
- * @generated on Fri Mar 22 2013 15:26:35 GMT+0800 (中国标准时间) 
+ * @generated on Tue Mar 26 2013 17:08:56 GMT+0800 (中国标准时间) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
 
 (function(app) {
+    /**
+     * ================================
+     * [*REQUIRED*] 
+     * 
+     * Module Name 
+     * ================================
+     */
     var module = app.module("Field");
+
+
+    /**
+     * ================================
+     * Module Data Sources
+     * [Model/Collection]
+     * ================================
+     */
 
     /**
      *
@@ -113,9 +133,12 @@
         },
         //backbone.model.save will use this to merge server response back to model.
         //this behaviour is not even optional...We really don't want the model to have
-        //this pre-set behaviour...
+        //this pre-set behaviour...	
         parse: function(response) {
-            if (response.payload) return response.payload; //to use mers on server.
+            if (response.payload) {
+                if (_.isArray(response.payload)) return response.payload[0]; //to use mers on server.
+                return response.payload;
+            }
             return response;
         },
         initialize: function(data, options) {
@@ -158,6 +181,13 @@
      */
     module.collection = new module.Collection();
 
+
+    /**
+     * ================================
+     * Module Views(+interactions)
+     * [Widgets]
+     * ================================
+     */
 
     /**
      * Start defining the View objects. e.g,
@@ -374,40 +404,41 @@
             body: '.datagrid-body-container',
             footer: '.datagrid-footer-container'
         },
-        columns: [{
-            name: "_selected_",
-            label: "",
-            sortable: false,
-            cell: "boolean"
-        }, {
-            name: "name",
-            label: "Field Name",
-            cell: "string"
-        }, {
-            name: "label",
-            label: "Label",
-            cell: "string"
-        }, {
-            name: "type",
-            label: "Type",
-            cell: "string"
-        }, {
-            name: "condition",
-            label: "Only Shown When",
-            cell: "string"
-        }, {
-            name: "editor",
-            label: "Editor",
-            cell: "string"
-        }, {
-            name: "_actions_",
-            label: "",
-            sortable: false,
-            cell: module.View.Extension.DataGrid.ActionCell
-        }],
         //remember the parent layout. So later on a 'new' or 'modify'
         //event will have a container region to render the form.
         initialize: function(options) {
+            this.columns = [{
+                name: "_selected_",
+                label: "",
+                sortable: false,
+                cell: "boolean"
+            }, {
+                name: "name",
+                label: "Field Name",
+                cell: "string"
+            }, {
+                name: "label",
+                label: "Label",
+                cell: "string"
+            }, {
+                name: "type",
+                label: "Type",
+                cell: "string"
+            }, {
+                name: "condition",
+                label: "Only Shown When",
+                cell: "string"
+            }, {
+                name: "editor",
+                label: "Editor",
+                cell: "string"
+            }, {
+                name: "_actions_",
+                label: "",
+                sortable: false,
+                cell: module.View.Extension.DataGrid.ActionCell
+            }];
+            this.mode = options.mode;
             this.parentCt = options.layout;
             this.editable = options.editable;
             var that = this;
@@ -424,7 +455,8 @@
             });
 
             this.ui.body.html(this.grid.render().el);
-            if (!this.parentCt.collectionRef) this.collection.fetch();
+            //if it is not in subDoc mode, we let the collection to fetch data itself.
+            if (this.mode !== 'subDoc') this.collection.fetch();
 
             //Do **NOT** register any event listeners here.
             //It might get registered again and again. 
@@ -463,7 +495,7 @@
             e.stopPropagation();
             //1.if this grid is used as top-level record holder:
             var that = this;
-            if (!this.parentCt.collectionRef) {
+            if (this.mode !== 'subDoc') {
                 sheet.model.save({}, {
                     error: function(model, res) {
                         var err = $.parseJSON(res.responseText).error;
@@ -480,7 +512,7 @@
                         } else Application.error('Server Error', 'Not yet saved...');
                     }
                 }); //save the model to server
-            } else { //2.else if this grid is used as an editor for sub-field:
+            } else { //2.else if this grid is used in subDoc mode for sub-field:
                 //add or update the model into the referenced collection:
                 this.collection.add(sheet.model, {
                     merge: true
@@ -514,6 +546,14 @@
 
     });
 
+    /**
+     * ================================
+     * [*REQUIRED*]
+     *  
+     * Module Layout
+     * Opt.[+interactions] 
+     * ================================
+     */
 
     /**
      * **View.AdminLayout**
@@ -564,18 +604,31 @@
             this.collectionRef = new module.Collection(options.data, {
                 url: options.apiUrl
             });
+
+            this.datagridMode = options.datagridMode;
         },
         onRender: function() {
             this.list.show(new module.View.DataGrid({
                 collection: this.collectionRef,
                 layout: this,
-                editable: false //in-place edit default off.
+                mode: this.datagridMode,
+                editable: false,
+                //in-place edit default off.
             }));
         }
     });
 
 
 
+
+    /**
+     * ================================
+     * [*REQUIRED*] 
+     * 
+     * Module's default menu view
+     * (Points to a layout view above)
+     * ================================
+     */
 
     /**
      * **View.Default**
@@ -588,3 +641,12 @@
 
 
 })(Application);
+
+
+/**
+ * ==========================================
+ * Module Specific Tpl
+ * [Generic tpls go to templates/generic/...]
+ * ==========================================
+ * e.g. Template.extend('id', ['<div>', '...', </div>]);
+ */

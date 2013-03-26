@@ -1,28 +1,24 @@
 
 /**
+ * Extenson Type A:: Direct
  * Used to extend the Entity module to have it support 'export JSON definition'
  * functionality. The .json file is the one that's ready to be used with gen2.js
  * 
  */
 
-Application.Entity.View.Extension.DataGrid.ActionCell = Application.Entity.View.Extension.DataGrid.ActionCell.extend({
+_.extend(Application.Entity.View.Extension.DataGrid.ActionCell.prototype, {
     onRender: function() {
         this.$el.find('div').append(' <span class="label" action="json">JSON</span>');
         this.$el.find('span[action]').attr('target', this.model.id || this.model.cid);
     }
 });
 
-console.log(Application.Entity.View.Extension.DataGrid.ActionCell);
 
-Application.Entity.View.DataGrid = _.extend(Application.Entity.View.DataGrid, {
-        events: {
-            'click .btn[action=new]': 'showForm',
-            'click .action-cell span[action=edit]': 'showForm',
-            'click .action-cell span[action=delete]': 'deleteRecord',
-            'click .action-cell span[action=json]': 'generateDefJSON',
-            'event_SaveRecord': 'saveRecord',
-            'event_RefreshRecords': 'refreshRecords',
-        },
+_.extend(Application.Entity.View.DataGrid.prototype.events, {
+    'click .action-cell span[action=json]': 'generateDefJSON',
+});
+
+_.extend(Application.Entity.View.DataGrid.prototype, {
         generateDefJSON: function(e){
             e.stopPropagation();
             var info = e.currentTarget.attributes;
@@ -31,6 +27,15 @@ Application.Entity.View.DataGrid = _.extend(Application.Entity.View.DataGrid, {
             jQuery.post('/generateDefJSON', m.toJSON(), function(data, textStatus, xhr) {
               //optional stuff to do after success
               console.log(data);
+              if(data.file){
+                var drone = $('#hiddenframe');
+                if(drone.length > 0){
+                }else{
+                    $('body').append('<iframe id="hiddenframe" style="display:none"></iframe>');
+                    drone = $('#hiddenframe');
+                }
+                drone.attr('src', '/generateDefJSON?file='+data.file);
+              }
             });
             
         },

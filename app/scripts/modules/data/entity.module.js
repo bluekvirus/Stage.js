@@ -1,4 +1,9 @@
 /**
+ *
+ * =====================
+ * Module Definition
+ * =====================
+ * 
  * Generated through `models/entity.json` for Backbone module **Entity**
  *
  * 
@@ -22,13 +27,28 @@
  * @author Tim.Liu (zhiyuanliu@fortinet.com)
  * @updated 
  * 
- * @generated on Thu Mar 21 2013 17:21:20 GMT+0800 (中国标准时间) 
+ * @generated on Tue Mar 26 2013 17:13:06 GMT+0800 (中国标准时间) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
 
 (function(app) {
+    /**
+     * ================================
+     * [*REQUIRED*] 
+     * 
+     * Module Name 
+     * ================================
+     */
     var module = app.module("Entity");
+
+
+    /**
+     * ================================
+     * Module Data Sources
+     * [Model/Collection]
+     * ================================
+     */
 
     /**
      *
@@ -78,14 +98,17 @@
             fields: {
                 type: "CUSTOM_GRID",
                 moduleRef: "Field",
-                mode:"subDoc"
+                mode: "subDoc"
             },
         },
         //backbone.model.save will use this to merge server response back to model.
         //this behaviour is not even optional...We really don't want the model to have
-        //this pre-set behaviour...
+        //this pre-set behaviour...	
         parse: function(response) {
-            if (response.payload) return response.payload; //to use mers on server.
+            if (response.payload) {
+                if (_.isArray(response.payload)) return response.payload[0]; //to use mers on server.
+                return response.payload;
+            }
             return response;
         },
         initialize: function(data, options) {
@@ -128,6 +151,13 @@
      */
     module.collection = new module.Collection();
 
+
+    /**
+     * ================================
+     * Module Views(+interactions)
+     * [Widgets]
+     * ================================
+     */
 
     /**
      * Start defining the View objects. e.g,
@@ -209,6 +239,7 @@
     module.View.Form = Backbone.Marionette.ItemView.extend({
         template: '#basic-form-view-wrap-tpl',
 
+
         className: 'basic-form-view-wrap',
 
         fieldsets: [
@@ -246,7 +277,9 @@
         },
         events: {
             'click .btn[action="submit"]': 'submitForm',
+
             'click .btn[action="cancel"]': 'closeForm',
+
             'change': 'onFieldValueChange',
         },
         //event listeners:
@@ -272,6 +305,7 @@
             } else { //delegating the save/upate action to the recordManager.
                 this.model.set(this.form.getValue());
                 this.recordManager.$el.trigger('event_SaveRecord', this);
+
             }
         },
         closeForm: function(e) {
@@ -279,6 +313,7 @@
             this.close();
             this.recordManager.$el.trigger('event_RefreshRecords');
         }
+
 
 
     });
@@ -304,7 +339,6 @@
         },
         //patch-in the id property for action locator.
         onRender: function() {
-            this.$el.find('div').append(' <span class="label" action="json">JSON</span>');
             this.$el.find('span[action]').attr('target', this.model.id || this.model.cid);
         }
     });
@@ -319,28 +353,29 @@
             body: '.datagrid-body-container',
             footer: '.datagrid-footer-container'
         },
-        columns: [{
-            name: "_selected_",
-            label: "",
-            sortable: false,
-            cell: "boolean"
-        }, {
-            name: "name",
-            label: "Model",
-            cell: "string"
-        }, {
-            name: "type",
-            label: "Type",
-            cell: "string"
-        }, {
-            name: "_actions_",
-            label: "",
-            sortable: false,
-            cell: module.View.Extension.DataGrid.ActionCell
-        }],
         //remember the parent layout. So later on a 'new' or 'modify'
         //event will have a container region to render the form.
         initialize: function(options) {
+            this.columns = [{
+                name: "_selected_",
+                label: "",
+                sortable: false,
+                cell: "boolean"
+            }, {
+                name: "name",
+                label: "Model",
+                cell: "string"
+            }, {
+                name: "type",
+                label: "Type",
+                cell: "string"
+            }, {
+                name: "_actions_",
+                label: "",
+                sortable: false,
+                cell: module.View.Extension.DataGrid.ActionCell
+            }];
+            this.mode = options.mode;
             this.parentCt = options.layout;
             this.editable = options.editable;
             var that = this;
@@ -357,7 +392,8 @@
             });
 
             this.ui.body.html(this.grid.render().el);
-            if (!this.parentCt.collectionRef) this.collection.fetch();
+            //if it is not in subDoc mode, we let the collection to fetch data itself.
+            if (this.mode !== 'subDoc') this.collection.fetch();
 
             //Do **NOT** register any event listeners here.
             //It might get registered again and again. 
@@ -371,31 +407,10 @@
             'click .btn[action=new]': 'showForm',
             'click .action-cell span[action=edit]': 'showForm',
             'click .action-cell span[action=delete]': 'deleteRecord',
-            'click .action-cell span[action=json]': 'generateDefJSON',
             'event_SaveRecord': 'saveRecord',
             'event_RefreshRecords': 'refreshRecords',
         },
         //DOM event listeners:
-        generateDefJSON: function(e){
-            e.stopPropagation();
-            var info = e.currentTarget.attributes;
-            var m = this.collection.get(info['target'].value);
-
-            jQuery.post('/generateDefJSON', m.toJSON(), function(data, textStatus, xhr) {
-              //optional stuff to do after success
-              console.log(data);
-              if(data.file){
-                var drone = $('#hiddenframe');
-                if(drone.length > 0){
-                }else{
-                    $('body').append('<iframe id="hiddenframe" style="display:none"></iframe>');
-                    drone = $('#hiddenframe');
-                }
-                drone.attr('src', '/generateDefJSON?file='+data.file);
-              }
-            });
-            
-        },
 
         showForm: function(e) {
             e.stopPropagation();
@@ -417,7 +432,7 @@
             e.stopPropagation();
             //1.if this grid is used as top-level record holder:
             var that = this;
-            if (!this.parentCt.collectionRef) {
+            if (this.mode !== 'subDoc') {
                 sheet.model.save({}, {
                     error: function(model, res) {
                         var err = $.parseJSON(res.responseText).error;
@@ -434,7 +449,7 @@
                         } else Application.error('Server Error', 'Not yet saved...');
                     }
                 }); //save the model to server
-            } else { //2.else if this grid is used as an editor for sub-field:
+            } else { //2.else if this grid is used in subDoc mode for sub-field:
                 //add or update the model into the referenced collection:
                 this.collection.add(sheet.model, {
                     merge: true
@@ -468,6 +483,14 @@
 
     });
 
+    /**
+     * ================================
+     * [*REQUIRED*]
+     *  
+     * Module Layout
+     * Opt.[+interactions] 
+     * ================================
+     */
 
     /**
      * **View.AdminLayout**
@@ -518,18 +541,31 @@
             this.collectionRef = new module.Collection(options.data, {
                 url: options.apiUrl
             });
+
+            this.datagridMode = options.datagridMode;
         },
         onRender: function() {
             this.list.show(new module.View.DataGrid({
                 collection: this.collectionRef,
                 layout: this,
-                editable: false //in-place edit default off.
+                mode: this.datagridMode,
+                editable: false,
+                //in-place edit default off.
             }));
         }
     });
 
 
 
+
+    /**
+     * ================================
+     * [*REQUIRED*] 
+     * 
+     * Module's default menu view
+     * (Points to a layout view above)
+     * ================================
+     */
 
     /**
      * **View.Default**
@@ -542,3 +578,12 @@
 
 
 })(Application);
+
+
+/**
+ * ==========================================
+ * Module Specific Tpl
+ * [Generic tpls go to templates/generic/...]
+ * ==========================================
+ * e.g. Template.extend('id', ['<div>', '...', </div>]);
+ */
