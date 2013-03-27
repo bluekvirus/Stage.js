@@ -30,4 +30,12 @@
             "module": "Nothing"
         }
     ]
+}, {
+    "label": "Tests",
+    "items": [
+        {
+            "label": "Modem",
+            "module": "Modem"
+        }
+    ]
 }]

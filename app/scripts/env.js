@@ -169,7 +169,43 @@
 	/**
 	 * =========================
 	 * RESTful data interfacing:
+	 * [Backbone] req/res trans
 	 * =========================
 	 */
+	
+
+
+
+	/**
+	 * ==============================
+	 * Try/Patch scripts/css loading:
+	 * ==============================
+	 */
+	
+	//worker function [all shorthands extend from this one]
+	var _patch = function(server, payload, type){
+        var path = payload;
+        $.ajax({
+            url: server,
+            async: false, //sync or else the loading won't occure before page ready.
+            data: {payload: path, type: type},
+            dataType: 'json',
+            success: function(json, textStatus) {
+              //optional stuff to do after success
+              if(json.files){
+                _.each(json.files, function(f, index){
+                    $('body').append('<script type="text/javascript" src="'+path+'/'+f+'"/>');
+                });
+              }else{
+                Application.error('Auto Loader Error', json.error);
+              }
+            }
+        });
+	}
+
+	//shorthand methods
+	Application.patchScripts = function(){
+		_patch('/try/scripts', 'scripts/_try', '\.js');
+	} 
 
 })();
