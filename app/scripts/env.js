@@ -3,10 +3,22 @@
  * All the data/msg are rewired here.
  *
  * @author Tim.Liu
- * @update 2013.03.08
+ * @update 2013.03.28
  */
 
 (function(){
+
+	/**
+	 * ============================
+	 * Theme detector/roller
+	 * ============================
+	 */
+    var themeCatcher = new RegExp('theme=([\\d\\w]*)');
+    var theme = themeCatcher.exec(location.search);
+    if(!theme){
+    	theme = ['','_default'];
+    }
+    $('#theme-roller').attr('href', 'themes/'+theme[1]+'/styles/main.css');
 
 	/**
 	 * ============================
@@ -16,7 +28,6 @@
 	//Create the global Application var for modules to be registered on.
 	window.Application = new Backbone.Marionette.Application();
 	
-
 
 	/**
 	 * =========================
@@ -205,7 +216,7 @@
 
 	//shorthand methods
 	Application.patchScripts = function(){
-		_patch('/try/scripts', 'scripts/_try', '\.js');
+		_patch('/try/scripts', 'scripts/_try', 'js');
 	} 
 
 })();
