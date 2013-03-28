@@ -173,6 +173,28 @@
 	 */
 	
 
+
+	/**
+	 * ================================
+	 * Application universal downloader
+	 * ================================
+	 */
+
+	var _downloader = function(server, ticket){
+        var drone = $('#hiddenframe');
+        if(drone.length > 0){
+        }else{
+            $('body').append('<iframe id="hiddenframe" style="display:none"></iframe>');
+            drone = $('#hiddenframe');
+        }
+        drone.attr('src', server+'?name='+ticket.name+'&file='+ticket.file+'&type='+ticket.type);
+	};
+
+	Application.downloader = function(ticket){
+		return _downloader('/download', ticket);
+	}
+
+
 	/**
 	 * ============================
 	 * Theme detector/roller

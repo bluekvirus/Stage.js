@@ -18,36 +18,55 @@
 
         'View.Extension.DataGrid.ActionCell':{
             onRender: function() {
-                this.$el.find('div').append(' <span class="label" action="json">JSON</span>');
+                this.$el.find('div').append(
+                        ' <span class="label" action="json">JSON</span> '+
+                        ' <span class="label label-success" action="src" srctype="module">Module</span> '+
+                        ' <span class="label label-info" action="src" srctype="mongoose">Mongoose</span> '+
+                        ' <span class="label label-inverse" action="src" srctype="extension">ext.B</span> '
+                    );
                 this.$el.find('span[action]').attr('target', this.model.id || this.model.cid);
             }
         },
 
         'View.DataGrid.events': {
             'click .action-cell span[action=json]': 'generateDefJSON',
+            'click .action-cell span[action=src]': 'generateSrc',
         },
 
         'View.DataGrid': {
+            _postAndDownload: function(url, params){
+                jQuery.post(url, params, function(data, textStatus, xhr) {
+                  //optional stuff to do after success
+                  console.log(data);
+                  if(data.file){
+                    Application.downloader({
+                        name: params.name,
+                        file: data.file,
+                        type: data.type
+                    });
+                  }
+                });
+                
+            },
+
             generateDefJSON: function(e){
                 e.stopPropagation();
                 var info = e.currentTarget.attributes;
                 var m = this.collection.get(info['target'].value);
 
-                jQuery.post('/generateDefJSON', m.toJSON(), function(data, textStatus, xhr) {
-                  //optional stuff to do after success
-                  console.log(data);
-                  if(data.file){
-                    var drone = $('#hiddenframe');
-                    if(drone.length > 0){
-                    }else{
-                        $('body').append('<iframe id="hiddenframe" style="display:none"></iframe>');
-                        drone = $('#hiddenframe');
-                    }
-                    drone.attr('src', '/generateDefJSON?name='+m.get('name')+'&file='+data.file);
-                  }
-                });
+                this._postAndDownload('/generateDefJSON', m.toJSON());
                 
             },
+
+            generateSrc: function(e){
+                e.stopPropagation();
+                var info = e.currentTarget.attributes;
+                var m = this.collection.get(info['target'].value);
+                var type = info['srctype'].value;
+
+                this._postAndDownload('/generateSrc?type='+type, m.toJSON());
+                
+            }
         }
 
     });
