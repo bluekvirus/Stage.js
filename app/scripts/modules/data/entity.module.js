@@ -27,7 +27,7 @@
  * @author Tim.Liu (zhiyuanliu@fortinet.com)
  * @updated 
  * 
- * @generated on Tue Mar 26 2013 17:13:06 GMT+0800 (中国标准时间) 
+ * @generated on Fri Mar 29 2013 09:54:54 GMT+0800 (中国标准时间) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
@@ -94,6 +94,10 @@
             header: {
                 type: "List",
                 itemType: "Text"
+            },
+            serverApi: {
+                type: "Text",
+                title: "Server Data API"
             },
             fields: {
                 type: "CUSTOM_GRID",
@@ -243,7 +247,7 @@
         className: 'basic-form-view-wrap',
 
         fieldsets: [
-            ["name", "author", "description", "type", "header", "fields"]
+            ["name", "author", "description", "type", "header", "serverApi", "fields"]
         ],
         ui: {
             header: '.form-header-container',
