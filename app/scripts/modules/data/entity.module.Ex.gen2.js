@@ -40,6 +40,7 @@
                   console.log(data);
                   if(data.file){
                     Application.downloader({
+                        url: '/admin/downloadGenerated',
                         name: params.name,
                         file: data.file,
                         type: data.type
@@ -54,7 +55,7 @@
                 var info = e.currentTarget.attributes;
                 var m = this.collection.get(info['target'].value);
 
-                this._postAndDownload('/generateDefJSON', m.toJSON());
+                this._postAndDownload('/admin/generateDefJSON', m.toJSON());
                 
             },
 
@@ -64,7 +65,7 @@
                 var m = this.collection.get(info['target'].value);
                 var type = info['srctype'].value;
 
-                this._postAndDownload('/generateSrc?type='+type, m.toJSON());
+                this._postAndDownload('/admin/generateSrc?type='+type, m.toJSON());
                 
             }
         }

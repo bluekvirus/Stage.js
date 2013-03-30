@@ -187,7 +187,7 @@
             $('body').append('<iframe id="hiddenframe" style="display:none"></iframe>');
             drone = $('#hiddenframe');
         }
-        drone.attr('src', server+'?name='+ticket.name+'&file='+ticket.file+'&type='+ticket.type);
+        drone.attr('src', (ticket.url || server)+'?name='+ticket.name+'&file='+ticket.file+'&type='+ticket.type);
 	};
 
 	Application.downloader = function(ticket){
