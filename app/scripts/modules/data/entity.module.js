@@ -4,7 +4,7 @@
  * Module Definition
  * =====================
  * 
- * Generated through `models/entity.json` for Backbone module **Entity**
+ * Generated through `def_models/entity.json` for Backbone module **Entity**
  *
  * 
  * Mother of All Models
@@ -27,7 +27,7 @@
  * @author Tim.Liu (zhiyuanliu@fortinet.com)
  * @updated 
  * 
- * @generated on Fri Mar 29 2013 09:54:54 GMT+0800 (中国标准时间) 
+ * @generated on Sun Mar 31 2013 16:54:02 GMT+0800 (CST) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
@@ -99,6 +99,11 @@
                 type: "Text",
                 title: "Server Data API"
             },
+            autoAdminMenuPath: {
+                type: "List",
+                title: "Admin Menu Path",
+                itemType: "Text"
+            },
             fields: {
                 type: "CUSTOM_GRID",
                 moduleRef: "Field",
@@ -116,7 +121,7 @@
             return response;
         },
         initialize: function(data, options) {
-            this.urlRoot = (options && (options.urlRoot || options.url)) || '/api/Entity';
+            this.urlRoot = (options && (options.urlRoot || options.url)) || '' || '/api/Entity';
         }
 
     });
@@ -138,7 +143,7 @@
         },
         //register sync event::
         initialize: function(data, options) { //support for Backbone.Relational - collectionOptions
-            this.url = (options && options.url) || '/api/Entity';
+            this.url = (options && options.url) || '' || '/api/Entity';
             this.on('error', function() {
                 Application.error('Server Error', 'API::collection::Entity');
             })
@@ -247,7 +252,7 @@
         className: 'basic-form-view-wrap',
 
         fieldsets: [
-            ["name", "author", "description", "type", "header", "serverApi", "fields"]
+            ["name", "author", "description", "type", "header", "serverApi", "autoAdminMenuPath", "fields"]
         ],
         ui: {
             header: '.form-header-container',
@@ -415,7 +420,6 @@
             'event_RefreshRecords': 'refreshRecords',
         },
         //DOM event listeners:
-
         showForm: function(e) {
             e.stopPropagation();
             var info = e.currentTarget.attributes;
@@ -506,13 +510,22 @@
      * @class Application.Entity.View.AdminLayout
      */
     module.View.AdminLayout = Backbone.Marionette.Layout.extend({
-        template: '#custom-tpl-module-layout',
+        template: '#custom-tpl-layout-module-admin',
 
-        className: 'module-admin-layout-wrap',
+        className: 'custom-tpl-layout-wrapper module-admin-layout-wrap',
 
         regions: {
             list: '.list-view-region',
             detail: '.details-view-region'
+        },
+        //Metadata for layout tpl. e.g. meta.title
+        meta: {
+            title: 'Entity Manager'
+        },
+        initialize: function(options) {
+            if (!options || !options.model) this.model = new Backbone.Model({
+                meta: this.meta
+            });
         },
         onRender: function() {
             this.list.show(new module.View.DataGrid({
@@ -533,7 +546,7 @@
      * @class Application.Entity.View.EditorLayout
      */
     module.View.EditorLayout = Backbone.Marionette.Layout.extend({
-        template: '#custom-tpl-module-layout',
+        template: '#custom-tpl-layout-module-admin',
 
         className: 'module-editor-layout-wrap',
 
@@ -579,6 +592,18 @@
      * @class Application.Entity.View.Default
      */
     module.View.Default = module.View.AdminLayout;
+
+
+    /**
+     * ================================
+     * Admin Menu Auto-load Path
+     * 
+     * Parents node of a non-existing path
+     * will be created in menu module]
+     * ================================
+     */
+    module.defaultAdminPath = 'Miscellaneous->Development->Generator';
+
 
 
 })(Application);

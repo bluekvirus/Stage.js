@@ -3,39 +3,17 @@
     "items": [{
         "label": "Dashboard",
         "module": "Dashboard"
-    }, {
-        "label": "Content",
-        "items": [{
-            "label": "Generator",
-            "module": "Entity"
-        },{
-            "label": "Modules",
-            "module": "Module"
-        },{
-            "label": "Fields",
-            "module": "Field"
-        },{
-            "label": "Users",
-            "module": "User"
-        },{
-            "label": "Status",
-            "module": "StatusPanel"
-        }]
     }]
-}, {
+},{
+    "label": "Content Manager"
+},{
+    "label": "Log & Report"
+},{
     "label": "Miscellaneous",
     "items": [
         {
             "label": "Other",
             "module": "Nothing"
-        }
-    ]
-}, {
-    "label": "Tests",
-    "items": [
-        {
-            "label": "Modem",
-            "module": "Modem"
         }
     ]
 }]

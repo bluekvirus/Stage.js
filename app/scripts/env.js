@@ -83,7 +83,7 @@
 	    },
 
 	    getValue: function() {
-	    	if(this.delegatedEditor)
+	    	if(this.delegatedEditor && this.datagridMode === 'subDoc')
 	    		return this.delegatedEditor.collectionRef.toJSON(); //return the collection.
 	    },
 

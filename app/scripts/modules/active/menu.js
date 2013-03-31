@@ -18,7 +18,7 @@
  * =====================
  *
  * @author Yan Zhu (yanzhu@fortinet.com), Tim Liu (zhiyuanliu@fortinet.com)
- * @update 2013.03.22
+ * @update 2013.03.31
  */
 (function(app) {
 
@@ -38,13 +38,10 @@
      * ================================
      */
     module.Model = Backbone.Model.extend({});
-
     module.Collection = Backbone.Collection.extend({
         model: module.Model,
-        url: './data/menu.json'
     });
-
-    module.collection = new module.Collection();
+    var _dataURL = './data/menu.json';
 
     /**
      * ================================
@@ -174,75 +171,27 @@
         itemView: module.View.AccordionItemView,
 
         initialize: function(){
-
-            this.collection = module.collection;
-
-            var that = this;
-
-            this.collection.fetch({
-
-                success: function(collection, response, options) {
-
-                    collection.dataChanged = true;
-
-                    that.render();
-                },
-
-                error: function(collection, xhr, options) {
-
-                    var errorHtml = [
-                        '<div style="color:red;font-weight:bold;">',
-                            'Load Menu Data Error!',
-                        '</div>',
-                        '<div style="color:red;">',
-                            xhr.responseText,
-                        '</div>'
-                    ].join('');
-
-                    that.$el.html(errorHtml);
-                }
-
-            });
-
             // Listen to Application 'navigateToModule' event
             this.listenTo(app, 'navigateToModule', this.changeSelected);
-
         },
 
         onRender: function() {
-
-            if (this.collection.dataChanged) {
-
-                this.$el.accordion({
-                    header: '.menu-accordion-item-header',
-                    event: 'click',
-                    heightStyle: 'content'
-                });
-
-                if (this.selectedModule) {
-                    this.selectModule(this.selectedModule);
-                }
-
-                this.collection.dataChanged = false;
-
-            }
+            // Activate the accordion after rendered
+            this.$el.accordion({
+                header: '.menu-accordion-item-header',
+                event: 'click',
+                heightStyle: 'content'
+            });
 
         },
 
         changeSelected: function(moduleName) {
-
-            if (moduleName !== this.selectedModule) {
-
-                this.$el.find('[module="'+this.selectedModule+'"]').removeClass('selected');
-
-                this.selectModule(moduleName);
-
-                this.selectedModule = moduleName;
-            }
+            this._selectModule(moduleName);
         },
 
-        selectModule: function(moduleName) {
+        _selectModule: function(moduleName) {
 
+            this.$el.find('[module]').removeClass('selected');
             var li = this.$el.find('[module="'+moduleName+'"]');
 
             li.addClass('selected');
@@ -253,9 +202,122 @@
                 li.parents('.menu-tree').show().children('ul').show();
                 li.parents('.menu-accordion-item').find('.menu-accordion-item-header').click();
             }
+
         }
 
     });
+
+
+    /**
+     * 
+     * Private worker, for fetching pre-set menu structure
+     * and register the modules if they have the defaultAdminPath set.
+     *
+     * **NOTE** that async data fetching might screw up the init seq, thus making
+     * the first 'navigateToModule' event lost.
+     * 
+     * @param  {[String]} url this would be the server path to fetch menu.json.
+     * 
+     */
+    var _prepareMenuData = function(url, cb){
+        $.ajax({
+            url: url,
+            async: false,
+            success: function(data, textStatus, xhr) {
+          
+            //register module pre-set path to the menu data object:
+            _.each(app.submodules, function(sMod, name){
+                if(sMod.defaultAdminPath){
+                    _mergePath(data, sMod.defaultAdminPath.split('->'), name);
+                }
+            })
+
+            console.log(data);
+            //call the cb to render the menu view.
+            cb(new module.Collection(data));
+
+            }
+        });
+        
+    }
+
+    //No order atm...just append.
+    var _mergePath = function(originalPathArray, newPathDescriptor, moduleName){
+        if(!newPathDescriptor || newPathDescriptor.length === 0) return;
+
+        if(newPathDescriptor.length === 1){
+            originalPathArray.push({
+                label: newPathDescriptor[0],
+                module: moduleName
+            })
+            return;
+        }
+
+        var nodeLabel = newPathDescriptor.shift();
+        var target = _.findWhere(originalPathArray, {label: nodeLabel});
+        if(target){
+            target.items = target.items || [];
+            _mergePath(target.items, newPathDescriptor, moduleName);
+        }else{
+            var node = {
+                label: nodeLabel,
+                items: []
+            }
+            originalPathArray.push(node);
+            _mergePath(node.items, newPathDescriptor, moduleName);
+        }
+        
+    }
+
+    /**
+     * ================================
+     * [*REQUIRED*]
+     *  
+     * Module Layout
+     * Opt.[+interactions] 
+     * ================================
+     */ 
+    module.View.AccordionLayout = Backbone.Marionette.Layout.extend({
+
+        template: "#custom-tpl-layout-menu-accordion",            
+        
+        className: "custom-tpl-layout-wrapper",
+
+        regions: {
+            header: '.menu-header',
+            body: '.menu-body',
+            footer: '.menu-footer'
+        },
+        
+        meta: {
+
+        },
+
+        initialize:function(options){
+            if(!options || !options.model)
+                this.model = new Backbone.Model({meta:this.meta});
+        },
+
+        onRender:function(){
+            var that = this;
+            _prepareMenuData(_dataURL, function(mCollection){
+                that.body.show(new module.View.AccordionView({collection: mCollection}));
+            })
+            
+        }
+
+
+    });
+
+    /**
+     * ================================
+     * [*REQUIRED*] 
+     * 
+     * Module's default menu view
+     * (Points to a layout view above)
+     * ================================
+     */
+    module.View.Default = module.View.AccordionLayout;
 
 })(Application);
 
@@ -294,3 +356,18 @@ Template.extend(
         '</li>'
     ]
 );
+
+/**
+ * Accordion Layout Wrapper tpl
+ */
+Template.extend(
+    'custom-tpl-layout-menu-accordion',
+    [
+        '<div class="menu-header"></div>',
+        '<div class="menu-body"></div>',
+        '<div class="menu-footer"></div>'
+
+    ]
+);
+
+

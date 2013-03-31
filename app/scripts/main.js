@@ -34,7 +34,7 @@ jQuery(document).ready(function($) {
 	//Application init:1 
 	Application.addInitializer(function(options){
 		//init menu,(banner, footer) and dashboard/welcome view.
-		Application.sidebar.show(new Application.Menu.View.AccordionView());
+		Application.sidebar.show(new Application.Menu.View.Default());
 	});
 
 	//Application init:2

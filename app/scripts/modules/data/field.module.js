@@ -4,7 +4,7 @@
  * Module Definition
  * =====================
  * 
- * Generated through `models/field.json` for Backbone module **Field**
+ * Generated through `def_models/field.json` for Backbone module **Field**
  *
  * 
  * 
@@ -27,7 +27,7 @@
  * @author Tim.Liu
  * @updated 
  * 
- * @generated on Tue Mar 26 2013 17:08:56 GMT+0800 (中国标准时间) 
+ * @generated on Sun Mar 31 2013 12:07:24 GMT+0800 (CST) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
@@ -142,7 +142,7 @@
             return response;
         },
         initialize: function(data, options) {
-            this.urlRoot = (options && (options.urlRoot || options.url)) || '/api/Field';
+            this.urlRoot = (options && (options.urlRoot || options.url)) || '' || '/api/Field';
         }
 
     });
@@ -164,7 +164,7 @@
         },
         //register sync event::
         initialize: function(data, options) { //support for Backbone.Relational - collectionOptions
-            this.url = (options && options.url) || '/api/Field';
+            this.url = (options && options.url) || '' || '/api/Field';
             this.on('error', function() {
                 Application.error('Server Error', 'API::collection::Field');
             })
@@ -474,7 +474,6 @@
             'event_RefreshRecords': 'refreshRecords',
         },
         //DOM event listeners:
-
         showForm: function(e) {
             e.stopPropagation();
             var info = e.currentTarget.attributes;
@@ -565,13 +564,22 @@
      * @class Application.Field.View.AdminLayout
      */
     module.View.AdminLayout = Backbone.Marionette.Layout.extend({
-        template: '#custom-tpl-module-layout',
+        template: '#custom-tpl-layout-module-admin',
 
-        className: 'module-admin-layout-wrap',
+        className: 'custom-tpl-layout-wrapper module-admin-layout-wrap',
 
         regions: {
             list: '.list-view-region',
             detail: '.details-view-region'
+        },
+        //Metadata for layout tpl. e.g. meta.title
+        meta: {
+            title: 'Field Manager'
+        },
+        initialize: function(options) {
+            if (!options || !options.model) this.model = new Backbone.Model({
+                meta: this.meta
+            });
         },
         onRender: function() {
             this.list.show(new module.View.DataGrid({
@@ -592,7 +600,7 @@
      * @class Application.Field.View.EditorLayout
      */
     module.View.EditorLayout = Backbone.Marionette.Layout.extend({
-        template: '#custom-tpl-module-layout',
+        template: '#custom-tpl-layout-module-admin',
 
         className: 'module-editor-layout-wrap',
 

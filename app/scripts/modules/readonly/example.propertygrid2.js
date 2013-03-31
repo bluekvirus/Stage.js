@@ -86,7 +86,7 @@
 Template.extend(
 	'custom-tpl-status-panel-layout',
 	[
-		'<div region="content">',
+		'<div class="custom-tpl-layout-wrapper" region="content">',
 			'<div region="gridA"></div>',
 			'<div region="gridB"></div>',
 		'</div>'

@@ -2,11 +2,10 @@
  * Basic region layout style::;
  */
 .application-container .body .sidebar {
-  padding: 0 20px;
 }
 
 .application-container .body .content {
-  padding: 10px 20px 10px 0;
+  margin-left: 5px;
 }
 
 /**
@@ -57,6 +56,18 @@
 }
 
 /* End of imports */
+
+
+/**
+ * General style classes
+ */
+.custom-tpl-layout-wrapper {
+  padding: 20px 30px;
+}
+/**
+ * End of general classes
+ */
+
 
 /**
  * Form styles::;
