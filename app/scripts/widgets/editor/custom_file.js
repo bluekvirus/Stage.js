@@ -11,7 +11,8 @@
 
     //editor UI::
     var FileEleView = Backbone.Marionette.ItemView.extend({
-        template: '#custom-tpl-widget-editor-file-item'
+        template: '#custom-tpl-widget-editor-file-item',
+        tagName: 'tr'
     });
     var EditorView = Backbone.Marionette.CompositeView.extend({
         template: '#custom-tpl-widget-editor-file',
@@ -71,11 +72,9 @@
     Template.extend(
         'custom-tpl-widget-editor-file-item',
         [
-            '<tr>',
             '<td>{{name}}</td>',
             '<td>{{size}}</td>',
-            '<td>{{#each actions}}<span class="action-trigger action-trigger-{{this.action}} label" action={{this.action}}>{{this.lable}}</span> {{/each}}</td>',
-            '</tr>'
+            '<td>{{#each actions}}<span class="action-trigger action-trigger-{{this.action}} label" action={{this.action}}>{{this.lable}}</span> {{/each}}</td>'
         ]
     );    
 
