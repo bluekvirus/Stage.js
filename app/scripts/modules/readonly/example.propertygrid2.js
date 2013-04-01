@@ -72,6 +72,8 @@
 	 */
 	module.View = {Default:PropertyLayout};
 
+	module.defaultAdminPath = "System->Dashboard->Status Example";
+
 })(Application);
 
 
