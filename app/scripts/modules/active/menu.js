@@ -232,7 +232,7 @@
                 }
             })
 
-            console.log(data);
+            //console.log(data);
             //call the cb to render the menu view.
             cb(new module.Collection(data));
 

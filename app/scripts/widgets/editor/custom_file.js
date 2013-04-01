@@ -15,8 +15,30 @@
     });
     var EditorView = Backbone.Marionette.CompositeView.extend({
         template: '#custom-tpl-widget-editor-file',
+        className: 'custom-form-editor-file',
         itemView: FileEleView,
         itemViewContainer: 'tbody',
+
+        ui: {
+            uploader: '.fileupload-field',
+            dropzone: '.fileupload-dropzone',
+            progress: '.fileupload-progress',
+            progressbar: '.fileupload-progress-bar',
+            progressfileQ: '.fileupload-progress-fileQ',
+            filelist: '.file-editor-body'
+        },
+
+        onRender: function(){
+            this.ui.uploader.fileupload({
+                dropzone: this.ui.dropzone
+            });
+
+            if(this.collection.length > 0){
+                this.ui.filelist.show();
+            }else {
+                this.ui.filelist.hide();
+            }
+        }
     });
 
     //editor tpl::
@@ -24,20 +46,24 @@
         'custom-tpl-widget-editor-file',
         [
             '<div class="file-editor-header row-fluid">',
-            '<div class="span3"><input class="fileupload-field" type="file" name="files[]" data-url="{{meta.url}}" multiple></div>',
-            '<div class="span9 fileupload-dropzone"></div>'
+            '<div class="span3"><div class="fileinput-button btn btn-block">Choose File<input class="fileupload-field" type="file" name="files[]" data-url="{{meta.url}}" multiple></div></div>',
+            '<div class="span9 fileupload-dropzone"><p class="alert alert-info">Or...drop you file here...</p></div>',
+                '<div class="fileupload-progress">',
+                    '<p class="fileupload-progress-bar"></p>',
+                    '<div class="fileupload-progress-fileQ"></div>',
+                '</div>',
             '</div>',
             '<div class="file-editor-body">',
-            '<table>',
-                '<thead>',
-                    '<tr>',
-                        '<th>Name</th>',
-                        '<th>Size</th>',
-                        '<th>Action</th>',
-                    '</tr>',
-                '</thead>',
-                '<tbody></tbody>',
-            '</table>',
+                '<table class="table">',
+                    '<thead>',
+                        '<tr>',
+                            '<th>Name</th>',
+                            '<th>Size</th>',
+                            '<th>Action</th>',
+                        '</tr>',
+                    '</thead>',
+                    '<tbody></tbody>',
+                '</table>',
             '</div>',
             '<div class="file-editor-footer"></div>',
         ]
@@ -55,10 +81,6 @@
 
     //editor hook::
     Backbone.Form.editors['File'] = Backbone.Form.editors.Base.extend({
-
-        tagName: 'input',
-
-        className: 'custom-form-editor-file',
 
         events: {
             'change': function() {
@@ -85,11 +107,21 @@
             Backbone.Form.editors.Base.prototype.initialize.call(this, options);
 
             // Custom setup code.
-            if (this.schema.customParam) this.doSomething();
+            // this.schema.options
+            this._options = options.schema.options || {};
         },
 
         render: function() {
-            //this.setValue(this.value);
+            this.delegatedEditor = new EditorView({
+                model: new Backbone.Model({
+                    meta:{
+                        url:this._options.url || '/api/uploads'
+                    }
+                }),
+                collection: new Backbone.Collection({url:this._options.url})
+            });
+            this.delegatedEditor.listenTo(this.form, 'close', this.delegatedEditor.close);
+            this.$el.html(this.delegatedEditor.render().el);
             return this;
         },
 

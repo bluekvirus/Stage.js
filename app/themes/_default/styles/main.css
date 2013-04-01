@@ -123,6 +123,13 @@ legend > span {
   margin-right: 20px;
 }
 
+/**
+ * File upload editor styles::;
+ */
+.custom-form-editor-file {
+  padding: 5px 20px;
+}
+
 
 /**
  * Menu styles::;

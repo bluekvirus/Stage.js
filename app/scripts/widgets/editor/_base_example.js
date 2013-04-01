@@ -6,7 +6,7 @@
 (function(){
     /*Backbone.Form.editors['_name_']*/ = Backbone.Form.editors.Base.extend({
 
-        tagName: 'input',
+        //tagName: 'input',
 
         events: {
             'change': function() {
@@ -37,17 +37,21 @@
         },
 
         render: function() {
-            this.setValue(this.value);
-
+            //this.setValue(this.value);
+            /* Sample code::
+                this.delegatedEditor = ...View();
+                this.delegatedEditor.listenTo(this.form, 'close', this.delegatedEditor.close);
+                this.$el.html(this.delegatedEditor.render().el);
+            */
             return this;
         },
 
         getValue: function() {
-            return this.$el.val();
+            //return this.$el.val();
         },
 
         setValue: function(value) {
-            this.$el.val(value);
+            //this.$el.val(value);
         },
 
         focus: function() {
