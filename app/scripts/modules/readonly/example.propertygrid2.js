@@ -24,7 +24,7 @@
 	 * [Model/Collection]
 	 * ================================
 	 */
-	
+
 	/**
 	 * ================================
 	 * Module Views(+interactions)
@@ -46,20 +46,38 @@
 		  gridA: "div[region=gridA]",
 		  gridB: "div[region=gridB]",			  
 		},
-		initialize:function(options){
-			this.urls = (options && options.urls) || [{name:'gridA', title:'abc', path:'./data/status.test.json'},
-													  {name:'gridB', title:'efg', path:'./data/status.test2.json'}];
+		initialize:function(options){			
+			this.blocks = (options && options.blocks) || [{name:'gridA', title:'abc', path:'./data/status/status.test.json'},
+													  {name:'gridB', title:'efg', path:'./data/status/status.test2.json'}];
+			//load the label
+			this._loadLabelMap(options);
+
 		},			
 		onShow:function(){
 			var that=this;
-			_.each(this.urls, function(url, index){
-				$.get(url.path,function(data){
-				 	that[url.name].show(app.Widget.create('PropertyGrid',{data:data, meta:{title:url.title}}));
+			_.each(this.blocks, function(block, index){
+				$.get(block.path,function(data){
+				 	that[block.name].show(app.Widget.create('PropertyGrid',{data:data, map:that.keyLabelMap ,meta:{title:block.title}}));
 				});
 			});
-				
-			
+					
+		},
+
+		_loadLabelMap: function(options){
+			var that = this;
+			$.ajax({
+				url: (options && options.labelInfo) || '/data/status/status.keylabel.map.json',
+				async: false,
+				success: function(map){
+					that.keyLabelMap = map;
+				},
+				error: function(err){
+					console.log(err);
+					that.keyLabelMap = this.keyLabelMap || {};
+				}
+			});
 		}
+
 	});
 
 	/**

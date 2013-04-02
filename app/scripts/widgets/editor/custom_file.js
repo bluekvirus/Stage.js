@@ -114,7 +114,7 @@
             this.delegatedEditor = new EditorView({
                 model: new Backbone.Model({
                     meta:{
-                        url:this._options.url || '/api/uploads'
+                        url:this._options.url || '/uploads'
                     }
                 }),
                 collection: new Backbone.Collection({url:this._options.url})

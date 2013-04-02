@@ -2,8 +2,8 @@
  *
  * Property Grid Widget to display json format status.
  *
- * @author Xin Dong (xindong@fortinet.com)
- * @update 2013.03.22
+ * @author Xin Dong (xindong@fortinet.com), Tim Liu (zhiyuanliu@fortinet.com)
+ * @update 2013.04.02
  * 
  */
 
@@ -22,7 +22,7 @@ Application.Widget.register('PropertyGrid', function(){
 			initialize:function(options){
 		 		this.collection = new Backbone.Collection();
 			 	_.each(options.data,function(val,key){
-			 		this.collection.add({key:key,val:val});
+			 		this.collection.add({key: options.map[key] || key,val:val});
 			 	}, this);
 			 	this.model = new Backbone.Model(options.meta);				
 			}		

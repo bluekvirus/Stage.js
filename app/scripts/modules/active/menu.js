@@ -41,7 +41,7 @@
     module.Collection = Backbone.Collection.extend({
         model: module.Model,
     });
-    var _dataURL = './data/menu.json';
+    var _dataURL = './data/menu/menu.json';
 
     /**
      * ================================
