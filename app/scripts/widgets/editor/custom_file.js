@@ -30,16 +30,20 @@
         },
 
         onRender: function(){
+            this.ui.filelist.hide();
             this.ui.uploader.fileupload({
-                dropzone: this.ui.dropzone
+                dropzone: this.ui.dropzone,
+                dataType: 'json'
             });
             var that = this;
             this.collection.fetch({
+                timeout: 4500,
                 success: function(listing){
                     that.ui.filelist.show();
                 },
-                error: function(err){
+                error: function(err, status){
                     that.ui.filelist.hide();
+                    Application.error('File List Fetching Error', status.statusText);
                 }
             });
         },
@@ -111,7 +115,7 @@
             // Custom setup code.
             // this.schema.options
             this._options = options.schema.options || {};
-            this._options.url = this._options.url || '/uploads';
+            this._options.url = this._options.url || '/uploads/shared';
             this.FileCollection = Backbone.Collection.extend({url:this._options.url+'?listing='+(new Date()).getTime()});
         },
 
