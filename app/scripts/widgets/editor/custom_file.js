@@ -33,13 +33,16 @@
             this.ui.uploader.fileupload({
                 dropzone: this.ui.dropzone
             });
-
-            if(this.collection.length > 0){
-                this.ui.filelist.show();
-            }else {
-                this.ui.filelist.hide();
-            }
-        }
+            var that = this;
+            this.collection.fetch({
+                success: function(listing){
+                    that.ui.filelist.show();
+                },
+                error: function(err){
+                    that.ui.filelist.hide();
+                }
+            });
+        },
     });
 
     //editor tpl::
@@ -47,8 +50,8 @@
         'custom-tpl-widget-editor-file',
         [
             '<div class="file-editor-header row-fluid">',
-            '<div class="span3"><div class="fileinput-button btn btn-block">Choose File<input class="fileupload-field" type="file" name="files[]" data-url="{{meta.url}}" multiple></div></div>',
-            '<div class="span9 fileupload-dropzone"><p class="alert alert-info">Or...drop you file here...</p></div>',
+            '<div class="span3 well well-small"><div class="fileinput-button btn btn-block"><i class="icon-upload"></i> Choose File<input class="fileupload-field" type="file" name="files[]" data-url="{{meta.url}}" multiple></div></div>',
+            '<div class="span8 fileupload-dropzone well well-small stripes"><p class="text-info">Or...Drop you file(s) here...</p></div>',
                 '<div class="fileupload-progress">',
                     '<p class="fileupload-progress-bar"></p>',
                     '<div class="fileupload-progress-fileQ"></div>',
@@ -76,7 +79,7 @@
             '<td>{{size}}</td>',
             '<td>{{#each actions}}<span class="action-trigger action-trigger-{{this.action}} label" action={{this.action}}>{{this.lable}}</span> {{/each}}</td>'
         ]
-    );    
+    );
 
     //editor hook::
     Backbone.Form.editors['File'] = Backbone.Form.editors.Base.extend({
@@ -108,16 +111,18 @@
             // Custom setup code.
             // this.schema.options
             this._options = options.schema.options || {};
+            this._options.url = this._options.url || '/uploads';
+            this.FileCollection = Backbone.Collection.extend({url:this._options.url+'?listing='+(new Date()).getTime()});
         },
 
         render: function() {
             this.delegatedEditor = new EditorView({
                 model: new Backbone.Model({
                     meta:{
-                        url:this._options.url || '/uploads'
+                        url:this._options.url
                     }
                 }),
-                collection: new Backbone.Collection({url:this._options.url})
+                collection: new this.FileCollection()
             });
             this.delegatedEditor.listenTo(this.form, 'close', this.delegatedEditor.close);
             this.$el.html(this.delegatedEditor.render().el);
