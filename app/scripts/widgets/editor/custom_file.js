@@ -12,7 +12,18 @@
     //editor UI::
     var FileEleView = Backbone.Marionette.ItemView.extend({
         template: '#custom-tpl-widget-editor-file-item',
-        tagName: 'tr'
+        tagName: 'tr',
+        initialize: function(options){
+            //Add actions:
+            _.extend(this.model.attributes, {
+                actions: [
+                    {action: 'delete', label:'Delete', labelCls: 'important', method:this.model.get('delete_type'), url:this.model.get('delete_url')}
+                ]
+            });
+        }
+        /**
+         * Write the aciton listeners down below in the EditorView._actions
+         */
     });
     var EditorView = Backbone.Marionette.CompositeView.extend({
         template: '#custom-tpl-widget-editor-file',
@@ -29,22 +40,64 @@
             filelist: '.file-editor-body'
         },
 
+        events: {
+            'click .action-trigger': '_runAction'
+        },
+
+        _runAction: function(e){
+            e.stopPropagation();
+            var action = e.target.attributes.action.value;
+            if(this._actions[action])
+                this._actions[action]({
+                    url: e.target.attributes._url.value,
+                    type: e.target.attributes._method.value,
+                }, this);
+        },
+
+        _actions: {
+            'delete': function(info, editor){
+                $.ajax({
+                    url: info.url,
+                    type: info.type,
+                    success: function(){
+                        editor.collection.fetch();
+                    },
+                    error: function(err){
+                        Application.error('File Deletion Error', err);
+                    }
+                });
+            }, 
+        },        
+
+        initialize: function(){
+            this.listenTo(this.collection, 'reset', function(){
+                if(this.collection.length === 0)
+                    this.ui.filelist.hide();
+                else
+                    this.ui.filelist.show();
+            });
+            this.listenTo(this.collection, 'error', function(err){
+                Application.error('File List Reading Error', err);
+            })            
+        },
+
         onRender: function(){
-            this.ui.filelist.hide();
+            var that = this;
             this.ui.uploader.fileupload({
                 dropzone: this.ui.dropzone,
-                dataType: 'json'
-            });
-            var that = this;
-            this.collection.fetch({
-                timeout: 4500,
-                success: function(listing){
-                    that.ui.filelist.show();
+                dataType: 'json',
+                //success
+                done: function(e, res){
+                    that.collection.fetch({timeout: 4500});
                 },
-                error: function(err, status){
-                    that.ui.filelist.hide();
-                    Application.error('File List Fetching Error', status.statusText);
-                }
+                fail: function(e, res){
+                    Application.error('File Upload Failed', res.errorThrown);
+                },
+                //progress
+                //add
+            });
+            this.collection.fetch({
+                timeout: 4500
             });
         },
     });
@@ -54,15 +107,20 @@
         'custom-tpl-widget-editor-file',
         [
             '<div class="file-editor-header row-fluid">',
-            '<div class="span3 well well-small"><div class="fileinput-button btn btn-block"><i class="icon-upload"></i> Choose File<input class="fileupload-field" type="file" name="files[]" data-url="{{meta.url}}" multiple></div></div>',
+            '<div class="span3 well well-small">',
+                '<div class="fileinput-button btn btn-block">',
+                    '<i class="icon-upload"></i> Choose File',
+                    '<input class="fileupload-field" type="file" name="files[]" data-url="{{meta.url}}" multiple>',
+                '</div>',
+            '</div>',
             '<div class="span8 fileupload-dropzone well well-small stripes"><p class="text-info">Or...Drop you file(s) here...</p></div>',
                 '<div class="fileupload-progress">',
                     '<p class="fileupload-progress-bar"></p>',
                     '<div class="fileupload-progress-fileQ"></div>',
                 '</div>',
             '</div>',
-            '<div class="file-editor-body">',
-                '<table class="table">',
+            '<div class="file-editor-body span11 clear-margin-left">',
+                '<table class="table table-striped">',
                     '<thead>',
                         '<tr>',
                             '<th>Name</th>',
@@ -81,7 +139,7 @@
         [
             '<td>{{name}}</td>',
             '<td>{{size}}</td>',
-            '<td>{{#each actions}}<span class="action-trigger action-trigger-{{this.action}} label" action={{this.action}}>{{this.lable}}</span> {{/each}}</td>'
+            '<td>{{#each actions}}<span class="action-trigger action-trigger-{{this.action}} label label-{{this.labelCls}} pointer-hand" action="{{this.action}}" _method="{{this.method}}" _url="{{this.url}}">{{this.label}}</span> {{/each}}</td>'
         ]
     );
 
@@ -114,8 +172,8 @@
 
             // Custom setup code.
             // this.schema.options
-            this._options = options.schema.options || {};
-            this._options.url = this._options.url || '/uploads/shared';
+            this._options = options.schema.options || options.schema;
+            this._options.url = this._options.url || '/uploads/'+this._options.hostName+'/'+(this._options.hostType === 'table'?this.model.id:'shared')+'/'+this.key;
             this.FileCollection = Backbone.Collection.extend({url:this._options.url+'?listing='+(new Date()).getTime()});
         },
 

@@ -68,6 +68,18 @@
 .stripes {
   background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.8) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0.8) 75%, transparent 75%, transparent);
 }
+
+.clear-margin-left {
+  margin-left: 0 !important;
+}
+
+.pointer-hand {
+  cursor: pointer;
+}
+
+.pointer-hand:hover {
+  box-shadow: 1px 1px 3px #1a1a1a;
+}
 /**
  * End of general classes
  */
