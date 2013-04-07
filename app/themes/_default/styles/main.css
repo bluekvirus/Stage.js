@@ -80,6 +80,11 @@
 .pointer-hand:hover {
   box-shadow: 1px 1px 3px #1a1a1a;
 }
+
+.edit-later-info {
+  margin-right: 20px;
+  margin-bottom: 0;
+}
 /**
  * End of general classes
  */
@@ -102,8 +107,8 @@
 fieldset {
   border-radius: 6px;
   margin: 10px;
-  padding-top: 20px;
-  padding-bottom: 10px;
+  padding-top: 10px;
+  padding-bottom: 15px;
   box-shadow: 1px 1px 2px black;
 }
 
@@ -135,15 +140,12 @@ legend > span {
   box-shadow: 1px 1px 3px #1a1a1a;
 }
 
-.edit-later-info {
-  margin-right: 20px;
-}
 
 /**
  * File upload editor styles::;
  */
 .custom-form-editor-file {
-  padding: 5px 20px;
+  padding: 5px 20px 5px 0;
 }
 
 

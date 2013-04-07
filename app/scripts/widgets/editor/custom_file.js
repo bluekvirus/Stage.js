@@ -178,16 +178,22 @@
         },
 
         render: function() {
-            this.delegatedEditor = new EditorView({
-                model: new Backbone.Model({
-                    meta:{
-                        url:this._options.url
-                    }
-                }),
-                collection: new this.FileCollection()
-            });
-            this.delegatedEditor.listenTo(this.form, 'close', this.delegatedEditor.close);
-            this.$el.html(this.delegatedEditor.render().el);
+            if(this._options.hostType === 'table' && !this.model.id){
+                //new table record...
+                this.$el.html('<div class="alert alert-info edit-later-info">Create your record before uploading file(s) to it.</div>');
+            }else {
+                this.delegatedEditor = new EditorView({
+                    model: new Backbone.Model({
+                        meta:{
+                            url:this._options.url
+                        }
+                    }),
+                    collection: new this.FileCollection()
+                });
+                this.delegatedEditor.listenTo(this.form, 'close', this.delegatedEditor.close);
+                this.$el.html(this.delegatedEditor.render().el); 
+            }
+
             return this;
         },
 
