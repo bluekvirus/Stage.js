@@ -22,7 +22,8 @@
 
     var DataEleView = Backbone.Marionette.ItemView.extend({
         template: '#custom-tpl-widget-editor-double-picker-item',
-        tagName: 'li'
+        tagName: 'li',
+        className: 'dnd-zone-list-item'
     });
 
     var DataListView = Backbone.Marionette.CollectionView.extend({
@@ -84,7 +85,11 @@
         },
 
         getValue: function(){
-            //ToDo::
+            var result = [];
+            this.target.$el.find('.dnd-zone-list-item .dnd-zone-list-item-val').each(function(index, el){
+                result.push($(el).text());
+            });
+            return result;
         }
     });
 
@@ -92,7 +97,7 @@
     Template.extend(
         'custom-tpl-widget-editor-double-picker-item',
         [
-            '<span>{{valueOf}}</span>'
+            '<span class="dnd-zone-list-item-val">{{valueOf}}</span>'
         ]
     );
 
