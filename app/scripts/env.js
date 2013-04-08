@@ -26,6 +26,11 @@
 	Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTemplate) {
 	  return Handlebars.compile(rawTemplate);
 	};
+	//To be used with ItemView tpl in CollectionView where collection is made from
+	//a ['a', 'b', 'c'] alike array directly.
+	Handlebars.registerHelper('valueOf', function(){
+		return _.keys(this)[0];
+	});
 
 
 	/**

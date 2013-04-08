@@ -27,7 +27,17 @@
 
     var DataListView = Backbone.Marionette.CollectionView.extend({
         itemView: DataEleView,
-        tagName: 'ul'
+        tagName: 'ul',
+        className: 'dnd-zone-list clear-margin-left',
+
+        initialize: function(options){
+            this.ns = options.ns;
+        },
+
+        onRender: function(){
+            if(this.ns)
+                this.$el.addClass('target-dnd-list-'+this.ns);
+        }
     });
 
     var EditorView = Backbone.Marionette.Layout.extend({
@@ -41,19 +51,36 @@
         },
 
         initialize: function(options){
-            //1. fetch from options.src - passed from editorOpt: dataSrc
-            //2. store options.selectedValue - passed from Form editor this.value
-            //3. filter
+            this._options = options;
         },
 
         onRender: function(){
-            //1.render src collection view,
-            //2.render target collection view,
-            //3.activate dnd with name space (only make both collection draggable within [target collection] ns)
+            this.reloadSrc();
         },
 
         reloadSrc: function(){
-            //ToDo::
+            var that = this;
+            Application.DataCenter.resolve(this._options.dataSrc, this._options.form, function(data){
+                //filtered with already selected data.
+                var srcData = _.difference(_.pluck(data, that._options.valueField), that._options.selectedVal);
+
+                that.src.show(new DataListView({
+                    collection: new Backbone.Collection(srcData),
+                    ns: that._options.dndNS,
+                }));
+
+                that.target.show(new DataListView({
+                    collection: new Backbone.Collection(that._options.selectedVal),
+                    ns: that._options.dndNS,
+                }))
+
+                //enable dnd
+                that.$el.find('.dnd-zone-list').sortable({
+                    connectWith: '.target-dnd-list-'+that._options.dndNS,
+                    placeholder: 'dnd-item-placeholder',
+                    //cursor: 'move',
+                }).disableSelection();
+            });
         },
 
         getValue: function(){
@@ -65,7 +92,7 @@
     Template.extend(
         'custom-tpl-widget-editor-double-picker-item',
         [
-            '<span>{{this}}</span>'
+            '<span>{{valueOf}}</span>'
         ]
     );
 
@@ -75,7 +102,8 @@
             '<div class="double-picker-header"></div>',
             '<div class="double-picker-body row-fluid">',
                 '<div class="src-dnd-zone dnd-zone span4 well"></div>',
-                '<div class="target-dnd-zone target-dnd-zone-{{meta.ns}} dnd-zone span4 well"></div>',
+                '<div class="between-dnd-zone span1"></div>',//for dnd indicator icons
+                '<div class="target-dnd-zone dnd-zone span4 well"></div>',
             '</div>',
             '<div class="double-picker-footer"></div>',
         ]
@@ -117,13 +145,11 @@
         render: function() {
             //this.setValue(this.value);
             this.delegatedEditor = new EditorView({
-                    selectedVal: this.value,
-                    src: this._options.dataSrc,
-                    model: new Backbone.Model({
-                        meta: {
-                            ns: this._options.dndNS
-                        }
-                    })
+                form: this.form,
+                selectedVal: this.value,
+                dataSrc: this._options.dataSrc,
+                dndNS: this._options.dndNS,
+                valueField: this._options.valueField,
             });
             this.delegatedEditor.listenTo(this.form, 'close', this.delegatedEditor.close);
             this.$el.html(this.delegatedEditor.render().el);

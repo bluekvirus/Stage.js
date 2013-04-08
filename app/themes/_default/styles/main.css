@@ -150,6 +150,33 @@ legend > span {
 
 
 /**
+ * Double picker editor styles::;
+ * 
+ */
+.dnd-zone-list li{
+  list-style: none;
+  border-radius: 6px;
+  padding: 3px;
+}
+
+.dnd-zone-list li:hover{
+  cursor: move;
+  background-color: #ddd;
+}
+
+.target-dnd-zone .dnd-zone-list{
+  min-height: 20px;
+}
+
+.dnd-item-placeholder {
+  border-radius: 6px;
+  border: 1px solid gold;
+  background-color: #F8F1A0;
+  min-height: 20px;
+}
+
+
+/**
  * Menu styles::;
  */
 .menu-item {
