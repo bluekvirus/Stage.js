@@ -26,10 +26,11 @@
         className: 'dnd-zone-list-item'
     });
 
-    var DataListView = Backbone.Marionette.CollectionView.extend({
+    var DataListView = Backbone.Marionette.CompositeView.extend({
+        template: '#custom-tpl-widget-editor-double-picker-list-wrapper',
         itemView: DataEleView,
-        tagName: 'ul',
-        className: 'dnd-zone-list clear-margin-left',
+        itemViewContainer: '.dnd-zone-list',
+        className: 'double-picker-list-wrapper',
 
         initialize: function(options){
             this.ns = options.ns;
@@ -37,12 +38,13 @@
 
         onRender: function(){
             if(this.ns)
-                this.$el.addClass('target-dnd-list-'+this.ns);
+                this.$el.find('.dnd-zone-list').addClass('target-dnd-list-'+this.ns);
         }
     });
 
     var EditorView = Backbone.Marionette.Layout.extend({
         template: '#custom-tpl-widget-editor-double-picker',
+        className: 'custom-form-editor-double-picker',
 
         regions: {
             header: '.double-picker-header',
@@ -68,11 +70,22 @@
                 that.src.show(new DataListView({
                     collection: new Backbone.Collection(srcData),
                     ns: that._options.dndNS,
+                    model: new Backbone.Model({
+                        meta: {
+                            title: 'Available Selections',
+                            titleType: 'info',
+                        }
+                    })
                 }));
 
                 that.target.show(new DataListView({
                     collection: new Backbone.Collection(that._options.selectedVal),
                     ns: that._options.dndNS,
+                    model: new Backbone.Model({
+                        meta: {
+                            title: 'Selected',
+                        }
+                    })                    
                 }))
 
                 //enable dnd
@@ -102,13 +115,22 @@
     );
 
     Template.extend(
+        'custom-tpl-widget-editor-double-picker-list-wrapper',
+        [
+            '<div class="double-picker-list-header label {{#if meta.titleType}}label-{{meta.titleType}}{{/if}}"><span>{{meta.title}}</span></div>',
+            '<div class="double-picker-list-body"><ul class="dnd-zone-list clear-margin-left"></ul></div>',
+            '<div class="double-picker-list-footer"></div>'
+        ]
+    );
+
+    Template.extend(
         'custom-tpl-widget-editor-double-picker',
         [
             '<div class="double-picker-header"></div>',
             '<div class="double-picker-body row-fluid">',
-                '<div class="src-dnd-zone dnd-zone span4 well"></div>',
-                '<div class="between-dnd-zone span1"></div>',//for dnd indicator icons
-                '<div class="target-dnd-zone dnd-zone span4 well"></div>',
+                '<div class="target-dnd-zone dnd-zone span4"></div>',
+                '<div class="between-dnd-zone span1"><i class="icon-hand-left"></i></div>',//for dnd indicator icons
+                '<div class="src-dnd-zone dnd-zone span4"></div>',
             '</div>',
             '<div class="double-picker-footer"></div>',
         ]

@@ -153,6 +153,20 @@ legend > span {
  * Double picker editor styles::;
  * 
  */
+
+.double-picker-list-wrapper {
+  border-radius: 6px;
+  border: 1px solid #eee;
+}
+
+.double-picker-list-wrapper .double-picker-list-header {
+  display: block;
+}
+
+.dnd-zone-list{
+  min-height: 20px;
+}
+
 .dnd-zone-list li{
   list-style: none;
   border-radius: 6px;
@@ -164,15 +178,16 @@ legend > span {
   background-color: #ddd;
 }
 
-.target-dnd-zone .dnd-zone-list{
-  min-height: 20px;
-}
-
 .dnd-item-placeholder {
   border-radius: 6px;
   border: 1px solid gold;
   background-color: #F8F1A0;
   min-height: 20px;
+}
+
+.between-dnd-zone {
+  padding-top: 40px;
+  text-align: center;
 }
 
 
