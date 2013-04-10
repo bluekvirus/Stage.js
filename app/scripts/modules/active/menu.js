@@ -57,34 +57,21 @@
     module.View.TreeView = Backbone.Marionette.CompositeView.extend({
 
         template: '#menu-tree-tpl',
-
         tagName: 'ul',
 
-        events: {
-            'click li:first': 'toggle',
-            'click .menu-item': 'asClickingAnchor',
-        },
-
         isLeaf : false,
-
         collapsible: true,
-
         collapsed: true,
 
         initialize: function(options) {
 
             if (this.model.get('items')) {
-
                 this.collection = new module.Collection(this.model.get('items'));
-
                 this.isLeaf = false;
-
                 this.className = 'menu-tree';
 
             } else {
-
                 this.isLeaf = true;
-
                 this.className = 'menu-tree-leaf';
             }
 
@@ -96,29 +83,28 @@
             var li = this.$el.children('li');
 
             if (this.isLeaf) {
-
                 li.find('.menu-group').remove();
-
                 li.attr('module', this.model.get('module'));
-
             } else {
 
                 li.find('.menu-item').remove();
 
                 if (this.collapsible && this.collapsed) {
-
                     this.$el.children('ul').hide();
                 }
             }
             
         },
 
-        toggle: function(event) {
+        events: {
+            'click li:first': 'toggle',
+            'click .menu-item': 'asClickingAnchor',
+        },        
 
+        toggle: function(event) {
             event.stopPropagation();
 
             if (!this.isLeaf && this.collapsible) {
-
                 this.$el.children('ul').toggle();
             }
         },
@@ -143,13 +129,8 @@
     module.View.AccordionItemView = Backbone.Marionette.CompositeView.extend({
 
         template: "#menu-accordion-item-tpl",
-
-        tagName: "div",
-
         className: 'menu-accordion-item',
-
         itemViewContainer: '.menu-accordion-item-content',
-
         itemView: module.View.TreeView,
 
         initialize: function() {

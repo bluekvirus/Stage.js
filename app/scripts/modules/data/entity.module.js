@@ -602,7 +602,7 @@
      * will be created in menu module]
      * ================================
      */
-    module.defaultAdminPath = 'Miscellaneous->Development->Generator';
+    module.defaultAdminPath = 'Development->Generator';
 
 
 
