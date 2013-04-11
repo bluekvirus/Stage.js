@@ -76,6 +76,8 @@
           <select data-type="hour" style="width: 4em">{{hours}}</select>\
           :\
           <select data-type="min" style="width: 4em">{{mins}}</select>\
+          :\
+          <select data-type="sec" style="width: 4em">{{secs}}</select>\
         </p>\
       </div>\
     ',

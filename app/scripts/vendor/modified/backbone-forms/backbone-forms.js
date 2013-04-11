@@ -2156,7 +2156,8 @@ Form.editors = (function() {
       var $el = $(Form.templates.dateTime({
         date: '<b class="bbf-tmp"></b>',
         hours: hoursOptions.join(),
-        mins: minsOptions.join()
+        mins: minsOptions.join(),
+        secs: minsOptions.join(),
       }));
 
       //Include the date editor
@@ -2165,6 +2166,7 @@ Form.editors = (function() {
       //Store references to selects
       this.$hour = $el.find('select[data-type="hour"]');
       this.$min = $el.find('select[data-type="min"]');
+      this.$sec = $el.find('select[data-type="sec"]');
 
       //Get the hidden date field to store values in case POSTed to server
       this.$hidden = $el.find('input[type="hidden"]');
@@ -2187,12 +2189,14 @@ Form.editors = (function() {
       var date = this.dateEditor.getValue();
 
       var hour = this.$hour.val(),
-          min = this.$min.val();
+          min = this.$min.val(),
+          sec = this.$sec.val();
 
-      if (!date || !hour || !min) return null;
+      if (!date || !hour || !min || !sec) return null;
 
       date.setHours(hour);
       date.setMinutes(min);
+      date.setSeconds(sec);
 
       return date;
     },
@@ -2204,6 +2208,7 @@ Form.editors = (function() {
       
       this.$hour.val(date.getHours());
       this.$min.val(date.getMinutes());
+      this.$sec.val(date.getSeconds());
 
       this.updateHidden();
     },
