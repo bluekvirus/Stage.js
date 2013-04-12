@@ -142,7 +142,7 @@
             return response;
         },
         initialize: function(data, options) {
-            this.urlRoot = (options && (options.urlRoot || options.url)) || '' || '/api/Field';
+            this.urlRoot = (options && (options.urlRoot || options.url)) || '' || '/gen/Field';
         }
 
     });
@@ -164,7 +164,7 @@
         },
         //register sync event::
         initialize: function(data, options) { //support for Backbone.Relational - collectionOptions
-            this.url = (options && options.url) || '' || '/api/Field';
+            this.url = (options && options.url) || '' || '/gen/Field';
             this.on('error', function() {
                 Application.error('Server Error', 'API::collection::Field');
             })

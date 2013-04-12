@@ -121,7 +121,7 @@
             return response;
         },
         initialize: function(data, options) {
-            this.urlRoot = (options && (options.urlRoot || options.url)) || '' || '/api/Entity';
+            this.urlRoot = (options && (options.urlRoot || options.url)) || '' || '/gen/Entity';
         }
 
     });
@@ -143,7 +143,7 @@
         },
         //register sync event::
         initialize: function(data, options) { //support for Backbone.Relational - collectionOptions
-            this.url = (options && options.url) || '' || '/api/Entity';
+            this.url = (options && options.url) || '' || '/gen/Entity';
             this.on('error', function() {
                 Application.error('Server Error', 'API::collection::Entity');
             })
