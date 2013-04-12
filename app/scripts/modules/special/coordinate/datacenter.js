@@ -59,4 +59,4 @@
 		}
 	};
 
-})(Application)
+})(Application); /*Don't forget ;*/
