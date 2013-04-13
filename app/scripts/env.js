@@ -159,11 +159,12 @@
 	 */
 	
 	//worker function [all shorthands extend from this one]
-	var _patch = function(server, payload, type){
+	var _patch = function(server, payload, type, silent){
         var path = payload;
         $.ajax({
             url: server,
             async: false, //sync or else the loading won't occure before page ready.
+            timeout: 4500,
             data: {payload: path, type: type},
             dataType: 'json',
             success: function(json, textStatus) {
@@ -173,7 +174,8 @@
                     $('body').append('<script type="text/javascript" src="'+path+'/'+f+'"/>');
                 });
               }else{
-                Application.error('Auto Loader Error', json.error);
+              	if(!silent)
+                	Application.error('Auto Loader Error', json.error);
               }
             }
         });
@@ -181,7 +183,11 @@
 
 	//shorthand methods
 	Application.patchScripts = function(){
-		_patch('/try/scripts', 'scripts/_try', 'js');
+		_patch('/try/scripts', 'scripts/_try', 'js', false);
 	} 
+
+	Application.patchAdminGen = function(){
+		_patch('/dev/', '/dev', '', true);
+	}
 
 })();

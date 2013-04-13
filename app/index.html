@@ -94,9 +94,6 @@
 
         <script type="text/javascript" src="scripts/modules/readonly/example.propertygrid2.js"></script>
 
-        <script type="text/javascript" src="scripts/modules/data/field.module.js"></script>
-        <script type="text/javascript" src="scripts/modules/data/entity.module.js"></script>
-        <script type="text/javascript" src="scripts/modules/data/entity.module.Ex.gen2.js"></script>
         <script type="text/javascript" src="scripts/modules/data/User_module.js"></script>      
 
     <!-- endbuild -->
@@ -104,6 +101,7 @@
     <!-- patch scripts autoloader see env.js -->
         <script type="text/javascript">
             Application.patchScripts();
+            Application.patchAdminGen();
         </script>
     <!-- end of scripts autoloader -->
 
