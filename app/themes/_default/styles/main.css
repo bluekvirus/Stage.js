@@ -1,4 +1,33 @@
 /**
+ * General style classes
+ */
+.custom-tpl-layout-wrapper {
+  padding: 20px 30px;
+}
+
+.stripes {
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.8) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0.8) 75%, transparent 75%, transparent);
+}
+
+.clear-margin-left {
+  margin-left: 0 !important;
+}
+
+.pointer-hand {
+  cursor: pointer;
+}
+
+.pointer-hand:hover {
+  box-shadow: 1px 1px 3px #1a1a1a;
+}
+
+.edit-later-info {
+  margin-right: 20px;
+  margin-bottom: 0;
+}
+/*End of general classes*/
+
+/**
  * Basic region layout style::;
  */
 .application-container .body .sidebar {
@@ -7,6 +36,29 @@
 .application-container .body .content {
   margin-left: 5px;
 }
+/* End of basic application container region styles*/
+
+
+/*Generic Tpl Styles - under templates*/
+.admin-layout-header {
+    background-color: #DFF0D8;
+    border-color: #D6E9C6;
+    color: #468847;
+    border-radius: 4px 4px 4px 4px;
+    margin-bottom: 10px;
+    padding: 8px 35px 8px 14px;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.admin-layout-body {
+
+}
+/*End of generic tpl styles*/
+
+
+/**
+ * Form styles::;
+ */
 
 /**
  * Imported from backbone-forms template
@@ -57,42 +109,6 @@
 
 /* End of imports */
 
-
-/**
- * General style classes
- */
-.custom-tpl-layout-wrapper {
-  padding: 20px 30px;
-}
-
-.stripes {
-  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.8) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0.8) 75%, transparent 75%, transparent);
-}
-
-.clear-margin-left {
-  margin-left: 0 !important;
-}
-
-.pointer-hand {
-  cursor: pointer;
-}
-
-.pointer-hand:hover {
-  box-shadow: 1px 1px 3px #1a1a1a;
-}
-
-.edit-later-info {
-  margin-right: 20px;
-  margin-bottom: 0;
-}
-/**
- * End of general classes
- */
-
-
-/**
- * Form styles::;
- */
 .form-body-container {
   padding: 10px 12px 10px 5px;
   border-top: 1px solid #eee;
@@ -121,6 +137,8 @@ legend > span {
   padding: 5px 20px;
 }
 
+/* End of Form styles*/
+
 /**
  * Datagrid styles::;
  */
@@ -139,18 +157,20 @@ legend > span {
 .action-cell span[action]:hover {
   box-shadow: 1px 1px 3px #1a1a1a;
 }
-
+/* End of Datagrid styles*/
 
 /**
- * File upload editor styles::;
+ * File-Upload editor styles::;
  */
 .custom-form-editor-file {
   padding: 5px 20px 5px 0;
 }
 
+/* End of File-Upload editor styles*/
+
 
 /**
- * Double picker editor styles::;
+ * Double-Picker editor styles::;
  * 
  */
 
@@ -189,7 +209,7 @@ legend > span {
   padding-top: 40px;
   text-align: center;
 }
-
+/* End of Double-Picker editor styles*/
 
 /**
  * Menu styles::;
@@ -217,11 +237,30 @@ ul.menu-tree-leaf > li.selected {
   background-color: #F89406;
 }
 
+/*menu root normal state*/
 .menu-accordion-item .menu-accordion-item-header {
-  font-style: italic;
-  cursor:pointer;
+    background-color: #EEEEEE;
+    border-radius: 6px 6px 6px 6px;
+    cursor: pointer;
+    font-style: italic;
+    margin-bottom: 5px;
+    padding: 5px;
+}
+
+/*menu root roll over*/
+.menu-accordion-item .menu-accordion-item-header:hover {
+  background-color: #aaa;
+}
+
+/*menu root selected*/
+.menu-accordion-item .ui-accordion-header-active {
+  background-color: #ccc;
 }
 
 .menu-accordion-item .menu-accordion-item-content {
   padding: 5px 10px;
 }
+
+/*End of Menu styles*/
+
+

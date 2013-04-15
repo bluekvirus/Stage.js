@@ -4,7 +4,7 @@
 Template.extend(
 	'custom-tpl-layout-module-admin',
 	[
-		'<div class="admin-layout-header"><span class="admin-layout-header-title">{{meta.title}}</span></div>',
+		'{{#if meta.title}}<div class="admin-layout-header"><i class="icon-tasks"></i> <span class="admin-layout-header-title">{{meta.title}}</span></div>{{/if}}',
 		'<div class="admin-layout-body">',
             '<div class="list-view-region"></div>',
             '<div class="details-view-region"></div>',
