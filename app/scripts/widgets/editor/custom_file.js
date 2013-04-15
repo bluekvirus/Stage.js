@@ -94,7 +94,7 @@
                     });
                 },
                 fail: function(e, res) {
-                    Application.error('File Upload Failed', res.errorThrown);
+                    Application.error('File Upload Failed', $.parseJSON(res.xhr().response).error);
                 },
                 //progress
                 //add
