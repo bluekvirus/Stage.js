@@ -115,7 +115,7 @@
         '<input class="fileupload-field" type="file" name="files[]" data-url="{{meta.url}}" multiple>',
         '</div>',
         '</div>',
-        '<div class="span8 fileupload-dropzone well well-small stripes"><p class="text-info">Or...Drop you file(s) here...</p></div>',
+        '<div class="span8 fileupload-dropzone well well-small stripes"><p class="text-info">Or...Drop your file(s) here...</p></div>',
         '<div class="fileupload-progress">',
         '<p class="fileupload-progress-bar"></p>',
         '<div class="fileupload-progress-fileQ"></div>',
