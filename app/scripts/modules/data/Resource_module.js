@@ -4,7 +4,7 @@
  * Module Definition
  * =====================
  * 
- * Generated through `D:\wamp\www\Server_\temp\module-1366170695298-def.json` for Backbone module **Resource**
+ * Generated through `D:\wamp\www\Server_\temp\module-1366186506094-def.json` for Backbone module **Resource**
  *
  * 
  * Used to represent a resource entry in privilege assignment (Role). All the data entity will automatically be registered with this meta data entity. 
@@ -28,7 +28,7 @@
  * @author Tim.Liu
  * @updated 
  * 
- * @generated on Wed Apr 17 2013 11:51:35 GMT+0800 (中国标准时间) 
+ * @generated on Wed Apr 17 2013 16:15:06 GMT+0800 (中国标准时间) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
@@ -73,9 +73,9 @@
             description: {
                 type: "TextArea"
             },
-            signitures: {
+            signatures: {
                 type: "CUSTOM_GRID",
-                moduleRef: "Signiture",
+                moduleRef: "Signature",
                 mode: "subDoc"
             },
         },
@@ -215,7 +215,7 @@
         className: 'basic-form-view-wrap',
 
         fieldsets: [
-            ["name", "description", "signitures"]
+            ["name", "description", "signatures"]
         ],
         ui: {
             header: '.form-header-container',
@@ -349,6 +349,10 @@
             }, {
                 name: "name",
                 label: "Name",
+                cell: "string"
+            }, {
+                name: "description",
+                label: "Description",
                 cell: "string"
             }, {
                 name: "_actions_",

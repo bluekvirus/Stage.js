@@ -4,7 +4,7 @@
  * Module Definition
  * =====================
  * 
- * Generated through `D:\wamp\www\Server_\temp\module-1366170698643-def.json` for Backbone module **Signiture**
+ * Generated through `D:\wamp\www\Server_\temp\module-1366186509647-def.json` for Backbone module **Signature**
  *
  * 
  * Used within Resource entries to identify privilege and http(s) method:req.path mapping.
@@ -19,9 +19,9 @@ list:GET:/upload/_name
 download:GET:/upload/_name/_/filename
 run:GET/POST/PUT/DELETE:/logic/...
 
-A signiture can have multiple api mappings, also, the signiture can choose to use whether strickly or loosely mapping (loosely means the api starts with the one that's in record)
+A signature can have multiple api mappings, also, the signiture can choose to use whether strickly or loosely mapping (loosely means the api starts with the one that's in record)
 
-If the api mappings are the same for deferent http(s) method, use / to separate them. In other words, you can group multiple mappings under one signiture, and within any one mapping you can tell it to match different http(s) methods used.
+If the api mappings are the same for deferent http(s) method, use / to separate them. In other words, you can group multiple mappings under one signature, and within any one mapping you can tell it to match different http(s) methods used.
 
  *
  *
@@ -38,11 +38,11 @@ If the api mappings are the same for deferent http(s) method, use / to separate 
  * 				   collection.fetch() to populate the grid data upon rendering.
  * 
  * 
- * @module Signiture
+ * @module Signature
  * @author Tim.Liu
  * @updated 
  * 
- * @generated on Wed Apr 17 2013 11:51:38 GMT+0800 (中国标准时间) 
+ * @generated on Wed Apr 17 2013 16:15:09 GMT+0800 (中国标准时间) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
@@ -55,7 +55,7 @@ If the api mappings are the same for deferent http(s) method, use / to separate 
      * Module Name 
      * ================================
      */
-    var module = app.module("Signiture");
+    var module = app.module("Signature");
 
 
     /**
@@ -72,7 +72,7 @@ If the api mappings are the same for deferent http(s) method, use / to separate 
      * We use the original Backbone.Model
      * [Not Backbone.RelationalModel, since it offers more trouble than solved]
      * 
-     * @class Application.Signiture.Model
+     * @class Application.Signature.Model
      */
     module.Model = Backbone.Model.extend({ //the id attribute to use
         idAttribute: '_id',
@@ -89,10 +89,10 @@ If the api mappings are the same for deferent http(s) method, use / to separate 
                 title: "Mapping Type",
                 options: [{
                     val: "loosely",
-                    label: "Loosely"
+                    label: "Loosely (starts with)"
                 }, {
                     val: "strictly",
-                    label: "Strictly"
+                    label: "Strictly (regex)"
                 }]
             },
             mappings: {
@@ -112,7 +112,7 @@ If the api mappings are the same for deferent http(s) method, use / to separate 
             return response;
         },
         initialize: function(data, options) {
-            this.urlRoot = (options && (options.urlRoot || options.url)) || '' || '/api/Signiture';
+            this.urlRoot = (options && (options.urlRoot || options.url)) || '' || '/api/Signature';
         }
 
     });
@@ -125,7 +125,7 @@ If the api mappings are the same for deferent http(s) method, use / to separate 
      * Backbone.PageableCollection is a strict superset of Backbone.Collection
      * We instead use the Backbone.PageableCollection for better paginate ability.
      *
-     * @class Application.Signiture.Collection
+     * @class Application.Signature.Collection
      */
     module.Collection = Backbone.PageableCollection.extend({ //model ref
         model: module.Model,
@@ -134,9 +134,9 @@ If the api mappings are the same for deferent http(s) method, use / to separate 
         },
         //register sync event::
         initialize: function(data, options) { //support for Backbone.Relational - collectionOptions
-            this.url = (options && options.url) || '' || '/api/Signiture';
+            this.url = (options && options.url) || '' || '/api/Signature';
             this.on('error', function() {
-                Application.error('Server Error', 'API::collection::Signiture');
+                Application.error('Server Error', 'API::collection::Signature');
             })
         }
 
@@ -144,10 +144,10 @@ If the api mappings are the same for deferent http(s) method, use / to separate 
 
     /**
      * **collection** 
-     * An instance of Application.Signiture.Collection
+     * An instance of Application.Signature.Collection
      * This collection is not nested in other models.
      * 
-     * @type Application.Signiture.Collection
+     * @type Application.Signature.Collection
      */
     module.collection = new module.Collection();
 
@@ -181,7 +181,7 @@ If the api mappings are the same for deferent http(s) method, use / to separate 
      * Backbone.Marionette.ItemView is used to wrap up the form view and 
      * related interactions. We do this in the onRender callback.
      *
-     * @class Application.Signiture.View.Form
+     * @class Application.Signature.View.Form
      */
     module.View.Extension.Form = {};
     module.View.Extension.Form.ConditionalDisplay = function(formCt) {
@@ -334,7 +334,7 @@ If the api mappings are the same for deferent http(s) method, use / to separate 
      * Backbone.Marionette.ItemView is used to wrap up the datagrid view and 
      * related interactions. We do this in the onRender callback.
      *
-     * @class Application.Signiture.View.DataGrid
+     * @class Application.Signature.View.DataGrid
      */
     module.View.Extension.DataGrid = {};
     module.View.Extension.DataGrid.ActionCell = Backbone.Marionette.ItemView.extend({
@@ -371,6 +371,10 @@ If the api mappings are the same for deferent http(s) method, use / to separate 
             }, {
                 name: "name",
                 label: "Name",
+                cell: "string"
+            }, {
+                name: "type",
+                label: "Mapping Type",
                 cell: "string"
             }, {
                 name: "_actions_",
@@ -502,7 +506,7 @@ If the api mappings are the same for deferent http(s) method, use / to separate 
      * show a datagrid and a form/property grid stacked vertically. This view is mainly
      * there to respond to user's admin menu selection event.
      *
-     * @class Application.Signiture.View.AdminLayout
+     * @class Application.Signature.View.AdminLayout
      */
     module.View.AdminLayout = Backbone.Marionette.Layout.extend({
         template: '#custom-tpl-layout-module-admin',
@@ -515,7 +519,7 @@ If the api mappings are the same for deferent http(s) method, use / to separate 
         },
         //Metadata for layout tpl. e.g. meta.title
         meta: {
-            title: 'Signiture Manager'
+            title: 'Signature Manager'
         },
         initialize: function(options) {
             if (!options || !options.model) this.model = new Backbone.Model({
@@ -538,7 +542,7 @@ If the api mappings are the same for deferent http(s) method, use / to separate 
      * This is similar to AdminLayout but only using a different tpl to make datagrid
      * and form slide together thus fit into a parent form.
      *
-     * @class Application.Signiture.View.EditorLayout
+     * @class Application.Signature.View.EditorLayout
      */
     module.View.EditorLayout = Backbone.Marionette.Layout.extend({
         template: '#custom-tpl-layout-module-admin',
@@ -584,7 +588,7 @@ If the api mappings are the same for deferent http(s) method, use / to separate 
      * 
      * The default view used with menu.
      * 
-     * @class Application.Signiture.View.Default
+     * @class Application.Signature.View.Default
      */
     module.View.Default = module.View.AdminLayout;
 
