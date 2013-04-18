@@ -29,12 +29,22 @@
  */
 (function(){
 
-    var ViewWrap = Backbone.Marionette.Layout.extend({
-        template: '#...',
-        className: '',
+    var ResourceItem = Backbone.Marionette.ItemView.extend({
+        template: '#custom-tpl-widget-editor-resource-item',
+        className: 'custom-form-editor-resource-control-item',
 
-        regions: {
+    });
 
+    var ViewWrap = Backbone.Marionette.CompositeView.extend({
+        template: '#custom-tpl-widget-editor-resource-control-wrap',
+        className: 'custom-form-editor-resource-control',
+        itemView: ResourceItem,
+        itemViewContainer: '.body',
+
+        ui: {
+            header: '.header',
+            body: '.body',
+            footer: '.footer'
         },
 
         events: {
@@ -43,6 +53,9 @@
 
         initialize: function(options){
             this._options = options;
+            Application.DataCenter.resolve('Resource', this._options.form, function(data){
+                this.collection = new Backbone.Collection(data);
+            });
         }
 
         onRender: function(){
@@ -50,7 +63,23 @@
         }
     });
 
-    /*Backbone.Form.editors['_name_']*/ = Backbone.Form.editors.Base.extend({
+    Template.extend('custom-tpl-widget-editor-resource-item', [
+        '<div>',
+            '{{name}}',
+            ' {{#each signatures}}',
+                '{{this.name}} ',
+            '{{/each}}',
+        '</div>'
+    ]);
+
+    Template.extend('custom-tpl-widget-editor-resource-control-wrap',[
+        '<div class="header"></div>',
+        '<div class="body"></div>',
+        '<div class="footer"></div>'
+    ]);
+
+
+    Backbone.Form.editors['ResourceControl'] = Backbone.Form.editors.Base.extend({
 
         //tagName: 'input',
 

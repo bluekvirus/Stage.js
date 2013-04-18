@@ -183,11 +183,11 @@
 
 	//shorthand methods
 	Application.patchScripts = function(){
-		_patch('/try/scripts', 'scripts/_try', 'js', false);
+		_patch('/tryscripts', 'scripts/_try', 'js', false);
 	} 
 
 	Application.patchAdminGen = function(){
-		_patch('/dev/', '/dev', '', true);
+		_patch('/dev/AdminGen/scripts', '/dev/AdminGen/scripts', '', true);
 	}
 
 })();
