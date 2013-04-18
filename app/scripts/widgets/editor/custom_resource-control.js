@@ -29,17 +29,37 @@
  */
 (function(){
 
+    var ResourceCollection = Backbone.Collection.extend({
+        model: Backbone.Model.extend({}),
+    });
+
     var ResourceItem = Backbone.Marionette.ItemView.extend({
         template: '#custom-tpl-widget-editor-resource-item',
         className: 'custom-form-editor-resource-control-item',
+        tagName: 'tr',
+
+        events: {
+            'click li': 'toggleSelection',
+            'recover': 'recoverSelection',
+        },
+
+        toggleSelection: function(e){
+            var target = $(e.target);
+            target.toggleClass('btn-success selected');
+        },
+
+        recoverSelection: function(e){
+            var target = $(e.target);
+            target.toggleClass('btn-success selected active');
+        },
 
     });
 
     var ViewWrap = Backbone.Marionette.CompositeView.extend({
         template: '#custom-tpl-widget-editor-resource-control-wrap',
-        className: 'custom-form-editor-resource-control',
+        className: 'custom-form-editor-resource-control custom-editor-wrap',
         itemView: ResourceItem,
-        itemViewContainer: '.body',
+        itemViewContainer: '.body tbody',
 
         ui: {
             header: '.header',
@@ -48,33 +68,69 @@
         },
 
         events: {
-
+            'click .custom-form-editor-resource-control-item li': 'markSelection'
         },
 
         initialize: function(options){
             this._options = options;
-            Application.DataCenter.resolve('Resource', this._options.form, function(data){
-                this.collection = new Backbone.Collection(data);
-            });
-        }
+        },
 
         onRender: function(){
             //TODO::
+            this.$el.find('.btn').button().popover({
+                placement: 'top',
+                trigger: 'hover',
+                html: 'true',
+                container: 'body'
+            });
+        },
+
+        getValue: function(){
+            return this.privileges;
+        },
+
+        setValue: function(val){
+            this.privileges = val || {} ;
+            var that = this;
+            _.each(val, function(signatures, resouce){
+                //mark
+                _.each(signatures, function(bool, sig){
+                    that.$el.find('.btn[resource="'+resouce+'"][signature="'+sig+'"]').trigger('recover');
+                });
+            });
+        },
+
+        markSelection: function(e){
+            var target = $(e.target);
+            var r = target.attr('resource'), s = target.attr('signature');
+            if(target.hasClass('selected')){
+                this.privileges[r] = this.privileges[r] || {};
+                this.privileges[r][s] = true;
+            }else{
+                try{
+                    delete this.privileges[target.attr('resource')][target.attr('signature')];
+                }catch(e){
+                    console.log('omit deletion privilege...');
+                }
+                
+            }
         }
     });
 
     Template.extend('custom-tpl-widget-editor-resource-item', [
-        '<div>',
-            '{{name}}',
+
+        '<td><span class=""><i class="icon-cog"></i> {{name}}</span></td>',
+        '<td><ul class="btn-group" data-toggle="buttons-checkbox">',
             ' {{#each signatures}}',
-                '{{this.name}} ',
+                '<li class="btn" resource="{{../name}}" signature="{{this.name}}" data-title="Mappings" data-content="{{#if mappings}}{{#each mappings}}{{showSignatureMapping this}}{{/each}}{{else}}<p class=\'label label-important\'>N/A</p>{{/if}}">{{this.name}}</li>',
             '{{/each}}',
-        '</div>'
+        '</ul></td>'
+
     ]);
 
     Template.extend('custom-tpl-widget-editor-resource-control-wrap',[
         '<div class="header"></div>',
-        '<div class="body"></div>',
+        '<div class="body"><table class="table table-striped"><thead><tr><th>Resources</th><th>Signatures</th></tr></thead><tbody></tbody></table></div>',
         '<div class="footer"></div>'
     ]);
 
@@ -112,21 +168,23 @@
         },
 
         render: function() {
-            //this.setValue(this.value);
+            Application.DataCenter.resolve('Resource', this.form, _.bind(function(data){
+                this.delegatedEditor = new ViewWrap({form:this.form, editor:this, collection: new ResourceCollection(data)});
+                this.delegatedEditor.listenTo(this.form, 'close', this.delegatedEditor.close);
+                this.$el.html(this.delegatedEditor.render().el); 
+                this.setValue(this.value);               
+            }, this));
 
-            this.delegatedEditor = new ViewWrap({form:this.form, editor:this});
-            this.delegatedEditor.listenTo(this.form, 'close', this.delegatedEditor.close);
-            this.$el.html(this.delegatedEditor.render().el);
         
             return this;
         },
 
         getValue: function() {
-            //return this.$el.val();
+            return this.delegatedEditor.getValue();
         },
 
         setValue: function(value) {
-            //this.$el.val(value);
+            this.delegatedEditor.setValue(value);
         },
 
         focus: function() {

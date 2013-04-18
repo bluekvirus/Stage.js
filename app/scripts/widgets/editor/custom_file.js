@@ -31,7 +31,7 @@
     });
     var EditorView = Backbone.Marionette.CompositeView.extend({
         template: '#custom-tpl-widget-editor-file',
-        className: 'custom-form-editor-file',
+        className: 'custom-form-editor-file custom-editor-wrap',
         itemView: FileEleView,
         itemViewContainer: 'tbody',
 
@@ -121,7 +121,8 @@
         '<div class="fileupload-progress-fileQ"></div>',
         '</div>',
         '</div>',
-        '<div class="file-editor-body span11 clear-margin-left">',
+        '<div class="file-editor-body clear-margin-left row-fluid">',
+        '<div class="span11">',
         '<table class="table table-striped">',
         '<thead>',
         '<tr>',
@@ -132,7 +133,7 @@
         '</thead>',
         '<tbody></tbody>',
         '</table>',
-        '</div>',
+        '</div></div>',
         '<div class="file-editor-footer"></div>', ]);
     Template.extend(
         'custom-tpl-widget-editor-file-item', [

@@ -32,6 +32,16 @@
 		return _.keys(this)[0];
 	});
 
+	Handlebars.registerHelper('showSignatureMapping', function(mapping){
+		try{
+	        var parts = mapping.split(':');
+			return '<p><span class="label label-info">'+parts[0]+'</span> '+parts[1]+'</p>';
+		}catch(e){
+			console.log(e);
+		}
+ 
+	});
+
 
 	/**
 	 * ========================

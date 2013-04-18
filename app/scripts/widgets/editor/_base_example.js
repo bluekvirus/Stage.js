@@ -23,7 +23,7 @@
 
         initialize: function(options){
             this._options = options;
-        }
+        },
 
         onRender: function(){
             //TODO::

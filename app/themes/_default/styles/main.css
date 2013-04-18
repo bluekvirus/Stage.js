@@ -5,6 +5,10 @@
   padding: 20px 30px;
 }
 
+.custom-editor-wrap {
+  padding: 0px 30px 5px 0;
+}
+
 .stripes {
   background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.8) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0.8) 75%, transparent 75%, transparent);
 }
@@ -162,9 +166,7 @@ legend > span {
 /**
  * File-Upload editor styles::;
  */
-.custom-form-editor-file {
-  padding: 5px 20px 5px 0;
-}
+
 
 /* End of File-Upload editor styles*/
 
