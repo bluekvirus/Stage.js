@@ -1,25 +1,45 @@
 /**
  * 
- * Base Editor Example. [Modified]
- * Based on [https://github.com/powmedia/backbone-forms#custom-editors]
+ * This is the Resource Control Editor used for User privilege 
+ * assignment. It is used in the Role entity and the same concept
+ * can be used for any resource control mech. 
+ *
+ * Concept: (type here is not the mapping type, but a meta describing resource type)
+ * register>> 
+ *     Resource <- Signatures <- Mappings
+ * assign>>
+ *     Role <- (Resource.(type).Mappings) <- Signatures (yes/no)
+ * resolve>>
+ *     (req.path) -> (/:type/:Resource/...) -> User.Role.Privileges[Resource.(type).Mappings]
+ *
+ * For performance reason it is better to re-group the Mappings inside a Resource
+ * to be grouped with types e.g /:type/:Resource when saved in a Role. Specifically,
+ * 
+ *     mapping.split('/') =>   [0]: should always be "";
+ *                             [1]: type;
+ *                             [2]: Resource name; [null] means "Index Page";
+ *
+ * Note:: We still use the full mappings(+mapping type) when try to match with req.path
+ * in authorization middleware.
+ *                             
  *
  * @author Tim.Liu
- * @update 2013.04.18
+ * @created 2013.04.18
  * 
  */
 (function(){
 
     var ViewWrap = Backbone.Marionette.Layout.extend({
-        // template: '#...',
-        // className: '',
+        template: '#...',
+        className: '',
 
-        // regions: {
+        regions: {
 
-        // },
+        },
 
-        // events: {
+        events: {
 
-        // },
+        },
 
         initialize: function(options){
             this._options = options;
