@@ -4,7 +4,12 @@
  * It needs a 'src' option to get the available selections and a 'namespace'
  * to distinguish from other 'Drag-n-Drop' zones.
  *
- * 'src' can be of 3 types: (it talks to a data manager to resolve the src resource)
+ * Options:
+ *     dataSrc: [see below],
+ *     dndNS:   [String] just a name for the dnd zone link,
+ *     valueField: [String] to indicate what's shown in the dnd listing],
+ *
+ * 'dataSrc' can be of 3 types: (it talks to a data manager to resolve the src resource)
  * 1. data url; ['/api/Abc']
  * 2. module name; ['Abc']
  * 3. fieldname; ['fff'] which indicates a field on the same form. (without data-refreshing)

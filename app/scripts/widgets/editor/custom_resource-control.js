@@ -81,7 +81,8 @@
                 placement: 'top',
                 trigger: 'hover',
                 html: 'true',
-                container: 'body'
+                container: 'body',
+                title: '<strong>Mappings</strong>'
             });
         },
 
@@ -122,7 +123,7 @@
         '<td><span class=""><i class="icon-cog"></i> {{name}}</span></td>',
         '<td><ul class="btn-group" data-toggle="buttons-checkbox">',
             ' {{#each signatures}}',
-                '<li class="btn" resource="{{../name}}" signature="{{this.name}}" data-title="Mappings" data-content="{{#if mappings}}{{#each mappings}}{{showSignatureMapping this}}{{/each}}{{else}}<p class=\'label label-important\'>N/A</p>{{/if}}">{{this.name}}</li>',
+                '<li class="btn" resource="{{../name}}" signature="{{this.name}}" data-content="{{#if mappings}}{{#each mappings}}{{showSignatureMapping ../type this}}{{/each}}{{else}}<p class=\'label\'>N/A</p>{{/if}}">{{this.name}}</li>',
             '{{/each}}',
         '</ul></td>'
 
@@ -130,7 +131,7 @@
 
     Template.extend('custom-tpl-widget-editor-resource-control-wrap',[
         '<div class="header"></div>',
-        '<div class="body"><table class="table table-striped"><thead><tr><th>Resources</th><th>Signatures</th></tr></thead><tbody></tbody></table></div>',
+        '<div class="body"><table class="table table-striped"><thead><tr><th>Resources</th><th>Signatures (e.g <span class="label label-warning">loosely</span> <span class="label label-important">strictly</span>)</th></tr></thead><tbody></tbody></table></div>',
         '<div class="footer"></div>'
     ]);
 

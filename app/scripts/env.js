@@ -32,10 +32,10 @@
 		return _.keys(this)[0];
 	});
 
-	Handlebars.registerHelper('showSignatureMapping', function(mapping){
+	Handlebars.registerHelper('showSignatureMapping', function(type, mapping){
 		try{
 	        var parts = mapping.split(':');
-			return '<p><span class="label label-info">'+parts[0]+'</span> '+parts[1]+'</p>';
+			return '<p><span class="label '+(type==='strictly'?'label-important':'label-warning')+'">'+parts[0]+'</span> '+parts[1]+'</p>';
 		}catch(e){
 			console.log(e);
 		}

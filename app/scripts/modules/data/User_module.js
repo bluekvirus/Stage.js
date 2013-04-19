@@ -4,7 +4,7 @@
  * Module Definition
  * =====================
  * 
- * Generated through `D:\wamp\www\Server_\temp\module-1365760716582-def.json` for Backbone module **User**
+ * Generated through `D:\wamp\www\Server_\temp\module-1366339112201-def.json` for Backbone module **User**
  *
  * 
  * This is the user module for authentication/authorization purpose
@@ -27,7 +27,7 @@
  * @author Tim.Liu
  * @updated 
  * 
- * @generated on Fri Apr 12 2013 17:58:36 GMT+0800 (中国标准时间) 
+ * @generated on Fri Apr 19 2013 10:38:32 GMT+0800 (中国标准时间) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
@@ -83,6 +83,12 @@
             },
             birthday: {
                 type: "Date"
+            },
+            roles: {
+                type: "CUSTOM_PICKER",
+                dataSrc: "Role",
+                dndNS: "user-roles",
+                valueField: "name"
             },
         },
         //backbone.model.save will use this to merge server response back to model.
@@ -234,6 +240,10 @@
             legend: "Basic Information",
             fields: ["name", "birthday"],
             tpl: "custom-tpl-User-form-fieldset-Basic_Information"
+        }, {
+            legend: "Access Control",
+            fields: ["roles"],
+            tpl: "custom-tpl-User-form-fieldset-Access_Control"
         }],
         ui: {
             header: '.form-header-container',
@@ -367,6 +377,10 @@
             }, {
                 name: "username",
                 label: "Username",
+                cell: "string"
+            }, {
+                name: "roles",
+                label: "Roles",
                 cell: "string"
             }, {
                 name: "_actions_",
