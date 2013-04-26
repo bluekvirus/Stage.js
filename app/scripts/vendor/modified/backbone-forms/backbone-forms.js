@@ -1946,6 +1946,16 @@ Form.editors = (function() {
       }
     },
 
+    /*Tim's hack, to parse date back*/
+    _parseDateBack: function(date){
+      if(date && !_.isDate(date)){
+        date = new Date(date);
+        date = new Date(date.getTime() + date.getTimezoneOffset()*60000);
+      }
+
+      return date;
+    },
+
     initialize: function(options) {
       options = options || {};
 
@@ -1966,15 +1976,13 @@ Form.editors = (function() {
         yearEnd: today.getFullYear()
       }, options.schema || {});
             
-      //Cast to Date
-      if (this.value && !_.isDate(this.value)) {
-        this.value = new Date(this.value);
-      }
+      //Cast to Date : using Tim's hack
+      this._parseDateBack(this.value);
       
       //Set default date
       if (!this.value) {
         var date = new Date();
-        date.setSeconds(0);
+        //date.setSeconds(0);
         date.setMilliseconds(0);
         
         this.value = date;
@@ -2039,13 +2047,23 @@ Form.editors = (function() {
 
       if (!year || !month || !date) return null;
 
-      return new Date(year, month, date);
+      /*Tim's hack get the actuall time I set on the client...*/
+      var d = new Date(year, month, date);
+      d = new Date(d.getTime() - d.getTimezoneOffset()*60000);
+
+      //console.log(d.toISOString());
+
+      return d;
     },
     
     /**
      * @param {Date} date
      */
     setValue: function(date) {
+
+      //Cast to Date : using Tim's hack;
+      date = this._parseDateBack(date);
+
       this.$date.val(date.getDate());
       this.$month.val(date.getMonth());
       this.$year.val(date.getFullYear());
@@ -2194,15 +2212,17 @@ Form.editors = (function() {
 
       if (!date || !hour || !min || !sec) return null;
 
-      date.setHours(hour);
-      date.setMinutes(min);
-      date.setSeconds(sec);
+      date.setUTCHours(hour);
+      date.setUTCMinutes(min);
+      date.setUTCSeconds(sec);
 
       return date;
     },
     
     setValue: function(date) {
-      if (!_.isDate(date)) date = new Date(date);
+      //if (!_.isDate(date)) date = new Date(date);
+      //Using Tim's hack instead.
+      date = this.dateEditor._parseDateBack(date);
       
       this.dateEditor.setValue(date);
       
