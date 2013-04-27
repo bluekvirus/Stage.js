@@ -51,6 +51,7 @@
 
 		}else if(form && !_.isFunction(form)){
 			//form field
+			//Note:: Make sure the request maker is rendered after the targeted field.
 			cb(form.getValue(resource));
 
 		}else{
