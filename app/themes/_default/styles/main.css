@@ -121,7 +121,11 @@
 
 .form-control-bar {
   padding: 10px;
-  padding-left: 180px;
+}
+
+.form-control-bar .form-control-bar-btn-holder {
+  width: 200px;
+  margin: 0 auto;
 }
 
 fieldset {
@@ -139,6 +143,15 @@ legend {
 /*by hacking the backbone-form's fieldset template*/
 legend > span {
   padding: 5px 20px;
+}
+
+/*for grid editor like full width fields: .grid-field*/
+.grid-field > .controls{
+  margin-left: 10px;
+}
+
+.grid-field .controls .datagrid-header-container .btn-action-new{
+  margin-left: 20px;
 }
 
 /* End of Form styles*/
