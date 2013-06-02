@@ -72,15 +72,18 @@ When you are ready to make your awesome extension available to the world, don't
 forget to add your extension to the `SUBDIRS` variable in
 `src/extensions/Makefile`.
 
+
 Branching
 =========
 
-If you are filing a pull request, you should be working on the `<version>-wip`
-branch which should be the only work-in-progress branch for this project. The
-`master` branch is reserved for stable releases.
+For every issue, there should be a branch for fixing that issue. When you are
+happy with your changes, you can file a pull request from your feature branch
+against Backgrid's master.
+
 
 Code Style
 ==========
+If you are filing a pull request, you should follow the guidelines below:
 
 Javascript
 ----------
@@ -100,7 +103,7 @@ CSS
 ---
 
 Please make sure you use `recess` to lint your CSS files before you submit a
-pull request. There's a make rule is put in every Makefile for this purpose.
+pull request. There's a make rule put in every Makefile for this purpose.
 
 ```shell
 $ make csslint

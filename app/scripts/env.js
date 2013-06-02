@@ -164,40 +164,39 @@
 
 	/**
 	 * ==============================
-	 * Try/Patch scripts/css loading:
+	 * Try/Patch scripts loading:
 	 * ==============================
 	 */
 	
 	//worker function [all shorthands extend from this one]
-	var _patch = function(server, payload, type, silent){
+	var _patch = function(server, payload, silent){
         var path = payload;
         $.ajax({
             url: server,
             async: false, //sync or else the loading won't occure before page ready.
             timeout: 4500,
-            data: {payload: path, type: type},
+            data: {payload: path},
             dataType: 'json',
             success: function(json, textStatus) {
-              //optional stuff to do after success
-              if(json.files){
-                _.each(json.files, function(f, index){
-                    $('body').append('<script type="text/javascript" src="'+path+'/'+f+'"/>');
-                });
-              }else{
-              	if(!silent)
-                	Application.error('Auto Loader Error', json.error);
-              }
+				//optional stuff to do after success
+				_.each(['modules', 'extensions', 'others'], function(type){
+					_.each(json[type], function(f, index){
+					    $('body').append('<script type="text/javascript" src="'+path+'/'+f+'"/>');
+					});
+				})
+				if(!silent && json.error)
+					Application.error('Auto Loader Error', json.error);
             }
         });
 	}
 
 	//shorthand methods
 	Application.patchScripts = function(){
-		_patch('/tryscripts', 'scripts/_try', 'js', false);
+		_patch('/tryscripts', 'scripts/_try', false);
 	} 
 
 	Application.patchAdminGen = function(){
-		_patch('/dev/AdminGen/scripts', '/dev/AdminGen/scripts', '', true);
+		_patch('/dev/AdminGen/scripts', '/dev/AdminGen/scripts', true);
 	}
 
 })();

@@ -30,17 +30,17 @@ $(document).ready(function () {
 
     var col = new (Backbone.PageableCollection.extend({
       url: "test/makeFullCollection",
-      model: Backbone.Model,
-      sync: sync
+      model: Backbone.Model
     }))();
 
+    col.sync = sync;
+
     var fullCol = col._makeFullCollection(models,
-                                          { comparator: comparator });
+                                          {comparator: comparator});
 
     ok(!_.isUndefined(fullCol));
     ok(_.isUndefined(fullCol.constructor.prototype.comparator));
     strictEqual(fullCol.comparator, comparator);
-    strictEqual(fullCol.constructor.prototype.sync, sync);
     strictEqual(fullCol.sync, sync);
     strictEqual(fullCol.constructor.prototype.model, Backbone.Model);
     strictEqual(fullCol.model, Backbone.Model);
@@ -80,6 +80,14 @@ $(document).ready(function () {
 
     var mods = models.slice();
 
+    col = new Backbone.PageableCollection(mods[0], {
+      mode: "client"
+    });
+
+    strictEqual(col.state.totalRecords, 1);
+    strictEqual(col.fullCollection.size(), 1);
+    strictEqual(col.fullCollection.at(0).get("name"), "a");
+
     col = new Backbone.PageableCollection(mods, {
       comparator: comparator,
       state: {
@@ -103,7 +111,7 @@ $(document).ready(function () {
 
     col = new Backbone.PageableCollection(mods, {
       state: {
-        pageSize: 1,
+        pageSize: 2,
         sortKey: "name"
       },
       full: true,
@@ -114,8 +122,9 @@ $(document).ready(function () {
     ok(!_.isUndefined(col.fullCollection.comparator));
     ok(_.isUndefined(col.comparator));
 
-    strictEqual(col.size(), 1);
+    strictEqual(col.size(), 2);
     strictEqual(col.at(0).get("name"), "a");
+    strictEqual(col.at(1).get("name"), "b");
     strictEqual(col.fullCollection.size(), 3);
     strictEqual(col.fullCollection.at(0).get("name"), "a");
     strictEqual(col.fullCollection.at(1).get("name"), "b");
@@ -482,11 +491,10 @@ $(document).ready(function () {
     col.fullCollection.reset();
   });
 
-  test("fetch", 11, function () {
+  test("fetch", 14, function () {
 
     var ajax = $.ajax;
     $.ajax = function (settings) {
-
       strictEqual(settings.url, "test-client-fetch");
       deepEqual(settings.data, {
         "sort_by": "name",
@@ -512,19 +520,34 @@ $(document).ready(function () {
       mode: "client"
     });
 
+    var resetCount = 0;
     var onReset = function () {
+      resetCount++;
       ok(true);
     };
 
+    var fullResetCount = 0;
     var onFullReset = function () {
+      fullResetCount++;
       ok(true);
     };
 
     col.on("reset", onReset);
     col.fullCollection.on("reset", onFullReset);
 
+    var parseCount = 0;
+    var oldParse = col.parse;
+    col.parse = function () {
+      parseCount++;
+      ok(true);
+      return oldParse.apply(this, arguments);
+    };
     col.fetch();
+    col.parse = oldParse;
 
+    equal(resetCount, 1);
+    equal(fullResetCount, 1);
+    equal(parseCount, 1);
     strictEqual(col.at(0).get("name"), "d");
     strictEqual(col.at(1).get("name"), "c");
     strictEqual(col.fullCollection.at(0).get("name"), "d");
@@ -533,6 +556,78 @@ $(document).ready(function () {
     strictEqual(col.fullCollection.at(3).get("name"), "a");
 
     $.ajax = ajax;
+  });
+  
+  test("getPageByOffset - firstPage is 0", function () {
+    var manyModels = [
+      {"name": "a1"},
+      {"name": "a2"},
+      {"name": "b1"},
+      {"name": "b2"},
+      {"name": "c1"},
+      {"name": "c2"}
+    ];
+    var col = new Backbone.PageableCollection(manyModels, {
+      state: {
+        pageSize: 2,
+        firstPage: 0,
+        currentPage: 0,
+      },
+      mode: "client"
+    });
+    strictEqual(col.state.currentPage, 0);
+
+    col.getPageByOffset(2);
+    strictEqual(1, col.state.currentPage);
+    strictEqual("b1", col.at(0).get("name"));
+
+    col.getPageByOffset(1);
+    strictEqual(0, col.state.currentPage);
+    strictEqual("a1", col.at(0).get("name"));
+
+    col.getPageByOffset(col.state.totalRecords - 1);
+    strictEqual(2, col.state.currentPage);
+    strictEqual("c1", col.at(0).get("name"));
+
+    sinon.stub(col, "getPage");
+    col.getPageByOffset(0);
+    ok(col.getPage.calledOnce);
+  });
+
+  test("getPageByOffset - firstPage is 1", function () {
+    var manyModels = [
+      {"name": "a1"},
+      {"name": "a2"},
+      {"name": "b1"},
+      {"name": "b2"},
+      {"name": "c1"},
+      {"name": "c2"}
+    ];
+    var col = new Backbone.PageableCollection(manyModels, {
+      state: {
+        pageSize: 2,
+        firstPage: 1,
+        currentPage: 1
+      },
+      mode: "client"
+    });
+    strictEqual(1, col.state.currentPage);
+
+    col.getPageByOffset(2);
+    strictEqual(2, col.state.currentPage);
+    strictEqual("b1", col.at(0).get("name"));
+
+    col.getPageByOffset(1);
+    strictEqual(1, col.state.currentPage);
+    strictEqual("a1", col.at(0).get("name"));
+
+    col.getPageByOffset(col.state.totalRecords - 1);
+    strictEqual(3, col.state.currentPage);
+    strictEqual("c1", col.at(0).get("name"));
+
+    sinon.stub(col, "getPage");
+    col.getPageByOffset(0);
+    ok(col.getPage.calledOnce);
   });
 
   test("getPage", function () {

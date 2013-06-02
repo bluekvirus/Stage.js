@@ -1,6 +1,6 @@
 PROJECT_NAME = backgrid
 PROJECT_URL = http://github.com/wyuenho/backgrid
-AUTHOR = Jimmy Yuen Ho Wong
+AUTHOR = Jimmy Yuen Ho Wong and contributors
 
 JS_FILES = preamble.js\
 	formatter.js \
@@ -27,17 +27,17 @@ all: clean dist test
 FORCE:
 
 %.js %.css: FORCE
-	echo "/*\n\
+	printf "/*\n\
 	  $(PROJECT_NAME)\n\
 	  $(PROJECT_URL)\n\n\
 	  Copyright (c) `date +%Y` $(AUTHOR)\n\
 	  Licensed under the MIT @license.\n\
-	*/" | cat - $@ > "/tmp/`basename $@`" && mv -f "/tmp/`basename $@`" $@
+	*/\n" | cat - $@ > "/tmp/`basename $@`" && mv -f "/tmp/`basename $@`" $@
 
 js:
 	cat $(JS_FILES) > $(JS_OUTFILE)
-	echo "(function (root, $$, _, Backbone) {\n\n  \"use strict\";\n" | cat - $(JS_OUTFILE) > /tmp/$(JS_OUTFILE) && mv -f /tmp/$(JS_OUTFILE) $(JS_OUTFILE)
-	echo "}(this, $$, _, Backbone));" >> $(JS_OUTFILE)
+	printf "(function (root, $$, _, Backbone) {\n\n  \"use strict\";\n" | cat - $(JS_OUTFILE) > /tmp/$(JS_OUTFILE) && mv -f /tmp/$(JS_OUTFILE) $(JS_OUTFILE)
+	printf "}(this, jQuery, _, Backbone));" >> $(JS_OUTFILE)
 	make $(JS_OUTFILE)
 
 csslint:

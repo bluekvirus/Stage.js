@@ -2,7 +2,7 @@
   backgrid
   http://github.com/wyuenho/backgrid
 
-  Copyright (c) 2013 Jimmy Yuen Ho Wong
+  Copyright (c) 2013 Jimmy Yuen Ho Wong and contributors
   Licensed under the MIT @license.
 */
 
@@ -31,8 +31,7 @@ var Footer = Backgrid.Footer = Backbone.View.extend({
      @throws {TypeError} If options.columns or options.collection is undefined.
   */
   initialize: function (options) {
-    requireOptions(options, ["columns", "collection"]);
-    this.parent = options.parent;
+    Backgrid.requireOptions(options, ["columns", "collection"]);
     this.columns = options.columns;
     if (!(this.columns instanceof Backbone.Collection)) {
       this.columns = new Backgrid.Columns(this.columns);

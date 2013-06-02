@@ -47,8 +47,8 @@
 		  gridB: "div[region=gridB]",			  
 		},
 		initialize:function(options){			
-			this.blocks = (options && options.blocks) || [{name:'gridA', title:'abc', path:'./data/status/status.test.json'},
-													  {name:'gridB', title:'efg', path:'./data/status/status.test2.json'}];
+			this.blocks = (options && options.blocks) || [{name:'gridA', title:'abc', path:'./static/status/status.test.json'},
+													  {name:'gridB', title:'efg', path:'./static/status/status.test2.json'}];
 			//load the label
 			this._loadLabelMap(options);
 
@@ -66,7 +66,7 @@
 		_loadLabelMap: function(options){
 			var that = this;
 			$.ajax({
-				url: (options && options.labelInfo) || '/data/status/status.keylabel.map.json',
+				url: (options && options.labelInfo) || '/static/status/status.keylabel.map.json',
 				async: false,
 				success: function(map){
 					that.keyLabelMap = map;

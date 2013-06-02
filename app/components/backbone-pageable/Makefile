@@ -17,13 +17,13 @@ FORCE:
 	  Licensed under the MIT @license.\n\
 	*/" | cat - $@ > "/tmp/`basename $@`" && mv -f "/tmp/`basename $@`" $@
 
-build:
+build: FORCE
 	uglifyjs $(JS_FILE) --compress --mangle --comments --output $(JS_OUTFILE)
 
-clean:
+clean: FORCE
 	rm -f $(JS_OUTFILE)
 
-doc:
+doc: FORCE
 	jsduck $(JS_FILE) \
 		--external=Backbone.Model,Backbone.Collection,XMLHttpRequest \
 		--title=backbone-pageable \
@@ -36,4 +36,5 @@ doc:
 test: FORCE
 	phantomjs test/runner.js test/index.html?noglobals=true
 	phantomjs test/runner.js test/test-zepto.html?noglobals=true
+	phantomjs test/runner.js test/index.0.9.10.html?noglobals=true
 	phantomjs test/runner.js test/index.0.9.9.html?noglobals=true

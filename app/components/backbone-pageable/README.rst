@@ -8,6 +8,7 @@ A pageable, drop-in replacement for Backbone.Collection inspired by
 much better.
 
 .. contents:: Table of Contents
+   :backlinks: none
 
 Advantages
 ----------
@@ -32,7 +33,7 @@ Bi-directional event handling
 100% compatible with existing code
   ``Backbone.PageableCollection`` is a strict superset of
   ``Backbone.Collection`` and passes its `test suite
-  <http://wyuenho.github.com/backbone-pageable/test/index.html>`_.
+  <http://wyuenho.github.io/backbone-pageable/test/index.html>`_.
 Well tested
   Comes with 100s of tests in addition to the ``Backbone.Collection`` test
   suite.
@@ -42,18 +43,18 @@ No surprising behavior
   ``Backbone.PageableCollection`` performs internal state sanity checks at
   appropriate times, so it is next to impossible to get into a weird state.
 Light-weight
-  The library is only 4 kb minified and gzipped.
+  The library is only 4.2KB minified and gzipped.
 
 
 Playable Demos
 --------------
 
 The following examples utilizes `Backgrid.js
-<http://wyuenho.github.com/backgrid/>`_ to render the collections.
+<http://backgridjs.com>`_ to render the collections.
 
-- `Server Mode <http://wyuenho.github.com/backbone-pageable/examples/server-mode.html>`_
-- `Client Mode <http://wyuenho.github.com/backbone-pageable/examples/client-mode.html>`_
-- `Infinite Mode <http://wyuenho.github.com/backbone-pageable/examples/infinite-mode.html>`_
+- `Server Mode <http://wyuenho.github.io/backbone-pageable/examples/server-mode.html>`_
+- `Client Mode <http://wyuenho.github.io/backbone-pageable/examples/client-mode.html>`_
+- `Infinite Mode <http://wyuenho.github.io/backbone-pageable/examples/infinite-mode.html>`_
 
 
 Installation
@@ -200,7 +201,7 @@ order        -1    order         "order"
 ============ ===== ============= ============================
 
 You can consult the `API documentation
-<http://wyuenho.github.com/backbone-pageable/#!/api/Backbone.PageableCollection>`_
+<http://wyuenho.github.io/backbone-pageable/#!/api/Backbone.PageableCollection>`_
 for a detailed explaination of these fields.
 
 Fetching Data and Managing States
@@ -232,11 +233,24 @@ support an additional response data structure that contains an object hash of
 pagination state. The following is a table of the response data structure
 formats ``Backbone.PageableCollection`` accepts.
 
-============= ====================================
-Without State With State
-============= ====================================
-[{}, {}, ...] [{ pagination state }, [{}, {} ...]]
-============= ====================================
+================= ========================================
+Without State     With State
+================= ========================================
+``[{}, {}, ...]`` ``[{ pagination state }, [{}, {} ...]]``
+================= ========================================
+
+Most of the time, providing something like this in your response is sufficient
+for updating the pagination state.
+
+``[{"total_entries": 100}, [{}, {}, ...]]``
+
+Since 1.1.7, customizing ``parse`` has been simplified and the default
+implementation now delegates to two new methods - ``parseState`` and
+``parseRecords``. You are encouraged to override them instead of ``parse`` if it
+is not clear how to do so.
+
+See the `API <http://wyuenho.github.io/backbone-pageable/>`_ for details on
+customizing ``parseState`` and ``parseRecords``.
 
 Bootstrapping
 -------------
@@ -301,7 +315,7 @@ to the client is not too time-consuming.
 
 .. code-block:: javascript
 
-  var book = new Book([
+  var books = new Books([
     // Bootstrap all the records for all the pages here
   ], { mode: "client" });
 
@@ -401,8 +415,8 @@ return a links object.
        offset: function () { return this.state.currentPage * this.state.pageSize; }
      },
      // Return all the comments for this Facebook object
-     parse: function (resp) {
-       return resp.comments;
+     parseRecords: function (resp) {
+       return resp.comments.data;
      },
      // Facebook's `paging` object is in the exact format
      // `Backbone.PageableCollection` accepts.
@@ -411,6 +425,44 @@ return a links object.
      }
    });
 
+To act on the newly fetched models under infinite mode, you can listen to the
+``fullCollection`` reference's ``add`` event like you would under client mode,
+and render the newly fetched models accordingly.
+
+.. code-block:: javascript
+
+   var ToiletPaper = Backbone.View.extend({
+
+     events: {
+       "scroll": "fetchSheets"
+     },
+
+     initialize: function (options) {
+       this.listenTo(this.collection.fullCollection, "add", this.addSheet);
+     },
+
+     addSheet: function () {
+       // ...
+     },
+
+     fetchSheets: function () {
+       this.collection.getNextPage();
+     },
+
+     // ...
+
+   });
+
+   var wordsOfTheDay = new Backbone.PageableCollection({
+     mode: "infinite",
+     // url, initial state, etc...
+   });
+
+   var toiletPaper = new ToiletPaper({collection: wordsOfTheDay});
+
+   $("#toilet-paper-dispenser").append(toiletPaper.render().el);
+
+   wordsOfTheDay.fetch();
 
 Sorting
 -------
@@ -508,7 +560,7 @@ communicated between all the pages throught the two collections.
 API Reference
 -------------
 
-See `here <http://wyuenho.github.com/backbone-pageable/>`_.
+See `here <http://wyuenho.github.io/backbone-pageable/>`_.
 
 
 FAQ
@@ -517,16 +569,15 @@ FAQ
 #. Why another paginator?
 
    This project was born out of the needs for a backing model for
-   `Backgrid.Paginator <http://wyuenho.github.com/backgrid/#api-paginator>`_ -
-   an extension for the `Backgrid.js <http://wyuenho.github.com/backgrid/>`_
-   project. The project needed a smart and intuitive model that is
-   well-documented and well-tested to manage the paginator view. Upon examining
-   the popular project `Backbone.Paginator
-   <https://github.com/addyosmani/backbone.paginator/>`_, the author has
-   concluded that it does not satisfy the above requirements. Furthermore, the
-   progress of the the project is too slow. The author hopes to reinvent a
-   better wheel that is better suited and supported for `Backgrid.js
-   <http://wyuenho.github.com/backgrid/>`_.
+   `Backgrid.Extension.Paginator <http://backgridjs.com/api/#api-paginator>`_ -
+   an extension for the `Backgrid.js <http://backgridjs.com>`_ project. The
+   project needed a smart and intuitive model that is well-documented and
+   well-tested to manage the paginator view. Upon examining the popular project
+   `Backbone.Paginator <https://github.com/addyosmani/backbone.paginator/>`_,
+   the author has concluded that it does not satisfy the above
+   requirements. Furthermore, the progress of the the project is too slow. The
+   author hopes to reinvent a better wheel that is better suited and supported
+   for `Backgrid.js <http://backgridjs.com>`_.
 
 #. Which package managers does backbone-pageable support?
 
@@ -542,6 +593,65 @@ FAQ
 
 Change Log
 ----------
+
+1.3.0
+    - Pass ``from`` and ``to`` to the ``options`` object sent to event handlers
+      after ``get*Page``.
+    - Fetching new page under infinite mode no longer silences ``add`` and
+      triggers ``reset``. It will now simple triggers ``add``.
+    - Slight code clean up.
+
+1.2.4
+    - Moved initialization from ``initialize`` code to the
+      constructor. `(Issue #83)
+      <https://github.com/wyuenho/backbone-pageable/issues/83>`_
+
+1.2.3
+    - Support non-array elements in the constructor. (Thanks Gabriel Bédard
+      Sicé) `(Pull
+      #76) <https://github.com/wyuenho/backbone-pageable/pull/76>`_
+    - Added ``getPageByOffset`` method. (Thanks Kee-Yip Chan) `(Pull #77)
+      <https://github.com/wyuenho/backbone-pageable/pull/77>`_
+
+1.2.2
+    - ``parseRecords`` doesn't get called twice during client and infinite mode
+      anymore. `(Issue #71)
+      <https://github.com/wyuenho/backbone-pageable/issues/71>`_
+    - No ``RangeError`` should be thrown if ``firstPage == 1``, ``currentPage ==
+      1`` and ``totalPages == 0``. `(Issues #74)
+      <https://github.com/wyuenho/backbone-pageable/issues/74>`_
+
+1.2.1
+    - ``parseLinks`` now returns an empty object instead of throwing an error if
+      there's no ``Links`` header found. `(Issue #69)
+      <https://github.com/wyuenho/backbone-pageable/issues/69>`_
+
+1.2.0
+    - Tested against Backbone 1.0 and Underscore 1.4.4. `(Issue #56)
+      <https://github.com/wyuenho/backbone-pageable/issues/56>`_
+
+1.1.9
+  Bugs Fixed
+    - Copy instance properties from pageable collection to full
+      collection. `(Issue #55)
+      <https://github.com/wyuenho/backbone-pageable/issues/55>`_
+
+1.1.8
+  Bugs Fixed
+    - Server can now return partial state and 0 for totalRecords. `(Issue #41)
+      <https://github.com/wyuenho/backbone-pageable/issues/41>`_, `(Issue #52)
+      <https://github.com/wyuenho/backbone-pageable/issues/52>`_.
+    - 0-based infinite mode pageable collection now initializes
+      correctly. `(Issue #51)
+      <https://github.com/wyuenho/backbone-pageable/issues/51>`_.
+1.1.7
+  Changes
+    - Simplified ``parse``. ``parse`` now delegates to two new methods -
+      ``parseState`` and ``parseRecords``. `(Issue #49)
+      <https://github.com/wyuenho/backbone-pageable/issues/49>`_.
+  Bugs Fixed
+    - ``fetch`` now accepts function as its ``options.url`` value. `(Issue #50)
+      <https://github.com/wyuenho/backbone-pageable/issues/50>`_.
 
 1.1.6
   Bugs Fixed

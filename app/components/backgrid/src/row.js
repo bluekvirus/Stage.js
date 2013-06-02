@@ -2,7 +2,7 @@
   backgrid
   http://github.com/wyuenho/backgrid
 
-  Copyright (c) 2013 Jimmy Yuen Ho Wong
+  Copyright (c) 2013 Jimmy Yuen Ho Wong and contributors
   Licensed under the MIT @license.
 */
 
@@ -13,13 +13,13 @@
 
    @class Backgrid.Row
    @extends Backbone.View
- */
+*/
 var Row = Backgrid.Row = Backbone.View.extend({
 
   /** @property */
   tagName: "tr",
 
-  initOptionRequires: ["columns", "model"],
+  requiredOptions: ["columns", "model"],
 
   /**
      Initializes a row view instance.
@@ -29,10 +29,10 @@ var Row = Backgrid.Row = Backbone.View.extend({
      @param {Backbone.Model} options.model The model instance to render.
 
      @throws {TypeError} If options.columns or options.model is undefined.
-   */
+  */
   initialize: function (options) {
 
-    requireOptions(options, this.initOptionRequires);
+    Backgrid.requireOptions(options, this.requiredOptions);
 
     var columns = this.columns = options.columns;
     if (!(columns instanceof Backbone.Collection)) {
@@ -88,7 +88,7 @@ var Row = Backgrid.Row = Backbone.View.extend({
      @param {Object} options The options passed to #initialize.
 
      @return {Backgrid.Cell}
-   */
+  */
   makeCell: function (column) {
     return new (column.get("cell"))({
       column: column,
@@ -98,7 +98,7 @@ var Row = Backgrid.Row = Backbone.View.extend({
 
   /**
      Renders a row of cells for this row's model.
-   */
+  */
   render: function () {
     this.$el.empty();
 
@@ -112,6 +112,8 @@ var Row = Backgrid.Row = Backbone.View.extend({
 
     this.el.appendChild(fragment);
 
+    this.delegateEvents();
+
     return this;
   },
 
@@ -119,7 +121,7 @@ var Row = Backgrid.Row = Backbone.View.extend({
      Clean up this row and its cells.
 
      @chainable
-   */
+  */
   remove: function () {
     for (var i = 0; i < this.cells.length; i++) {
       var cell = this.cells[i];
@@ -128,4 +130,50 @@ var Row = Backgrid.Row = Backbone.View.extend({
     return Backbone.View.prototype.remove.apply(this, arguments);
   }
 
+});
+
+/**
+   EmptyRow is a simple container view that takes a list of column and render a
+   row with a single column.
+
+   @class Backgrid.EmptyRow
+   @extends Backbone.View
+*/
+var EmptyRow = Backgrid.EmptyRow = Backbone.View.extend({
+
+  /** @property */
+  tagName: "tr",
+
+  /** @property */
+  emptyText: null,
+
+  /**
+     Initializer.
+
+     @param {Object} options
+     @param {string} options.emptyText
+     @param {Backbone.Collection.<Backgrid.Column>|Array.<Backgrid.Column>|Array.<Object>} options.columns Column metadata.
+   */
+  initialize: function (options) {
+    Backgrid.requireOptions(options, ["emptyText", "columns"]);
+
+    this.emptyText = options.emptyText;
+    this.columns =  options.columns;
+  },
+
+  /**
+     Renders an empty row.
+  */
+  render: function () {
+    this.$el.empty();
+
+    var td = document.createElement("td");
+    td.setAttribute("colspan", this.columns.length);
+    td.textContent = this.emptyText;
+
+    this.el.setAttribute("class", "empty");
+    this.el.appendChild(td);
+
+    return this;
+  }
 });

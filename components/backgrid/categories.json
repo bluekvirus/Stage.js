@@ -22,14 +22,18 @@
         "classes": [
           "Backgrid.CellEditor",
           "Backgrid.InputCellEditor",
+          "Backgrid.BooleanCellEditor",
           "Backgrid.SelectCellEditor"
         ]
       }, {
         "name": "Formatters",
         "classes": [
           "Backgrid.CellFormatter",
+          "Backgrid.StringFormatter",
+          "Backgrid.EmailFormatter",
           "Backgrid.NumberFormatter",
-          "Backgrid.DatetimeFormatter"
+          "Backgrid.DatetimeFormatter",
+          "Backgrid.SelectFormatter"
         ]
       }, {
         "name": "Columns",
@@ -46,9 +50,11 @@
       }, {
         "name": "Others",
         "classes": [
+          "Backgrid.Command",
           "Backgrid.Grid",
           "Backgrid.Body",
           "Backgrid.Row",
+          "Backgrid.EmptyRow",
           "Backgrid.Footer"
         ]
       }
@@ -81,6 +87,21 @@
         "classes": [
           "Backgrid.Extension.Select2Cell",
           "Backgrid.Extension.Select2CellEditor"
+        ]
+      },
+      {
+        "name": "SelectAll",
+        "classes": [
+          "Backgrid.Extension.SelectAllHeaderCell",
+          "Backgrid.Extension.SelectRowCell"
+        ]
+      },
+      {
+        "name": "Filter",
+        "classes": [
+          "Backgrid.Extension.ServerSideFilter",
+          "Backgrid.Extension.ClientSideFilter",
+          "Backgrid.Extension.LunrFilter"
         ]
       }
     ]

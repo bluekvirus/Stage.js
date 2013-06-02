@@ -2,6 +2,10 @@
   padding: 10px 0;
 }
 
+#social-media .g-plusone {
+  display: inline-block;
+}
+
 #social-media * {
   vertical-align: middle !important;
 }
@@ -48,7 +52,7 @@ h1,h2,h3,h4,h5,h6,.brand {
 }
 
 #example-2-result {
-  height: 523px;
+  height: 592px;
 }
 
 #example-4-result .backgrid {

@@ -2,7 +2,7 @@
   backgrid
   http://github.com/wyuenho/backgrid
 
-  Copyright (c) 2013 Jimmy Yuen Ho Wong
+  Copyright (c) 2013 Jimmy Yuen Ho Wong and contributors
   Licensed under the MIT @license.
 */
 
@@ -21,11 +21,13 @@ var CellFormatter = Backgrid.CellFormatter = function () {};
 _.extend(CellFormatter.prototype, {
 
   /**
-     Takes a raw value from a model and returns a formatted string for display.
+     Takes a raw value from a model and returns an optionally formatted string
+     for display. The default implementation simply returns the supplied value
+     as is without any type conversion.
 
      @member Backgrid.CellFormatter
      @param {*} rawData
-     @return {string}
+     @return {*}
   */
   fromRaw: function (rawData) {
     return rawData;
@@ -64,7 +66,7 @@ var NumberFormatter = Backgrid.NumberFormatter = function (options) {
     throw new RangeError("decimals must be between 0 and 20");
   }
 };
-NumberFormatter.prototype = new CellFormatter;
+NumberFormatter.prototype = new CellFormatter();
 _.extend(NumberFormatter.prototype, {
 
   /**
@@ -98,7 +100,7 @@ _.extend(NumberFormatter.prototype, {
      @return {string}
   */
   fromRaw: function (number) {
-    if (isNaN(number) || number === null) return '';
+    if (_.isNull(number) || _.isUndefined(number)) return '';
 
     number = number.toFixed(~~this.decimals);
 
@@ -143,9 +145,10 @@ _.extend(NumberFormatter.prototype, {
 });
 
 /**
-   Formatter to converts between various datetime string formats.
+   Formatter to converts between various datetime formats.
 
-   This class only understands ISO-8601 formatted datetime strings. See
+   This class only understands ISO-8601 formatted datetime strings and UNIX
+   offset (number of milliseconds since UNIX Epoch). See
    Backgrid.Extension.MomentFormatter if you need a much more flexible datetime
    formatter.
 
@@ -162,7 +165,7 @@ var DatetimeFormatter = Backgrid.DatetimeFormatter = function (options) {
     throw new Error("Either includeDate or includeTime must be true");
   }
 };
-DatetimeFormatter.prototype = new CellFormatter;
+DatetimeFormatter.prototype = new CellFormatter();
 _.extend(DatetimeFormatter.prototype, {
 
   /**
@@ -190,12 +193,18 @@ _.extend(DatetimeFormatter.prototype, {
   ISO_SPLITTER_RE: /T|Z| +/,
 
   _convert: function (data, validate) {
-    if (_.isNull(data) || _.isUndefined(data)) return data;
-    data = data.trim();
-    var parts = data.split(this.ISO_SPLITTER_RE) || [];
-
-    var date = this.DATE_RE.test(parts[0]) ? parts[0] : '';
-    var time = date && parts[1] ? parts[1] : this.TIME_RE.test(parts[0]) ? parts[0] : '';
+    var date, time = null;
+    if (_.isNumber(data)) {
+      var jsDate = new Date(data);
+      date = lpad(jsDate.getUTCFullYear(), 4, 0) + '-' + lpad(jsDate.getUTCMonth() + 1, 2, 0) + '-' + lpad(jsDate.getUTCDate(), 2, 0);
+      time = lpad(jsDate.getUTCHours(), 2, 0) + ':' + lpad(jsDate.getUTCMinutes(), 2, 0) + ':' + lpad(jsDate.getUTCSeconds(), 2, 0);
+    }
+    else {
+      data = data.trim();
+      var parts = data.split(this.ISO_SPLITTER_RE) || [];
+      date = this.DATE_RE.test(parts[0]) ? parts[0] : '';
+      time = date && parts[1] ? parts[1] : this.TIME_RE.test(parts[0]) ? parts[0] : '';
+    }
 
     var YYYYMMDD = this.DATE_RE.exec(date) || [];
     var HHmmssSSS = this.TIME_RE.exec(time) || [];
@@ -242,9 +251,11 @@ _.extend(DatetimeFormatter.prototype, {
 
      @member Backgrid.DatetimeFormatter
      @param {string} rawData
-     @return {string|null|undefined} ISO-8601 string in UTC. Null and undefined values are returned as is.
+     @return {string|null|undefined} ISO-8601 string in UTC. Null and undefined
+     values are returned as is.
   */
   fromRaw: function (rawData) {
+    if (_.isNull(rawData) || _.isUndefined(rawData)) return '';
     return this._convert(rawData);
   },
 
@@ -258,13 +269,88 @@ _.extend(DatetimeFormatter.prototype, {
      @member Backgrid.DatetimeFormatter
      @param {string} formattedData
      @return {string|undefined} ISO-8601 string in UTC. Undefined if a date is
-     found `includeDate` is false, or a time is found if `includeTime` is false,
-     or if `includeDate` is true and a date is not found, or if `includeTime` is
-     true and a time is not found.
+     found when `includeDate` is false, or a time is found when `includeTime` is
+     false, or if `includeDate` is true and a date is not found, or if
+     `includeTime` is true and a time is not found.
   */
   toRaw: function (formattedData) {
     return this._convert(formattedData, true);
   }
 
+});
+
+/**
+   Formatter to convert any value to string.
+
+   @class Backgrid.StringFormatter
+   @extends Backgrid.CellFormatter
+   @constructor
+ */
+var StringFormatter = Backgrid.StringFormatter = function () {};
+StringFormatter.prototype = new CellFormatter();
+_.extend(StringFormatter.prototype, {
+  /**
+     Converts any value to a string using Ecmascript's implicit type
+     conversion. If the given value is `null` or `undefined`, an empty string is
+     returned instead.
+
+     @member Backgrid.StringFormatter
+     @param {*} rawValue
+     @return {string}
+   */
+  fromRaw: function (rawValue) {
+    if (_.isUndefined(rawValue) || _.isNull(rawValue)) return '';
+    return rawValue + '';
+  }
+});
+
+/**
+   Simple email validation formatter.
+
+   @class Backgrid.EmailFormatter
+   @extends Backgrid.CellFormatter
+   @constructor
+ */
+var EmailFormatter = Backgrid.EmailFormatter = function () {};
+EmailFormatter.prototype = new CellFormatter();
+_.extend(EmailFormatter.prototype, {
+  /**
+     Return the input if it is a string that contains an '@' character and if
+     the strings before and after '@' are non-empty. If the input does not
+     validate, `undefined` is returned.
+
+     @member Backgrid.EmailFormatter
+     @param {*} formattedData
+     @return {string|undefined}
+   */
+  toRaw: function (formattedData) {
+    var parts = formattedData.trim().split("@");
+    if (parts.length === 2 && _.all(parts)) {
+      return formattedData;
+    }
+  }
+});
+
+/**
+   Formatter for SelectCell.
+
+   @class Backgrid.SelectFormatter
+   @extends Backgrid.CellFormatter
+   @constructor
+*/
+var SelectFormatter = Backgrid.SelectFormatter = function () {};
+SelectFormatter.prototype = new CellFormatter();
+_.extend(SelectFormatter.prototype, {
+
+  /**
+     Normalizes raw scalar or array values to an array.
+
+     @member Backgrid.SelectFormatter
+     @param {*} rawValue
+     @return {Array.<*>}
+  */
+  fromRaw: function (rawValue) {
+    return _.isArray(rawValue) ? rawValue : rawValue != null ? [rawValue] : [];
+  }
 });
 

@@ -2,10 +2,10 @@
   backgrid
   http://github.com/wyuenho/backgrid
 
-  Copyright (c) 2013 Jimmy Yuen Ho Wong
+  Copyright (c) 2013 Jimmy Yuen Ho Wong and contributors
   Licensed under the MIT @license.
 */
-describe("An CellEditor", function () {
+describe("A CellEditor", function () {
 
   it("throws TypeError if a formatter is not given", function () {
     expect(function () {
@@ -39,14 +39,13 @@ describe("An CellEditor", function () {
     }).toThrow(new TypeError("'model' is required"));
   });
 
-  it("calls postRender when parent triggers 'editing'", function () {
-
-    var parent = new Backbone.View();
-
+  it("calls postRender when model triggers 'backgrid:editing'", function () {
+    var postRenderCalled = 0;
     var editor = new (Backgrid.CellEditor.extend({
-      postRender: jasmine.createSpy("postRender")
+      postRender: function () {
+        postRenderCalled++;
+      }
     }))({
-      parent: parent,
       formatter: {
         fromRaw: function () {},
         toRaw: function () {}
@@ -59,14 +58,10 @@ describe("An CellEditor", function () {
         name: "alice"
       })
     });
-
     editor.render();
 
-    parent.trigger("editing");
-
-    expect(editor.postRender).toHaveBeenCalled();
-    expect(editor.postRender.calls.length).toBe(1);
-
+    editor.model.trigger("backgrid:editing");
+    expect(postRenderCalled).toBe(1);
   });
 
 });
@@ -75,6 +70,10 @@ describe("An InputCellEditor", function () {
 
   var book;
   var editor;
+  var backgridEditedTriggerCount;
+  var backgridEditedTriggerArgs;
+  var backgridErrorTriggerCount;
+  var backgridErrorTriggerArgs;
 
   beforeEach(function () {
 
@@ -94,7 +93,17 @@ describe("An InputCellEditor", function () {
       placeholder: "put your text here"
     });
 
-    spyOn(editor, "trigger").andCallThrough();
+    backgridEditedTriggerCount = 0;
+    book.on("backgrid:edited", function () {
+      backgridEditedTriggerCount++;
+      backgridEditedTriggerArgs = [].slice.call(arguments);
+    });
+
+    backgridErrorTriggerCount = 0;
+    book.on("backgrid:error", function () {
+      backgridErrorTriggerCount++;
+      backgridErrorTriggerArgs = [].slice.call(arguments);
+    });
 
     this.addMatchers({
       toBeAnInstanceOf: function (expected) {
@@ -109,39 +118,38 @@ describe("An InputCellEditor", function () {
     });
   });
 
-  it("render an text input box with a placeholder and the model value formatted for display", function () {
+  it("renders a text input box with a placeholder and the model value formatted for display", function () {
     editor.render();
     expect(editor.el).toBeAnInstanceOf(HTMLInputElement);
     expect(editor.$el.attr("placeholder")).toBe("put your text here");
     expect(editor.$el.val()).toBe("title");
   });
 
-  it("saves a formatted value in the input box to the model and triggers 'done' when tab is pressed", function () {
+  it("saves a formatted value in the input box to the model and triggers 'backgrid:edited' from the model when tab is pressed", function () {
     editor.render();
     editor.$el.val("another title");
     var tab = $.Event("keydown", { keyCode: 9 });
     editor.$el.trigger(tab);
     expect(editor.model.get(editor.column.get("name"))).toBe("another title");
-    expect(editor.trigger.calls.length).toBe(1);
-    expect(editor.trigger).toHaveBeenCalledWith("done");
+    expect(backgridEditedTriggerCount).toBe(1);
+    expect(backgridEditedTriggerArgs[0]).toEqual(editor.model);
+    expect(backgridEditedTriggerArgs[1]).toEqual(editor.column);
+    expect(backgridEditedTriggerArgs[2].moveRight()).toBe(true);
   });
 
-  it("saves a formatted value in the input box to the model and triggers 'done' when enter is pressed", function () {
+  it("saves a formatted value in the input box to the model and triggers 'backgrid:edited' from the model when enter is pressed", function () {
     editor.render();
     editor.$el.val("another title");
     var enter = $.Event("keydown", { keyCode: 13 });
     editor.$el.trigger(enter);
     expect(editor.model.get(editor.column.get("name"))).toBe("another title");
-    expect(editor.trigger.calls.length).toBe(1);
-    expect(editor.trigger).toHaveBeenCalledWith("done");
+    expect(backgridEditedTriggerCount).toBe(1);
+    expect(backgridEditedTriggerArgs[0]).toEqual(editor.model);
+    expect(backgridEditedTriggerArgs[1]).toEqual(editor.column);
+    expect(backgridEditedTriggerArgs[2].save()).toBe(true);
   });
 
-  it("removes itself when it triggers 'done'", function () {
-    editor.trigger("done");
-    expect(editor.remove.calls.length).toBe(1);
-  });
-
-  it("triggers 'error' when trying to save an invalid value", function () {
+  it("triggers 'backgrid:error' from the model when trying to save an invalid value", function () {
     editor.formatter = {
       fromRaw: jasmine.createSpy("fromRaw").andCallFake(function (d) {
         return d;
@@ -154,41 +162,50 @@ describe("An InputCellEditor", function () {
     editor.$el.trigger(enter);
     expect(editor.formatter.toRaw.calls.length).toBe(1);
     expect(editor.formatter.toRaw).toHaveBeenCalledWith("invalid value");
-    expect(editor.trigger.calls.length).toBe(1);
-    expect(editor.trigger).toHaveBeenCalledWith("error");
+    expect(backgridErrorTriggerCount).toBe(1);
+    expect(backgridErrorTriggerArgs[0]).toEqual(editor.model);
+    expect(backgridErrorTriggerArgs[1]).toEqual(editor.column);
+    expect(backgridErrorTriggerArgs[2]).toEqual("invalid value");
 
-    editor.trigger.reset();
     editor.formatter.toRaw.reset();
-    editor.$el.trigger(enter);
-    editor.model.validate = function () { return "error found"; };
-    expect(editor.trigger.calls.length).toBe(1);
-    expect(editor.trigger).toHaveBeenCalledWith("error");
+    editor.$el.blur();
+    expect(backgridErrorTriggerCount).toBe(2);
+    expect(backgridErrorTriggerArgs[0]).toEqual(editor.model);
+    expect(backgridErrorTriggerArgs[1]).toEqual(editor.column);
+    expect(backgridErrorTriggerArgs[2]).toEqual("invalid value");
   });
 
-  it("discards changes and triggers 'done' when esc is pressed'", function () {
+  it("discards changes and triggers 'backgrid:edited' from the model when esc is pressed'", function () {
     editor.render();
     editor.$el.val("new value");
     var esc = $.Event("keydown", { keyCode: 27 });
     editor.$el.trigger(esc);
-    expect(editor.trigger.calls.length).toBe(1);
-    expect(editor.trigger).toHaveBeenCalledWith("done");
+    expect(backgridEditedTriggerCount).toBe(1);
+    expect(backgridEditedTriggerArgs[0]).toEqual(editor.model);
+    expect(backgridEditedTriggerArgs[1]).toEqual(editor.column);
+    expect(backgridEditedTriggerArgs[2].cancel()).toBe(true);
     expect(editor.model.get(editor.column.get("name"))).toBe("title");
   });
 
-  it("triggers 'done' when value hasn't changed and focus is lose", function () {
+  it("triggers 'backgrid:edited' from the model when value hasn't changed and focus is lost", function () {
     editor.render();
     editor.$el.blur();
-    expect(editor.trigger.calls.length).toBe(1);
-    expect(editor.trigger).toHaveBeenCalledWith("done");
+    expect(backgridEditedTriggerCount).toBe(1);
+    expect(backgridEditedTriggerArgs[0]).toEqual(editor.model);
+    expect(backgridEditedTriggerArgs[1]).toEqual(editor.column);
+    expect(backgridEditedTriggerArgs[2].passThru()).toBe(true);
     expect(editor.model.get(editor.column.get("name"))).toBe("title");
   });
 
-  it("stays in focus when the value has changed but going out of focus", function () {
+  it("saves the value if the value is valid when going out of focus", function () {
     editor.render();
     editor.$el.val("another title");
     editor.$el.blur();
-    expect(editor.trigger).not.toHaveBeenCalled();
-    expect(editor.model.get(editor.column.get("name"))).toBe("title");
+    expect(backgridEditedTriggerCount).toBe(1);
+    expect(backgridEditedTriggerArgs[0]).toEqual(editor.model);
+    expect(backgridEditedTriggerArgs[1]).toEqual(editor.column);
+    expect(backgridEditedTriggerArgs[2].passThru()).toBe(true);
+    expect(editor.model.get(editor.column.get("name"))).toBe("another title");
   });
 
 });
@@ -240,6 +257,31 @@ describe("A Cell", function () {
     }).toThrow(new ReferenceError("Class 'NosuchformatterFormatter' not found"));
   });
 
+  it("uses the formatter from the column if one is given", function () {
+
+    var formatter = {
+      fromRaw: function (rawValue) {
+        return rawValue;
+      },
+      toRaw: function (formattedValue) {
+        return formattedValue;
+      }
+    };
+
+    column = {
+      name: "title",
+      cell: "string",
+      formatter: formatter
+    };
+
+    cell = new Backgrid.Cell({
+      model: book,
+      column: column
+    });
+
+    expect(cell.formatter).toBe(formatter);
+  });
+
   it("renders a td with the model value formatted for display", function () {
     cell.render();
     expect(cell.$el.text()).toBe("title");
@@ -251,17 +293,22 @@ describe("A Cell", function () {
     expect(cell.$el.hasClass("editor")).toBe(true);
   });
 
-  it("goes back into display mode when the editor triggers 'done'", function () {
+  it("goes into edit mode when `enterEditMode` is called", function () {
     cell.render();
+    cell.enterEditMode();
+    expect(cell.$el.hasClass("editor")).toBe(true);
+  });
+
+  it("goes back into display mode when `exitEditMode` is called", function () {
+    cell.render();
+
     cell.$el.click();
-    var editor = cell.currentEditor;
-    var enter = $.Event("keydown", { keyCode: 13 });
-    editor.$el.trigger(enter);
+    cell.exitEditMode();
     expect(cell.$el.hasClass("editor")).toBe(false);
     expect(cell.$el.text()).toBe("title");
   });
 
-  it("renders error when the editor triggers 'error'", function () {
+  it("renders error when the editor triggers 'backgrid:error'", function () {
 
     cell.formatter = {
       fromRaw: function () {},
@@ -360,15 +407,6 @@ describe("A UriCell", function () {
     expect(cell.$el.find("a").text()).toBe("http://www.example.com");
   });
 
-  it(".formatter.fromRaw() accepts any string without conversion", function () {
-    expect(cell.formatter.fromRaw("whatever")).toBe("whatever");
-  });
-
-  it(".formatter.toRaw() URI encode the values", function () {
-    expect(cell.formatter.toRaw()).toBeUndefined();
-    expect(cell.formatter.toRaw(" ")).toBe("%20");
-  });
-
 });
 
 describe("An EmailCell", function () {
@@ -401,22 +439,6 @@ describe("An EmailCell", function () {
     cell.render();
     expect(cell.$el.find("a").attr("href")).toBe("mailto:email@host");
     expect(cell.$el.find("a").text()).toBe("email@host");
-  });
-
-  it(".formatter.fromRaw() accepts any string without conversion", function () {
-    expect(cell.formatter.fromRaw("whatever")).toBe("whatever");
-  });
-
-  it(".formatter.toRaw() returns undefined if the value does not contain '@' or the strings before and after '@' are not empty", function () {
-    expect(cell.formatter.toRaw("")).toBeUndefined();
-    expect(cell.formatter.toRaw("@")).toBeUndefined();
-    expect(cell.formatter.toRaw("a@")).toBeUndefined();
-    expect(cell.formatter.toRaw("@b")).toBeUndefined();
-    expect(cell.formatter.toRaw("a@b@")).toBeUndefined();
-  });
-
-  it(".formatter.toRaw() returns the input if it contains a '@' and the strings before and after '@' are not empty", function () {
-    expect(cell.formatter.toRaw("a@b")).toBe("a@b");
   });
 
 });
@@ -598,30 +620,62 @@ describe("A BooleanCell", function () {
 
   it("has a display mode that renders a checkbox with the checkbox checked if the model value is true, not checked otherwise", function () {
     cell.render();
-    expect(cell.$el.find("input[type=checkbox]").prop("checked")).toBe(true);
+    expect(cell.$el.find(":checkbox").prop("checked")).toBe(true);
     model.set("ate", false);
     cell.render();
-    expect(cell.$el.find("input[type=checkbox]").prop("checked")).toBe(false);
+    expect(cell.$el.find(":checkbox").prop("checked")).toBe(false);
   });
 
   it("goes into edit mode after clicking the cell with the checkbox intact", function () {
     cell.render();
     cell.$el.click();
     expect(cell.$el.hasClass("editor")).toBe(true);
-    expect(cell.$el.find("input[type=checkbox]").length).toBe(1);
+    expect(cell.$el.find(":checkbox").length).toBe(1);
   });
 
-  it("goes back to display mode when the checkbox goes out of focus", function () {
+  it("goes into edit mode after calling `enterEditMode` with the checkbox intact", function () {
+    cell.render();
+    cell.enterEditMode();
+    expect(cell.$el.hasClass("editor")).toBe(true);
+    expect(cell.$el.find(":checkbox").length).toBe(1);
+  });
+
+  it("goes back to display mode after calling `exitEditMode`", function () {
+    cell.render();
+    cell.enterEditMode();
+    cell.exitEditMode();
+    expect(cell.$el.hasClass("editor")).toBe(false);
+    expect(cell.$el.find(":checkbox").prop("checked")).toBe(true);
+  });
+
+  it("triggers `backgrid:edited` when the checkbox goes out of focus", function () {
+    var backgridEditedTriggerCount = 0;
+    var backgridEditedTriggerArgs;
+    cell.model.on("backgrid:edited", function () {
+      backgridEditedTriggerCount++;
+      backgridEditedTriggerArgs = [].slice.call(arguments);
+    });
+
     cell.render();
     cell.$el.click();
-    cell.$el.find("input[type=checkbox]").blur();
-    expect(cell.$el.hasClass("editor")).toBe(false);
-    expect(cell.$el.find("input[type=checkbox]").length).toBe(1);
+    cell.$el.find(":checkbox").blur();
+    expect(backgridEditedTriggerCount).toBe(1);
+    expect(backgridEditedTriggerArgs[0]).toBe(cell.model);
+    expect(backgridEditedTriggerArgs[1]).toBe(cell.column);
+    expect(backgridEditedTriggerArgs[2].passThru()).toBe(true);
+    expect(cell.$el.find(":checkbox").prop("checked")).toBe(true);
+
+    cell.render();
+    cell.$el.click();
+    cell.currentEditor.$el.mousedown();
+    cell.$el.find(":checkbox").blur();
+    expect(backgridEditedTriggerCount).toBe(1);
   });
 
   it("saves a boolean value to the model when the checkbox is toggled", function () {
     cell.render();
-    cell.$el.find("input[type=checkbox]").prop("checked", false).change();
+    cell.enterEditMode();
+    cell.$el.find(":checkbox").prop("checked", false).change();
     expect(cell.model.get(cell.column.get("name"))).toBe(false);
   });
 
@@ -629,20 +683,25 @@ describe("A BooleanCell", function () {
     it("refreshes during display mode", function () {
       cell.render();
       model.set("ate", false);
-      expect(cell.$el.find("input[type=checkbox]").prop("checked")).toBe(false);
+      expect(cell.$el.find(":checkbox").prop("checked")).toBe(false);
+      model.set("ate", true);
+      expect(cell.$el.find(":checkbox").prop("checked")).toBe(true);
     });
 
     it("does not refresh during display mode if the change was silenced", function () {
       cell.render();
       model.set("ate", false, {silent: true});
-      expect(cell.$el.find("input[type=checkbox]").prop("checked")).toBe(true);
+      expect(cell.$el.find(":checkbox").prop("checked")).toBe(true);
+      model.set("ate", false);
+      model.set("ate", true, {silent: true});
+      expect(cell.$el.find(":checkbox").prop("checked")).toBe(true);
     });
 
     it("does not refresh during edit mode", function () {
       cell.render();
       cell.$el.click();
       model.set("ate", false);
-      expect(cell.$el.find("input[type=checkbox]").prop("checked")).toBe(true);
+      expect(cell.$el.find(":checkbox").prop("checked")).toBe(true);
     });
   });
 
@@ -678,8 +737,9 @@ describe("A SelectCellEditor", function () {
 
   it("renders a select box using a list if nvps", function () {
 
+    // single selection
     var editor = new Backgrid.SelectCellEditor({
-      formatter: new Backgrid.CellFormatter(),
+      formatter: new Backgrid.SelectFormatter(),
       column: {
         name: "gender",
         cell: "select"
@@ -700,12 +760,39 @@ describe("A SelectCellEditor", function () {
     expect($options.eq(1).val()).toBe("2");
     expect($options.eq(1).prop("selected")).toBe(true);
     expect($options.eq(1).text()).toBe("Girl");
+
+    // multiple selection
+    var editor = new Backgrid.SelectCellEditor({
+      formatter: new Backgrid.SelectFormatter(),
+      column: {
+        name: "gender",
+        cell: "select"
+      },
+      model: new Backbone.Model({
+        gender: [1, 2]
+      })
+    });
+
+    editor.setMultiple(true);
+    editor.setOptionValues(optionValues);
+    editor.render();
+    expect(editor.el.tagName).toBe("SELECT");
+    expect(editor.el.multiple).toBe(true);
+    var $options = editor.$el.children();
+    expect($options.length).toBe(2);
+    expect($options.eq(0).val()).toBe("1");
+    expect($options.eq(0).prop("selected")).toBe(true);
+    expect($options.eq(0).text()).toBe("Boy");
+    expect($options.eq(1).val()).toBe("2");
+    expect($options.eq(1).prop("selected")).toBe(true);
+    expect($options.eq(1).text()).toBe("Girl");
   });
 
   it("renders a select box using a parameter-less function that returns a list if nvps", function () {
 
+    // single selection
     var editor = new Backgrid.SelectCellEditor({
-      formatter: new Backgrid.CellFormatter(),
+      formatter: new Backgrid.SelectFormatter(),
       column: {
         name: "gender",
         cell: "select"
@@ -728,12 +815,41 @@ describe("A SelectCellEditor", function () {
     expect($options.eq(1).val()).toBe("2");
     expect($options.eq(1).prop("selected")).toBe(true);
     expect($options.eq(1).text()).toBe("Girl");
+
+    // multiple selection
+    var editor = new Backgrid.SelectCellEditor({
+      formatter: new Backgrid.SelectFormatter(),
+      column: {
+        name: "gender",
+        cell: "select"
+      },
+      model: new Backbone.Model({
+        gender: [1, 2]
+      })
+    });
+
+    editor.setMultiple(true);
+    editor.setOptionValues(function () {
+      return optionValues;
+    });
+    editor.render();
+    expect(editor.el.tagName).toBe("SELECT");
+    expect(editor.el.multiple).toBe(true);
+    var $options = editor.$el.children();
+    expect($options.length).toBe(2);
+    expect($options.eq(0).val()).toBe("1");
+    expect($options.eq(0).prop("selected")).toBe(true);
+    expect($options.eq(0).text()).toBe("Boy");
+    expect($options.eq(1).val()).toBe("2");
+    expect($options.eq(1).prop("selected")).toBe(true);
+    expect($options.eq(1).text()).toBe("Girl");
   });
 
   it("renders a select box using a list of object literals denoting option groups", function () {
 
+    // single selection
     var editor = new Backgrid.SelectCellEditor({
-      formatter: new Backgrid.CellFormatter(),
+      formatter: new Backgrid.SelectFormatter(),
       column: {
         name: "food",
         cell: "select"
@@ -775,12 +891,59 @@ describe("A SelectCellEditor", function () {
     expect($group2Options.eq(2).val()).toBe("m");
     expect($group2Options.eq(2).prop("selected")).toBe(false);
     expect($group2Options.eq(2).text()).toBe("Maize");
+
+    // multiple selection
+    var editor = new Backgrid.SelectCellEditor({
+      formatter: new Backgrid.SelectFormatter(),
+      column: {
+        name: "food",
+        cell: "select"
+      },
+      model: new Backbone.Model({
+        food: ["b", "c"]
+      })
+    });
+
+    editor.setMultiple(true);
+    editor.setOptionValues(optionGroupValues);
+    editor.render();
+    var $optionGroups = editor.$el.children();
+    expect($optionGroups.length).toBe(2);
+
+    var $group1 = $optionGroups.eq(0);
+    var $group2 = $optionGroups.eq(1);
+
+    expect($group1.attr("label")).toBe("\" ><script></script>Fruit");
+    expect($group2.attr("label")).toBe("Cereal");
+
+    var $group1Options = $group1.children();
+    expect($group1Options.eq(0).val()).toBe("\" ><script></script>a");
+    expect($group1Options.eq(0).prop("selected")).toBe(false);
+    expect($group1Options.eq(0).html()).toBe("Apple&lt;script&gt;&lt;/script&gt;");
+    expect($group1Options.eq(1).val()).toBe("b");
+    expect($group1Options.eq(1).prop("selected")).toBe(true);
+    expect($group1Options.eq(1).text()).toBe("Banana");
+    expect($group1Options.eq(2).val()).toBe("c");
+    expect($group1Options.eq(2).prop("selected")).toBe(true);
+    expect($group1Options.eq(2).text()).toBe("Cantaloupe");
+
+    var $group2Options = $group2.children();
+    expect($group2Options.eq(0).val()).toBe("w");
+    expect($group2Options.eq(0).prop("selected")).toBe(false);
+    expect($group2Options.eq(0).text()).toBe("Wheat");
+    expect($group2Options.eq(1).val()).toBe("r");
+    expect($group2Options.eq(1).prop("selected")).toBe(false);
+    expect($group2Options.eq(1).text()).toBe("Rice");
+    expect($group2Options.eq(2).val()).toBe("m");
+    expect($group2Options.eq(2).prop("selected")).toBe(false);
+    expect($group2Options.eq(2).text()).toBe("Maize");
   });
 
   it("renders a select box using a parameter-less function that returns a list of object literals denoting option groups", function () {
 
+    // single selection
     var editor = new Backgrid.SelectCellEditor({
-      formatter: new Backgrid.CellFormatter(),
+      formatter: new Backgrid.SelectFormatter(),
       column: {
         name: "food",
         cell: "select"
@@ -824,12 +987,61 @@ describe("A SelectCellEditor", function () {
     expect($group2Options.eq(2).val()).toBe("m");
     expect($group2Options.eq(2).prop("selected")).toBe(false);
     expect($group2Options.eq(2).text()).toBe("Maize");
+
+    // multiple selection
+    var editor = new Backgrid.SelectCellEditor({
+      formatter: new Backgrid.SelectFormatter(),
+      column: {
+        name: "food",
+        cell: "select"
+      },
+      model: new Backbone.Model({
+        food: ["b", "c"]
+      })
+    });
+
+    editor.setMultiple(true);
+    editor.setOptionValues(function () {
+      return optionGroupValues;
+    });
+    editor.render();
+    var $optionGroups = editor.$el.children();
+    expect($optionGroups.length).toBe(2);
+
+    var $group1 = $optionGroups.eq(0);
+    var $group2 = $optionGroups.eq(1);
+
+    expect($group1.attr("label")).toBe("\" ><script></script>Fruit");
+    expect($group2.attr("label")).toBe("Cereal");
+
+    var $group1Options = $group1.children();
+    expect($group1Options.eq(0).val()).toBe("\" ><script></script>a");
+    expect($group1Options.eq(0).prop("selected")).toBe(false);
+    expect($group1Options.eq(0).html()).toBe("Apple&lt;script&gt;&lt;/script&gt;");
+    expect($group1Options.eq(1).val()).toBe("b");
+    expect($group1Options.eq(1).prop("selected")).toBe(true);
+    expect($group1Options.eq(1).text()).toBe("Banana");
+    expect($group1Options.eq(2).val()).toBe("c");
+    expect($group1Options.eq(2).prop("selected")).toBe(true);
+    expect($group1Options.eq(2).text()).toBe("Cantaloupe");
+
+    var $group2Options = $group2.children();
+    expect($group2Options.eq(0).val()).toBe("w");
+    expect($group2Options.eq(0).prop("selected")).toBe(false);
+    expect($group2Options.eq(0).text()).toBe("Wheat");
+    expect($group2Options.eq(1).val()).toBe("r");
+    expect($group2Options.eq(1).prop("selected")).toBe(false);
+    expect($group2Options.eq(1).text()).toBe("Rice");
+    expect($group2Options.eq(2).val()).toBe("m");
+    expect($group2Options.eq(2).prop("selected")).toBe(false);
+    expect($group2Options.eq(2).text()).toBe("Maize");
   });
 
   it("saves the value to the model on change", function () {
 
+    // single selection
     var editor = new Backgrid.SelectCellEditor({
-      formatter: new Backgrid.CellFormatter(),
+      formatter: new Backgrid.SelectFormatter(),
       column: {
         name: "gender",
         cell: "select"
@@ -845,12 +1057,85 @@ describe("A SelectCellEditor", function () {
     spyOn(editor.formatter, "toRaw").andCallThrough();
     spyOn(editor, "trigger").andCallThrough();
 
+    var backgridEditedTriggerCount = 0;
+    var backgridEditedTriggerArgs;
+    editor.model.on("backgrid:edited", function () {
+      backgridEditedTriggerCount++;
+      backgridEditedTriggerArgs = [].slice.call(arguments);
+    });
+
     editor.$el.val(1).change();
     expect(editor.formatter.toRaw).toHaveBeenCalledWith("1");
     expect(editor.formatter.toRaw.calls.length).toBe(1);
     expect(editor.model.get(editor.column.get("name"))).toBe("1");
-    expect(editor.trigger).toHaveBeenCalledWith("done");
-    expect(editor.trigger.calls.length).toBe(1);
+
+    expect(backgridEditedTriggerCount).toBe(1);
+    expect(backgridEditedTriggerArgs[0]).toEqual(editor.model);
+    expect(backgridEditedTriggerArgs[1]).toEqual(editor.column);
+    expect(backgridEditedTriggerArgs[2].passThru()).toBe(true);
+
+    // multiple selection
+    var editor = new Backgrid.SelectCellEditor({
+      formatter: new Backgrid.SelectFormatter(),
+      column: {
+        name: "gender",
+        cell: "select"
+      },
+      model: new Backbone.Model({
+        gender: [1, 2]
+      })
+    });
+
+    editor.setMultiple(true);
+    editor.setOptionValues(optionValues);
+    editor.render();
+
+    spyOn(editor.formatter, "toRaw").andCallThrough();
+    spyOn(editor, "trigger").andCallThrough();
+
+    var backgridEditedTriggerCount = 0;
+    var backgridEditedTriggerArgs;
+    editor.model.on("backgrid:edited", function () {
+      backgridEditedTriggerCount++;
+      backgridEditedTriggerArgs = [].slice.call(arguments);
+    });
+
+    editor.$el.val([1, 2]).change();
+    expect(editor.formatter.toRaw).toHaveBeenCalledWith(["1", "2"]);
+    expect(editor.formatter.toRaw.calls.length).toBe(1);
+    expect(editor.model.get(editor.column.get("name"))).toEqual(["1", "2"]);
+
+    expect(backgridEditedTriggerCount).toBe(1);
+    expect(backgridEditedTriggerArgs[0]).toEqual(editor.model);
+    expect(backgridEditedTriggerArgs[1]).toEqual(editor.column);
+    expect(backgridEditedTriggerArgs[2].passThru()).toBe(true);
+
+    backgridEditedTriggerCount = 0;
+    editor.$el.val(null).change();
+    expect(editor.formatter.toRaw).toHaveBeenCalledWith(null);
+    expect(editor.formatter.toRaw.calls.length).toBe(2);
+    expect(editor.model.get(editor.column.get("name"))).toBe(null);
+
+    expect(backgridEditedTriggerCount).toBe(1);
+    expect(backgridEditedTriggerArgs[0]).toEqual(editor.model);
+    expect(backgridEditedTriggerArgs[1]).toEqual(editor.column);
+    expect(backgridEditedTriggerArgs[2].passThru()).toBe(true);
+  });
+
+  it("saves the value to the model on blur if there's only one option", function () {
+    var editor = new Backgrid.SelectCellEditor({
+      formatter: new Backgrid.SelectFormatter(),
+      column: {
+        name: "gender",
+        cell: "select"
+      },
+      model: new Backbone.Model()
+    });
+    editor.setOptionValues([["Boy", "1"]]);
+    editor.render();
+
+    editor.$el.blur();
+    expect(editor.model.get(editor.column.get("name"))).toBe("1");
   });
 
 });
@@ -917,6 +1202,8 @@ describe("A SelectCell", function () {
   });
 
   it("renders the label of the selected option in display mode", function () {
+
+    // single selection
     var cell = new (Backgrid.SelectCell.extend({
       optionValues: optionValues
     }))({
@@ -946,6 +1233,37 @@ describe("A SelectCell", function () {
 
     cell.render();
     expect(cell.$el.text()).toBe("Banana");
+
+    // multiple selection
+    var cell = new (Backgrid.SelectCell.extend({
+      optionValues: optionValues
+    }))({
+      column: {
+        name: "gender",
+        cell: "select"
+      },
+      model: new Backbone.Model({
+        gender: [1, 2]
+      })
+    });
+
+    cell.render();
+    expect(cell.$el.text()).toBe("Boy, Girl");
+
+    var cell = new (Backgrid.SelectCell.extend({
+      optionValues: optionGroupValues
+    }))({
+      column: {
+        name: "food",
+        cell: "select"
+      },
+      model: new Backbone.Model({
+        food: ["a", "b"]
+      })
+    });
+
+    cell.render();
+    expect(cell.$el.text()).toBe("Apple, Banana");
   });
 
   it("throws TypeError when rendering a malformed option value list", function () {

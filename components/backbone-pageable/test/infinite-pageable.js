@@ -34,6 +34,17 @@ $(document).ready(function () {
     });
     deepEqual(col.toJSON(), [{id: 2}, {id: 4}]);
     deepEqual(col.fullCollection.toJSON(), [{id: 1}, {id: 3}, {id: 2}, {id: 4}]);
+
+    col = new (Backbone.PageableCollection.extend({
+      url: "url"
+    }))(null, {
+      state: {
+        firstPage: 0
+      },
+      mode: "infinite"
+    });
+
+    ok(col.links[0] === "url");
   });
 
   test("parseLinks", function () {
@@ -55,9 +66,15 @@ $(document).ready(function () {
     strictEqual(col.state.totalRecords, 100);
     strictEqual(col.state.totalPages, 50);
     strictEqual(col.state.lastPage, 50);
+
+    xhr.getResponseHeader = function () {
+      return null;
+    };
+    links = col.parseLinks({}, {xhr: xhr});
+    deepEqual(links, {});
   });
 
-  test("fetch", function () {
+  test("fetch", 3, function () {
     var ajax = $.ajax;
     $.ajax = function (settings) {
 
@@ -75,6 +92,12 @@ $(document).ready(function () {
       ]);
     };
 
+    var oldParse = col.parse;
+    col.parse = function () {
+      ok(true);
+      return oldParse.apply(this, arguments);
+    };
+
     col.parseLinks = function () {
       return {first: "url-1", next: "url-2"};
     };
@@ -85,6 +108,7 @@ $(document).ready(function () {
     });
 
     col.fetch();
+    col.parse = oldParse;
 
     $.ajax = ajax;
   });

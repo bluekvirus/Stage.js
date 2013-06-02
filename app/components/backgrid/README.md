@@ -27,6 +27,7 @@ functionalities easy.
 - Chrome 4+
 - Safari 4+
 - Firefox 4+
+- Opera 9+
 
 ### Notes:
 
@@ -55,7 +56,7 @@ var columns = [{
   // Defines a cell type, and ID is displayed as an integer without the ',' separating 1000s.
   cell: Backgrid.IntegerCell.extend({
     orderSeparator: ''
-  })
+  }1)
 }, {
   name: "name",
   label: "Name",
@@ -83,24 +84,21 @@ var columns = [{
 var grid = new Backgrid.Grid({
   columns: columns,
   collection: territories,
-  footer: Backgrid.Paginator
 });
 
-// Render the grid and attach the root to your HTML document
-$("#example-1-result").append(grid.render().$el);
+// Render the grid and attach the Grid's root to your HTML document
+$("#example-1-result").append(grid.render().el);
 ```
 
 # Result:
 
-Take a look [here](http://wyuenho.github.com/backgrid/#examples).
+Take a look [here](http://backgridjs.com/#examples).
 
 ## More Examples
 
-Are you kidding me? This is a README file. Go to the [documentation](http://wyuenho.github.com/backgrid/
+Are you kidding me? This is a README file. Go to the [documentation](http://backgridjs.com/
 "Backbone.js Documentation") to find out more :)
 
 ## License
 Copyright (c) 2013 Jimmy Yuen Ho Wong  
-Source code licensed under the [MIT license](LICENSE-MIT "MIT License").
-
-Documentation licenses under [GPLv3](http://www.gnu.org/licenses/gpl-3.0.html "GPLv3")
+Licensed under the [MIT license](LICENSE-MIT "MIT License").

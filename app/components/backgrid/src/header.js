@@ -2,7 +2,7 @@
   backgrid
   http://github.com/wyuenho/backgrid
 
-  Copyright (c) 2013 Jimmy Yuen Ho Wong
+  Copyright (c) 2013 Jimmy Yuen Ho Wong and contributors
   Licensed under the MIT @license.
 */
 
@@ -39,12 +39,12 @@ var HeaderCell = Backgrid.HeaderCell = Backbone.View.extend({
      @throws {TypeError} If options.column or options.collection is undefined.
    */
   initialize: function (options) {
-    requireOptions(options, ["column", "collection"]);
+    Backgrid.requireOptions(options, ["column", "collection"]);
     this.column = options.column;
     if (!(this.column instanceof Column)) {
       this.column = new Column(this.column);
     }
-    this.listenTo(Backbone, "backgrid:sort", this._resetCellDirection);
+    this.listenTo(this.collection, "backgrid:sort", this._resetCellDirection);
   },
 
   /**
@@ -129,7 +129,9 @@ var HeaderCell = Backgrid.HeaderCell = Backbone.View.extend({
      Backbone.PageableCollection, sorting will be done globally on all the pages
      and the current page will then be returned.
 
-     Triggers a Backbone `backgrid:sort` event when done.
+     Triggers a Backbone `backgrid:sort` event from the collection when done
+     with the column name, direction, comparator and a reference to the
+     collection.
 
      @param {string} columnName
      @param {null|"ascending"|"descending"} direction
@@ -157,24 +159,14 @@ var HeaderCell = Backgrid.HeaderCell = Backbone.View.extend({
         }
         collection.fullCollection.sort();
       }
-      else collection.fetch();
+      else collection.fetch({reset: true});
     }
     else {
       collection.comparator = comparator;
       collection.sort();
     }
 
-    /**
-       Global Backbone event. Fired when the sorter is clicked on a sortable
-       column.
-
-       @event backgrid:sort
-       @param {string} columnName
-       @param {null|"ascending"|"descending"} direction
-       @param {function(*, *): number} comparator A Backbone.Collection#comparator.
-       @param {Backbone.Collection} collection
-    */
-    Backbone.trigger("backgrid:sort", columnName, direction, comparator, this.collection);
+    this.collection.trigger("backgrid:sort", columnName, direction, comparator, this.collection);
   },
 
   /**
@@ -203,6 +195,7 @@ var HeaderCell = Backgrid.HeaderCell = Backbone.View.extend({
     this.$el.empty();
     var $label = $("<a>").text(this.column.get("label")).append("<b class='sort-caret'></b>");
     this.$el.append($label);
+    this.delegateEvents();
     return this;
   }
 
@@ -216,7 +209,7 @@ var HeaderCell = Backgrid.HeaderCell = Backbone.View.extend({
  */
 var HeaderRow = Backgrid.HeaderRow = Backgrid.Row.extend({
 
-  initOptionRequires: ["columns", "collection"],
+  requiredOptions: ["columns", "collection"],
 
   /**
      Initializer.
@@ -268,7 +261,7 @@ var Header = Backgrid.Header = Backbone.View.extend({
      @throws {TypeError} If options.columns or options.model is undefined.
    */
   initialize: function (options) {
-    requireOptions(options, ["columns", "collection"]);
+    Backgrid.requireOptions(options, ["columns", "collection"]);
 
     this.columns = options.columns;
     if (!(this.columns instanceof Backbone.Collection)) {
@@ -286,6 +279,7 @@ var Header = Backgrid.Header = Backbone.View.extend({
    */
   render: function () {
     this.$el.append(this.row.render().$el);
+    this.delegateEvents();
     return this;
   },
 

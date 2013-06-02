@@ -2,7 +2,7 @@
   backgrid
   http://github.com/wyuenho/backgrid
 
-  Copyright (c) 2013 Jimmy Yuen Ho Wong
+  Copyright (c) 2013 Jimmy Yuen Ho Wong and contributors
   Licensed under the MIT @license.
 */
 
@@ -82,7 +82,7 @@ var Grid = Backgrid.Grid = Backbone.View.extend({
      @param {Backgrid.Footer} [options.footer=Backgrid.Footer] An optional Footer class.
    */
   initialize: function (options) {
-    requireOptions(options, ["columns", "collection"]);
+    Backgrid.requireOptions(options, ["columns", "collection"]);
 
     // Convert the list of column objects here first so the subviews don't have
     // to.
@@ -91,21 +91,26 @@ var Grid = Backgrid.Grid = Backbone.View.extend({
     }
     this.columns = options.columns;
 
+    var passedThruOptions = _.omit(options, ["el", "id", "attributes",
+                                             "className", "tagName", "events"]);
+
     this.header = options.header || this.header;
-    this.header = new this.header(options);
+    this.header = new this.header(passedThruOptions);
 
     this.body = options.body || this.body;
-    this.body = new this.body(options);
+    this.body = new this.body(passedThruOptions);
 
     this.footer = options.footer || this.footer;
     if (this.footer) {
-      this.footer = new this.footer(options);
+      this.footer = new this.footer(passedThruOptions);
     }
 
     this.listenTo(this.columns, "reset", function () {
-      this.header = new (this.header.remove().constructor)(options);
-      this.body = new (this.body.remove().constructor)(options);
-      if (this.footer) this.footer = new (this.footer.remove().constructor)(options);
+      this.header = new (this.header.remove().constructor)(passedThruOptions);
+      this.body = new (this.body.remove().constructor)(passedThruOptions);
+      if (this.footer) {
+        this.footer = new (this.footer.remove().constructor)(passedThruOptions);
+      }
       this.render();
     });
   },
@@ -156,7 +161,9 @@ var Grid = Backgrid.Grid = Backbone.View.extend({
   },
 
   /**
-     Renders the grid's header, then footer, then finally the body.
+     Renders the grid's header, then footer, then finally the body. Triggers a
+     Backbone `backgrid:rendered` event along with a reference to the grid when
+     the it has successfully been rendered.
    */
   render: function () {
     this.$el.empty();
@@ -169,12 +176,9 @@ var Grid = Backgrid.Grid = Backbone.View.extend({
 
     this.$el.append(this.body.render().$el);
 
-    /**
-       Backbone event. Fired when the grid has been successfully rendered.
+    this.delegateEvents();
 
-       @event rendered
-     */
-    this.trigger("rendered");
+    this.trigger("backgrid:rendered", this);
 
     return this;
   },
@@ -192,3 +196,4 @@ var Grid = Backgrid.Grid = Backbone.View.extend({
   }
 
 });
+

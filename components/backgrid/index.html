@@ -1,21 +1,11 @@
 <!doctype html>
 <!--
-    Backgrid.js
-    Copyright (C) 2013 Jimmy Yuen Ho Wong
+  backgrid
+  http://github.com/wyuenho/backgrid
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
--->
+  Copyright (c) 2013 Jimmy Yuen Ho Wong and contributors
+  Licensed under the MIT @license.
+ -->
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -26,16 +16,20 @@
 
     <title>Backgrid.js - A powerful widget set for building data grids with Backbone.js</title>
 
+    <link rel="canonical" href="http://backgridjs.com" />
+
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.2.2/css/bootstrap.min.css" />
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" />
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/select2/3.2/select2.css" />
-    <link rel="stylesheet" href="codemirror/lib/codemirror.css" />
-    <link rel="stylesheet" href="codemirror/theme/ambiance.css" />
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/select2/3.3.2/select2.min.css" />
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/2.36.0/codemirror.min.css" />
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/2.36.0/ambiance.min.css" />
     <link rel="stylesheet" href="lib/backgrid.min.css" />
     <link rel="stylesheet" href="lib/extensions/paginator/backgrid-paginator.min.css" />
     <link rel="stylesheet" href="lib/extensions/text-cell/backgrid-text-cell.min.css" />
     <link rel="stylesheet" href="lib/extensions/moment-cell/backgrid-moment-cell.min.css" />
     <link rel="stylesheet" href="lib/extensions/select2-cell/backgrid-select2-cell.min.css" />
+    <link rel="stylesheet" href="lib/extensions/select-all/backgrid-select-all.min.css" />
+    <link rel="stylesheet" href="lib/extensions/filter/backgrid-filter.min.css" />
     <link rel="stylesheet" href="assets/css/doc.css" />
     <!--[if lt IE 9]>
         <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -84,11 +78,12 @@
                       <li class="divider"></li>
                       <li><a href="#extensions"><strong class="muted">Extensions</strong></a></li>
                       <li class="divider"></li>
+                      <li><a href="#api-select-all">SelectAll</a></li>
                       <li><a href="#api-paginator">Paginator</a></li>
+                      <li><a href="#api-filter">Filter</a></li>
                       <li><a href="#api-text-cell">TextCell</a></li>
                       <li><a href="#api-moment-cell">MomentCell</a></li>
                       <li><a href="#api-select2-cell">Select2Cell</a></li>
-                      <li><a href="#api-latlng-cell">LatLngCell</a></li>
                     </ul>
                   </li>
                   <li class="dropdown">
@@ -105,8 +100,10 @@
                     </ul>
                   </li>
                   <li id="social-media">
-                    <a href="https://twitter.com/share" class="twitter-share-button" data-via="wong_jim">Tweet</a>
+                    <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://backgridjs.com" data-counturl="wyuenho.github.com/backgrid" data-via="wong_jim" data-hashtags="backgridjs,backbone_js">Tweet</a>
                     <div class="g-plusone" data-size="medium"></div>
+                    <iframe src="http://ghbtns.com/github-btn.html?user=wyuenho&repo=backgrid&type=watch&count=true"
+                            allowtransparency="true" frameborder="0" scrolling="0" width="110" height="20"></iframe>
                     <a href="https://coderwall.com/wyuenho"><img alt="Endorse wyuenho on Coderwall" src="http://api.coderwall.com/wyuenho/endorsecount.png" /></a>
                     <iframe allowtransparency="true" frameborder="0" scrolling="no"
                             style="border: 0; margin: 0 0 0 15px; padding: 0;"
@@ -132,10 +129,13 @@
               programming interface that makes easy things easy, but <em>hard things possible</em>
               when dealing with tabular data.</p>
           <p>
-            <a class="btn btn-large btn-success" href="#examples">See Examples</a>
-            <a class="btn btn-large btn-primary hidden-phone hidden-tablet"
-               href="https://github.com/wyuenho/backgrid/tags"
-               target="_blank">Download v0.1.4</a>
+            <div class="btn-group">
+              <a class="btn btn-large btn-success" href="#examples">See Examples</a>
+              <a class="btn btn-large btn-primary hidden-phone hidden-tablet"
+                 href="https://github.com/wyuenho/backgrid/tags">Download v0.2.6</a>
+              <a class="btn btn-large btn-info"
+                 href="https://github.com/wyuenho/backgrid/blob/0.2.6/CHANGELOG.md">What's new?</a>
+            </div>
           </p>
         </section>
         <div id="features">
@@ -196,7 +196,7 @@
               <ul>
                 <li><a href="http://jquery.com">jquery &gt;= 1.7.0</a></li>
                 <li><a href="http://underscorejs.org">underscore.js ~ 1.4.0</a></li>
-                <li><a href="http://backbonejs.org">backbone.js ~ 0.9.10</a></li>
+                <li><a href="http://backbonejs.org">backbone.js >= 0.9.10</a></li>
               </ul>
               <aside class="note">
                 <h5>Note:</h5> If you don&apos;t care about having the latest
@@ -299,7 +299,7 @@
                     $("#example-1-result").append(grid.render().$el);
 
                     // Fetch some countries from the url
-                    territories.fetch();</textarea>
+                    territories.fetch({reset: true});</textarea>
                 </div>
               </div>
               <div class="row-fluid">
@@ -337,16 +337,18 @@
               </div>
               <div class="row-fluid">
                 <div class="span12">
-                  <h2 id="example-2">Paginator</h2>
+                  <h2 id="example-2">A More Complete Example</h2>
                   <p>If you have a large result set like the above, you&apos;d
-                    probably want to paginate your results. This is easily
-                    achieved in Backgrid.js.</p>
-                  <p>Backgrid.js comes with a paginator extension which you can
-                    load by including the following into your <code>head</code>
-                    tag:</p>
+                    probably want to be able to paginate and filter your
+                    results. This is easily achieved in Backgrid.js.</p>
+                  <p>Backgrid.js comes with a number of filters and a paginator
+                    extension which you can load by including the following into
+                    your <code>head</code> tag:</p>
                   <textarea class="code-snippet" data-mode="htmlmixed">
+                    &lt;link rel="stylesheet" href="lib/extensions/filter/backgrid-filter.css" /&gt;
                     &lt;link rel="stylesheet" href="lib/extensions/paginator/backgrid-paginator.css" /&gt;
                     &lt;script src="assets/js/backbone-pageable.js"&gt;&lt;/script&gt;
+                    &lt;script src="lib/extensions/filter/backgrid-filter.js"&gt;&lt;/script&gt;
                     &lt;script src="lib/extensions/paginator/backgrid-paginator.js"&gt;&lt;/script&gt;</textarea>
                   <p>To use the paginator, you must first declare your
                     collections to be
@@ -366,15 +368,39 @@
 
                     var pageableTerritories = new PageableTerritories();
 
+                    // Set up a grid to use the pageable collection
                     var pageableGrid = new Backgrid.Grid({
                       columns: columns,
-                      collection: pageableTerritories,
-                      footer: Backgrid.Extension.Paginator
+                      collection: pageableTerritories
                     });
 
-                    $("#example-2-result").append(pageableGrid.render().$el);
+                    // Render the grid
+                    var $example2 = $("#example-2-result");
+                    $example2.append(pageableGrid.render().$el)
 
-                    pageableTerritories.fetch();</textarea>
+                    // Initialize the paginator
+                    var paginator = new Backgrid.Extension.Paginator({
+                      collection: pageableTerritories
+                    });
+
+                    // Render the paginator
+                    $example2.append(paginator.render().$el);
+
+                    // Initialize a client-side filter to filter on the client
+                    // mode pageable collection's cache.
+                    var filter = new Backgrid.Extension.ClientSideFilter({
+                      collection: pageableTerritories.fullCollection,
+                      fields: ['name']
+                    });
+
+                    // Render the filter
+                    $example2.prepend(filter.render().$el);
+
+                    // Add some space to the filter and move it to the right
+                    filter.$el.css({float: "right", margin: "20px"});
+
+                    // Fetch some data
+                    pageableTerritories.fetch({reset: true});</textarea>
                 </div>
               </div>
               <div class="row-fluid">
@@ -393,8 +419,12 @@
           <div class="row-fluid">
             <div class="span2">
               <h2 id="api-grid">Grid</h2>
-              <ul class="nav navlist">
+              <ul class="nav">
                 <li><a href="api/index.html#!/api/Backgrid.Grid">Backgrid.Grid</a></li>
+              </ul>
+              <h3>Events</h3>
+              <ul class="nav">
+                <li><a href="api/index.html#!/api/Backgrid.Grid-method-render">backgrid:rendered</a></li>
               </ul>
             </div>
             <div class="span10">
@@ -452,7 +482,7 @@
           <div class="row-fluid">
             <div class="span2">
               <h2 id="api-column">Columns</h2>
-              <ul class="nav navlist">
+              <ul class="nav">
                 <li><a href="api/index.html#!/api/Backgrid.Column" title="Backgrid.Column">Backgrid.Column</a></li>
                 <li><a href="api/index.html#!/api/Backgrid.Columns" title="Backgrid.Columns">Backgrid.Columns</a></li>
               </ul>
@@ -496,7 +526,7 @@
           <div class="row-fluid">
             <div class="span2">
               <h2 id="api-cell">Cell</h2>
-              <ul class="nav navlist">
+              <ul class="nav">
                 <li><a href="api/index.html#!/api/Backgrid.Cell">Backgrid.Cell</a></li>
                 <li><a href="api/index.html#!/api/Backgrid.DatetimeCell">Backgrid.DatetimeCell</a></li>
                 <li><a href="api/index.html#!/api/Backgrid.DateCell">Backgrid.DateCell</a></li>
@@ -512,30 +542,19 @@
                 <li><a href="api/index.html#!/api/Backgrid.InputCellEditor">Backgrid.InputCellEditor</a></li>
                 <li><a href="api/index.html#!/api/Backgrid.SelectCellEditor">Backgrid.SelectCellEditor</a></li>
               </ul>
+              <h3>Events</h3>
+              <ul class="nav">
+                <li><a href="api/index.html#!/api/Backgrid.Cell-method-enterEditMode">backgrid:edit</a></li>
+                <li><a href="api/index.html#!/api/Backgrid.Cell-method-enterEditMode">backgrid:editing</a></li>
+                <li><a href="api/index.html#!/api/Backgrid.InputCellEditor-method-saveOrCancel">backgrid:edited</a></li>
+                <li><a href="api/index.html#!/api/Backgrid.InputCellEditor-method-saveOrCancel">backgrid:error</a></li>
+              </ul>
             </div>
             <div class="span10">
               <h3>Demo</h3>
               <p class="label label-success">Try them</p>
-              <div class="backgrid-container" style="height: auto">
-                <table class="backgrid">
-                  <tr>
-                    <th>Name (StringCell)</th>
-                    <th>Age (IntegerCell)</th>
-                    <th>Birthday (DateCell)</th>
-                    <th>Gender (SelectCell)</th>
-                    <th>Alive (BooleanCell)</th>
-                  </tr>
-                  <tr id="cell-demo-row-1"></tr>
-                  <tr>
-                    <th>URL (UriCell)</th>
-                    <th>Email (EmailCell)</th>
-                    <th>Next Delivery Time (DateTimeCell)</th>
-                    <th>His Local Time (TimeCell)</th>
-                    <th>Change in Wallet (NumberCell)</th>
-                  </tr>
-                  <tr id="cell-demo-row-2"></tr>
-                </table>
-              </div>
+              <div id="cell-demo-grid-1" class="backgrid-container" style="height: auto"></div>
+              <div id="cell-demo-grid-2" class="backgrid-container" style="height: auto"></div>
               <aside class="note">
                 <h5>Note:</h5>
                 <p>Backgrid.js and its author are not associated with Santa and
@@ -602,22 +621,16 @@
                 title="Formatter">formatter</a>. In fact, most of the core cell
                 classes are done this way.</p>
               <textarea class="code-snippet" data-mode="javascript" data-eval="no">
-                // This is the verbatim Backgrid.StringCell definition
+                // This is how StringCell is defined.
 
-                var StringCell = Backgrid.StringCell = Cell.extend({
+                Backgrid.StringCell = Cell.extend({
 
                   // Cell default class names are the lower-cased and dasherized
                   // form of the the cell class names by convention.
-                  className: "string-cell",
+                  className: "string-cell"
 
-                  formatter: {
-                    fromRaw: function (rawData) {
-                      return rawData;
-                    },
-                    toRaw: function (formattedData) {
-                      return formattedData;
-                    }
-                  }
+                  formatter: Backgrid.StringFormatter
+
                 });</textarea>
               <p>If your cell class will render differently in display mode, you
                 may simply
@@ -635,27 +648,27 @@
                 <code>&lt;input type="text" /&gt;</code>, will not be suitable
                 and a new <a href="api/index.html#!/api/Backgrid.CellEditor"
                 title="CellEditor">CellEditor</a> must be defined.</p>
-              <p>A custom cell editor should
-                subclass <a href="api/index.html#!/api/Backgrid.CellEditor">CellEditor</a>
+              <p>A custom cell editor should subclass <a
+                href="api/index.html#!/api/Backgrid.CellEditor">CellEditor</a>
                 as it defines a number of required parameters in its initializer
                 and clean up operations that are necessary for most cell
                 editors. When a cell class enters edit mode, a new editor
                 instance is constructed by given it the required parameters, and
-                then a Backbone event <code>edit</code> is fired from the cell
-                instance itself. A custom cell class can act on this event to do
-                anything before the cell editor is rendered.</p>
-              <p>Once the cell has entered edit mode, a Backbone
-                event <code>editing</code> is fired. A custom cell class can
+                then a Backbone event <code>backgrid:edit</code> is fired from
+                the cell instance itself. A custom cell class can act on this
+                event to do anything before the cell editor is rendered.</p>
+              <p>Once the cell has entered edit mode, a Backbone event
+                <code>backgrid:editing</code> is fired. A custom cell class can
                 then act on it to do anything after the cell editor has been
                 rendered, e.g. placing the focus inside the editor.</p>
-              <p>During editing, if an error is encountered (see
-                the <a href="#api-formatter">formatter protocol</a> below), a
-                cell editor should fire a Backbone event <code>error</code> so that
-                listeners&mdash;usually a cell instance&mdash;can respond
-                appropriately. When editing is done, a cell editor should fire a
-                Backbone <code>done</code> event. A cell should be listening to
-                this event so it can remove its editor and re-render itsef in
-                display mode.</p>
+              <p>During editing, if an error is encountered (see the <a
+                href="#api-formatter">formatter protocol</a> below), a cell
+                editor should fire a Backbone event <code>backgrid:error</code>
+                so that listeners&mdash;usually a cell instance&mdash;can
+                respond appropriately. When editing is done, a cell editor
+                should fire a Backbone <code>backgrid:done</code> event. A cell
+                should be listening to this event so it can remove its editor
+                and re-render itsef in display mode.</p>
               <p class="label label-important">Truely Advanced Hacking</p>
               <p>At the most basic level, Cells and CellEditors are simply
                 <a href="http://backbonejs.org/#View"
@@ -669,7 +682,7 @@
           <div class="row-fluid">
             <div class="span2">
               <h2 id="api-formatter">Formatter</h2>
-              <ul class="nav navlist">
+              <ul class="nav">
                 <li><a href="api/index.html#!/api/Backgrid.CellFormatter">Backgrid.CellFormatter</a></li>
                 <li><a href="api/index.html#!/api/Backgrid.DatetimeFormatter">Backgrid.DatetimeFormatter</a></li>
                 <li><a href="api/index.html#!/api/Backgrid.NumberFormatter">Backgrid.NumberFormatter</a></li>
@@ -714,8 +727,11 @@
                 var grid = new Backgrid.Grid({
                   columns: [{
                     name: "url",
-                    cell: UriCell.extend({
-                      formatter: new MyURLFormatter() // As a cell class attribute
+                    cell: "uri",
+                    formatter: _.extend({}, Backgrid.CellFormatter.prototype, {
+                      fromRaw: function (rawValue) {
+                        return rawValue.replace("http://", '');
+                      }
                     })
                   }],
                   collection: col
@@ -725,10 +741,14 @@
           <div class="row-fluid">
             <div class="span2">
               <h2 id="api-header">Header</h2>
-              <ul class="nav navlist">
+              <ul class="nav">
                 <li><a href="api/index.html#!/api/Backgrid.Header">Backgrid.Header</a></li>
                 <li><a href="api/index.html#!/api/Backgrid.HeaderRow">Backgrid.HeaderRow</a></li>
                 <li><a href="api/index.html#!/api/Backgrid.HeaderCell">Backgrid.HeaderCell</a></li>
+              </ul>
+              <h3>Events</h3>
+              <ul class="nav">
+                <li><a href="api/index.html#!/api/Backgrid.HeaderCell-method-sort">backgrid:sort</a></li>
               </ul>
             </div>
             <div class="span10">
@@ -757,7 +777,7 @@
                 the <a href="api/index.html#!/api/Backgrid.HeaderCell"
                 title="Backgrid.HeaderCell API">JSDoc</a> for details.</p>
               <textarea class="code-snippet" data-mode="javascript" data-eval="no">
-                var SelectAllHeader = Backgrid.HeaderCell.extend({
+                var SelectAllHeaderCell = Backgrid.HeaderCell.extend({
                   // Implement your "select all" logic here
                 });
 
@@ -768,7 +788,7 @@
                     label: "",
                     sortable: false,
                     cell: "boolean",
-                    headerCell: SelectAllHeader
+                    headerCell: SelectAllHeaderCell
                   }],
 
                   collection: col
@@ -778,7 +798,7 @@
           <div class="row-fluid">
             <div class="span2">
               <h2 id="api-row">Row</h2>
-              <ul class="nav navlist">
+              <ul class="nav">
                 <li><a href="api/index.html#!/api/Backgrid.Row">Backgrid.Row</a></li>
               </ul>
             </div>
@@ -808,8 +828,12 @@
           <div class="row-fluid">
             <div class="span2">
               <h2 id="api-body">Body</h2>
-              <ul class="nav navlist">
+              <ul class="nav">
                 <li><a href="api/index.html#!/api/Backgrid.Body">Backgrid.Body</a></li>
+              </ul>
+              <h3>Events</h3>
+              <ul class="nav">
+                <li><a href="api/index.html#!/api/Backgrid.Body-method-refresh">backgrid:refresh</a></li>
               </ul>
             </div>
             <div class="span10">
@@ -839,7 +863,7 @@
           <div class="row-fluid">
             <div class="span2">
               <h2 id="api-footer">Footer</h2>
-              <ul class="nav navlist">
+              <ul class="nav">
                 <li><a href="api/index.html#!/api/Backgrid.Footer">Backgrid.Footer</a></li>
               </ul>
             </div>
@@ -907,8 +931,8 @@
                 top-level make invocations and copy the output files to the
                 destination directory.</li>
               <li>You should use recess to lint your CSS file(s).</li>
-              <li>You should follow the JS coding style
-                defined <a href="CONTRIBUTING.md#coding-style">here</a>.</li>
+              <li>You should follow the JS coding style defined <a
+                href="https://github.com/wyuenho/backgrid/blob/gh-pages/CONTRIBUTING.md#coding-style">here</a>.</li>
               <li>Your .gitignore file inside the extension directory should
                 ignore all output files.</li>
               <li>You should wrap your JS file in an immediately invoked
@@ -925,8 +949,100 @@
           </div>
           <div class="row-fluid">
             <div class="span3">
+              <h2 id="api-select-all">SelectAll</h2>
+              <ul class="nav">
+                <li><a href="api/index.html#!/api/Backgrid.Extension.SelectRowCell">Backgrid.Extension.SelectRowCell</a></li>
+                <li><a href="api/index.html#!/api/Backgrid.Extension.SelectAllHeaderCell">Backgrid.Extension.SelectAllHeaderCell</a></li>
+              </ul>
+              <h3>Events</h3>
+              <ul class="nav">
+                <li><a href="api/Backgrid.Extension.SelectAllHeaderCell-method-initialize">backgrid:select</a></li>
+                <li><a href="api/Backgrid.Extension.SelectAllHeaderCell-method-initialize">backgrid:selected</a></li>
+              </ul>
+              <h4>Best Used On</h4>
+              <ul>
+                <li>Desktop</li>
+                <li>Mobile</li>
+              </ul>
+            </div>
+            <div class="span9">
+              <h3>When to Use</h3>
+              <p>When you want to select multiple models at a time for batch operations.</p>
+              <textarea class="code-snippet" data-mode="htmlmixed">
+                &lt;link rel="stylesheet" href="lib/extensions/select-all/backgrid-select-all.css" /&gt;
+                &lt;script src="lib/extensions/select-all/backgrid-select-all.js"&gt;&lt;/script&gt;</textarea>
+              <h3>Usage</h3>
+              <p>To enable the SelectAll extension, you simply have to add a new
+              column to your column definition like so:</p>
+              <textarea class="code-snippet" data-mode="javascript" data-eval="yes">
+                var grid = new Backgrid.Grid({
+                  columns: [{
+
+                    // name is a required parameter, but you don't really want one on a select all column
+                    name: "",
+
+                    // Backgrid.Extension.SelectRowCell lets you select individual rows
+                    cell: "select-row",
+
+                    // Backgrid.Extension.SelectAllHeaderCell lets you select all the row on a page
+                    headerCell: "select-all",
+
+                  }].concat(columns),
+
+                  collection: new Backbone.Collection([
+                    {"name": "Afghanistan", "url": "http://en.wikipedia.org/wiki/Afghanistan", "pop": 25500100, "date": "2013-01-01", "percentage": 0.36, "id": 1},
+                    {"name": "Albania", "url": "http://en.wikipedia.org/wiki/Albania", "pop": 2831741, "date": "2011-10-01", "percentage": 0.04, "id": 2}
+                  ])
+                });
+
+                $("#select-all-example-result").append(grid.render().el);</textarea>
+            </div>
+          </div>
+          <div class="row-fluid">
+            <div class="span9 offset3">
+              <h3>Result</h3>
+              <div id="select-all-example-result" class="backgrid-container" style="height: auto"></div>
+            </div>
+          </div>
+          <div class="row-fluid">
+            <div class="span9 offset3">
+              <h3>Manipulating Selections Programatically</h3>
+              <p>At any point during the lifetime of your program, if you'd like
+              to get an array of the currently selected models after you've
+              rendered your grid, you can easily do so:</p>
+              <textarea class="code-snippet" data-mode="javascript" data-eval="no">
+                // This method is only available on Backgrid.Grid after you've
+                // include the SelectAll extension.
+                var selectedModels = grid.getSelectedModels();
+
+                // To deselect selected models
+                _.each(selectedModels, function (model) {
+                  model.trigger("backgrid:select", model, false);
+                });
+
+                // Selecting even numbered rows
+                grid.collection.each(function (model, i) {
+                  if (i % 2 == 0) model.trigger("backgrid:select", model, true);
+                });
+              </textarea>
+            </div>
+          </div>
+          <div class="row-fluid">
+            <div class="span9 offset3">
+              <p class="label label-info">Pro Tip</p>
+              <p>Each SelectRowCell will trigger a <code>backgrid:select</code>
+              event directly from the selected models when its checkbox value
+              changes, so if you want to react to those events, you can attach
+              your event handlers on the collection.</p>
+              <p>See the <a
+              href="api/index.html#!/api/Backgrid.Extension.SelectRowCell">API
+              documentation</a> for details.</p>
+            </div>
+          </div>
+          <div class="row-fluid">
+            <div class="span3">
               <h2 id="api-paginator">Paginator</h2>
-              <ul class="nav navlist">
+              <ul class="nav">
                 <li><a href="api/index.html#!/api/Backgrid.Extension.Paginator">Backgrid.Extension.Paginator</a></li>
               </ul>
               <h4>Best Used On</h4>
@@ -995,7 +1111,7 @@
                 });
 
                 var issues = new Issues();</textarea>
-              <h3>Configuring Backgrid.Extention.Paginator</h3>
+              <h3>Configuring Backgrid.Extension.Paginator</h3>
               <p>Backgrid.Extension.Paginator supports a few configuration
                 options to adjust to the size of the result set.</p>
               <textarea class="code-snippet" data-mode="javascript" data-eval="yes">
@@ -1026,41 +1142,138 @@
                     sortable: false
                   }],
 
-                  collection: issues,
-
-                  footer: Backgrid.Extension.Paginator.extend({
-
-                    // If you anticipate a large number of pages, you can adjust
-                    // the number of page handles to show. The sliding window
-                    // will automatically show the next set of page handles when
-                    // you click next at the end of a window.
-                    windowSize: 20, // Default is 10
-
-                    // If you anticipate a small number of pages, you can choose
-                    // to disable the rendering of fast forward handles to save
-                    // space.
-                    hasFastForward: true, // true is the default
-
-                    fastForwardHandleLabels: {
-                      prev: "<",
-                      next: ">"
-                    }
-                  })
+                  collection: issues
                 });
 
-                $("#example-3-result").append(issueGrid.render().el);
+                var $paginatorExample = $("#paginator-example-result");
+                $paginatorExample.append(issueGrid.render().el);
+
+                var GithubPaginator = Backgrid.Extension.Paginator.extend({
+
+                  // If you anticipate a large number of pages, you can adjust
+                  // the number of page handles to show. The sliding window
+                  // will automatically show the next set of page handles when
+                  // you click next at the end of a window.
+                  windowSize: 20, // Default is 10
+
+                  // If you anticipate a small number of pages, you can choose
+                  // to disable the rendering of fast forward handles to save
+                  // space.
+                  hasFastForward: true, // true is the default
+
+                  fastForwardHandleLabels: {
+                    prev: "<",
+                    next: ">"
+                  }
+                });
+
+                var paginator = new GithubPaginator({
+                  collection: issues
+                });
+                $paginatorExample.append(paginator.render().el);
 
                 issues.getFirstPage();</textarea>
             </div>
             <div class="span12">
               <h3>Result</h3>
-              <div id="example-3-result" class="backgrid-container" style="height: auto"></div>
+              <div id="paginator-example-result" class="backgrid-container" style="height: auto"></div>
+            </div>
+          </div>
+          <div class="row-fluid">
+            <div class="span3">
+              <h2 id="api-filter">Filter</h2>
+              <ul class="nav">
+                <li><a href="api/index.html#!/api/Backgrid.Extension.ServerSideFilter">Backgrid.Extension.ServerSideFilter</a></li>
+                <li><a href="api/index.html#!/api/Backgrid.Extension.ClientSideFilter">Backgrid.Extension.ClientSideFilter</a></li>
+                <li><a href="api/index.html#!/api/Backgrid.Extension.LunrFilter">Backgrid.Extension.LunrFilter</a></li>
+              </ul>
+              <h4>Best Used On</h4>
+              <ul>
+                <li>Desktop</li>
+                <li>Mobile</li>
+              </ul>
+            </div>
+            <div class="span9">
+              <h3>When to Use</h3>
+              <p>When you have lots of rows with lots of text, and you just want
+              to quickly get to the row that only contain certain keywords.</p>
+              <h3>Prerequisites</h3>
+              <p>All three Filter classes have an optional dependency
+                on <a href="http://twitter.github.com/bootstrap/"
+                      title="Twitter Bootstrap">Twitter Bootstrap's CSS</a>.
+                This dependency is optional because the filter extension only
+                uses its CSS for rendering. You are free to override the default
+                template and CSS if you don't like it.</p>
+              <p>For LunrFilter, it has a hard dependency on <a
+                href="http://lunrjs.com/" title="lunr.js">lunr.js</a> for
+                full-text searching.</p>
+              <textarea class="code-snippet" data-mode="htmlmixed">
+                &lt;link rel="stylesheet" href="assets/css/bootstrap.css" /&gt;
+                &lt;link rel="stylesheet" href="lib/extensions/filter/backgrid-filter.css" /&gt;
+                &lt;script src="assets/js/lunr.js"&gt;&lt;/script&gt;
+                &lt;script src="lib/extensions/filter/backgrid-filter.js"&gt;&lt;/script&gt;</textarea>
+              <h3>Usage</h3>
+              <textarea class="code-snippet" data-mode="javascript" data-eval="yes">
+
+                // ServerSideFilter delegates the searching to the server by submitting a query.
+                var serverSideFilter = new Backgrid.Extension.ServerSideFilter({
+                  collection: issues,
+                  name: "labels", // the name of the URL query parameter
+                  placeholder: "Search on the server" // HTML5 placeholder for the search box
+                });
+
+                $("#filter-example-result").append(serverSideFilter.render().el);
+
+                // ClientSideFilter performs a case-insensitive regular
+                // expression search on the client side by OR-ing the keywords in
+                // the search box together.
+                var clientSideFilter = new Backgrid.Extension.ClientSideFilter({
+                  collection: territories,
+                  placeholder: "Search in the browser",
+                  // The model fields to search for matches
+                  fields: ['name'],
+                  // How long to wait after typing has stopped before searching can start
+                  wait: 150
+                });
+
+                $("#filter-example-result").append(clientSideFilter.render().el);
+
+                // LunrFilter is a specialized ClientSideFilter that uses
+                // lunr.js to perform full-text searching on the client side.
+                var lunrFilter = new Backgrid.Extension.LunrFilter({
+                  collection: territories,
+                  placeholder: "Full-text searching",
+                  // lunr.js field name and boost value
+                  fields: {
+                    name: 10
+                  },
+                  // lunr.js document key for indexing
+                  ref: 'id',
+                  wait: 150
+                });
+
+                $("#filter-example-result").append(lunrFilter.render().el);</textarea>
+              <div id="filter-example-result"></div>
+              <p class="label label-info">Pro Tip</p>
+              <p>The client-side filters won't work unless the collection
+                contains all the data for filtering at the time the filters are
+                initialized. If you are fetching data after the filters were
+                initialized and using Backbone 1.0.0+, you should pass
+                <code>{remove: true}</code> or <code>{reset: true}</code> to
+                <code>Collection#fetch()</code> due to the change to
+                <code>Collection#set()</code>
+                after <a href="http://backbonejs.org/#Collection-fetch"
+                         title="Backbone.Collection#fetch">fetching</a> in Backbone
+                1.0.0+. For this reason, the examples above may or may not work
+                due to the asynchronous nature of fetching. To see a working
+                example, scroll up to
+              <a href="#example-2-result" title="Example 2">example 2</a>.</p>
             </div>
           </div>
           <div class="row-fluid">
             <div class="span3">
               <h2 id="api-text-cell">TextCell</h2>
-              <ul class="nav navlist">
+              <ul class="nav">
                 <li><a href="api/index.html#!/api/Backgrid.Extension.TextCell">Backgrid.Extension.TextCell</a></li>
                 <li><a href="api/index.html#!/api/Backgrid.Extension.TextareaEditor">Backgrid.Extension.TextareaEditor</a></li>
               </ul>
@@ -1077,11 +1290,12 @@
                 an <code>&lt;input type="text" /&gt;</code> editor. It
                 is best suited for entering a large body of text.</p>
               <h3>Prerequisites</h3>
-              <p>TextCell
-                require <a href="http://twitter.github.com/bootstrap/javascript.html#modals"
+              <p>TextCell requires <a
+                href="http://twitter.github.com/bootstrap/javascript.html#modals"
                 title="bootstrap-modal.js">bootstrap-modal.js</a> to render
                 it&apos;s modal dialog. TextCell is tested against Bootstrap
-                version 2.2.2.</p>
+                version 2.2.2. Bootstrap version 2.3.x is not recommended due to
+                a number of critical bugs.</p>
               <textarea class="code-snippet" data-mode="htmlmixed">
                 &lt;link rel="stylesheet" href="assets/css/bootstrap.css" /&gt;
                 <!-- include this if you want to use TextCell on mobile browsers -->
@@ -1108,10 +1322,10 @@
                   collection: books
                 });
 
-                $("#example-4-result").append(grid.render().el);
+                $("#text-cell-example-result").append(grid.render().el);
               </textarea>
               <h3>Result</h3>
-              <div id="example-4-result" class="backgrid-container" style="height: auto;"></div>
+              <div id="text-cell-example-result" class="backgrid-container" style="height: auto;"></div>
             </div>
           </div>
           <div class="row-fluid">
@@ -1142,7 +1356,7 @@
                 <!-- Moment.js language files must be included after
                      backgrid-moment-cell.js because it changes moment.js' default
                      language -->
-                &lt;script src="assets/js/moment/lang/zh-tw.js"&gt;&lt;/script&gt;</textarea>
+                &lt;script src="assets/js/moment/lang/zh-tw.min.js"&gt;&lt;/script&gt;</textarea>
               <h3>Usage</h3>
               <p>The default MomentCell acts just like DatetimeCell, so if you
                 have a column with datetime values, the default MomentCell is
@@ -1195,15 +1409,15 @@
                   collection: data
                 });
 
-                $("#example-5-result").append(grid.render().el);</textarea>
+                $("#moment-cell-example-result").append(grid.render().el);</textarea>
               <h3>Result</h3>
-              <div id="example-5-result" class="backgrid-container" style="height: auto;"></div>
+              <div id="moment-cell-example-result" class="backgrid-container" style="height: auto;"></div>
             </div>
           </div>
           <div class="row-fluid">
             <div class="span3">
               <h2 id="api-select2-cell">Select2Cell</h2>
-              <ul class="nav navlist">
+              <ul class="nav">
                 <li><a href="api/index.html#!/api/Backgrid.Extension.Select2Cell">Backgrid.Extension.Select2Cell</a></li>
                 <li><a href="api/index.html#!/api/Backgrid.Extension.Select2CellEditor">Backgrid.Extension.Select2CellEditor</a></li>
               </ul>
@@ -1219,10 +1433,10 @@
               for a column, or want to use a select box with autocomplete
               capability.</p>
               <h3>Prerequisites</h3>
-              <p>Select2Cell uses
-                the <a href="http://ivaynberg.github.com/select2/"
+              <p>Select2Cell uses the <a
+                href="http://ivaynberg.github.com/select2/"
                 title="select2">Select2</a> jQuery plugin to render its select
-                box. Select2Cell is tested against Select2 version 3.2.</p>
+                box. Select2Cell is tested with Select2 version 3.2.</p>
               <textarea class="code-snippet" data-mode="htmlmixed">
                 &lt;link rel="stylesheet" href="assets/css/select2.css" /&gt;
                 &lt;link rel="stylesheet" href="lib/extensions/select2-cell/backgrid-select2-cell.css" /&gt;
@@ -1235,7 +1449,7 @@
               addition to the options SelectCell supports.</p>
               <textarea class="code-snippet" data-mode="javascript" data-eval="yes">
 
-                var data = new Backbone.Collection([{number: 5}]);
+                var data = new Backbone.Collection([{number: 5, another: 1}]);
 
                 // Just like SelectCell, Select2Cell supports option lists and groups
                 var numbers = [{name: 10, values: [
@@ -1243,30 +1457,27 @@
                   [6, 6], [7, 7], [8, 8], [9, 9], [10, 10]
                 ]}];
 
+                var MySelect2Cell = Backgrid.Extension.Select2Cell.extend({
+                  select2Options: {
+                    // any options specific to `select2` goes here
+                  },
+                  optionValues: numbers
+                });
+
                 var grid = new Backgrid.Grid({
                   columns: [{
                     name: "number",
-                    cell: Backgrid.Extension.Select2Cell.extend({
-                      select2Options: {
-                        // any options specific to `select2` goes here
-                      },
-                      optionValues: numbers
-                    })
+                    cell: MySelect2Cell
+                  }, {
+                    name: "another",
+                    cell: MySelect2Cell
                   }],
                   collection: data
                 });
 
-                $("#example-6-result").append(grid.render().el);</textarea>
+                $("#select2-cell-example-result").append(grid.render().el);</textarea>
               <h3>Result</h3>
-              <div id="example-6-result" class="backgrid-container" style="height: auto;"></div>
-            </div>
-          </div>
-          <div class="row-fluid">
-            <div class="span3">
-              <h2 id="api-latlng-cell">LatLngCell</h2>
-              Coming soon...
-            </div>
-            <div class="span9">
+              <div id="select2-cell-example-result" class="backgrid-container" style="height: auto;"></div>
             </div>
           </div>
         </section>
@@ -1318,7 +1529,7 @@
                     /* Say you want to give some shiny gradient background colors
                        to your table header */
                     .backgrid th {
-                      background-color: linear-gradient(top, #2F2727, #1a82f7);
+                      background-image: linear-gradient(#2F2727, #1a82f7);
                     }</textarea>
                 </div>
                 <div class="span6">
@@ -1357,8 +1568,29 @@
           </div>
           <div class="row-fluid">
             <div class="span12">
+              <h2>How do I add or remove a row?</h2>
+              <p>You can either use <a
+              href="http://backbonejs.org/#Collection-add"
+              title="Backbone.Collection#add">Backbone.Collection#add</a> or <a
+              href="#api-grid" title="Grid#insertRow">Grid#insertRow</a> for
+              insertion. Similarly, use <a
+              href="http://backbonejs.org/#Collection-remove"
+              title="Backbone.Collection#remove">Backbone.Collection#remove</a>
+              or <a href="#api-grid" title="Grid#removeRow">Grid#removeRow</a>
+              to remove rows.</p>
               <h2>How do I validate user input?</h2>
               <p>See <a href="#api-formatter" title="Formatter">Formatter</a>.</p>
+              <h2>How do I save my row changes to the server immediately?</h2>
+              <textarea class="code-snippet" data-mode="javascript">
+                var MyModel = Backbone.Model.extend({
+                  initialize: function () {
+                    Backbone.Model.prototype.initialize.apply(this, arguments);
+                    this.on("change", function (model, options) {
+                      if (options && options.save === false) return;
+                      model.save();
+                    });
+                  }
+                });</textarea>
               <h2>Why doesn&apos;t Backgrid.js support AMD (or NPM)?</h2>
               <p>The same question can be asked for volo, bower, ender,
                 browserify and many other competing solutions. The number one
@@ -1445,20 +1677,17 @@
           </div>
           <p>Copyright &copy; 2013 Jimmy Yuen Ho Wong and
             Contributors.</p>
-          <p>Backgrid.js Javascript and CSS source code licensed
-            under the <a href="LICENSE-MIT">MIT license</a>.</p>
-          <p>Documentation licensed
-            under <a href="http://www.gnu.org/licenses/gpl-3.0.html"
-                     title="GPLv3">GPLv3</a>.</p>
+          <p>Licensed under the <a href="LICENSE-MIT">MIT license</a>.</p>
         </section>
       </div>
     </div>
     <script type="text/javascript">
       var _gaq = _gaq || [];
-      var pluginUrl = '//www.google-analytics.com/plugins/ga/inpage_linkid.js';
-      _gaq.push(['_require', 'inpage_linkid', pluginUrl]);
       _gaq.push(['_setAccount', 'UA-36403214-1']);
+      _gaq.push(['_setDomainName', 'backgridjs.com']);
+      _gaq.push(['_setAllowLinker', true]);
       _gaq.push(['_trackPageview']);
+
       (function() {
         var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
         ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
@@ -1468,24 +1697,27 @@
     <script src="assets/js/scale.fix.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.10/backbone-min.js"></script>
-    <script src="assets/js/backbone-pageable.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/backbone-pageable/1.2.2/backbone-pageable.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.2.2/bootstrap.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/select2/3.2/select2.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/1.7.2/moment.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/select2/3.3.2/select2.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.0.0/moment.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/lunr.js/0.3.0/lunr.min.js"></script>
     <script src="lib/backgrid.min.js"></script>
     <script src="lib/extensions/paginator/backgrid-paginator.min.js"></script>
     <script src="lib/extensions/text-cell/backgrid-text-cell.min.js"></script>
     <script src="lib/extensions/moment-cell/backgrid-moment-cell.min.js"></script>
-    <script src="lib/extensions/select2-cell/backgrid-select2-cell.min.js"></script>
-    <script src="codemirror/lib/codemirror.js"></script>
-    <script src="codemirror/lib/util/formatting.js"></script>
-    <script src="codemirror/mode/xml/xml.js"></script>
-    <script src="codemirror/mode/css/css.js"></script>
-    <script src="codemirror/mode/javascript/javascript.js"></script>
-    <script src="codemirror/mode/htmlmixed/htmlmixed.js"></script>
-    <script src="codemirror/mode/shell/shell.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/1.7.2/lang/zh-tw.js"></script>
+    <script src="lib/extensions/select2-cell/backgrid-select2-cell.js"></script>
+    <script src="lib/extensions/select-all/backgrid-select-all.min.js"></script>
+    <script src="lib/extensions/filter/backgrid-filter.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/2.36.0/codemirror.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/2.36.0/formatting.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/2.36.0/xml.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/2.36.0/css.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/2.36.0/javascript.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/2.36.0/htmlmixed.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/2.36.0/shell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.0.0/lang/zh-tw.min.js"></script>
     <script>
       (function () {
 
@@ -1553,12 +1785,15 @@
             }
           }
 
-          var santa = new Backbone.Model({
+          var santa1 = new Backbone.Model({
             name: "Santa Clause",
             age: new Date().getFullYear() - 270,
             birthday: "0270-03-01",
             gender: "m",
-            alive: true,
+            alive: true
+          });
+
+          var santa2 = new Backbone.Model({
             url: "http://santaclaus.com",
             email: "santa@santaclaus.com",
             nextDeliveryTime: nextChristmas(),
@@ -1568,52 +1803,61 @@
 
           var columns = [{
             name: "name",
-            cell: "string"
+            cell: "string",
+            label: "Name (StringCell)"
           }, {
             name: "age",
-            cell: "integer"
+            cell: "integer",
+            label: "Age (IntegerCell)"
           }, {
             name: "birthday",
-            cell: "date"
+            cell: "date",
+            label: "Birthday (DateCell)"
           }, {
             name: "gender",
             cell: Backgrid.SelectCell.extend({
               optionValues: [["Male", "m"], ["Female", "f"]]
-            })
+            }),
+            label: "Gender (SelectCell)"
           }, {
             name: "alive",
-            cell: "boolean"
+            cell: "boolean",
+            label: "Alive (BooleanCell)"
           }, {
             name: "url",
-            cell: "uri"
+            cell: "uri",
+            label: "URL (UriCell)"
           }, {
             name: "email",
-            cell: "email"
+            cell: "email",
+            label: "Email (EmailCell)"
           }, {
             name: "nextDeliveryTime",
-            cell: "datetime"
+            cell: "datetime",
+            label: "Next Delivery Time (DateTimeCell)"
           }, {
             name: "hisLocalTime", // His local time is your local time, Santa lives at the North Pole.
-            cell: "time"
+            cell: "time",
+            label: "His Local Time (TimeCell)"
           }, {
             name: "moneyInWallet",
-            cell: "number"
+            cell: "number",
+            label: "Change in Wallet (NumberCell)"
           }];
 
-          var cellDemoRow1 = new Backgrid.Row({
+          var cellDemoGrid1 = new Backgrid.Grid({
             columns: columns.slice(0, 5),
-            model: santa
+            collection: new Backbone.Collection([santa1])
           });
 
-          $("#cell-demo-row-1").replaceWith(cellDemoRow1.render().$el);
+          $("#cell-demo-grid-1").append(cellDemoGrid1.render().el);
 
-          var cellDemoRow2 = new Backgrid.Row({
+          var cellDemoGrid2 = new Backgrid.Grid({
             columns: columns.slice(5),
-            model: santa
+            collection: new Backbone.Collection([santa2])
           });
 
-          $("#cell-demo-row-2").replaceWith(cellDemoRow2.render().$el);
-
+          $("#cell-demo-grid-2").append(cellDemoGrid2.render().el);
         });
       }());
     </script>
