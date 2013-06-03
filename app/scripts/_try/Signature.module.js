@@ -4,10 +4,25 @@
  * Module Definition
  * =====================
  * 
- * Generated through `D:\wamp\www\Server_\temp\module-1366278065388-def.json` for Backbone module **Role**
+ * Generated through `D:\wamp\www\dup_Server_-0.9\temp\module-1370229016855-def.json` for Backbone module **Signature**
  *
  * 
- * Used with Recource (+Signiture) and User to provide fine grind authorization.
+ * Used within Resource entries to identify privilege and http(s) method:req.path mapping.
+
+Default mappings for a data entity are (e.g):
+read:GET:/api/_name
+write:POST:/api/_name
+modify:PUT:/api/_name 
+remove:DELETE:/api/_name
+upload:POST:/upload/_name
+list:GET:/upload/_name
+download:GET:/upload/_name/_/filename
+run:GET/POST/PUT/DELETE:/logic/...
+
+A signature can have multiple api mappings, also, the signiture can choose to use whether strickly or loosely mapping (loosely means the api starts with the one that's in record)
+
+If the api mappings are the same for deferent http(s) method, use / to separate them. In other words, you can group multiple mappings under one signature, and within any one mapping you can tell it to match different http(s) methods used.
+
  *
  *
  * **General Note**
@@ -23,11 +38,11 @@
  * 				   collection.fetch() to populate the grid data upon rendering.
  * 
  * 
- * @module Role
+ * @module Signature
  * @author Tim.Liu
  * @updated 
  * 
- * @generated on Thu Apr 18 2013 17:41:05 GMT+0800 (中国标准时间) 
+ * @generated on Mon Jun 03 2013 11:10:17 GMT+0800 (中国标准时间) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
@@ -40,7 +55,7 @@
      * Module Name 
      * ================================
      */
-    var module = app.module("Role");
+    var module = app.module("Signature");
 
 
     /**
@@ -57,10 +72,10 @@
      * We use the original Backbone.Model
      * [Not Backbone.RelationalModel, since it offers more trouble than solved]
      * 
-     * @class Application.Role.Model
+     * @class Application.Signature.Model
      */
     module.Model = Backbone.Model.extend({ //the id attribute to use
-        idAttribute: '_id',
+        idAttribute: '' || '_id',
 
         //validation:
         validation: {},
@@ -69,11 +84,21 @@
             name: {
                 type: "Text"
             },
-            description: {
-                type: "TextArea"
+            type: {
+                type: "Radio",
+                title: "Mapping Type",
+                options: [{
+                    val: "loosely",
+                    label: "Loosely (starts with)"
+                }, {
+                    val: "strictly",
+                    label: "Strictly (regex)"
+                }]
             },
-            privileges: {
-                type: "ResourceControl"
+            mappings: {
+                type: "List",
+                title: "Http(s) APIs",
+                itemType: "Text"
             },
         },
         //backbone.model.save will use this to merge server response back to model.
@@ -87,7 +112,7 @@
             return response;
         },
         initialize: function(data, options) {
-            this.urlRoot = (options && (options.urlRoot || options.url)) || '' || '/api/Role';
+            this.urlRoot = (options && (options.urlRoot || options.url)) || '' || '/data/Signature';
         }
 
     });
@@ -100,7 +125,7 @@
      * Backbone.PageableCollection is a strict superset of Backbone.Collection
      * We instead use the Backbone.PageableCollection for better paginate ability.
      *
-     * @class Application.Role.Collection
+     * @class Application.Signature.Collection
      */
     module.Collection = Backbone.PageableCollection.extend({ //model ref
         model: module.Model,
@@ -109,9 +134,9 @@
         },
         //register sync event::
         initialize: function(data, options) { //support for Backbone.Relational - collectionOptions
-            this.url = (options && options.url) || '' || '/api/Role';
+            this.url = (options && options.url) || '' || '/data/Signature';
             this.on('error', function() {
-                Application.error('Server Error', 'API::collection::Role');
+                Application.error('Server Error', 'API::collection::Signature');
             })
         }
 
@@ -119,10 +144,10 @@
 
     /**
      * **collection** 
-     * An instance of Application.Role.Collection
+     * An instance of Application.Signature.Collection
      * This collection is not nested in other models.
      * 
-     * @type Application.Role.Collection
+     * @type Application.Signature.Collection
      */
     module.collection = new module.Collection();
 
@@ -156,7 +181,7 @@
      * Backbone.Marionette.ItemView is used to wrap up the form view and 
      * related interactions. We do this in the onRender callback.
      *
-     * @class Application.Role.View.Form
+     * @class Application.Signature.View.Form
      */
     module.View.Extension.Form = {};
     module.View.Extension.Form.ConditionalDisplay = function(formCt) {
@@ -212,7 +237,7 @@
         className: 'basic-form-view-wrap',
 
         fieldsets: [
-            ["name", "description", "privileges"]
+            ["name", "type", "mappings"]
         ],
         ui: {
             header: '.form-header-container',
@@ -309,7 +334,7 @@
      * Backbone.Marionette.ItemView is used to wrap up the datagrid view and 
      * related interactions. We do this in the onRender callback.
      *
-     * @class Application.Role.View.DataGrid
+     * @class Application.Signature.View.DataGrid
      */
     module.View.Extension.DataGrid = {};
     module.View.Extension.DataGrid.ActionCell = Backbone.Marionette.ItemView.extend({
@@ -337,6 +362,8 @@
         },
         //remember the parent layout. So later on a 'new' or 'modify'
         //event will have a container region to render the form.
+        cells: {},
+        //[key:cell type] map to be overriden in _extension.js
         initialize: function(options) {
             this.columns = [{
                 name: "_selected_",
@@ -348,8 +375,8 @@
                 label: "Name",
                 cell: "string"
             }, {
-                name: "description",
-                label: "Description",
+                name: "type",
+                label: "Mapping Type",
                 cell: "string"
             }, {
                 name: "_actions_",
@@ -363,6 +390,8 @@
             var that = this;
             _.each(this.columns, function(col) {
                 col.editable = that.editable;
+                //allow cell definition overriden in _extension.js
+                col.cell = that.cells[col.name] || col.cell;
             });
 
         },
@@ -481,7 +510,7 @@
      * show a datagrid and a form/property grid stacked vertically. This view is mainly
      * there to respond to user's admin menu selection event.
      *
-     * @class Application.Role.View.AdminLayout
+     * @class Application.Signature.View.AdminLayout
      */
     module.View.AdminLayout = Backbone.Marionette.Layout.extend({
         template: '#custom-tpl-layout-module-admin',
@@ -494,7 +523,7 @@
         },
         //Metadata for layout tpl. e.g. meta.title
         meta: {
-            title: 'Role Manager'
+            title: 'Signature Manager'
         },
         initialize: function(options) {
             if (!options || !options.model) this.model = new Backbone.Model({
@@ -517,7 +546,7 @@
      * This is similar to AdminLayout but only using a different tpl to make datagrid
      * and form slide together thus fit into a parent form.
      *
-     * @class Application.Role.View.EditorLayout
+     * @class Application.Signature.View.EditorLayout
      */
     module.View.EditorLayout = Backbone.Marionette.Layout.extend({
         template: '#custom-tpl-layout-module-admin',
@@ -563,20 +592,9 @@
      * 
      * The default view used with menu.
      * 
-     * @class Application.Role.View.Default
+     * @class Application.Signature.View.Default
      */
     module.View.Default = module.View.AdminLayout;
-
-
-    /**
-     * ================================
-     * Admin Menu Auto-load Path
-     * 
-     * Parents node of a non-existing path
-     * will be created in menu module]
-     * ================================
-     */
-    module.defaultAdminPath = 'System->Roles';
 
 
 
