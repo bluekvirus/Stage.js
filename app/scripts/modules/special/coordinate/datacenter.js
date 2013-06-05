@@ -32,6 +32,9 @@
 			cb = form;
 		}
 		var options = {
+			//signal the server that we will not use paginations 
+			data: {pagination: false},
+			processData: true, //this will convert data into query params.
 			success: function(data){
 				//returned from url or collection fetch()
 				cb(data.payload || data.toJSON());
@@ -42,15 +45,15 @@
 		};
 
 		if(resource.indexOf('/') !== -1){
-			//url
+			//case: url
 			$.ajax(_.extend({url: resource}).extend(options));
 
 		}else if(/[A-Z].*/.test(resource) && app[resource]){
-			//data module name
+			//case: data module name
 			app[resource].collection.fetch(options);
 
 		}else if(form && !_.isFunction(form)){
-			//form field
+			//case: form field
 			//Note:: Make sure the request maker is rendered after the targeted field.
 			cb(form.getValue(resource));
 
