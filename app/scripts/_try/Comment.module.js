@@ -4,7 +4,7 @@
  * Module Definition
  * =====================
  * 
- * Generated through `D:\wamp\www\dup_Server_-0.9\temp\module-1370507132531-def.json` for Backbone module **Comment**
+ * Generated through `D:\wamp\www\dup_Server_-0.9\temp\module-1370571054706-def.json` for Backbone module **Comment**
  *
  * 
  * Comments data module
@@ -27,7 +27,7 @@
  * @author Tim.Liu
  * @updated 
  * 
- * @generated on Thu Jun 06 2013 16:25:32 GMT+0800 (中国标准时间) 
+ * @generated on Fri Jun 07 2013 10:10:54 GMT+0800 (中国标准时间) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
@@ -449,7 +449,7 @@
             //promp user [TBI]
             var that = this;
             Application.prompt('Are you sure?', 'error', function() {
-                if (!that.parentCt.collectionRef) m.destroy({
+                if (that.mode !== 'subDoc') m.destroy({
                     success: function(model, resp) {
                         that.collection.fetch(); //refresh
                     },
@@ -462,7 +462,7 @@
         },
         refreshRecords: function(e) {
             e.stopPropagation();
-            if (!this.parentCt.collectionRef) this.collection.fetch();
+            if (this.mode !== 'subDoc') this.collection.fetch();
         }
 
     });

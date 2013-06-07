@@ -20,7 +20,7 @@
                     action: 'delete',
                     label: 'Delete',
                     labelCls: 'important',
-                    method: this.model.get('delete_type'),
+                    method: this.model.get('delete_type'), //http method type used for this action
                     url: this.model.get('delete_url')
                 }]
             });
@@ -53,7 +53,7 @@
             var action = e.target.attributes.action.value;
             if (this._actions[action]) this._actions[action]({
                 url: e.target.attributes._url.value,
-                type: e.target.attributes._method.value,
+                type: e.target.attributes._method.value, //http method type used for this action
             }, this);
         },
 
@@ -61,7 +61,7 @@
             'delete': function(info, editor) {
                 $.ajax({
                     url: info.url,
-                    type: info.type,
+                    type: info.type, //http method type used for this action
                     success: function() {
                         editor.collection.fetch();
                     },
@@ -107,39 +107,44 @@
 
     //editor tpl::
     Template.extend(
-        'custom-tpl-widget-editor-file', [
+        'custom-tpl-widget-editor-file', 
+        [
         '<div class="file-editor-header row-fluid">',
-        '<div class="span3 well well-small">',
-        '<div class="fileinput-button btn btn-block">',
-        '<i class="icon-upload"></i> Choose File',
-        '<input class="fileupload-field" type="file" name="files[]" data-url="{{meta.url}}" multiple>',
-        '</div>',
-        '</div>',
-        '<div class="span8 fileupload-dropzone well well-small stripes"><p class="text-info">Or...Drop your file(s) here...</p></div>',
-        '<div class="fileupload-progress">',
-        '<p class="fileupload-progress-bar"></p>',
-        '<div class="fileupload-progress-fileQ"></div>',
-        '</div>',
+            '<div class="span3 well well-small">',
+                '<div class="fileinput-button btn btn-block">',
+                    '<i class="icon-upload"></i> Choose File',
+                    '<input class="fileupload-field" type="file" name="files[]" data-url="{{meta.url}}" multiple>',
+                '</div>',
+            '</div>',
+            '<div class="span8 fileupload-dropzone well well-small stripes"><p class="text-info">Or...Drop your file(s) here...</p></div>',
+            '<div class="fileupload-progress">',
+                '<p class="fileupload-progress-bar"></p>',
+                '<div class="fileupload-progress-fileQ"></div>',
+            '</div>',
         '</div>',
         '<div class="file-editor-body clear-margin-left row-fluid">',
-        '<div class="span11">',
-        '<table class="table table-striped">',
-        '<thead>',
-        '<tr>',
-        '<th>Name</th>',
-        '<th>Size</th>',
-        '{{#unless meta.noActions}}<th>Action</th>{{/unless}}',
-        '</tr>',
-        '</thead>',
-        '<tbody></tbody>',
-        '</table>',
-        '</div></div>',
-        '<div class="file-editor-footer"></div>', ]);
+            '<div class="span11">',
+                '<table class="table table-striped">',
+                    '<thead>',
+                        '<tr>',
+                            '<th>Name</th>',
+                            '<th>Size</th>',
+                            '{{#unless meta.noActions}}<th>Action</th>{{/unless}}',
+                        '</tr>',
+                    '</thead>',
+                    '<tbody></tbody>',
+                '</table>',
+            '</div>',
+        '</div>',
+        '<div class="file-editor-footer"></div>', 
+        ]);
     Template.extend(
-        'custom-tpl-widget-editor-file-item', [
+        'custom-tpl-widget-editor-file-item', 
+        [
         '<td>{{name}}</td>',
         '<td>{{size}}</td>',
-        '{{#unless _options.noActions}}<td>{{#each actions}}<span class="action-trigger action-trigger-{{this.action}} label label-{{this.labelCls}} pointer-hand" action="{{this.action}}" _method="{{this.method}}" _url="{{this.url}}">{{this.label}}</span> {{/each}}{{/unless}}</td>']);
+        '{{#unless _options.noActions}}<td>{{#each actions}}<span class="action-trigger action-trigger-{{this.action}} label label-{{this.labelCls}} pointer-hand" action="{{this.action}}" _method="{{this.method}}" _url="{{this.url}}">{{this.label}}</span> {{/each}}{{/unless}}</td>'
+        ]);
 
     //editor hook::
     Backbone.Form.editors['File'] = Backbone.Form.editors.Base.extend({

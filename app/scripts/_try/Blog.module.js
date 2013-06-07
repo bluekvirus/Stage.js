@@ -4,7 +4,7 @@
  * Module Definition
  * =====================
  * 
- * Generated through `D:\wamp\www\dup_Server_-0.9\temp\module-1370507125458-def.json` for Backbone module **Blog**
+ * Generated through `D:\wamp\www\dup_Server_-0.9\temp\module-1370598595797-def.json` for Backbone module **Blog**
  *
  * 
  * Blog module
@@ -27,7 +27,7 @@
  * @author Tim.Liu
  * @updated 
  * 
- * @generated on Thu Jun 06 2013 16:25:25 GMT+0800 (中国标准时间) 
+ * @generated on Fri Jun 07 2013 17:50:00 GMT+0800 (中国标准时间) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
@@ -99,6 +99,25 @@
                 moduleRef: "Comment",
                 mode: "refDoc",
                 template: "gridField"
+            },
+            comment4: {
+                type: "CUSTOM_GRID",
+                title: "Comment Sub",
+                moduleRef: "Comment",
+                mode: "subDoc",
+                template: "gridField"
+            },
+            titleimage: {
+                type: "File",
+                title: "Title Image",
+                hostType: "table",
+                hostName: "Blog"
+            },
+            filelists: {
+                type: "File",
+                title: "Content Images",
+                hostType: "table",
+                hostName: "Blog"
             },
         },
         //backbone.model.save will use this to merge server response back to model.
@@ -237,7 +256,7 @@
         className: 'basic-form-view-wrap',
 
         fieldsets: [
-            ["title", "body", "comments", "comments2", "comment3"]
+            ["title", "body", "comments", "comments2", "comment3", "comment4", "titleimage", "filelists"]
         ],
         ui: {
             header: '.form-header-container',
@@ -472,7 +491,7 @@
             //promp user [TBI]
             var that = this;
             Application.prompt('Are you sure?', 'error', function() {
-                if (!that.parentCt.collectionRef) m.destroy({
+                if (that.mode !== 'subDoc') m.destroy({
                     success: function(model, resp) {
                         that.collection.fetch(); //refresh
                     },
@@ -485,7 +504,7 @@
         },
         refreshRecords: function(e) {
             e.stopPropagation();
-            if (!this.parentCt.collectionRef) this.collection.fetch();
+            if (this.mode !== 'subDoc') this.collection.fetch();
         }
 
     });
