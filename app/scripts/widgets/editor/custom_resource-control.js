@@ -118,23 +118,6 @@
         }
     });
 
-    Template.extend('custom-tpl-widget-editor-resource-item', [
-
-        '<td><span class=""><i class="icon-cog"></i> {{name}}</span></td>',
-        '<td><ul class="btn-group" data-toggle="buttons-checkbox">',
-            ' {{#each signatures}}',
-                '<li class="btn" resource="{{../name}}" signature="{{this.name}}" data-content="{{#if mappings}}{{#each mappings}}{{showSignatureMapping ../type this}}{{/each}}{{else}}<p class=\'label\'>N/A</p>{{/if}}">{{this.name}}</li>',
-            '{{/each}}',
-        '</ul></td>'
-
-    ]);
-
-    Template.extend('custom-tpl-widget-editor-resource-control-wrap',[
-        '<div class="header"></div>',
-        '<div class="body"><table class="table table-striped"><thead><tr><th>Resources</th><th>Signatures (e.g <span class="label label-warning">loosely</span> <span class="label label-important">strictly</span>)</th></tr></thead><tbody></tbody></table></div>',
-        '<div class="footer"></div>'
-    ]);
-
 
     Backbone.Form.editors['ResourceControl'] = Backbone.Form.editors.Base.extend({
 
@@ -206,3 +189,35 @@
         }
     });
 })();
+
+/**
+ * =====================
+ * Templates and Helpers
+ * =====================
+ */
+Template.extend('custom-tpl-widget-editor-resource-item', [
+
+    '<td><span class=""><i class="icon-cog"></i> {{name}}</span></td>',
+    '<td><ul class="btn-group" data-toggle="buttons-checkbox">',
+        ' {{#each signatures}}',
+            '<li class="btn" resource="{{../name}}" signature="{{this.name}}" data-content="{{#if mappings}}{{#each mappings}}{{showSignatureMapping ../type this}}{{/each}}{{else}}<p class=\'label\'>N/A</p>{{/if}}">{{this.name}}</li>',
+        '{{/each}}',
+    '</ul></td>'
+
+]);
+
+Template.extend('custom-tpl-widget-editor-resource-control-wrap',[
+    '<div class="header"></div>',
+    '<div class="body"><table class="table table-striped"><thead><tr><th>Resources</th><th>Signatures (e.g <span class="label label-warning">loosely</span> <span class="label label-important">strictly</span>)</th></tr></thead><tbody></tbody></table></div>',
+    '<div class="footer"></div>'
+]);
+
+Handlebars.registerHelper('showSignatureMapping', function(type, mapping){
+    try{
+        var parts = mapping.split(':');
+        return '<p><span class="label '+(type==='strictly'?'label-important':'label-warning')+'">'+parts[0]+'</span> '+parts[1]+'</p>';
+    }catch(e){
+        console.log(e);
+    }
+
+});

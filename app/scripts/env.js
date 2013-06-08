@@ -31,15 +31,29 @@
 	Handlebars.registerHelper('valueOf', function(){
 		return _.keys(this)[0];
 	});
+	//To format given type of data to string
+	Handlebars.registerHelper('printF', function(type, value){
+		//enums
+		var config = {
+			fileSizeType: ['Byte', 'KB', 'MB', 'GB', 'TB'],
+		};
+		//format
+		switch(type){
+			//print file size
+			case 'fileSize':
+				var biggerSizeUnit;
+				var i = 0;
+				for(; i < config.fileSizeType.length; i++){
+					biggerSizeUnit = value/1024;
+					if(Math.floor(biggerSizeUnit) === 0) break;
+					value = biggerSizeUnit;
+				}
+				return value.toFixed(2) + ' ' + config.fileSizeType[i];
+				break;
 
-	Handlebars.registerHelper('showSignatureMapping', function(type, mapping){
-		try{
-	        var parts = mapping.split(':');
-			return '<p><span class="label '+(type==='strictly'?'label-important':'label-warning')+'">'+parts[0]+'</span> '+parts[1]+'</p>';
-		}catch(e){
-			console.log(e);
-		}
- 
+			default:
+				return value;
+		};
 	});
 
 

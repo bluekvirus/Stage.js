@@ -105,46 +105,6 @@
         },
     });
 
-    //editor tpl::
-    Template.extend(
-        'custom-tpl-widget-editor-file', 
-        [
-        '<div class="file-editor-header row-fluid">',
-            '<div class="span3 well well-small">',
-                '<div class="fileinput-button btn btn-block">',
-                    '<i class="icon-upload"></i> Choose File',
-                    '<input class="fileupload-field" type="file" name="files[]" data-url="{{meta.url}}" multiple>',
-                '</div>',
-            '</div>',
-            '<div class="span8 fileupload-dropzone well well-small stripes"><p class="text-info">Or...Drop your file(s) here...</p></div>',
-            '<div class="fileupload-progress">',
-                '<p class="fileupload-progress-bar"></p>',
-                '<div class="fileupload-progress-fileQ"></div>',
-            '</div>',
-        '</div>',
-        '<div class="file-editor-body clear-margin-left row-fluid">',
-            '<div class="span11">',
-                '<table class="table table-striped">',
-                    '<thead>',
-                        '<tr>',
-                            '<th>Name</th>',
-                            '<th>Size</th>',
-                            '{{#unless meta.noActions}}<th>Action</th>{{/unless}}',
-                        '</tr>',
-                    '</thead>',
-                    '<tbody></tbody>',
-                '</table>',
-            '</div>',
-        '</div>',
-        '<div class="file-editor-footer"></div>', 
-        ]);
-    Template.extend(
-        'custom-tpl-widget-editor-file-item', 
-        [
-        '<td><a href="{{url}}">{{name}}</a></td>',
-        '<td>{{size}}</td>',
-        '{{#unless _options.noActions}}<td>{{#each actions}}<span class="action-trigger action-trigger-{{this.action}} label label-{{this.labelCls}} pointer-hand" action="{{this.action}}" _method="{{this.method}}" _url="{{this.url}}">{{this.label}}</span> {{/each}}{{/unless}}</td>'
-        ]);
 
     //editor hook::
     Backbone.Form.editors['File'] = Backbone.Form.editors.Base.extend({
@@ -234,3 +194,48 @@
         }
     });
 })();
+
+/**
+ * =====================
+ * Templates and Helpers
+ * =====================
+ */
+Template.extend(
+    'custom-tpl-widget-editor-file', 
+    [
+    '<div class="file-editor-header row-fluid">',
+        '<div class="span3 well well-small">',
+            '<div class="fileinput-button btn btn-block">',
+                '<i class="icon-upload"></i> Choose File',
+                '<input class="fileupload-field" type="file" name="files[]" data-url="{{meta.url}}" multiple>',
+            '</div>',
+        '</div>',
+        '<div class="span8 fileupload-dropzone well well-small stripes"><p class="text-info">Or...Drop your file(s) here...</p></div>',
+        '<div class="fileupload-progress">',
+            '<p class="fileupload-progress-bar"></p>',
+            '<div class="fileupload-progress-fileQ"></div>',
+        '</div>',
+    '</div>',
+    '<div class="file-editor-body clear-margin-left row-fluid">',
+        '<div class="span11">',
+            '<table class="table table-striped">',
+                '<thead>',
+                    '<tr>',
+                        '<th>Name</th>',
+                        '<th>Size</th>',
+                        '{{#unless meta.noActions}}<th>Action</th>{{/unless}}',
+                    '</tr>',
+                '</thead>',
+                '<tbody></tbody>',
+            '</table>',
+        '</div>',
+    '</div>',
+    '<div class="file-editor-footer"></div>', 
+    ]);
+Template.extend(
+    'custom-tpl-widget-editor-file-item', 
+    [
+    '<td><a href="{{url}}">{{name}}</a></td>',
+    '<td>{{printF "fileSize" size}}</td>',
+    '{{#unless _options.noActions}}<td>{{#each actions}}<span class="action-trigger action-trigger-{{this.action}} label label-{{this.labelCls}} pointer-hand" action="{{this.action}}" _method="{{this.method}}" _url="{{this.url}}">{{this.label}}</span> {{/each}}{{/unless}}</td>'
+    ]);
