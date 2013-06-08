@@ -141,7 +141,7 @@
     Template.extend(
         'custom-tpl-widget-editor-file-item', 
         [
-        '<td>{{name}}</td>',
+        '<td><a href="{{url}}">{{name}}</a></td>',
         '<td>{{size}}</td>',
         '{{#unless _options.noActions}}<td>{{#each actions}}<span class="action-trigger action-trigger-{{this.action}} label label-{{this.labelCls}} pointer-hand" action="{{this.action}}" _method="{{this.method}}" _url="{{this.url}}">{{this.label}}</span> {{/each}}{{/unless}}</td>'
         ]);
