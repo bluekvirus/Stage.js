@@ -11,7 +11,7 @@
 
     var ViewWrap = Backbone.Marionette.Layout.extend({
         template: '#custom-tpl-widget-editor-resource-control-wrap',
-        className: 'custom-form-editor-resource-control custom-editor-wrap',
+        className: 'custom-form-editor-resource-control',
 
         regions: {
             header: '.header',
@@ -28,9 +28,29 @@
         },
 
         onRender: function(){
-            //TODO::
+            this.body.show(new ResourcesView({model: new Resources()}));
         }
     });
+
+    var Resources = Backbone.Model.extend({
+        urlRoot: 'logic/Resources/list',
+        parse: function(resp){
+            return resp.payload;
+        }
+    });
+
+    var ResourcesView = Backbone.Marionette.ItemView.extend({
+        template: '#custom-tpl-widget-editor-resource-control-items',
+
+        onShow: function(){
+            this.model.fetch({
+                success: _.bind(function(resp){
+                    this.render();
+                }, this)
+            });
+        }
+    });
+
 
     Backbone.Form.editors['ResourceControl'] = Backbone.Form.editors.Base.extend({
 
@@ -103,7 +123,22 @@
 
 
 Template.extend('custom-tpl-widget-editor-resource-control-wrap',[
-    '<div class="header"></div>',
+    '<div class="header">',
+        '<p class="alert alert-warning edit-later-info">Assign Privileges for this Role below...</p>',
+    '</div>',
     '<div class="body"></div>',
     '<div class="footer"></div>'
 ]);
+
+Template.extend('custom-tpl-widget-editor-resource-control-items', [
+    '<div class="data-obj-list">',
+        '{{#each models}}',
+            '<div>{{name}}</div>',
+        '{{/each}}',
+    '</div>',
+]);
+
+
+
+
+

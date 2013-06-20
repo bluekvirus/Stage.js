@@ -73,7 +73,8 @@
                 type: "TextArea"
             },
             privileges: {
-                type: "ResourceControl"
+                type: "ResourceControl",
+                template: "gridField",
             },
         },
         //backbone.model.save will use this to merge server response back to model.
