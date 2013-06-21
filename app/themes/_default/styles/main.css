@@ -230,6 +230,24 @@ legend > span {
 /**
  * Resource Control editor styles::;
  */
+.custom-form-editor-resource-control .privilege-entry {
+  padding: 20px;
+  border-radius: 6px;
+  margin-top: 10px;
+}
+
+.custom-form-editor-resource-control .privilege-entry .entry-item {
+  margin-bottom: 5px;
+  max-width: 270px;
+}
+
+.custom-form-editor-resource-control .privilege-entry .entry-item .entry-item-field {
+  padding: 3px 0px 3px 20px;
+}
+
+.custom-form-editor-resource-control .privilege-entry .btn.active {
+  background: #5BB75B;
+}
 
 /* End of Resource Control editor styles */
 
