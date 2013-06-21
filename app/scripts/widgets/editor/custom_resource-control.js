@@ -133,7 +133,9 @@ Template.extend('custom-tpl-widget-editor-resource-control-wrap',[
 Template.extend('custom-tpl-widget-editor-resource-control-items', [
     '<div class="data-obj-list">',
         '{{#each models}}',
-            '<div>{{name}}</div>',
+            '<div class="privilege-entry">',
+            '{{name}}',
+            '</div>',
         '{{/each}}',
     '</div>',
 ]);
