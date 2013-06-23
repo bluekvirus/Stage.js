@@ -28,8 +28,13 @@
         },
 
         onRender: function(){
-            this.body.show(new ResourcesView({model: new Resources()}));
-        }
+            this.body.show(new ResourcesView({model: new Resources(), parentCt: this}));
+        },
+
+        recoverFromSelection: function(val){
+            this.selectionVal = val;
+            //delegates to onRender in ResourcesView object.       
+        }        
     });
 
     var Resources = Backbone.Model.extend({
@@ -42,13 +47,38 @@
     var ResourcesView = Backbone.Marionette.ItemView.extend({
         template: '#custom-tpl-widget-editor-resource-control-items',
 
+        initialize: function(options){
+            this.parentCt = options.parentCt;
+        },
+
         onShow: function(){
             this.model.fetch({
                 success: _.bind(function(resp){
                     this.render();
                 }, this)
             });
+        },
+
+        onRender: function(){
+            //recover selections
+            _.each(this.parentCt.selectionVal, _.bind(function(tokens, model){
+                this.$el.find('[model='+model+']').each(function(index, el){
+                    var $model = $(this);
+                    _.each(tokens, function(affects, token){
+                        if(affects === true)
+                            //data-self tokens
+                            $model.find('[token='+token+']').addClass('active');
+                        else{
+                            //data-ref, file, logic tokens
+                            _.each(affects, function(_true, affected){
+                                $model.find('[token='+token+'][affects='+affected+']').addClass('active');
+                            });
+                        }
+                    });
+                });
+            }, this));
         }
+
     });
 
 
@@ -85,21 +115,39 @@
         },
 
         render: function() {
-            //this.setValue(this.value);
 
             this.delegatedEditor = new ViewWrap({form:this.form, editor:this});
             this.delegatedEditor.listenTo(this.form, 'close', this.delegatedEditor.close);
+            this.setValue(this.value);
             this.$el.html(this.delegatedEditor.render().el);
-        
+            
             return this;
         },
 
         getValue: function() {
-            //return this.$el.val();
+            var memo = {};
+            this.$el.find('li.active,[token=]').each(function(index, selected){
+                var $selected = $(selected);
+                var model = $selected.parentsUntil('.data-obj-list', '[model]').attr('model');
+                memo[model] = memo[model] || {};
+                var affectedItem = $selected.attr('affects');
+                var token = $(selected).attr('token');
+                if(!affectedItem)
+                    //data-self 
+                    memo[model][token] = true;
+                else {
+                    //data-ref, file, logic
+                    memo[model][token] = memo[model][token] || {};
+                    memo[model][token][affectedItem] = true;
+                }
+            });
+
+            //console.log(memo);
+            return memo; 
         },
 
         setValue: function(value) {
-            //this.$el.val(value);
+            this.delegatedEditor.recoverFromSelection(value);
         },
 
         focus: function() {
@@ -133,8 +181,8 @@ Template.extend('custom-tpl-widget-editor-resource-control-wrap',[
 Template.extend('custom-tpl-widget-editor-resource-control-items', [
     '<div class="data-obj-list">',
         '{{#each models}}',
-            '<div class="privilege-entry row-fluid">',
-                '<div class="span3">{{name}}</div>',
+            '<div class="privilege-entry row-fluid" model="{{name}}">',
+                '<div class="span3"><span>{{name}}</span></div>',
                 '<div class="span9">',
                     //Data api - self
                     '<div class="entry-item clearfix"><span class="entry-item-label">Data Access: </span>',
@@ -167,8 +215,7 @@ Handlebars.registerHelper('showEntryItemFields', function(fields){
                     '<ul class="btn-group pull-right" data-toggle="buttons-checkbox">'            
         ].join('');
         _.each(privilegeGroup, function(privilege, key){
-            console.log(privilege);
-            result+=     '<li class="btn" token="' + privilege.token + '" holder="' + fname + '">' + key + '</li>';
+            result+=     '<li class="btn" token="' + privilege.token + '" affects="' + fname + '">' + key + '</li>';
         });
         result+=[
                     '</ul>',
