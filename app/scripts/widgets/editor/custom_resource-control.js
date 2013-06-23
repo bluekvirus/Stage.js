@@ -138,46 +138,48 @@ Template.extend('custom-tpl-widget-editor-resource-control-items', [
                 '<div class="span9">',
                     //Data api - self
                     '<div class="entry-item clearfix"><span class="entry-item-label">Data Access: </span>',
-                    '<div class="btn-group pull-right" data-toggle="buttons-checkbox">{{#each routes.data.std}}<button type="button" class="btn">{{@key}}</button>{{/each}}</div>',
+                    '<ul class="btn-group pull-right" data-toggle="buttons-checkbox">{{#each routes.data.std}}<li token="{{token}}" class="btn">{{@key}}</li>{{/each}}</ul>',
                     '</div>',
                     //Data api - ref [per field]
                     '<div class="entry-item clearfix"><span class="entry-item-label">Reference Data Access: </span>',
-                        '{{#each routes.data.ref}}',
-                            '<div class="entry-item-field clearfix">',
-                                '<span class="label label-info field-label">{{@key}}</span> ',
-                                '<div class="btn-group pull-right" data-toggle="buttons-checkbox">{{#each this}}<button type="button" class="btn">{{@key}}</button>{{/each}}</div>',
-                            '</div>',
-                        '{{else}}',
-                            '<span class="label label-inverse pull-right">N/A</span>',
-                        '{{/each}}',
+                        '{{{showEntryItemFields routes.data.ref}}}',
                     '</div>',
                     //File api - [per file]
                     '<div class="entry-item clearfix"><span class="entry-item-label">File Access: </span>',
-                        '{{#each routes.file}}',
-                            '<div class="entry-item-field clearfix">',
-                                '<span class="label label-info field-label">{{@key}}</span> ',
-                                '<div class="btn-group pull-right" data-toggle="buttons-checkbox">{{#each this}}<button type="button" class="btn">{{@key}}</button>{{/each}}</div>',
-                            '</div>',
-                        '{{else}}',
-                            '<span class="label label-inverse pull-right">N/A</span>',
-                        '{{/each}}',
+                        '{{{showEntryItemFields routes.file}}}',
                     '</div>',
                     //Logic api - [per exposed method]
                     '<div class="entry-item clearfix"><span class="entry-item-label">Logic Access: </span>',
-                        '{{#each routes.logic}}',
-                            '<div class="entry-item-field clearfix">',
-                                '<span class="label label-info field-label">{{@key}}</span> ',
-                                '<div class="btn-group pull-right" data-toggle="buttons-checkbox"><button type="button" class="btn">exec</button></div>',
-                            '</div>',
-                        '{{else}}',
-                            '<span class="label label-inverse pull-right">N/A</span>',
-                        '{{/each}}',
+                        '{{{showEntryItemFields routes.logic}}}',
                     '</div>',                    
                 '</div>',
             '</div>',
         '{{/each}}',
     '</div>',
 ]);
+
+Handlebars.registerHelper('showEntryItemFields', function(fields){
+    var result = '';
+    _.each(fields, function(privilegeGroup, fname){
+        result+=[
+                '<div class="entry-item-field clearfix">',
+                    '<span class="label label-info field-label">' + fname +'</span> ',
+                    '<ul class="btn-group pull-right" data-toggle="buttons-checkbox">'            
+        ].join('');
+        _.each(privilegeGroup, function(privilege, key){
+            console.log(privilege);
+            result+=     '<li class="btn" token="' + privilege.token + '" holder="' + fname + '">' + key + '</li>';
+        });
+        result+=[
+                    '</ul>',
+                '</div>'
+        ].join('');
+
+    })
+    if(result) return result;
+    //empty:
+    return '<span class="label label-inverse pull-right">N/A</span>';
+});
 
 
 
