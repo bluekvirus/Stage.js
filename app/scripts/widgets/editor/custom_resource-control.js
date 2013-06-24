@@ -19,9 +19,9 @@
             footer: '.footer'
         },
 
-        // events: {
-
-        // },
+        events: {
+            'click li[token]' : 'chainSelectHelper',
+        },
 
         initialize: function(options){
             this._options = options;
@@ -34,7 +34,18 @@
         recoverFromSelection: function(val){
             this.selectionVal = val;
             //delegates to onRender in ResourcesView object.       
-        }        
+        },
+
+        /**
+         * If 'modify' is assigned then 'read' will automatically be added
+         */
+        chainSelectHelper: function(e){
+            var $target = $(e.target);
+            if($target.html() === 'modify' && !$target.hasClass('active')){
+                $target.prev().addClass('active');
+            }
+        },
+
     });
 
     var Resources = Backbone.Model.extend({
@@ -60,7 +71,7 @@
         },
 
         onRender: function(){
-            //recover selections
+            //recover selections only upon render so the tags can be found.
             _.each(this.parentCt.selectionVal, _.bind(function(tokens, model){
                 this.$el.find('[model='+model+']').each(function(index, el){
                     var $model = $(this);
@@ -179,10 +190,11 @@ Template.extend('custom-tpl-widget-editor-resource-control-wrap',[
 ]);
 
 Template.extend('custom-tpl-widget-editor-resource-control-items', [
+    //Data Objects privilege control
     '<div class="data-obj-list">',
         '{{#each models}}',
             '<div class="privilege-entry row-fluid" model="{{name}}">',
-                '<div class="span3"><span>{{name}}</span></div>',
+                '<div class="span3"><div class="entry-title-ct"><span class="entry-title">{{name}}</span></div></div>',
                 '<div class="span9">',
                     //Data api - self
                     '<div class="entry-item clearfix"><span class="entry-item-label">Data Access: </span>',
@@ -200,6 +212,28 @@ Template.extend('custom-tpl-widget-editor-resource-control-items', [
                     '<div class="entry-item clearfix"><span class="entry-item-label">Logic Access: </span>',
                         '{{{showEntryItemFields routes.logic}}}',
                     '</div>',                    
+                '</div>',
+            '</div>',
+        '{{/each}}',
+    '</div>',
+
+    //Meta Objects privilege control
+    '<div class="meta-obj-list">',
+        '{{#each metaobjs}}',
+            '<div class="privilege-entry row-fluid" model="{{name}}">',
+                '<div class="span3"><div class="entry-title-ct"><span class="entry-title">{{name}}</span></div></div>',
+                '<div class="span9">',
+                    //Logic api - [per exposed method]
+                    '<div class="entry-item clearfix"><span class="entry-item-label">Logic Access: </span>',
+                        '{{#each methods}}',
+                            '<div class="entry-item-field clearfix">',
+                                '<span class="label label-info field-label">{{@key}}</span> ',
+                                '<ul class="btn-group pull-right" data-toggle="buttons-checkbox">',
+                                    '<li class="btn" token="{{../token}}" affects="{{@key}}">exec</li>',
+                                '</ul>',
+                            '</div>',
+                        '{{/each}}',
+                    '</div>',
                 '</div>',
             '</div>',
         '{{/each}}',

@@ -230,10 +230,32 @@ legend > span {
 /**
  * Resource Control editor styles::;
  */
+.custom-form-editor-resource-control .data-obj-list, .custom-form-editor-resource-control .meta-obj-list{
+  margin-right: 15px;
+  padding: 0 20px;
+}
+
+.custom-form-editor-resource-control .meta-obj-list {
+  border-top: 6px solid #eee;
+}
+
 .custom-form-editor-resource-control .privilege-entry {
-  padding: 20px;
+  padding: 10px 0;
   border-radius: 6px;
   margin-top: 10px;
+}
+
+.custom-form-editor-resource-control .privilege-entry .entry-title-ct {
+  text-align: center;
+  margin: 0 auto;
+  width: 100px;
+  border-radius: 100px;
+  border: 8px solid #eee;
+}
+
+.custom-form-editor-resource-control .privilege-entry .entry-title {
+  line-height: 100px;
+  vertical-align: middle;
 }
 
 .custom-form-editor-resource-control .privilege-entry .entry-item {
@@ -243,6 +265,14 @@ legend > span {
 
 .custom-form-editor-resource-control .privilege-entry .entry-item .entry-item-field {
   padding: 3px 0px 3px 20px;
+}
+
+.custom-form-editor-resource-control .privilege-entry .entry-item .entry-item-field .field-label {
+  margin-top: 6px !important;
+}
+
+.custom-form-editor-resource-control .privilege-entry .btn-group {
+  margin-bottom: 0px;
 }
 
 .custom-form-editor-resource-control .privilege-entry .btn.active {
