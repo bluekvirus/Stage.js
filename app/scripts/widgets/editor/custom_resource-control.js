@@ -1,26 +1,74 @@
 /**
  * 
- * Base Editor Example. [Modified]
- * Based on [https://github.com/powmedia/backbone-forms#custom-editors]
+ * This is the Resource Control Editor used for User privilege 
+ * assignment. It is used in the Role entity and the same concept
+ * can be used for any resource control mech. 
+ *
+ * Concept: (type here is not the mapping type, but a meta describing resource type)
+ * register>> 
+ *     Resource <- Signatures <- Mappings
+ * assign>>
+ *     Role <- (Resource.(type).Mappings) <- Signatures (yes/no)
+ * resolve>>
+ *     (req.path) -> (/:type/:Resource/...) -> User.Role.Privileges[Resource.(type).Mappings]
+ *
+ * For performance reason it is better to re-group the Mappings inside a Resource
+ * to be grouped with types e.g /:type/:Resource when saved in a Role. Specifically,
+ * 
+ *     mapping.split('/') =>   [0]: should always be "";
+ *                             [1]: type;
+ *                             [2]: Resource name; [null] means "Index Page";
+ *
+ * Note:: We still use the full mappings(+mapping type) when try to match with req.path
+ * in authorization middleware.
+ *                             
  *
  * @author Tim.Liu
- * @update 2013.04.18
+ * @created 2013.04.18
  * 
  */
 (function(){
 
-    var ViewWrap = Backbone.Marionette.Layout.extend({
-        template: '#custom-tpl-widget-editor-resource-control-wrap',
-        className: 'custom-form-editor-resource-control',
+    var ResourceCollection = Backbone.Collection.extend({
+        model: Backbone.Model.extend({}),
+    });
 
-        regions: {
+    var ResourceItem = Backbone.Marionette.ItemView.extend({
+        template: '#custom-tpl-widget-editor-resource-item',
+        className: 'custom-form-editor-resource-control-item',
+        tagName: 'tr',
+
+        events: {
+            'click li': 'toggleSelection',
+            'recover': 'recoverSelection',
+        },
+
+        toggleSelection: function(e){
+            var target = $(e.target);
+            target.toggleClass('btn-success selected');
+        },
+
+        recoverSelection: function(e){
+            var target = $(e.target);
+            target.toggleClass('btn-success selected active');
+        },
+
+    });
+
+    var ViewWrap = Backbone.Marionette.CompositeView.extend({
+        template: '#custom-tpl-widget-editor-resource-control-wrap',
+        className: 'custom-form-editor-resource-control custom-editor-wrap',
+        itemView: ResourceItem,
+        itemViewContainer: '.body tbody',
+
+        ui: {
             header: '.header',
             body: '.body',
             footer: '.footer'
         },
 
         events: {
-            'click li[token]' : 'chainSelectHelper',
+            'click .custom-form-editor-resource-control-item li': 'markSelection'
         },
 
         initialize: function(options){
@@ -28,68 +76,46 @@
         },
 
         onRender: function(){
-            this.body.show(new ResourcesView({model: new Resources(), parentCt: this}));
-        },
-
-        recoverFromSelection: function(val){
-            this.selectionVal = val;
-            //delegates to onRender in ResourcesView object.       
-        },
-
-        /**
-         * If 'modify' is assigned then 'read' will automatically be added
-         */
-        chainSelectHelper: function(e){
-            var $target = $(e.target);
-            if($target.html() === 'modify' && !$target.hasClass('active')){
-                $target.prev().addClass('active');
-            }
-        },
-
-    });
-
-    var Resources = Backbone.Model.extend({
-        urlRoot: 'logic/Resources/list',
-        parse: function(resp){
-            return resp.payload;
-        }
-    });
-
-    var ResourcesView = Backbone.Marionette.ItemView.extend({
-        template: '#custom-tpl-widget-editor-resource-control-items',
-
-        initialize: function(options){
-            this.parentCt = options.parentCt;
-        },
-
-        onShow: function(){
-            this.model.fetch({
-                success: _.bind(function(resp){
-                    this.render();
-                }, this)
+            //TODO::
+            this.$el.find('.btn').button().popover({
+                placement: 'top',
+                trigger: 'hover',
+                html: 'true',
+                container: 'body',
+                title: '<strong>Mappings</strong>'
             });
         },
 
-        onRender: function(){
-            //recover selections only upon render so the tags can be found.
-            _.each(this.parentCt.selectionVal, _.bind(function(tokens, model){
-                this.$el.find('[model='+model+']').each(function(index, el){
-                    var $model = $(this);
-                    _.each(tokens, function(affects, token){
-                        if(affects === true)
-                            //data-self tokens
-                            $model.find('[token='+token+']').addClass('active');
-                        else{
-                            //data-ref, file, logic tokens
-                            _.each(affects, function(_true, affected){
-                                $model.find('[token='+token+'][affects='+affected+']').addClass('active');
-                            });
-                        }
-                    });
-                });
-            }, this));
-        }
+        getValue: function(){
+            return this.privileges;
+        },
 
+        setValue: function(val){
+            this.privileges = val || {} ;
+            var that = this;
+            _.each(val, function(signatures, resouce){
+                //mark
+                _.each(signatures, function(bool, sig){
+                    that.$el.find('.btn[resource="'+resouce+'"][signature="'+sig+'"]').trigger('recover');
+                });
+            });
+        },
+
+        markSelection: function(e){
+            var target = $(e.target);
+            var r = target.attr('resource'), s = target.attr('signature');
+            if(target.hasClass('selected')){
+                this.privileges[r] = this.privileges[r] || {};
+                this.privileges[r][s] = true;
+            }else{
+                try{
+                    delete this.privileges[target.attr('resource')][target.attr('signature')];
+                }catch(e){
+                    console.log('omit deletion privilege...');
+                }
+                
+            }
+        }
     });
 
 
@@ -126,39 +152,23 @@
         },
 
         render: function() {
+            Application.DataCenter.resolve('Resource', this.form, _.bind(function(data){
+                this.delegatedEditor = new ViewWrap({form:this.form, editor:this, collection: new ResourceCollection(data)});
+                this.delegatedEditor.listenTo(this.form, 'close', this.delegatedEditor.close);
+                this.$el.html(this.delegatedEditor.render().el); 
+                this.setValue(this.value);               
+            }, this));
 
-            this.delegatedEditor = new ViewWrap({form:this.form, editor:this});
-            this.delegatedEditor.listenTo(this.form, 'close', this.delegatedEditor.close);
-            this.setValue(this.value);
-            this.$el.html(this.delegatedEditor.render().el);
-            
+        
             return this;
         },
 
         getValue: function() {
-            var memo = {};
-            this.$el.find('li.active,[token=]').each(function(index, selected){
-                var $selected = $(selected);
-                var model = $selected.parentsUntil('.data-obj-list', '[model]').attr('model');
-                memo[model] = memo[model] || {};
-                var affectedItem = $selected.attr('affects');
-                var token = $(selected).attr('token');
-                if(!affectedItem)
-                    //data-self 
-                    memo[model][token] = true;
-                else {
-                    //data-ref, file, logic
-                    memo[model][token] = memo[model][token] || {};
-                    memo[model][token][affectedItem] = true;
-                }
-            });
-
-            //console.log(memo);
-            return memo; 
+            return this.delegatedEditor.getValue();
         },
 
         setValue: function(value) {
-            this.delegatedEditor.recoverFromSelection(value);
+            this.delegatedEditor.setValue(value);
         },
 
         focus: function() {
@@ -180,89 +190,34 @@
     });
 })();
 
+/**
+ * =====================
+ * Templates and Helpers
+ * =====================
+ */
+Template.extend('custom-tpl-widget-editor-resource-item', [
+
+    '<td><span class=""><i class="icon-cog"></i> {{name}}</span></td>',
+    '<td><ul class="btn-group" data-toggle="buttons-checkbox">',
+        ' {{#each signatures}}',
+            '<li class="btn" resource="{{../name}}" signature="{{this.name}}" data-content="{{#if mappings}}{{#each mappings}}{{showSignatureMapping ../type this}}{{/each}}{{else}}<p class=\'label\'>N/A</p>{{/if}}">{{this.name}}</li>',
+        '{{/each}}',
+    '</ul></td>'
+
+]);
 
 Template.extend('custom-tpl-widget-editor-resource-control-wrap',[
-    '<div class="header">',
-        '<p class="alert alert-warning edit-later-info">Assign Privileges for this Role below...</p>',
-    '</div>',
-    '<div class="body"></div>',
+    '<div class="header"></div>',
+    '<div class="body"><table class="table table-striped"><thead><tr><th>Resources</th><th>Signatures (e.g <span class="label label-warning">loosely</span> <span class="label label-important">strictly</span>)</th></tr></thead><tbody></tbody></table></div>',
     '<div class="footer"></div>'
 ]);
 
-Template.extend('custom-tpl-widget-editor-resource-control-items', [
-    //Data Objects privilege control
-    '<div class="data-obj-list">',
-        '{{#each models}}',
-            '<div class="privilege-entry row-fluid" model="{{name}}">',
-                '<div class="span3"><div class="entry-title-ct"><span class="entry-title">{{name}}</span></div></div>',
-                '<div class="span9">',
-                    //Data api - self
-                    '<div class="entry-item clearfix"><span class="entry-item-label">Data Access: </span>',
-                    '<ul class="btn-group pull-right" data-toggle="buttons-checkbox">{{#each routes.data.std}}<li token="{{token}}" class="btn">{{@key}}</li>{{/each}}</ul>',
-                    '</div>',
-                    //Data api - ref [per field]
-                    '<div class="entry-item clearfix"><span class="entry-item-label">Reference Data Access: </span>',
-                        '{{{showEntryItemFields routes.data.ref}}}',
-                    '</div>',
-                    //File api - [per file]
-                    '<div class="entry-item clearfix"><span class="entry-item-label">File Access: </span>',
-                        '{{{showEntryItemFields routes.file}}}',
-                    '</div>',
-                    //Logic api - [per exposed method]
-                    '<div class="entry-item clearfix"><span class="entry-item-label">Logic Access: </span>',
-                        '{{{showEntryItemFields routes.logic}}}',
-                    '</div>',                    
-                '</div>',
-            '</div>',
-        '{{/each}}',
-    '</div>',
+Handlebars.registerHelper('showSignatureMapping', function(type, mapping){
+    try{
+        var parts = mapping.split(':');
+        return '<p><span class="label '+(type==='strictly'?'label-important':'label-warning')+'">'+parts[0]+'</span> '+parts[1]+'</p>';
+    }catch(e){
+        console.log(e);
+    }
 
-    //Meta Objects privilege control
-    '<div class="meta-obj-list">',
-        '{{#each metaobjs}}',
-            '<div class="privilege-entry row-fluid" model="{{name}}">',
-                '<div class="span3"><div class="entry-title-ct"><span class="entry-title">{{name}}</span></div></div>',
-                '<div class="span9">',
-                    //Logic api - [per exposed method]
-                    '<div class="entry-item clearfix"><span class="entry-item-label">Logic Access: </span>',
-                        '{{#each methods}}',
-                            '<div class="entry-item-field clearfix">',
-                                '<span class="label label-info field-label">{{@key}}</span> ',
-                                '<ul class="btn-group pull-right" data-toggle="buttons-checkbox">',
-                                    '<li class="btn" token="{{../token}}" affects="{{@key}}">exec</li>',
-                                '</ul>',
-                            '</div>',
-                        '{{/each}}',
-                    '</div>',
-                '</div>',
-            '</div>',
-        '{{/each}}',
-    '</div>',
-]);
-
-Handlebars.registerHelper('showEntryItemFields', function(fields){
-    var result = '';
-    _.each(fields, function(privilegeGroup, fname){
-        result+=[
-                '<div class="entry-item-field clearfix">',
-                    '<span class="label label-info field-label">' + fname +'</span> ',
-                    '<ul class="btn-group pull-right" data-toggle="buttons-checkbox">'            
-        ].join('');
-        _.each(privilegeGroup, function(privilege, key){
-            result+=     '<li class="btn" token="' + privilege.token + '" affects="' + fname + '">' + key + '</li>';
-        });
-        result+=[
-                    '</ul>',
-                '</div>'
-        ].join('');
-
-    })
-    if(result) return result;
-    //empty:
-    return '<span class="label label-inverse pull-right">N/A</span>';
 });
-
-
-
-
-
