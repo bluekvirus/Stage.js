@@ -41,8 +41,15 @@
          */
         chainSelectHelper: function(e){
             var $target = $(e.target);
-            if($target.html() === 'modify' && !$target.hasClass('active')){
-                $target.prev().addClass('active');
+            switch($target.html()){
+                case 'modify': //select 'modify' will also select 'read'
+                    if(!$target.hasClass('active')) $target.prev().addClass('active');
+                break;
+                case 'read': //un-select 'read' will also cancel 'modify'
+                    if($target.hasClass('active')) $target.next().removeClass('active');
+                break;
+                default:
+                break;
             }
         },
 
