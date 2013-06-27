@@ -136,7 +136,7 @@
             // Custom setup code.
             // this.schema.options
             this._options = options.schema.options || options.schema;
-            this._options.url = this._options.url || '/uploads/' + this._options.hostName + '/' + (this._options.hostType === 'table' ? this.model.id : 'shared') + '/' + this.key;
+            this._options.url = this._options.url || ((Application.config.apiBase && Application.config.apiBase.file && Application.config.apiBase.file.up) || '/upload')+'/' + this._options.hostName + '/' + (this._options.hostType === 'table' ? this.model.id : 'shared') + '/' + this.key;
             this.FileCollection = Backbone.Collection.extend({
                 url: this._options.url + '?listing=' + (new Date()).getTime(),
                 model: Backbone.Model.extend({

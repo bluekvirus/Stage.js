@@ -4,7 +4,7 @@
  * Module Definition
  * =====================
  * 
- * Generated through `D:\wamp\www\dup_Server_-0.9\temp\module-1370229020620-def.json` for Backbone module **Role**
+ * Generated through `def_models/app_core/Role_def.json` for Backbone module **Role**
  *
  * 
  * Used with Recource (+Signiture) and User to provide fine grind authorization.
@@ -27,7 +27,7 @@
  * @author Tim.Liu
  * @updated 
  * 
- * @generated on Mon Jun 03 2013 11:10:20 GMT+0800 (中国标准时间) 
+ * @generated on Thu Jun 27 2013 22:35:59 GMT+0800 (CST) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
@@ -87,7 +87,7 @@
             return response;
         },
         initialize: function(data, options) {
-            this.urlRoot = (options && (options.urlRoot || options.url)) || '' || '/data/Role';
+            this.urlRoot = (options && (options.urlRoot || options.url)) || '' || ((app.config.apiBase && app.config.apiBase.data) || '/data') + '/Role';
         }
 
     });
@@ -102,16 +102,15 @@
      *
      * @class Application.Role.Collection
      */
-    module.Collection = Backbone.PageableCollection.extend({ //model ref
+    module.Collection = Backbone.PageableCollection.extend({
         model: module.Model,
         parse: function(response) {
             return response.payload; //to use mers on server.
         },
-        //register sync event::
-        initialize: function(data, options) { //support for Backbone.Relational - collectionOptions
-            this.url = (options && options.url) || '' || '/data/Role';
+        initialize: function(data, options) {
+            this.url = (options && options.url) || '' || ((app.config.apiBase && app.config.apiBase.data) || '/data') + '/Role';
             this.on('error', function() {
-                Application.error('Server Error', 'API::collection::Role');
+                Application.error('Server Error', 'Can NOT initialize collection:Role');
             })
         }
 
@@ -397,7 +396,6 @@
             'event_RefreshRecords': 'refreshRecords',
         },
         //DOM event listeners:
-
         showForm: function(e) {
             e.stopPropagation();
             var info = e.currentTarget.attributes;
@@ -420,19 +418,11 @@
             var that = this;
             if (this.mode !== 'subDoc') {
                 sheet.model.save({}, {
-                    error: function(model, res) {
-                        var err = $.parseJSON(res.responseText).error;
-                        console.log('!Possible Hack!', err);
-                        if (err.db) { //server db error::
-                            Application.error('Server DB Error', err.db);
-                        }
-                        //[optional]TODO::highlight error back to form fields
-                    },
                     success: function(model, res) {
                         if (res.payload) {
                             that.collection.fetch();
                             sheet.close();
-                        } else Application.error('Server Error', 'Not yet saved...');
+                        }
                     }
                 }); //save the model to server
             } else { //2.else if this grid is used in subDoc mode for sub-field:
@@ -451,12 +441,9 @@
             //promp user [TBI]
             var that = this;
             Application.prompt('Are you sure?', 'error', function() {
-                if (!that.parentCt.collectionRef) m.destroy({
+                if (that.mode !== 'subDoc') m.destroy({
                     success: function(model, resp) {
                         that.collection.fetch(); //refresh
-                    },
-                    error: function(model, resp) {
-                        Application.error('Server Error', 'Can NOT remove this record...');
                     }
                 });
                 else that.collection.remove(m);
@@ -464,7 +451,7 @@
         },
         refreshRecords: function(e) {
             e.stopPropagation();
-            if (!this.parentCt.collectionRef) this.collection.fetch();
+            if (this.mode !== 'subDoc') this.collection.fetch();
         }
 
     });
@@ -580,7 +567,7 @@
      * will be created in menu module]
      * ================================
      */
-    module.defaultAdminPath = 'System->Access Control->Roles';
+    module.defaultAdminPath = 'System->Roles';
 
 
 
