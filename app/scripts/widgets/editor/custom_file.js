@@ -236,6 +236,31 @@ Template.extend(
     'custom-tpl-widget-editor-file-item', 
     [
     '<td><a href="{{url}}">{{name}}</a></td>',
-    '<td>{{printF "fileSize" size}}</td>',
+    '<td>{{printSize "file" size}}</td>',
     '{{#unless _options.noActions}}<td>{{#each actions}}<span class="action-trigger action-trigger-{{this.action}} label label-{{this.labelCls}} pointer-hand" action="{{this.action}}" _method="{{this.method}}" _url="{{this.url}}">{{this.label}}</span> {{/each}}{{/unless}}</td>'
     ]);
+
+//To format given type of data to string
+Handlebars.registerHelper('printSize', function(type, value){
+    //enums
+    var config = {
+        fileSizeType: ['Byte', 'KB', 'MB', 'GB', 'TB'],
+    };
+    //format
+    switch(type){
+        //print file size
+        case 'file':
+            var biggerSizeUnit;
+            var i = 0;
+            for(; i < config.fileSizeType.length; i++){
+                biggerSizeUnit = value/1024;
+                if(Math.floor(biggerSizeUnit) === 0) break;
+                value = biggerSizeUnit;
+            }
+            return value.toFixed(2) + ' ' + config.fileSizeType[i];
+            break;
+
+        default:
+            return value;
+    };
+});

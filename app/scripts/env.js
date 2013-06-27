@@ -9,12 +9,56 @@
 (function(){
 
 	/**
-	 * ============================
-	 * Application & Global Events:
-	 * ============================
+	 * ================================
+	 * Application Container Creation
+	 * ================================
 	 */
 	//Create the global Application var for modules to be registered on.
 	window.Application = new Backbone.Marionette.Application();
+	
+
+	/**
+	 * ================================
+	 * Global Configure
+	 * ================================
+	 */
+	$.ajax({
+		url: '/loadappconfig',
+		async: false,
+		timeout: 200,
+		success: function(cfg){
+			Application.config = cfg;
+		},
+		error: function(){
+			Application.config = {};
+		}
+	})
+	_.extend(Application.config, {
+
+		crossdomain: {
+			enabled: false,
+			/*CROSSDOMAIN ONLY*/
+			ssl: false, //https or not? default: false -> http
+			host: '', 
+			port: '',
+			/*----------------*/
+		},
+
+		/*Override ONLY IF want to use a query param for server side routing*/
+		baseURL: '', //can be /?dispatch= if server doesn't support URI-REWRITE by default.
+
+		/*Override Web API - defaults came from the server side config*/ 
+		//apiBase: {},
+
+	});
+
+	console.log(Application.config);
+
+	/**
+	 * ================================
+	 * Global Events
+	 * ================================
+	 */
 	
 
 	/**
@@ -30,30 +74,6 @@
 	//a ['a', 'b', 'c'] alike array directly.
 	Handlebars.registerHelper('valueOf', function(){
 		return _.keys(this)[0];
-	});
-	//To format given type of data to string
-	Handlebars.registerHelper('printF', function(type, value){
-		//enums
-		var config = {
-			fileSizeType: ['Byte', 'KB', 'MB', 'GB', 'TB'],
-		};
-		//format
-		switch(type){
-			//print file size
-			case 'fileSize':
-				var biggerSizeUnit;
-				var i = 0;
-				for(; i < config.fileSizeType.length; i++){
-					biggerSizeUnit = value/1024;
-					if(Math.floor(biggerSizeUnit) === 0) break;
-					value = biggerSizeUnit;
-				}
-				return value.toFixed(2) + ' ' + config.fileSizeType[i];
-				break;
-
-			default:
-				return value;
-		};
 	});
 
 
