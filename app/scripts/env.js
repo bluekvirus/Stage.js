@@ -225,7 +225,6 @@
             async: false, //sync or else the loading won't occure before page ready.
             timeout: 4500,
             data: {payload: path, type: 'js'}, //Compatibility:: 0.9 server still need 'type' param
-            dataType: 'json',
             success: function(json, textStatus) {
 				//optional stuff to do after success
 				var count = 0

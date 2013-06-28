@@ -226,16 +226,18 @@
     var _mergePath = function(originalPathArray, newPathDescriptor, moduleName){
         if(!newPathDescriptor || newPathDescriptor.length === 0) return;
 
-        if(newPathDescriptor.length === 1){
-            originalPathArray.push({
-                label: newPathDescriptor[0],
-                module: moduleName
-            })
+        var nodeLabel = newPathDescriptor.shift();
+        var target = _.findWhere(originalPathArray, {label: nodeLabel});
+        if(newPathDescriptor.length === 0){
+            if(!target){
+                originalPathArray.push({
+                    label: nodeLabel,
+                    module: moduleName
+                });
+            }
             return;
         }
 
-        var nodeLabel = newPathDescriptor.shift();
-        var target = _.findWhere(originalPathArray, {label: nodeLabel});
         if(target){
             target.items = target.items || [];
             _mergePath(target.items, newPathDescriptor, moduleName);

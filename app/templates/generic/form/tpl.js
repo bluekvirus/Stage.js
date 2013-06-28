@@ -24,8 +24,10 @@ Template.extend(
 		'<div class="form-header-container"></div>',
 		'<div class="form-body-container"></div>',
 		'<div class="form-control-bar">',
-			'<a class="btn btn-primary" action="submit">Submit</a> ',
-			'<a class="btn" action="refresh">Refresh</a>',
+			'<div class="form-control-bar-btn-holder">',
+				'<a class="btn btn-primary" action="submit">Submit</a> ',
+				'<a class="btn" action="refresh">Refresh</a>',
+			'</div>',
 		'</div>'
 	]
 );
