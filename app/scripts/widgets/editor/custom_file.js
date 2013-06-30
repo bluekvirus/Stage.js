@@ -29,6 +29,13 @@
          * Write the aciton listeners down below in the EditorView._actions
          */
     });
+    var FileProgressEleView = Backbone.Marionette.ItemView.extend({
+        template: '#custom-tpl-widget-editor-file-progress-item',
+        initialize: function(options){
+            this.model = new Backbone.Model(options.fileinfo);
+        }
+    });
+
     var EditorView = Backbone.Marionette.CompositeView.extend({
         template: '#custom-tpl-widget-editor-file',
         className: 'custom-form-editor-file custom-editor-wrap',
@@ -84,23 +91,42 @@
 
         onRender: function() {
             var that = this;
+            this.ui.progress.hide();
             this.ui.uploader.fileupload({
                 dropzone: this.ui.dropzone,
                 dataType: 'json',
                 //success
                 done: function(e, res) {
                     that.collection.fetch({
-                        timeout: 4500
+                        timeout: 2500,
+                        success: function(){
+                            //reset progress - TBI regroup showProgress, hideProgress related methods.
+                            that.ui.progress.hide();
+                            that.ui.progressfileQ.empty();
+                            that.ui.progressbar.width(0);
+                        }
                     });
                 },
                 fail: function(e, res) {
                     Application.error('File Upload Failed', $.parseJSON(res.xhr().response).error);
                 },
-                //progress
-                //add
+                add: function(e, data) {
+                    //[ASSUMPTION] single file upload at a time...
+                    var f = data.files[0];
+                    //+ to progressfileQ
+                    that.ui.progressfileQ.append(new FileProgressEleView({fileinfo:f}).render().$el.html());
+                    that.ui.progress.show();
+                    //start uploading
+                    data.submit();
+                },
+                progressInterval: 250,
+                progress: function(e, data){
+                    var progress = parseInt(data.loaded / data.total * 100, 10) + '%';
+                    that.ui.progressbar.width(progress);
+                }
             });
             this.collection.fetch({
-                timeout: 4500
+                timeout: 2500
             });
         },
     });
@@ -211,8 +237,10 @@ Template.extend(
             '</div>',
         '</div>',
         '<div class="span8 fileupload-dropzone well well-small stripes"><p class="text-info">Or...Drop your file(s) here...</p></div>',
-        '<div class="fileupload-progress">',
-            '<p class="fileupload-progress-bar"></p>',
+        '<div class="span9 fileupload-progress">',
+            '<div class="progress progress-success progress-striped active">',
+                '<div class="fileupload-progress-bar bar"></div>',
+            '</div>',
             '<div class="fileupload-progress-fileQ"></div>',
         '</div>',
     '</div>',
@@ -239,6 +267,13 @@ Template.extend(
     '<td>{{printSize "file" size}}</td>',
     '{{#unless _options.noActions}}<td>{{#each actions}}<span class="action-trigger action-trigger-{{this.action}} label label-{{this.labelCls}} pointer-hand" action="{{this.action}}" _method="{{this.method}}" _url="{{this.url}}">{{this.label}}</span> {{/each}}{{/unless}}</td>'
     ]);
+
+Template.extend(
+    'custom-tpl-widget-editor-file-progress-item',
+    [
+        '<p>{{name}} <span class="muted">[{{printSize "file" size}} - {{type}}]</span> <span class="btn btn-small btn-danger pull-right">Cancel</span></p>',
+    ]
+);
 
 //To format given type of data to string
 Handlebars.registerHelper('printSize', function(type, value){
