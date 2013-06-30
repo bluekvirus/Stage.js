@@ -33,6 +33,16 @@
         template: '#custom-tpl-widget-editor-file-progress-item',
         initialize: function(options){
             this.model = new Backbone.Model(options.fileinfo);
+            this.handle = options.handle; //for cancelling the job using .abort;
+        },
+
+        events: {
+            'click [action=cancel-job]': 'cancelUpload',
+        },
+
+        cancelUpload: function(e){
+            e.stopPropagation();
+            this.handle.abort();
         }
     });
 
@@ -79,14 +89,16 @@
             },
         },
 
-        initialize: function() {
+        initialize: function(options) {
             this.listenTo(this.collection, 'reset', function() {
                 if (this.collection.length === 0) this.ui.filelist.hide();
                 else this.ui.filelist.show();
             });
-            this.listenTo(this.collection, 'error', function(err) {
-                Application.error('File List Reading Error', err);
-            })
+            this.listenTo(this.collection, 'error', function(collection, err, xhr) {
+                Application.error('File List Reading Error', err.statusText);
+            });
+
+            this.form = options.form;
         },
 
         onRender: function() {
@@ -96,33 +108,38 @@
                 dropzone: this.ui.dropzone,
                 dataType: 'json',
                 //success
-                done: function(e, res) {
-                    that.collection.fetch({
-                        timeout: 2500,
-                        success: function(){
-                            //reset progress - TBI regroup showProgress, hideProgress related methods.
-                            that.ui.progress.hide();
-                            that.ui.progressfileQ.empty();
-                            that.ui.progressbar.width(0);
-                        }
-                    });
+                done: function(e, data) {
+                    //single file done... see - progressall
                 },
-                fail: function(e, res) {
-                    Application.error('File Upload Failed', $.parseJSON(res.xhr().response).error);
+                fail: function(e, data) {
+                    Application.error('File Upload Failed', data.errorThrown);
                 },
                 add: function(e, data) {
                     //[ASSUMPTION] single file upload at a time...
                     var f = data.files[0];
-                    //+ to progressfileQ
-                    that.ui.progressfileQ.append(new FileProgressEleView({fileinfo:f}).render().$el.html());
-                    that.ui.progress.show();
                     //start uploading
-                    data.submit();
+                    var jobHandle = data.submit().always(function(){
+                        fItemView.close();
+                    });
+                    //+ to progressfileQ
+                    var fItemView = new FileProgressEleView({fileinfo:f, handle:jobHandle});
+                    that.ui.progressfileQ.append(fItemView.render().el);
+                },
+                start: function(e, data) {
+                    that.ui.progressbar.width(0);
+                    that.ui.progress.show();
+                },
+                stop: function(e, data) {
+                    that.ui.progress.hide();
+                    that.collection.fetch({
+                        timeout: 1500,
+                    });
                 },
                 progressInterval: 250,
-                progress: function(e, data){
-                    var progress = parseInt(data.loaded / data.total * 100, 10) + '%';
-                    that.ui.progressbar.width(progress);
+                progressall: function(e, data){
+                    //TBI upload bit rate display
+                    var progress = parseInt(data.loaded / data.total * 100, 10);
+                    that.ui.progressbar.width(progress + '%');
                 }
             });
             this.collection.fetch({
@@ -185,7 +202,8 @@
                             noActions: this._options.noActions,
                         }
                     }),
-                    collection: new this.FileCollection()
+                    collection: new this.FileCollection(),
+                    form: this.form,
                 });
                 this.delegatedEditor.listenTo(this.form, 'close', this.delegatedEditor.close);
                 this.$el.html(this.delegatedEditor.render().el);
@@ -271,7 +289,7 @@ Template.extend(
 Template.extend(
     'custom-tpl-widget-editor-file-progress-item',
     [
-        '<p>{{name}} <span class="muted">[{{printSize "file" size}} - {{type}}]</span> <span class="btn btn-small btn-danger pull-right">Cancel</span></p>',
+        '<p>{{name}} <span class="muted">[{{printSize "file" size}} - {{type}}]</span> <span class="btn btn-small btn-danger pull-right" action="cancel-job">Cancel</span></p>',
     ]
 );
 
