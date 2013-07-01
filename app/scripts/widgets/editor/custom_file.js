@@ -78,6 +78,7 @@
             'delete': function(info, editor) {
                 $.ajax({
                     url: info.url,
+                    notify: true,
                     type: info.type, //http method type used for this action
                     success: function() {
                         editor.collection.fetch();
@@ -94,11 +95,9 @@
                 if (this.collection.length === 0) this.ui.filelist.hide();
                 else this.ui.filelist.show();
             });
-            this.listenTo(this.collection, 'error', function(collection, err, xhr) {
-                Application.error('File List Reading Error', err.statusText);
-            });
 
             this.form = options.form;
+            this.editorCt = options.editor;
         },
 
         onRender: function() {
@@ -107,6 +106,7 @@
             this.ui.uploader.fileupload({
                 dropzone: this.ui.dropzone,
                 dataType: 'json',
+                notify: true,
                 //success
                 done: function(e, data) {
                     //single file done... see - progressall
@@ -131,6 +131,11 @@
                 },
                 stop: function(e, data) {
                     that.ui.progress.hide();
+                    if(that.form.formCt)//notify the backbone-forms' wrapper view (View.Form)
+                        that.form.formCt.$el.trigger('notify', {
+                            field: that.editorCt.key,
+                            type: 'complete', //'error', 'success', 'complete', 'abort'
+                        });
                     that.collection.fetch({
                         timeout: 1500,
                     });
@@ -204,6 +209,7 @@
                     }),
                     collection: new this.FileCollection(),
                     form: this.form,
+                    editor: this,
                 });
                 this.delegatedEditor.listenTo(this.form, 'close', this.delegatedEditor.close);
                 this.$el.html(this.delegatedEditor.render().el);

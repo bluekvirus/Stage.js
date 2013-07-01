@@ -96,6 +96,19 @@
 			});
 		};
 
+		/** 
+		 * Notify the user about successful data submission.
+		 */
+		Application.success = function(msg){
+			noty({
+				text: '<span>' + (msg || 'Operation Complete' ) + '</span>',
+				type: 'success',
+				layout: 'center',
+				timeout: 800,
+				dismissQueue: true,
+			});
+		}
+
 		/**
 		 * Prompt the user if they are sure about this...
 		 */
@@ -122,6 +135,18 @@
 		}
 
 
+		/**
+		 * Default SUCCESS/ERROR reporting on ajax op globally.
+		 * Success Notify will only appear if ajax options.notify = true
+		 */
+		$(document).ajaxSuccess(function(event, jqxhr, settings){
+			if(settings.notify)
+				Application.success();
+		});
+
+		$(document).ajaxError(function(event, jqxhr, settings, exception){
+			Application.error('Server Communication Error ', exception, settings.url.split('?')[0]);
+		});
 	}
 
 
@@ -224,6 +249,7 @@
             url: server,
             async: false, //sync or else the loading won't occure before page ready.
             timeout: 4500,
+            global: !(silent || false),  
             data: {payload: path, type: 'js'}, //Compatibility:: 0.9 server still need 'type' param
             success: function(json, textStatus) {
 				//optional stuff to do after success
@@ -255,7 +281,7 @@
 
 	//shorthand methods
 	Application.patchScripts = function(){
-		_patch('/tryscripts', 'scripts/_try', false);
+		_patch('/tryscripts', 'scripts/_try');
 	} 
 
 	Application.patchAdminGen = function(){

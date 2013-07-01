@@ -27,7 +27,7 @@
  * @author Tim.Liu
  * @updated 
  * 
- * @generated on Thu Jun 27 2013 21:48:50 GMT+0800 (CST) 
+ * @generated on Mon Jul 01 2013 21:11:57 GMT+0800 (CST) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
@@ -266,19 +266,20 @@
             //We are delegating the create/update action to it.
             this.recordManager = options.recordManager;
             this.displayManager = new module.View.Extension.Form.ConditionalDisplay(this);
-        },
-        //Might create zombie views...let's see.
-        onRender: function() {
             this.form = new Backbone.Form({
                 model: this.model,
                 fieldsets: this.fieldsets
             });
+            this.form.formCt = this; //for accepting field editor notifications
             var that = this;
             //Yes :(( it does, need to wire up the clean-ups.
             this.form.listenTo(this, 'close', function() {
                 that.form.trigger('close'); //this is for the EditorLayouts (sub-grids, custom editors) to close off.
                 that.form.remove();
             });
+        },
+        //Might create zombie views...let's see.
+        onRender: function() {
             this.ui.body.html(this.form.render().el);
 
             //disable 'editOnce' type of editor
