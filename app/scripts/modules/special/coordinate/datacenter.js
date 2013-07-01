@@ -38,9 +38,6 @@
 			success: function(data){
 				//returned from url or collection fetch()
 				cb(data.payload || data.toJSON());
-			},
-			error: function(msg){
-				Application.error('Data Resolving Error', resource, msg);
 			}
 		};
 
