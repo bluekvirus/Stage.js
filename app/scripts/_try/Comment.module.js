@@ -4,7 +4,7 @@
  * Module Definition
  * =====================
  * 
- * Generated through `D:\wamp\www\dup_Server_-0.9\temp\module-1370571054706-def.json` for Backbone module **Comment**
+ * Generated through `D:\wamp\www\dup_Server_-0.9\temp\module-1372736064208-def.json` for Backbone module **Comment**
  *
  * 
  * Comments data module
@@ -27,7 +27,7 @@
  * @author Tim.Liu
  * @updated 
  * 
- * @generated on Fri Jun 07 2013 10:10:54 GMT+0800 (中国标准时间) 
+ * @generated on Tue Jul 02 2013 11:34:24 GMT+0800 (中国标准时间) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
@@ -85,7 +85,7 @@
             return response;
         },
         initialize: function(data, options) {
-            this.urlRoot = (options && (options.urlRoot || options.url)) || '' || '/data/Comment';
+            this.urlRoot = (options && (options.urlRoot || options.url)) || '' || ((app.config.apiBase && app.config.apiBase.data) || '/data') + '/Comment';
         }
 
     });
@@ -100,16 +100,15 @@
      *
      * @class Application.Comment.Collection
      */
-    module.Collection = Backbone.PageableCollection.extend({ //model ref
+    module.Collection = Backbone.PageableCollection.extend({
         model: module.Model,
         parse: function(response) {
             return response.payload; //to use mers on server.
         },
-        //register sync event::
-        initialize: function(data, options) { //support for Backbone.Relational - collectionOptions
-            this.url = (options && options.url) || '' || '/data/Comment';
+        initialize: function(data, options) {
+            this.url = (options && options.url) || '' || ((app.config.apiBase && app.config.apiBase.data) || '/data') + '/Comment';
             this.on('error', function() {
-                Application.error('Server Error', 'API::collection::Comment');
+                Application.error('Server Error', 'Can NOT initialize collection:Comment');
             })
         }
 
@@ -221,19 +220,20 @@
             //We are delegating the create/update action to it.
             this.recordManager = options.recordManager;
             this.displayManager = new module.View.Extension.Form.ConditionalDisplay(this);
-        },
-        //Might create zombie views...let's see.
-        onRender: function() {
             this.form = new Backbone.Form({
                 model: this.model,
                 fieldsets: this.fieldsets
             });
+            this.form.formCt = this; //for accepting field editor notifications
             var that = this;
             //Yes :(( it does, need to wire up the clean-ups.
             this.form.listenTo(this, 'close', function() {
                 that.form.trigger('close'); //this is for the EditorLayouts (sub-grids, custom editors) to close off.
                 that.form.remove();
             });
+        },
+        //Might create zombie views...let's see.
+        onRender: function() {
             this.ui.body.html(this.form.render().el);
 
             //disable 'editOnce' type of editor
@@ -418,19 +418,12 @@
             var that = this;
             if (this.mode !== 'subDoc') {
                 sheet.model.save({}, {
-                    error: function(model, res) {
-                        var err = $.parseJSON(res.responseText).error;
-                        console.log('!Possible Hack!', err);
-                        if (err.db) { //server db error::
-                            Application.error('Server DB Error', err.db);
-                        }
-                        //[optional]TODO::highlight error back to form fields
-                    },
+                    notify: true,
                     success: function(model, res) {
                         if (res.payload) {
                             that.collection.fetch();
                             sheet.close();
-                        } else Application.error('Server Error', 'Not yet saved...');
+                        }
                     }
                 }); //save the model to server
             } else { //2.else if this grid is used in subDoc mode for sub-field:
@@ -452,9 +445,6 @@
                 if (that.mode !== 'subDoc') m.destroy({
                     success: function(model, resp) {
                         that.collection.fetch(); //refresh
-                    },
-                    error: function(model, resp) {
-                        Application.error('Server Error', 'Can NOT remove this record...');
                     }
                 });
                 else that.collection.remove(m);

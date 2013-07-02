@@ -108,12 +108,9 @@
                 dataType: 'json',
                 notify: true,
                 //success
-                done: function(e, data) {
-                    //single file done... see - progressall
-                },
-                fail: function(e, data) {
-                    Application.error('File Upload Failed', data.errorThrown);
-                },
+                // done: function(e, data) {
+                //     //single file done... see - progressall
+                // },
                 add: function(e, data) {
                     //[ASSUMPTION] single file upload at a time...
                     var f = data.files[0];
@@ -131,15 +128,20 @@
                 },
                 stop: function(e, data) {
                     that.ui.progress.hide();
+                },
+                success: function(e, data) {
                     if(that.form.formCt)//notify the backbone-forms' wrapper view (View.Form)
                         that.form.formCt.$el.trigger('notify', {
                             field: that.editorCt.key,
-                            type: 'complete', //'error', 'success', 'complete', 'abort'
+                            type: 'success', //'error', 'success', 'complete', 'abort'
                         });
                     that.collection.fetch({
                         timeout: 1500,
                     });
                 },
+                fail: function(e, data) {
+                    Application.error('File Upload Failed', data.errorThrown);
+                },                
                 progressInterval: 250,
                 progressall: function(e, data){
                     //TBI upload bit rate display
