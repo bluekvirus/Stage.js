@@ -88,24 +88,40 @@
 		 * @arguments Messages ,...,
 		 */
 		Application.error = function(){
+			arguments = _.toArray(arguments);
+			var cb = arguments.pop();
+			if(!_.isFunction(cb)){
+				arguments.push(cb);
+				cb = undefined;
+			} 
 			noty({
-				text: '<span class="label label-inverse">'+arguments[0]+'</span> '+_.toArray(arguments).slice(1).join(' '),
+				text: '<span class="label label-inverse">'+arguments[0]+'</span> '+arguments.slice(1).join(' '),
 				type: 'error',
 				layout: 'bottom',
 				dismissQueue: true,
+				callback: {
+					afterClose: cb || function(){}
+				}
 			});
 		};
 
 		/** 
 		 * Notify the user about successful data submission.
 		 */
-		Application.success = function(msg){
+		Application.success = function(msg, cb){
+			if(_.isFunction(msg)){
+				cb = msg;
+				msg = undefined;
+			}
 			noty({
 				text: '<span>' + (msg || 'Operation Complete' ) + '</span>',
 				type: 'success',
 				layout: 'center',
 				timeout: 800,
 				dismissQueue: true,
+				callback: {
+					afterClose: cb || function(){}
+				}				
 			});
 		}
 
@@ -145,7 +161,12 @@
 		});
 
 		$(document).ajaxError(function(event, jqxhr, settings, exception){
-			Application.error('Server Communication Error ', exception, settings.url.split('?')[0]);
+			try{
+				var errorStr = $.parseJSON(jqxhr.responseText).error;
+			}catch(e){
+				var errorStr = errorStr || exception;
+			}
+				Application.error('Server Communication Error', settings.type, settings.url.split('?')[0], '|', errorStr);
 		});
 	}
 

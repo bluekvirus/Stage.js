@@ -106,7 +106,6 @@
             this.ui.uploader.fileupload({
                 dropzone: this.ui.dropzone,
                 dataType: 'json',
-                notify: true,
                 //success
                 // done: function(e, data) {
                 //     //single file done... see - progressall
@@ -126,22 +125,26 @@
                     that.ui.progressbar.width(0);
                     that.ui.progress.show();
                 },
-                stop: function(e, data) {
-                    that.ui.progress.hide();
-                },
                 success: function(e, data) {
-                    if(that.form.formCt)//notify the backbone-forms' wrapper view (View.Form)
-                        that.form.formCt.$el.trigger('notify', {
-                            field: that.editorCt.key,
-                            type: 'success', //'error', 'success', 'complete', 'abort'
-                        });
+                    that.ui.progress.hide();
+                    Application.success('File Uploaded', function(){
+                        if(that.form.formCt)//notify the backbone-forms' wrapper view (View.Form)
+                            that.form.formCt.$el.trigger('notify', {
+                                field: that.editorCt.key,
+                                type: 'success', //'error', 'success', 'complete', 'abort'
+                            });
+                    });
                     that.collection.fetch({
                         timeout: 1500,
                     });
                 },
                 fail: function(e, data) {
+                    that.ui.progress.hide();
                     Application.error('File Upload Failed', data.errorThrown);
-                },                
+                },
+                // stop: function(e, data) {
+                //     that.ui.progress.hide(); //since this one is called after success and fail.
+                // },                                
                 progressInterval: 250,
                 progressall: function(e, data){
                     //TBI upload bit rate display
