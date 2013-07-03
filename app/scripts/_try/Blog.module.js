@@ -4,7 +4,7 @@
  * Module Definition
  * =====================
  * 
- * Generated through `def_models/test/Blog.def.json` for Backbone module **Blog**
+ * Generated through `D:\wamp\www\dup_Server_-0.9\temp\module-1372839465128-def.json` for Backbone module **Blog**
  *
  * 
  * Blog module
@@ -27,7 +27,7 @@
  * @author Tim.Liu
  * @updated 
  * 
- * @generated on Mon Jul 01 2013 21:11:57 GMT+0800 (CST) 
+ * @generated on Wed Jul 03 2013 16:17:45 GMT+0800 (中国标准时间) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
@@ -89,7 +89,12 @@
                 valueField: "title",
                 options: function(cb, editor) {
                     Application.DataCenter.resolve(editor.schema.dataSrc, editor.form, function(data) {
-                        cb(_.pluck(data, editor.schema.valueField || 'name'));
+                        cb(data.map(function(d) {
+                            return {
+                                val: d[editor.schema.valueField || 'name'],
+                                label: d[editor.schema.labelField || editor.schema.valueField || 'name']
+                            };
+                        }));
                     });
                 }
             },
@@ -437,6 +442,7 @@
             'event_RefreshRecords': 'refreshRecords',
         },
         //DOM event listeners:
+
         showForm: function(e) {
             e.stopPropagation();
             var info = e.currentTarget.attributes;
@@ -459,6 +465,7 @@
             var that = this;
             if (this.mode !== 'subDoc') {
                 sheet.model.save({}, {
+                    notify: true,
                     success: function(model, res) {
                         if (res.payload) {
                             that.collection.fetch();
