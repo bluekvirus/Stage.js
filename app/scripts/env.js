@@ -264,6 +264,7 @@
 	 */
 	
 	//worker function [all shorthands extend from this one]
+	var $body = $('body');
 	var _patch = function(server, payload, silent){
         var path = payload;
         $.ajax({
@@ -277,7 +278,7 @@
 				var count = 0
 				_.each(['modules', 'extensions', 'others'], function(type){
 					_.each(json[type], function(f, index){
-					    $('body').append('<script type="text/javascript" src="'+path+'/'+f+'"/>');
+					    $body.append('<script type="text/javascript" src="'+path+'/'+f+'"/>');
 					    count++;
 					});
 				})
@@ -289,7 +290,7 @@
 				 */
 				if(count === 0 && json.files){
 					_.each(json.files, function(f, index){
-					    $('body').append('<script type="text/javascript" src="'+path+'/'+f+'"/>');
+					    $body.append('<script type="text/javascript" src="'+path+'/'+f+'"/>');
 					});
 				}
 				//====================================

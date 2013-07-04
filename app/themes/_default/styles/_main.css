@@ -1,0 +1,336 @@
+/**
+ * General style classes
+ */
+.custom-tpl-layout-wrapper {
+  padding: 20px 30px;
+}
+
+.custom-editor-wrap {
+  padding: 0px 30px 5px 0;
+}
+
+.stripes {
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.8) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0.8) 75%, transparent 75%, transparent);
+}
+
+.clear-margin-left {
+  margin-left: 0 !important;
+}
+
+.pointer-hand {
+  cursor: pointer;
+}
+
+.pointer-hand:hover {
+  box-shadow: 1px 1px 3px #1a1a1a;
+}
+
+.edit-later-info {
+  margin-bottom: 0;
+  margin-right: 10px;
+  padding: 5px 0 5px 200px;  
+}
+/*End of general classes*/
+
+/**
+ * Basic region layout style::;
+ */
+.application-container .body .sidebar {
+}
+
+.application-container .body .content {
+  margin-left: 5px;
+}
+/* End of basic application container region styles*/
+
+
+/*Generic Tpl Styles - under templates*/
+.admin-layout-header {
+    background-color: #DFF0D8;
+    border-color: #D6E9C6;
+    color: #468847;
+    border-radius: 4px 4px 4px 4px;
+    margin-bottom: 10px;
+    padding: 8px 35px 8px 14px;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.admin-layout-body {
+
+}
+/*End of generic tpl styles*/
+
+
+/**
+ * Form styles::;
+ */
+
+/**
+ * Imported from backbone-forms template
+ */
+/* Date */
+.bbf-date .bbf-date {
+  width: 4em
+}
+
+.bbf-date .bbf-month {
+  width: 9em;
+}
+
+.bbf-date .bbf-year {
+  width: 5em;
+}
+
+
+/* DateTime */
+.bbf-datetime select {
+  width: 4em;
+}
+
+
+/* List */
+.bbf-list .bbf-add {
+  margin-top: -10px
+}
+
+.bbf-list li {
+  margin-bottom: 5px
+}
+
+.bbf-list .bbf-del {
+  margin-left: 4px
+}
+
+
+/* List.Modal */
+.bbf-list-modal {
+  cursor: pointer;
+  border: 1px solid #ccc;
+  width: 208px;
+  border-radius: 3px;
+  padding: 4px;
+  color: #555;
+}
+
+/* End of imports */
+
+.form-body-container {
+  padding: 10px 12px 10px 5px;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+}
+
+.form-control-bar {
+  padding: 10px;
+}
+
+.form-control-bar .form-control-bar-btn-holder {
+  width: 200px;
+  margin: 0 auto;
+}
+
+fieldset {
+  border-radius: 6px;
+  margin: 10px;
+  padding-top: 10px;
+  padding-bottom: 15px;
+  box-shadow: 1px 1px 2px black;
+}
+
+legend {
+  margin-bottom: 0px;
+}
+
+/*by hacking the backbone-form's fieldset template*/
+legend > span {
+  padding: 5px 20px;
+}
+
+/*for grid editor like full width fields: .grid-field*/
+.grid-field > .controls{
+  margin-left: 10px;
+}
+
+.grid-field .controls .datagrid-header-container .btn-action-new{
+  margin-left: 20px;
+}
+
+/* End of Form styles*/
+
+/**
+ * Datagrid styles::;
+ */
+.boolean-cell input[type="checkbox"] {
+  margin: 0;
+} 
+
+.datagrid-body-container {
+  padding: 10px 20px 10px 10px;
+}
+
+.action-cell span[action] {
+  cursor: pointer;
+}
+
+.action-cell span[action]:hover {
+  box-shadow: 1px 1px 3px #1a1a1a;
+}
+/* End of Datagrid styles*/
+
+/**
+ * File-Upload editor styles::;
+ */
+
+
+/* End of File-Upload editor styles*/
+
+
+/**
+ * Double-Picker editor styles::;
+ * 
+ */
+
+.double-picker-list-wrapper {
+  border-radius: 6px;
+  border: 1px solid #eee;
+}
+
+.double-picker-list-wrapper .double-picker-list-header {
+  display: block;
+}
+
+.dnd-zone-list{
+  min-height: 20px;
+}
+
+.dnd-zone-list li{
+  list-style: none;
+  border-radius: 6px;
+  padding: 3px;
+}
+
+.dnd-zone-list li:hover{
+  cursor: move;
+  background-color: #ddd;
+}
+
+.dnd-item-placeholder {
+  border-radius: 6px;
+  border: 1px solid gold;
+  background-color: #F8F1A0;
+  min-height: 20px;
+}
+
+.between-dnd-zone {
+  padding-top: 40px;
+  text-align: center;
+}
+/* End of Double-Picker editor styles */
+
+/**
+ * Resource Control editor styles::;
+ */
+.custom-form-editor-resource-control .data-obj-list, .custom-form-editor-resource-control .meta-obj-list{
+  margin-right: 15px;
+  padding: 0 20px;
+}
+
+.custom-form-editor-resource-control .meta-obj-list {
+  border-top: 6px solid #eee;
+}
+
+.custom-form-editor-resource-control .privilege-entry {
+  padding: 10px 0;
+  border-radius: 6px;
+  margin-top: 10px;
+}
+
+.custom-form-editor-resource-control .privilege-entry .entry-title-ct {
+  text-align: center;
+  margin: 0 auto;
+  width: 100px;
+  border-radius: 100px;
+  border: 8px solid #eee;
+}
+
+.custom-form-editor-resource-control .privilege-entry .entry-title {
+  line-height: 100px;
+  vertical-align: middle;
+}
+
+.custom-form-editor-resource-control .privilege-entry .entry-item {
+  margin-bottom: 5px;
+  max-width: 270px;
+}
+
+.custom-form-editor-resource-control .privilege-entry .entry-item .entry-item-field {
+  padding: 3px 0px 3px 20px;
+}
+
+.custom-form-editor-resource-control .privilege-entry .entry-item .entry-item-field .field-label {
+  margin-top: 6px !important;
+}
+
+.custom-form-editor-resource-control .privilege-entry .btn-group {
+  margin-bottom: 0px;
+}
+
+.custom-form-editor-resource-control .privilege-entry .btn.active {
+  background: #5BB75B;
+}
+
+/* End of Resource Control editor styles */
+
+/**
+ * Menu styles::;
+ */
+.menu-item {
+  cursor: pointer;
+}
+
+ul.menu-tree > li {
+  font-weight: bold;
+  cursor: pointer;
+}
+
+ul.menu-tree-leaf > li {
+  font-style: italic;
+  padding: 2px;
+  border-radius: 6px;
+}
+
+ul.menu-tree-leaf > li:hover {
+  background-color: #ddd;
+}
+
+ul.menu-tree-leaf > li.selected {
+  background-color: #F89406;
+}
+
+/*menu root normal state*/
+.menu-accordion-item .menu-accordion-item-header {
+    background-color: #EEEEEE;
+    border-radius: 6px 6px 6px 6px;
+    cursor: pointer;
+    font-style: italic;
+    margin-bottom: 5px;
+    padding: 5px;
+}
+
+/*menu root roll over*/
+.menu-accordion-item .menu-accordion-item-header:hover {
+  background-color: #aaa;
+}
+
+/*menu root selected*/
+.menu-accordion-item .ui-accordion-header-active {
+  background-color: #ccc;
+}
+
+.menu-accordion-item .menu-accordion-item-content {
+  padding: 5px 10px;
+}
+
+/*End of Menu styles*/
+
+
