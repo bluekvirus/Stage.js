@@ -43,7 +43,7 @@
 
 		if(resource.indexOf('/') !== -1){
 			//case: url
-			$.ajax(_.extend({url: resource}).extend(options));
+			$.ajax(_.extend(options,{url: resource}));
 
 		}else if(/[A-Z].*/.test(resource) && app[resource]){
 			//case: data module name
