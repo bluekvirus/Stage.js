@@ -194,6 +194,7 @@
                 dataSrc: this._options.dataSrc,
                 dndNS: this._options.dndNS,
                 valueField: this._options.valueField,
+                labelField: this._options.labelField,
             });
             this.delegatedEditor.listenTo(this.form, 'close', this.delegatedEditor.close);
             this.$el.html(this.delegatedEditor.render().el);
