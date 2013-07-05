@@ -60,6 +60,7 @@
 
         initialize: function(options){
             this._options = options;
+            this._options.labelField = this._options.labelField || this._options.valueField || 'name';
         },
 
         onRender: function(){
@@ -70,7 +71,18 @@
             var that = this;
             Application.DataCenter.resolve(this._options.dataSrc, this._options.form, function(data){
                 //filtered with already selected data.
-                var srcData = _.difference(_.pluck(data, that._options.valueField), that._options.selectedVal);
+                var selected = _.object(that._options.selectedVal, that._options.selectedVal);
+                var srcData = [], targetData = [];
+                _.each(data, function(item){
+                    var displayItem = {
+                        label: item[that._options.labelField],
+                        val: item[that._options.valueField]
+                    };
+                    if(!selected[item[that._options.valueField]])
+                        srcData.push(displayItem);
+                    else
+                        targetData.push(displayItem);
+                });
 
                 that.src.show(new DataListView({
                     collection: new Backbone.Collection(srcData),
@@ -84,7 +96,7 @@
                 }));
 
                 that.target.show(new DataListView({
-                    collection: new Backbone.Collection(that._options.selectedVal),
+                    collection: new Backbone.Collection(targetData),
                     ns: that._options.dndNS,
                     model: new Backbone.Model({
                         meta: {
@@ -105,7 +117,7 @@
         getValue: function(){
             var result = [];
             this.target.$el.find('.dnd-zone-list-item .dnd-zone-list-item-val').each(function(index, el){
-                result.push($(el).text());
+                result.push($(el).attr('val'));
             });
             return result;
         }
@@ -115,7 +127,7 @@
     Template.extend(
         'custom-tpl-widget-editor-double-picker-item',
         [
-            '<span class="dnd-zone-list-item-val">{{valueOf}}</span>'
+            '<span class="dnd-zone-list-item-val" val="{{val}}">{{label}}</span>'
         ]
     );
 
