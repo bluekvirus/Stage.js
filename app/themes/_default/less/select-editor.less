@@ -6,14 +6,21 @@
  */
 
 .select-val-ct {
-	padding-top: 4px;
+	padding-top: 2px;
+	position: absolute; //so the editor won't take up too much space;
 
 	.select-selected-val {
+		@paddingTop: 2px;
 	    background: none repeat scroll 0 0 #CCCCCC;
 	    border-radius: 6px 6px 6px 6px;
 	    cursor: pointer;
 	    line-height: 24px;
-	    padding: 5px 20px;
+	    padding: @paddingTop 5px @paddingTop 20px;
+
+	    .close {
+	    	padding-top: @paddingTop;
+			margin-left: 10px;
+	    }
 	}
 }
 

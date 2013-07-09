@@ -9,10 +9,12 @@
 
 Template.extend('custom-tpl-widget-plugin-flattened-select', [
 	'<div class="select-val-ct">',
-		//selected value (single - only atm!!)
-		'{{#each selected}}',
-			'<span class="select-selected-val">{{this.key}}</span>',
-		'{{/each}}',
+		//selected value(s)
+		'<ul class="inline">',
+			'{{#each selected}}',
+				'<li class="select-selected-val"><span>{{this.key}}</span> <button type="button" class="close">&times;</button></li>',
+			'{{/each}}',
+		'</ul>',
 	'</div>',
 	'<div class="select-opts">',
 		//options by group
