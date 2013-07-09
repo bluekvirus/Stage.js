@@ -72,6 +72,25 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 		return config;
 	}
 
+	function registerListeners($select) {
+		var $parent = $select.parent();
+		var $opts = $parent.find('.select-opts');
+		var top = $select.offset().top + $select.outerHeight();
+		var gap = $opts.innerWidth() - $opts.width() + 20;
+		//parent will handle interactions:
+		//expand/hide options:
+		$parent.on('click', '.select-val-ct', function(){
+			/**
+			 * [WARNING:: show the element before manipulate the offset() or el that is hidden or display:none will jerk off the screen...]
+			 */
+			if($opts.data().set) $opts.width($parent.width() - gap).fadeToggle();
+			else
+				$opts.show().data({set: true}).offset({
+					top: top,
+				}).width($parent.width() - gap);
+		});
+	}
+
 	$.fn.flattenSelect = function(options){
 
 		options = $.extend({
@@ -81,14 +100,16 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 		//TBI
 		return this.filter('select').each(function(index, el){
 			var $el = $(el);
+			if($el.data().set) return;//Do NOT re-init
 			//get groups 'optgroup' with label
 			//or
 			//get options 'option' with value and html as label
 			var config = grabSelectConfig($el);
 			//show it
 			$el.hide();
-			$el.after(template(config));
-			
+			$el.after(template(config)).data({set: true});
+			//interactions
+			registerListeners($el.next());
 		});
 
 	}
