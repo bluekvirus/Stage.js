@@ -10,9 +10,9 @@
 Template.extend('custom-tpl-widget-plugin-flattened-select', [
 	'<div class="select-val-ct">',
 		//selected value(s)
-		'<ul class="inline">',
+		'<ul class="inline selected-items">',
 			'{{#each selected}}',
-				'<li class="select-selected-val"><span>{{this.key}}</span> <button type="button" class="close">&times;</button></li>',
+				'<li class="select-selected-val" data-key="{{this.key}}"><span data-value="{{this.val}}">{{this.key}}</span> <button type="button" class="close">&times;</button></li>',
 			'{{/each}}',
 		'</ul>',
 	'</div>',
@@ -21,7 +21,7 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 		'{{#each groups}}',
 			'<div class="select-opt-group">',
 				'{{#each this}}',
-					'<span class="select-opt-item">{{this.key}}</span>',
+					'<span class="select-opt-item" data-value="{{this.val}}">{{this.key}}</span>',
 				'{{/each}}',
 			'</div>',
 		'{{/each}}',
@@ -37,7 +37,8 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 			val: $opt.attr('value'),
 		}
 	}
-	function grabSelectConfig($select) {
+	function grabSelectConfig($oldSelect) {
+		var $select = $oldSelect;
 		var groups = $select.find('optgroup');
 		var config = {
 			field: $select.attr('name'),
@@ -71,14 +72,24 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 
 		return config;
 	}
-
-	function registerListeners($select) {
+	function inSelection(val, vals){
+		var result = -1;
+		$.each(vals, function(index, v){
+			if(result === -1 && v.key === val.key)
+				result = index;
+		});
+		return result;
+	}
+	function registerListeners($oldSelect) {
+		var $select = $oldSelect.next();
 		var $parent = $select.parent();
+		var $selected = $select.find('.selected-items');
 		var $opts = $parent.find('.select-opts');
 		var top = $select.offset().top + $select.outerHeight();
 		var gap = $opts.innerWidth() - $opts.width() + 20;
 		//parent will handle interactions:
-		//expand/hide options:
+		
+		//1.expand/hide options:
 		$parent.on('click', '.select-val-ct', function(){
 			/**
 			 * [WARNING:: show the element before manipulate the offset() or el that is hidden or display:none will jerk off the screen...]
@@ -89,12 +100,59 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 					top: top,
 				}).width($parent.width() - gap);
 		});
+
+		//2.item selection:
+		$parent.on('click', '.select-opt-item', function(){
+			//one item at a time...
+			$item = $(this);//key .text(), val .data('value')
+			//grab value and check if selected...
+			var itemValue = {key: $item.text(), val: $item.data('value')};				
+			var index = inSelection(itemValue, $oldSelect.data().vals);
+			if(index === -1){
+				//not found;
+				if($oldSelect.data().options.multi)
+					//push into set;
+					$oldSelect.data().vals.push(itemValue);
+				else
+					//replace;
+					$oldSelect.data().vals = [itemValue];
+				//render the changed selection(s)
+				$selected.empty();
+				$.each($oldSelect.data().vals, function(index, v){
+					$selected.append('<li class="select-selected-val" data-key="' + v.key + '"><span data-value="' + v.val + '">' + v.key + '</span> <button type="button" class="close">&times;</button></li>')
+				});						
+			}else {
+				//highlight it:
+				$selected.find('[data-key=' + itemValue.key + ']').effect('highlight', {color: '#8A0917'}, 600);
+			}
+
+			//hide the options
+			$opts.fadeToggle();
+		});
+
+		//3.item cancellation:
+		$parent.on('click', '.close', function(e){
+
+			if($oldSelect.data().vals.length === 1){
+				//last selection
+				//TBI
+				return;
+			}
+
+			$item = $(this).prev();
+			var itemValue = {key: $item.text(), val: $item.data('value')};
+			var index = inSelection(itemValue, $oldSelect.data().vals);
+			$oldSelect.data().vals.splice(index, 1);
+			$selected.find('[data-key=' + itemValue.key + ']').remove();
+			e.stopPropagation();
+		});
 	}
 
 	$.fn.flattenSelect = function(options){
 
 		options = $.extend({
 			//default options
+			//TBI detect multi-mode automatically
 		}, options);
 
 		//TBI
@@ -107,9 +165,9 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 			var config = grabSelectConfig($el);
 			//show it
 			$el.hide();
-			$el.after(template(config)).data({set: true});
+			$el.after(template(config)).data({set: true, vals:config.selected, options: options});
 			//interactions
-			registerListeners($el.next());
+			registerListeners($el);
 		});
 
 	}
