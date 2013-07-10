@@ -87,9 +87,11 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 		return result;
 	}
 	function informOldSelectTag($oldSelect){
-		//TBI
 		//inform the replaced <select> tag
-		console.log($oldSelect.data());
+		var vals = $.map($oldSelect.data().vals, function(v, index){
+			return v.val;
+		});
+		$oldSelect.val(vals);
 	}
 
 	/*===============Listeners===============*/
