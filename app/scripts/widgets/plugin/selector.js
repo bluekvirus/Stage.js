@@ -17,6 +17,7 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 		'</ul>',
 	'</div>',
 	'<div class="select-opts">',
+		'<div class="arrow"></div>',
 		//options by group
 		'{{#each groups}}',
 			'<div class="select-opt-group">',
@@ -85,6 +86,11 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 		});
 		return result;
 	}
+	function informOldSelectTag($oldSelect){
+		//TBI
+		//inform the replaced <select> tag
+		console.log($oldSelect.data());
+	}
 
 	/*===============Listeners===============*/
 	function registerListeners($oldSelect) {
@@ -92,7 +98,6 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 		var $parent = $select.parent();
 		var $selected = $select.find('.selected-items');
 		var $opts = $parent.find('.select-opts');
-		var top = $select.offset().top + $select.outerHeight();
 		var gap = $opts.innerWidth() - $opts.width() + 20;
 		//parent will handle interactions:
 		
@@ -101,11 +106,11 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 			/**
 			 * [WARNING:: show the element before manipulate the offset() or el that is hidden or display:none will jerk off the screen...]
 			 */
-			if($opts.data().set) $opts.width($parent.width() - gap).fadeToggle();
-			else
-				$opts.show().data({set: true}).offset({
-					top: top,
-				}).width($parent.width() - gap);
+			var top = $select.offset().top + $select.outerHeight();			
+			$opts.width($parent.width() - gap).fadeToggle().offset({
+				top: top,
+			});
+
 		});
 
 		//2.item selection:
@@ -127,7 +132,8 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 				$selected.empty();
 				$.each($oldSelect.data().vals, function(index, v){
 					$selected.append('<li class="select-selected-val" data-key="' + v.key + '"><span data-value="' + v.val + '">' + v.key + '</span> <button type="button" class="close">&times;</button></li>')
-				});						
+				});
+				informOldSelectTag($oldSelect);						
 			}else {
 				//highlight it:
 				$selected.find('[data-key=' + itemValue.key + ']').effect('highlight', {color: '#8A0917'}, 600);
@@ -151,6 +157,7 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 			var index = inSelection(itemValue, $oldSelect.data().vals);
 			$oldSelect.data().vals.splice(index, 1);
 			$selected.find('[data-key=' + itemValue.key + ']').remove();
+			informOldSelectTag($oldSelect);
 			e.stopPropagation();
 		});
 	}
@@ -162,7 +169,6 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 			//TBI detect multi-mode automatically
 		}, options);
 
-		//TBI
 		return this.filter('select').each(function(index, el){
 			var $el = $(el);
 			if($el.data().set) return;//Do NOT re-init
