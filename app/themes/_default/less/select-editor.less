@@ -12,7 +12,7 @@
 	.select-selected-val {
 		@paddingTop: 2px;
 	    background: none repeat scroll 0 0 #CCCCCC;
-	    border-radius: 6px 6px 6px 6px;
+	    border-radius: 3px;
 	    cursor: pointer;
 	    line-height: 24px;
 	    padding: @paddingTop 5px @paddingTop 20px;
@@ -32,9 +32,24 @@
 	background-color: #eee;
 	border: 3px solid #eee;
 
-	.select-opt-item {
-		padding: 5px 10px;
-		margin-right: 5px;
-		background-color: #ccc;
+	.select-opt-group {
+		.select-opt-group-title {
+			margin-bottom: 3px;
+			border-bottom: 1px solid #ddd;
+			font-weight: bold;
+			color: @color-sand;
+		}
+
+		.select-opt-group-items {
+			.clearfix;
+			.select-opt-item {
+				padding: 5px 10px;
+				margin-right: 5px;
+				background-color: #ccc;
+				.pull-left;
+			}			
+		}
+
 	}
+
 }

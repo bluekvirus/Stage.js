@@ -45,6 +45,7 @@
 
 @import "menu-accordion";
 @import "select-editor";
+@import "datagrid";
 //Navbar - Top
 .banner {
   .navbar-inner {
@@ -52,12 +53,31 @@
   }
 }
 
-
-//DataGrid - [BackGrid.js]
-.backgrid {
-  .table;
+//Buttons, Label & Badges
+.btn-action {
+  &-new {
+    .buttonBackground(@btnCreateBG, @btnCreateBGHL);
+  }
+  &-save {
+    .buttonBackground(@btnSaveBG, @btnSaveBGHL);
+  }
 }
 
+.label {
+  &[action=edit] {
+    background-color: @color-sand;
+  }
+  &[action=delete] {
+    background-color: @color-red;
+  }
+
+  &-data-field {
+    background-color: @color-sand;
+  }
+  &-na {
+    background-color: @color-dark;
+  }
+}
 /*!
  * =========================
  * CSS END

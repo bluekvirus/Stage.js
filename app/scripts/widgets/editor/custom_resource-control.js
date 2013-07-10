@@ -234,7 +234,7 @@ Template.extend('custom-tpl-widget-editor-resource-control-items', [
                     '<div class="entry-item clearfix"><span class="entry-item-label">Logic Access: </span>',
                         '{{#each methods}}',
                             '<div class="entry-item-field clearfix">',
-                                '<span class="label label-info field-label">{{@key}}</span> ',
+                                '<span class="label label-info label-data-field">{{@key}}</span> ',
                                 '<ul class="btn-group pull-right" data-toggle="buttons-checkbox">',
                                     '<li class="btn" token="{{../token}}" affects="{{@key}}">exec</li>',
                                 '</ul>',
@@ -252,7 +252,7 @@ Handlebars.registerHelper('showEntryItemFields', function(fields){
     _.each(fields, function(privilegeGroup, fname){
         result+=[
                 '<div class="entry-item-field clearfix">',
-                    '<span class="label label-info field-label">' + fname +'</span> ',
+                    '<span class="label label-info label-data-field">' + fname +'</span> ',
                     '<ul class="btn-group pull-right" data-toggle="buttons-checkbox">'            
         ].join('');
         _.each(privilegeGroup, function(privilege, key){
@@ -266,7 +266,7 @@ Handlebars.registerHelper('showEntryItemFields', function(fields){
     })
     if(result) return result;
     //empty:
-    return '<span class="label label-inverse pull-right">N/A</span>';
+    return '<span class="label label-inverse label-na pull-right">N/A</span>';
 });
 
 

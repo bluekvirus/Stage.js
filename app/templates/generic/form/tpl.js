@@ -11,7 +11,7 @@ Template.extend(
 		'<div class="form-body-container"></div>',
 		'<div class="form-control-bar">',
 			'<div class="form-control-bar-btn-holder">',
-				'<a class="btn btn-primary" action="submit">Submit</a> ',
+				'<a class="btn btn-primary btn-action-save" action="submit">Save</a> ',
 				'<a class="btn" action="cancel">Cancel</a>',
 			'</div>',
 		'</div>'
@@ -25,7 +25,7 @@ Template.extend(
 		'<div class="form-body-container"></div>',
 		'<div class="form-control-bar">',
 			'<div class="form-control-bar-btn-holder">',
-				'<a class="btn btn-primary" action="submit">Submit</a> ',
+				'<a class="btn btn-primary btn-action-save" action="submit">Save</a> ',
 				'<a class="btn" action="refresh">Refresh</a>',
 			'</div>',
 		'</div>'

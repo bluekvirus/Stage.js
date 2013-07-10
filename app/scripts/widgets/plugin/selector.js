@@ -20,9 +20,12 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 		//options by group
 		'{{#each groups}}',
 			'<div class="select-opt-group">',
-				'{{#each this}}',
-					'<span class="select-opt-item" data-value="{{this.val}}">{{this.key}}</span>',
-				'{{/each}}',
+				'<div class="select-opt-group-title">{{@key}}</div>',
+				'<div class="select-opt-group-items">',
+					'{{#each this}}',
+						'<span class="select-opt-item" data-value="{{this.val}}">{{this.key}}</span>',
+					'{{/each}}',
+				'</div>',
 			'</div>',
 		'{{/each}}',
 	'</div>'
@@ -31,6 +34,8 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 (function($){
 
 	var template = Handlebars.compile($('#custom-tpl-widget-plugin-flattened-select').html());
+
+	/*===============Helper Functions===============*/
 	function grabOption($opt){
 		return {
 			key: $opt.text(),
@@ -80,6 +85,8 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 		});
 		return result;
 	}
+
+	/*===============Listeners===============*/
 	function registerListeners($oldSelect) {
 		var $select = $oldSelect.next();
 		var $parent = $select.parent();
