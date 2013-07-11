@@ -3,6 +3,28 @@
  *
  * @requires Handlebars.js templating engine.
  *
+ * Exposed in $('select').data()
+ *
+ * cfg:
+ * 	.options.{
+ * 		multi : false - limited to 1;
+ * 				true(<=0) - unlimited, >=1 - limited by number;
+ * 				
+ * 		data(TBI) : 
+ * 					//use <select/>
+ * 					undefined - from the targeted <select> tag;
+ *
+ * 					//use hidden input tag
+ * 					url - ajax data source;
+ * 					[](array) - [{key: ..., val: ...}, {...}, {...}];
+ * 					function - returns an array like the above;
+ * 				
+ * 	}
+ * utils:
+ * .reRender();
+ * .show();
+ * .hide();
+ *
  * @author Tim.Liu
  * @created 2013.07.08
  */
@@ -122,19 +144,26 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 			//one item at a time...
 			$item = $(this);//key .text(), val .data('value')
 			//grab value and check if selected...
-			var itemValue = {key: $item.text(), val: $item.data('value')};				
-			var index = inSelection(itemValue, $oldSelect.data().vals);
+			var itemValue = {key: $item.text(), val: $item.data('value')};
+			var multiMode = $oldSelect.data().options.multi;
+			var vals = $oldSelect.data().vals;							
+			var index = inSelection(itemValue, vals);
 			if(index === -1){
 				//not found;
-				if($oldSelect.data().options.multi)
+				if(multiMode){
 					//push into set;
-					$oldSelect.data().vals.push(itemValue);
+					if($.isNumeric(multiMode) && multiMode > 0)
+						//if reaches maximum selection, replace the last one;
+						while(vals.length > multiMode - 1)
+							vals.pop();
+					vals.push(itemValue);
+				}
 				else
 					//replace;
-					$oldSelect.data().vals = [itemValue];
+					vals = [itemValue];
 				//render the changed selection(s)
 				$selected.empty();
-				$.each($oldSelect.data().vals, function(index, v){
+				$.each(vals, function(index, v){
 					$selected.append('<li class="select-selected-val" data-key="' + v.key + '"><span data-value="' + v.val + '">' + v.key + '</span> <button type="button" class="close">&times;</button></li>')
 				});
 				informOldSelectTag($oldSelect);						
@@ -176,21 +205,34 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 			//get options 'option' with value and html as label		
 		var config = grabSelectConfig($oldSelect);
 			//show (id is the field name atm)
-		$oldSelect.after(template(config)).data({id: config.field, vals:config.selected, reRender:function(){
+		$oldSelect.after(template(config)).data({
+			id: config.field, 
+			vals:config.selected, 
+			//util functions:
+			reRender:function(){
 				return reRender($oldSelect);
-		}});
+			},
+			show: function(){
+				$oldSelect.next().show();
+			},
+			hide: function(){
+				$oldSelect.next().hide();
+			}
+		});
 			//interactions
 		registerListeners($oldSelect);
 	}
 
+	/*===============the plugin================*/
 	$.fn.flattenSelect = function(options){
 
 		options = $.extend({
 			//default options
-			//TBI detect multi-mode automatically
+			multi: this.attr('multiple'),
+			data: undefined,//TBI
 		}, options);
 
-		return this.filter('select').each(function(index, el){
+		return this.filter('select:visible').each(function(index, el){
 			var $el = $(el);
 			if($el.data().set) return;//Do NOT re-init
 
