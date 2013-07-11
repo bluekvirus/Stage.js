@@ -4,7 +4,7 @@
  * Module Definition
  * =====================
  * 
- * Generated through `D:\wamp\www\dup_Server_-0.9\temp\module-1372839465128-def.json` for Backbone module **Blog**
+ * Generated through `def_models/test/Blog.def.json` for Backbone module **Blog**
  *
  * 
  * Blog module
@@ -27,7 +27,7 @@
  * @author Tim.Liu
  * @updated 
  * 
- * @generated on Wed Jul 03 2013 16:17:45 GMT+0800 (中国标准时间) 
+ * @generated on Thu Jul 11 2013 20:32:32 GMT+0800 (CST) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
@@ -89,12 +89,7 @@
                 valueField: "title",
                 options: function(cb, editor) {
                     Application.DataCenter.resolve(editor.schema.dataSrc, editor.form, function(data) {
-                        cb(data.map(function(d) {
-                            return {
-                                val: d[editor.schema.valueField || 'name'],
-                                label: d[editor.schema.labelField || editor.schema.valueField || 'name']
-                            };
-                        }));
+                        cb(_.pluck(data, editor.schema.valueField || 'name'));
                     });
                 }
             },
@@ -294,18 +289,14 @@
                 }
             });
 
-            //leave a 'to-be-overriden' stub here.
-            this.onRenderPlus(this.form, this);
-
             //bind the validators:
             Backbone.Validation.bind(this.form);
 
             //field show/hide according to pre-set conditions:
             this.displayManager.initRound();
         },
-        //the onRender stub.
-        onRenderPlus: function() { //To Be Overriden in extension.
-        },
+        //Empty Stub. override in extension
+        onRenderPlus: function() {},
         events: {
             'click .btn[action="submit"]': 'submitForm',
 
@@ -429,6 +420,8 @@
             //Do **NOT** register any event listeners here.
             //It might get registered again and again. 
         },
+        //Empty Stub. override in extension
+        onRenderPlus: function() {},
         //Clean up zombie views.
         onBeforeClose: function() {
             this.grid.remove();
@@ -442,7 +435,6 @@
             'event_RefreshRecords': 'refreshRecords',
         },
         //DOM event listeners:
-
         showForm: function(e) {
             e.stopPropagation();
             var info = e.currentTarget.attributes;
@@ -454,10 +446,12 @@
                 url: this.collection.url
             });
 
-            this.parentCt.detail.show(new module.View.Form({
+            var formView = new module.View.Form({
                 model: m,
                 recordManager: this
-            }));
+            });
+            this.parentCt.detail.show(formView);
+            formView.onRenderPlus(formView);
         },
         saveRecord: function(e, sheet) {
             e.stopPropagation();
@@ -541,11 +535,13 @@
             });
         },
         onRender: function() {
-            this.list.show(new module.View.DataGrid({
+            var dataGridView = new module.View.DataGrid({
                 collection: module.collection,
                 layout: this,
                 editable: false //in-place edit default off.
-            }));
+            });
+            this.list.show(dataGridView);
+            dataGridView.onRenderPlus(dataGridView);
         }
     });
 
@@ -575,13 +571,15 @@
             this.datagridMode = options.datagridMode;
         },
         onRender: function() {
-            this.list.show(new module.View.DataGrid({
+            var dataGridView = new module.View.DataGrid({
                 collection: this.collectionRef,
                 layout: this,
                 mode: this.datagridMode,
                 editable: false,
                 //in-place edit default off.
-            }));
+            });
+            this.list.show(dataGridView);
+            dataGridView.onRenderPlus(dataGridView, 'editor');
         }
     });
 
