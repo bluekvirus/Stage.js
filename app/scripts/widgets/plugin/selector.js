@@ -160,7 +160,7 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 				}
 				else
 					//replace;
-					vals = [itemValue];
+					vals.splice(0, 1, itemValue);
 				//render the changed selection(s)
 				$selected.empty();
 				$.each(vals, function(index, v){
