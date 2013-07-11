@@ -88,6 +88,7 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 	}
 	function informOldSelectTag($oldSelect){
 		//inform the replaced <select> tag
+		//[WARNING] this will not trigger the tag's 'change' event!
 		var vals = $.map($oldSelect.data().vals, function(v, index){
 			return v.val;
 		});
@@ -161,6 +162,11 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 			$selected.find('[data-key=' + itemValue.key + ']').remove();
 			informOldSelectTag($oldSelect);
 			e.stopPropagation();
+		});
+
+		//4.item/options change:
+		$oldSelect.on('change', function(){
+			console.log('val changed', $(this));
 		});
 	}
 
