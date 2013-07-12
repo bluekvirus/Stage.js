@@ -115,31 +115,24 @@
                     var f = data.files[0];
                     //start uploading
                     var jobHandle = data.submit().always(function(){
-                        fItemView.close();
+                        fItemView.close(); //lazy eval                        
                     });
                     //+ to progressfileQ
                     var fItemView = new FileProgressEleView({fileinfo:f, handle:jobHandle});
                     that.ui.progressfileQ.append(fItemView.render().el);
                 },
                 start: function(e, data) {
+                    //all files
                     that.ui.progressbar.width(0);
                     that.ui.progress.show();
                 },
                 success: function(e, data) {
-                    that.ui.progress.hide();
-                    Application.success('File Uploaded', function(){
-                        if(that.form.formCt)//notify the backbone-forms' wrapper view (View.Form)
-                            that.form.formCt.$el.trigger('notify', {
-                                field: that.editorCt.key,
-                                type: 'success', //'error', 'success', 'complete', 'abort'
-                            });
-                    });
-                    that.collection.fetch({
-                        timeout: 1500,
-                    });
+                    //single file
+                    //moved into progressall for notification of 'all done';
+                    //this is to counter the delay in the ui progress update.
                 },
                 fail: function(e, data) {
-                    that.ui.progress.hide();
+                    //single file
                     Application.error('File Upload Failed', data.errorThrown);
                 },
                 // stop: function(e, data) {
@@ -150,6 +143,17 @@
                     //TBI upload bit rate display
                     var progress = parseInt(data.loaded / data.total * 100, 10);
                     that.ui.progressbar.width(progress + '%');
+                    if(progress === 100){
+                        Application.success('File Uploaded', function(){
+                            if(that.form.formCt)//notify the backbone-forms' wrapper view (View.Form)
+                                that.form.formCt.$el.trigger('notify', {
+                                    field: that.editorCt.key,
+                                    type: 'success', //'error', 'success', 'complete', 'abort'
+                                });
+                        });
+                        that.ui.progress.hide();                        
+                        that.collection.fetch({timeout: 1500});
+                    }
                 }
             });
             this.collection.fetch({
@@ -259,13 +263,13 @@ Template.extend(
     'custom-tpl-widget-editor-file', 
     [
     '<div class="file-editor-header row-fluid">',
-        '<div class="span3 well well-small">',
+        '<div class="span2 well well-small">',
             '<div class="fileinput-button btn btn-block">',
-                '<i class="icon-upload"></i> Choose File',
+                '<i class="icon-upload"></i> File',
                 '<input class="fileupload-field" type="file" name="files[]" data-url="{{meta.url}}" multiple>',
             '</div>',
         '</div>',
-        '<div class="span8 fileupload-dropzone well well-small stripes"><p class="text-info">Or...Drop your file(s) here...</p></div>',
+        // '<div class="span8 fileupload-dropzone well well-small stripes"><p class="text-info">Or...Drop your file(s) here...</p></div>',
         '<div class="span9 fileupload-progress">',
             '<div class="progress progress-success progress-striped active">',
                 '<div class="fileupload-progress-bar bar"></div>',
