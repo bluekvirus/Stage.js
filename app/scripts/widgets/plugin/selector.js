@@ -144,7 +144,7 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 			//one item at a time...
 			$item = $(this);//key .text(), val .data('value')
 			//grab value and check if selected...
-			var itemValue = {key: $item.text(), val: $item.data('value')};
+			var itemValue = {key: $item.text(), val: $item.data('value') || $item.text()};
 			var multiMode = $oldSelect.data().options.multi;
 			var vals = $oldSelect.data().vals;							
 			var index = inSelection(itemValue, vals);
