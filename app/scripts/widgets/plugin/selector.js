@@ -232,7 +232,7 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 			data: undefined,//TBI
 		}, options);
 
-		return this.filter('select:visible').each(function(index, el){
+		return this.filter('select').each(function(index, el){
 			var $el = $(el);
 			if($el.data().set) return;//Do NOT re-init
 
