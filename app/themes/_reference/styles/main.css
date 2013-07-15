@@ -49,7 +49,7 @@
 
 
 /*Generic Tpl Styles - under templates*/
-.admin-layout-header {
+.default-layout-header {
     background-color: #DFF0D8;
     border-color: #D6E9C6;
     color: #468847;
@@ -59,7 +59,7 @@
     text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
-.admin-layout-body {
+.default-layout-body {
 
 }
 /*End of generic tpl styles*/

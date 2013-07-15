@@ -342,8 +342,8 @@
                 name: "_selected_",
                 label: "",
                 sortable: false,
-                cell: "select-row",
-                headerCell: "select-all",
+                cell: "boolean",
+                //headerCell: "select-all",
 
             }, {
                 name: "title",

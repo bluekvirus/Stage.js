@@ -9,7 +9,6 @@
 //
 @header-color: #eee;
 
-
 .backgrid {
   .table;
   .table-bordered;
@@ -30,6 +29,15 @@
 	  	}
 	}
   }
+
+  td {
+  	&.boolean-cell {
+  		text-align: center;
+  		input {
+  			margin: 0;
+  		}
+  	}
+  }
 }
 
 //DataGrid wrapper default or editor
@@ -49,5 +57,21 @@
 		.datagrid-header-container {
 			padding: 0;
 		}
+	}
+}
+
+//as a form field;
+.grid-field {
+	&> .controls {
+		margin-left: 10px;
+		.datagrid-header-container {
+    		.btn-action-new {
+    			margin-left: 20px;
+    		}
+    	}
+
+    	.datagrid-body-container {
+    		margin-top: 10px;
+    	}
 	}
 }
