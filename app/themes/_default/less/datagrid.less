@@ -6,10 +6,21 @@
  */
 
 //DataGrid - [BackGrid.js]
+//
+@header-color: #eee;
+
+
 .backgrid {
   .table;
+  .table-bordered;
+  .table-condensed;
+  .table-hover;
 
   th {
+
+	background-color: @header-color;
+	text-align: center;
+
 	a {
 	  	color: @color-sand;
 	  	&:hover {

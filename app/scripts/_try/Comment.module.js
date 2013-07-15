@@ -342,7 +342,9 @@
                 name: "_selected_",
                 label: "",
                 sortable: false,
-                cell: "boolean"
+                cell: "select-row",
+                headerCell: "select-all",
+
             }, {
                 name: "title",
                 label: "Title",
