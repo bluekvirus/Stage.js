@@ -30,21 +30,21 @@
  */
 
 Template.extend('custom-tpl-widget-plugin-flattened-select', [
-	'<div class="new-select-plugin">',
-		'<div class="select-val-ct">',
-			//selected value(s)
-			'<ul class="inline selected-items">',
-				'{{#each selected}}',
-					'<li class="select-selected-val" data-key="{{this.key}}"><span data-value="{{this.val}}">{{this.key}}</span> <button type="button" class="close">&times;</button></li>',
-				'{{/each}}',
-			'</ul>',
-		'</div>',
+	'<div class="new-select-plugin-flatten">',
+		// '<div class="select-val-ct">',
+		// 	//selected value(s)
+		// 	'<ul class="inline selected-items">',
+		// 		'{{#each selected}}',
+		// 			'<li class="select-selected-val" data-key="{{this.key}}"><span data-value="{{this.val}}">{{this.key}}</span> <button type="button" class="close">&times;</button></li>',
+		// 		'{{/each}}',
+		// 	'</ul>',
+		// '</div>',
 		'<div class="select-opts">',
 			'<div class="arrow"></div>',
 			//options by group
 			'{{#each groups}}',
 				'<div class="select-opt-group">',
-					'<div class="select-opt-group-title">{{@key}}</div>',
+					// '<div class="select-opt-group-title">{{@key}}</div>',
 					'<div class="select-opt-group-items">',
 						'{{#each this}}',
 							'<span class="select-opt-item" data-value="{{this.val}}">{{this.key}}</span>',
@@ -64,7 +64,7 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 	function grabOption($opt){
 		return {
 			key: $opt.text(),
-			val: $opt.attr('value'),
+			val: $opt.attr('value') || $opt.text(),
 		}
 	}
 	function grabSelectConfig($oldSelect) {
@@ -76,7 +76,7 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 				var $el = $(el);
 				return {
 					key: $el.text(),
-					val: $el.attr('value'),
+					val: $el.attr('value') || $el.text(),
 				}
 			}).toArray(),//Note: need toArray() here since $.map still returns jQuery object.
 			groups: {},
@@ -119,6 +119,13 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 		$oldSelect.val(vals);
 		$oldSelect.trigger('change', $oldSelect.data().id);
 	}
+	function highlightSelection($oldSelect){
+		var $select = $oldSelect.next();
+		var $selected = $select.find('.select-opt-item').removeClass('selected-item');
+		$.each($oldSelect.data().vals, function(index, v){
+			$selected.filter('[data-value=' + v.val + ']').addClass('selected-item');
+		});
+	}
 
 	/*===============Listeners===============*/
 	function registerListeners($oldSelect) {
@@ -127,29 +134,7 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 		var $opts = $select.find('.select-opts');
 		var gap = $opts.innerWidth() - $opts.width() + 20;
 
-		function showOptions(){
-			/**
-			 * [WARNING:: show the element before manipulate the offset() or el that is hidden or display:none will jerk off the screen...]
-			 */
-			var top = $select.offset().top + $select.outerHeight();			
-			$opts.width($select.width() - gap).show().offset({
-				top: top,
-			});
-		}
-
-		function hideOptions(){
-			$opts.fadeOut();
-		}
-		
-		//1.expand/hide options: (use the outter most tag for mouse events)
-		$select.on('click mouseenter', '.select-selected-val', function(e){
-			showOptions(); 
-			e.stopPropagation();
-		}).on('mouseleave', function(e){
-			hideOptions();
-			e.stopPropagation();
-		});
-
+		//options are always shown;
 
 		//2.item selection:
 		$select.on('click', '.select-opt-item', function(){
@@ -184,25 +169,8 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 				$selected.find('[data-key=' + itemValue.key + ']').effect('highlight', {color: '#8A0917'}, 600);
 			}
 
-			//hide the options
-			hideOptions();
-		});
+			highlightSelection($oldSelect);
 
-		//3.item cancellation:
-		$select.on('click', '.close', function(e){
-			if($oldSelect.data().vals.length === 1){
-				//last selection
-				//TBI
-				return;
-			}
-
-			$item = $(this).prev();
-			var itemValue = {key: $item.text(), val: $item.data('value')};
-			var index = inSelection(itemValue, $oldSelect.data().vals);
-			$oldSelect.data().vals.splice(index, 1);
-			$selected.find('[data-key=' + itemValue.key + ']').remove();
-			informOldSelectTag($oldSelect);
-			e.stopPropagation();
 		});
 
 	}
@@ -232,6 +200,7 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 		});
 			//interactions
 		registerListeners($oldSelect);
+		highlightSelection($oldSelect);
 	}
 
 	/*===============the plugin================*/

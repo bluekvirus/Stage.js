@@ -1514,7 +1514,7 @@ Form.editors = (function() {
 
       //Select correct option
       this.setValue(this.value);
-      /*Tim's hack for select-editor plugin*/
+      /*Tim's hack for select-editor (hover or flatten) plugin*/
       $select.flattenSelect();
     },
 
