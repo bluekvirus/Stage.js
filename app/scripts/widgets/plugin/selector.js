@@ -126,18 +126,30 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 		var $selected = $select.find('.selected-items');
 		var $opts = $select.find('.select-opts');
 		var gap = $opts.innerWidth() - $opts.width() + 20;
-		
-		//1.expand/hide options:
-		$select.on('click', '.select-val-ct', function(){
+
+		function showOptions(){
 			/**
 			 * [WARNING:: show the element before manipulate the offset() or el that is hidden or display:none will jerk off the screen...]
 			 */
 			var top = $select.offset().top + $select.outerHeight();			
-			$opts.width($select.width() - gap).fadeToggle().offset({
+			$opts.width($select.width() - gap).show().offset({
 				top: top,
 			});
+		}
 
+		function hideOptions(){
+			$opts.fadeOut();
+		}
+		
+		//1.expand/hide options: (use the outter most tag for mouse events)
+		$select.on('click mouseenter', '.select-selected-val', function(e){
+			showOptions(); 
+			e.stopPropagation();
+		}).on('mouseleave', function(e){
+			hideOptions();
+			e.stopPropagation();
 		});
+
 
 		//2.item selection:
 		$select.on('click', '.select-opt-item', function(){
@@ -173,12 +185,11 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 			}
 
 			//hide the options
-			$opts.fadeToggle();
+			hideOptions();
 		});
 
 		//3.item cancellation:
 		$select.on('click', '.close', function(e){
-
 			if($oldSelect.data().vals.length === 1){
 				//last selection
 				//TBI
