@@ -1516,6 +1516,7 @@ Form.editors = (function() {
       this.setValue(this.value);
       /*Tim's hack for select-editor (hover or flatten) plugin*/
       $select.flattenSelect();
+      //$select.hoverSelect();
     },
 
     getValue: function() {
