@@ -245,7 +245,7 @@ Template.extend('custom-tpl-widget-plugin-hover-select', [
 
 		return this.filter('select').each(function(index, el){
 			var $el = $(el);
-			if($el.data().set) return;//Do NOT re-init
+			if($el.data().set) return $el.data().reRender();//Do NOT re-init
 
 			$el.data({ options: options, set:true }).hide();
 			$el.on('change', function(e, id){

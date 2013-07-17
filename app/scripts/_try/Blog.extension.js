@@ -21,6 +21,7 @@
         'View.Form': {
 
             onRenderPlus: function() { //Todo::
+                $('select').flattenSelect();
             },
 
             onFieldNotify: function(e, data){
