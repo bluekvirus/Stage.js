@@ -9,12 +9,16 @@
 
 }
 
-@form-border: 1px solid #eee;
+@form-border: 3px solid #eee;
 .form-body-container {
-    border: @form-border;
     
 	form {
 		margin-bottom: 0px;
+		background-color: @color-white;
+		padding: 0 20px;
+		border-bottom: @form-border;
+		border-left: @form-border;
+		border-radius: 0 0 0 65px;
 
 		.edit-later-info {
 		    margin-bottom: 0;
@@ -23,13 +27,21 @@
 		}
 
 		fieldset {
+
+			margin-bottom: 10px;
+
 			legend {
+				line-height: 24px;
+
 				&>span {
 					//fieldset title
-					padding: 8px 10px;
+					padding: 4px 30px;
 					background-color: #eee;
 					color: @color-sand;
-
+					font-size: 14px;
+					border-radius: 6px 6px 0 0;
+					margin-left: 20px;
+					
 				}
 			}
 
