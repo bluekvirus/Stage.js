@@ -9,8 +9,9 @@
 
 }
 
+@form-border: 1px solid #eee;
 .form-body-container {
-    border-bottom: 1px solid #EEEEEE;
+    border: @form-border;
     
 	form {
 		margin-bottom: 0px;
@@ -19,6 +20,24 @@
 		    margin-bottom: 0;
 		    margin-right: 10px;
 		    padding: 5px 0 5px 200px;
+		}
+
+		fieldset {
+			legend {
+				&>span {
+					//fieldset title
+					padding: 8px 10px;
+					background-color: #eee;
+					color: @color-sand;
+
+				}
+			}
+
+			.control-group {
+				.controls {
+					padding: 0 10px;
+				}
+			}
 		}
 	}    
 }

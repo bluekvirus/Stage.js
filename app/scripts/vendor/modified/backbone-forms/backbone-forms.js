@@ -147,13 +147,14 @@ var Form = (function() {
       })));
 
       //Set legend
-      if (fieldset.legend) {
-        $fieldset.find('.bbf-tmp-legend').replaceWith(fieldset.legend);
-      }
+      //Tim's Hack; always have legend!
+      // if (fieldset.legend) {
+        $fieldset.find('.bbf-tmp-legend').replaceWith(fieldset.legend || 'Settings');
+      // }
       //or remove the containing tag if there isn't a legend
-      else {
-        $fieldset.find('.bbf-tmp-legend').parent().remove();
-      }
+      // else {
+      //   $fieldset.find('.bbf-tmp-legend').parent().remove();
+      // }
 
       var $fieldsContainer = $('.bbf-tmp-fields', $fieldset);
       //Tim.Liu a bit of hack here to autoload our fieldset templates.
