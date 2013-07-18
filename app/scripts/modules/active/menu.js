@@ -331,10 +331,10 @@ Template.extend(
     [
         '<li>',
             '<div class="menu-group">',
-                '<span>{{label}}</span>',
+                '<span><i class="icon-sub-item"></i><i class="icon-expand"></i> {{label}}</span>',
             '</div>',
             '<div class="menu-item">',
-                '<a href="#config/{{module}}">{{label}}</a>',
+                '<i class="icon-sub-item"></i><i class="icon-item"></i> <a href="#config/{{module}}">{{label}}</a>',
             '</div>',
         '</li>'
     ]
