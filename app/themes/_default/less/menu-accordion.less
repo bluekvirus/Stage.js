@@ -27,27 +27,14 @@
       cursor: pointer;
       margin-bottom: 3px;
     }
-
-    //group parent
-    .menu-group {
-      span {
-      }
-    }
     
-    //item
-    .menu-tree-leaf {
-      li {
-        &.selected {
-          .btn-block;
-          padding-left: 10px;
-          background-color: @color-sand;
-          border-radius: 10px;
-          a {
-            color: @color-white;
-          }
-        }
-      }
+    .menu-tree {
+
     }
+
+    .menu-tree-leaf {
+
+    }    
 
     .menu-item {
       a {
@@ -56,6 +43,30 @@
         &:focus {
           outline: none;
         }
+      }
+    }
+
+    .selected {
+      .menu-item {
+          .btn-block;
+          padding-left: 10px;
+          background-color: @color-sand;
+          border-radius: 10px;
+          a {
+            color: @color-white;
+          }
+      }
+    }
+
+    //group parent
+    .menu-group {
+      span {
+      }
+    }
+    
+    .expanded {
+      .menu-group {
+        //change the icon
       }
     }      
 

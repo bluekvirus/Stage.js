@@ -105,7 +105,7 @@
             event.stopPropagation();
 
             if (!this.isLeaf && this.collapsible) {
-                this.$el.children('ul').toggle();
+                this.$el.toggleClass('expanded').children('ul').toggle();
             }
         },
 
@@ -180,7 +180,7 @@
             // If this menu item is hidden, show its ancestor menu group and siblings(ancestor uncles)
             // Also show the accordion item it is in
             if (li.is(':hidden')) {
-                li.parents('.menu-tree').show().children('ul').show();
+                li.parents('.menu-tree').addClass('expanded').show().children('ul').show();
                 li.parents('.menu-accordion-item').find('.menu-accordion-item-header').click();
             }
 

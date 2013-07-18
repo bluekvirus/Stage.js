@@ -47,7 +47,7 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 					// '<div class="select-opt-group-title">{{@key}}</div>',
 					'<div class="select-opt-group-items">',
 						'{{#each this}}',
-							'<span class="select-opt-item" data-value="{{this.val}}">{{this.key}}</span>',
+							'<span class="select-opt-item {{#unless this.key}}select-opt-item-empty{{/unless}}" data-value="{{this.val}}">{{this.key}}</span>',
 						'{{/each}}',
 					'</div>',
 				'</div>',
