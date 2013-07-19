@@ -40,18 +40,31 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 		// 	'</ul>',
 		// '</div>',
 		'<div class="select-opts">',
-			'<div class="arrow"></div>',
+			'<div class="tools clearfix">',
+		    	//expand/collapse
+		    	'<div class="tool-opts-expand pull-right">',
+		    		'<span class="more-opts"><i class="icon-plus"></i>More</span>',
+		    		'<span class="less-opts"><i class="icon-minus"></i>Less</span>',
+		    	'</div>',				
+				//search
+				'<div class="input-prepend tool-opts-search">',
+					'<span class="add-on"><i class="icon-search"></i></span>',
+		    		'<input class="input-medium tool-opts-search-input" type="text">',
+		    	'</div>',
+			'</div>',
 			//options by group
-			'{{#each groups}}',
-				'<div class="select-opt-group">',
-					// '<div class="select-opt-group-title">{{@key}}</div>',
-					'<div class="select-opt-group-items">',
-						'{{#each this}}',
-							'<span class="select-opt-item {{#unless this.key}}select-opt-item-empty{{/unless}}" data-value="{{this.val}}">{{this.key}}</span>',
-						'{{/each}}',
+			'<div class="select-opt-groups">',
+				'{{#each groups}}',
+					'<div class="select-opt-group">',
+						// '<div class="select-opt-group-title">{{@key}}</div>', WARNING::we do NOT support groups in flattened mode, use hover version.
+						'<div class="select-opt-group-items">',
+							'{{#each this}}',
+								'<span class="select-opt-item {{#unless this.key}}select-opt-item-empty{{/unless}}" data-value="{{this.val}}">{{this.key}}</span>',
+							'{{/each}}',
+						'</div>',
 					'</div>',
-				'</div>',
-			'{{/each}}',
+				'{{/each}}',
+			'</div>',
 		'</div>',
 	'</div>'
 ]);
@@ -126,6 +139,33 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 			$selected.filter('[data-value=' + v.val + ']').addClass('selected-item');
 		});
 	}
+	function adjustTools($oldSelect){
+		var $select = $oldSelect.next();
+		var $tools = $select.find('.tools');
+		var $optItems = $select.find('.select-opt-groups');
+		var $optItem = $optItems.find('.select-opt-item:first');
+		var options = $oldSelect.data().options;
+
+		//a. more/less on config.maximumLines, undefined/null/0 for no limits
+		//TBI
+		if(!$optItems.height() || !$optItem.outerHeight()) return;
+		var fix = 7;
+		var lines = $optItems.height()/($optItem.outerHeight()+fix);//WARNING: this number is a hard code...we can't get the margin from outerHeight()...
+		if(options.maximumLines && options.maximunLines !== 0 && lines > options.maximumLines){
+			//show tools along with the expand/collapse button
+			$tools.show();
+			var height = $oldSelect.data().options.maximumLines * ($optItem.outerHeight()+fix);
+			$optItems.height(height).data('recoverHeight', height);
+		}
+
+		//b. search on config.searchEnabled, true for always, > 1 for shown when number of options exceed this val; 
+		if(options.searchEnabled && options.searchEnabled != 0 && options.searchEnabled <= $optItems.find('.select-opt-item').length){
+			//show search box
+			$searchBox = $tools.find('.tool-opts-search');
+			//position it?? TBI
+			$searchBox.show();
+		}
+	}
 
 	/*===============Listeners===============*/
 	function registerListeners($oldSelect) {
@@ -173,6 +213,30 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 
 		});
 
+		//3. tools events:
+		$tools = $select.find('.tools');
+		$tools.on('click', '.tool-opts-expand', function(e){
+			$el = $(e.currentTarget);
+			$el.toggleClass('expanded');
+			$optGroups = $opts.find('.select-opt-groups');
+			if($el.hasClass('expanded')){
+				$optGroups.css('height', 'auto');
+			}else {
+				$optGroups.height($optGroups.data('recoverHeight'));
+			}
+		}).on('keyup', '.tool-opts-search-input', function(e){
+			var fuzzyTarget = $(e.currentTarget).val();
+			//search for this val in data().vals;
+			$opts.find('.select-opt-item').each(function(index, item){
+				var $el = $(this);
+				if($el.text().toLowerCase().contains(fuzzyTarget)){
+					$el.show();
+				}else{
+					$el.hide();
+				}
+			})
+		})
+
 	}
 
 	/*===============Re-Render================*/
@@ -200,7 +264,10 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 		});
 			//interactions
 		registerListeners($oldSelect);
+			//highlight
 		highlightSelection($oldSelect);
+			//patchin search and collapse/expand...
+		adjustTools($oldSelect);
 	}
 
 	/*===============the plugin================*/
@@ -208,8 +275,10 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 
 		options = $.extend({
 			//default options
-			multi: this.attr('multiple'),
+			//multi: this.attr('multiple'), //WARNING: we do NOT support multi-select in flattened mode yet...
 			data: undefined,//TBI
+			maximumLines: 2, //if options shown are more then 2 lines, show the more/less tool
+			searchEnabled: 12, //if options are more than a dozen, show the search box
 		}, options);
 
 		return this.filter('select').each(function(index, el){

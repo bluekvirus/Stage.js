@@ -104,9 +104,56 @@
 		//background-color: @select-opts-bg;
 		//border-bottom: @select-opts-border-size solid darken(@select-opts-bg, 10%);
 
+		.tools {
+			//search, more/less, others
+			display: none;
+			margin-bottom: 3px;
+			border-bottom: 1px solid @select-opts-bg;
+			padding-right: 10px;
+
+			.tool-opts-expand {
+			    background-color: @select-opts-bg;
+			    border-radius: 6px 6px 0 0;
+			    padding: 5px;
+
+			    cursor: pointer;
+				
+				span {
+					.hide;
+				}
+
+				//default on collapsed
+		    	.more-opts {
+		    		.show;
+		    	}
+				.less-opts {
+					.hide;
+				}	
+
+			    &.expanded {
+					.less-opts {
+						.show;
+					}
+			    	.more-opts {
+			    		.hide;
+			    	}					
+			    }		    	
+			}
+
+			.tool-opts-search {
+				display: none;
+			}
+
+
+		}
+
+		.select-opt-groups {
+			overflow: hidden;
+		}
 
 		.select-opt-group {
 			margin-bottom: 5px;
+
 
 			.select-opt-group-title {
 				margin-bottom: 3px;
