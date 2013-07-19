@@ -143,7 +143,7 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 		var $select = $oldSelect.next();
 		var $tools = $select.find('.tools');
 		var $optItems = $select.find('.select-opt-groups');
-		var $optItem = $optItems.find('.select-opt-item:first');
+		var $optItem = $optItems.find('.select-opt-item:last');
 		var options = $oldSelect.data().options;
 
 		//a. more/less on config.maximumLines, undefined/null/0 for no limits
