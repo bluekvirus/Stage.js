@@ -225,11 +225,11 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 				$optGroups.height($optGroups.data('recoverHeight'));
 			}
 		}).on('keyup', '.tool-opts-search-input', function(e){
-			var fuzzyTarget = $(e.currentTarget).val();
+			var fuzzyTarget = '.*'+$(e.currentTarget).val()+'.*';
 			//search for this val in data().vals;
 			$opts.find('.select-opt-item').each(function(index, item){
 				var $el = $(this);
-				if($el.text().toLowerCase().contains(fuzzyTarget)){
+				if($el.text().toLowerCase().match(fuzzyTarget)){
 					$el.show();
 				}else{
 					$el.hide();
