@@ -149,12 +149,12 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 		//a. more/less on config.maximumLines, undefined/null/0 for no limits
 		//TBI
 		if(!$optItems.height() || !$optItem.outerHeight()) return;
-		var fix = 7;
-		var lines = $optItems.height()/($optItem.outerHeight()+fix);//WARNING: this number is a hard code...we can't get the margin from outerHeight()...
+		var fix = options.uiFix.height;//WARNING: This is because we can't get the margin from outerHeight()...
+		var lines = $optItems.height()/($optItem.outerHeight()+fix);
 		if(options.maximumLines && options.maximunLines !== 0 && lines > options.maximumLines){
 			//show tools along with the expand/collapse button
 			$tools.show();
-			var height = $oldSelect.data().options.maximumLines * ($optItem.outerHeight()+fix);
+			var height = options.maximumLines * ($optItem.outerHeight()+fix);
 			$optItems.height(height).data('recoverHeight', height);
 		}
 
@@ -225,7 +225,7 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 				$optGroups.height($optGroups.data('recoverHeight'));
 			}
 		}).on('keyup', '.tool-opts-search-input', function(e){
-			var fuzzyTarget = '.*'+$(e.currentTarget).val()+'.*';
+			var fuzzyTarget = '.*'+$(e.currentTarget).val().toLowerCase()+'.*';
 			//search for this val in data().vals;
 			$opts.find('.select-opt-item').each(function(index, item){
 				var $el = $(this);
@@ -279,6 +279,10 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 			data: undefined,//TBI
 			maximumLines: 2, //if options shown are more then 2 lines, show the more/less tool
 			searchEnabled: 12, //if options are more than a dozen, show the search box
+			/*heightFix*/
+			uiFix: {
+				height: 7, //this is abnormal cfg... Tim's Hack. //WARNING: This is because we can't get the margin from outerHeight()...
+			}
 		}, options);
 
 		return this.filter('select').each(function(index, el){

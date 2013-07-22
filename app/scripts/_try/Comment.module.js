@@ -4,7 +4,7 @@
  * Module Definition
  * =====================
  * 
- * Generated through `D:\wamp\www\dup_Server_-0.9\temp\module-1372736064208-def.json` for Backbone module **Comment**
+ * Generated through `D:\wamp\www\dup_Server_-0.9\temp\module-1374480045862-def.json` for Backbone module **Comment**
  *
  * 
  * Comments data module
@@ -27,7 +27,7 @@
  * @author Tim.Liu
  * @updated 
  * 
- * @generated on Tue Jul 02 2013 11:34:24 GMT+0800 (中国标准时间) 
+ * @generated on Mon Jul 22 2013 16:00:46 GMT+0800 (中国标准时间) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
@@ -243,18 +243,14 @@
                 }
             });
 
-            //leave a 'to-be-overriden' stub here.
-            this.onRenderPlus(this.form, this);
-
             //bind the validators:
             Backbone.Validation.bind(this.form);
 
             //field show/hide according to pre-set conditions:
             this.displayManager.initRound();
         },
-        //the onRender stub.
-        onRenderPlus: function() { //To Be Overriden in extension.
-        },
+        //Empty Stub. override in extension
+        onRenderPlus: function() {},
         events: {
             'click .btn[action="submit"]': 'submitForm',
 
@@ -342,9 +338,7 @@
                 name: "_selected_",
                 label: "",
                 sortable: false,
-                cell: "boolean",
-                //headerCell: "select-all",
-
+                cell: "boolean"
             }, {
                 name: "title",
                 label: "Title",
@@ -384,6 +378,8 @@
             //Do **NOT** register any event listeners here.
             //It might get registered again and again. 
         },
+        //Empty Stub. override in extension
+        onRenderPlus: function() {},
         //Clean up zombie views.
         onBeforeClose: function() {
             this.grid.remove();
@@ -409,10 +405,12 @@
                 url: this.collection.url
             });
 
-            this.parentCt.detail.show(new module.View.Form({
+            var formView = new module.View.Form({
                 model: m,
                 recordManager: this
-            }));
+            });
+            this.parentCt.detail.show(formView);
+            formView.onRenderPlus(formView);
         },
         saveRecord: function(e, sheet) {
             e.stopPropagation();
@@ -496,11 +494,13 @@
             });
         },
         onRender: function() {
-            this.list.show(new module.View.DataGrid({
+            var dataGridView = new module.View.DataGrid({
                 collection: module.collection,
                 layout: this,
                 editable: false //in-place edit default off.
-            }));
+            });
+            this.list.show(dataGridView);
+            dataGridView.onRenderPlus(dataGridView);
         }
     });
 
@@ -530,13 +530,15 @@
             this.datagridMode = options.datagridMode;
         },
         onRender: function() {
-            this.list.show(new module.View.DataGrid({
+            var dataGridView = new module.View.DataGrid({
                 collection: this.collectionRef,
                 layout: this,
                 mode: this.datagridMode,
                 editable: false,
                 //in-place edit default off.
-            }));
+            });
+            this.list.show(dataGridView);
+            dataGridView.onRenderPlus(dataGridView, 'editor');
         }
     });
 

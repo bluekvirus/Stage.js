@@ -27,6 +27,32 @@
 			text-decoration: none;
 			cursor: pointer;			
 	  	}
+
+	  	.sort-caret {/*borrowed from bootstrap's sprites.less [icon-...]*/
+			display: inline-block;
+			width: 14px;
+			height: 14px;
+			.ie7-restore-right-whitespace();
+			line-height: 14px;
+			vertical-align: text-top;
+			background-image: url("@{iconSpritePath}");
+			background-position: 14px 14px;
+			background-repeat: no-repeat;
+			margin-top: 1px;
+			margin-left: 2px;
+	  	}
+	}
+
+	&.ascending {
+		.sort-caret {
+			.icon-chevron-up;
+		}
+	}
+
+	&.descending {
+		.sort-caret {
+			.icon-chevron-down;
+		}
 	}
   }
 
@@ -74,4 +100,17 @@
     		margin-top: 10px;
     	}
 	}
+}
+
+//backgrid filter css
+.backgrid-filter {
+	.pull-right;
+	.icon-search {
+		.icon-filter;
+	}
+	.close {
+		float: none;
+		.icon-remove;
+	}
+
 }
