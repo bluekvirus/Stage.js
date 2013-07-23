@@ -92,8 +92,9 @@
                 var $el = $(e.currentTarget);
                 var $searchBox = $el.prev().toggle();
                 if($searchBox.offset()){
-                    var offset = $el.parent().offset();
-                    $searchBox.focus().offset({top: offset.top + ($el.parent().innerHeight()-$el.parent().height())/4 , left: offset.left + ($el.parent().innerWidth()-$el.parent().width())/4}).width($el.parent().width());
+                    $searchBox.focus().width($el.parent().width()).position({
+                        of:$el.parent(), 
+                    });
                 }
 
             },

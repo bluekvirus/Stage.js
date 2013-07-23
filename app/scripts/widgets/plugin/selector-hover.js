@@ -35,7 +35,7 @@ Template.extend('custom-tpl-widget-plugin-hover-select', [
 			//selected value(s)
 			'<ul class="inline selected-items">',
 				'{{#each selected}}',
-					'<li class="select-selected-val" data-key="{{this.key}}"><span data-value="{{this.val}}">{{this.key}}</span> <button type="button" class="close">&times;</button></li>',
+					'<li class="select-selected-val {{#unless this.key}}select-selected-val-empty{{/unless}}" data-key="{{this.key}}"><span data-value="{{this.val}}">{{this.key}}</span> <button type="button" class="close">&times;</button></li>',
 				'{{/each}}',
 			'</ul>',
 		'</div>',
@@ -47,7 +47,7 @@ Template.extend('custom-tpl-widget-plugin-hover-select', [
 					'<div class="select-opt-group-title">{{@key}}</div>',
 					'<div class="select-opt-group-items">',
 						'{{#each this}}',
-							'<span class="select-opt-item" data-value="{{this.val}}">{{this.key}}</span>',
+							'<span class="select-opt-item {{#unless this.key}}select-opt-item-empty{{/unless}}" data-value="{{this.val}}">{{this.key}}</span>',
 						'{{/each}}',
 					'</div>',
 				'</div>',
@@ -72,7 +72,7 @@ Template.extend('custom-tpl-widget-plugin-hover-select', [
 		var groups = $select.find('optgroup');
 		var config = {
 			field: $select.attr('name'),
-			selected: $select.find('option:selected').map(function(index, el){
+			selected: $select.find('option').filter(':selected').map(function(index, el){
 				var $el = $(el);
 				return {
 					key: $el.text(),
@@ -164,24 +164,33 @@ Template.extend('custom-tpl-widget-plugin-hover-select', [
 				//not found;
 				if(multiMode){
 					//push into set;
-					if($.isNumeric(multiMode) && multiMode > 0)
+					if($.isNumeric(multiMode) && multiMode > 0){
 						//if reaches maximum selection, replace the last one;
-						while(vals.length > multiMode - 1)
+						while(vals.length > multiMode - 1){
 							vals.pop();
+						}
+					}
 					vals.push(itemValue);
-				}
-				else
+				} else {
 					//replace;
 					vals.splice(0, 1, itemValue);
+				}
+
+				// remove 'selected-item' class from previouly selected option items
+				$opts.find('.selected-item').removeClass('selected-item');
+
 				//render the changed selection(s)
 				$selected.empty();
 				$.each(vals, function(index, v){
-					$selected.append('<li class="select-selected-val" data-key="' + v.key + '"><span data-value="' + v.val + '">' + v.key + '</span> <button type="button" class="close">&times;</button></li>')
+					$selected.append('<li class="select-selected-val' + (v.key ? '' : ' select-selected-val-empty') + '" data-key="' + v.key + '"><span data-value="' + v.val + '">' + v.key + '</span> <button type="button" class="close">&times;</button></li>');
+					// add 'selected-item' class to current selected option items
+					$opts.find('.select-opt-item[data-value="' + v.val + '"]').addClass('selected-item');
 				});
+
 				informOldSelectTag($oldSelect);						
-			}else {
+			} else {
 				//highlight it:
-				$selected.find('[data-key=' + itemValue.key + ']').effect('highlight', {color: '#8A0917'}, 600);
+				$selected.find('[data-key="' + itemValue.key + '"]').effect('highlight', {color: '#8A0917'}, 600);
 			}
 
 			//hide the options
@@ -200,8 +209,11 @@ Template.extend('custom-tpl-widget-plugin-hover-select', [
 			var itemValue = {key: $item.text(), val: $item.data('value')};
 			var index = inSelection(itemValue, $oldSelect.data().vals);
 			$oldSelect.data().vals.splice(index, 1);
-			$selected.find('[data-key=' + itemValue.key + ']').remove();
+			$selected.find('[data-key="' + itemValue.key + '"]').remove();
+			$opts.find('.select-opt-item[data-value="' + itemValue.val + '"]').removeClass('selected-item');
+
 			informOldSelectTag($oldSelect);
+
 			e.stopPropagation();
 		});
 

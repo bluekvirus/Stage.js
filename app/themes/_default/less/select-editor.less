@@ -38,6 +38,10 @@
 		    min-width: @select-val-min-width;
 			position: relative;
 
+			&-empty {
+				height: @baseLineHeight + 4;
+			}
+
 		    .close {
 		    	position: absolute;
 		    	top: 5px;
@@ -85,6 +89,14 @@
 
 					&:hover {
 						background-color: @color-sand;
+					}
+
+					&.selected-item {
+						background-color: @color-stone;
+					}
+
+					&-empty {
+						height: @baseLineHeight;
 					}
 				}			
 			}
@@ -180,6 +192,10 @@
 
 					&.selected-item {
 						background-color: @color-stone;
+					}
+
+					&-empty {
+						height: @baseLineHeight;
 					}
 				}			
 			}

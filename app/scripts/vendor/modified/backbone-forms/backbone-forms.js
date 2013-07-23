@@ -224,7 +224,7 @@ var Form = (function() {
             $fieldsContainer.append(fieldEl);
           else {
             console.log('regroup ',key);
-            $fieldsContainer.find('[target='+key+']').html(fieldEl);
+            $fieldsContainer.find('[target='+key+']').replaceWith(fieldEl);
           }
             
         }
