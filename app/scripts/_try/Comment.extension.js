@@ -54,8 +54,10 @@
         },
         'View.DataGrid.events': { //Todo::
 
-            'click i.icon-filter' : 'filtColumn',
-            'focusout input.columFilter' : 'closeFilt',
+            'click i.icon-filter' : 'showColumnFilter',
+            'focusout input.columnFilter' : 'closeColumnFilter',
+            'keyup input.columnFilter' : 'applyFilter',
+            'click .filter-val' : 'showColumnFilter',
         },
         'View.DataGrid': { //Todo::
             //mode: undefined/editor
@@ -82,15 +84,17 @@
                 view.$el.find('th').each(function(index, el){
                     var $el = $(el);
                     if($el.find('a').text().length>0){
-                        $el.append('<input class="columFilter" style="float:left;display:none;position:absolute;"><i class="icon-filter pull-right"></i>');
+                        $el.append('<input class="columnFilter hide" style="position:absolute;"></span><i class="icon-filter pull-right"></i>');
                     }
                 });
+                    //add a column filter recovery gap
+                view.$el.find('.datagrid-body-container').prepend('<div class="column-filter-recover-gap hide"></div>');
                 
             },
 
-            filtColumn: function(e){
+            showColumnFilter: function(e){
                 var $el = $(e.currentTarget);
-                var $searchBox = $el.prev().toggle();
+                var $searchBox = $el.parent().find('.columnFilter').toggle();
                 if($searchBox.offset()){
                     $searchBox.focus().width($el.parent().width()).position({
                         of:$el.parent(), 
@@ -99,9 +103,33 @@
 
             },
 
-            closeFilt: function(e){
+            closeColumnFilter: function(e){
                 var $el = $(e.currentTarget);
+                var val = $el.val();
+                if(val){
+                    if($el.data().filter){
+                        $el.data().filter.text(val);
+                    }else {
+                        var $filter = $('<span class="filter-val" style="position:absolute;padding:0px 5px;background-color:#eee;border-radius:6px 6px 0 0"><i class="icon-remove"></i></span>').text(val).appendTo($el.parent());
+                        $el.data('filter', $filter);
+                    }
+                    $el.data().filter.position({
+                        my: 'right bottom',
+                        at: 'right top',
+                        of: $el.parent()
+                    });
+                }else {
+                    if($el.data().filter) $el.data().filter.remove();
+                    delete $el.data().filter;
+                }
                 $el.hide();
+            },
+
+            applyFilter: function(e){
+                if(e.keyCode === 13){
+                    $(e.currentTarget).focusout();
+                    //TBI
+                }
             }
         },
     });
