@@ -39,7 +39,12 @@
 
         },
         'View.Form': {
-            onRenderPlus: function(view) { //Todo::
+            onRenderPlus: function(view, partnerGridView) { //Todo::
+                if(partnerGridView && partnerGridView.collection._oldMode){
+                    //reset the collection mode:
+                    partnerGridView.collection.switchMode(partnerGridView.collection._oldMode, {fetch: false, resetState: false});
+                    delete partnerGridView.collection._oldMode;
+                }
             }
 
         },
@@ -58,9 +63,9 @@
         'View.DataGrid': { //Todo::
             //mode: undefined/editor
             onRenderPlus: function(view, mode) { //Todo::
-                if(mode && view.options.mode === 'subDoc'){
-                    view.$el.find('th').off();
-                }
+                // if(mode && view.options.mode === 'subDoc'){
+                //     view.$el.find('th').off();
+                // }
                 //a. apply the client side search filter
                 var fields = _.pluck(view.columns, 'name');
                 fields.pop();fields.shift();//get the _select_, _action_ columns out;
@@ -74,8 +79,22 @@
 
                     //render it to the datagrid header ct
                 view.$el.find('.datagrid-header-container').append(view.filter.render().el);
-                view.filter.$el.find('a.close').replaceWith('<i class="close icon-x"></i>');
+                view.filter.$el.on('keyup', 'input', function(e){
+                    var $el = $(e.currentTarget);
+                    if($el.val() && !view.collection._oldMode){
+                        view.collection._oldMode = view.collection.mode; 
+                        view.collection.switchMode('client', {fetch: false, resetState: false});
+                    }else if(!$el.val() && view.collection._oldMode){
+                        
+                        view.collection.switchMode(view.collection._oldMode);
+                        delete view.collection._oldMode;
+                            
+                    }
+                }).find('.input-prepend').removeClass('input-append').find('a.close').parent().remove();
                 
+                view.collection.on('sync', function(){
+                    view.filter.search();
+                });
             }
         },
     });

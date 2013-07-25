@@ -287,7 +287,7 @@
         closeForm: function(e) {
             e.stopPropagation();
             this.close();
-            this.recordManager.$el.trigger('event_RefreshRecords');
+            //this.recordManager.$el.trigger('event_RefreshRecords');
         }
 
 
@@ -410,7 +410,7 @@
                 recordManager: this
             });
             this.parentCt.detail.show(formView);
-            formView.onRenderPlus(formView);
+            formView.onRenderPlus(formView, this);
         },
         saveRecord: function(e, sheet) {
             e.stopPropagation();
