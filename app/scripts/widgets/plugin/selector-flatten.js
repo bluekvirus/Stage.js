@@ -40,7 +40,7 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 		// 	'</ul>',
 		// '</div>',
 		'<div class="select-opts">',
-			'<div class="tools clearfix">',
+			'<div class="tools">',
 		    	//expand/collapse
 		    	'<div class="tool-opts-expand pull-right">',
 		    		'<span class="more-opts"><i class="icon-plus"></i>More</span>',
@@ -148,13 +148,12 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 
 		//a. more/less on config.maximumLines, undefined/null/0 for no limits
 		//TBI
-		if(!$optItems.height() || !$optItem.outerHeight()) return;
-		var fix = options.uiFix.height;//WARNING: This is because we can't get the margin from outerHeight()...
-		var lines = $optItems.height()/($optItem.outerHeight()+fix);
+		if(!$optItems.height() || !$optItem.outerHeight(true)) return;
+		var lines = Math.floor($optItems.height()/($optItem.outerHeight(true)));
 		if(options.maximumLines && options.maximunLines !== 0 && lines > options.maximumLines){
 			//show tools along with the expand/collapse button
 			$tools.show();
-			var height = options.maximumLines * ($optItem.outerHeight()+fix);
+			var height = options.maximumLines * ($optItem.outerHeight(true));
 			$optItems.height(height).data('recoverHeight', height);
 		}
 
@@ -163,7 +162,14 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 			//show search box
 			$searchBox = $tools.find('.tool-opts-search');
 			//position it?? TBI
-			$searchBox.show();
+			$label = $tools.parents(options.parentCtSelector).find(options.fieldLableSelector);
+			$searchBox.css('display', 'inline-block').find('.tool-opts-search-input').width($label.width()/2);
+			$searchBox.position({
+				my: 'right top',
+				at: 'right bottom+5',
+				of: $label,
+				collision: 'fit none'
+			});
 		}
 	}
 
@@ -279,10 +285,8 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 			data: undefined,//TBI
 			maximumLines: 2, //if options shown are more then 2 lines, show the more/less tool
 			searchEnabled: 12, //if options are more than a dozen, show the search box
-			/*heightFix*/
-			uiFix: {
-				height: 7, //this is abnormal cfg... Tim's Hack. //WARNING: This is because we can't get the margin from outerHeight()...
-			}
+			parentCtSelector: '.control-group',
+			fieldLableSelector: '.control-label'
 		}, options);
 
 		return this.filter('select').each(function(index, el){
@@ -297,7 +301,15 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 				}
 			});
 			reRender($el);
-
+			//=====give it a little adjustment upon window resizing=====
+			function resizeFix() {
+				if($el.parent().length > 0)
+					reRender($el);
+				else{
+					$(window).off('resize', resizeFix);
+				}
+			}
+			$(window).resize(resizeFix);
 		});
 
 	}

@@ -5,21 +5,18 @@
  * @created 2013.07.08
  */
 
-@select-val-opts-gap: 10px;
+@select-val-opts-gap: 5px;
 @select-val-min-width: 120px;
-@select-val-font-size: 13px; //or 12px;
+@select-val-font-size: 12px;
 @select-val-bg: lighten(@color-sand, 10%);
 @select-opts-bg: #eee;
-@select-opts-border-size: 3px;
+@select-opts-border-size: 2px;
 
 /*Hover Version*/
 .new-select-plugin-hover {
-
-	//display: none;
+	font-size: @select-val-font-size;
 
 	.select-val-ct {
-		
-		padding-top: 2px;
 
 		.selected-items {
 			margin-bottom: @select-val-opts-gap;
@@ -28,37 +25,40 @@
 		.select-selected-val {
 			@paddingTop: 2px;
 			@paddingRight: 20px;
-			margin: 0 5px 5px 0;
+			@paddingLeft: 4px;
+			@marginTop: @select-val-opts-gap - @paddingTop;
+
+			margin: @marginTop @select-val-opts-gap @marginTop 0;
+		    padding: @paddingTop @paddingRight @paddingTop @paddingLeft;
 		    background: none repeat scroll 0 0 @select-val-bg;
 		    border-radius: 3px;
 		    cursor: pointer;
-		    line-height: 24px;
-		    padding: @paddingTop @paddingRight @paddingTop (@paddingRight - 5);
 		    text-align: center;
 		    min-width: @select-val-min-width;
 			position: relative;
 
 			&-empty {
-				height: @baseLineHeight + 4;
+				height: @baseLineHeight;
 			}
 
 		    .close {
 		    	position: absolute;
-		    	top: 5px;
-		    	right: 5px;
+		    	top: @paddingTop;
+		    	right: @paddingLeft;
 		    }
 		}
 	}
 
 	.select-opts {
-
 		position: absolute; //so the editor won't take up too much space;
 		display: none;
-		
-		@padding-top: 10px;
-		padding: @padding-top 20px;
 		background-color: @select-opts-bg;
 		border: @select-opts-border-size solid darken(@select-opts-bg, 10%);
+		
+		@padding-top: 5px;
+		@padding-left: @padding-top * 2;
+
+		padding: @padding-top @padding-left;
 
 		.arrow {
 			position: absolute;
@@ -67,10 +67,10 @@
 		}
 
 		.select-opt-group {
-			margin-bottom: 5px;
+			margin-bottom: @select-val-opts-gap;
 
 			.select-opt-group-title {
-				margin-bottom: 3px;
+				margin-bottom: @select-val-opts-gap;
 				border-bottom: 1px solid darken(@select-opts-bg, 10%);
 				font-weight: bold;
 				color: @color-sand;
@@ -78,9 +78,13 @@
 
 			.select-opt-group-items {
 				.clearfix;
+
 				.select-opt-item {
-					padding: 5px 10px;
-					margin: 2px 10px 5px 0;
+					@padding-top: 2px;
+					@padding-left: @padding-top * 2;
+
+					padding: @padding-top @padding-left;
+					margin: 0 @select-val-opts-gap @select-val-opts-gap 0;
 					background-color: darken(@select-opts-bg, 10%);
 					min-width: @select-val-min-width;
 					cursor: pointer;
@@ -109,26 +113,28 @@
 
 /*Flattened Version*/
 .new-select-plugin-flatten {
+	font-size: @select-val-font-size;
+	
+	@padding-top: 2px;
+	@padding-left: @padding-top * 2;
+	@tools-border: 1px solid @select-opts-bg;
 	
 	.select-opts {
-		@padding-top: 0;
-		padding: @padding-top 5px;
-		//background-color: @select-opts-bg;
-		//border-bottom: @select-opts-border-size solid darken(@select-opts-bg, 10%);
+		padding: 0;
 
 		.tools {
 			//search, more/less, others
 			display: none;
-			margin-bottom: 3px;
-			border-bottom: 1px solid @select-opts-bg;
+			margin-bottom: @select-val-opts-gap;
+			border-bottom: @tools-border;
 			padding-right: 10px;
 
 			.tool-opts-expand {
 			    background-color: @select-opts-bg;
 			    border-radius: 6px 6px 0 0;
 			    padding: 5px;
-
 			    cursor: pointer;
+			    .font-size(@select-val-font-size);
 				
 				span {
 					.hide;
@@ -154,8 +160,16 @@
 
 			.tool-opts-search {
 				display: none;
+
+				.tool-opts-search-input {
+					width: auto;
+					.font-size(@select-val-font-size);
+				}
 			}
 
+			.add-on {
+				.font-size(@select-val-font-size);
+			}
 
 		}
 
@@ -164,11 +178,11 @@
 		}
 
 		.select-opt-group {
-			margin-bottom: 5px;
+			margin-bottom: @select-val-opts-gap;
 
 
 			.select-opt-group-title {
-				margin-bottom: 3px;
+				margin-bottom: @select-val-opts-gap;
 				border-bottom: 1px solid darken(@select-opts-bg, 10%);
 				font-weight: bold;
 				color: @color-sand;
@@ -176,16 +190,17 @@
 
 			.select-opt-group-items {
 				.clearfix;
+
 				.select-opt-item {
-					padding: 5px 10px;
-					margin: 2px 10px 5px 0;
+					padding: @padding-top @padding-left;
+					margin: 0 @select-val-opts-gap @select-val-opts-gap 0;
 					background-color: @select-opts-bg;
 					min-width: @select-val-min-width;
-					font-size: @select-val-font-size;
 					cursor: pointer;
 					text-align: center;
 					.pull-left;
 					border-radius: 4px;
+					
 					&:hover {
 						background-color: @color-sand;
 					}

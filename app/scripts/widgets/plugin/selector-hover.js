@@ -125,15 +125,31 @@ Template.extend('custom-tpl-widget-plugin-hover-select', [
 		var $select = $oldSelect.next();
 		var $selected = $select.find('.selected-items');
 		var $opts = $select.find('.select-opts');
-		var gap = $opts.innerWidth() - $opts.width() + 20;
+		var $optItem = $opts.find('.select-opt-item');
 
 		function showOptions(){
 			/**
 			 * [WARNING:: show the element before manipulate the offset() or el that is hidden or display:none will jerk off the screen...]
 			 */
-			var top = $select.offset().top + $select.outerHeight();			
-			$opts.width($select.width() - gap).show().offset({
-				top: top,
+			$opts.show();
+			var gap = $opts.innerWidth() - $opts.width() + 20;
+			var selectOffset = $select.offset();
+			var maxWidth = $(window).width() - selectOffset.left - gap;
+			var width = 0;
+			$optItem.each(function(){
+				var itemWidth = $(this).outerWidth(true);
+				if (width + itemWidth > maxWidth) {
+					return false;
+				} else {
+					width += itemWidth;
+				}
+			});
+			if (width === 0) {
+				width = $optItem.outerWidth(true);
+			}
+			var top = selectOffset.top + $select.outerHeight();
+			$opts.width(width).offset({
+				top: top
 			});
 		}
 
