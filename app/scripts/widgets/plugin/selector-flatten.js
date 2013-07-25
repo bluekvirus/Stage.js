@@ -40,7 +40,7 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 		// 	'</ul>',
 		// '</div>',
 		'<div class="select-opts">',
-			'<div class="tools">',
+			'<div class="tools clearfix">',
 		    	//expand/collapse
 		    	'<div class="tool-opts-expand pull-right">',
 		    		'<span class="more-opts"><i class="icon-plus"></i>More</span>',
@@ -162,7 +162,7 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 			//show search box
 			$searchBox = $tools.find('.tool-opts-search');
 			//position it?? TBI
-			$label = $tools.parents(options.parentCtSelector).find(options.fieldLableSelector);
+			$label = $tools.parentsUntil(options.parentCtSearchCapSelector, options.parentCtSelector).find(options.fieldLableSelector);
 			$searchBox.css('display', 'inline-block').find('.tool-opts-search-input').width($label.width()/2);
 			$searchBox.position({
 				my: 'right top',
@@ -286,6 +286,7 @@ Template.extend('custom-tpl-widget-plugin-flattened-select', [
 			maximumLines: 2, //if options shown are more then 2 lines, show the more/less tool
 			searchEnabled: 12, //if options are more than a dozen, show the search box
 			parentCtSelector: '.control-group',
+			parentCtSearchCapSelector: 'fieldset',
 			fieldLableSelector: '.control-label'
 		}, options);
 
