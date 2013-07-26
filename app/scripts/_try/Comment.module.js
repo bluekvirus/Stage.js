@@ -334,7 +334,9 @@
         cells: {},
         //[key:cell type] map to be overriden in _extension.js
         initialize: function(options) {
-            this.columns = [{
+
+            //a. columns:
+            this.columns = options.columns || [{
                 name: "_selected_",
                 label: "",
                 sortable: false,
@@ -357,11 +359,27 @@
             this.parentCt = options.layout;
             this.editable = options.editable;
             var that = this;
+            //b. cells
             _.each(this.columns, function(col) {
                 col.editable = that.editable;
                 //allow cell definition overriden in _extension.js
                 col.cell = that.cells[col.name] || col.cell;
             });
+
+            //c. client side search filter
+            var fields = _.pluck(this.columns, 'name');
+            fields.pop();fields.shift();//get the _select_, _action_ columns out;
+
+                //add more fields? You can :))
+
+            this.filter = new Backgrid.Extension.ClientSideFilter({
+              collection: this.collection,
+              fields: options.filterFields || fields,
+            });
+
+                //render it and add listeners
+            this.filter.render().$el.find('.input-prepend').removeClass('input-append').find('a.close').parent().remove();
+                         
 
         },
         //Add a backgrid.js grid into the body 
@@ -372,8 +390,10 @@
             });
 
             this.ui.body.html(this.grid.render().el);
+            this.ui.header.append(this.filter.el);
             //if it is not in subDoc mode, we let the collection to fetch data itself.
             if (this.mode !== 'subDoc') this.collection.fetch();
+
 
             //Do **NOT** register any event listeners here.
             //It might get registered again and again. 
@@ -421,7 +441,7 @@
                     notify: true,
                     success: function(model, res) {
                         if (res.payload) {
-                            that.collection.fetch();
+                            that.refreshRecords();
                             sheet.close();
                         }
                     }
@@ -444,15 +464,17 @@
             Application.prompt('Are you sure?', 'error', function() {
                 if (that.mode !== 'subDoc') m.destroy({
                     success: function(model, resp) {
-                        that.collection.fetch(); //refresh
+                        that.refreshRecords();
                     }
                 });
                 else that.collection.remove(m);
             })
         },
         refreshRecords: function(e) {
-            e.stopPropagation();
-            if (this.mode !== 'subDoc') this.collection.fetch();
+            if(e) e.stopPropagation();
+            if (this.mode !== 'subDoc') {
+                this.collection.fetch();
+            }
         }
 
     });
@@ -524,7 +546,8 @@
         },
         initialize: function(options) { //This is also used as a flag by datagrid to check if it is working in 'editor-mode'
             this.collectionRef = new module.Collection(options.data, {
-                url: options.apiUrl
+                url: options.apiUrl,
+                mode: options.datagridMode === 'subDoc'?'client' : 'server'
             });
 
             this.datagridMode = options.datagridMode;
