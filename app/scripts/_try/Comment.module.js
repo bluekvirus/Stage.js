@@ -306,177 +306,31 @@
      * @class Application.Comment.View.DataGrid
      */
     module.View.Extension.DataGrid = {};
-    module.View.Extension.DataGrid.ActionCell = Backbone.Marionette.ItemView.extend({
-        tagName: 'td',
-        className: 'action-cell',
-        template: '#custom-tpl-grid-actioncell',
-        initialize: function(options) {
-            this.column = options.column;
-        },
-        //patch-in the id property for action locator.
-        onRender: function() {
-            this.$el.find('span[action]').attr('target', this.model.id || this.model.cid);
-        }
-    });
 
-    module.View.DataGrid = Backbone.Marionette.ItemView.extend({
-        template: '#basic-datagrid-view-wrap-tpl',
-
-        className: 'basic-datagrid-view-wrap',
-
-        ui: {
-            header: '.datagrid-header-container',
-            body: '.datagrid-body-container',
-            footer: '.datagrid-footer-container'
-        },
-        //remember the parent layout. So later on a 'new' or 'modify'
-        //event will have a container region to render the form.
-        cells: {},
-        //[key:cell type] map to be overriden in _extension.js
-        initialize: function(options) {
-
-            //a. columns:
-            this.columns = options.columns || [{
-                name: "_selected_",
-                label: "",
-                sortable: false,
-                cell: "boolean"
-            }, {
-                name: "title",
-                label: "Title",
-                cell: "string"
-            }, {
-                name: "body",
-                label: "Content",
-                cell: "string"
-            }, {
-                name: "_actions_",
-                label: "",
-                sortable: false,
-                cell: module.View.Extension.DataGrid.ActionCell
-            }];
-            this.mode = options.mode;
-            this.parentCt = options.layout;
-            this.editable = options.editable;
-            var that = this;
-            //b. cells
-            _.each(this.columns, function(col) {
-                col.editable = that.editable;
-                //allow cell definition overriden in _extension.js
-                col.cell = that.cells[col.name] || col.cell;
-            });
-
-            //c. client side search filter
-            var fields = _.pluck(this.columns, 'name');
-            fields.pop();fields.shift();//get the _select_, _action_ columns out;
-
-                //add more fields? You can :))
-
-            this.filter = new Backgrid.Extension.ClientSideFilter({
-              collection: this.collection,
-              fields: options.filterFields || fields,
-            });
-
-                //render it and add listeners
-            this.filter.render().$el.find('.input-prepend').removeClass('input-append').find('a.close').parent().remove();
-                         
-
-        },
-        //Add a backgrid.js grid into the body 
-        onRender: function() {
-            this.grid = new Backgrid.Grid({
-                columns: this.columns,
-                collection: this.collection
-            });
-
-            this.ui.body.html(this.grid.render().el);
-            this.ui.header.append(this.filter.el);
-            //if it is not in subDoc mode, we let the collection to fetch data itself.
-            if (this.mode !== 'subDoc') this.collection.fetch();
-
-
-            //Do **NOT** register any event listeners here.
-            //It might get registered again and again. 
-        },
-        //Empty Stub. override in extension
-        onRenderPlus: function() {},
-        //Clean up zombie views.
-        onBeforeClose: function() {
-            this.grid.remove();
-        },
-        //datagrid actions DOM-events.
-        events: {
-            'click .btn[action=new]': 'showForm',
-            'click .action-cell span[action=edit]': 'showForm',
-            'click .action-cell span[action=delete]': 'deleteRecord',
-            'event_SaveRecord': 'saveRecord',
-            'event_RefreshRecords': 'refreshRecords',
-        },
-        //DOM event listeners:
-
-        showForm: function(e) {
-            e.stopPropagation();
-            var info = e.currentTarget.attributes;
-
-            if (info['target']) { //edit mode.
-                var m = this.collection.get(info['target'].value);
-            } else //create mode.
-            var m = new module.Model({}, {
-                url: this.collection.url
-            });
-
-            var formView = new module.View.Form({
-                model: m,
-                recordManager: this
-            });
-            this.parentCt.detail.show(formView);
-            formView.onRenderPlus(formView, this);
-        },
-        saveRecord: function(e, sheet) {
-            e.stopPropagation();
-            //1.if this grid is used as top-level record holder:
-            var that = this;
-            if (this.mode !== 'subDoc') {
-                sheet.model.save({}, {
-                    notify: true,
-                    success: function(model, res) {
-                        if (res.payload) {
-                            that.refreshRecords();
-                            sheet.close();
-                        }
-                    }
-                }); //save the model to server
-            } else { //2.else if this grid is used in subDoc mode for sub-field:
-                //add or update the model into the referenced collection:
-                this.collection.add(sheet.model, {
-                    merge: true
-                });
-                sheet.close();
-            }
-        },
-        deleteRecord: function(e) {
-            e.stopPropagation();
-            var info = e.currentTarget.attributes;
-            //find target and ask user
-            var m = this.collection.get(info['target'].value);
-            //promp user [TBI]
-            var that = this;
-            Application.prompt('Are you sure?', 'error', function() {
-                if (that.mode !== 'subDoc') m.destroy({
-                    success: function(model, resp) {
-                        that.refreshRecords();
-                    }
-                });
-                else that.collection.remove(m);
-            })
-        },
-        refreshRecords: function(e) {
-            if(e) e.stopPropagation();
-            if (this.mode !== 'subDoc') {
-                this.collection.fetch();
-            }
-        }
-
+    module.View.DataGrid = app.Widget.DataGrid.extend({
+        columns: [{
+            name: "_selected_",
+            label: "",
+            sortable: false,
+            cell: "boolean"
+        }, {
+            name: "title",
+            label: "Title",
+            cell: "string"
+        }, {
+            name: "body",
+            label: "Content",
+            cell: "string"
+        }, {
+            name: "_actions_",
+            label: "",
+            sortable: false,
+            cell: "action",
+            actions: [
+                {name: "edit", title: "Edit"},
+                {name: "delete", title: "Delete"}
+            ]
+        }]
     });
 
     /**
@@ -518,11 +372,10 @@
         onRender: function() {
             var dataGridView = new module.View.DataGrid({
                 collection: module.collection,
-                layout: this,
-                editable: false //in-place edit default off.
+                parentCt: this,
+                formWidget: module.View.Form
             });
             this.list.show(dataGridView);
-            dataGridView.onRenderPlus(dataGridView);
         }
     });
 

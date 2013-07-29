@@ -56,9 +56,10 @@ Application.Widget.register('DataGrid', function(){
         initialize: function(options) {
 
             //a. columns, mode, parent container $el:
-            this.columns = options.columns;
+            this.columns = options.columns || this.columns;
             this.mode = options.mode; //subDoc or refDoc
             this.parentCt = options.parentCt; //for event relay and collaboration with sibling wigets.
+            this.formWidget = options.formWidget;// needed for editing/create records.
 
             var that = this;
             //b. cells
@@ -76,7 +77,7 @@ Application.Widget.register('DataGrid', function(){
                 //customized header TBI (local sorting, before/after filtering op)
                 //customized body.row (row data-attribute by record, cell class per column)
                 //customized footer (pagination, statistics, date/versions)
-            }).render();
+            });
 
             //d. listen to the 'mod_backgrid''s render event and plugin our afterRender extension point
             this.listenTo(this.grid, 'backgrid:rendered', _.bind(function(){
@@ -87,8 +88,30 @@ Application.Widget.register('DataGrid', function(){
 
         /*======Private Helper Functions======*/
         _isRefMode: function(){
-        	return this.mode === 'refDoc';
-        }
+        	return this.mode !== 'subDoc';
+        },
+
+        _refreshRecords: function(e) {
+            if(e) e.stopPropagation();
+            if (this._isRefMode()) {
+                this.collection.fetch();
+            }
+        },
+
+        _actionCalled: function(e){
+        	e.stopPropagation();
+        	var $el = $(e.currentTarget);
+        	//dispatch
+        	var action = $el.attr('action');
+        	if(this.actions[action]){
+        		if(_.isFunction(this.actions[action]))
+        			this.actions[action]($el);
+        		else
+        			this[this.actions[action]]($el);
+        	}else {
+        		Application.error('DataGrid Action Error', 'Action', action, 'is not implemented yet!');
+        	}
+        },
         //====================================
 
         /*======Renderring Related Hooks======*/
@@ -109,32 +132,18 @@ Application.Widget.register('DataGrid', function(){
         onBeforeClose: function() {
             this.grid.remove();
         },
-        //===================================
+        //====================================
         
-        //*============Actions===============*/
+        //*============Events & Actions===============*/
         events: {
             // 'click .btn[action=new]': 'showForm',
             // 'click .action-cell span[action=edit]': 'showForm',
             // 'click .action-cell span[action=delete]': 'deleteRecord',
-            'click [action]': 'actionCalled',
+            'click [action]': '_actionCalled',
             'event_SaveRecord': 'saveRecord',
-            'event_RefreshRecords': 'refreshRecords',
+            'event_RefreshRecords': '_refreshRecords',
         },
         //General DOM event listener/ action listener:
-        actionCalled: function(e){
-        	e.stopPropagation();
-        	var $el = $(e.currentTarget);
-        	//dispatch
-        	var action = $el.attr('action');
-        	if(this.actions[action]){
-        		if(_.isFunction(this.actions[action]))
-        			this.actions[action]($el);
-        		else
-        			this[this.actions[action]]($el);
-        	}else {
-        		Application.error('DataGrid Action Error', 'Action', action, 'is not implemented yet!');
-        	}
-        },
 
         actions: {
         	new: 'showForm',
@@ -142,34 +151,62 @@ Application.Widget.register('DataGrid', function(){
         	delete: 'deleteRecord'
         },
 
-        showForm: function(e) {
-            e.stopPropagation();
-            var info = e.currentTarget.attributes;
+        //-------------Action Workers-----------------
+        showForm: function($actionBtn) {
+        	var recordId = $actionBtn.attr('target');
 
-            if (info['target']) { //edit mode.
-                var m = this.collection.get(info['target'].value);
+            if (recordId) { //edit mode.
+                var m = this.collection.get(recordId);
             } else //create mode.
-            var m = new module.Model({}, {
+            var m = new this.collection.model({}, {
                 url: this.collection.url
             });
 
-            var formView = new module.View.Form({
-                model: m,
-                recordManager: this
-            });
-            this.parentCt.detail.show(formView);
-            formView.onRenderPlus(formView, this);
+            if(this.formWidget){
+            	//create and show it
+	            var formView = new this.formWidget({
+	                model: m,
+	                recordManager: this
+	            });
+	            this.parentCt.detail.show(formView);
+	            formView.onRenderPlus(formView, this);
+            }else {
+            	//trigger an event so the parentCt can act accordingly
+            	this.parentCt.$el.trigger('showForm', {
+            		model: m,
+            		grid: this
+            	});
+            }
+
         },
+        //--------------------------------------------
+        deleteRecord: function($actionBtn) {
+        	var recordId = $actionBtn.attr('target');
+            //find target and ask user
+            var m = this.collection.get(recordId);
+            //promp user [TBI]
+            var that = this;
+            Application.prompt('Are you sure?', 'error', function() {
+                if (that._isRefMode()) m.destroy({
+                    success: function(model, resp) {
+                        that._refreshRecords();
+                    }
+                });
+                else that.collection.remove(m);
+            })
+        },
+
+        //-----------Event Listeners-------------------
         saveRecord: function(e, sheet) {
             e.stopPropagation();
             //1.if this grid is used as top-level record holder:
             var that = this;
-            if (this.mode !== 'subDoc') {
+            if (this._isRefMode()) {
                 sheet.model.save({}, {
                     notify: true,
                     success: function(model, res) {
                         if (res.payload) {
-                            that.refreshRecords();
+                            that._refreshRecords();
                             sheet.close();
                         }
                     }
@@ -181,29 +218,8 @@ Application.Widget.register('DataGrid', function(){
                 });
                 sheet.close();
             }
-        },
-        deleteRecord: function(e) {
-            e.stopPropagation();
-            var info = e.currentTarget.attributes;
-            //find target and ask user
-            var m = this.collection.get(info['target'].value);
-            //promp user [TBI]
-            var that = this;
-            Application.prompt('Are you sure?', 'error', function() {
-                if (that.mode !== 'subDoc') m.destroy({
-                    success: function(model, resp) {
-                        that.refreshRecords();
-                    }
-                });
-                else that.collection.remove(m);
-            })
-        },
-        refreshRecords: function(e) {
-            if(e) e.stopPropagation();
-            if (this.mode !== 'subDoc') {
-                this.collection.fetch();
-            }
         }
+        //--------------------------------------------
 
     });
 
@@ -227,3 +243,34 @@ Template.extend(
 		'<div class="datagrid-footer-container"></div>'
 	]
 );
+
+
+
+/*===================New Cells==================*/
+
+//1. Action cell-----------------------------------
+Backgrid.Extension.ActionCell = Backbone.Marionette.ItemView.extend({
+    tagName: 'td',
+    className: 'action-cell',
+    template: '#widget-tpl-grid-actioncell',
+    initialize: function(options) {
+        this.column = options.column; //options.column and options.model are both Backbone.Model instances.
+        this.data = options.model; //we use part of  options.column as the model to render the action cell with action tags, and save the options.model in .data
+        this.model = new Backbone.Model({
+        	actions: this.column.get('actions'),
+        	target: this.data.id || this.data.cid
+        });
+    }
+});
+Template.extend(
+	'widget-tpl-grid-actioncell',
+	[
+		//'<div>',
+		'{{#each actions}}',
+        	'<span class="label" action="{{name}}" target="{{../target}}">{{title}}</span> ',
+        '{{/each}}',
+        //'</div>'
+	]
+);
+//-------------------------------------------------
+

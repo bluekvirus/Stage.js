@@ -53,15 +53,17 @@
 				var listOfParentObjs = key.split('.');
 				var tails = [];
 				try{
-					while(!target){
+					while(!target && listOfParentObjs.length > 0){
 						tails.unshift(listOfParentObjs.pop());
 						key = listOfParentObjs.join('.')+'.prototype.'+tails.join('.');
 						target = _getByKeyStr(app[name], key);	
 					}
+					if(tails.length <= 0) throw new Error('!');
+					_.extend(target, val);
 				}catch(e){
 					app.error('Extender Error', name, ' when overriding ', key);
 				}
-				_.extend(target, val);
+				
 				
 			}
 		});
