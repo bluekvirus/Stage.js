@@ -232,6 +232,7 @@
 	    	async: false,
 	    	success: function(layout){
 	    		$('.application-container').replaceWith(layout);
+	    		Application.currentTheme = theme;
 	    	},
 	    	error: function(msg){
 	    		if(theme!=='_default')

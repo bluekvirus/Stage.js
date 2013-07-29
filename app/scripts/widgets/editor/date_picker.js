@@ -14,7 +14,7 @@
         changeMonth: true,
         changeYear: true,
         showOn: 'both',
-        buttonImage: 'themes/'+Application.theme+'/images/calendar.gif',
+        buttonImage: 'themes/'+Application.currentTheme+'/img/calendar.gif',
         buttonImageOnly: true,
         buttonText: 'Choose'
     });
