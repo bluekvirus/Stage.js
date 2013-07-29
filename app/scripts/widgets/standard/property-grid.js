@@ -15,7 +15,7 @@ Application.Widget.register('PropertyGrid', function(){
 	});
 
 	var PropertyGrid = Backbone.Marionette.CompositeView.extend({	
-			template: "#basic-propertygrid-view-wrap-tpl",	
+			template: "#widget-propertygrid-view-wrap-tpl",	
 			itemView: PropertyItemView,
 			// specify a jQuery selector to put the itemView instances into
 			itemViewContainer: "tbody",  		
@@ -47,7 +47,7 @@ Template.extend(
 );
 
 Template.extend(	
-	'basic-propertygrid-view-wrap-tpl',
+	'widget-propertygrid-view-wrap-tpl',
 	[
 		'<div region="title" class="alert alert-info">{{title}}</div>',
 		'<table class="table">',
