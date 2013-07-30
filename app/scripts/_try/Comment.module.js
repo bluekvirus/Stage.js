@@ -312,8 +312,9 @@
         columns: [{
             name: "_selected_",
             label: "",
-            sortable: false,
-            cell: "boolean"
+            cell: "boolean",
+            filterable: false,
+            sortDisabled: true,
         }, {
             name: "title",
             label: "Title",
@@ -321,19 +322,20 @@
         }, {
             name: "body",
             label: "Content",
-            cell: "string"
+            cell: "string",
         }, {
             name: "_actions_",
             label: "",
-            sortable: false,
             cell: "action",
+            filterable: false,
+            sortDisabled: true,
             actions: [
                 {name: "edit", title: "Edit"},
                 {name: "delete", title: "Delete"},
                 {name: "detail", title: "Details"}
             ]
         }]
-        
+
     });
 
     /**

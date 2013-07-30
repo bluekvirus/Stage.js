@@ -31,7 +31,20 @@
  * 	collection.setSorting('title',-1,{side:'client', full:false});
  * 	collection.sort();
  *
- * Note that there isn't multi-column sort yet in backbone.pageable-collection, considering tableSorter (http://mottie.github.io/tablesorter/docs/index.html) 
+ * Note that there isn't multi-column sort yet in backbone.pageable-collection, considering tableSorter (http://mottie.github.io/tablesorter/docs/index.html)
+ *
+ * *******
+ * Options in columns:
+ * *******
+ * + filterable - all, for making the column appear in the global filter.
+ * + sortDisabled - all, replacing the sortable option to control client side sorting.
+ * + actions [cell: 'action'] only. [{name: ..., title: ...}].
+ *
+ * *******
+ * Customized
+ * *******
+ * CustomRow - from Row
+ * ActionCell - plain Backbone.Marionette.ItemView
  *
  * @author Tim.Liu
  * @created 2013.07.27
@@ -74,22 +87,53 @@ Application.Widget.register('DataGrid', function(){
             //c. the grid instance 'mod_backgrid'
             this.grid = new Backgrid.Grid({
                 columns: this.columns,
-                collection: this.collection //automatically assigned by Marionette.ItemView.
+                collection: this.collection, //automatically assigned by Marionette.ItemView.
                 //customized header TBI (local sorting, before/after filtering op)
                 //customized body.row (row data-attribute by record, cell class per column)
+                row: Backgrid.Extension.CustomRow
+
                 //customized footer (pagination, statistics, date/versions)
             });
 
-            //d. listen to the 'mod_backgrid''s render event and plugin our afterRender extension point
+            //d. listen to the 'mod_backgrid''s render event for once and plugin our sorter & filters.
+            this.grid.once('backgrid:rendered', _.bind(function(){
+            	//d. the grid's global filter (top-right)
+            	this._hookupGlobalFilter();
+            	this._hookupColumnSorter();
+            }, this));
+
+            //e. listen to the 'mod_backgrid''s render event and plugin our afterRender extension point
             this.listenTo(this.grid, 'backgrid:rendered', _.bind(function(){
             	this.afterRender();
             }, this));
-                         
+            
+            /*WARNING:: a fetch() will screw up the UI tableSorter, need furter investigation...*/
         },
 
         /*======Private Helper Functions======*/
         _isRefMode: function(){
         	return this.mode !== 'subDoc';
+        },
+
+        _hookupGlobalFilter: function(){
+			this.grid.$el.sieve({
+				itemSelector: '.data-row',
+				textSelector: '.filterable',
+				searchInput: this.ui.header.find('.local-filter-box input')
+			});
+        },
+
+        _hookupColumnSorter: function(){
+        	//Not that we don't use the default sorting op provided by backgrid throught backbone.pageable
+        	var headers = _.reduce(this.columns, function(memo, column, index){
+        		if(column.sortDisabled === true)
+        			memo[index] = { sorter: false };
+        		return memo;
+        	}, {});
+        	this.grid.$el.tablesorter({
+        		headers: headers,
+        		theme: '_default'
+        	});
         },
 
         _refreshRecords: function(e) {
@@ -196,7 +240,7 @@ Application.Widget.register('DataGrid', function(){
             Application.prompt('Are you sure?', 'error', function() {
                 if (that._isRefMode()) m.destroy({
                     success: function(model, resp) {
-                        that._refreshRecords();
+                        //that._refreshRecords();
                     }
                 });
                 else that.collection.remove(m);
@@ -213,7 +257,8 @@ Application.Widget.register('DataGrid', function(){
                     notify: true,
                     success: function(model, res) {
                         if (res.payload) {
-                            that._refreshRecords();
+                            //that._refreshRecords();
+                            that.grid.insertRow(model);
                             sheet.close();
                         }
                     }
@@ -241,9 +286,9 @@ Template.extend(
 		'<div class="datagrid-header-container">',
 			'<a class="btn btn-success btn-action-new" action="new">Create</a>',
 			//'<a class="btn btn-danger pull-right" action="delete"><i class="icon-trash"></i></a>',
-			'<div class="pull-right input-prepend">',
-				'<span class="add-on"><i class="icon-search"></i></span>',
-				'<input type="text" class="input input-medium" name="filter">',
+			'<div class="pull-right input-prepend local-filter-box">',
+				'<span class="add-on"><i class="icon-filter"></i></span>',
+				'<input type="text" class="input input-medium" name="filter" placeholder="Search...">',
 			'</div>',
 		'</div>',
 		'<div class="datagrid-body-container"></div>',
@@ -251,6 +296,20 @@ Template.extend(
 	]
 );
 
+/*===================New Row Class==============*/
+Backgrid.Extension.CustomRow = Backgrid.Row.extend({
+	className: 'data-row',
+
+	//overriden makeCell to give cells awareness of its column and filters.
+	makeCell: function (column) {
+		var options  = {
+		  column: column,
+		  model: this.model
+		};
+		if(column.get('filterable') !== false) options['className'] = 'column-' + column.get('name') + ' filterable';
+		return new (column.get("cell"))(options);
+	},	
+});
 
 
 /*===================New Cells==================*/
