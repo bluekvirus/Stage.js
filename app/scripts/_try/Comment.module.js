@@ -308,6 +308,7 @@
     module.View.Extension.DataGrid = {};
 
     module.View.DataGrid = app.Widget.DataGrid.extend({
+
         columns: [{
             name: "_selected_",
             label: "",
@@ -328,9 +329,11 @@
             cell: "action",
             actions: [
                 {name: "edit", title: "Edit"},
-                {name: "delete", title: "Delete"}
+                {name: "delete", title: "Delete"},
+                {name: "detail", title: "Details"}
             ]
         }]
+        
     });
 
     /**
@@ -408,13 +411,11 @@
         onRender: function() {
             var dataGridView = new module.View.DataGrid({
                 collection: this.collectionRef,
-                layout: this,
-                mode: this.datagridMode,
-                editable: false,
-                //in-place edit default off.
+                parentCt: this,
+                formWidget: module.View.Form,
+                mode: this.datagridMode
             });
             this.list.show(dataGridView);
-            dataGridView.onRenderPlus(dataGridView, 'editor');
         }
     });
 

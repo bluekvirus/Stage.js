@@ -64,8 +64,9 @@ Application.Widget.register('DataGrid', function(){
             var that = this;
             //b. cells
             _.each(this.columns, function(col) {
-            	//turn off editable by default
+            	//turn off editor/sort by default
                 col.editable = col.editable || false;
+                col.sortable = false;
                 //allow cell definition overriden in _extension.js
                 col.cell = that.cells[col.name] || col.cell; //necessary ??? TBI
             });
@@ -118,10 +119,16 @@ Application.Widget.register('DataGrid', function(){
         //Add a backgrid.js grid into the body 
         onRender: function() {
 
-            this.ui.body.html(this.grid.render().el);
             //if it is not in subDoc mode, we let the collection to fetch data itself.
             //this will trigger the 'reset' event which in turn will trigger 'backgrid:rendered' on backgrid
-            if (this._isRefMode()) this.collection.fetch(); 
+            if (this._isRefMode()) this.collection.fetch({
+            	success: _.bind(function(){
+            		//delayed here so we can trigger a 'reset' which in turn triggers a 'backgrid:rendered' event.
+            		this.ui.body.html(this.grid.render().el);
+            	}, this)
+            });
+            else
+            	this.ui.body.html(this.grid.render().el);
 
             //Do **NOT** register any event listeners here.
             //It might get registered again and again. 

@@ -56,12 +56,8 @@
 
         },
         'View.DataGrid': { //Todo::
-            //mode: undefined/editor
-            onRenderPlus: function(view, mode) { //Todo::
-                // if(mode && view.options.mode === 'subDoc'){
-                //     view.$el.find('th').off();
-                // }
-
+            afterRender: function() { //Todo::
+                //console.log(this);
             }
         },
     });
