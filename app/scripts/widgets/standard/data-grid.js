@@ -84,20 +84,20 @@ Application.Widget.register('DataGrid', function(){
                 col.cell = that.cells[col.name] || col.cell; //necessary ??? TBI
             });
 
-            //c. the grid instance 'mod_backgrid'
+            //c. the grid instance 'mod_backgrid'******************************************
             this.grid = new Backgrid.Grid({
                 columns: this.columns,
                 collection: this.collection, //automatically assigned by Marionette.ItemView.
                 //customized header TBI (local sorting, before/after filtering op)
                 //customized body.row (row data-attribute by record, cell class per column)
-                row: Backgrid.Extension.CustomRow
-
+                row: Backgrid.Extension.CustomRow,
                 //customized footer (pagination, statistics, date/versions)
             });
+            //******************************************************************************
 
             //d. listen to the 'mod_backgrid''s render event for once and plugin our sorter & filters.
             this.grid.once('backgrid:rendered', _.bind(function(){
-            	//d. the grid's global filter (top-right)
+            	//the grid's global filter (top-right)
             	this._hookupGlobalFilter();
             	this._hookupColumnSorter();
             }, this));
@@ -132,8 +132,17 @@ Application.Widget.register('DataGrid', function(){
         	}, {});
         	this.grid.$el.tablesorter({
         		headers: headers,
-        		theme: '_default'
+        		theme: '_default',
+        		sortReset: 'true'
         	});
+        	//update the sorter if the data in the table are changed
+            this.listenTo(this.grid.collection, 'reset', _.bind(function(){
+            	this._applyToNewSortData();
+            }, this));        	
+        },
+
+        _applyToNewSortData: function(){
+        	this.grid.$el.trigger('updateAll');
         },
 
         _refreshRecords: function(e) {
@@ -259,6 +268,7 @@ Application.Widget.register('DataGrid', function(){
                         if (res.payload) {
                             //that._refreshRecords();
                             that.grid.insertRow(model);
+                            that._applyToNewSortData();
                             sheet.close();
                         }
                     }

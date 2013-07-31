@@ -110,6 +110,10 @@
             this.on('error', function() {
                 Application.error('Server Error', 'Can NOT initialize collection:Comment');
             })
+        },
+
+        state: {
+            pageSize: 5,
         }
 
     });
@@ -312,7 +316,8 @@
         columns: [{
             name: "_selected_",
             label: "",
-            cell: "boolean",
+            cell: "select-row",
+            headerCell: "select-all",
             filterable: false,
             sortDisabled: true,
         }, {
