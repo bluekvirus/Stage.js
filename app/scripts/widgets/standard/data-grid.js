@@ -100,14 +100,11 @@ Application.Widget.register('DataGrid', function(){
             	//the grid's global filter (top-right)
             	this._hookupGlobalFilter();
             	this._hookupColumnSorter();
-            }, this));
-
-            //e. listen to the 'mod_backgrid''s render event and plugin our afterRender extension point
-            this.listenTo(this.grid, 'backgrid:rendered', _.bind(function(){
             	this.afterRender();
             }, this));
             
-            /*WARNING:: a fetch() will screw up the UI tableSorter, need furter investigation...*/
+            //e. hook up with 'backgrid:refresh' see this._hookupColumnSorter()
+            /*WARNING:: a fetch() will screw up the UI tableSorter, need to fire update/updateAll event*/
         },
 
         /*======Private Helper Functions======*/
@@ -136,13 +133,13 @@ Application.Widget.register('DataGrid', function(){
         		sortReset: 'true'
         	});
         	//update the sorter if the data in the table are changed
-            this.listenTo(this.grid.collection, 'reset', _.bind(function(){
+            this.listenTo(this.grid.collection, 'backgrid:refresh', _.bind(function(){
             	this._applyToNewSortData();
             }, this));        	
         },
 
         _applyToNewSortData: function(){
-        	this.grid.$el.trigger('updateAll');
+        	this.grid.$el.trigger('updateAll', [true]);
         },
 
         _refreshRecords: function(e) {
@@ -244,7 +241,10 @@ Application.Widget.register('DataGrid', function(){
         	var recordId = $actionBtn.attr('target');
             //find target and ask user
             var m = this.collection.get(recordId);
-            //promp user [TBI]
+            if(!m) {
+            	Application.error('Collection Error', 'can NOT find target id');
+            }
+            //promp user
             var that = this;
             Application.prompt('Are you sure?', 'error', function() {
                 if (that._isRefMode()) m.destroy({
@@ -267,8 +267,15 @@ Application.Widget.register('DataGrid', function(){
                     success: function(model, res) {
                         if (res.payload) {
                             //that._refreshRecords();
-                            that.grid.insertRow(model);
+                            
+                            var locator= {};//locate the model in collection , if not add it manually.
+                            locator[model.idAttribute] = model.id;
+                            if(that.grid.collection.where(locator).length === 0){
+                            	that.grid.collection.add(model, {silent:true});
+                            	that.grid.insertRow(model, that.grid.collection);
+                            }
                             that._applyToNewSortData();
+
                             sheet.close();
                         }
                     }

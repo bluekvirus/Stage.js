@@ -100,7 +100,7 @@
      *
      * @class Application.Comment.Collection
      */
-    module.Collection = Backbone.PageableCollection.extend({
+    module.Collection = Backbone.Collection.extend({
         model: module.Model,
         parse: function(response) {
             return response.payload; //to use mers on server.
@@ -110,10 +110,6 @@
             this.on('error', function() {
                 Application.error('Server Error', 'Can NOT initialize collection:Comment');
             })
-        },
-
-        state: {
-            pageSize: 5,
         }
 
     });

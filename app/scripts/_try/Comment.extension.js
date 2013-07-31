@@ -58,7 +58,13 @@
         'View.DataGrid': { //Todo::
             afterRender: function() { //Todo::
                 //console.log(this);
+            },
+            showDetails: function($actionBtn){
+                console.log($actionBtn.attr('target'));
             }
         },
+        'View.DataGrid.actions': {
+            detail: 'showDetails'
+        }
     });
 })(Application);
