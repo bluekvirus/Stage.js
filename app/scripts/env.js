@@ -311,4 +311,13 @@
 		_patch('/dev/AdminGen/scripts', '/dev/AdminGen/scripts', true);
 	}
 
+	/**
+	 * ====================================================================
+	 * 	Backward Compatibility
+	 *
+	 * We no longer use Backbone.PageableCollection for pagination anymore.
+	 * ====================================================================
+	 */
+	Backbone.PageableCollection = Backbone.Collection;
+
 })();

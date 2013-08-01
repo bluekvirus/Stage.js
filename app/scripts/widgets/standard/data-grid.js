@@ -157,10 +157,16 @@ Application.Widget.register('DataGrid', function(){
         	if(this.actions[action]){
         		if(_.isFunction(this.actions[action]))
         			this.actions[action]($el);
-        		else
-        			this[this.actions[action]]($el);
+        		else {
+                    try {
+                        this[this.actions[action]]($el);
+                    }catch(e){
+                        Application.error('DataGrid Action Error', 'Action Listener [', this.actions[action], '] is registered but not implemented yet!');
+                    }
+                }
+        			
         	}else {
-        		Application.error('DataGrid Action Error', 'Action', action, 'is not implemented yet!');
+        		Application.error('DataGrid Action Error', 'Action [', action, '] is not implemented yet!');
         	}
         },
         //====================================
@@ -239,10 +245,11 @@ Application.Widget.register('DataGrid', function(){
         //--------------------------------------------
         deleteRecord: function($actionBtn) {
         	var recordId = $actionBtn.attr('target');
-            //find target and ask user
+            //find target
             var m = this.collection.get(recordId);
             if(!m) {
             	Application.error('Collection Error', 'can NOT find target id');
+                return;
             }
             //promp user
             var that = this;
@@ -305,7 +312,7 @@ Template.extend(
 			//'<a class="btn btn-danger pull-right" action="delete"><i class="icon-trash"></i></a>',
 			'<div class="pull-right input-prepend local-filter-box">',
 				'<span class="add-on"><i class="icon-filter"></i></span>',
-				'<input type="text" class="input input-medium" name="filter" placeholder="Search...">',
+				'<input type="text" class="input input-medium" name="filter" placeholder="Filter...">',
 			'</div>',
 		'</div>',
 		'<div class="datagrid-body-container"></div>',

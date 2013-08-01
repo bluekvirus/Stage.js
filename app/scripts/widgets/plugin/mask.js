@@ -2,6 +2,8 @@
  * This is the mask jQuery plugin for masking certain dom element or all other.
  * This plugin should be loaded as early as possible, since other form/editor/notification widgets might need this effect.
  *
+ * @requires Handlebars.js templating engine.
+ * 
  * @author Yan Zhu
  * @author Tim.Liu
  * @create 2013.07.08

@@ -4,7 +4,7 @@
  * Module Definition
  * =====================
  * 
- * Generated through `def_models/test/Blog.def.json` for Backbone module **Blog**
+ * Generated through `D:\wamp\www\dup_Server_-0.9\temp\module-1375330930907-def.json` for Backbone module **Blog**
  *
  * 
  * Blog module
@@ -27,7 +27,7 @@
  * @author Tim.Liu
  * @updated 
  * 
- * @generated on Thu Jul 11 2013 20:32:32 GMT+0800 (CST) 
+ * @generated on Thu Aug 01 2013 12:22:11 GMT+0800 (中国标准时间) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
@@ -89,7 +89,12 @@
                 valueField: "title",
                 options: function(cb, editor) {
                     Application.DataCenter.resolve(editor.schema.dataSrc, editor.form, function(data) {
-                        cb(_.pluck(data, editor.schema.valueField || 'name'));
+                        cb(data.map(function(d) {
+                            return {
+                                val: d[editor.schema.valueField || 'name'],
+                                label: d[editor.schema.labelField || editor.schema.valueField || 'name']
+                            };
+                        }));
                     });
                 }
             },
@@ -333,7 +338,7 @@
         closeForm: function(e) {
             e.stopPropagation();
             this.close();
-            this.recordManager.$el.trigger('event_RefreshRecords');
+            //this.recordManager.$el.trigger('event_RefreshRecords');
         }
 
 
@@ -352,149 +357,32 @@
      * @class Application.Blog.View.DataGrid
      */
     module.View.Extension.DataGrid = {};
-    module.View.Extension.DataGrid.ActionCell = Backbone.Marionette.ItemView.extend({
-        tagName: 'td',
-        className: 'action-cell',
-        template: '#custom-tpl-grid-actioncell',
-        initialize: function(options) {
-            this.column = options.column;
-        },
-        //patch-in the id property for action locator.
-        onRender: function() {
-            this.$el.find('span[action]').attr('target', this.model.id || this.model.cid);
-        }
-    });
-
-    module.View.DataGrid = Backbone.Marionette.ItemView.extend({
-        template: '#basic-datagrid-view-wrap-tpl',
-
-        className: 'basic-datagrid-view-wrap',
-
-        ui: {
-            header: '.datagrid-header-container',
-            body: '.datagrid-body-container',
-            footer: '.datagrid-footer-container'
-        },
-        //remember the parent layout. So later on a 'new' or 'modify'
-        //event will have a container region to render the form.
-        cells: {},
-        //[key:cell type] map to be overriden in _extension.js
-        initialize: function(options) {
-            this.columns = [{
-                name: "_selected_",
-                label: "",
-                sortable: false,
-                cell: "boolean"
+    module.View.DataGrid = app.Widget.DataGrid.extend({
+        columns: [{
+            name: "_selected_",
+            label: "",
+            cell: "select-row",
+            headerCell: "select-all",
+            filterable: false,
+            sortDisabled: true
+        }, {
+            name: "title",
+            label: "Title",
+            cell: "string"
+        }, {
+            name: "_actions_",
+            label: "",
+            cell: "action",
+            filterable: false,
+            sortDisabled: true,
+            actions: [{
+                name: "edit",
+                title: "Edit"
             }, {
-                name: "title",
-                label: "Title",
-                cell: "string"
-            }, {
-                name: "_actions_",
-                label: "",
-                sortable: false,
-                cell: module.View.Extension.DataGrid.ActionCell
-            }];
-            this.mode = options.mode;
-            this.parentCt = options.layout;
-            this.editable = options.editable;
-            var that = this;
-            _.each(this.columns, function(col) {
-                col.editable = that.editable;
-                //allow cell definition overriden in _extension.js
-                col.cell = that.cells[col.name] || col.cell;
-            });
-
-        },
-        //Add a backgrid.js grid into the body 
-        onRender: function() {
-            this.grid = new Backgrid.Grid({
-                columns: this.columns,
-                collection: this.collection
-            });
-
-            this.ui.body.html(this.grid.render().el);
-            //if it is not in subDoc mode, we let the collection to fetch data itself.
-            if (this.mode !== 'subDoc') this.collection.fetch();
-
-            //Do **NOT** register any event listeners here.
-            //It might get registered again and again. 
-        },
-        //Empty Stub. override in extension
-        onRenderPlus: function() {},
-        //Clean up zombie views.
-        onBeforeClose: function() {
-            this.grid.remove();
-        },
-        //datagrid actions DOM-events.
-        events: {
-            'click .btn[action=new]': 'showForm',
-            'click .action-cell span[action=edit]': 'showForm',
-            'click .action-cell span[action=delete]': 'deleteRecord',
-            'event_SaveRecord': 'saveRecord',
-            'event_RefreshRecords': 'refreshRecords',
-        },
-        //DOM event listeners:
-        showForm: function(e) {
-            e.stopPropagation();
-            var info = e.currentTarget.attributes;
-
-            if (info['target']) { //edit mode.
-                var m = this.collection.get(info['target'].value);
-            } else //create mode.
-            var m = new module.Model({}, {
-                url: this.collection.url
-            });
-
-            var formView = new module.View.Form({
-                model: m,
-                recordManager: this
-            });
-            this.parentCt.detail.show(formView);
-            formView.onRenderPlus(formView);
-        },
-        saveRecord: function(e, sheet) {
-            e.stopPropagation();
-            //1.if this grid is used as top-level record holder:
-            var that = this;
-            if (this.mode !== 'subDoc') {
-                sheet.model.save({}, {
-                    notify: true,
-                    success: function(model, res) {
-                        if (res.payload) {
-                            that.collection.fetch();
-                            sheet.close();
-                        }
-                    }
-                }); //save the model to server
-            } else { //2.else if this grid is used in subDoc mode for sub-field:
-                //add or update the model into the referenced collection:
-                this.collection.add(sheet.model, {
-                    merge: true
-                });
-                sheet.close();
-            }
-        },
-        deleteRecord: function(e) {
-            e.stopPropagation();
-            var info = e.currentTarget.attributes;
-            //find target and ask user
-            var m = this.collection.get(info['target'].value);
-            //promp user [TBI]
-            var that = this;
-            Application.prompt('Are you sure?', 'error', function() {
-                if (that.mode !== 'subDoc') m.destroy({
-                    success: function(model, resp) {
-                        that.collection.fetch(); //refresh
-                    }
-                });
-                else that.collection.remove(m);
-            })
-        },
-        refreshRecords: function(e) {
-            e.stopPropagation();
-            if (this.mode !== 'subDoc') this.collection.fetch();
-        }
+                name: "delete",
+                title: "Delete"
+            }]
+        }]
 
     });
 
@@ -537,11 +425,10 @@
         onRender: function() {
             var dataGridView = new module.View.DataGrid({
                 collection: module.collection,
-                layout: this,
-                editable: false //in-place edit default off.
+                parentCt: this,
+                formWidget: module.View.Form
             });
             this.list.show(dataGridView);
-            dataGridView.onRenderPlus(dataGridView);
         }
     });
 
@@ -573,13 +460,11 @@
         onRender: function() {
             var dataGridView = new module.View.DataGrid({
                 collection: this.collectionRef,
-                layout: this,
+                parentCt: this,
+                formWidget: module.View.Form,
                 mode: this.datagridMode,
-                editable: false,
-                //in-place edit default off.
             });
             this.list.show(dataGridView);
-            dataGridView.onRenderPlus(dataGridView, 'editor');
         }
     });
 
