@@ -64,7 +64,7 @@
             }
         },
         'View.DataGrid.actions': {
-            detail: 'showDetails'
+            //detail: 'showDetails'
         }
     });
 })(Application);

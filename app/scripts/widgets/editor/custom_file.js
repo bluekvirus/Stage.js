@@ -91,7 +91,7 @@
         },
 
         initialize: function(options) {
-            this.listenTo(this.collection, 'reset', function() {
+            this.listenTo(this.collection, 'sync', function() {
                 if (this.collection.length === 0) this.ui.filelist.hide();
                 else this.ui.filelist.show();
             });
@@ -152,13 +152,11 @@
                                 });
                         });
                         that.ui.progress.hide();                        
-                        that.collection.fetch({timeout: 1500});
+                        that.collection.fetch();
                     }
                 }
             });
-            this.collection.fetch({
-                timeout: 2500
-            });
+            this.collection.fetch();
         },
     });
 
