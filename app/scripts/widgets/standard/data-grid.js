@@ -138,6 +138,18 @@ Application.Widget.register('DataGrid', function(){
             }, this));        	
         },
 
+        _registerFooter: function(){
+            this.listenTo(this.collection, 'all', _.bind(function(){
+                console.log(arguments);
+                // this.ui.footer.show(new Backgrid.Extension.CustomFooter({
+                //     model: new Backbone.Model({
+                //         lastSynced: new Date().toString(),
+                //         recordCount: 
+                //     })
+                // }));
+            }, this));
+        },
+
         _applyToNewSortData: function(){
         	this.grid.$el.trigger('updateAll', [true]);
         },
@@ -203,6 +215,7 @@ Application.Widget.register('DataGrid', function(){
             // 'click .action-cell span[action=edit]': 'showForm',
             // 'click .action-cell span[action=delete]': 'deleteRecord',
             'click [action]': '_actionCalled',
+            'dblclick .data-row': 'editRecord',
             'event_SaveRecord': 'saveRecord',
             'event_RefreshRecords': '_refreshRecords',
         },
@@ -233,6 +246,7 @@ Application.Widget.register('DataGrid', function(){
 	            });
 	            this.parentCt.detail.show(formView);
 	            formView.onRenderPlus(formView, this);
+                return formView;
             }else {
             	//trigger an event so the parentCt can act accordingly
             	this.parentCt.$el.trigger('showForm', {
@@ -264,6 +278,24 @@ Application.Widget.register('DataGrid', function(){
         },
 
         //-----------Event Listeners-------------------
+        editRecord: function(e){
+            var $el = $(e.currentTarget);
+            var formView = this.showForm($el.find('[action="edit"]'));
+            var preRecords = $el.prevAll('.data-row').hide();
+            var followingRecords = $el.nextAll('.data-row').hide();
+            formView.$el.position({
+                my: 'center top',
+                at: 'center bottom',
+                of: $el,
+                collision: 'none none'
+            });
+            formView.once('close', _.bind(function(){
+                preRecords.show();
+                followingRecords.show();
+            }, this));
+            //console.log($el.nextAll().length);
+        },
+
         saveRecord: function(e, sheet) {
             e.stopPropagation();
             //1.if this grid is used as top-level record holder:
@@ -320,7 +352,30 @@ Template.extend(
 	]
 );
 
-/*===================New Row Class==============*/
+/*===================Footer=====================*/
+Backgrid.Extension.CustomFooter = Backbone.Marionette.ItemView.extend({
+    //show some info and prepare a space for paginator
+    className: 'datagrid-footer clearfix',
+    template: '#widget-tpl-grid-info-footer',
+    initialize: function(options){
+
+    },
+
+});
+
+Template.extend(
+    'widget-tpl-grid-info-footer',
+    [
+        '<div class="footer-left pull-left">',
+            '<span class="sync-time-indicator">{{lastSynced}}</span>',
+        '</div>',
+        '<div class="footer-right pull-right">',
+            '<span class="total-visible-record">{{recordCount}}</span>',
+        '</div>'
+    ]
+);
+
+/*===================Overriden Classes==============*/
 Backgrid.Extension.CustomRow = Backgrid.Row.extend({
 	className: 'data-row',
 
@@ -334,7 +389,6 @@ Backgrid.Extension.CustomRow = Backgrid.Row.extend({
 		return new (column.get("cell"))(options);
 	},	
 });
-
 
 /*===================New Cells==================*/
 
