@@ -172,9 +172,9 @@ Application.Widget.register('DataGrid', function(){
         		if(_.isFunction(this.actions[action]))
         			this.actions[action]($el);
         		else {
-                    try {
+                    if(_.isFunction(this[this.actions[action]])){
                         this[this.actions[action]]($el);
-                    }catch(e){
+                    }else {
                         Application.error('DataGrid Action Error', 'Action Listener [', this.actions[action], '] is registered but not implemented yet!');
                     }
                 }
@@ -217,7 +217,7 @@ Application.Widget.register('DataGrid', function(){
             // 'click .action-cell span[action=edit]': 'showForm',
             // 'click .action-cell span[action=delete]': 'deleteRecord',
             'click [action]': '_actionCalled',
-            'dblclick .data-row': 'editRecord',
+            'dblclick .data-row': 'editRecordDbClick',
             'event_SaveRecord': 'saveRecord',
             'event_RefreshRecords': '_refreshRecords',
             'event_FormClose': 'closeForm',
@@ -225,15 +225,13 @@ Application.Widget.register('DataGrid', function(){
         //General DOM event listener/ action listener:
 
         actions: {
-        	new: 'showForm',
-        	edit: 'showForm',
+        	new: 'newRecord',
+        	edit: 'editRecord',
         	delete: 'deleteRecord'
         },
 
-        //-------------Action Workers-----------------
-        showForm: function($actionBtn) {
-        	var recordId = $actionBtn.attr('target');
-
+        //------------------Workers-------------------
+        showForm: function(recordId) {
             if (recordId) { //edit mode.
                 var m = this.collection.get(recordId);
             } else //create mode.
@@ -262,7 +260,13 @@ Application.Widget.register('DataGrid', function(){
         closeForm: function(e, $form){
             $form.close();
         },
-        //--------------------------------------------
+        //---------------Action Workers---------------
+        newRecord: function($actionBtn){
+        	this._animateFormUp(this.grid.$el.find('thead'), this.grid.$el.find('tbody'));
+        },
+        editRecord: function($actionBtn){
+        	$actionBtn.parentsUntil('tbody', 'tr.data-row').dblclick();
+        },
         deleteRecord: function($actionBtn) {
         	var recordId = $actionBtn.attr('target');
             //find target
@@ -280,28 +284,11 @@ Application.Widget.register('DataGrid', function(){
         },
 
         //-----------Event Listeners-------------------
-        editRecord: function(e){
-            var $el = $(e.currentTarget);
-            var formView = this.showForm($el.find('[action="edit"]'));
-            var followingRecords = $el.nextAll('tr.data-row');
-            //scroll up the form
-            formView.$el.position({
-                my: 'center top',
-                at: 'center-1 bottom+2',
-                of: $el,
-                collision: 'none none',
-                using: function(prop, ref){
-                    followingRecords.animate({opacity: 0.2});
-                    formView.$el.animate(prop);
-                }
-            });
-            //recover
-            formView.once('close', _.bind(function(){
-                followingRecords.animate({
-                    opacity: 1
-                });
-            }, this));
-            //console.log($el.nextAll().length);
+        editRecordDbClick: function(e){
+        	var $el = $(e.currentTarget);
+            //-----Animation Effect-----
+            this._animateFormUp($el);
+            //---Animation Effect End----
         },
 
         saveRecord: function(e, sheet) {
@@ -333,6 +320,32 @@ Application.Widget.register('DataGrid', function(){
                 });
                 this.$el.trigger('event_FormClose', sheet);
             }
+        },
+        //--------------------------------------------
+        
+        //----------Animation: Form Slide-up----------
+        _animateFormUp: function($toRow, $hideFormParts){
+            var formView = this.showForm($toRow.find('[action="edit"]').attr('target'));
+            var followingRecords = $hideFormParts || $toRow.nextAll('tr.data-row');        	
+            //scroll up the form
+            formView.$el.position({
+                my: 'center top',
+                at: 'center-1 bottom+2',
+                of: $toRow,
+                collision: 'none none',
+                using: _.bind(function(prop, ref){
+                	this.grid.$el.toggleClass('form-overlay');
+                    followingRecords.animate({opacity: 0.1});
+                    formView.$el.animate(prop);
+                }, this)
+            });
+            //recover
+            formView.once('close', _.bind(function(){
+            	this.grid.$el.toggleClass('form-overlay');
+                followingRecords.animate({
+                    opacity: 1
+                });
+            }, this));
         }
         //--------------------------------------------
 
