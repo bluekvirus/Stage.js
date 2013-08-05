@@ -139,14 +139,16 @@ Application.Widget.register('DataGrid', function(){
         },
 
         _registerFooter: function(){
+            this.footerUI = new Backgrid.Extension.CustomFooter({
+                model: new Backbone.Model({
+                    lastSynced: new Date().toString(),
+                    recordCount: this.collection.length
+                })
+            });
+            this.ui.footer.show(footerUI);            
             this.listenTo(this.collection, 'all', _.bind(function(){
                 console.log(arguments);
-                // this.ui.footer.show(new Backgrid.Extension.CustomFooter({
-                //     model: new Backbone.Model({
-                //         lastSynced: new Date().toString(),
-                //         recordCount: 
-                //     })
-                // }));
+                footerUI.model.set(recordCount, this.collection.length);
             }, this));
         },
 
@@ -218,6 +220,7 @@ Application.Widget.register('DataGrid', function(){
             'dblclick .data-row': 'editRecord',
             'event_SaveRecord': 'saveRecord',
             'event_RefreshRecords': '_refreshRecords',
+            'event_FormClose': 'closeForm',
         },
         //General DOM event listener/ action listener:
 
@@ -256,6 +259,9 @@ Application.Widget.register('DataGrid', function(){
             }
 
         },
+        closeForm: function(e, $form){
+            $form.close();
+        },
         //--------------------------------------------
         deleteRecord: function($actionBtn) {
         	var recordId = $actionBtn.attr('target');
@@ -268,11 +274,7 @@ Application.Widget.register('DataGrid', function(){
             //promp user
             var that = this;
             Application.prompt('Are you sure?', 'error', function() {
-                if (that._isRefMode()) m.destroy({
-                    success: function(model, resp) {
-                        //that._refreshRecords();
-                    }
-                });
+                if (that._isRefMode()) m.destroy();
                 else that.collection.remove(m);
             })
         },
@@ -281,17 +283,23 @@ Application.Widget.register('DataGrid', function(){
         editRecord: function(e){
             var $el = $(e.currentTarget);
             var formView = this.showForm($el.find('[action="edit"]'));
-            var preRecords = $el.prevAll('.data-row').hide();
-            var followingRecords = $el.nextAll('.data-row').hide();
+            var followingRecords = $el.nextAll('tr.data-row');
+            //scroll up the form
             formView.$el.position({
                 my: 'center top',
-                at: 'center bottom',
+                at: 'center-1 bottom+2',
                 of: $el,
-                collision: 'none none'
+                collision: 'none none',
+                using: function(prop, ref){
+                    followingRecords.animate({opacity: 0.2});
+                    formView.$el.animate(prop);
+                }
             });
+            //recover
             formView.once('close', _.bind(function(){
-                preRecords.show();
-                followingRecords.show();
+                followingRecords.animate({
+                    opacity: 1
+                });
             }, this));
             //console.log($el.nextAll().length);
         },
@@ -307,15 +315,14 @@ Application.Widget.register('DataGrid', function(){
                         if (res.payload) {
                             //that._refreshRecords();
                             
-                            var locator= {};//locate the model in collection , if not add it manually.
+                            var locator= {};//locate the model in collection , if not, add it manually.
                             locator[model.idAttribute] = model.id;
                             if(that.grid.collection.where(locator).length === 0){
                             	that.grid.collection.add(model, {silent:true});
                             	that.grid.insertRow(model, that.grid.collection);
                             }
                             that._applyToNewSortData();
-
-                            sheet.close();
+                            that.$el.trigger('event_FormClose', sheet);
                         }
                     }
                 }); //save the model to server
@@ -324,7 +331,7 @@ Application.Widget.register('DataGrid', function(){
                 this.collection.add(sheet.model, {
                     merge: true
                 });
-                sheet.close();
+                this.$el.trigger('event_FormClose', sheet);
             }
         }
         //--------------------------------------------

@@ -304,7 +304,7 @@
 
 	//shorthand methods
 	Application.patchScripts = function(){
-		_patch('/tryscripts', 'scripts/_try');
+		_patch('/tryscripts', 'scripts/_try', true);
 	} 
 
 	Application.patchAdminGen = function(){

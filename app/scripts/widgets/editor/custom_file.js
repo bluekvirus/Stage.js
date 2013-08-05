@@ -261,7 +261,7 @@ Template.extend(
     'custom-tpl-widget-editor-file', 
     [
     '<div class="file-editor-header row-fluid">',
-        '<div class="span2 well well-small">',
+        '<div class="span2">',
             '<div class="fileinput-button btn btn-block">',
                 '<i class="icon-upload"></i> File',
                 '<input class="fileupload-field" type="file" name="files[]" data-url="{{meta.url}}" multiple>',

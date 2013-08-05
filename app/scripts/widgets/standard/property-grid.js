@@ -2,8 +2,11 @@
  *
  * Property Grid Widget to display json format status.
  *
- * @author Xin Dong (xindong@fortinet.com), Tim Liu (zhiyuanliu@fortinet.com)
- * @update 2013.04.02
+ * Added custom options:
+ * cells: new ItemView({...}) to allow customized cells for displaying certain properties.
+ *
+ * @author Xin Dong (xindong@fortinet.com), Yan Zhu (yanzhu@fortinet.com), Tim Liu (zhiyuanliu@fortinet.com)
+ * @update 2013.08.05
  * 
  */
 
@@ -15,14 +18,23 @@ Application.Widget.register('PropertyGrid', function(){
 	});
 
 	var PropertyGrid = Backbone.Marionette.CompositeView.extend({	
-			template: "#widget-propertygrid-view-wrap-tpl",	
+			template: "#widget-propertygrid-view-wrap-tpl",
+			className: 'property-grid',
 			itemView: PropertyItemView,
 			// specify a jQuery selector to put the itemView instances into
-			itemViewContainer: "tbody",  		
+			itemViewContainer: "tbody",
 			initialize:function(options){
 		 		this.collection = new Backbone.Collection();
+		 		var that = this;
 			 	_.each(options.data,function(val,key){
-			 		this.collection.add({key: options.map[key] || key,val:val});
+			 		if (options.cells && options.cells[key]) {
+			 			val = options.cells[key].render().$el.html();
+			 		}
+			 		this.collection.add({
+			 			key: key,
+			 			label: (options.map && options.map[key]) || key,
+			 			val: val
+			 		});
 			 	}, this);
 			 	this.model = new Backbone.Model(options.meta);				
 			}		
@@ -41,17 +53,20 @@ Application.Widget.register('PropertyGrid', function(){
 Template.extend(	
 	'property-item-tpl',
 	[
-		'<td>{{key}}</td>',
-		'<td>{{val}}</td>'
+		'<td class="cell key-cell field-{{key}}">{{{label}}}</td>',
+		'<td class="cell value-cell field-{{key}}">{{{val}}}</td>'
 	]
 );
 
 Template.extend(	
 	'widget-propertygrid-view-wrap-tpl',
 	[
-		'<div region="title" class="alert alert-info">{{title}}</div>',
+		'<div region="title" class="alert alert-info header">',
+			'<i class="icon-tasks header-icon"></i> ',
+			'<span class="header-title">{{{title}}}</span>',
+		'</div>',
 		'<table class="table">',
-		'<tbody></tbody>',
+			'<tbody></tbody>',
 		'</table>'
 	]
 );
