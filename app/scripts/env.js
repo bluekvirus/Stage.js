@@ -100,7 +100,7 @@
 				layout: 'bottom',
 				dismissQueue: true,
 				callback: {
-					afterClose: cb || function(){}
+					afterClose: cb || $.noop
 				}
 			});
 		};
@@ -120,7 +120,7 @@
 				timeout: 800,
 				dismissQueue: true,
 				callback: {
-					afterClose: cb || function(){}
+					afterClose: cb || $.noop
 				}				
 			});
 		}
@@ -128,7 +128,7 @@
 		/**
 		 * Prompt the user if they are sure about this...
 		 */
-		Application.prompt = function(question, type, okCb, cancelCb){
+		Application.prompt = function(question, type, okCb, cancelCb, closeCb){
 
 			//TODO:: Mask/Disable user interactions first.
 
@@ -146,7 +146,10 @@
 						if(cancelCb)
 							cancelCb();
 					}}
-				]
+				],
+				callback: {
+					afterClose: closeCb || $.noop
+				}
 			});
 		}
 

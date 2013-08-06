@@ -107,11 +107,12 @@ Application.Widget.register('DataGrid', function(){
             /*WARNING:: a fetch() will screw up the UI tableSorter, need to fire update/updateAll event*/
         },
 
-        /*======Private Helper Functions======*/
-        _isRefMode: function(){
-        	return this.mode !== 'subDoc';
+        _lock: false, //the UI lock, if true, no interaction will be responsed.
+        isRefMode: function(){
+            return this.mode !== 'subDoc';
         },
 
+        /*======Private Helper Functions======*/
         _hookupGlobalFilter: function(){
 			this.grid.$el.sieve({
 				itemSelector: '.data-row',
@@ -151,38 +152,6 @@ Application.Widget.register('DataGrid', function(){
                 footerUI.model.set(recordCount, this.collection.length);
             }, this));
         },
-
-        _applyToNewSortData: function(){
-        	this.grid.$el.trigger('updateAll', [true]);
-        },
-
-        _refreshRecords: function(e) {
-            if(e) e.stopPropagation();
-            if (this._isRefMode()) {
-                this.collection.fetch();
-            }
-        },
-
-        _actionCalled: function(e){
-        	e.stopPropagation();
-        	var $el = $(e.currentTarget);
-        	//dispatch
-        	var action = $el.attr('action');
-        	if(this.actions[action]){
-        		if(_.isFunction(this.actions[action]))
-        			this.actions[action]($el);
-        		else {
-                    if(_.isFunction(this[this.actions[action]])){
-                        this[this.actions[action]]($el);
-                    }else {
-                        Application.error('DataGrid Action Error', 'Action Listener [', this.actions[action], '] is registered but not implemented yet!');
-                    }
-                }
-        			
-        	}else {
-        		Application.error('DataGrid Action Error', 'Action [', action, '] is not implemented yet!');
-        	}
-        },
         //====================================
 
         /*======Renderring Related Hooks======*/
@@ -191,7 +160,7 @@ Application.Widget.register('DataGrid', function(){
 
             //if it is not in subDoc mode, we let the collection to fetch data itself.
             //this will trigger the 'reset' event which in turn will trigger 'backgrid:rendered' on backgrid
-            if (this._isRefMode()) this.collection.fetch({
+            if (this.isRefMode()) this.collection.fetch({
             	success: _.bind(function(){
             		//delayed here so we can trigger a 'reset' which in turn triggers a 'backgrid:rendered' event.
             		this.ui.body.html(this.grid.render().el);
@@ -213,16 +182,13 @@ Application.Widget.register('DataGrid', function(){
         
         //*============Events & Actions===============*/
         events: {
-            // 'click .btn[action=new]': 'showForm',
-            // 'click .action-cell span[action=edit]': 'showForm',
-            // 'click .action-cell span[action=delete]': 'deleteRecord',
             'click [action]': '_actionCalled',
             'dblclick .data-row': 'editRecordDbClick',
             'event_SaveRecord': 'saveRecord',
-            'event_RefreshRecords': '_refreshRecords',
+            'event_RefreshRecords': 'refreshRecords',
             'event_FormClose': 'closeForm',
         },
-        //General DOM event listener/ action listener:
+        //Action listeners - through _actionCalled():
 
         actions: {
         	new: 'newRecord',
@@ -231,7 +197,7 @@ Application.Widget.register('DataGrid', function(){
         },
 
         //------------------Workers-------------------
-        showForm: function(recordId) {
+        _showForm: function(recordId) {
             if (recordId) { //edit mode.
                 var m = this.collection.get(recordId);
             } else //create mode.
@@ -256,15 +222,17 @@ Application.Widget.register('DataGrid', function(){
             }
 
         },
-        closeForm: function(e, $form){
-            $form.close();
+
+        _applyToNewSortData: function(){
+            this.grid.$el.trigger('updateAll', [true]);
         },
+
         //---------------Action Workers---------------
         newRecord: function($actionBtn){
         	this._animateFormUp(this.grid.$el.find('thead'), this.grid.$el.find('tbody'));
         },
         editRecord: function($actionBtn){
-        	$actionBtn.parentsUntil('tbody', 'tr.data-row').dblclick();
+        	this._animateFormUp($actionBtn.parentsUntil('tbody', 'tr.data-row'));
         },
         deleteRecord: function($actionBtn) {
         	var recordId = $actionBtn.attr('target');
@@ -276,25 +244,49 @@ Application.Widget.register('DataGrid', function(){
             }
             //promp user
             var that = this;
+            $actionBtn.parentsUntil('tbody', 'tr.data-row').addClass('data-row-focused');
             Application.prompt('Are you sure?', 'error', function() {
-                if (that._isRefMode()) m.destroy();
+                if (that.isRefMode()) m.destroy();
                 else that.collection.remove(m);
+            }, $.noop, function(){
+                $actionBtn.parentsUntil('tbody', 'tr.data-row').removeClass('data-row-focused');
             })
         },
 
         //-----------Event Listeners-------------------
+        _actionCalled: function(e){
+            e.stopPropagation();
+            if(this._lock) return;
+
+            var $el = $(e.currentTarget);
+            //dispatch
+            var action = $el.attr('action');
+            if(this.actions[action]){
+                if(_.isFunction(this.actions[action]))
+                    this.actions[action]($el);
+                else {
+                    if(_.isFunction(this[this.actions[action]])){
+                        this[this.actions[action]]($el);
+                    }else {
+                        Application.error('DataGrid Action Error', 'Action Listener [', this.actions[action], '] is registered but not implemented yet!');
+                    }
+                }
+                    
+            }else {
+                Application.error('DataGrid Action Error', 'Action [', action, '] is not implemented yet!');
+            }
+        },
         editRecordDbClick: function(e){
+            e.stopPropagation()
         	var $el = $(e.currentTarget);
-            //-----Animation Effect-----
-            this._animateFormUp($el);
-            //---Animation Effect End----
+            $el.find('[action=edit]').click();
         },
 
         saveRecord: function(e, sheet) {
             e.stopPropagation();
             //1.if this grid is used as top-level record holder:
             var that = this;
-            if (this._isRefMode()) {
+            if (this.isRefMode()) {
                 var options = {
                     notify: true,
                     success: function(model, res) {
@@ -316,30 +308,48 @@ Application.Widget.register('DataGrid', function(){
                 this.$el.trigger('event_FormClose', sheet);
             }
         },
+        refreshRecords: function(e) {
+            if(e) e.stopPropagation();
+            if (this.isRefMode()) {
+                this.collection.fetch();
+            }
+        },        
+        closeForm: function(e, $form){
+            $form.close();
+        },        
         //--------------------------------------------
         
-        //----------Animation: Form Slide-up----------
+        //----------Animation Related----------
+        _lockUI: function(){
+            this._lock = true;
+            this.grid.$el.addClass('form-overlay');
+        },
+        _unlockUI: function(){
+            this._lock = false;
+            this.grid.$el.removeClass('form-overlay');
+        },
+            //------: Form Slide-up-----------
         _animateFormUp: function($toRow, $hideFormParts){
-            var formView = this.showForm($toRow.find('[action="edit"]').attr('target'));
+            var formView = this._showForm($toRow.find('[action="edit"]').attr('target'));
             var followingRecords = $hideFormParts || $toRow.nextAll('tr.data-row');        	
             //scroll up the form
             formView.$el.position({
                 my: 'center top',
-                at: 'center-1 bottom+2',
+                at: 'center bottom+2',
                 of: $toRow,
                 collision: 'none none',
                 using: _.bind(function(prop, ref){
-                	this.grid.$el.toggleClass('form-overlay');
+                    this._lockUI();
                     followingRecords.animate({opacity: 0.1});
                     formView.$el.animate(prop);
                 }, this)
             });
             //recover
             formView.once('close', _.bind(function(){
-            	this.grid.$el.toggleClass('form-overlay');
                 followingRecords.animate({
                     opacity: 1
                 });
+                this._unlockUI();
             }, this));
         }
         //--------------------------------------------

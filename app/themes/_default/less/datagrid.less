@@ -58,6 +58,16 @@
 	}
   }
 
+  /*tr*/
+  tr {
+	&.data-row-focused {
+		td {
+			border-left-color: @color-red;
+			border-left-width: 2px;
+		}
+	}
+  }
+
   td {
   	&.boolean-cell {
   		text-align: center;
@@ -71,9 +81,9 @@
 	.select-row-cell,
 	.select-all-header-cell {
 		text-align: center;
-  		input {
-  			margin: 0;
-  		}		
+			input {
+				margin: 0;
+			}		
 	}
 
   &.form-overlay {
@@ -119,19 +129,5 @@
 	}
 }
 
-//backgrid filter css - deprecated.
-.backgrid-filter {
-	.pull-right;
-	.icon-search {
-		//.icon-filter;
-		opacity: 0.3;
-	}
-	.close {
-		float: none;
-		.icon-remove;
-		opacity: 1;
-	}
-
-}
 
 
