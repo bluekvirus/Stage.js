@@ -235,9 +235,8 @@ Application.Widget.register('DataGrid', function(){
             if (recordId) { //edit mode.
                 var m = this.collection.get(recordId);
             } else //create mode.
-            var m = new this.collection.model({}, {
-                url: this.collection.url
-            });
+            var m = new this.collection.model();
+
 
             if(this.formWidget){
             	//create and show it
@@ -296,23 +295,19 @@ Application.Widget.register('DataGrid', function(){
             //1.if this grid is used as top-level record holder:
             var that = this;
             if (this._isRefMode()) {
-                sheet.model.save({}, {
+                var options = {
                     notify: true,
                     success: function(model, res) {
-                        if (res.payload) {
-                            //that._refreshRecords();
-                            
-                            var locator= {};//locate the model in collection , if not, add it manually.
-                            locator[model.idAttribute] = model.id;
-                            if(that.grid.collection.where(locator).length === 0){
-                            	that.grid.collection.add(model, {silent:true});
-                            	that.grid.insertRow(model, that.grid.collection);
-                            }
-                            that._applyToNewSortData();
-                            that.$el.trigger('event_FormClose', sheet);
-                        }
+                        that._applyToNewSortData();
+                        that.$el.trigger('event_FormClose', sheet);
                     }
-                }); //save the model to server
+                };
+                if(!sheet.model.isNew())//update
+                    sheet.model.save({}, options); //save the model to server
+                else {
+                    //create
+                    this.collection.create(sheet.model.attributes, options);
+                }
             } else { //2.else if this grid is used in subDoc mode for sub-field:
                 //add or update the model into the referenced collection:
                 this.collection.add(sheet.model, {
