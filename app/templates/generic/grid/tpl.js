@@ -1,6 +1,6 @@
 /**
  *
- * Basic DataGrid Outline.
+ * Basic DataGrid Outline. (deprecated - see scripts/widgets/standard/data-grid.js)
  * 
  */
 

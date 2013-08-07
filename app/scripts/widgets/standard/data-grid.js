@@ -100,6 +100,7 @@ Application.Widget.register('DataGrid', function(){
             	//the grid's global filter (top-right)
             	this._hookupGlobalFilter();
             	this._hookupColumnSorter();
+                this._registerFooter();
             	this.afterRender();
             }, this));
             
@@ -140,16 +141,19 @@ Application.Widget.register('DataGrid', function(){
         },
 
         _registerFooter: function(){
-            this.footerUI = new Backgrid.Extension.CustomFooter({
+            if(!this.isRefMode()) return;
+            this.infoBar = new Backgrid.Extension.InfoBar({
                 model: new Backbone.Model({
                     lastSynced: new Date().toString(),
                     recordCount: this.collection.length
                 })
             });
-            this.ui.footer.show(footerUI);            
-            this.listenTo(this.collection, 'all', _.bind(function(){
-                console.log(arguments);
-                footerUI.model.set(recordCount, this.collection.length);
+            this.ui.footer.html(this.infoBar.render().el);            
+            this.listenTo(this.collection, 'add remove', _.bind(function(e){
+                this.infoBar.model.set('recordCount', this.collection.length);
+            }, this));
+            this.listenTo(this.collection, 'sync destroy', _.bind(function(e){
+                this.infoBar.model.set('lastSynced', new Date().toString());
             }, this));
         },
         //====================================
@@ -365,7 +369,7 @@ Template.extend(
 	'widget-datagrid-view-wrap-tpl',
 	[
 		'<div class="datagrid-header-container">',
-			'<a class="btn btn-success btn-action-new" action="new">Create</a>',
+			'<a class="btn btn-success btn-action-new" action="new"><i class="icon-plus-sign icon-white"></i> New</a>',
 			//'<a class="btn btn-danger pull-right" action="delete"><i class="icon-trash"></i></a>',
 			'<div class="pull-right input-prepend local-filter-box">',
 				'<span class="add-on"><i class="icon-filter"></i></span>',
@@ -377,25 +381,27 @@ Template.extend(
 	]
 );
 
-/*===================Footer=====================*/
-Backgrid.Extension.CustomFooter = Backbone.Marionette.ItemView.extend({
+/*===================Info Bar=====================*/
+Backgrid.Extension.InfoBar = Backbone.Marionette.ItemView.extend({
     //show some info and prepare a space for paginator
-    className: 'datagrid-footer clearfix',
-    template: '#widget-tpl-grid-info-footer',
+    className: 'datagrid-infobar clearfix',
+    template: '#widget-tpl-grid-info-bar',
     initialize: function(options){
-
+        this.listenTo(this.model, 'change', _.bind(function(){
+            this.render();
+        }, this))
     },
 
 });
 
 Template.extend(
-    'widget-tpl-grid-info-footer',
+    'widget-tpl-grid-info-bar',
     [
-        '<div class="footer-left pull-left">',
-            '<span class="sync-time-indicator">{{lastSynced}}</span>',
+        '<div class="info-bar-datetime pull-right">',
+            '<small>Last Synchronized: <span class="sync-time-indicator">{{lastSynced}}</span></small>',
         '</div>',
-        '<div class="footer-right pull-right">',
-            '<span class="total-visible-record">{{recordCount}}</span>',
+        '<div class="info-bar-count pull-left">',
+            '<small>Record Count: <span class="total-visible-record">{{recordCount}}</span></small>',
         '</div>'
     ]
 );
