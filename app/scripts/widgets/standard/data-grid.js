@@ -41,6 +41,14 @@
  * + actions [cell: 'action'] only. [{name: ..., title: ...}].
  *
  * *******
+ * Extension (high-lighted ones)
+ * *******
+ * actionColumnTagOverride
+ * actionColumnTags
+ * afterRender()
+ * 
+ *
+ * *******
  * Customized
  * *******
  * CustomRow - from Row
@@ -62,10 +70,6 @@ Application.Widget.register('DataGrid', function(){
             footer: '.datagrid-footer-container'
         },
 
-        //remember the parent layout. So later on a 'new' or 'modify'
-        //event will have a container region to render the form.
-        cells: {},
-        //[key:cell type] map to be overriden in _extension.js
         initialize: function(options) {
 
             //a. columns, mode, parent container $el:
@@ -81,7 +85,13 @@ Application.Widget.register('DataGrid', function(){
                 col.editable = col.editable || false;
                 col.sortable = false;
                 //allow cell definition overriden in _extension.js
-                col.cell = that.cells[col.name] || col.cell; //necessary ??? TBI
+                col.cell = (that.cells && that.cells[col.name]) || col.cell;
+                if(col.cell === 'action' && that.actionColumnTags){
+                    if(that.actionColumnTagOverride)
+                        col.actions = that.actionColumnTags || [];
+                    else //extend on default
+                        col.actions = col.actions.concat(that.actionColumnTags || []);
+                }
             });
 
             //c. the grid instance 'mod_backgrid'******************************************
@@ -161,7 +171,6 @@ Application.Widget.register('DataGrid', function(){
         /*======Renderring Related Hooks======*/
         //Add a backgrid.js grid into the body 
         onRender: function() {
-
             //if it is not in subDoc mode, we let the collection to fetch data itself.
             //this will trigger the 'reset' event which in turn will trigger 'backgrid:rendered' on backgrid
             if (this.isRefMode()) this.collection.fetch({

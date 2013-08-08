@@ -43,9 +43,6 @@
             }
 
         },
-        'View.Extension.DataGrid.ActionCell': { //Todo:: 
-
-        },
         'View.Extension.DataGrid': { //Todo:: your customized cell definition goes here...
 
         },
@@ -56,6 +53,11 @@
 
         },
         'View.DataGrid': { //Todo::
+            //actionColumnTagOverride: true,
+            actionColumnTags: [
+                {name: "detail", title: "Details"},
+                {name: "show", title: "Show"}
+            ],
             afterRender: function() { //Todo::
                 //console.log(this);
             },

@@ -21,15 +21,14 @@
         'View.Form': {
 
             onRenderPlus: function() { //Todo::
-                $('select').flattenSelect();
+                //$('select').flattenSelect();
+                $('select').hoverSelect();
             },
 
             onFieldNotify: function(e, data){
                 console.log(data);
             }
 
-        },
-        'View.Extension.DataGrid.ActionCell': { //Todo:: 
         },
         'View.Extension.DataGrid': { //Todo:: your customized cell definition goes here...
         },

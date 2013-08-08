@@ -44,14 +44,14 @@
 				//extend its prototype.
 				_.extend(target.prototype, val);
 			}else{
-				//the last bit of key is not yet initialized
+				//the last bit of key is not yet found on this level,
 				//which means the key is an option key inside 
-				//a component's definition in this module.
+				//a component's definition.
 				//We do NOT bother developers with the component
-				//name here, we will try to hookup with the 'nearest'
-				//one.
+				//name here, we will try to hookup with the 'nearest' key in its prototype chain.
 				var listOfParentObjs = key.split('.');
 				var tails = [];
+				var oldKey = key;
 				try{
 					while(!target && listOfParentObjs.length > 0){
 						tails.unshift(listOfParentObjs.pop());
@@ -59,12 +59,18 @@
 						target = _getByKeyStr(app[name], key);	
 					}
 					if(tails.length <= 0) throw new Error('!');
-					_.extend(target, val);
+					if(target)
+						_.extend(target, val);
+					else {
+						//target still undefined, which means this key is not in all the prototype chains. 
+						//[Important!] Developer should back track to this key's parent object in .extension.js in order to add it.
+						//--------------------------------------
+						//alert(oldKey +', ' + name); //-debug: uncomment this line
+						//--------------------------------------
+					}
 				}catch(e){
 					app.error('Extender Error', name, ' when overriding ', key);
 				}
-				
-				
 			}
 		});
 	};

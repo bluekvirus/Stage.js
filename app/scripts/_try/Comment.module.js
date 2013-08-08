@@ -332,8 +332,7 @@
             sortDisabled: true,
             actions: [
                 {name: "edit", title: "Edit"},
-                {name: "delete", title: "Delete"},
-                {name: "detail", title: "Details"}
+                {name: "delete", title: "Delete"}
             ]
         }]
 
