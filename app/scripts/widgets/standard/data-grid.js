@@ -86,11 +86,13 @@ Application.Widget.register('DataGrid', function(){
                 col.sortable = false;
                 //allow cell definition overriden in _extension.js
                 col.cell = (that.cells && that.cells[col.name]) || col.cell;
-                if(col.cell === 'action' && that.actionColumnTags){
+                if(col.cell === 'action' && that.actionColumnTags && that.actionColumnTags.length > 0){
                     if(that.actionColumnTagOverride)
                         col.actions = that.actionColumnTags || [];
-                    else //extend on default
-                        col.actions = col.actions.concat(that.actionColumnTags || []);
+                    else {//extend on default
+                        col.actions = col.actions.concat(that.actionColumnTags.splice(0, that.actionColumnTags.length) || []);
+                        
+                    }
                 }
             });
 
