@@ -15,19 +15,19 @@
 	var manager = app.module('Widget');
 
 	manager.register = function(name, factory){
-		// manager[name] = {
-		// 	factory: factory,
-		// 	prototype: factory()
-		// }
-		manager[name] = factory();
+
+		manager[name] = factory; //register factory instead of factory() to protect our widget definition.
 	};
+
+	manager.get = function(name, options){
+		return manager[name](options); //more options to pass into the widget factory.
+	}
 
 	//could be name, id, group, options to remember the instances
 	//[Under consideration]
 	manager.create = function(name, options){
 		if(manager[name])
-			//return new manager[name].prototype(options);
-			return new manager[name](options);
+			return new (manager.get(name))(options);
 		app.error('Widget Registry Error', 'widget ', name, ' not found...');
 	}
 

@@ -307,7 +307,7 @@
      */
     module.View.Extension.DataGrid = {};
 
-    module.View.DataGrid = app.Widget.DataGrid.extend({
+    module.View.DataGrid = app.Widget.get('DataGrid').extend({
 
         columns: [{
             name: "_selected_",
