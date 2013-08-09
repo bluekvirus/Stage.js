@@ -15,6 +15,10 @@
 	var manager = app.module('Widget');
 
 	manager.register = function(name, factory){
+		// manager[name] = {
+		// 	factory: factory,
+		// 	prototype: factory()
+		// }
 		manager[name] = factory();
 	};
 
@@ -22,6 +26,7 @@
 	//[Under consideration]
 	manager.create = function(name, options){
 		if(manager[name])
+			//return new manager[name].prototype(options);
 			return new manager[name](options);
 		app.error('Widget Registry Error', 'widget ', name, ' not found...');
 	}

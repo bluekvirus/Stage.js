@@ -70,6 +70,7 @@ Application.Widget.register('DataGrid', function(){
             footer: '.datagrid-footer-container'
         },
 
+        cells: {},//extend cells in .extension.js (Do NOT DELETE this empty block here!!)
         initialize: function(options) {
 
             //a. columns, mode, parent container $el:

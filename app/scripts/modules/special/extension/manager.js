@@ -53,16 +53,16 @@
 				var tails = [];
 				var oldKey = key;
 				try{
-					while(!target && listOfParentObjs.length > 0){
+					if(!target && listOfParentObjs.length > 0){
 						tails.unshift(listOfParentObjs.pop());
 						key = listOfParentObjs.join('.')+'.prototype.'+tails.join('.');
 						target = _getByKeyStr(app[name], key);	
 					}
-					if(tails.length <= 0) throw new Error('!');
 					if(target)
 						_.extend(target, val);
 					else {
-						//target still undefined, which means this key is not in all the prototype chains. 
+						throw new Error('!');
+						//target still undefined, which means this key is not in the prototype chain 1 lvl up. 
 						//[Important!] Developer should back track to this key's parent object in .extension.js in order to add it.
 						//--------------------------------------
 						//alert(oldKey +', ' + name); //-debug: uncomment this line
