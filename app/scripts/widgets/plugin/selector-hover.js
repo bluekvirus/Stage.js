@@ -41,10 +41,16 @@ Template.extend('custom-tpl-widget-plugin-hover-select', [
 		'</div>',
 		'<div class="select-opts">',
 			'<div class="arrow"></div>',
+			'<div class="input-append pull-right select-search-box">',
+				'<input class="input input-small" type="text" placeholder="Filter...">',
+				'<span class="add-on"><i class="icon-filter"></i></span>',
+			'</div>',
 			//options by group
 			'{{#each groups}}',
 				'<div class="select-opt-group">',
-					'<div class="select-opt-group-title">{{@key}}</div>',
+					'<div class="select-opt-group-title">',
+						'<span>{{@key}}</span>',
+					'</div>',
 					'<div class="select-opt-group-items">',
 						'{{#each this}}',
 							'<span class="select-opt-item {{#unless this.key}}select-opt-item-empty{{/unless}}" data-value="{{this.val}}">{{this.key}}</span>',
@@ -231,6 +237,13 @@ Template.extend('custom-tpl-widget-plugin-hover-select', [
 			informOldSelectTag($oldSelect);
 
 			e.stopPropagation();
+		});
+
+		//4. item search:
+		$select.sieve({
+			itemSelector: '.select-opt-item',
+			//textSelector: '.filterable',
+			searchInput: $select.find('.select-search-box input')
 		});
 
 	}
