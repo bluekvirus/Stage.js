@@ -30,10 +30,11 @@
 	module.resolve = function(resource, form, cb){
 		if(!cb){
 			cb = form;
+			form = undefined;
 		}
 		var options = {
 			//signal the server that we will not use paginations 
-			data: {pagination: false},
+			data: {pagination: false, formRecordId: form && form.model.id},
 			processData: true, //this will convert data into query params.
 			success: function(data){
 				//returned from url or collection fetch()
