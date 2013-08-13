@@ -104,24 +104,28 @@ Application.Widget.register('DataGrid', function(){
                 //customized header TBI (local sorting, before/after filtering op)
                 //customized body.row (row data-attribute by record, cell class per column)
                 row: Backgrid.Extension.CustomRow,
+                //body: Backgrid.Extension.CustomBody,
                 //customized footer (pagination, statistics, date/versions)
             });
             //******************************************************************************
 
             //d. listen to the 'mod_backgrid''s render event for once and plugin our sorter & filters.
-            this.grid.once('backgrid:rendered', _.bind(function(){
+            this.grid.listenTo(this.grid,'backgrid:rendered', _.bind(function(){
             	//the grid's global filter (top-right)
             	this._hookupGlobalFilter();
             	this._hookupColumnSorter();
                 this._registerFooter();
-            	this.afterRender();
             }, this));
+
+            this.listenTo(this.grid, 'widget:rendered', _.bind(function(){
+                this.afterRender();
+            },this))
             
             //e. hook up with 'backgrid:refresh' see this._hookupColumnSorter()
-            /*WARNING:: a fetch() will screw up the UI tableSorter, need to fire update/updateAll event*/
-
-            this.grid.body.listenTo(this.grid.collection, 'sync', this.grid.body.refresh);
-            this.grid.$el.on('updateAll', this.afterRefresh);
+            this.grid.listenTo(this.grid.collection,'backgrid:refresh', _.bind(function(){
+                this.afterRefresh(); //triggered by sort, reset event (see Backgrid.Body)
+            }, this));
+            /*WARNING:: a fetch() will screw up the UI tableSorter, need to fire update/updateAll event*/        
         },
 
         _lock: false, //the UI lock, if true, no interaction will be responsed.
@@ -181,12 +185,14 @@ Application.Widget.register('DataGrid', function(){
             //this will trigger the 'reset' event which in turn will trigger 'backgrid:rendered' on backgrid
             if (this.isRefMode()) this.collection.fetch({
             	success: _.bind(function(){
-            		//delayed here so we can trigger a 'reset' which in turn triggers a 'backgrid:rendered' event.
             		this.ui.body.html(this.grid.render().el);
+                    this.grid.trigger('widget:rendered', this);
             	}, this)
             });
-            else
+            else{
             	this.ui.body.html(this.grid.render().el);
+                this.grid.trigger('widget:rendered', this);
+            }
 
             //Do **NOT** register any event listeners here.
             //It might get registered again and again. 
@@ -331,7 +337,7 @@ Application.Widget.register('DataGrid', function(){
         refreshRecords: function(e) {
             if(e) e.stopPropagation();
             if (this.isRefMode()) {
-                this.collection.fetch();
+                this.collection.fetch({reset: true});
             }
         },        
         closeForm: function(e, $form){
@@ -436,6 +442,26 @@ Backgrid.Extension.CustomRow = Backgrid.Row.extend({
 		return new (column.get("cell"))(options);
 	},	
 });
+
+// Backgrid.Extension.CustomBody = Backgrid.Body.extend({
+//   render: function () {
+//     this.$el.empty();
+
+//     var fragment = document.createDocumentFragment();
+//     for (var i = 0; i < this.rows.length; i++) {
+//       var row = this.rows[i];
+//       fragment.appendChild(row.render().el);
+//     }
+
+//     this.el.appendChild(fragment);
+
+//     this.delegateEvents();
+
+//     this.trigger('backgrid:rowRendered', this);
+
+//     return this;
+//   },
+// });
 
 /*===================New Cells==================*/
 

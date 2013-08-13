@@ -59,10 +59,10 @@
                 {name: "show", title: "Show"}
             ],
             afterRender: function() { //Todo::
-                //console.log(this);
+                console.log('datagrid:rendered', this.$el.find('.data-row').length); //will fire only after backgrid:rendered. (can't use $('.data-row') )
             },
             afterRefresh: function(){
-                //console.log($('.data-row').length);
+                console.log('datagrid:refresh', this.$el.find('.data-row').length); //will fire upon each sort, reset (backgrid:refresh)
             },
             showDetails: function($actionBtn){
                 console.log($actionBtn.attr('target'));
