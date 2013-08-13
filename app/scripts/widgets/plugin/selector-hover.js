@@ -296,7 +296,15 @@ Template.extend('custom-tpl-widget-plugin-hover-select', [
 				}
 			});
 			reRender($el);
-
+			//=====give it a little adjustment upon window resizing=====
+			function resizeFix() {
+				if($el.parent().length > 0)
+					reRender($el);
+				else{
+					$(window).off('resize', resizeFix);
+				}
+			}
+			$(window).resize(resizeFix);
 		});
 
 	}

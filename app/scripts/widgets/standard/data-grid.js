@@ -119,6 +119,9 @@ Application.Widget.register('DataGrid', function(){
             
             //e. hook up with 'backgrid:refresh' see this._hookupColumnSorter()
             /*WARNING:: a fetch() will screw up the UI tableSorter, need to fire update/updateAll event*/
+
+            this.grid.body.listenTo(this.grid.collection, 'sync', this.grid.body.refresh);
+            this.grid.$el.on('updateAll', this.afterRefresh);
         },
 
         _lock: false, //the UI lock, if true, no interaction will be responsed.
@@ -189,7 +192,8 @@ Application.Widget.register('DataGrid', function(){
             //It might get registered again and again. 
         },
         //Empty Stub. override in extension
-        afterRender: function() {},
+        afterRender: $.noop,
+        afterRefresh: $.noop,
         //Clean up zombie views.
         onBeforeClose: function() {
             this.grid.remove();

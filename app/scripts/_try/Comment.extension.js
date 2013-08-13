@@ -61,6 +61,9 @@
             afterRender: function() { //Todo::
                 //console.log(this);
             },
+            afterRefresh: function(){
+                //console.log($('.data-row').length);
+            },
             showDetails: function($actionBtn){
                 console.log($actionBtn.attr('target'));
             },
