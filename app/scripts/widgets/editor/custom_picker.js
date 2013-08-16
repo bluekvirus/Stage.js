@@ -71,7 +71,11 @@
             var that = this;
             Application.DataCenter.resolve(this._options.dataSrc, this._options.form, function(data){
                 //filtered with already selected data.
-                var selected = _.object(that._options.selectedVal, that._options.selectedVal);
+                var selected = _.reduce(that._options.selectedVal, function(memo, v, index){
+                    memo[v] = index+1;
+                    return memo;
+                },{});
+                //_.object(that._options.selectedVal, that._options.selectedVal); - deprecated selected array.
                 var srcData = [], targetData = [];
                 _.each(data, function(item){
                     var displayItem = {
@@ -82,6 +86,10 @@
                         srcData.push(displayItem);
                     else
                         targetData.push(displayItem);
+                });
+                //recover selected value order:
+                targetData = _.sortBy(targetData, function(item){
+                    return selected[item.val];
                 });
 
                 that.src.show(new DataListView({
