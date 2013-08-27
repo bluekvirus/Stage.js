@@ -348,14 +348,26 @@ var Form = (function() {
      * 
      * @param {String} [key]    Specific field value to get
      */
+    /*Tim's Hack for excluding the non-visible fields.*/
+    _isFieldVisible: function(f) {
+      return f.$el.css('display') !== 'none';
+    },
+
     getValue: function(key) {
       //Return only given key if specified
       if (key) return this.fields[key].getValue();
       
       //Otherwise return entire form      
-      var values = {};
+      var values = {}, that = this;
       _.each(this.fields, function(field) {
-        values[field.key] = field.getValue();
+
+        /*Tim's Hack for excluding the non-visible fields.*/
+        if(that._isFieldVisible(field)){
+          var val = field.getValue();
+          if(!_.isUndefined(val)) //this is to cop with editors that have disabled the getValue() function for some reasion, e.g Custom_Grid.
+            values[field.key] = val;
+        }
+          
       });
 
       return values;

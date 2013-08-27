@@ -320,8 +320,20 @@ Application.Widget.register('DataGrid', function(){
                         that.$el.trigger('event_FormClose', sheet);
                     }
                 };
-                if(!sheet.model.isNew())//update
+                if(!sheet.model.isNew()){//update
+                    //save only the changed attr to server
+                    var changed = sheet.model.changedAttributes();
+                    if(!changed) {
+                        Application.error('Form Warning', 'Nothing has been changed...[Cancel] to close the form');
+                        return;
+                    }
+
+                    var id = {};
+                    id[sheet.model.idAttribute] = sheet.model.id;
+                    sheet.model.attributes = changed;
+                    sheet.model.set(id, {silent:true});
                     sheet.model.save({}, options); //save the model to server
+                }
                 else {
                     //create
                     this.collection.create(sheet.model.attributes, options);
