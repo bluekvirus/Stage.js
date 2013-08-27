@@ -350,7 +350,7 @@ var Form = (function() {
      */
     /*Tim's Hack for excluding the non-visible fields.*/
     _isFieldVisible: function(f) {
-      return f.$el.css('display') !== 'none';
+      return (f.$el.css('display') !== 'none') || (f.$el.attr('type') === 'hidden');
     },
 
     getValue: function(key) {

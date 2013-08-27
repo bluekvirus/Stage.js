@@ -67,13 +67,13 @@
             showDetails: function($actionBtn){
                 console.log($actionBtn.attr('target'));
             },
-            abc: function(){
-                console.log('hi5');
-            }
+            // abc: function(){
+            //     console.log('hi5');
+            // }
         },
         'View.DataGrid.actions': {
             //detail: 'showDetails'
-            delete: 'abc'
+            //delete: 'abc'
         }
     });
 })(Application);

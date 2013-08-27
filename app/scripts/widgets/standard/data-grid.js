@@ -324,7 +324,7 @@ Application.Widget.register('DataGrid', function(){
                     //save only the changed attr to server
                     var changed = sheet.model.changedAttributes();
                     if(!changed) {
-                        Application.error('Form Warning', 'Nothing has been changed...[Cancel] to close the form');
+                        this.$el.trigger('event_FormClose', sheet);
                         return;
                     }
 
