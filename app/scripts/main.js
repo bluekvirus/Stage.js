@@ -23,11 +23,11 @@ jQuery(document).ready(function($) {
 	//Note that these regions selectors must already be on the index.html page.
 	Application.addRegions({
 		main: '.application-container',
-		banner: '.application-container .banner',
-		body: '.application-container .body',
-		sidebar: '.application-container .body .sidebar',
-		content: '.application-container .body .content',
-		footer: '.application-container .footer',
+		banner: '.application-container > .banner',
+		body: '.application-container > .body',
+		sidebar: '.application-container > .body .sidebar',
+		content: '.application-container > .body .content',
+		footer: '.application-container > .footer',
 
 	});
 
@@ -48,7 +48,7 @@ jQuery(document).ready(function($) {
 				navigateToModule: (function(){
 					var currentModule = '';
 					return function(module){
-							//console.log(module);
+							// console.log(module);
 							if(Application[module]){
 								if(currentModule !== module){
 									Application.content.show(new Application[module].View.Default());

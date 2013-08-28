@@ -1,5 +1,6 @@
 /**
  * i18n loading file
+ * dependencies: jQuery, underscore, store.js
  * 
  * @author Yan Zhu (yanzhu@fortinet.com)
  * @date 2013-08-26
@@ -31,22 +32,22 @@
 	var locale = params.locale;
 	var localizer = params.localizer;
 	
-	/**
-	 * {locale}.json
-	 * {
-	 * 	locale: {locale},
-	 *  trans: {
-	 * 	 key: "" | {
-	 * 	  "_default": "",
-	 *    {ns}: ""
-	 *   }
-	 *  }
-	 * }
-	 */
 	var resources;
 	
 	if (locale) {
 		// load resources from file
+		/**
+		 * {locale}.json
+		 * {
+		 * 	locale: {locale},
+		 *  trans: {
+		 * 	 key: "" | {
+		 * 	  "_default": "",
+		 *    {ns}: ""
+		 *   }
+		 *  }
+		 * }
+		 */
 		$.ajax({
 			url: [resources_path, locale, '.json'].join(''),
 			async: false,

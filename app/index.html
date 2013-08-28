@@ -38,9 +38,10 @@
     <!-- build:js scripts/lib.js -->
         <script type="text/javascript" src="components/jquery/jquery.js"></script>
         <script type="text/javascript" src="components/underscore/underscore.js"></script>
+        <script type="text/javascript" src="components/underscore.string/lib/underscore.string.js"></script>        
         <script type="text/javascript" src="components/backbone/backbone.js"></script>
         <script type="text/javascript" src="components/handlebars/handlebars.js"></script>
-        <script type="text/javascript" src="components/underscore.string/lib/underscore.string.js"></script>
+        <script type="text/javascript" src="scripts/vendor/store.min.js"></script>
         <script type="text/javascript" src="scripts/vendor/modified/backbone-forms/backbone-forms.js"></script>
         <script type="text/javascript" src="components/backbone-forms/distribution/editors/list.js"></script>
         <script type="text/javascript" src="scripts/vendor/backbone.paginator.min.js"></script>
@@ -48,8 +49,6 @@
         <script type="text/javascript" src="components/marionette/lib/backbone.marionette.js"></script>
         <script type="text/javascript" src="components/backgrid/lib/backgrid.js"></script>
         <script type="text/javascript" src="components/backgrid/lib/extensions/select-all/backgrid-select-all.js"></script>
-        <script type="text/javascript" src="scripts/widgets/plugin/vendor/lunr.js"></script>
-        <script type="text/javascript" src="components/backgrid/lib/extensions/filter/backgrid-filter.js"></script>
         <script type="text/javascript" src="components/noty/js/noty/jquery.noty.js"></script>
         <script type="text/javascript" src="components/noty/js/noty/layouts/top.js"></script>
         <script type="text/javascript" src="components/noty/js/noty/layouts/topCenter.js"></script>
@@ -60,9 +59,13 @@
         <script type="text/javascript" src="components/noty/js/noty/layouts/bottomLeft.js"></script>
         <script type="text/javascript" src="components/noty/js/noty/layouts/bottomRight.js"></script>
         <script type="text/javascript" src="components/noty/js/noty/themes/default.js"></script>
-        <script src="scripts/vendor/spin.min.js"></script>
+        <script type="text/javascript" src="scripts/vendor/spin.min.js"></script>
         <script type="text/javascript" src="components/jquery-ui/ui/jquery-ui.custom.js"></script>
         <script type="text/javascript" src="components/bootstrap/docs/assets/js/bootstrap.js"></script>
+        <script type="text/javascript" src="scripts/vendor/modified/jquery-mask/jquery-mask.js"></script>
+        <script type="text/javascript" src="scripts/vendor/justgage/raphael.2.1.0.min.js"></script>
+        <script type="text/javascript" src="scripts/vendor/justgage/justgage.1.0.1.min.js"></script>
+        <script type="text/javascript" src="scripts/i18n.js"></script>
     <!-- endbuild -->
 
     <!-- build:js scripts/tpl.js -->
@@ -71,17 +74,17 @@
         <script type="text/javascript" src="templates/generic/layout/tpl.js"></script>
         <script type="text/javascript" src="templates/generic/grid/tpl.js"></script>
         <script type="text/javascript" src="templates/generic/form/tpl.js"></script>
-
     <!-- endbuild -->
 
         <script type="text/javascript" src="scripts/env.js"></script>
         
     <!-- build:js scripts/application.js -->
-
         <script type="text/javascript" src="scripts/main.js"></script>
         <script type="text/javascript" src="scripts/modules/special/registry/widgets.js"></script>
         <script type="text/javascript" src="scripts/widgets/standard/property-grid.js"></script>
         <script type="text/javascript" src="scripts/widgets/standard/data-grid.js"></script>
+        <script type="text/javascript" src="scripts/widgets/standard/progress-bar.js"></script>
+        <script type="text/javascript" src="scripts/widgets/standard/single-gauge.js"></script>
         <script type="text/javascript" src="scripts/widgets/editor/custom_grid.js"></script>
         <script type="text/javascript" src="scripts/widgets/editor/custom_picker.js"></script>
         <script type="text/javascript" src="scripts/widgets/editor/custom_file.js"></script>
@@ -94,8 +97,8 @@
         <script type="text/javascript" src="scripts/widgets/plugin/selector-hover.js"></script>
         <script type="text/javascript" src="scripts/modules/special/extension/manager.js"></script>
         <script type="text/javascript" src="scripts/modules/special/coordinate/datacenter.js"></script>
-        <script type="text/javascript" src="scripts/modules/active/menu.js"></script>    
-
+        <script type="text/javascript" src="scripts/modules/active/menu.js"></script>
+        <script type="text/javascript" src="scripts/modules/active/dashboard.js"></script>
     <!-- endbuild -->
 
     <!-- patch scripts autoloader see env.js -->

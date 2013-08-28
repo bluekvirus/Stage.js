@@ -19,7 +19,7 @@ Template.extend('custom-tpl-widget-plugin-mask', [
 	'</div>'
 ]);
 
-(function($) {
+(function($, app) {
 
 	// spin options
 	var spinOpts = {
@@ -58,12 +58,21 @@ Template.extend('custom-tpl-widget-plugin-mask', [
 			timeout: 0, // (ms) anything non-negative && > 0 should be considered - only in loading mode
 			msg: '', // msg to replace the read-only or loading message
 
+			/* overlap mode if overlap: true */
+			overlap: false, // blacken this element and show an overlap layer above this element
+			/* overlap mode options */
+			overlapClass: 'overlap', // the class name of the overlap layer, takes precedence of overlapSelector
+			overlapMaskClass: 'overlap-mask', // the class name of the mask layer
+			overlapSelector: undefined, // the selector of the overlap layer, priority lower than overlapClass.
+										// if use this option, the element match the selector must already exist
+
 			/* highlight mode if highlight: true */
 			highlight: false, // blacken all other else to contrast this one - I (INTERACTABLE) but others NI (NON-INTERACTABLE)
 			/* highlight mode options */
 			target: '', // selector to highlight
 			highlightMaskClass: 'highlight-mask', // mask class name - highlight mode
-			cancelOnClick: true, // user will cancel the highlight mode upon clicking the masked area
+
+			cancelOnClick: true, // user will cancel the overlap/highlight mode upon clicking the masked area
 
 			/* readonly mode if readonly: true */
 			readonly: false, // mask with a Read-Only sign - NI (NON-INTERACTABLE)
@@ -71,7 +80,7 @@ Template.extend('custom-tpl-widget-plugin-mask', [
 			/* callbacks: two arguments: this jquery object and the options */
 			onShow: $.noop, // on 'show' callback
 			onClose: $.noop, // on 'close'/'timeout' callback - loading mode
-			onCancel: $.noop, // on 'cancel' callback - highlight mode
+			onCancel: $.noop, // on 'cancel' callback - overlap/highlight mode
 
 			/* customization - read-only or loading mode */
 			custom: undefined // custom el (mask view) to be used - unsupported yet
@@ -88,7 +97,62 @@ Template.extend('custom-tpl-widget-plugin-mask', [
 		closeLoadingMask(that, options);
 
 		var result;
-		if (options.highlight === true) {
+		if (options.overlap === true) {
+			if (options.overlapClass) {
+				var classArray = options.overlapClass.split(' ');
+				classArray.unshift('>');
+				options.overlapSelector = classArray.join('.');
+			}
+			if (!options.overlapSelector) {
+				app.error('Use Plugin Mask Error', 'should specify [overlapClass] or [overlapSelector] when using overlap mode');
+				return;
+			}
+			
+			result = that.each(function(index, el) {
+				$el = $(el);
+				$el.data('originPosition', $el.css('position'));
+				$el.css('position', 'relative');
+				var $overlap = $el.find(options.overlapSelector);
+				if ($overlap.length === 0) {
+					if (options.overlapClass) {
+						$overlap = $('<div class="'+options.overlapClass+'"></div>').appendTo(el);
+					} else {
+						app.error('Use Plugin Mask Error', 'no element match "', options.overlapSelector, '" within ', $el.attr('id'));
+						return;
+					}
+				}
+				$overlap.show();
+
+			}).highlight(options.overlapSelector, {
+				className: options.overlapMaskClass
+			});
+
+			var $maskDivs = $('.'+options.overlapMaskClass);
+			function closeOverlap() {
+				$maskDivs.remove();
+				that.each(function(index, el) {
+					$el = $(el);
+					var originPosition = $el.data('originPosition');
+					if (originPosition) {
+						$el.css('position', originPosition);
+					}
+					$el.find(options.overlapSelector).hide();
+				});
+
+				if ($.isFunction(options.onCancel)) {
+					options.onCancel(that, options);
+				}
+			}
+			that.data('closeOverlap', closeOverlap);
+			if (options.cancelOnClick === true) {
+				$maskDivs.on('click', closeOverlap);
+			}
+
+			if ($.isFunction(options.onShow)) {
+				options.onShow(that, options);
+			}
+
+		} else if (options.highlight === true) {
 			//use jquery-mask
 			result = that.highlight(options.target, {
 				className: options.highlightMaskClass
@@ -165,4 +229,4 @@ Template.extend('custom-tpl-widget-plugin-mask', [
 		return result;
 	};
 
-})(jQuery);
+})(jQuery, Application);
