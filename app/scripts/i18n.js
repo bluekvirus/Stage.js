@@ -1,8 +1,15 @@
 /**
  * i18n loading file
  * dependencies: jQuery, underscore, store.js
+ *
+ * =====
+ * Usage
+ * =====
+ * 1. load this i18n.js before any of your modules/widgets
+ * 2. use '...string...'.i18n() instead of just '...string...',
+ * 3. use {{i18n vars/paths or '...string...'}} in templates, {{{...}}} for un-escaped.
  * 
- * @author Yan Zhu (yanzhu@fortinet.com)
+ * @author Yan Zhu (yanzhu@fortinet.com), Tim Liu (zhiyuanliu@fortinet.com)
  * @date 2013-08-26
  */
 ;(function($, _) {
@@ -71,17 +78,24 @@
 		}
 	}
 	
+	/**
+	 * =============================================================
+	 * String Object plugin
+	 * options:
+	 * 	module - the module/namespace ref-ed translation of the key.
+	 * =============================================================
+	 */
 	String.prototype.i18n = function(options) {
 		var key = this;
 		
 		if (!locale) {
-			console.log('locale', locale, 'is falsy');
+			//console.log('locale', locale, 'is falsy');
 			return key;
 		}
 		
 		var translation = resources[key];
 		if (typeof(translation) === 'undefined') {
-			console.log('translation', translation, 'is undefined');
+			//console.log('translation', translation, 'is undefined');
 			// report this key
 			resources[key] = '';
 			cacheResources();
@@ -91,7 +105,7 @@
 			var ns = (options && options.module) || '_default';
 			translation = translation[ns];
 			if (typeof(translation) === 'undefined') {
-				console.log('translation', translation, 'is undefined');
+				//console.log('translation', translation, 'is undefined');
 				// report this namespace
 				resources[key][ns] = '';
 				cacheResources();
@@ -99,7 +113,6 @@
 			}
 		}
 		translation = new String(translation);
-		console.log('translation', translation, 'is string');
 		if (translation.trim() === '') {
 			return key;
 		}
@@ -107,7 +120,7 @@
 	};
 	
 	function cacheResources() {
-		console.log('cacheResources', 'localizer', localizer);
+		//console.log('cacheResources', 'localizer', localizer);
 		if (localizer) {
 			store.set(resources_cache_key, resources);
 		}
@@ -154,5 +167,17 @@
 	}
 
 	window.getResourceProperties = getResourceProperties;
+
+	/**
+	 * =============================================================
+	 * Handlebars helper(s) for displaying text in i18n environment.
+	 * =============================================================
+	 */
+	if(Handlebars){
+		Handlebars.registerHelper('i18n', function(key, ns, options) {
+	  		return String(key).i18n(ns && {module:ns});
+		});
+	}
+
 
 })(jQuery, _);
