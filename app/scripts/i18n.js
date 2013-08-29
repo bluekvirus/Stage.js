@@ -69,12 +69,23 @@
 
 		resources = resources || {};
 		
-		// if localizer, merge resources with localStorage
+		//Localizer mode, merge resources with localStorage, cache is modified upon localizer's DnD action (modified property file).
 		if (localizer) {
 			var resources_cache_key = ['resources_', locale].join('');
 			var cached_resources = store.get(resources_cache_key);
 			if (cached_resources) {
-				resources = _.extend(resources, cached_resources);
+				_.each(cached_resources, function(trans, key){
+					//favor cached_ over loaded resources.
+					if(!trans) return;
+					if(!resources[key]) {
+						resources[key] = trans;
+						return;
+					}
+					//if we had a string trans, let cache (object/string) override resource.
+					if(_.isString(resources[key])) resources[key] = trans;
+					//if we had a trans object(with ns), only extend if cached is a trans object.
+					else if(_.isObject(resources[key]) && _.isObject(trans)) _.extend(resources[key], trans);
+				});
 			}
 		}
 	}
@@ -102,7 +113,7 @@
 			cacheResources();
 			return key;
 		} else if (typeof(translation) === 'object') {
-			console.log('translation', translation, 'is object');
+			//console.log('translation', translation, 'is object');
 			var ns = (options && options.module) || '_default';
 			translation = translation[ns];
 			if (typeof(translation) === 'undefined') {
@@ -176,6 +187,10 @@
 
 	window.getResourceProperties = getResourceProperties;
 	window.getResourceJSON = getResourceJSON;
+	window.clearResourceCache = function(){
+		var resources_cache_key = ['resources_', locale].join('');
+		store.remove(resources_cache_key);
+	}
 
 	/**
 	 * =============================================================
@@ -184,6 +199,10 @@
 	 */
 	if(Handlebars){
 		Handlebars.registerHelper('i18n', function(key, ns, options) {
+			if(!options) {
+				options = ns;
+				ns = undefined;
+			}
 	  		return String(key).i18n(ns && {module:ns});
 		});
 	}

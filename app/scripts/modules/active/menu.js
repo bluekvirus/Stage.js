@@ -318,7 +318,7 @@
 Template.extend(
     'menu-accordion-item-tpl',
     [
-        '<div class="menu-accordion-item-header">{{i18n label}}</div>',
+        '<div class="menu-accordion-item-header">{{i18n label "menu"}}</div>',
         '<div class="menu-accordion-item-content"></div>'       
     ]
 );
@@ -332,10 +332,10 @@ Template.extend(
     [
         '<li>',
             '<div class="menu-group">',
-                '<span><i class="icon-sub-item"></i><i class="icon-expand"></i> {{i18n label}}</span>',
+                '<span><i class="icon-sub-item"></i><i class="icon-expand"></i> {{i18n label "menu"}}</span>',
             '</div>',
             '<div class="menu-item">',
-                '<i class="icon-sub-item"></i><i class="icon-item"></i> <a href="#config/{{module}}">{{i18n label}}</a>',
+                '<i class="icon-sub-item"></i><i class="icon-item"></i> <a href="#config/{{module}}">{{i18n label "menu"}}</a>',
             '</div>',
         '</li>'
     ]
