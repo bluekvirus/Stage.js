@@ -44,7 +44,7 @@ Application.Widget.register('PropertyGrid', function(){
 			},
 
 			fetchMap: function() {
-				console.log('PropertyGrid fetchMap');
+				//console.log('PropertyGrid fetchMap');
 				if (this.mapUrl) {
 			 		$.ajax({
 						url: this.mapUrl,
@@ -60,7 +60,7 @@ Application.Widget.register('PropertyGrid', function(){
 			},
 
 			fetchData: function() {
-				console.log('PropertyGrid fetchData');
+				//console.log('PropertyGrid fetchData');
 				if (this.dataUrl) {
 					$.getJSON(this.dataUrl, _.bind(function(data, textStatus, jqXHR) {
 						this.setData(data);
@@ -99,7 +99,7 @@ Application.Widget.register('PropertyGrid', function(){
 			},
 
 			refresh: function(data) {
-				console.log('PropertyGrid refresh', new Date());
+				//console.log('PropertyGrid refresh', new Date());
 				if (typeof(data) !== 'undefined') {
 					this.setData(data);
 				} else {

@@ -68,19 +68,28 @@
         <script type="text/javascript" src="scripts/vendor/justgage/raphael.2.1.0.min.js"></script>
         <script type="text/javascript" src="scripts/vendor/justgage/justgage.1.0.1.min.js"></script>
         <script type="text/javascript" src="scripts/i18n.js"></script>
+        <script>
+            /**
+             * ================================
+             * Application Container Creation
+             * ================================
+             */
+            //Create the global Application var for modules to be registered on.
+            window.Application = new Backbone.Marionette.Application();
+        </script>
     <!-- endbuild -->
 
     <!-- build:js scripts/tpl.js -->
         <script type="text/javascript" src="templates/vendor/backbone-form-bootstrap-tpl.js"></script>
         <script type="text/javascript" src="templates/loader.js"></script>
         <script type="text/javascript" src="templates/generic/layout/tpl.js"></script>
-        <script type="text/javascript" src="templates/generic/grid/tpl.js"></script>
         <script type="text/javascript" src="templates/generic/form/tpl.js"></script>
     <!-- endbuild -->
 
-        <script type="text/javascript" src="scripts/env.js"></script>
+         <script type="text/javascript" src="scripts/config.js"></script>
         
     <!-- build:js scripts/application.js -->
+        <script type="text/javascript" src="scripts/env.js"></script>
         <script type="text/javascript" src="scripts/main.js"></script>
         <script type="text/javascript" src="scripts/modules/special/registry/widgets.js"></script>
         <script type="text/javascript" src="scripts/widgets/standard/property-grid.js"></script>

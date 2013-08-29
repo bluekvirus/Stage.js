@@ -27,7 +27,7 @@
  * @author Tim.Liu
  * @updated 
  * 
- * @generated on Thu Jun 27 2013 22:35:48 GMT+0800 (CST) 
+ * @generated on Thu Aug 29 2013 20:47:24 GMT+0800 (CST) 
  * Contact Tim.Liu for generator related issue (zhiyuanliu@fortinet.com)
  * 
  */
@@ -66,25 +66,25 @@
         validation: {},
         //form:
         schema: {
-            username: {
+            'username': {
                 type: "Text",
                 itemType: "email"
             },
-            password: {
+            'password': {
                 type: "Password"
             },
-            password_check: {
+            'password_check': {
                 type: "Password",
                 title: "Comfirm Password"
             },
-            name: {
+            'name': {
                 type: "Text",
                 title: "Real Name"
             },
-            birthday: {
+            'birthday': {
                 type: "Date"
             },
-            roles: {
+            'roles': {
                 type: "CUSTOM_PICKER",
                 dataSrc: "Role",
                 dndNS: "user-roles",
@@ -111,13 +111,10 @@
     /**
      *
      * **Collection**
-     * 
-     * Backbone.PageableCollection is a strict superset of Backbone.Collection
-     * We instead use the Backbone.PageableCollection for better paginate ability.
      *
      * @class Application.User.Collection
      */
-    module.Collection = Backbone.PageableCollection.extend({
+    module.Collection = Backbone.Collection.extend({
         model: module.Model,
         parse: function(response) {
             return response.payload; //to use mers on server.
@@ -175,7 +172,7 @@
     module.View.Extension.Form = {};
     module.View.Extension.Form.ConditionalDisplay = function(formCt) {
         this.conditions = {
-            password_check: function(f) {
+            'password_check': function(f, fin) {
                 return f('password') !== '';
             },
         };
@@ -219,7 +216,7 @@
         //get checked, so there is no this.conditions[f] === undefined
         //check...since it is not needed.
         this.check = function(fieldname) {
-            if (this.conditions[fieldname](this.f)) formCt.form.fields[fieldname].$el.show();
+            if (this.conditions[fieldname](this.f, this.fin)) formCt.form.fields[fieldname].$el.show();
             else formCt.form.fields[fieldname].$el.hide();
         };
 
@@ -253,19 +250,20 @@
             //We are delegating the create/update action to it.
             this.recordManager = options.recordManager;
             this.displayManager = new module.View.Extension.Form.ConditionalDisplay(this);
-        },
-        //Might create zombie views...let's see.
-        onRender: function() {
             this.form = new Backbone.Form({
                 model: this.model,
                 fieldsets: this.fieldsets
             });
+            this.form.formCt = this; //for accepting field editor notifications
             var that = this;
             //Yes :(( it does, need to wire up the clean-ups.
             this.form.listenTo(this, 'close', function() {
                 that.form.trigger('close'); //this is for the EditorLayouts (sub-grids, custom editors) to close off.
                 that.form.remove();
             });
+        },
+        //Might create zombie views...let's see.
+        onRender: function() {
             this.ui.body.html(this.form.render().el);
 
             //disable 'editOnce' type of editor
@@ -275,18 +273,14 @@
                 }
             });
 
-            //leave a 'to-be-overriden' stub here.
-            this.onRenderPlus(this.form, this);
-
             //bind the validators:
             Backbone.Validation.bind(this.form);
 
             //field show/hide according to pre-set conditions:
             this.displayManager.initRound();
         },
-        //the onRender stub.
-        onRenderPlus: function() { //To Be Overriden in extension.
-        },
+        //Empty Stub. override in extension
+        onRenderPlus: function() {},
         events: {
             'click .btn[action="submit"]': 'submitForm',
 
@@ -323,7 +317,7 @@
         closeForm: function(e) {
             e.stopPropagation();
             this.close();
-            this.recordManager.$el.trigger('event_RefreshRecords');
+            //this.recordManager.$el.trigger('event_RefreshRecords');
         }
 
 
@@ -342,148 +336,36 @@
      * @class Application.User.View.DataGrid
      */
     module.View.Extension.DataGrid = {};
-    module.View.Extension.DataGrid.ActionCell = Backbone.Marionette.ItemView.extend({
-        tagName: 'td',
-        className: 'action-cell',
-        template: '#custom-tpl-grid-actioncell',
-        initialize: function(options) {
-            this.column = options.column;
-        },
-        //patch-in the id property for action locator.
-        onRender: function() {
-            this.$el.find('span[action]').attr('target', this.model.id || this.model.cid);
-        }
-    });
-
-    module.View.DataGrid = Backbone.Marionette.ItemView.extend({
-        template: '#basic-datagrid-view-wrap-tpl',
-
-        className: 'basic-datagrid-view-wrap',
-
-        ui: {
-            header: '.datagrid-header-container',
-            body: '.datagrid-body-container',
-            footer: '.datagrid-footer-container'
-        },
-        //remember the parent layout. So later on a 'new' or 'modify'
-        //event will have a container region to render the form.
-        cells: {},
-        //[key:cell type] map to be overriden in _extension.js
-        initialize: function(options) {
-            this.columns = [{
-                name: "_selected_",
-                label: "",
-                sortable: false,
-                cell: "boolean"
+    module.View.DataGrid = app.Widget.get('DataGrid').extend({
+        columns: [{
+            name: "_selected_",
+            label: "",
+            cell: "select-row",
+            headerCell: "select-all",
+            filterable: false,
+            sortDisabled: true
+        }, {
+            name: "username",
+            label: "Username",
+            cell: "string"
+        }, {
+            name: "roles",
+            label: "Roles",
+            cell: "string"
+        }, {
+            name: "_actions_",
+            label: "",
+            cell: "action",
+            filterable: false,
+            sortDisabled: true,
+            actions: [{
+                name: "edit",
+                title: "Edit"
             }, {
-                name: "username",
-                label: "Username",
-                cell: "string"
-            }, {
-                name: "roles",
-                label: "Roles",
-                cell: "string"
-            }, {
-                name: "_actions_",
-                label: "",
-                sortable: false,
-                cell: module.View.Extension.DataGrid.ActionCell
-            }];
-            this.mode = options.mode;
-            this.parentCt = options.layout;
-            this.editable = options.editable;
-            var that = this;
-            _.each(this.columns, function(col) {
-                col.editable = that.editable;
-                //allow cell definition overriden in _extension.js
-                col.cell = that.cells[col.name] || col.cell;
-            });
-
-        },
-        //Add a backgrid.js grid into the body 
-        onRender: function() {
-            this.grid = new Backgrid.Grid({
-                columns: this.columns,
-                collection: this.collection
-            });
-
-            this.ui.body.html(this.grid.render().el);
-            //if it is not in subDoc mode, we let the collection to fetch data itself.
-            if (this.mode !== 'subDoc') this.collection.fetch();
-
-            //Do **NOT** register any event listeners here.
-            //It might get registered again and again. 
-        },
-        //Clean up zombie views.
-        onBeforeClose: function() {
-            this.grid.remove();
-        },
-        //datagrid actions DOM-events.
-        events: {
-            'click .btn[action=new]': 'showForm',
-            'click .action-cell span[action=edit]': 'showForm',
-            'click .action-cell span[action=delete]': 'deleteRecord',
-            'event_SaveRecord': 'saveRecord',
-            'event_RefreshRecords': 'refreshRecords',
-        },
-        //DOM event listeners:
-        showForm: function(e) {
-            e.stopPropagation();
-            var info = e.currentTarget.attributes;
-
-            if (info['target']) { //edit mode.
-                var m = this.collection.get(info['target'].value);
-            } else //create mode.
-            var m = new module.Model({}, {
-                url: this.collection.url
-            });
-
-            this.parentCt.detail.show(new module.View.Form({
-                model: m,
-                recordManager: this
-            }));
-        },
-        saveRecord: function(e, sheet) {
-            e.stopPropagation();
-            //1.if this grid is used as top-level record holder:
-            var that = this;
-            if (this.mode !== 'subDoc') {
-                sheet.model.save({}, {
-                    success: function(model, res) {
-                        if (res.payload) {
-                            that.collection.fetch();
-                            sheet.close();
-                        }
-                    }
-                }); //save the model to server
-            } else { //2.else if this grid is used in subDoc mode for sub-field:
-                //add or update the model into the referenced collection:
-                this.collection.add(sheet.model, {
-                    merge: true
-                });
-                sheet.close();
-            }
-        },
-        deleteRecord: function(e) {
-            e.stopPropagation();
-            var info = e.currentTarget.attributes;
-            //find target and ask user
-            var m = this.collection.get(info['target'].value);
-            //promp user [TBI]
-            var that = this;
-            Application.prompt('Are you sure?', 'error', function() {
-                if (that.mode !== 'subDoc') m.destroy({
-                    success: function(model, resp) {
-                        that.collection.fetch(); //refresh
-                    }
-                });
-                else that.collection.remove(m);
-            })
-        },
-        refreshRecords: function(e) {
-            e.stopPropagation();
-            if (this.mode !== 'subDoc') this.collection.fetch();
-        }
+                name: "delete",
+                title: "Delete"
+            }]
+        }]
 
     });
 
@@ -524,11 +406,12 @@
             });
         },
         onRender: function() {
-            this.list.show(new module.View.DataGrid({
+            var dataGridView = new module.View.DataGrid({
                 collection: module.collection,
-                layout: this,
-                editable: false //in-place edit default off.
-            }));
+                parentCt: this,
+                formWidget: module.View.Form
+            });
+            this.list.show(dataGridView);
         }
     });
 
@@ -558,13 +441,13 @@
             this.datagridMode = options.datagridMode;
         },
         onRender: function() {
-            this.list.show(new module.View.DataGrid({
+            var dataGridView = new module.View.DataGrid({
                 collection: this.collectionRef,
-                layout: this,
+                parentCt: this,
+                formWidget: module.View.Form,
                 mode: this.datagridMode,
-                editable: false,
-                //in-place edit default off.
-            }));
+            });
+            this.list.show(dataGridView);
         }
     });
 
