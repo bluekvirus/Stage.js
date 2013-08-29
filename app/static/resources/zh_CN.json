@@ -1,0 +1,14 @@
+{
+	"locale": "zh_CN",
+	"trans": {
+		"System": "系统",
+		"Dashboard": "状态监控板",
+		"Status Example": "",
+		"Roles": "权限角色",
+		"Users": "用户管理",
+		"Log & Report": "系统记录及报告",
+		"Miscellaneous": "其他设置",
+		"Other": "",
+		"Logout":"退出"
+	}
+}

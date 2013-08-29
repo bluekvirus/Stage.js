@@ -199,6 +199,9 @@
 			options.crossDomain = true;
 		}
 
+		//cache:[for IE]
+		options.cache = false;
+
 	});
 
 
@@ -234,7 +237,7 @@
 	    	url: 'themes/'+theme+'/layout.html',
 	    	async: false,
 	    	success: function(layout){
-	    		$('.application-container').replaceWith(layout);
+	    		$('.application-container').replaceWith($(layout).i18n({search: true}));
 	    		Application.currentTheme = theme;
 	    	},
 	    	error: function(msg){

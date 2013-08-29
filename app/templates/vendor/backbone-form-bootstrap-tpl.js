@@ -22,29 +22,29 @@
 
     fieldset: '\
       <fieldset>\
-        <legend><span>{{legend}}</span></legend>\
+        <legend><span data-i18n-key="*">{{legend}}</span></legend>\
         {{fields}}\
       </fieldset>\
     ',
 
     field: '\
       <div class="control-group field-{{key}}">\
-        <label class="control-label" for="{{id}}">{{title}}</label>\
+        <label class="control-label" for="{{id}}" data-i18n-key="*">{{title}}</label>\
         <div class="controls">\
           {{editor}}\
-          <div class="help-inline">{{error}}</div>\
-          <div class="help-block">{{help}}</div>\
+          <div class="help-inline" data-i18n-key="*">{{error}}</div>\
+          <div class="help-block" data-i18n-key="*">{{help}}</div>\
         </div>\
       </div>\
     ',
 
     gridField: '\
       <div class="control-group grid-field field-{{key}}">\
-        <label class="control-label" for="{{id}}">{{title}}</label>\
+        <label class="control-label" for="{{id}}" data-i18n-key="*">{{title}}</label>\
         <div class="controls">\
           {{editor}}\
-          <div class="help-inline">{{error}}</div>\
-          <div class="help-block">{{help}}</div>\
+          <div class="help-inline" data-i18n-key="*">{{error}}</div>\
+          <div class="help-block" data-i18n-key="*">{{help}}</div>\
         </div>\
       </div>\
     ',

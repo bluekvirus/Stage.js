@@ -8,6 +8,7 @@
  * 1. load this i18n.js before any of your modules/widgets
  * 2. use '...string...'.i18n() instead of just '...string...',
  * 3. use {{i18n vars/paths or '...string...'}} in templates, {{{...}}} for un-escaped.
+ * 4. use $.i18n(options) to translate html tags with [data-i18n-key] [data-i18n-module] data attributes. 
  * 
  * @author Yan Zhu (yanzhu@fortinet.com), Tim Liu (zhiyuanliu@fortinet.com)
  * @date 2013-08-26
@@ -86,9 +87,9 @@
 	 * =============================================================
 	 */
 	String.prototype.i18n = function(options) {
-		var key = this;
+		var key = $.trim(this);
 		
-		if (!locale) {
+		if (!locale || !key) {
 			//console.log('locale', locale, 'is falsy');
 			return key;
 		}
@@ -166,7 +167,15 @@
 		return result;
 	}
 
+	function getResourceJSON() {
+		return JSON.stringify({
+			locale: locale,
+			trans: resources
+		});
+	}
+
 	window.getResourceProperties = getResourceProperties;
+	window.getResourceJSON = getResourceJSON;
 
 	/**
 	 * =============================================================
@@ -177,6 +186,40 @@
 		Handlebars.registerHelper('i18n', function(key, ns, options) {
 	  		return String(key).i18n(ns && {module:ns});
 		});
+	}
+
+	/**
+	 * =============================================================
+	 * Jquery plugin for linking html tags with i18n environment.
+	 * 
+	 * data-i18n-key = '*' to use everything in between the selected dom object tag.
+	 * <span data-i18n-key="*">abcd...</span> means to use abcd... as the key.
+	 *
+	 * data-i18n-module = '...' to specify the module/namespace.
+	 *
+	 * options:
+	 * 	1. search, whether or not to use find() to locate i18n tags.
+	 * =============================================================
+	 */
+	function _i18nIterator(index, el) {
+		var $el = $(el);
+		var key = $el.data('i18nKey');
+		var ns = $el.data('i18nModule');
+		if(key === '*') key = $.trim($el.html());
+		$el.html(key.i18n({module:ns}));
+	}
+	$.fn.i18n = function(options){
+		options = _.extend({
+			//defaults
+			search: false
+		}, options)
+
+		if(!options.search)
+			return this.filter('[data-i18n-key]').each(_i18nIterator);
+		else {
+			this.find('[data-i18n-key]').each(_i18nIterator);
+			return this;
+		}
 	}
 
 

@@ -115,6 +115,8 @@ var Form = (function() {
       
       if (this.hasFocus) this.trigger('blur', this);
 
+      /*Tim's Hack for i18n*/
+      this.$el.i18n({search: true});
       return this;
     },
 
