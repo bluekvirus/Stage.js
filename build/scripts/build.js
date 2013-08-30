@@ -8,7 +8,8 @@
  */
 
 var buildify = require('buildify'),
-_ = require('underscore');
+_ = require('underscore'),
+path = require('path');
 
 /*-----------Config/Structure-------*/
 /**
@@ -17,6 +18,8 @@ _ = require('underscore');
  * true/false - read from task memory, minify or non-minify.
  */
 var config = {
+	clientBase: '../../',
+	'index.html': 'app/index.html',
 	structure : {
 		admin: {
 			scripts: {
@@ -58,8 +61,44 @@ var config = {
 
 /*-----------Util/Steps------------*/
 //0. load index.html (replace lib, tpl and application js section)
+function loadIndexHTML(){
+	buildify().load(config.clientBase + config['index.html']).perform(function(content){
+		//extract build sections.
+		
+		var buildSectCatcherStart = /<!-- build:(.*?)\s+(.*)-->/i, buildSectCatcherEnd = /<!-- endbuild -->/i, scriptRefCatcher=/<script.*?src="(.*?)"><\/script>/i, scriptCatcherStart = /<script .*?>/i, scriptCatcherEnd = /<\/script>/i;
+		var lines = _.compact(content.split(/[\n\r]/));
+		var sections = [];
+		var currentSect = undefined;
+		var embeddedScriptContent = '';
+		_.each(lines, function(line){
+			var match = buildSectCatcherStart.exec(line);
+			if(match){
+				if(currentSect) throw new Error('Incomplete Build Section', currentSect);
+				currentSect = path.basename(match[2]);
+				sections.push({src:currentSect, path:match[2]});
+				console.log('src type', match[1], ',path', match[2], ',section', currentSect);
+				return;
+			}
+
+			match = buildSectCatcherEnd.exec(line);
+			if(match){
+				console.log('section', currentSect, 'ends');
+				currentSect = undefined;
+				return;
+			}
+
+			//scripts in between:
+			match = scriptRefCatcher.exec(line);
+			if(match){
+				console.log('caught script', match[1]);
+			}
+		});
+
+		console.log(sections);
+	});
+}
 //1. build lib
-//2. build tpl
+//2. build tpl - planed to be removed in the future.
 //3. build application
 //4. create structure
 
@@ -67,7 +106,7 @@ var config = {
 buildify.task({
 	name: 'admin',
 	task: function(){
-
+		loadIndexHTML();
 	}
 });
 

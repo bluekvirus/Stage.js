@@ -67,6 +67,7 @@
             this.reloadSrc();
         },
 
+        //TBI: let reloadSrc send option query params to server through DataCenter module.
         reloadSrc: function(){
             var that = this;
             Application.DataCenter.resolve(this._options.dataSrc, this._options.form, function(data){
