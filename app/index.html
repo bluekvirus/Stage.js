@@ -89,7 +89,18 @@
         <script type="text/javascript" src="templates/generic/form/tpl.js"></script>
     <!-- endbuild -->
 
-         <script type="text/javascript" src="scripts/config.js"></script>
+         <script>
+            /**
+             * ================================
+             * Application Config Loading
+             * ================================
+             */
+            $.ajax({
+                url: 'scripts/config.js',
+                dataType: 'script',
+                async: false
+            });
+         </script>
         
     <!-- build:js scripts/application.js -->
         <script type="text/javascript" src="scripts/env.js"></script>

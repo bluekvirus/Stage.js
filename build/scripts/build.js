@@ -9,6 +9,7 @@
 
 var buildify = require('buildify'),
 _ = require('underscore'),
+cheerio = require('cheerio'), //as server side jquery
 path = require('path');
 
 /*-----------Config/Structure-------*/
@@ -18,8 +19,11 @@ path = require('path');
  * true/false - read from task memory, minify or non-minify.
  */
 var config = {
+	distFolder: '../dist',
 	clientBase: '../../',
-	'index.html': 'app/index.html',
+	index: {
+		admin : 'app/index.html'
+	},
 	structure : {
 		admin: {
 			scripts: {
@@ -37,9 +41,7 @@ var config = {
 					standard: {} //backbone view
 				},
 				core: { //core lib, tpl and application js are built then put here.
-					'lib.js': true, //minified, false means non-minified.
-					'tpl.js': true,
-					'application.js': true
+					'core.js': true, //!!Hardcoded path see - loadIndexHTML() below;
 				}, 
 				'config.js': 'app/scripts/config.js' //-non minified or copied
 			},
@@ -60,53 +62,63 @@ var config = {
 };
 
 /*-----------Util/Steps------------*/
-//0. load index.html (replace lib, tpl and application js section)
-function loadIndexHTML(){
-	buildify().load(config.clientBase + config['index.html']).perform(function(content){
+//0. load index.html (replace lib, tpl and application js section - compress js libs into core.js)
+function loadIndexHTML(target){
+	return buildify().load(config.clientBase + config.index[target]).perform(function(content){
 		//extract build sections.
-		
-		var buildSectCatcherStart = /<!-- build:(.*?)\s+(.*)-->/i, buildSectCatcherEnd = /<!-- endbuild -->/i, scriptRefCatcher=/<script.*?src="(.*?)"><\/script>/i, scriptCatcherStart = /<script .*?>/i, scriptCatcherEnd = /<\/script>/i;
-		var lines = _.compact(content.split(/[\n\r]/));
-		var sections = [];
-		var currentSect = undefined;
-		var embeddedScriptContent = '';
-		_.each(lines, function(line){
-			var match = buildSectCatcherStart.exec(line);
-			if(match){
-				if(currentSect) throw new Error('Incomplete Build Section', currentSect);
-				currentSect = path.basename(match[2]);
-				sections.push({src:currentSect, path:match[2]});
-				console.log('src type', match[1], ',path', match[2], ',section', currentSect);
-				return;
+		var $ = cheerio.load(content);
+		var $script;
+		var coreJS = buildify().load('EMPTY.js');
+		$('script').each(function(index, el){
+			$script = $(el);
+			if($script.attr('non-core')) return;
+			var srcPath = $script.attr('src');
+			if(srcPath){
+				//ref-ed js, concat 
+				coreJS.concat(config.clientBase + 'app/' + srcPath);
+			}else {
+				//in-line
+				coreJS.perform(function(content){
+					return content + ';' + $script.html() + ';';
+				});
 			}
-
-			match = buildSectCatcherEnd.exec(line);
-			if(match){
-				console.log('section', currentSect, 'ends');
-				currentSect = undefined;
-				return;
-			}
-
-			//scripts in between:
-			match = scriptRefCatcher.exec(line);
-			if(match){
-				console.log('caught script', match[1]);
-			}
+			$script.remove();
 		});
 
-		console.log(sections);
+		$('body').append('<script src="scripts/core/core.js"></script>'); //Warning::Hard Coded Core Lib Path!
+		content = $.html();
+
+		return {
+			'core.js': coreJS.uglify().getContent(),
+			'index.html': content
+		}
 	});
+
 }
-//1. build lib
-//2. build tpl - planed to be removed in the future.
-//3. build application
-//4. create structure
+
+//1. create structure with pre-processed package.
+function createFolderStructure(target, package) {
+	var structure = config.structure[target];
+	var targets = [];
+	var baseDir = path.join(config.distFolder, target);
+	_.each(structure, function(content, key){
+		targets.push({
+			path: path.join(baseDir, key),
+			content: content,
+			key: key
+		});
+	});
+	console.log(targets);
+	//use iteration - bfs to create/copy/dump the files/folders
+	//TBI
+}
 
 /*-----------Build Tasks-----------*/
 buildify.task({
 	name: 'admin',
 	task: function(){
-		loadIndexHTML();
+		var pack = loadIndexHTML('admin');
+		createFolderStructure('admin', pack);
 	}
 });
 
