@@ -12,9 +12,11 @@ _ = require('underscore'),
 cheerio = require('cheerio'), //as server side jquery
 path = require('path'),
 mkdirp = require('mkdirp'),
-ncp = require('ncp').ncp;
+ncp = require('ncp').ncp,
+colors = require('colors'),
+moment = require('moment');
 
-ncp.limit = 16;
+ncp.limit = 16; //ncp concurrency limit
 
 /*-----------Config/Structure-------*/
 /**
@@ -68,6 +70,8 @@ var config = {
 /*-----------Util/Steps------------*/
 //0. load index.html (replace lib, tpl and application js section - compress js libs into core.js)
 function loadIndexHTML(target){
+	console.log('Processing Index...'.yellow);
+
 	return buildify().load(config.clientBase + config.index[target]).perform(function(content){
 		//extract build sections.
 		var $ = cheerio.load(content);
@@ -89,19 +93,21 @@ function loadIndexHTML(target){
 			$script.remove();
 		});
 
-		$('body').append('<script src="scripts/core/core.js"></script>'); //Warning::Hard Coded Core Lib Path!
+		$('body').append('\n\t\t\t<script src="scripts/core/core.js"></script>\n'); //Warning::Hard Coded Core Lib Path!
 		content = $.html();
 
 		return {
 			'core.js': coreJS.uglify().getContent(),
-			'index.html': content
+			'index.html': content.replace(/\n\s+\n/gm, '\n')
 		}
-	});
+	}).getContent();
 
 }
 
 //1. create structure with pre-processed package.
-function createFolderStructure(target, package) {
+function createFolderStructure(target, package, done) {
+	console.log('Creating Folders & Files...'.yellow);
+
 	var structure = config.structure[target];
 	var targets = [];
 	var baseDir = path.join(config.distFolder, target);
@@ -113,46 +119,60 @@ function createFolderStructure(target, package) {
 		});
 	});
 	//use iteration - bfs to create/copy/dump the files/folders
-	while(targets.length > 0) {
-		var currentTarget = targets.shift();
-		if(_.isString(currentTarget.content)){
-			//path string - copy
-			var srcPath = path.join(config.clientBase, currentTarget.content);
-			ncp(srcPath, currentTarget.path, function(error){
-				if(!error) console.log(srcPath, '==>', currentTarget.path, '[OK]');
-				else console.log(srcPath, '==>', currentTarget.path, '[ERROR:', error, ']');
-			});
-		}else if(_.isBoolean(currentTarget.content)){
-			//true/false - dump from cached package
-			if(package[currentTarget.key]){
-				buildify().setContent(package[currentTarget.key]).save(currentTarget.path);
-			}
-		}else if(_.isObject(currentTarget.content)){
-			//{} and {...} create folder and keep the bfs going
-			var folderPath = path.join(currentTarget.path, currentTarget.key);
-			mkdirp(folderPath, function(error){
-				if(!error) console.log(folderPath, '{+}', '[OK]');
-				else console.log(folderPath, '{+}', '[ERROR:', error,']');
-			});
-
-			_.each(currentTarget.content, function(subContent, subKey){
-				targets.push({
-					path: path.join(folderPath, subKey),
-					content: subContent,
-					key: subKey
+	//
+	function iterator(done){
+		if(targets.length > 0) {
+			var currentTarget = targets.shift();
+			if(_.isString(currentTarget.content)){
+				//path string - copy
+				var srcPath = path.join(config.clientBase, currentTarget.content);
+				ncp(srcPath, currentTarget.path, function(error){
+					if(!error) console.log(srcPath, '==>'.grey, currentTarget.path, '[OK]'.green);
+					else console.log(srcPath, '==>'.grey, currentTarget.path, '[ERROR:'.red, error, ']'.red);
+					iterator(done);
 				});
-			});
-		}
-	}
+			}else if(_.isBoolean(currentTarget.content)){
+				//true/false - dump from cached package
+				if(package[currentTarget.key]){
+					buildify().setContent(package[currentTarget.key]).save(currentTarget.path);
+				}else {
+					console.log(currentTarget.key, 'not found in cache'.red);
+				}
+				iterator(done);
+			}else if(_.isObject(currentTarget.content)){
+				//{} and {...} create folder and keep the bfs going
+				mkdirp(currentTarget.path, function(error){
+					if(!error) {
+						console.log(currentTarget.path, '{+}'.grey, '[OK]'.green);
+						_.each(currentTarget.content, function(subContent, subKey){
+							targets.push({
+								path: path.join(currentTarget.path, subKey),
+								content: subContent,
+								key: subKey
+							});
+						});						
+					}
+					else console.log(currentTarget.path, '{+}'.grey, '[ERROR:'.red, error,']'.red);
+					iterator(done);
+				});
+			}
+		}else 
+			done();
+	};
+	iterator(done);
 }
 
 /*-----------Build Tasks-----------*/
 buildify.task({
 	name: 'admin',
 	task: function(){
+		var startTime = new Date().getTime();
+
 		var pack = loadIndexHTML('admin');
 		mkdirp(config.distFolder, function(error){
-			createFolderStructure('admin', pack);
+			createFolderStructure('admin', pack, function(){
+				console.log('Build Task [admin] Complete'.rainbow, '-', moment.utc(new Date().getTime() - startTime).format('HH:mm:ss.SSS').underline);
+			});
 		});
 	}
 });
