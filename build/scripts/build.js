@@ -10,7 +10,11 @@
 var buildify = require('buildify'),
 _ = require('underscore'),
 cheerio = require('cheerio'), //as server side jquery
-path = require('path');
+path = require('path'),
+mkdirp = require('mkdirp'),
+ncp = require('ncp').ncp;
+
+ncp.limit = 16;
 
 /*-----------Config/Structure-------*/
 /**
@@ -108,9 +112,38 @@ function createFolderStructure(target, package) {
 			key: key
 		});
 	});
-	console.log(targets);
 	//use iteration - bfs to create/copy/dump the files/folders
-	//TBI
+	while(targets.length > 0) {
+		var currentTarget = targets.shift();
+		if(_.isString(currentTarget.content)){
+			//path string - copy
+			var srcPath = path.join(config.clientBase, currentTarget.content);
+			ncp(srcPath, currentTarget.path, function(error){
+				if(!error) console.log(srcPath, '==>', currentTarget.path, '[OK]');
+				else console.log(srcPath, '==>', currentTarget.path, '[ERROR:', error, ']');
+			});
+		}else if(_.isBoolean(currentTarget.content)){
+			//true/false - dump from cached package
+			if(package[currentTarget.key]){
+				buildify().setContent(package[currentTarget.key]).save(currentTarget.path);
+			}
+		}else if(_.isObject(currentTarget.content)){
+			//{} and {...} create folder and keep the bfs going
+			var folderPath = path.join(currentTarget.path, currentTarget.key);
+			mkdirp(folderPath, function(error){
+				if(!error) console.log(folderPath, '{+}', '[OK]');
+				else console.log(folderPath, '{+}', '[ERROR:', error,']');
+			});
+
+			_.each(currentTarget.content, function(subContent, subKey){
+				targets.push({
+					path: path.join(folderPath, subKey),
+					content: subContent,
+					key: subKey
+				});
+			});
+		}
+	}
 }
 
 /*-----------Build Tasks-----------*/
@@ -118,7 +151,9 @@ buildify.task({
 	name: 'admin',
 	task: function(){
 		var pack = loadIndexHTML('admin');
-		createFolderStructure('admin', pack);
+		mkdirp(config.distFolder, function(error){
+			createFolderStructure('admin', pack);
+		});
 	}
 });
 
