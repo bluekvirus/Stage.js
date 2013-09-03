@@ -156,6 +156,8 @@
 		if(crossdomain.enabled){
 			options.url = (crossdomain.protocol || 'http') + '://' + (crossdomain.host || 'localhost') + ((crossdomain.port && (':'+crossdomain.port)) || '') + (/^\//.test(options.url)?options.url:('/'+options.url));
 			options.crossDomain = true;
+
+			//TBI:: get the url params and insert Application.config.crossdomain.token there.
 		}
 
 		//cache:[for IE]
