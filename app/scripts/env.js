@@ -82,7 +82,7 @@
 					afterClose: cb || $.noop
 				}				
 			});
-		}
+		};
 
 		/**
 		 * Prompt the user if they are sure about this...
@@ -110,7 +110,7 @@
 					afterClose: closeCb || $.noop
 				}
 			});
-		}
+		};
 
 		/**
 		 * Special information
@@ -123,8 +123,8 @@
 				layout: 'center',
 				timeout: 5000,
 				dismissQueue: true,				
-			})
-		}
+			});
+		};
 
 
 		/**

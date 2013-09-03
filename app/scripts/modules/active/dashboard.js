@@ -32,7 +32,7 @@
 
 		// Dashboard auto-refresh function, should implement it when wholeRefresh true
 		refresh: function() {
-			console.log('Dashboard refresh: unimplemented');
+			//console.log('Dashboard refresh: unimplemented');
 		}
 	};
 
@@ -90,7 +90,7 @@
 		},
 
 		onRender: function() {
-			console.log('Portlet onRender');
+			//console.log('Portlet onRender');
 			this.ui.body.empty().append(this.widget.render().el);
 
 			// If refreshing dashboard as a whole, portlet refresh is forbidden
@@ -100,13 +100,13 @@
 		},
 
 		onShow: function() {
-			console.log('Portlet onShow');
+			//console.log('Portlet onShow');
 			this.widget.trigger('parentCt:shown', this);
 			this.handleAutoRefresh();
 		},
 
 		onClose: function() {
-			console.log('Portlet onClose');
+			//console.log('Portlet onClose');
 			this.stopAutoRefresh();
 			$(window).off('resize.'+this.getElId());
 		},
@@ -120,12 +120,12 @@
 		},
 
 		onResize: function(event) {
-			console.log('Portlet onResize');
+			//console.log('Portlet onResize');
 			this.widget.trigger('parentCt:resize', this);
 		},
 
 		stopAutoRefresh: function() {
-			console.log('Portlet stopAutoRefresh');
+			//console.log('Portlet stopAutoRefresh');
 			if (this.timerId) {
 				clearInterval(this.timerId);
 				this.timerId = null;
@@ -133,7 +133,7 @@
 		},
 
 		handleAutoRefresh: function() {
-			console.log('Portlet handleAutoRefresh');
+			//console.log('Portlet handleAutoRefresh');
 
 			this.stopAutoRefresh();
 
@@ -156,7 +156,7 @@
 		},
 
 		refreshPortlet: function(event) {
-			console.log('Portlet refreshPortlet');
+			//console.log('Portlet refreshPortlet');
 			if (typeof(this.widget.refresh) !== 'function') {
 				app.error('Portlet Refresh Error', 'widget ', this.widgetType, ' does not provide [refresh] method');
 				return;
@@ -168,7 +168,7 @@
 		},
 
 		togglePortlet: function(event) {
-			// console.log('Portlet togglePortlet');
+			// //console.log('Portlet togglePortlet');
 			this.$el.width(this.$el.width());
 			this.ui.body.slideToggle();
 
@@ -176,11 +176,11 @@
 		},
 
 		fullSizePortlet: function(event) {
-			console.log('Portlet fullSizePortlet');
+			//console.log('Portlet fullSizePortlet');
 			$('body').elMask({
 				overlap: true,
 				onShow: _.bind(function($el, options) {
-									console.log('elMask onShow');
+									//console.log('elMask onShow');
 									var $overlap = $el.find(options.overlapSelector);
 									var closeHandler = $el.data('closeOverlap');
 									var portletView = new module.View.FullSizePortlet({
@@ -197,7 +197,7 @@
 									this.stopAutoRefresh();
 								}, this),
 				onCancel: _.bind(function($el, options) {
-									console.log('elMask onCancel');
+									//console.log('elMask onCancel');
 									var $overlap = $el.find(options.overlapSelector);
 									var portletView = $overlap.data('portlet');
 									$overlap.empty();
@@ -211,7 +211,7 @@
 		},
 
 		closePortlet: function(event) {
-			console.log('Portlet closePortlet');
+			//console.log('Portlet closePortlet');
 			module.shownPortletCollection.remove(this.model);
 			module.hiddenPortletCollection.add(this.model);
 		}
@@ -229,7 +229,7 @@
 		},
 
 		onRender: function() {
-			console.log('FullSizePortlet onRender');
+			//console.log('FullSizePortlet onRender');
 			module.View.Portlet.prototype.onRender.call(this);
 
 			this.ui.header.find('.tool-toggle, .tool-fullsize').remove();
@@ -240,13 +240,13 @@
 		},
 
 		onResize: function() {
-			console.log('FullSizePortlet onResize');
+			//console.log('FullSizePortlet onResize');
 			this.closePortlet();
 			this.originPortlet.fullSizePortlet();
 		},
 
 		closePortlet: function(event) {
-			console.log('FullSizePortlet closePortlet');
+			//console.log('FullSizePortlet closePortlet');
 			if ($.isFunction(this.closeHandler)) {
 				this.closeHandler();
 			}
@@ -264,7 +264,7 @@
 		},
 
 		showPortlet: function(event) {
-			// console.log('showPortlet');
+			// //console.log('showPortlet');
 			module.shownPortletCollection.add(this.model);
 			module.hiddenPortletCollection.remove(this.model);
 		}
@@ -282,14 +282,14 @@
 		},
 
 		portletAdded: function(model, collection, options) {
-			// console.log('portlet added to hidden portlets');
+			// //console.log('portlet added to hidden portlets');
 			var hiddenIds = store.get(cache_key_hidden_portlets) || [];
 			hiddenIds.push(model.get('id'));
 			store.set(cache_key_hidden_portlets, hiddenIds);
 		},
 
 		portletRemoved: function(model, collection, options) {
-			// console.log('portlet removed from hidden portlets');
+			// //console.log('portlet removed from hidden portlets');
 			var hiddenIds = store.get(cache_key_hidden_portlets) || [];
 			hiddenIds = _.without(hiddenIds, model.get('id'));
 			store.set(cache_key_hidden_portlets, hiddenIds);
@@ -346,7 +346,7 @@
 
 		// Override appendHtml() function to display portlets in the correct order on the screen
 		appendHtml: function(compositeView, itemView, index) {
-			console.log('Dashboard appendHtml');
+			//console.log('Dashboard appendHtml');
 			var $container = this.getItemViewContainer(compositeView);
 			if (index === 0) {
 				$container.prepend(itemView.el);
@@ -356,7 +356,7 @@
 		},
 
 		onRender: function() {
-			console.log('Dashboard onRender');
+			//console.log('Dashboard onRender');
 			this.ui.footer.empty().append(new module.View.HiddenPortlets({
 				collection: module.hiddenPortletCollection
 			}).render().el);
@@ -377,7 +377,7 @@
 		},
 
 		onShow: function() {
-			console.log('Dashboard onShow');
+			//console.log('Dashboard onShow');
 			this.adjustHeight();
 
 			this.ui.body.sortable({
@@ -394,18 +394,18 @@
 		},
 
 		onClose: function() {
-			console.log('Dashboard onClose');
+			//console.log('Dashboard onClose');
 			this.stopAutoRefresh();
 			$(window).off('resize.dashboard');
 		},
 
 		onResize: function() {
-			console.log('Dashboard onResize');
+			//console.log('Dashboard onResize');
 			this.adjustHeight();
 		},
 
 		adjustHeight: function() {
-			console.log('Dashboard adjustHeight');
+			//console.log('Dashboard adjustHeight');
 			_.each([app.main, app.banner, app.footer], function(region, index) {
 				region.ensureEl();
 			});
@@ -413,7 +413,7 @@
 									- app.banner.$el.outerHeight(true)
 									- app.footer.$el.outerHeight(true);
 			var marginBorderPaddingHeight = this.$el.outerHeight(true) - this.$el.height();
-			// console.log($(window).height(),
+			// //console.log($(window).height(),
 			// 			$('body').height(),
 			// 			app.main.$el.height(),
 			// 			app.banner.$el.outerHeight(true),
@@ -430,7 +430,7 @@
 		},
 
 		stopAutoRefresh: function() {
-			console.log('Dashboard stopAutoRefresh');
+			//console.log('Dashboard stopAutoRefresh');
 			if (this.timerId) {
 				clearInterval(this.timerId);
 				this.timerId = null;
@@ -438,7 +438,7 @@
 		},
 
 		handleAutoRefresh: function() {
-			console.log('Dashboard handleAutoRefresh');
+			//console.log('Dashboard handleAutoRefresh');
 
 			this.stopAutoRefresh();
 
@@ -461,7 +461,7 @@
 		},
 
 		refreshDashboard: function(event) {
-			console.log('Dashboard refreshDashboard');
+			//console.log('Dashboard refreshDashboard');
 			if (module.Config.wholeRefresh) {
 				if (typeof(module.Config.refresh) !== 'function') {
 					app.error('Dashboard Refresh Error', 'does not provide [refresh] method in the Config');
@@ -478,7 +478,7 @@
 		},
 
 		toggleDashboardAutoRefresh: function(event) {
-			console.log('Dashboard toggleDashboardAutoRefresh');
+			//console.log('Dashboard toggleDashboardAutoRefresh');
 			var $btn = $(event.currentTarget);
 			var state = $btn.data('state');
 
