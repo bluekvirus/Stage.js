@@ -112,6 +112,20 @@
 			});
 		}
 
+		/**
+		 * Special information
+		 */
+		Application.inform = function(){
+			arguments = _.toArray(arguments);
+			noty({
+				text: '<span class="label label-inverse">'+arguments[0]+'</span> '+arguments.slice(1).join(' '),
+				type: 'information',
+				layout: 'center',
+				timeout: 5000,
+				dismissQueue: true,				
+			})
+		}
+
 
 		/**
 		 * Default SUCCESS/ERROR reporting on ajax op globally.
@@ -123,6 +137,7 @@
 		});
 
 		$(document).ajaxError(function(event, jqxhr, settings, exception){
+			if(settings.notify === false) return;
 			try{
 				var errorStr = $.parseJSON(jqxhr.responseText).error;
 			}catch(e){
@@ -156,8 +171,9 @@
 		if(crossdomain.enabled){
 			options.url = (crossdomain.protocol || 'http') + '://' + (crossdomain.host || 'localhost') + ((crossdomain.port && (':'+crossdomain.port)) || '') + (/^\//.test(options.url)?options.url:('/'+options.url));
 			options.crossDomain = true;
-
-			//TBI:: get the url params and insert Application.config.crossdomain.token there.
+			options.xhrFields = _.extend(options.xhrFields || {}, {
+				withCredentials: true //persists session cookies.
+			});
 		}
 
 		//cache:[for IE]
@@ -280,7 +296,7 @@
 
 	/**
 	 * ====================================================================
-	 * 	Backward Compatibility
+	 * 	Backward Compatibility & Hacks
 	 *
 	 * We no longer use Backbone.PageableCollection for pagination anymore.
 	 * We priorities model's collection url before a model's urlRoot
@@ -293,6 +309,15 @@
 	      if (this.isNew()) return base;
 	      return base + (base.charAt(base.length - 1) === '/' ? '' : '/') + encodeURIComponent(this.id);
 	    },
-	})
+	});
+
+	//touch on remote server so that it sets back correct session cookies
+	if(Application.config.crossdomain.enabled){
+		var data = {username: Application.config.crossdomain.username, password:Application.config.crossdomain.password};
+		$.ajax({type:'post', dataType:'json', url:'/login', data: data, notify: false, complete: function(jqXHR){
+				Application.inform('Crossdomain Ajax', ' See if you can access the data');
+			}
+		});
+	}
 
 })(Application, jQuery, Backbone, _, Handlebars);

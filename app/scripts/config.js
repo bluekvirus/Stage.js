@@ -17,16 +17,13 @@
 			/**
 			 * CROSSDOMAIN ONLY
 			 * [Warning - During Development: Crossdomain Authentication]
-			 * If you ever need crossdomain development, we recommend that you TURN OFF the server side authenticaion(thus authorization) on the remote server.
-			 * You can still have your local app host server enabling the authentication layer 
-			 * (just for the login page tho, the authorization filters on routes will have no effects here since you are fetching data from the remote server)
-			 *
-			 * If you do need authorization during crossdomain development, please consider using a 'TOKEN', TBI...
+			 * If you ever need crossdomain development, we recommend that you TURN OFF local server's auth layer/middleware.
 			 */
 			protocol: '', //https or not? default: '' -> http
 			host: '127.0.0.1', 
 			port: '5000',
-			token: '', //TBI:: no in effect yet, this will most likely be a encoded user id, e.g (encode('admin'))
+			username: 'admin',
+			password: '123'
 			/*----------------*/
 		},
 
