@@ -13,30 +13,11 @@
  * @author Yan Zhu (yanzhu@fortinet.com), Tim Liu (zhiyuanliu@fortinet.com)
  * @date 2013-08-26
  */
-;(function($, _) {
+;(function($, _, URI) {
 	
 	var resources_path = 'static/resources/';
 	
-	function getParams(url) {
-		var params = {};
-		var start = url.indexOf('?');
-		if (start >= 0) {
-			var stop = url.indexOf('#');
-			if (stop === -1) {
-				stop = url.length;
-			}
-			start += 1;
-			var paramString = url.substring(start, stop);
-			var paramArray = paramString.split('&');
-			_.each(paramArray, function(paramPair, index) {
-				var paramKV = paramPair.split('=');
-				params[paramKV[0]] = paramKV[1];
-			});
-		}
-		return params;
-	}
-	
-	var params = getParams(window.location.toString());
+	var params = URI(window.location.toString()).search(true);
 	var locale = params.locale;
 	var localizer = params.localizer;
 	
@@ -242,4 +223,4 @@
 	}
 
 
-})(jQuery, _);
+})(jQuery, _, URI);

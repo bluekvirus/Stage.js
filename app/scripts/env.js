@@ -6,7 +6,7 @@
  * @update 2013.04.01
  */
 
-;(function(Application, $, Backbone, _, Handlebars){
+;(function(Application, $, Backbone, _, Handlebars, URI){
 
 	/**
 	 * ================================
@@ -225,13 +225,9 @@
 	    });
     };	
 
-    var themeCatcher = new RegExp('theme=([\\d\\w]*)');
-    var theme = themeCatcher.exec(location.search);
-    if(!theme){
-    	theme = ['','_default'];
-    }
+    var theme = URI(window.location.toString()).search(true).theme || '_default';
     //1st time upload app loading.
-    _themeRoller(theme[1]);
+    _themeRoller(theme);
 
     //Can expose the api to the Application
     //To be considered...
@@ -320,4 +316,4 @@
 		});
 	}
 
-})(Application, jQuery, Backbone, _, Handlebars);
+})(Application, jQuery, Backbone, _, Handlebars, URI);

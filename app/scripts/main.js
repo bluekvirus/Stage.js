@@ -52,7 +52,7 @@ jQuery(document).ready(function($) {
 							if(Application[module]){
 								if(currentModule !== module){
 									Application.content.show(new Application[module].View.Default());
-									currentModule = module;
+									Application.currentModule = currentModule = module;
 									Application.trigger('navigateToModule', module);
 								}
 							}else
