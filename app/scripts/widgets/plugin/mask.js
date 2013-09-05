@@ -41,21 +41,16 @@ Template.extend('custom-tpl-widget-plugin-mask', [
 		left: 'auto' // Left position relative to parent in px
 	};
 
-	function closeLoadingMask($el, options) {
-		$el.prev('.spin-msg').remove();
-		$el.prev('.mask').remove();
-
-		if ($.isFunction(options.onClose)) {
-			options.onClose($el, options);
-		}
-	};
-
 	$.fn.elMask = function(options) {
 
 		// default options
 		options = $.extend({
 			/* default is loading mode */
-			timeout: 0, // (ms) anything non-negative && > 0 should be considered - only in loading mode
+
+			/* readonly mode if readonly: true */
+			readonly: false, // mask with a Read-Only sign - NI (NON-INTERACTABLE)
+
+			timeout: 0, // (ms) anything non-negative && > 0 should be considered - loading/readonly mode
 			msg: '', // msg to replace the read-only or loading message
 
 			/* overlap mode if overlap: true */
@@ -74,12 +69,9 @@ Template.extend('custom-tpl-widget-plugin-mask', [
 
 			cancelOnClick: true, // user will cancel the overlap/highlight mode upon clicking the masked area
 
-			/* readonly mode if readonly: true */
-			readonly: false, // mask with a Read-Only sign - NI (NON-INTERACTABLE)
-
 			/* callbacks: two arguments: this jquery object and the options */
 			onShow: $.noop, // on 'show' callback
-			onClose: $.noop, // on 'close'/'timeout' callback - loading mode
+			onClose: $.noop, // on 'close'/'timeout' callback - loading/readonly mode
 			onCancel: $.noop, // on 'cancel' callback - overlap/highlight mode
 
 			/* customization - read-only or loading mode */
@@ -94,7 +86,13 @@ Template.extend('custom-tpl-widget-plugin-mask', [
 		// plugin logic
 		var that = this;
 
-		closeLoadingMask(that, options);
+		if ($.isFunction(that.data('unmask'))) {
+			that.data('unmask')();
+		}
+
+		$(window).on('resize.elMask', function(event) {
+			that.elMask(options);
+		});
 
 		var result;
 		if (options.overlap === true) {
@@ -143,9 +141,13 @@ Template.extend('custom-tpl-widget-plugin-mask', [
 					options.onCancel(that, options);
 				}
 			}
-			that.data('closeOverlap', closeOverlap);
+			that.data('unmask', function() {
+				closeOverlap();
+				$(window).off('resize.elMask');
+				that.removeData('unmask');
+			});
 			if (options.cancelOnClick === true) {
-				$maskDivs.on('click', closeOverlap);
+				$maskDivs.on('click', that.data('unmask'));
 			}
 
 			if ($.isFunction(options.onShow)) {
@@ -158,18 +160,25 @@ Template.extend('custom-tpl-widget-plugin-mask', [
 				className: options.highlightMaskClass
 			});
 
-			if ($.isFunction(options.onShow)) {
-				options.onShow(that, options);
+			var $maskDivs = $('.'+options.highlightMaskClass);
+			function cancelHighlight() {
+				$maskDivs.remove();
+
+				if ($.isFunction(options.onCancel)) {
+					options.onCancel(that, options);
+				}
+			}
+			that.data('unmask', function() {
+				cancelHighlight();
+				$(window).off('resize.elMask');
+				that.removeData('unmask');
+			});
+			if (options.cancelOnClick === true) {
+				$maskDivs.on('click', that.data('unmask'));
 			}
 
-			if (options.cancelOnClick === true) {
-				var $maskDivs = $('.'+options.highlightMaskClass);
-				$maskDivs.on('click', function(e) {
-					$maskDivs.remove();
-					if ($.isFunction(options.onCancel)) {
-						options.onCancel(that, options);
-					}
-				});
+			if ($.isFunction(options.onShow)) {
+				options.onShow(that, options);
 			}
 
 		} else {
@@ -211,8 +220,19 @@ Template.extend('custom-tpl-widget-plugin-mask', [
 				}
 			});
 
-			that.data('unmask', (options.readonly === true) ? $.noop : function() {
-				return closeLoadingMask(that, options);
+
+			function cancelMask() {
+				that.prev('.spin-msg').remove();
+				that.prev('.mask').remove();
+
+				if ($.isFunction(options.onClose)) {
+					options.onClose(that, options);
+				}
+			};
+			that.data('unmask', function() {
+				cancelMask();
+				$(window).off('resize.elMask');
+				that.removeData('unmask');
 			});
 
 			if ($.isFunction(options.onShow)) {
@@ -221,7 +241,7 @@ Template.extend('custom-tpl-widget-plugin-mask', [
 
 			if ($.isNumeric(options.timeout) && options.timeout > 0) {
 				setTimeout(function() {
-					closeLoadingMask(that, options);
+					that.data('unmask')();
 				}, options.timeout);
 			}
 		}

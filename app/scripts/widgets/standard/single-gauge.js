@@ -31,7 +31,7 @@ Application.Widget.register('SingleGauge', function() {
 			var gaugeId = _.uniqueId('gauge_');
 			this.options = _.extend({id: gaugeId}, defaults, options);
 			this.listenTo(this, 'parentCt:shown', this.onShow);
-			this.listenTo(this, 'parentCt:resize', this.onShow);
+			this.listenTo(this, 'parentCt:resize', this.onResize);
 		},
 
 		onRender: function() {
@@ -40,6 +40,27 @@ Application.Widget.register('SingleGauge', function() {
 
 		onShow: function(parentCt) {
 			console.log('SingleGauge onShow');
+			
+			this.adjustSize(parentCt);
+
+			if (this.options.url) {
+				this.fetchValue();
+			} else {
+				this.setValue(this.options.value);
+			}
+		},
+
+		onResize: function(parentCt) {
+			console.log('SingleGauge onResize');
+
+			this.adjustSize(parentCt);
+
+			this.ui.gaugeCt.find('svg').remove();
+			this.gage = new JustGage(this.options);
+		},
+
+		adjustSize: function(parentCt) {
+			console.log('SingleGauge adjustSize');
 			if (parentCt) {
 				var parentWidth = parentCt.$el.width();
 				this.options.width = parentWidth * 0.8;
@@ -47,15 +68,17 @@ Application.Widget.register('SingleGauge', function() {
 					this.options.width = defaults.width;
 				}
 				this.options.height = this.options.width * 0.8;
+
+				// var parentHeight = parentCt.$el.height();
+				// console.log('parentHeight', parentHeight);
+				// if (this.options.height > parentHeight) {
+				// 	this.options.height = parentHeight;
+				// 	this.options.width = this.options.height * 1.25;
+				// }
 			}
+
 			this.ui.gaugeCt.css('width', this.options.width+'px')
 							.css('height', this.options.height+'px');
-
-			if (this.options.url) {
-				this.fetchValue();
-			} else {
-				this.setValue(this.options.value);
-			}
 		},
 
 		fetchValue: function() {

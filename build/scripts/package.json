@@ -1,0 +1,22 @@
+{
+  "name": "web-client-build",
+  "version": "0.1.0",
+  "description": "It builds web client structures and compress js files according to given index.html and structure object in config.",
+  "main": "build.js",
+  "dependencies": {
+    "buildify": "~0.4.0",
+    "cheerio": "~0.12.1",
+    "mkdirp": "~0.3.5",
+    "colors": "~0.6.2",
+    "ncp": "~0.4.2",
+    "moment": "~2.1.0",
+    "underscore": "~1.5.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "",
+  "author": "Tim.Liu (bluekvirus@gmail.com)",
+  "license": "MIT"
+}
