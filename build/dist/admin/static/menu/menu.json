@@ -1,0 +1,19 @@
+[{
+    "label": "System",
+    "items": [{
+        "label": "Dashboard",
+        "module": "Dashboard"
+    }]
+},{
+    "label": "Content Manager"
+},{
+    "label": "Log & Report"
+},{
+    "label": "Miscellaneous",
+    "items": [
+        {
+            "label": "Other",
+            "module": "Nothing"
+        }
+    ]
+}]

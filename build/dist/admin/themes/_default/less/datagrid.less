@@ -1,0 +1,135 @@
+/**
+ * DataGrid styles
+ *
+ * @author Tim.Liu
+ * @created 2013.07.10
+ */
+
+//DataGrid - [BackGrid.js]
+//
+@header-color: #eee;
+
+.backgrid {
+  .table;
+  .table-bordered;
+  .table-condensed;
+  .table-hover;
+
+  margin-top: 0;
+  margin-bottom: 3px;
+
+  th {
+
+	background-color: @header-color;
+	text-align: center;
+
+	a {
+	  	color: @color-sand;
+	  	&:hover {
+			color: @color-dark;
+			text-decoration: none;
+			cursor: pointer;			
+	  	}
+
+	  	.sort-caret {/*borrowed from bootstrap's sprites.less [icon-...]*/
+			display: inline-block;
+			width: 14px;
+			height: 14px;
+			.ie7-restore-right-whitespace();
+			line-height: 14px;
+			vertical-align: text-top;
+			background-image: url("@{iconSpritePath}");
+			background-position: 14px 14px;
+			background-repeat: no-repeat;
+			margin-top: 1px;
+			margin-left: 2px;
+	  	}
+	}
+
+	&.ascending {
+		.sort-caret {
+			.icon-chevron-up;
+		}
+	}
+
+	&.descending {
+		.sort-caret {
+			.icon-chevron-down;
+		}
+	}
+  }
+
+  /*tr*/
+  tr {
+	&.data-row-focused {
+		td {
+			border-left-color: @color-red;
+			border-left-width: 1px;
+		}
+	}
+  }
+
+  td {
+  	&.boolean-cell {
+  		text-align: center;
+  		input {
+  			margin: 0;
+  		}
+  	}
+  }
+
+	/*From Backgrid Select-All Cell extension*/
+	.select-row-cell,
+	.select-all-header-cell {
+		text-align: center;
+			input {
+				margin: 0;
+			}		
+	}
+
+  &.form-overlay {
+  	border-width: 1px 0 0 0;
+  }
+	  
+}
+
+
+//DataGrid wrapper default or editor
+.module-admin-layout-wrap {
+	.basic-datagrid-view-wrap {
+		padding-bottom: 20px;
+		.datagrid-header-container {
+			padding: 5px 10px;
+			//TBI up down inset shadow...
+			// @shadowUpDown: inset 0 1px 1px rgba(0,0,0,.5), none;
+			// .box-shadow(@shadowUpDown);
+		}
+	}
+}
+
+.module-editor-layout-wrap {
+	.basic-datagrid-view-wrap {
+		.datagrid-header-container {
+			padding: 0;
+		}
+	}
+}
+
+//as a form field;
+.grid-field {
+	&> .controls {
+		//margin-left: 10px; //this will expand the sub-grid to the left hand side.
+		.datagrid-header-container {
+    		.btn-action-new {
+    			margin-left: 10px;
+    		}
+    	}
+
+    	.datagrid-body-container {
+    		margin-top: 10px;
+    	}
+	}
+}
+
+
+

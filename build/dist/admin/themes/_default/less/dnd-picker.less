@@ -1,0 +1,54 @@
+/**
+ * This is the style for the drag-n-drop picker (double-picker) editor
+ *
+ * @author Tim.Liu
+ * @created 2013.07.16
+ */
+
+.custom-form-editor-double-picker {
+
+	.double-picker-body {
+		.between-dnd-zone {
+		  padding-top: 40px;
+		  text-align: center;
+		}
+
+		.double-picker-list-wrapper {
+		    border: 1px solid #eee;
+		    border-radius: 6px;
+
+		    .double-picker-list-header {
+		    	display: block;
+		    }
+
+		    .double-picker-list-body {
+				max-height: 220px;
+				overflow-y: auto;
+
+		    	.dnd-zone-list {
+					min-height: 20px;
+					margin-left: 0;
+
+					li{
+					    border-radius: 6px;
+					    list-style: none;
+					    padding: 3px;
+
+					    &:hover {
+						  cursor: move;
+						  background-color: #ddd;
+					    }
+					}
+
+					.dnd-item-placeholder {
+					  border-radius: 6px;
+					  border: 1px solid @color-sand;
+					  background-color: lighten(@color-sand, 20%);
+					  min-height: 20px;
+					}			
+		    	}
+		    }
+		}
+	}	
+
+}

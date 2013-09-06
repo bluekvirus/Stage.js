@@ -1,0 +1,57 @@
+/**
+ * Mask style
+ *
+ * @author Yan Zhu
+ */
+
+@maskZIndex: 40000;
+@spinSize: 40px;
+
+.base-mask () {
+	position: absolute;
+	z-index: @maskZIndex;
+}
+
+.loading-mask () {
+	background: @black;
+	opacity: .5;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+	filter: alpha(opacity=50);
+}
+
+.mask {
+	.base-mask;
+
+	&.loading {
+		.loading-mask;
+	}
+
+	.readonly-msg {
+		.pull-right;
+		background: lighten(@grayLight, 20%);
+		padding: 10px;
+	}
+}
+
+.spin-msg {
+	position: fixed;
+	z-index: @maskZIndex + 1;
+	background: @white;
+	border-radius: @baseBorderRadius;
+
+	.spin {
+		.pull-left;
+		width: @spinSize;
+		height: @spinSize;
+	}
+
+	.wait-msg {
+		line-height: @spinSize;
+		padding-right: 5px;
+	}
+}
+
+.highlight-mask {
+	.base-mask;
+	.loading-mask;
+}

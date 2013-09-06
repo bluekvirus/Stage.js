@@ -1,0 +1,38 @@
+/**
+ * Colors, Size, and basic attributes.
+ *
+ * @author Tim.Liu
+ * 
+ */
+
+//Overriden Existing Vars
+//=======================
+
+//Base Font and component sizing
+@baseFontSize: 12px;
+@baseLineHeight: 18px;
+
+@paddingLarge:          9px 17px; // 38px
+@paddingSmall:          1px 8px;  // 21px
+@paddingMini:           0 4px;   // 18px
+
+//NavBar
+@navbarBackgroundHighlight: lighten(@color-white, 5%);
+
+
+//Specific to our application
+//===========================
+@color-sand: #B8AE9C;
+@color-stone: #ACCFCC;
+@color-white: #FFFFFF;
+@color-dark: #595241;
+@color-red: #8A0917;
+@color-bg: #eee; /*Used in date-picker.less*/
+
+//Buttons
+
+@btnCreateBG: @color-sand;
+@btnCreateBGHL: darken(@btnCreateBG, 10%);
+
+@btnSaveBG: @color-red;
+@btnSaveBGHL: darken(@btnSaveBG, 10%);
