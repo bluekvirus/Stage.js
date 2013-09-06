@@ -1,0 +1,18 @@
+{
+  "name": "jslibs-build-helper",
+  "version": "0.1.0",
+  "description": "Help build/combine some of the client web js libs pulled by bower.",
+  "main": "buildify.js",
+  "dependencies": {
+    "underscore": "*",
+    "buildify": "~0.4.0",
+    "ncp": "~0.4.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "",
+  "author": "Tim.Liu",
+  "license": "MIT"
+}

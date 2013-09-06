@@ -61,8 +61,7 @@ var config = {
 				_default: 'app/themes/_default'
 			},
 			'404.html': 'app/404.html',
-			'index.html': true,
-			'robots.txt': 'app/robots.txt'
+			'index.html': true
 		}
 	}
 };

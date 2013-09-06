@@ -1,0 +1,14 @@
+{
+  "name": "jquery-sieve",
+  "homepage": "https://github.com/rmm5t/jquery-sieve",
+  "version": "0.3.0",
+  "_release": "0.3.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.3.0",
+    "commit": "11430bbbf57cd5d778c5a95925912e61a9e5e395"
+  },
+  "_source": "git://github.com/rmm5t/jquery-sieve.git",
+  "_target": "~0.3.0",
+  "_originalSource": "jquery-sieve"
+}
