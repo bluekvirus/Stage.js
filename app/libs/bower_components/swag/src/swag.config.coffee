@@ -1,2 +1,0 @@
-Swag.Config =
-    partialsPath: ''
