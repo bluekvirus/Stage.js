@@ -19,11 +19,13 @@
   "dependencies": {
     "backbone-validation": "~0.8.1",
     "backbone.paginator": "~0.8.1",
+    "backbone-forms": "~0.12.0",
     "backbone": "~1.0.0",
     "backgrid": "~0.2.6",
     "bootstrap": "~2.3.2",
     "colorbox": "~1.4.27",
     "d3": "~3.3.2",
+    "flexslider": "*",
     "jqtree": "~0.17.0",
     "jquery-file-upload": "~8.8.5",
     "jquery-sieve": "~0.3.0",
