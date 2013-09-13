@@ -31,14 +31,16 @@
  * =====
  * Usage
  * =====
- * $.stackView(html, [options])
+ * $.stackView(html dom/String/jQuery obj, [options]) on a new DOM object.
+ * $.stackView(html dom/String/jQuery obj, index) on sub-sequent calls. [Not in used due to bug in FlexSlider...]
  *
  * =======
  * Options
  * =======
  * currently overlaps with the options for FlexSlider.
  * + unitSelector: the content unit class selector. {default: div}
- * 
+ * + popOnBackward
+ * + moveToOnAdd
  *
  * @author Tim.Liu
  * @created 2013.09.13
@@ -46,23 +48,75 @@
 
 ;(function($){
 
-	$.fn.stackView = function(options){
-		var unitSelector = (options && options.unitSelector) || 'div',
-		options = $.extend({
-			selector: '.slides > ' + unitSelector,
-			animation: 'slide',
-			animationLoop: false,
-			slideshow: false,
+	$.fn.stackView = function($view, options){
+
+		// if(_.isNumber(options)){
+		// 	var index = options;
+		// 	options = {};
+		// }
+
+		var optionPlus = $.extend({
+			//additional options used by us.
+			unitSelector: 'div',
+			popOnBackward: true,
+			moveToOnAdd: true
 		}, options);
 
-		return this.each(function(index, el){
+		options = $.extend({
+			//defaults on standard FlexSlider options.
+			selector: '.slides > ' + optionPlus.unitSelector,
+			animation: 'slide',
+			controlsContainer: '.slides-control',
+			directionNav: false,
+			animationLoop: false,
+			slideshow: false,
+			keyboard: false,
+
+			after: function(slider){
+				if(optionPlus.popOnBackward && slider.direction === 'prev'){
+					while(slider.currentSlide < slider.last){
+						slider.removeSlide(slider.last);
+					}
+				}
+			}
+		}, options);
+
+		return this.each(function(elIndex, el){
 			var $el = $(el);
-			//if($el.data('flexslider')) return; //we don't re-init them.
 
-			if($el.find('> .slides').length === 0)
-				$el.wrapInner('<div class="slides"/>');
+			if($el.find('.slides').length === 0){
+				$el.wrapInner('<div class="slides-holder"><div class="slides"/></div>');
+				$el.prepend('<div class="slides-control" style="height:20px;"/>')
+			}
 
-			$el.flexslider(options);
+			//use the inner container.
+			$el = $el.find('.slides-holder');
+
+			if(!$el.data('flexslider')){
+				//we don't re-init them.
+				$el.flexslider(options);
+			}
+
+			if($view){
+				$view = (_.isString($view) || _.isElement($view))? $($view) : $view;
+				$view.find(':input').attr('tabIndex', -1); //disable tab keys on inputs (if it is a form)
+				$view.on('prev', function(){
+					if($el.data('flexslider').currentSlide === $view.slideIndex)
+						$el.flexslider('prev');
+				});
+				$view.on('next', function(){
+					if($el.data('flexslider').currentSlide === $view.slideIndex)
+						$el.flexslider('next');
+				})
+
+				var index = index || $el.data('flexslider').count;
+				$el.data('flexslider').addSlide($view); //bug in adding index here, omitted...;
+				$view.slideIndex = index; //remember index on the $view object.
+				
+				if(optionPlus.moveToOnAdd)
+					$el.flexslider($view.slideIndex);
+			}
+			
 		});
 
 	}
