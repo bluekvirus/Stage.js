@@ -54,7 +54,7 @@
 				model: module.map[name].Model,
 				url: dataURL,
 		        parse: function(response) {
-		            return response.payload; //to use mers on server.
+		            return response.payload; //payload is the default server data field.
 		        }
 			}, options.backboneOpts && options.backboneOpts.collection));
 		}else {

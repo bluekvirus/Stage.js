@@ -19,6 +19,15 @@
  * initialized and shown anywhere by any module. A generalization on the options argument is thus required (We will add in our own in addition to those accepted by 
  * backgrid).
  *
+ * ************
+ * Init Options
+ * ************
+ * collection
+ * columns
+ * mode
+ * parentCt
+ * formWidget (TBI: optional, inferred from model's name or schema in Admin meta module)
+ *
  * *****
  * Note
  * *****
