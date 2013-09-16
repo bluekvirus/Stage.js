@@ -154,7 +154,7 @@
 
         initialize: function(){
             // Listen to Application 'navigate to module' event
-            this.listenTo(app, 'app.navigate-to-module', this.changeSelected);
+            this.listenTo(app, 'app:navigate-to-module', this.changeSelected);
         },
 
         onRender: function() {

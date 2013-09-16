@@ -55,11 +55,12 @@
 					return function(module, region){
 							appRegion = Application.getRegion(region) || Application.getRegion('content');
 							// console.log(module);
-							if(Application[module] && appRegion){
+							var target = Application[module] || (Application.Admin && Application.Admin[module]);
+							if(target && appRegion){
 								if(currentModule !== module){
-									appRegion.show(new Application[module].View.Default());
+									appRegion.show(new target.View.Default());
 									Application.currentModule = currentModule = module;
-									Application.trigger('app.navigate-to-module', module, region);
+									Application.trigger('app:navigate-to-module', module, region);
 								}
 							}else
 								Application.error('Applicaton Routes Error', 'The module','<em class="label">', module,'</em>','you requested can NOT be shown on region', region);
