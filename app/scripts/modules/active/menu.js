@@ -85,7 +85,7 @@
 
             if (this.isLeaf) {
                 li.find('.menu-group').remove();
-                li.attr('module', this.model.get('module'));
+                li.attr('data-module-name', this.model.get('module'));
             } else {
 
                 li.find('.menu-item').remove();
@@ -153,8 +153,8 @@
         itemView: module.View.AccordionItemView,
 
         initialize: function(){
-            // Listen to Application 'navigateToModule' event
-            this.listenTo(app, 'navigateToModule', this.changeSelected);
+            // Listen to Application 'navigate to module' event
+            this.listenTo(app, 'app.navigate-to-module', this.changeSelected);
         },
 
         onRender: function() {
@@ -173,8 +173,8 @@
 
         _selectModule: function(moduleName) {
 
-            this.$el.find('[module]').removeClass('selected');
-            var li = this.$el.find('[module="'+moduleName+'"]');
+            this.$el.find('[data-module-name]').removeClass('selected');
+            var li = this.$el.find('[data-module-name="'+moduleName+'"]');
 
             li.addClass('selected');
 
@@ -335,7 +335,7 @@ Template.extend(
                 '<span><i class="icon-sub-item"></i><i class="icon-expand"></i> {{i18n label "menu"}}</span>',
             '</div>',
             '<div class="menu-item">',
-                '<i class="icon-sub-item"></i><i class="icon-item"></i> <a href="#config/{{module}}">{{i18n label "menu"}}</a>',
+                '<i class="icon-sub-item"></i><i class="icon-item"></i> <a href="#navigate/{{module}}">{{i18n label "menu"}}</a>',
             '</div>',
         '</li>'
     ]

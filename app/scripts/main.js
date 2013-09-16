@@ -1,74 +1,79 @@
 /**
- *
  * The main application module. 
  * 
- * 
  * Everything starts here. 
- * 	- Exposing the Application var
  * 	- Kicks start the application and modules.
- * 	- Managing app level region and layout within. 
+ * 	- Managing app level region and layouts.
+ * 	- Hook up global routes and routing event trigger. (event name: 'app.navigate-to-module', on Application)
  *
- * 
- * @module Application
  * @author Tim.Liu
+ * @update 2013.09.11
  */
 
 
 //When page is ready...
 
-jQuery(document).ready(function($) {
+;jQuery(document).ready(function($) {
 	// Stuff to do as soon as the DOM is ready. Use $() w/o colliding with other libs;
 	
 	//Config application regions for views:
-	//Note that these regions selectors must already be on the index.html page.
+	//Note that these regions selectors must already be on the index.html page (through loaded layout.html by theme roller.)
 	Application.addRegions({
+		//TBI:: auto-pickup from layouts?
 		main: '.application-container',
 		banner: '.application-container > .banner',
 		body: '.application-container > .body',
-		sidebar: '.application-container > .body .sidebar',
-		content: '.application-container > .body .content',
+		sidebar: '.application-container > .body .sidebar', //optional
+		content: '.application-container > .body .content', //optional
 		footer: '.application-container > .footer',
 
 	});
 
-	//Application init:1 
+	//Application init: Global listeners
 	Application.addInitializer(function(options){
-		//init menu,(banner, footer) and dashboard/welcome view.
+		//...
+	});	
+
+	//Application init: Region Views (marionette layouts)
+	//init menu,(banner, footer) and dashboard/welcome view.
+	Application.addInitializer(function(options){
+		//TBI:: auto-detect and init from configuration? (login, admin or app layout module)
 		Application.sidebar.show(new Application.Menu.View.Default());
 	});
 
-	//Application init:2
+	//Application init: Routes (can use href = #navigate/... to trigger them)
 	Application.on("initialize:after", function(options){
 		//init client page router and history:
-		var _Router_ = Backbone.Marionette.AppRouter.extend({
+		var Router = Backbone.Marionette.AppRouter.extend({
 			appRoutes: {
-				'config/:module': 'navigateToModule', //navigate to this module's default view.
+				'navigate/:module': 'navigateToModule', //navigate to a module's default view.
+				'navigate/:module/:region' : 'navigateToModule', //navigate to a module's default view from certain region. (optional, use with caution...)
 			},
 			controller: {
 				navigateToModule: (function(){
 					var currentModule = '';
-					return function(module){
+					return function(module, region){
+							appRegion = Application.getRegion(region) || Application.getRegion('content');
 							// console.log(module);
-							if(Application[module]){
+							if(Application[module] && appRegion){
 								if(currentModule !== module){
-									Application.content.show(new Application[module].View.Default());
+									appRegion.show(new Application[module].View.Default());
 									Application.currentModule = currentModule = module;
-									Application.trigger('navigateToModule', module);
+									Application.trigger('app.navigate-to-module', module, region);
 								}
 							}else
-								Application.error('Applicaton Routes Error', 'The module','<em class="label">', module,'</em>','you requested does not exist');
+								Application.error('Applicaton Routes Error', 'The module','<em class="label">', module,'</em>','you requested can NOT be shown on region', region);
 						}
 				})(),
 			}
 		});
 
-		new _Router_();
+		new Router();
 		if(Backbone.history)
 			Backbone.history.start();
 
 	});
 
-	
 	//Kick start the application
 	Application.start();
 
