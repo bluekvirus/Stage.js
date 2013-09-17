@@ -2,24 +2,13 @@
  * This is the mask jQuery plugin for masking certain dom element or all other.
  * This plugin should be loaded as early as possible, since other form/editor/notification widgets might need this effect.
  *
- * @requires Handlebars.js templating engine.
+ * @requires jQuery, spin.js
  * 
  * @author Yan Zhu
  * @author Tim.Liu
  * @create 2013.07.08
  */
-
-Template.extend('custom-tpl-widget-plugin-mask', [
-	'<div class="mask">',
-		'<span class="readonly-msg">{{msg}}</span>',
-		'<div class="spin-msg">',
-            '<div class="spin"></div>',
-            '<div class="wait-msg">{{msg}}</div>',
-        '</div>',
-	'</div>'
-]);
-
-(function($, app) {
+(function($) {
 
 	// spin options
 	var spinOpts = {
@@ -41,212 +30,209 @@ Template.extend('custom-tpl-widget-plugin-mask', [
 		left: 'auto' // Left position relative to parent in px
 	};
 
+	function unmask($el) {
+		if ($.isFunction($el.data('unmask'))) {
+			$el.data('unmask')($el);
+		}
+	}
+
+	/**
+	 * Usage:
+	 * 
+	 * 1. loading:
+	 * 	$(el).elMask({
+	 * 		mode: 'loading', // optional
+	 * 		maskClass: 'mask', // optional
+	 * 		msg: 'Please wait...', // optional
+	 * 		timeout: 0, // optional
+	 * 		onShow: function($el, options) {}, // optional
+	 * 		onCancel: function($el, options) {}, // optional
+	 * 	});
+	 * 
+	 * 2. readonly:
+	 * 	$(el).elMask({
+	 * 		mode: 'readonly', // required
+	 * 		maskClass: 'mask', // optional
+	 * 		msg: 'READ-ONLY', // optional
+	 * 		timeout: 0, // optional
+	 * 		onShow: function($el, options) {}, // optional
+	 * 		onCancel: function($el, options) {}, // optional
+	 * 	});
+	 * 
+	 * 3. overlay:
+	 * 	$(el).elMask({
+	 * 		mode: 'overlay', // required
+	 * 		maskClass: 'mask', // optional
+	 * 		overlayClass: 'overlay', // optional
+	 * 		cancelOnClick: true, // optional
+	 * 		onShow: function($el, options) {}, // optional
+	 * 		onCancel: function($el, options) {}, // optional
+	 * 	});
+	 * 
+	 * 4. highlight:
+	 * 	$(el).elMask({
+	 * 		mode: 'highlight', // required
+	 * 		highlightTarget: 'xxx', // required
+	 * 		maskClass: 'mask', // optional
+	 * 		highlightClass: 'highlight', // optional
+	 * 		cancelOnClick: true, // optional
+	 * 		onShow: function($el, options) {}, // optional
+	 * 		onCancel: function($el, options) {}, // optional
+	 * 	});
+	 * 
+	 * 5. unmask:
+	 * 	$(el).elMask({
+	 * 		mode: 'unmask', // required
+	 * 	});
+	 * 
+	 */
 	$.fn.elMask = function(options) {
 
-		// default options
+		///////////// default options ////////////
 		options = $.extend({
-			/* default is loading mode */
+			/**
+			 * elMask mode.
+			 * 
+			 * Available modes are:
+			 * 'loading': mask with a Loading sign - NI (NON-INTERACTABLE)
+			 * 'readonly': mask with a Read-Only sign - NI (NON-INTERACTABLE)
+			 * 'overlay': blacken this element and show an overlay layer above it - NI (NON-INTERACTABLE) but overlay layer I (INTERACTABLE)
+			 * 'highlight': blacken all parts of this element but highlight the specified part - NI (NON-INTERACTABLE) but highlight part I (INTERACTABLE)
+			 * 'unmask': cancel mask
+			 * 
+			 * Defaults to: 'loading'
+			 */
+			mode: 'loading',
+			
+			maskClass: 'mask', // the class name of the mask layer
 
-			/* readonly mode if readonly: true */
-			readonly: false, // mask with a Read-Only sign - NI (NON-INTERACTABLE)
+			overlayClass: 'overlay', // the class name of the overlay layer - overlay mode
 
+			highlightClass: 'highlight', // the class name of the highlight part - highlight mode
+
+			highlightTarget: undefined, // selector of the highlight part - highlight mode
+
+			msg: '', // msg to replace the read-only or loading message - loading/readonly mode
+
+			cancelOnClick: true, // user will cancel the overlay/highlight mode upon clicking the masked area - overlay/highlight mode
 			timeout: 0, // (ms) anything non-negative && > 0 should be considered - loading/readonly mode
-			msg: '', // msg to replace the read-only or loading message
 
-			/* overlap mode if overlap: true */
-			overlap: false, // blacken this element and show an overlap layer above this element
-			/* overlap mode options */
-			overlapClass: 'overlap', // the class name of the overlap layer, takes precedence of overlapSelector
-			overlapMaskClass: 'overlap-mask', // the class name of the mask layer
-			overlapSelector: undefined, // the selector of the overlap layer, priority lower than overlapClass.
-										// if use this option, the element match the selector must already exist
-
-			/* highlight mode if highlight: true */
-			highlight: false, // blacken all other else to contrast this one - I (INTERACTABLE) but others NI (NON-INTERACTABLE)
-			/* highlight mode options */
-			target: '', // selector to highlight
-			highlightMaskClass: 'highlight-mask', // mask class name - highlight mode
-
-			cancelOnClick: true, // user will cancel the overlap/highlight mode upon clicking the masked area
-
-			/* callbacks: two arguments: this jquery object and the options */
+			/* callbacks: two arguments: one of the matched elements, the options */
 			onShow: $.noop, // on 'show' callback
-			onClose: $.noop, // on 'close'/'timeout' callback - loading/readonly mode
-			onCancel: $.noop, // on 'cancel' callback - overlap/highlight mode
+			onCancel: $.noop, // on 'cancel' callback
 
 			/* customization - read-only or loading mode */
 			custom: undefined // custom el (mask view) to be used - unsupported yet
 
 		}, options);
 
-		if (!options.msg) {
-			options.msg = options.readonly ? 'READ-ONLY' : 'Please wait...';
-		}
 
-		// plugin logic
-		var that = this;
-
-		if ($.isFunction(that.data('unmask'))) {
-			that.data('unmask')();
-		}
-
-		$(window).on('resize.elMask', function(event) {
-			that.elMask(options);
+		////////////////// plugin logic /////////////
+		
+		// unmask and remove event listeners first
+		this.each(function(index, el) {
+			var $el = $(el);
+			unmask($el);
 		});
+		$(window).off('resize.elMask');
+		if (options.mode === 'unmask') {
+			return this;
+		}
 
-		var result;
-		if (options.overlap === true) {
-			if (options.overlapClass) {
-				var classArray = options.overlapClass.split(' ');
-				classArray.unshift('>');
-				options.overlapSelector = classArray.join('.');
-			}
-			if (!options.overlapSelector) {
-				app.error('Use Plugin Mask Error', 'should specify [overlapClass] or [overlapSelector] when using overlap mode');
-				return;
-			}
+		// remask when window resize
+		$(window).on('resize.elMask', _.bind(function(event) {
+			this.elMask(options);
+		}, this));
+		
+		
+		this.each(function(index, el) {
+			var $el = $(el);
+			var $elMask = $('<div></div>').addClass(options.maskClass).insertBefore($el);
+			options.maskSelector = '.' + options.maskClass;
+			// $elMask.height($el.height()).width($el.width()).offset($el.offset());
+			$elMask.height($el.outerHeight(true)).width($el.outerWidth(true)).offset($el.offset());
 			
-			result = that.each(function(index, el) {
-				$el = $(el);
+			if (options.mode === 'overlay') {
 				$el.data('originPosition', $el.css('position'));
 				$el.css('position', 'relative');
-				var $overlap = $el.find(options.overlapSelector);
-				if ($overlap.length === 0) {
-					if (options.overlapClass) {
-						$overlap = $('<div class="'+options.overlapClass+'"></div>').appendTo(el);
-					} else {
-						app.error('Use Plugin Mask Error', 'no element match "', options.overlapSelector, '" within ', $el.attr('id'));
-						return;
-					}
+				$('<div class="'+options.overlayClass+'"></div>').appendTo(el);
+				options.overlaySelector = '> .' + options.overlayClass;
+
+			} else if (options.mode === 'highlight') {
+				var $target = $el.find(options.highlightTarget);
+				$target.each(function(index, targetEl) {
+					var $targetEl = $(targetEl);
+					$targetEl.addClass(options.highlightClass);
+				});
+
+			} else if (options.mode === 'readonly') {
+				$('<span class="readonly-msg"></span>').html(options.msg || 'READ-ONLY').appendTo($elMask);
+				$elMask.addClass('readonly');
+
+			} else {
+				var $spinMsg = $('<div class="spin-msg"></div>').insertAfter($elMask);
+				var $spin = $('<div class="spin"></div>').appendTo($spinMsg);
+				var $waitMsg = $('<div class="wait-msg"></div>').html(options.msg || 'Please wait...').appendTo($spinMsg);
+				$spinMsg.width($spin.outerWidth(true) + $waitMsg.outerWidth(true));
+				var offset = $elMask.offset();
+				if ((offset.top + $elMask.height()) > $(window).height()) {
+					offset.top += ($(window).height() - offset.top - $spinMsg.height()) / 2;
+				} else {
+					offset.top += ($elMask.height() - $spinMsg.height()) / 2;
 				}
-				$overlap.show();
+				offset.left += ($elMask.width() - $spinMsg.width()) / 2;
+				$spinMsg.offset(offset);
 
-			}).highlight(options.overlapSelector, {
-				className: options.overlapMaskClass
-			});
-
-			var $maskDivs = $('.'+options.overlapMaskClass);
-			function closeOverlap() {
-				$maskDivs.remove();
-				that.each(function(index, el) {
-					$el = $(el);
+				var spinner = new Spinner(spinOpts);
+				spinner.spin($spin[0]);
+				$(spinner.el).css('top', $spin.height()/2+'px').css('left', $spin.width()/2+'px');
+			}
+			
+			$el.data('unmask', function($el) {
+				$el.prev('.spin-msg').remove();
+				$el.prev(options.maskSelector).remove();
+				
+				if (options.mode === 'overlay') {
+					$el.find(options.overlaySelector).remove();
 					var originPosition = $el.data('originPosition');
 					if (originPosition) {
 						$el.css('position', originPosition);
 					}
-					$el.find(options.overlapSelector).hide();
-				});
-
+				} else if (options.mode === 'highlight') {
+					var $target = $el.find(options.highlightTarget);
+					$target.each(function(index, targetEl) {
+						var $targetEl = $(targetEl);
+						$targetEl.removeClass(options.highlightClass);
+					});
+				}
+				
 				if ($.isFunction(options.onCancel)) {
-					options.onCancel(that, options);
+					options.onCancel($el, options);
+				}
+				
+				$el.removeData('unmask');
+			});
+			
+			if (options.mode === 'overlay' || options.mode === 'highlight') {
+				if (options.cancelOnClick === true) {
+					$elMask.on('click', function() {
+						unmask($el);
+					});
+				}
+			} else {
+				if ($.isNumeric(options.timeout) && options.timeout > 0) {
+					setTimeout(function() {
+						unmask($el);
+					}, options.timeout);
 				}
 			}
-			that.data('unmask', function() {
-				closeOverlap();
-				$(window).off('resize.elMask');
-				that.removeData('unmask');
-			});
-			if (options.cancelOnClick === true) {
-				$maskDivs.on('click', that.data('unmask'));
-			}
-
+			
 			if ($.isFunction(options.onShow)) {
-				options.onShow(that, options);
+				options.onShow($el, options);
 			}
+		});
 
-		} else if (options.highlight === true) {
-			//use jquery-mask
-			result = that.highlight(options.target, {
-				className: options.highlightMaskClass
-			});
-
-			var $maskDivs = $('.'+options.highlightMaskClass);
-			function cancelHighlight() {
-				$maskDivs.remove();
-
-				if ($.isFunction(options.onCancel)) {
-					options.onCancel(that, options);
-				}
-			}
-			that.data('unmask', function() {
-				cancelHighlight();
-				$(window).off('resize.elMask');
-				that.removeData('unmask');
-			});
-			if (options.cancelOnClick === true) {
-				$maskDivs.on('click', that.data('unmask'));
-			}
-
-			if ($.isFunction(options.onShow)) {
-				options.onShow(that, options);
-			}
-
-		} else {
-			result = that.each(function(index, el) {
-				$el = $(el);
-				var tpl_mask = Handlebars.compile($('#custom-tpl-widget-plugin-mask').html());
-				var $mask = $(tpl_mask({
-					msg: options.msg
-				}));
-
-				if (options.readonly === true) {
-					$mask.find('.spin-msg').remove();
-					$el.before($mask);
-					$mask.height($el.height()).width($el.width());
-
-				} else {
-					$mask.find('.readonly-msg').remove();
-					$mask.addClass('loading');
-					$el.before($mask);
-					$mask.height($el.outerHeight(true)).width($el.outerWidth(true));
-
-					var $spinMsg = $mask.find('.spin-msg');
-					$mask.after($spinMsg);
-					var $spin = $spinMsg.find('.spin');
-					var $waitMsg = $spinMsg.find('.wait-msg');
-					$spinMsg.width($spin.outerWidth(true)+$waitMsg.outerWidth(true));
-					var offset = $mask.offset();
-					if ((offset.top+$mask.height()) > $(window).height()) {
-						offset.top += ($(window).height()-offset.top-$spinMsg.height())/2;
-					} else {
-						offset.top += ($mask.height()-$spinMsg.height())/2;
-					}
-					offset.left += ($mask.width()-$spinMsg.width())/2;
-					$spinMsg.offset(offset);
-
-					var spinner = new Spinner(spinOpts);
-					spinner.spin($spin[0]);
-					$(spinner.el).css('top', $spin.height()/2+'px').css('left', $spin.width()/2+'px');
-				}
-			});
-
-
-			function cancelMask() {
-				that.prev('.spin-msg').remove();
-				that.prev('.mask').remove();
-
-				if ($.isFunction(options.onClose)) {
-					options.onClose(that, options);
-				}
-			};
-			that.data('unmask', function() {
-				cancelMask();
-				$(window).off('resize.elMask');
-				that.removeData('unmask');
-			});
-
-			if ($.isFunction(options.onShow)) {
-				options.onShow(that, options);
-			}
-
-			if ($.isNumeric(options.timeout) && options.timeout > 0) {
-				setTimeout(function() {
-					that.data('unmask')();
-				}, options.timeout);
-			}
-		}
-
-		return result;
+		return this;
 	};
 
-})(jQuery, Application);
+})(jQuery);
