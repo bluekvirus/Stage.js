@@ -208,7 +208,7 @@
             success: function(data, textStatus, xhr) {
           
             //register module pre-set path to the menu data object:
-            _.each(app.submodules, function(sMod, name){
+            _.each(_.extend({}, app.submodules, app.Admin.submodules), function(sMod, name){
                 if(sMod.defaultAdminPath){
                     _mergePath(data, sMod.defaultAdminPath.split('->'), name);
                 }

@@ -30,28 +30,28 @@
  * To create a data admin module, we need:
  * {
  * 		name: (*) - required, this name will be used to obtain Model/Collection definitions from the DataUnits module (see data-units.js)
- * 		type: table | complex - default on table
+ * 		type: table | complex - default on table, optional
  * 		menuPath: default admin menu path. e.g. 'Content Manager->Blogs->...->...', optional
  * 		fields: {
  * 			f-name: {
  * 				//validations
- * 					validation: see lib Backbone.Validations
+ * 					validation: see lib Backbone.Validations, optional
  * 				//form
- * 					title: label 
- * 					tooltip/description: hover 2s tooltip
+ * 					title: label , optional
+ * 					tooltip/description: hover 2s tooltip, optional
  * 					editor: '[editor name]' as defined in form editors(widgets) or 'null', default on text input, use ReadOnly(//TBI) or Hidden if needs be...
  * 					editorOpt: options used when init the editor widget.
- * 					fieldset: a group name. Fieldset can help regroup some of the fields and apply a custom tpl to the set.
+ * 					fieldset: a group name. Fieldset can help regroup some of the fields and apply a custom tpl to the set. optional
  * 					conditions: upon each 'change' event fired by the form, this function will be checked to see if this field should still be visible.
- * 								(note that a Hidden field is considered to be visible all the time)
+ * 								(note that a Hidden field is considered to be visible all the time). optional
  * 				//grid
 					column: {
-						label: default on field title
-						cell: default on "string"
-						headerCell: 
-						filterable: searchable through jquery.sieve
-						sortDisabled: apply local sort through table sorter
-						index: re-arrange column order?
+						label: default on field title, optional
+						cell: default on "string", optional
+						headerCell: default on 'string', optional
+						filterable: default on 'true' , searchable through jquery.sieve, optional
+						sortDisabled: default on 'false', apply local sort through table sorter, optional
+						index: re-arrange column order? NIU atm.
 						...
 					} - see datagrid widget and lib Backgrid.js
  * 			},
@@ -76,7 +76,7 @@
  * 
  */
 
-;(function(app, _){
+;(function(app, _, Backbone){
 
 	var Factory = app.Factory || app.module('Factory');
 	var Admin = app.Admin || app.module('Admin');
@@ -93,24 +93,24 @@
 			options = _.defaults(options, {type: 'table'});
 			if(!options.name) return;
 
-			//prepare options from passed in config to the module components
+			//1 prepare options from passed in config to the module components
 			//validations, form schema, and grid columns
 			var config = {
 				validation: {}, schema: {}, columns: []
 			}
 			_.each(options.fields, function(f, fname){
-				//1. extract validation for backbone-validations
+				//1.1 extract validation for backbone-validations
 				if(f.validation) config.validation[fname] = f.validation;
-				//2. extract form schema (WARNING::note that currently we use the format defined by backbone-forms.js)
+				//1.2 extract form schema (WARNING::note that currently we use the format defined by backbone-forms.js)
 				f.title = f.title || _.string.titleize(fname);
-				config.schema[fname] = _.extend(_.omit(f, 'validation', 'column', 'editorOpt'), f.editorOpt);
-				//3. extract datagrid columns
+				config.schema[fname] = f.editor && _.extend(_.omit(f, 'validation', 'column', 'editor', 'editorOpt'), f.editorOpt, {type: f.editor});
+				//1.3 extract datagrid columns
 				if(f.column) config.columns.push = _.extend({name: fname, label: f.title, cell: 'string'}, f.column);
 			});
 			if(options.type === 'table'){
-				//0. sort columns according to index (TBI)
+				//1.4.0. sort columns according to index (TBI)
 				
-				//1.need a little [action, select_all] columns fix according to options.actions
+				//1.4.1.need a little [action, select_all] columns fix according to options.actions
 				if(options.actions){
 					//+Action Column
 			        var actionsColumn = {
@@ -151,11 +151,12 @@
 				}
 			}
 
-			//build the admin module
-			Admin[name] = (function(){
+			//2 build the admin module as a sub-module of app.Admin
+			var module = app.module('Admin.' + options.name);
+			(function(module, config, options){
 
 				var dataUnit = app.DataUnits.get(options.name);
-				var module = {
+				var module = _.extend(module, {
 					name: options.name,
 					type: options.type,
 					defaultAdminPath: options.menuPath, //optional
@@ -167,50 +168,60 @@
 						DataGrid: options.grid || app.Widget.get('DataGrid'), //can be undefined if of type complex
 						Form: options.form || app.Widget.get('Form')
 					},
-
 					View: {
-						Default: Backbone.Marionette.Layout.extend({
-							template: '#custom-tpl-layout-module-admin',
-							className: 'custom-tpl-layout-wrapper module-admin-layout-wrap',
-
-							regions: {
-							    list: '.list-view-region',
-							    detail: '.details-view-region'
-							},
-
-							initialize: function(options){
-								options = options || {};
-								this.model = options.model || new Backbone.Model({
-									meta: { //the layout view info package (as a model to a view) see the admin layout template below.
-										title: _.string.titleize(_.string.humanize(options.name))
-									}
-								});
-							},
-							onShow: function(){
-								//TBI
-							}
-						})
+						Default: Backbone.Marionette.Layout
 					}
-				};
+				});
 
-				//a little tidy up / pre config work here...
+				//3 a little tidy up / pre config work here...
 				module.Model = module.Model.extend({validation: config.validation}); //+ validation to model
 				module.Widgets.Form = module.Widgets.Form.extend({type:module.type, schema: config.schema}); //+ schema to form (note that we no longer apply this to model)
 				if(module.type === 'table'){
+					module.collection = new module.Collection();
 					module.Widgets.DataGrid = module.Widgets.DataGrid.extend({columns: config.columns, formWidget: module.Widgets.Form}); //+ columns to datagrid
 				}else {
+					module.model = new module.Model();
 					delete module.Collection;
 					delete module.Widgets.DataGrid;
 				}
+				module.View.Default = module.View.Default.extend({
 
+					template: '#custom-tpl-layout-module-admin',
+					className: 'custom-tpl-layout-wrapper module-admin-layout-wrap',
+
+					regions: {
+					    list: '.list-view-region',
+					    detail: '.details-view-region'
+					},
+
+					initialize: function(options){
+						options = options || {};
+						this.model = options.model || new Backbone.Model({
+							meta: { //the layout view info package (as a model to a view) see the admin layout template below.
+								title: _.string.titleize(_.string.humanize(options.name))
+							}
+						});
+					},
+					onShow: function(){
+						if(module.type === 'table')
+							this.list.show(new module.Widgets.DataGrid({
+				                collection: module.collection,
+				                parentCt: this
+				            }));
+						else 
+							this.detail.show(new module.Widgets.Form({
+								model: module.model
+							}));
+					}
+
+				});
 				return module;
-
-			})();
+			})(module, config, options);
 		},
 
 	};
 
-})(Application, _);
+})(Application, _, Backbone);
 
 /**
  * =======================================
