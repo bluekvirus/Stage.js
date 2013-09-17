@@ -86,7 +86,7 @@ Application.Widget.register('DataGrid', function(){
             this.columns = options.columns || this.columns;
             this.mode = options.mode; //subDoc or refDoc
             this.parentCt = options.parentCt; //for event relay and collaboration with sibling wigets.
-            this.formWidget = options.formWidget;// needed for editing/create records.
+            this.formWidget = options.formWidget || this.formWidget;// needed for editing/create records.
 
             var that = this;
             //b. cells
@@ -126,9 +126,9 @@ Application.Widget.register('DataGrid', function(){
                 this._registerFooter();
             }, this));
 
-            this.listenTo(this.grid, 'widget:rendered', _.bind(function(){
+            this.on('show', _.bind(function(){
                 this.afterRender();
-            },this))
+            }, this));
             
             //e. hook up with 'backgrid:refresh' see this._hookupColumnSorter()
             this.grid.listenTo(this.grid.collection,'backgrid:refresh', _.bind(function(){

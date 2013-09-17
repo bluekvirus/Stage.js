@@ -31,6 +31,7 @@
  * {
  * 		name: (*) - required, this name will be used to obtain Model/Collection definitions from the DataUnits module (see data-units.js)
  * 		type: table | complex - default on table
+ * 		menuPath: default admin menu path. e.g. 'Content Manager->Blogs->...->...', optional
  * 		fields: {
  * 			f-name: {
  * 				//validations
@@ -88,24 +89,83 @@
 
 		create: function(options){
 			options = options || {};
+			//apply defaults:
+			options = _.defaults(options, {type: 'table'});
 			if(!options.name) return;
 
 			//prepare options from passed in config to the module components
+			//validations, form schema, and grid columns
+			var config = {
+				validation: {}, schema: {}, columns: []
+			}
+			_.each(options.fields, function(f, fname){
+				//1. extract validation for backbone-validations
+				if(f.validation) config.validation[fname] = f.validation;
+				//2. extract form schema (WARNING::note that currently we use the format defined by backbone-forms.js)
+				f.title = f.title || _.string.titleize(fname);
+				config.schema[fname] = _.extend(_.omit(f, 'validation', 'column', 'editorOpt'), f.editorOpt);
+				//3. extract datagrid columns
+				if(f.column) config.columns.push = _.extend({name: fname, label: f.title, cell: 'string'}, f.column);
+			});
+			if(options.type === 'table'){
+				//0. sort columns according to index (TBI)
+				
+				//1.need a little [action, select_all] columns fix according to options.actions
+				if(options.actions){
+					//+Action Column
+			        var actionsColumn = {
+			        	    name: "_actions_",
+				            label: "",
+				            cell: "action",
+				            filterable: false,
+				            sortDisabled: true,
+				            actions: []
+			        };
+			        config.columns.push(actionsColumn);
+			        function pushActions(actionList){
+						_.each(actionList, function(action){
+							actionsColumn.push({
+								name: action,
+								title: _.string.titleize(_.string.humanize(action))
+							});
+						});
+			        };
+					if(_.isObject(options.actions)){
+						if(!options.actions.batch)
+							pushActions(options.actions.list);
+						else
+							options.actions = options.actions.list; //convert it back to array
+					}	        
+					if(_.isArray(options.actions)){
+						//+Select All Column
+						config.columns.unshift({
+				            name: "_selected_",
+				            label: "",
+				            cell: "select-row",
+				            headerCell: "select-all",
+				            filterable: false,
+				            sortDisabled: true
+				        });
+				        pushActions(options.actions);
+					}
+				}
+			}
 
 			//build the admin module
 			Admin[name] = (function(){
 
+				var dataUnit = app.DataUnits.get(options.name);
 				var module = {
+					name: options.name,
+					type: options.type,
+					defaultAdminPath: options.menuPath, //optional
+
+					Model: dataUnit.Model,
+					Collection: dataUnit.Collection, //can be undefined if of type table
 
 					Widgets: {
-						
-						DataGrid: app.Widget.get('DataGrid').extend({
-							//TBI
-						}),
-
-						Form: app.Widget.get('Form').extend({
-							//TBI
-						})
+						DataGrid: options.grid || app.Widget.get('DataGrid'), //can be undefined if of type complex
+						Form: options.form || app.Widget.get('Form')
 					},
 
 					View: {
@@ -117,9 +177,31 @@
 							    list: '.list-view-region',
 							    detail: '.details-view-region'
 							},
+
+							initialize: function(options){
+								options = options || {};
+								this.model = options.model || new Backbone.Model({
+									meta: { //the layout view info package (as a model to a view) see the admin layout template below.
+										title: _.string.titleize(_.string.humanize(options.name))
+									}
+								});
+							},
+							onShow: function(){
+								//TBI
+							}
 						})
 					}
 				};
+
+				//a little tidy up / pre config work here...
+				module.Model = module.Model.extend({validation: config.validation}); //+ validation to model
+				module.Widgets.Form = module.Widgets.Form.extend({type:module.type, schema: config.schema}); //+ schema to form (note that we no longer apply this to model)
+				if(module.type === 'table'){
+					module.Widgets.DataGrid = module.Widgets.DataGrid.extend({columns: config.columns, formWidget: module.Widgets.Form}); //+ columns to datagrid
+				}else {
+					delete module.Collection;
+					delete module.Widgets.DataGrid;
+				}
 
 				return module;
 
