@@ -6,6 +6,7 @@
 
 	app.Factory.AdminModule.create({
 		name: 'Comment',
+        //type: 'complex',
 		menuPath: 'Test -> Comments',
 		fields: {
             title: {

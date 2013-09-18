@@ -157,33 +157,36 @@
 
 			//2 build the admin module as a sub-module of app.Admin
 			var module = app.module('Admin.' + options.name);
-			(function(module, config, options){
+			(function(module, config, forwaredOptions){
+				//create the required data unit. see - special/registry/data-units.js
+				var dataUnitOpt = (forwaredOptions.type === 'table')?{}:{modelOnly: true};
+				app.DataUnits.init(forwaredOptions.name, dataUnitOpt);
+				var	dataUnit =  app.DataUnits.get(forwaredOptions.name),
+				//create the module skeleton
+					module = _.extend(module, {
+						name: forwaredOptions.name,
+						type: forwaredOptions.type,
+						defaultAdminPath: forwaredOptions.menuPath, //optional
 
-				var dataUnit = app.DataUnits.get(options.name);
-				var module = _.extend(module, {
-					name: options.name,
-					type: options.type,
-					defaultAdminPath: options.menuPath, //optional
+						Model: dataUnit.Model,
+						Collection: dataUnit.Collection, //can be undefined if of type table
 
-					Model: dataUnit.Model,
-					Collection: dataUnit.Collection, //can be undefined if of type table
+						Widgets: {
+							DataGrid: forwaredOptions.grid || app.Widget.get('DataGrid'), //can be undefined if of type complex
+							Form: forwaredOptions.form || app.Widget.get('Form')
+						},
+						View: {
+							Default: Backbone.Marionette.Layout
+						}
+					});
 
-					Widgets: {
-						DataGrid: options.grid || app.Widget.get('DataGrid'), //can be undefined if of type complex
-						Form: options.form || app.Widget.get('Form')
-					},
-					View: {
-						Default: Backbone.Marionette.Layout
-					}
-				});
-
-				//3 a little tidy up / pre config work here...
+				//3 a little tidy up / pre config work here...bring the module to life.
 				module.Model = module.Model.extend({validation: config.validation}); //+ validation to model
 				module.Widgets.Form = module.Widgets.Form.extend({type:module.type, schema: config.schema}); //+ schema to form (note that we no longer apply this to model)
 				if(module.type === 'table'){
 					//table module
 					module.collection = new module.Collection();
-					module.Widgets.DataGrid = module.Widgets.DataGrid.extend({columns: config.columns, formWidget: module.Widgets.Form}); //+ columns to datagrid
+					module.Widgets.DataGrid = module.Widgets.DataGrid.extend({columns: config.columns, formWidget: module.Widgets.Form}); //+ columns, form to datagrid
 				}else {
 					//complex module
 					module.model = new module.Model();
@@ -194,7 +197,6 @@
 
 					template: '#custom-tpl-layout-module-admin',
 					className: 'custom-tpl-layout-wrapper module-admin-layout-wrap',
-
 					regions: {
 					    list: '.list-view-region',
 					    detail: '.details-view-region'
@@ -203,9 +205,8 @@
 					initialize: function(options){
 						options = options || {};
 						this.model = options.model || new Backbone.Model({
-							meta: { //the layout view info package (as a model to a view) see the admin layout template below.
-								title: _.string.titleize(_.string.humanize(options.name))
-							}
+							//the layout view info package (as a model to a view) see the admin layout template below.
+							title: _.string.titleize(_.string.humanize(forwaredOptions.name + 'Manager')) 
 						});
 					},
 					onShow: function(){
@@ -218,6 +219,10 @@
 							this.detail.show(new module.Widgets.Form({
 								model: module.model
 							}));
+					},
+					//this is for the datagrid widget to call from its _showForm method. so it won't have to know the layout of this parentCt view.
+					showForm: function(form){
+						this.detail.show(form);
 					}
 
 				});
@@ -237,7 +242,7 @@
 Template.extend(
 	'custom-tpl-layout-module-admin',
 	[
-		'{{#if meta.title}}<div class="default-layout-header"><i class="icon-tasks"></i> <span class="default-layout-header-title">{{meta.title}}</span></div>{{/if}}',
+		'{{#if title}}<div class="default-layout-header"><i class="icon-tasks"></i> <span class="default-layout-header-title">{{title}}</span></div>{{/if}}',
 		'<div class="default-layout-body">',
             '<div class="list-view-region"></div>',
             '<div class="details-view-region"></div>',

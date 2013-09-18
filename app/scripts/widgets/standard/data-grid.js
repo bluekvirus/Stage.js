@@ -224,17 +224,16 @@ Application.Widget.register('DataGrid', function(){
             } else //create mode.
             var m = new this.collection.model();
 
-            //TBI : need to change this so the datagrid won't know its parentCt's layout.
-            if(this.formWidget){
+            if(this.formWidget && this.parentCt){
             	//create and show it
 	            var formView = new this.formWidget({
 	                model: m,
 	                recordManager: this
 	            });
-	            this.parentCt.detail.show(formView);
+	            this.parentCt.showForm(formView);
                 return formView;
-            }else {
-            	//trigger an event so the parentCt can act accordingly
+            }else if(this.parentCt) {
+            	//trigger an event so the parentCt can help get the form
             	this.parentCt.$el.trigger('showForm', {
             		model: m,
             		grid: this
