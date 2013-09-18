@@ -9,11 +9,11 @@
 		menuPath: 'Test -> Comments',
 		fields: {
             title: {
-                type: "Text",
+                editor: "Text",
                 column: true,
             },
             body: {
-                type: "TextArea",
+                editor: "TextArea",
                 title: "Content",
                 column: {
                 	label: "Content Body",

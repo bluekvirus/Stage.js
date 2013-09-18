@@ -69,11 +69,11 @@
 
 Application.Widget.register('DataGrid', function(){
 
-	var DataGrid = Backbone.Marionette.ItemView.extend({
+	var DataGrid = Backbone.Marionette.Layout.extend({
         template: '#widget-datagrid-view-wrap-tpl',
         className: 'basic-datagrid-view-wrap',
 
-        ui: {
+        regions: {
             header: '.datagrid-header-container',
             body: '.datagrid-body-container',
             footer: '.datagrid-footer-container'
@@ -126,14 +126,10 @@ Application.Widget.register('DataGrid', function(){
                 this._registerFooter();
             }, this));
 
-            this.on('show', _.bind(function(){
-                this.afterRender();
-            }, this));
+            this.listenTo(this.grid, 'show', this.afterRender);
             
             //e. hook up with 'backgrid:refresh' see this._hookupColumnSorter()
-            this.grid.listenTo(this.grid.collection,'backgrid:refresh', _.bind(function(){
-                this.afterRefresh(); //triggered by sort, reset event (see Backgrid.Body)
-            }, this));
+            this.grid.listenTo(this.grid.collection,'backgrid:refresh', this.afterRefresh/*triggered by sort, reset event (see Backgrid.Body)*/);
             /*WARNING:: a fetch() will screw up the UI tableSorter, need to fire update/updateAll event*/        
         },
 
@@ -147,7 +143,7 @@ Application.Widget.register('DataGrid', function(){
 			this.grid.$el.sieve({
 				itemSelector: '.data-row',
 				textSelector: '.filterable',
-				searchInput: this.ui.header.find('.local-filter-box input')
+				searchInput: this.header.getEl('.local-filter-box input')
 			});
         },
 
@@ -177,7 +173,7 @@ Application.Widget.register('DataGrid', function(){
                     recordCount: this.collection.length
                 })
             });
-            this.ui.footer.html(this.infoBar.render().el);            
+            this.footer.show(this.infoBar);            
             this.listenTo(this.collection, 'add remove', _.bind(function(e){
                 this.infoBar.model.set('recordCount', this.collection.length);
             }, this));
@@ -189,18 +185,12 @@ Application.Widget.register('DataGrid', function(){
 
         /*======Renderring Related Hooks======*/
         //Add a backgrid.js grid into the body 
-        onRender: function() {
+        onShow: function() {
             //if it is not in subDoc mode, we let the collection to fetch data itself.
             //this will trigger the 'reset' event which in turn will trigger 'backgrid:rendered' on backgrid
-            if (this.isRefMode()) this.collection.fetch({
-            	success: _.bind(function(){
-            		this.ui.body.html(this.grid.render().el);
-                    this.grid.trigger('widget:rendered', this);
-            	}, this)
-            });
-            else{
-            	this.ui.body.html(this.grid.render().el);
-                this.grid.trigger('widget:rendered', this);
+            this.body.show(this.grid);
+            if (this.isRefMode()){ 
+            	this.grid.$el.trigger('event_RefreshRecords');
             }
 
             //Do **NOT** register any event listeners here.
@@ -209,10 +199,6 @@ Application.Widget.register('DataGrid', function(){
         //Empty Stub. override in extension
         afterRender: $.noop,
         afterRefresh: $.noop,
-        //Clean up zombie views.
-        onBeforeClose: function() {
-            this.grid.remove();
-        },
         //====================================
         
         //*============Events & Actions===============*/
@@ -238,7 +224,7 @@ Application.Widget.register('DataGrid', function(){
             } else //create mode.
             var m = new this.collection.model();
 
-
+            //TBI : need to change this so the datagrid won't know its parentCt's layout.
             if(this.formWidget){
             	//create and show it
 	            var formView = new this.formWidget({
@@ -246,7 +232,6 @@ Application.Widget.register('DataGrid', function(){
 	                recordManager: this
 	            });
 	            this.parentCt.detail.show(formView);
-	            formView.onRenderPlus(formView, this);
                 return formView;
             }else {
             	//trigger an event so the parentCt can act accordingly

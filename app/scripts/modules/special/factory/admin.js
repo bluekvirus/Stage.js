@@ -58,7 +58,7 @@
  * 			...
  * 		},
  * 		grid: ...a copy of widget definition (.extend({}))... see the Widgets Registry module [modules/special/registry/widgets.js]
- * 		actions: [edit, delete] (default) or none (which will remove both select_all and action columns) or {
+ * 		actions: [edit, delete] or none (which will remove both select_all and action columns) or {
  * 			batch: false,
  * 			list: [edit, delete, ...] 
  * 		} (this means that only the select_all column will be removed)
@@ -90,7 +90,7 @@
 		create: function(options){
 			options = options || {};
 			//apply defaults:
-			options = _.defaults(options, {type: 'table'});
+			options = _.defaults(options, {type: 'table', actions:['edit', 'delete']});
 			if(!options.name) return;
 
 			//1 prepare options from passed in config to the module components
@@ -103,10 +103,14 @@
 				if(f.validation) config.validation[fname] = f.validation;
 				//1.2 extract form schema (WARNING::note that currently we use the format defined by backbone-forms.js)
 				f.title = f.title || _.string.titleize(fname);
-				config.schema[fname] = f.editor && _.extend(_.omit(f, 'validation', 'column', 'editor', 'editorOpt'), f.editorOpt, {type: f.editor});
+				if(f.editor) config.schema[fname] = _.extend(_.omit(f, 'validation', 'column', 'editor', 'editorOpt'), f.editorOpt, {type: f.editor});
 				//1.3 extract datagrid columns
-				if(f.column) config.columns.push = _.extend({name: fname, label: f.title, cell: 'string'}, f.column);
+				if(f.column) config.columns.push(_.extend({name: fname, label: f.title, cell: 'string'}, f.column));
 			});
+			//warning msgs.
+			if(_.isEmpty(config.schema)) throw new Error('DEV::AdminFactory::You must have at least one editor configured for the form widget');
+			if(_.isEmpty(config.columns)) throw new Error('DEV::AdminFactory::You must have at least one column configured for the datagrid widget');
+			//go on refine the datagrid columns
 			if(options.type === 'table'){
 				//1.4.0. sort columns according to index (TBI)
 				
@@ -124,7 +128,7 @@
 			        config.columns.push(actionsColumn);
 			        function pushActions(actionList){
 						_.each(actionList, function(action){
-							actionsColumn.push({
+							actionsColumn.actions.push({
 								name: action,
 								title: _.string.titleize(_.string.humanize(action))
 							});
@@ -177,9 +181,11 @@
 				module.Model = module.Model.extend({validation: config.validation}); //+ validation to model
 				module.Widgets.Form = module.Widgets.Form.extend({type:module.type, schema: config.schema}); //+ schema to form (note that we no longer apply this to model)
 				if(module.type === 'table'){
+					//table module
 					module.collection = new module.Collection();
 					module.Widgets.DataGrid = module.Widgets.DataGrid.extend({columns: config.columns, formWidget: module.Widgets.Form}); //+ columns to datagrid
 				}else {
+					//complex module
 					module.model = new module.Model();
 					delete module.Collection;
 					delete module.Widgets.DataGrid;
