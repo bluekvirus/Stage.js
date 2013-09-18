@@ -16,7 +16,7 @@
 	 * Module Name 
 	 * ================================
 	 */
-	var module = app.module('StatusPanel');
+	var module = app.module('Admin.StatusPanel');
 
 	/**
 	 * ================================

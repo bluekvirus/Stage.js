@@ -10,6 +10,41 @@
  * @update 2013.09.11
  */
 
+//Application Contexts
+;(function(app){
+
+	var contexts = app.module('Context');
+	_.extend(contexts, {
+		//login
+		Login: Backbone.Marionette.Layout.extend({
+
+		}),
+
+		Admin: Backbone.Marionette.Layout.extend({
+			template: '#application-context-admin-tpl',
+			regions: {
+				sidebar: '.sidebar',
+				content: '.content',
+			},
+			onShow: function(){
+				this.sidebar.show(new Application.Menu.View.Default());
+			}
+		})
+
+	});
+
+
+})(Application);
+
+Template.extend(
+	'application-context-admin-tpl',
+	[
+        '<div class="default row-fluid">',
+            '<div class="sidebar span2"></div>',
+            '<div class="content span10"></div>',
+        '</div>'
+	]
+);
 
 //When page is ready...
 
@@ -23,8 +58,6 @@
 		main: '.application-container',
 		banner: '.application-container > .banner',
 		body: '.application-container > .body',
-		sidebar: '.application-container > .body .sidebar', //optional
-		content: '.application-container > .body .content', //optional
 		footer: '.application-container > .footer',
 
 	});
@@ -37,8 +70,10 @@
 	//Application init: Region Views (marionette layouts)
 	//init menu,(banner, footer) and dashboard/welcome view.
 	Application.addInitializer(function(options){
-		//TBI:: auto-detect and init from configuration? (login, admin or app layout module)
-		Application.sidebar.show(new Application.Menu.View.Default());
+		//TBI:: auto-detect and init context (view that replaces the body region) from configuration or server? (login, admin or app layout module)
+		//		the context is now always Admin at the moment...
+		Application.currentContext = 'Admin';
+		Application.body.show(new Application.Context[Application.currentContext]());
 	});
 
 	//Application init: Routes (can use href = #navigate/... to trigger them)
@@ -46,16 +81,17 @@
 		//init client page router and history:
 		var Router = Backbone.Marionette.AppRouter.extend({
 			appRoutes: {
-				'navigate/:module': 'navigateToModule', //navigate to a module's default view.
-				'navigate/:module/:region' : 'navigateToModule', //navigate to a module's default view from certain region. (optional, use with caution...)
+				'(navigate)(/:module)(/:region)' : 'navigateToModule', //navigate to a module's default view from certain region. (optional, use with caution...)
 			},
 			controller: {
 				navigateToModule: (function(){
 					var currentModule = '';
 					return function(module, region){
-							appRegion = Application.getRegion(region) || Application.getRegion('content');
+							module = module || 'StatusPanel'; //or Dashboard
+							region = region || 'content';
+							appRegion = Application.body.currentView.regionManager.get(region);
 							// console.log(module);
-							var target = Application[module] || (Application.Admin && Application.Admin[module]);
+							var target = (Application[Application.currentContext] && Application[Application.currentContext][module]);
 							if(target && appRegion){
 								if(currentModule !== module){
 									appRegion.show(new target.View.Default());
@@ -63,7 +99,7 @@
 									Application.trigger('app:navigate-to-module', module, region);
 								}
 							}else
-								Application.error('Applicaton Routes Error', 'The module','<em class="label">', module,'</em>','you requested can NOT be shown on region', region);
+								Application.error('Applicaton Routes Error', 'The module','<em class="label">', module,'</em>','you requested in context', Application.currentContext,'can NOT be shown on region', region);
 						}
 				})(),
 			}
@@ -79,3 +115,4 @@
 	Application.start();
 
 });
+
