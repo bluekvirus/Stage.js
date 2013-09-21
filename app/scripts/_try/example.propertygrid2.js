@@ -16,7 +16,8 @@
 	 * Module Name 
 	 * ================================
 	 */
-	var module = app.module('Admin.StatusPanel');
+	var context= app.Context.Admin;
+	var module = context.module('StatusPanel');
 
 	/**
 	 * ================================

@@ -22,7 +22,7 @@
  * app.Factory.AdminModule.create(...config...); //define.
  * app.Factory.AdminModule.get(...name...); //for extension. directly use .extend() on widgets or use the Extension Manager module [modules/special/extension/manager.js]
  *
- * created module will appear in app.Admin.[...name...]
+ * created module will appear in app.Context.Admin.[...name...]
  * 
  * ===================
  * Config/Init Options
@@ -79,7 +79,7 @@
 ;(function(app, _, Backbone){
 
 	var Factory = app.Factory || app.module('Factory');
-	var Admin = app.Admin || app.module('Admin');
+	var Admin = app.Context.Admin;
 
 	Factory.AdminModule = {
 
@@ -155,8 +155,8 @@
 				}
 			}
 
-			//2 build the admin module as a sub-module of app.Admin
-			var module = app.module('Admin.' + options.name);
+			//2 build the admin module as a sub-module of app.Context.Admin
+			var module = Admin.module(options.name);
 			(function(module, config, forwaredOptions){
 				//create the required data unit. see - special/registry/data-units.js
 				var dataUnitOpt = (forwaredOptions.type === 'table')?{}:{modelOnly: true};

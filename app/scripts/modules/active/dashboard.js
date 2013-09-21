@@ -7,7 +7,8 @@
 
 (function(app) {
 
-	var module = app.module('Dashboard');
+	var context = app.Context.Admin;
+	var module = context.module('Dashboard');
 
 	module.portlets = [];
 

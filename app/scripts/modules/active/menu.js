@@ -30,7 +30,8 @@
      * Module Name 
      * ================================
      */
-    var module = app.module("Menu");
+    var context = app.Context.Admin;
+    var module = context.module('Menu');
 
     /**
      * ================================
@@ -208,7 +209,7 @@
             success: function(data, textStatus, xhr) {
           
             //register module pre-set path to the menu data object:
-            _.each(_.extend({}, app.submodules, app.Admin.submodules), function(sMod, name){
+            _.each(context.submodules, function(sMod, name){
                 if(sMod.defaultAdminPath){
                     _mergePath(data, sMod.defaultAdminPath.split('->'), name);
                 }
