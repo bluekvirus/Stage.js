@@ -91,7 +91,7 @@
 	 */
 	module.View = {Default:PropertyLayout};
 
-	module.defaultAdminPath = "System->Dashboard->Status Example";
+	module.defaultAdminPath = "System->Status Example";
 
 })(Application);
 
