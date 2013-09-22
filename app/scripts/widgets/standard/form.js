@@ -45,6 +45,7 @@ Application.Widget.register('Form', function(){
 		events: {
 			//hook up the generalized action clicking listener logic
 			'click [action]': function(e){
+				e.stopPropagation(); //this is to prevent the parent form to trigger actions as well.
 				$el = $(e.currentTarget);
 				var action =  'do' + _.string.titleize($el.attr('action'));
 				var doer = this.actions[action];
@@ -111,7 +112,7 @@ Application.Widget.register('Form', function(){
 				//1 check if there are validations to apply to the fields
 	            var error = widget.form.validate();
 	            if (error) { //output error and scroll to first error field.
-	                console.log(error);
+	                //console.log(error);
 	                for (var key in error) {
 	                    $('html').animate({
 	                        scrollTop: widget.form.$el.find('.invalid[name=' + key + ']').offset().top - 30

@@ -35,6 +35,10 @@
 
         onShow: function() {
             this.list.show(this.dataGridView);
+        },
+
+        showForm: function(form) {
+            this.detail.show(form);
         }        
 
     });
@@ -81,7 +85,7 @@
             //delegating the datagrid display
             	this.delegatedEditor = new EditorLayout({
     	        	data: this.value, //this is the subDoc/refDoc array [NOT YET a collection].
-    	        	apiUrl: this.model.urlRoot+'/'+this.model.id+'/'+this.key, //collection url.
+    	        	apiUrl: this.model.url() + '/' + this.key, //collection url.
     	        	datagridMode: this.datagridMode,
                     moduleRef: this.moduleRef
     	        });

@@ -325,6 +325,9 @@ Application.Widget.register('DataGrid', function(){
                     id[sheet.model.idAttribute] = sheet.model.id;
                     sheet.model.attributes = changed;
                     sheet.model.set(id, {silent:true});
+
+                    console.log(sheet.model);//TBDebugged: why doesn't this model have any collection related...?
+
                     sheet.model.save({}, options); //save the model to server
                 }
                 else {
