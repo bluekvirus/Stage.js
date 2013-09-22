@@ -25,6 +25,16 @@
 	var context = app.module('Context');
 	_.extend(context, {
 
+		get: function(dotedName){
+			var path = dotedName.split('.');
+			var result = this;
+			while(path.length > 0){
+				result = result[path.shift()];
+			}
+			if(result === this) return;
+			return result;
+		},
+
 		create: function(name, factory){
 			var ctx = app.module('Context.' + name); //create new context module as sub-modules.
 			_.extend(ctx, {

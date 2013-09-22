@@ -32,7 +32,7 @@
   
 var Form = (function() {
 
-  return Backbone.View.extend({
+  return Backbone.Marionette.Layout.extend({
     
     hasFocus: false,
 
@@ -118,6 +118,13 @@ var Form = (function() {
       /*Tim's Hack for i18n*/
       this.$el.i18n({search: true});
       return this;
+    },
+
+    /*Tim's Hack for revealing the fields on 'show' event, see - widgets/form.js*/
+    onShow: function(){
+      _.each(this.fields, function(f){
+        f.editor.$el.trigger('editor:shown');
+      });
     },
 
     /**
@@ -357,7 +364,9 @@ var Form = (function() {
 
     getValue: function(key) {
       //Return only given key if specified
-      if (key) return this.fields[key].getValue();
+      if (key && this.fields[key]){
+        return this.fields[key].getValue();
+      }
       
       //Otherwise return entire form      
       var values = {}, that = this;
@@ -1022,7 +1031,7 @@ Form.editors = (function() {
    *         value   {String} : When not using a model. If neither provided, defaultValue will be used.
    *         schema  {Object} : May be required by some editors
    */
-  editors.Base = Backbone.View.extend({
+  editors.Base = Backbone.Marionette.Layout.extend({
 
     defaultValue: null,
     
@@ -1057,7 +1066,14 @@ Form.editors = (function() {
       
       //Add custom attributes
       if (this.schema.editorAttrs) this.$el.attr(this.schema.editorAttrs);
+
+      //Tim's Hack for hooking up the 'show' event.
+      this.$el.on('editor:shown', _.bind(function(){
+        this.onShow();
+      }, this));
     },
+
+    onShow: $.noop,
 
     getValue: function() {
       throw 'Not implemented. Extend and override this method.';

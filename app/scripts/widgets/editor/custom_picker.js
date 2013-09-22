@@ -41,7 +41,7 @@
             this.ns = options.ns;
         },
 
-        onRender: function(){
+        onShow: function(){
             if(this.ns)
                 this.$el.find('.dnd-zone-list').addClass('target-dnd-list-'+this.ns);
         }
@@ -63,7 +63,7 @@
             this._options.labelField = this._options.labelField || this._options.valueField || 'name';
         },
 
-        onRender: function(){
+        onShow: function(){
             this.reloadSrc();
         },
 
@@ -209,6 +209,10 @@
             this.$el.html(this.delegatedEditor.render().el);
         
             return this;
+        },
+
+        onShow: function(){
+            this.delegatedEditor.onShow();
         },
 
         getValue: function() {

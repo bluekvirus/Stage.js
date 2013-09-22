@@ -46,9 +46,9 @@
 			//case: url
 			$.ajax(_.extend(options,{url: resource}));
 
-		}else if(/[A-Z].*/.test(resource) && app[resource]){
+		}else if(/[A-Z].*/.test(resource) && app.Context.get(resource) && app.Context.get(resource).collection){
 			//case: data module name
-			app[resource].collection.fetch(options);
+			app.Context.get(resource).collection.fetch(options);
 
 		}else if(form && !_.isFunction(form)){
 			//case: form field

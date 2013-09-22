@@ -6,7 +6,40 @@
  * @author Tim.Liu
  * @update 2013.03.11
  */
-(function(){
+(function(app){
+
+    var EditorLayout = Backbone.Marionette.Layout.extend({
+
+        template: '#custom-tpl-layout-module-admin',
+        className: 'module-editor-layout-wrap',
+
+        regions: {
+            list: '.list-view-region',
+            detail: '.details-view-region'
+        },
+
+        initialize: function(options) { //This is also used as a flag by datagrid to check if it is working in 'editor-mode'
+            this.datagridMode = options.datagridMode;
+            this.moduleRef = options.moduleRef;
+            this.collectionRef = new this.moduleRef.Collection(options.data, {
+                url: options.apiUrl
+            });
+        },
+        onRender: function() {
+            this.dataGridView = new this.moduleRef.Widgets.DataGrid({
+                collection: this.collectionRef,
+                parentCt: this,
+                mode: this.datagridMode,
+            });
+        },
+
+        onShow: function() {
+            this.list.show(this.dataGridView);
+        }        
+
+    });
+
+
     Backbone.Form.editors['CUSTOM_GRID'] = Backbone.Form.editors.Base.extend({
 
         className: 'custom-form-editor-datagrid',
@@ -37,7 +70,7 @@
 
             // Custom setup code.
             // Need to delegate the EditorLayout(Datagrid) view to the module later in render.
-            this.moduleRef = Application[options.schema.moduleRef];
+            this.moduleRef = app.Context.get(options.schema.moduleRef);
             this.datagridMode = options.schema.mode;
         },
 
@@ -46,19 +79,24 @@
 
             if(this.model.id){
             //delegating the datagrid display
-            	this.delegatedEditor = new this.moduleRef.View.EditorLayout({
+            	this.delegatedEditor = new EditorLayout({
     	        	data: this.value, //this is the subDoc/refDoc array [NOT YET a collection].
     	        	apiUrl: this.model.urlRoot+'/'+this.model.id+'/'+this.key, //collection url.
     	        	datagridMode: this.datagridMode,
+                    moduleRef: this.moduleRef
     	        });
     	        this.delegatedEditor.listenTo(this.form, 'close', this.delegatedEditor.close);
     	        this.$el.html(this.delegatedEditor.render().el);
     	    }else {
     	    	this.$el.addClass('alert alert-info edit-later-info');
-    	    	this.$el.html("Once you've created this record, you can come back to edit this field.");
+    	    	this.$el.html("Once you've created this record, you can come back to edit this field.".i18n());
     	    }
 
             return this;
+        },
+
+        onShow: function(){
+            this.delegatedEditor.onShow();
         },
 
         getValue: function() {
@@ -87,4 +125,4 @@
             this.$el.blur();
         }
     });
-})();
+})(Application);
