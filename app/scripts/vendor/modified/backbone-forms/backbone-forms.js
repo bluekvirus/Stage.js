@@ -1068,7 +1068,8 @@ Form.editors = (function() {
       if (this.schema.editorAttrs) this.$el.attr(this.schema.editorAttrs);
 
       //Tim's Hack for hooking up the 'show' event.
-      this.$el.on('editor:shown', _.bind(function(){
+      this.$el.on('editor:shown', _.bind(function(e){
+        e.stopPropagation();//[Warning:: This is very very important...since this form editor can be within another editor.]
         this.onShow();
       }, this));
     },
