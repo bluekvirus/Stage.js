@@ -49,7 +49,7 @@
 							},
 							success: function(res) {
 								//the default reply from server is res.redirect
-								app.trigger('app:switch-context', app.config.appContext, true); //use the triggerNavi flag to allow re-evaluation of uri fragment.
+								app.trigger('app:switch-context', app.config.appContext, app.Context.Login.cachedRedirect || 'navigate/default'); //use the triggerNavi flag to allow re-evaluation of uri fragment.
 							}
 						})
 						.always(function(){

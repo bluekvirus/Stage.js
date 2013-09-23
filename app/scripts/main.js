@@ -33,8 +33,9 @@
 			Application.currentContext = Application.Context[context];
 			if(!Application.currentContext) throw new Error('DEV::MainApp::You must have the requred context module ' + context + ' defined...'); //see - special/registry/context.js
 			Application.body.show(new Application.currentContext.View.Default());
-			if(triggerNavi)
-				console.log(Application.router); //TBI: trigger a re-evaluation on current uri fragment.
+			if(triggerNavi){
+				Application.router.navigate(triggerNavi, {trigger:true}); //trigger: true, let the route controller re-evaluate the uri fragment.
+			}
 		};		
 		
 		Application.listenTo(Application, 'app:switch-context', function(context, triggerNavi){
@@ -49,6 +50,10 @@
 		var context = 'Login';
 		if(Application.Context.Login.API.isLoggedIn())
 			context = Application.config.appContext; //go to default app context.
+		else {
+			Application.Context.Login.cachedRedirect = window.location.hash;
+			window.location.assign('#'); //must clear the hash before switching to Context.Login (+ another route history page)
+		}
 		Application.trigger('app:switch-context', context);
 	});
 
