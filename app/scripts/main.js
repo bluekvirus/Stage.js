@@ -28,18 +28,28 @@
 
 	//Application init: Global listeners
 	Application.addInitializer(function(options){
-		//...
+		//Context switching utility
+		function switchContext(context, triggerNavi){
+			Application.currentContext = Application.Context[context];
+			if(!Application.currentContext) throw new Error('DEV::MainApp::You must have the requred context module ' + context + ' defined...'); //see - special/registry/context.js
+			Application.body.show(new Application.currentContext.View.Default());
+			if(triggerNavi)
+				console.log(Application.router); //TBI: trigger a re-evaluation on current uri fragment.
+		};		
+		
+		Application.listenTo(Application, 'app:switch-context', function(context, triggerNavi){
+			switchContext(context, triggerNavi);
+		});
 	});	
 
 	//Application init: Region Views (marionette layouts)
 	//init menu,(banner, footer) and dashboard/welcome view.
 	Application.addInitializer(function(options){
-		//TBI:: auto-detect and init context (view that replaces the body region) from configuration or server? (login, admin or app layout module)
-		//		the context is now always Admin at the moment...
-		var context = 'Admin';
-		Application.currentContext = Application.Context[context];
-		if(!Application.currentContext) throw new Error('DEV::MainApp::You must have the requred context module ' + context + ' defined...'); //see - special/registry/context.js
-		Application.body.show(new Application.currentContext.View.Default());
+		//Auto-detect and init context (view that replaces the body region). see the Context.Login
+		var context = 'Login';
+		if(Application.Context.Login.API.isLoggedIn())
+			context = Application.config.appContext; //go to default app context.
+		Application.trigger('app:switch-context', context);
 	});
 
 	//Application init: Routes (can use href = #navigate/... to trigger them)
@@ -53,11 +63,8 @@
 				navigateToModule: (function(){
 					var currentModule = '';
 					return function(module, region){
-							module = module || Application.currentContext.defaults.module;
-							region = region || Application.currentContext.defaults.region;
-							appRegion = Application.body.currentView.regionManager.get(region);
-							// console.log(module);
-							var target = Application.currentContext[module];
+							appRegion = Application.body.currentView.regionManager.get(region) || Application.body.currentView.regionManager.get(Application.currentContext.defaults.region);
+							var target = Application.currentContext[module] || Application.currentContext[Application.currentContext.defaults.module];
 							if(target && appRegion){
 								if(currentModule !== module){
 									appRegion.show(new target.View.Default());
@@ -65,13 +72,14 @@
 									Application.trigger('app:navigate-to-module', module, region);
 								}
 							}else
+								//fallback to default, if that fails show error
 								Application.error('Applicaton Routes Error', 'The module','<em class="label">', module,'</em>','you requested in context', Application.currentContext.name, 'can NOT be shown on region', region);
 						}
 				})(),
 			}
 		});
 
-		new Router();
+		Application.router = new Router();
 		if(Backbone.history)
 			Backbone.history.start();
 

@@ -58,6 +58,47 @@
 
 Application.Context.create('Login', function(context){
 
+	Template.extend(
+		'application-context-login-tpl',
+		[
+			'<div class="container content"></div>'
+		]
+	);
+	
+	return {
+		defaults: {
+			region: 'content',
+			module: 'Account'
+		},
+		View: {
+			Default: Backbone.Marionette.Layout.extend({
+				template: '#application-context-login-tpl',
+				regions: {
+					content: '.content'
+				}
+			})
+		},
+		API: {
+			/**
+			 * [isLoggedIn check with application server to see if the user is logged in or not...]
+			 * @return {Boolean} see application server routes/landing/page.js
+			 */
+			isLoggedIn: function(){
+				var result = false;
+				$.ajax({
+					url: '/login',
+					notify: false,
+					async: false,
+					success: function(){
+						result = true;
+					}
+				});
+				return result;			
+			}
+		}
+		//Do NOT need to use onShow() here, since the defaults config will put 'Account' module on page.
+	}
+
 });
 
 Application.Context.create('Admin', function(context){
@@ -75,7 +116,7 @@ Application.Context.create('Admin', function(context){
 	return {
 		defaults: {
 			region: 'content',
-			module: 'StatusPanel' //can be Dashboard
+			module: 'Dashboard'
 		},
 		View: {
 			Default: Backbone.Marionette.Layout.extend({

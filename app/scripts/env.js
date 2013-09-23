@@ -286,9 +286,9 @@
 		_patch('/tryscripts', 'scripts/_try', true);
 	} 
 
-	Application.patchAdminGen = function(){
-		_patch('/dev/AdminGen/scripts', '/dev/AdminGen/scripts', true);
-	}
+	// Application.patchAdminGen = function(){
+	// 	_patch('/dev/AdminGen/scripts', '/dev/AdminGen/scripts', true);
+	// }
 
 	/**
 	 * ====================================================================

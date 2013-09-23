@@ -35,10 +35,11 @@ var config = {
 			scripts: {
 				_try: {}, //autoload scripts
 				modules: { //layouts/page wrapper
-					active: {}, //view + interactions 
-					data: {}, //data model bound (grid + form)
-					readonly: {}, //view only
-					special: {} //non-view-able
+					context: {
+						login: {}, //UI modules for the login context
+						admin: {}	//UI modules for when the login go through				
+					},
+					special: {} //Non-UI worker modules.
 				},
 				vendor: {}, //3rd party libs
 				widgets: {
@@ -46,9 +47,7 @@ var config = {
 					plugin: {}, //jquery plugins (as widgets)
 					standard: {} //backbone view
 				},
-				core: { //core lib, tpl and application js are built then put here.
-					'core.js': true, //!!Hardcoded path see - loadIndexHTML() below;
-				}, 
+				'core.js': true, //!!Hardcoded path see - loadIndexHTML() below;
 				'config.js': 'app/scripts/config.js' //-non minified or copied
 			},
 			static: {

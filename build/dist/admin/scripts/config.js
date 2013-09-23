@@ -12,6 +12,8 @@
 	});
 	Application.config = _.extend(Application.config || {}, {
 
+		appContext: 'Admin',
+
 		crossdomain: {
 			//enabled: true,
 			/**
