@@ -20,7 +20,7 @@
  * 
  */
 
-(function(app){
+;(function(app){
 
 	var module = app.module('DataCenter');
 
@@ -34,7 +34,7 @@
 		}
 		var options = {
 			//signal the server that we will not use paginations 
-			data: {pagination: false, formRecordId: form && form.model.id},
+			data: {pagination: false, form: form && form.model.name, id: form && form.model.id},
 			processData: true, //this will convert data into query params.
 			success: function(data){
 				//returned from url or collection fetch()

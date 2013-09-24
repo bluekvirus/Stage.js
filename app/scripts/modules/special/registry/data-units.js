@@ -43,6 +43,7 @@
 		module.map[name] = {
 			//general model definition
 			Model: Backbone.Model.extend(_.extend({
+				name: name, //this is our extention
 				idAttribute : '_id'
 			}, options.backboneOpts && options.backboneOpts.model))
 		};

@@ -6,6 +6,11 @@
  * 	- Managing app level region and layouts.
  * 	- Hook up global routes and routing event trigger. (event name: 'app.navigate-to-module', on Application)
  *
+ * Global Application Events:
+ * app:switch-context (contextName, naviFragment)
+ * app:navigate-to-module (moduleName, regionName)
+ * 
+ * 
  * @author Tim.Liu
  * @update 2013.09.11
  */
@@ -46,7 +51,8 @@
 	//Application init: Region Views (marionette layouts)
 	//init menu,(banner, footer) and dashboard/welcome view.
 	Application.addInitializer(function(options){
-		//Auto-detect and init context (view that replaces the body region). see the Context.Login
+
+		//1.Auto-detect and init context (view that replaces the body region). see the Context.Login
 		var context = 'Login';
 		if(Application.Context.Login.API.isLoggedIn())
 			context = Application.config.appContext; //go to default app context.
@@ -55,6 +61,9 @@
 			window.location.assign('#'); //must clear the hash before switching to Context.Login (+ another route history page)
 		}
 		Application.trigger('app:switch-context', context);
+
+		//2.Show the shared UI modules, since these might depend on the Context.Login.Account.user
+		Application.banner.show(new (Application.Context.get('Shared.Banner')).View.Default());		
 	});
 
 	//Application init: Routes (can use href = #navigate/... to trigger them)

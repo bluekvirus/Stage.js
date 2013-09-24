@@ -13,7 +13,7 @@
  * ======
  * Usage
  * ======
- * app.Context.create('name', factory) - factory should return a object that has View.Default(layout), name, default module and region defined.
+ * app.Context.create('name', [factory]) - factory should return a object that has View.Default(layout), name, default module and region defined.
  * app.Context.module('name') - create a context's sub-module.
  * 
  * @author Tim.Liu
@@ -42,7 +42,7 @@
 				module: function(subModName){
 					return app.module(['Context', name, subModName].join('.'));
 				}
-			}, factory(ctx));
+			}, factory && factory(ctx)); //note that we allow non-UI context for module grouping purposes.
 		}
 
 	});
@@ -55,7 +55,7 @@
  * Pre-Defined Contexts
  * ====================
  */
-
+Application.Context.create('Shared');//Shared is a context without basice UI (View.Default), it groups the UI modules that are shared among the contexts.
 Application.Context.create('Login', function(context){
 
 	Template.extend(
@@ -89,8 +89,9 @@ Application.Context.create('Login', function(context){
 					url: '/login',
 					notify: false,
 					async: false,
-					success: function(){
+					success: function(res){
 						result = true;
+						context.user = res.user;
 					}
 				});
 				return result;			

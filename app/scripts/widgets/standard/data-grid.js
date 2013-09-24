@@ -423,9 +423,7 @@ Backgrid.Extension.InfoBar = Backbone.Marionette.ItemView.extend({
     className: 'datagrid-infobar clearfix',
     template: '#widget-tpl-grid-info-bar',
     initialize: function(options){
-        this.listenTo(this.model, 'change', _.bind(function(){
-            this.render();
-        }, this))
+        this.listenTo(this.model, 'change', this.render);
     },
 
 });
