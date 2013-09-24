@@ -106,7 +106,7 @@ Application.Widget.register('DataGrid', function(){
                 }
             });
 
-            //c. the grid instance 'mod_backgrid'******************************************
+            //c.1 the grid instance 'mod_backgrid'******************************************
             this.grid = new Backgrid.Grid({
                 columns: this.columns,
                 collection: this.collection, //automatically assigned by Marionette.ItemView.
@@ -116,14 +116,16 @@ Application.Widget.register('DataGrid', function(){
                 //body: Backgrid.Extension.CustomBody,
                 //customized footer (pagination, statistics, date/versions)
             });
+
             //******************************************************************************
+            //c.2 create the footer UI view objects
+            this._createFooter();
 
             //d. listen to the 'mod_backgrid''s render event for once and plugin our sorter & filters.
             this.grid.listenTo(this.grid,'backgrid:rendered', _.bind(function(){
             	//the grid's global filter (top-right)
             	this._hookupGlobalFilter();
             	this._hookupColumnSorter();
-                this._registerFooter();
             }, this));
 
             this.listenTo(this.grid, 'show', this.afterRender);
@@ -165,7 +167,7 @@ Application.Widget.register('DataGrid', function(){
             }, this));        	
         },
 
-        _registerFooter: function(){
+        _createFooter: function(){
             if(!this.isRefMode()) return;
             this.infoBar = new Backgrid.Extension.InfoBar({
                 model: new Backbone.Model({
@@ -173,12 +175,17 @@ Application.Widget.register('DataGrid', function(){
                     recordCount: this.collection.length
                 })
             });
-            this.footer.show(this.infoBar);            
+            //Set model val to trigger auto-re-render on 'InfoBar'            
             this.listenTo(this.collection, 'add remove', _.bind(function(e){
-                this.infoBar.model.set('recordCount', this.collection.length);
+                this.infoBar.model.set({
+                    'recordCount': this.collection.length
+                });
             }, this));
             this.listenTo(this.collection, 'sync destroy', _.bind(function(e){
-                this.infoBar.model.set('lastSynced', new Date().toString());
+                this.infoBar.model.set({
+                    'recordCount': this.collection.length,
+                    'lastSynced': new Date().toString()
+                });
             }, this));
         },
         //====================================
@@ -189,6 +196,7 @@ Application.Widget.register('DataGrid', function(){
             //if it is not in subDoc mode, we let the collection to fetch data itself.
             //this will trigger the 'reset' event which in turn will trigger 'backgrid:rendered' on backgrid
             this.body.show(this.grid);
+            this.footer.show(this.infoBar);
             if (this.isRefMode()){ 
             	this.grid.$el.trigger('event_RefreshRecords');
             }
