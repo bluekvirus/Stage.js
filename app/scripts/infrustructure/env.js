@@ -286,34 +286,5 @@
 		_patch('/tryscripts', 'scripts/_try', true);
 	} 
 
-	// Application.patchAdminGen = function(){
-	// 	_patch('/dev/AdminGen/scripts', '/dev/AdminGen/scripts', true);
-	// }
-
-	/**
-	 * ====================================================================
-	 * 	Backward Compatibility & Hacks
-	 *
-	 * We no longer use Backbone.PageableCollection for pagination anymore.
-	 * We priorities model's collection url before a model's urlRoot
-	 * ====================================================================
-	 */
-	Backbone.PageableCollection = Backbone.Collection;
-	Backbone.Model = Backbone.Model.extend({
-	    url: function() {
-	      var base = _.result(this.collection, 'url') || _.result(this, 'urlRoot') || urlError();
-	      if (this.isNew()) return base;
-	      return base + (base.charAt(base.length - 1) === '/' ? '' : '/') + encodeURIComponent(this.id);
-	    },
-	});
-
-	//touch on remote server so that it sets back correct session cookies
-	if(Application.config.crossdomain.enabled){
-		var data = {username: Application.config.crossdomain.username, password:Application.config.crossdomain.password};
-		$.ajax({type:'post', dataType:'json', url:'/login', data: data, notify: false, complete: function(jqXHR){
-				Application.inform('Crossdomain Ajax', ' See if you can access the data');
-			}
-		});
-	}
 
 })(Application, jQuery, Backbone, _, Handlebars, URI);

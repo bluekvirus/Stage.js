@@ -47,6 +47,7 @@
         <script type="text/javascript" src="libs/bower_components/jquery.cookie/jquery.cookie.js"></script>
         <script type="text/javascript" src="libs/bower_components/uri.js/dist/uri.js"></script>
         <script type="text/javascript" src="scripts/vendor/modified/backbone-forms/backbone-forms.js"></script>
+        <script type="text/javascript" src="scripts/vendor/modified/backbone-forms/backbone-form-bootstrap-tpl.js"></script>
         <script type="text/javascript" src="libs/bower_components/backbone-forms/distribution/editors/list.js"></script>
         <script type="text/javascript" src="libs/bower_components/backbone.paginator/dist/backbone.paginator.js"></script>
         <script type="text/javascript" src="libs/bower_components/backbone-validation/dist/backbone-validation.js"></script>
@@ -75,11 +76,6 @@
         </script>
     <!-- endbuild -->
 
-    <!-- build:js scripts/tpl.js -->
-        <script type="text/javascript" src="templates/vendor/backbone-form-bootstrap-tpl.js"></script>
-        <script type="text/javascript" src="templates/loader.js"></script>
-    <!-- endbuild -->
-
          <script>
             /**
              * ================================
@@ -94,9 +90,11 @@
          </script>
         
     <!-- build:js scripts/application.js -->
-        <script type="text/javascript" src="scripts/i18n.js"></script>
-        <script type="text/javascript" src="scripts/env.js"></script>
-        <script type="text/javascript" src="scripts/main.js"></script>
+        <script type="text/javascript" src="scripts/infrustructure/base-lib-fix.js"></script>
+        <script type="text/javascript" src="scripts/infrustructure/template-builder.js"></script>
+        <script type="text/javascript" src="scripts/infrustructure/i18n.js"></script>
+        <script type="text/javascript" src="scripts/infrustructure/env.js"></script>
+        <script type="text/javascript" src="scripts/infrustructure/main.js"></script>
         <script type="text/javascript" src="scripts/modules/special/registry/widgets.js"></script>
         <script type="text/javascript" src="scripts/widgets/standard/property-grid.js"></script>
         <script type="text/javascript" src="scripts/widgets/standard/data-grid.js"></script>
