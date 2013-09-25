@@ -31,6 +31,7 @@
  * {
  * 		name: (*) - required, this name will be used to obtain Model/Collection definitions from the DataUnits module (see data-units.js)
  * 		type: table | complex - default on table, optional
+ * 		dataUnitOpt: optional, passed to data-unit module to create special Model & Collection for this admin module. (see data-units.js)
  * 		menuPath: default admin menu path. e.g. 'Content Manager->Blogs->...->...', optional
  * 		fields: {
  * 			f-name: {
@@ -159,7 +160,7 @@
 			var module = Admin.module(options.name);
 			(function(module, config, forwaredOptions){
 				//create the required data unit. see - special/registry/data-units.js
-				var dataUnitOpt = (forwaredOptions.type === 'table')?{}:{modelOnly: true};
+				var dataUnitOpt = _.extend((forwaredOptions.dataUnitOpt || {}), (forwaredOptions.type === 'table')?{}:{modelOnly: true});
 				app.DataUnits.init(forwaredOptions.name, dataUnitOpt);
 				var	dataUnit =  app.DataUnits.get(forwaredOptions.name),
 				//create the module skeleton
