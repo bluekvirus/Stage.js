@@ -12,7 +12,9 @@
 	});
 	Application.config = _.extend(Application.config || {}, {
 
-		appContext: 'Admin',
+		appContext: 'Admin', 
+		//TBI: appContext will be replaced by some sub-module dispatcher later. since we want the Login (before login) and App (after login) to be the two super contex.
+		//We want the Admin to be a sub-context module under App...
 
 		crossdomain: {
 			//enabled: true,

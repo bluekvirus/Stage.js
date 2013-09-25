@@ -14,7 +14,8 @@ path = require('path'),
 mkdirp = require('mkdirp'),
 ncp = require('ncp').ncp,
 colors = require('colors'),
-moment = require('moment');
+moment = require('moment'),
+gzip = require('gzip-js');
 
 ncp.limit = 16; //ncp concurrency limit
 
@@ -24,53 +25,16 @@ ncp.limit = 16; //ncp concurrency limit
  * 'string' - copy file or folder
  * true/false - read from task memory, minify or non-minify.
  */
-var config = {
-	distFolder: '../dist',
-	clientBase: '../../',
-	index: {
-		admin : 'app/index.html'
-	},
-	structure : {
-		admin: {
-			scripts: {
-				_try: {}, //autoload scripts
-				modules: { //layouts/page wrapper
-					context: {
-						login: {}, //UI modules for the login context
-						admin: {}	//UI modules for when the login go through				
-					},
-					special: {} //Non-UI worker modules.
-				},
-				vendor: {}, //3rd party libs
-				widgets: {
-					editor: {}, //form editors
-					plugin: {}, //jquery plugins (as widgets)
-					standard: {} //backbone view
-				},
-				'core.js': true, //!!Hardcoded path see - loadIndexHTML() below;
-				'config.js': 'app/scripts/config.js' //-non minified or copied
-			},
-			static: {
-				menu: {
-					'menu.json': 'app/static/menu/menu.json'
-				},
-				resources: 'app/static/resources'
-			},
-			themes: {
-				_default: 'app/themes/_default'
-			},
-			'404.html': 'app/404.html',
-			'index.html': true
-		}
-	}
-};
+var config = {};
 
 /*-----------Util/Steps------------*/
-//0. load index.html (replace lib, tpl and application js section - compress js libs into core.js)
+//0. load index.html (replace lib, tpl and application js section - compress js libs into core.js [app.min.js])
 function loadIndexHTML(target){
+	config = require('./config/'+target);
+	if(!config) return console.log('Can NOT find build config for ', target);
 	console.log('Processing Index...'.yellow);
 
-	return buildify().load(config.clientBase + config.index[target]).perform(function(content){
+	return buildify().load(config.clientBase + config.index).perform(function(content){
 		//extract build sections.
 		var $ = cheerio.load(content);
 		var $script;
@@ -91,11 +55,11 @@ function loadIndexHTML(target){
 			$script.remove();
 		});
 
-		$('body').append('\n\t\t\t<script src="scripts/core/core.js"></script>\n'); //Warning::Hard Coded Core Lib Path!
+		$('body').append('\n\t\t\t<script src="scripts/app.min.js"></script>\n'); //Warning::Hard Coded Core Lib Path!
 		content = $.html();
 
 		return {
-			'core.js': coreJS.uglify().getContent(),
+			'app.min.js': coreJS.uglify().getContent(),
 			'index.html': content.replace(/\n\s+\n/gm, '\n')
 		}
 	}).getContent();
@@ -106,7 +70,7 @@ function loadIndexHTML(target){
 function createFolderStructure(target, package, done) {
 	console.log('Creating Folders & Files...'.yellow);
 
-	var structure = config.structure[target];
+	var structure = config.structure;
 	var targets = [];
 	var baseDir = path.join(config.distFolder, target);
 	_.each(structure, function(content, key){
