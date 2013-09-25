@@ -14,25 +14,24 @@
  */
 
 module.exports = {
-	distFolder: 'dist',
-	clientBase: '../',
+	clientBase: '../../',
 	index: 'app/index.html',
 	structure : {
 		scripts: {
-			_try: {}, //autoload scripts
-			modules: { //layouts/page wrapper
-				context: {
-					login: {}, //UI modules for the login (pre-login) context
-					admin: {}	//UI modules for context after the login goes through				
-				},
-				special: {} //Non-UI worker modules.
-			},
-			vendor: {}, //3rd party libs
-			widgets: {
-				editor: {}, //form editors
-				plugin: {}, //jquery plugins (as widgets)
-				standard: {} //backbone view
-			},
+			_try: {}, //autoload scripts - usually patches after dist built
+			// modules: { //layouts/page wrapper
+			// 	context: {
+			// 		login: {}, //UI modules for the login (pre-login) context
+			// 		admin: {}	//UI modules for context after the login goes through				
+			// 	},
+			// 	special: {} //Non-UI worker modules.
+			// },
+			// vendor: {}, //3rd party libs
+			// widgets: {
+			// 	editor: {}, //form editors
+			// 	plugin: {}, //jquery plugins (as widgets)
+			// 	standard: {} //backbone view
+			// },
 			'app.min.js': true, //!!Hardcoded path see - loadIndexHTML() below;
 			'config.js': 'app/scripts/config.js' //-non minified or copied
 		},

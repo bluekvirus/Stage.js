@@ -12,12 +12,10 @@ _ = require('underscore'),
 cheerio = require('cheerio'), //as server side jquery
 path = require('path'),
 mkdirp = require('mkdirp'),
-ncp = require('ncp').ncp,
 colors = require('colors'),
 moment = require('moment'),
-gzip = require('gzip-js');
+hammer = require('../shared/hammer');
 
-ncp.limit = 16; //ncp concurrency limit
 
 /*-----------Config/Structure-------*/
 /**
@@ -38,7 +36,7 @@ function loadIndexHTML(target){
 		//extract build sections.
 		var $ = cheerio.load(content);
 		var $script;
-		var coreJS = buildify().load('EMPTY.js');
+		var coreJS = buildify().load('../shared/EMPTY.js');
 		$('script').each(function(index, el){
 			$script = $(el);
 			if($script.attr('non-core')) return;
@@ -59,6 +57,7 @@ function loadIndexHTML(target){
 		content = $.html();
 
 		return {
+			'app.js': coreJS.getContent(),
 			'app.min.js': coreJS.uglify().getContent(),
 			'index.html': content.replace(/\n\s+\n/gm, '\n')
 		}
@@ -66,63 +65,7 @@ function loadIndexHTML(target){
 
 }
 
-//1. create structure with pre-processed package.
-function createFolderStructure(target, package, done) {
-	console.log('Creating Folders & Files...'.yellow);
 
-	var structure = config.structure;
-	var targets = [];
-	var baseDir = path.join(config.distFolder, target);
-	_.each(structure, function(content, key){
-		targets.push({
-			path: path.join(baseDir, key),
-			content: content,
-			key: key
-		});
-	});
-	//use iteration - bfs to create/copy/dump the files/folders
-	//
-	function iterator(done){
-		if(targets.length > 0) {
-			var currentTarget = targets.shift();
-			if(_.isString(currentTarget.content)){
-				//path string - copy
-				var srcPath = path.join(config.clientBase, currentTarget.content);
-				ncp(srcPath, currentTarget.path, function(error){
-					if(!error) console.log(srcPath, '==>'.grey, currentTarget.path, '[OK]'.green);
-					else console.log(srcPath, '==>'.grey, currentTarget.path, '[ERROR:'.red, error, ']'.red);
-					iterator(done);
-				});
-			}else if(_.isBoolean(currentTarget.content)){
-				//true/false - dump from cached package
-				if(package[currentTarget.key]){
-					buildify().setContent(package[currentTarget.key]).save(currentTarget.path);
-				}else {
-					console.log(currentTarget.key, 'not found in cache'.red);
-				}
-				iterator(done);
-			}else if(_.isObject(currentTarget.content)){
-				//{} and {...} create folder and keep the bfs going
-				mkdirp(currentTarget.path, function(error){
-					if(!error) {
-						console.log(currentTarget.path, '{+}'.grey, '[OK]'.green);
-						_.each(currentTarget.content, function(subContent, subKey){
-							targets.push({
-								path: path.join(currentTarget.path, subKey),
-								content: subContent,
-								key: subKey
-							});
-						});						
-					}
-					else console.log(currentTarget.path, '{+}'.grey, '[ERROR:'.red, error,']'.red);
-					iterator(done);
-				});
-			}
-		}else 
-			done();
-	};
-	iterator(done);
-}
 
 /*-----------Build Tasks-----------*/
 buildify.task({
@@ -130,9 +73,9 @@ buildify.task({
 	task: function(){
 		var startTime = new Date().getTime();
 
-		var pack = loadIndexHTML('admin');
+		var cached = loadIndexHTML('admin');
 		mkdirp(config.distFolder, function(error){
-			createFolderStructure('admin', pack, function(){
+			hammer.createFolderStructure('admin', _.extend({cachedFiles: cached}, config), function(){
 				console.log('Build Task [admin] Complete'.rainbow, '-', moment.utc(new Date().getTime() - startTime).format('HH:mm:ss.SSS').underline);
 			});
 		});
