@@ -21,7 +21,7 @@ module.exports = {
 		console.log('Creating Folders & Files...'.yellow);
 
 		options = _.extend({
-			structure: {},
+			structure: {}, //see config
 			cachedFiles: {},
 			distFolder: 'dist',
 			clientBase: '../../'

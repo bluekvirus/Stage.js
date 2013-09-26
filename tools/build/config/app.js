@@ -1,5 +1,5 @@
 /**
- * This is the Admin Application Build Config.
+ * This is the Application Build Config.
  *
  * ================
  * Config/Structure

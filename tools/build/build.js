@@ -1,10 +1,8 @@
 /**
- * This is the build script for both building 
+ * This is the build script for building your web application front-end.
  *
- * Part I: Admin - the administrator panel
- * Part II: Stage - the front pages
- *
- * of our web application/site.
+ * @author Tim.Liu
+ * @created 2013.09.26
  */
 
 var buildify = require('buildify'),
@@ -16,13 +14,6 @@ colors = require('colors'),
 moment = require('moment'),
 hammer = require('../shared/hammer');
 
-
-/*-----------Config/Structure-------*/
-/**
- * {} - create folder
- * 'string' - copy file or folder
- * true/false - read from task memory, minify or non-minify.
- */
 var config = {};
 
 /*-----------Util/Steps------------*/
@@ -69,23 +60,15 @@ function loadIndexHTML(target){
 
 /*-----------Build Tasks-----------*/
 buildify.task({
-	name: 'admin',
+	name: 'app',
 	task: function(){
 		var startTime = new Date().getTime();
 
-		var cached = loadIndexHTML('admin');
+		var cached = loadIndexHTML('app');
 		mkdirp(config.distFolder, function(error){
-			hammer.createFolderStructure('admin', _.extend({cachedFiles: cached}, config), function(){
-				console.log('Build Task [admin] Complete'.rainbow, '-', moment.utc(new Date().getTime() - startTime).format('HH:mm:ss.SSS').underline);
+			hammer.createFolderStructure('app', _.extend({cachedFiles: cached}, config), function(){
+				console.log('Build Task [app] Complete'.rainbow, '-', moment.utc(new Date().getTime() - startTime).format('HH:mm:ss.SSS').underline);
 			});
 		});
-	}
-});
-
-
-buildify.task({
-	name: 'stage',
-	task: function(){
-
 	}
 });

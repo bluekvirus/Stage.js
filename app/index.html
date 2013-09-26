@@ -34,7 +34,7 @@
 
 
     <!-- build:js scripts/lib.js -->
-        <script type="text/javascript" src="libs/dist/base-libs.js"></script>
+        <script type="text/javascript" src="libs/dist/base-libs.js" lib="base"></script>
         <script type="text/javascript" src="libs/bower_components/noty/dist/themes/default.js"></script>
 
         <script type="text/javascript" src="scripts/vendor/modified/backbone-forms/backbone-forms.js"></script>
@@ -53,13 +53,20 @@
     <!-- endbuild -->
 
     <!-- build:js scripts/application.js -->
-        <script type="text/javascript" src="scripts/infrustructure/base-lib-fix.js"></script>
+        <script type="text/javascript" src="scripts/infrustructure/base-lib-fix.js" lib="infrustructure"></script>
         <script type="text/javascript" src="scripts/infrustructure/template-builder.js"></script>
         <script type="text/javascript" src="scripts/infrustructure/i18n.js"></script>
         <script type="text/javascript" src="scripts/infrustructure/env.js"></script>
         <script type="text/javascript" src="scripts/infrustructure/main.js"></script>
-        <script type="text/javascript" src="scripts/modules/special/registry/widgets.js"></script>
-        <script type="text/javascript" src="scripts/widgets/standard/property-grid.js"></script>
+
+        <script type="text/javascript" src="scripts/modules/special/registry/widgets.js" lib="core-modules"></script>
+        <script type="text/javascript" src="scripts/modules/special/extension/manager.js"></script>
+        <script type="text/javascript" src="scripts/modules/special/coordinate/datacenter.js"></script>
+        <script type="text/javascript" src="scripts/modules/special/registry/data-units.js"></script>
+        <script type="text/javascript" src="scripts/modules/special/registry/contexts.js"></script>
+        <script type="text/javascript" src="scripts/modules/special/factory/admin.js"></script>
+
+        <script type="text/javascript" src="scripts/widgets/standard/property-grid.js" lib="preset-widgets"></script>
         <script type="text/javascript" src="scripts/widgets/standard/data-grid.js"></script>
         <script type="text/javascript" src="scripts/widgets/standard/form.js"></script>
         <script type="text/javascript" src="scripts/widgets/standard/progress-bar.js"></script>
@@ -72,12 +79,9 @@
         <script type="text/javascript" src="scripts/widgets/plugin/selector-flatten.js"></script>
         <script type="text/javascript" src="scripts/widgets/plugin/selector-hover.js"></script>
         <script type="text/javascript" src="scripts/widgets/plugin/view-stack.js"></script>
-        <script type="text/javascript" src="scripts/modules/special/extension/manager.js"></script>
-        <script type="text/javascript" src="scripts/modules/special/coordinate/datacenter.js"></script>
-        <script type="text/javascript" src="scripts/modules/special/registry/data-units.js"></script>
-        <script type="text/javascript" src="scripts/modules/special/registry/contexts.js"></script>
-        <script type="text/javascript" src="scripts/modules/special/factory/admin.js"></script>
-        <script type="text/javascript" src="scripts/modules/context/shared/banner.js"></script>
+
+        <script type="text/javascript" src="scripts/modules/context/shared/banner.js" lib="N/A"></script>
+        <script type="text/javascript" src="scripts/modules/context/shared/footer.js"></script>
         <script type="text/javascript" src="scripts/modules/context/login/account.js"></script>
         <script type="text/javascript" src="scripts/modules/context/admin/menu.js"></script>
         <script type="text/javascript" src="scripts/modules/context/admin/dashboard.js"></script>
