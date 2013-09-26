@@ -6,14 +6,32 @@
  * @update 2013.04.01
  */
 
+/**
+ * ================================
+ * Application Container Creation
+ * ================================
+ */
+//Create the global Application var for modules to be registered on.
+window.Application = new Backbone.Marionette.Application();
 ;(function(Application, $, Backbone, _, Handlebars, URI){
 
 	/**
 	 * ================================
 	 * Global Events
 	 * ================================
+	 * see main.js - Application init: Global listeners
 	 */
-	
+
+    /**
+     * ================================
+     * Application Config Loading
+     * ================================
+     */
+    $.ajax({
+        url: 'scripts/config.js',
+        dataType: 'script',
+        async: false
+    });
 
 	/**
 	 * =========================
@@ -24,11 +42,6 @@
 	Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTemplate) {
 	  return Handlebars.compile(rawTemplate);
 	};
-	//To be used with ItemView tpl in CollectionView where collection is made from
-	//a ['a', 'b', 'c'] alike array directly.
-	Handlebars.registerHelper('valueOf', function(){
-		return _.keys(this)[0];
-	});
 
 
 	/**

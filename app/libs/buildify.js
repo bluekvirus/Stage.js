@@ -67,9 +67,9 @@ buildify.task({
 		buildify()
 			.setDir('bower_components/spin.js')
 			.concat(['spin.js', 'jquery.spin.js'])
-			.save('dist/uri-with-jqplugin.js')
+			.save('dist/spin-with-jqplugin.js')
 			.uglify()
-			.save('dist/uri-with-jqplugin.min.js');
+			.save('dist/spin-with-jqplugin.min.js');
 	}
 });
 
