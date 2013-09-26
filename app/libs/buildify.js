@@ -153,14 +153,16 @@ buildify.task({
 	depends: ['load-lib-map'],
 	task: function(){
 		var list = [
+			'modernizr',
 			'jquery',
 			'jquery.cookie',
 			'jquery-ui',
 			'jquery-sieve', //client side text search
-			'flexslider',
+			//'flexslider',
 			'underscore',
 			'underscore.string',
 			'backbone', //include json2/3
+			'backbone-validation',
 			'backbone.paginator',
 			'marionette',
 			'handlebars.js',

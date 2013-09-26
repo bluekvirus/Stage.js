@@ -63,7 +63,13 @@
 		Application.trigger('app:switch-context', context);
 
 		//2.Show the shared UI modules, since these might depend on the Context.Login.Account.user
-		Application.banner.show(new (Application.Context.get('Shared.Banner')).View.Default());		
+		var shared = {
+			banner: Application.Context.get('Shared.Banner'),
+			footer: Application.Context.get('Shared.Footer')
+		}
+		_.each(shared, function(UI, region){
+			if(UI) Application.getRegion(region).show(new UI.View.Default());
+		});	
 	});
 
 	//Application init: Routes (can use href = #navigate/... to trigger them)

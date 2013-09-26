@@ -16,5 +16,5 @@
 	"parsleyjs": "dist/parsley-standalone.min.js",
 	"underscore.string": "lib",
 	"uri.js": "bower_components/uri.js/dist",
-	"spin.js": "../uri-with-jqplugin.js"
+	"spin.js": "../spin-with-jqplugin.js"
 }
