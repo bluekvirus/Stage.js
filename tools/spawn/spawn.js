@@ -49,35 +49,49 @@ function loadIndexHTML(target){
 		var $ = cheerio.load(content);
 		var $script;
 
-		//TBI
-
-		var coreJS = buildify().load('../shared/EMPTY.js');
+		var srcCache = buildify().load('../shared/EMPTY.js');
+		var currentJS = null;
+		var srcMap = {};
 		$('script').each(function(index, el){
 			$script = $(el);
-			if($script.attr('non-core')) return;
+			var jsName = $script.attr('lib') || currentJS || 'core';
+
+			if(currentJS && (currentJS !== jsName)){
+				srcMap[currentJS + '.js'] = srcCache.getContent();
+				currentJS = jsName;
+				if(!srcMap[currentJS])
+					srcCache.clear();
+				else
+					srcCache.setContent(srcMap[currentJS]);
+			}else if (!currentJS)
+				currentJS = jsName;
+
+			if( jsName === 'N/A') return;
+
 			var srcPath = $script.attr('src');
 			if(srcPath){
 				//ref-ed js, concat 
-				coreJS.concat(config.clientBase + 'app/' + srcPath);
+				srcCache.concat(config.clientBase + 'app/' + srcPath);
 			}else {
 				//in-line
-				coreJS.perform(function(content){
+				srcCache.perform(function(content){
 					return content + ';' + $script.html() + ';';
 				});
 			}
 			$script.remove();
 		});
+		srcMap[currentJS + '.js'] = srcCache.getContent();
+		delete srcMap['N/A.js'];
 
-		$('body').append('\n\t\t\t<script src="scripts/app.min.js"></script>\n'); //Warning::Hard Coded Core Lib Path!
+		_.each(_.keys(srcMap).reverse(), function(libName){
+			$('body .application-container').after('\n\t\t<script src="scripts/' + libName + '"></script>'); //Warning::We default the dev libs path to be under /scripts root.
+		});
 		content = $.html();
 
-		//TBI
-
-		return {
-			'app.js': coreJS.getContent(),
-			'app.min.js': coreJS.uglify().getContent(),
+		//console.log(_.keys(srcMap));
+		return _.extend({
 			'index.html': content.replace(/\n\s+\n/gm, '\n')
-		}
+		}, srcMap);
 	}).getContent();
 
 }
@@ -93,7 +107,7 @@ buildify.task({
 		var cached = loadIndexHTML(type);
 		mkdirp(config.distFolder, function(error){
 			hammer.createFolderStructure(type, _.extend({cachedFiles: cached}, config), function(){
-				console.log('Spawn Task ['+ type +'] Complete'.green, '-', moment.utc(new Date().getTime() - startTime).format('HH:mm:ss.SSS').underline);
+				console.log(('Spawn Task ['+ type +'] Complete').green, '-', moment.utc(new Date().getTime() - startTime).format('HH:mm:ss.SSS').underline);
 			});
 		});
 	}

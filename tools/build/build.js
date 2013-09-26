@@ -44,7 +44,7 @@ function loadIndexHTML(target){
 			$script.remove();
 		});
 
-		$('body').append('\n\t\t\t<script src="scripts/app.min.js"></script>\n'); //Warning::Hard Coded Core Lib Path!
+		$('body').append('\n\t\t<script src="scripts/app.min.js"></script>\n'); //Warning::Hard Coded Core Lib Path!
 		content = $.html();
 
 		return {

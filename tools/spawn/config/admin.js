@@ -26,18 +26,18 @@ module.exports = {
 					shared: 'app/scripts/modules/context/shared' 				
 				},
 				special: { //Non-UI worker modules.
-					'core-modules.js': true
 				}
 			},
 			vendor: {}, //3rd party libs
 			widgets: {
 				editor: {}, //form editors
 				plugin: {}, //jquery plugins (as widgets)
-				standard: {}, //backbone view
-				'preset-widgets.js': true
+				standard: {} //backbone view
 			},
-			'base.js': true, //!!Hardcoded path see - loadIndexHTML() below;
+			'base.js': true, //cached srcs see - loadIndexHTML() in spawn.js;
 			'infrustructure.js': true,
+			'core-modules.js': true,
+			'preset-widgets.js': true,
 			'config.js': 'app/scripts/config.js' //-non minified or copied
 		},
 		static: {
