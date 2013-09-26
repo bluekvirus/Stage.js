@@ -23,7 +23,8 @@ module.exports = {
 		options = _.extend({
 			structure: {},
 			cachedFiles: {},
-			distFolder: 'dist'
+			distFolder: 'dist',
+			clientBase: '../../'
 		}, options);
 
 		var targets = [];

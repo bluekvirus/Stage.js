@@ -1,0 +1,20 @@
+{
+	"backbone-forms": "distribution",
+	"backbone-validation": "dist",
+	"backbone.paginator": "dist",
+	"backgrid": "lib",
+	"bootstrap2": "bootstrap.js",
+	"bootstrap3": "bootstrap.js",
+	"flexslider": "jquery.flexslider.js",
+	"json3": "lib",
+	"jqtree": "tree.jquery.js",
+	"jquery-file-upload": "jquery.fileupload.js",
+	"jquery-sieve": "dist/jquery.sieve.js",
+	"jquery.tablesorter": "js",
+	"marked": "lib",
+	"noty": "dist/jquery.noty-with-layouts.js",
+	"parsleyjs": "dist/parsley-standalone.min.js",
+	"underscore.string": "lib",
+	"uri.js": "bower_components/uri.js/dist",
+	"spin.js": "../uri-with-jqplugin.js"
+}
