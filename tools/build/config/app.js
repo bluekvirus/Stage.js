@@ -6,7 +6,7 @@
  * ================
  * {} - create folder
  * 'string' - copy file or folder
- * true/false - read from task memory, minify or non-minify. 
+ * true/false - read'n'save from task memory, gzip or not.
  *
  * 
  * @author Tim.Liu
@@ -19,19 +19,6 @@ module.exports = {
 	structure : {
 		scripts: {
 			_try: {}, //autoload scripts - usually patches after dist built
-			// modules: { //layouts/page wrapper
-			// 	context: {
-			// 		login: {}, //UI modules for the login (pre-login) context
-			// 		admin: {}	//UI modules for context after the login goes through				
-			// 	},
-			// 	special: {} //Non-UI worker modules.
-			// },
-			// vendor: {}, //3rd party libs
-			// widgets: {
-			// 	editor: {}, //form editors
-			// 	plugin: {}, //jquery plugins (as widgets)
-			// 	standard: {} //backbone view
-			// },
 			'app.min.js': true, //!!Hardcoded path see - loadIndexHTML() below;
 			'config.js': 'app/scripts/config.js' //-non minified or copied
 		},
@@ -45,6 +32,6 @@ module.exports = {
 			_default: 'app/themes/_default'
 		},
 		'404.html': 'app/404.html',
-		'index.html': true
+		'index.html': false
 	}
 };

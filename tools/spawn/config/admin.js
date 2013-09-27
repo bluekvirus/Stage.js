@@ -35,8 +35,8 @@ module.exports = {
 				standard: {} //backbone view
 			},
 			'base.js': true, //cached srcs see - loadIndexHTML() in spawn.js;
-			'infrustructure.js': true,
-			'core-modules.js': true,
+			'infrustructure.js': false,
+			'core-modules.js': false,
 			'preset-widgets.js': true,
 			'config.js': 'app/scripts/config.js' //-non minified or copied
 		},
@@ -55,6 +55,6 @@ module.exports = {
 			'package.json': 'tools/package.json'
 		},
 		'404.html': 'app/404.html',
-		'index.html': true
+		'index.html': false
 	}
 };

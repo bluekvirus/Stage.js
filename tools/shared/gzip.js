@@ -5,18 +5,35 @@
  * @created 2013.09.25
  */
 
-var fs = require('fs'), 
-zlib = require('zlib'),
-gzip = zlib.createGzip({
-	level: zlib.Z_BEST_COMPRESSION
-});
+var fs = require('fs'),
+path = require('path'), 
+zlib = require('zlib');
 
-//dealing with different src and dist path 
-var args = process.argv.slice(2);
+/*--A way to check if this script is called directly in command-line or require() in another script--*/
+function isCLI () {
+	var script = path.extname(process.argv[1]) === '.js' ? process.argv[1] : (process.argv[1] + '.js'); 
+	return script === __filename;
+}
 
-if(fs.existsSync(args[0])){
-	var inp = fs.createReadStream(args[0]);
-	var out = fs.createWriteStream(args[1] || args[0] + '.gz');
-	inp.pipe(gzip).pipe(out);
-}else
-	throw new Error('Can NOT find file:' + args[0]);
+function doCompress (src, target) {
+	if(fs.existsSync(src)){
+		gzip = zlib.createGzip({
+			level: zlib.Z_BEST_COMPRESSION
+		});		
+		var inp = fs.createReadStream(src);
+		var out = fs.createWriteStream(target || src + '.gz');
+		inp.pipe(gzip).pipe(out);
+	}else
+		throw new Error('Can NOT find file:' + src);
+}
+
+if(isCLI()){
+	//dealing with different src and dist path 
+	var args = process.argv.slice(2);
+	doCompress(args[0], args[1]);
+}
+else {
+	module.exports = {
+		compress: doCompress
+	}
+}

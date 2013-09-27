@@ -10,7 +10,8 @@ var buildify = require('buildify'),
 _ = require('underscore'),
 path = require('path'),
 mkdirp = require('mkdirp'),
-ncp = require('ncp').ncp;
+ncp = require('ncp').ncp,
+gzip = require('../shared/gzip');
 
 ncp.limit = 16; //ncp concurrency limit
 
@@ -53,6 +54,8 @@ module.exports = {
 					//true/false - dump from cached files
 					if(options.cachedFiles[currentTarget.key]){
 						buildify().setContent(options.cachedFiles[currentTarget.key]).save(currentTarget.path);
+						if(currentTarget.content) //if boolean says true, we gzip it.
+							gzip.compress(currentTarget.path);
 					}else {
 						console.log(currentTarget.key, 'not found in cache'.red);
 					}
