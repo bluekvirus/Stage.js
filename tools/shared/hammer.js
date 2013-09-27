@@ -9,6 +9,7 @@
 var buildify = require('buildify'),
 _ = require('underscore'),
 path = require('path'),
+rimraf = require('rimraf'), //rm -rf;
 mkdirp = require('mkdirp'),
 ncp = require('ncp').ncp,
 gzip = require('../shared/gzip');
@@ -28,6 +29,9 @@ module.exports = {
 
 		var targets = [];
 		var baseDir = path.join(options.distFolder, name);
+		//clear base dir
+		rimraf.sync(baseDir);
+		//prepare the structure description map
 		_.each(options.structure, function(content, key){
 			targets.push({
 				path: path.join(baseDir, key),
@@ -36,7 +40,6 @@ module.exports = {
 			});
 		});
 		//use iteration - bfs to create/copy/dump the files/folders
-		//
 		function iterator(done){
 			if(targets.length > 0) {
 				var currentTarget = targets.shift();

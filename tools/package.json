@@ -12,7 +12,8 @@
     "moment": "~2.1.0",
     "underscore": "~1.5.1",
     "request": "~2.27.0",
-    "json3": "~3.2.5"
+    "json3": "~3.2.5",
+    "rimraf": "~2.2.2"
   },
   "devDependencies": {},
   "scripts": {
