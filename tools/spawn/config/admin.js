@@ -14,6 +14,7 @@
  */
 
 module.exports = {
+	distFolder: 'dist',
 	clientBase: '../../',
 	index: 'app/index.html',
 	structure : {
@@ -50,7 +51,10 @@ module.exports = {
 			_default: 'app/themes/_default'
 		},
 		tools: {
-			build: 'tools/build',
+			build: { //excluding the dist folder.
+				config: 'tools/build/config',
+				'build.js': 'tools/build/build.js',
+			},
 			shared: 'tools/shared',
 			'package.json': 'tools/package.json'
 		},

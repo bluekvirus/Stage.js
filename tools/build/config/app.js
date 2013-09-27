@@ -14,12 +14,15 @@
  */
 
 module.exports = {
+	distFolder: 'dist',
 	clientBase: '../../',
 	index: 'app/index.html',
+	patchAutoLoad: 'http://localhost:4000/tryscripts?payload=scripts/_try&type=js',
 	structure : {
 		scripts: {
 			_try: {}, //autoload scripts - usually patches after dist built
 			'app.min.js': true, //!!Hardcoded path see - loadIndexHTML() below;
+			//'app.js': false,
 			'config.js': 'app/scripts/config.js' //-non minified or copied
 		},
 		static: {

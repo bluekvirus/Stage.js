@@ -10,7 +10,9 @@
     "colors": "~0.6.2",
     "ncp": "~0.4.2",
     "moment": "~2.1.0",
-    "underscore": "~1.5.1"
+    "underscore": "~1.5.1",
+    "request": "~2.27.0",
+    "json3": "~3.2.5"
   },
   "devDependencies": {},
   "scripts": {
