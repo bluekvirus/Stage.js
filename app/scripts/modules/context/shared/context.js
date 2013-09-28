@@ -1,0 +1,1 @@
+Application.Context.create('Shared');//Shared is a context without basice UI (View.Default), it groups the UI modules that are shared among the contexts.

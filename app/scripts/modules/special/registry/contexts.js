@@ -15,6 +15,19 @@
  * ======
  * app.Context.create('name', [factory]) - factory should return a object that has View.Default(layout), name, default module and region defined.
  * app.Context.module('name') - create a context's sub-module.
+ *
+ * a context factory function should return at least an object that contains {
+ *
+ * 	requireLogin: true | false,
+ * 	defaults: {
+ * 		region: 'content',
+ * 		module: 'Dashboard'
+ * 		},
+ * 	View: {
+ * 		Default: ...
+ * 	}
+ * 
+ * }
  * 
  * @author Tim.Liu
  * @created 2013.09.21
@@ -54,82 +67,7 @@
  * ====================
  * Pre-Defined Contexts
  * ====================
+ *
+ * see modules/context/[specific context folder]/context.js
  */
-Application.Context.create('Shared');//Shared is a context without basice UI (View.Default), it groups the UI modules that are shared among the contexts.
-Application.Context.create('Login', function(context){
 
-	Template.extend(
-		'application-context-login-tpl',
-		[
-			'<div class="container content"></div>'
-		]
-	);
-	
-	return {
-		defaults: {
-			region: 'content',
-			module: 'Account'
-		},
-		View: {
-			Default: Backbone.Marionette.Layout.extend({
-				template: '#application-context-login-tpl',
-				regions: {
-					content: '.content'
-				}
-			})
-		},
-		API: {
-			/**
-			 * [isLoggedIn check with application server to see if the user is logged in or not...]
-			 * @return {Boolean} see application server routes/landing/page.js
-			 */
-			isLoggedIn: function(){
-				var result = false;
-				$.ajax({
-					url: '/login',
-					notify: false,
-					async: false,
-					success: function(res){
-						result = true;
-						context.user = res.user;
-					}
-				});
-				return result;			
-			}
-		}
-		//Do NOT need to use onShow() here, since the defaults config will put 'Account' module on page.
-	}
-
-});
-
-Application.Context.create('Admin', function(context){
-
-	Template.extend(
-		'application-context-admin-tpl',
-		[
-	        '<div class="default row-fluid">',
-	            '<div class="sidebar span2"></div>',
-	            '<div class="content span10"></div>',
-	        '</div>'
-		]
-	);
-
-	return {
-		defaults: {
-			region: 'content',
-			module: 'Dashboard'
-		},
-		View: {
-			Default: Backbone.Marionette.Layout.extend({
-				template: '#application-context-admin-tpl',
-				regions: {
-					sidebar: '.sidebar',
-					content: '.content',
-				},
-				onShow: function(){
-					this.sidebar.show(new context.Menu.View.Default());
-				}
-			})
-		}
-	} 
-});

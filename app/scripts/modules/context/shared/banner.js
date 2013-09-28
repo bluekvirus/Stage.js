@@ -31,7 +31,7 @@
 				},
 
 				onShow: function(){
-					this.model.set(app.Context.get('Login').user);
+					this.model.set(app.user);
 				}
 			})
 		}

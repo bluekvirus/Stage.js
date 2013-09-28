@@ -49,7 +49,7 @@
 							},
 							success: function(res) {
 								//the default reply from server is res.redirect
-								context.user = res.user;
+								app.user = res.user;
 								context.trigger('login:account:user-changed');
 								app.trigger('app:switch-context', app.config.appContext, app.Context.Login.cachedRedirect || 'navigate/default'); //use the triggerNavi flag to allow re-evaluation of uri fragment.
 							}

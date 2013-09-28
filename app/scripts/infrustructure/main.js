@@ -35,7 +35,12 @@
 	Application.addInitializer(function(options){
 		//Context switching utility
 		function switchContext(context, triggerNavi){
-			Application.currentContext = Application.Context[context];
+			Application.currentContext = Application.Context.get(context);
+			if(Application.currentContext.requireLogin && !Application.touch()){
+				Application.currentContext = Application.Context.get('Login');
+				Application.currentContext.cachedRedirect = window.location.hash;
+				window.location.assign('#'); //must clear the hash before switching to Context.Login (+ another route history page)
+			}	
 			if(!Application.currentContext) throw new Error('DEV::MainApp::You must have the requred context module ' + context + ' defined...'); //see - special/registry/context.js
 			Application.body.show(new Application.currentContext.View.Default());
 			if(triggerNavi){
@@ -53,13 +58,7 @@
 	Application.addInitializer(function(options){
 
 		//1.Auto-detect and init context (view that replaces the body region). see the Context.Login
-		var context = 'Login';
-		if(Application.Context.Login.API.isLoggedIn())
-			context = Application.config.appContext; //go to default app context.
-		else {
-			Application.Context.Login.cachedRedirect = window.location.hash;
-			window.location.assign('#'); //must clear the hash before switching to Context.Login (+ another route history page)
-		}
+		var context = Application.config.appContext; //go to default app context.
 		Application.trigger('app:switch-context', context);
 
 		//2.Show the shared UI modules, since these might depend on the Context.Login.Account.user

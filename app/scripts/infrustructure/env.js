@@ -297,7 +297,33 @@ window.Application = new Backbone.Marionette.Application();
 	//shorthand methods
 	Application.patchScripts = function(){
 		_patch('/tryscripts', 'scripts/_try', true);
-	} 
+	};
 
+
+	/**
+	 * ==============================
+	 * Session Touch Util
+	 * ==============================
+	 */
+	 Application.touch = function(){
+		/**
+		 * This check with application server to see if the user is logged in or not...
+		 * @return {Boolean} see application server routes/landing/page.js
+		 */
+		var result = false;
+		$.ajax({
+			url: '/login',
+			notify: false,
+			async: false,
+			success: function(res){
+				result = true;
+				Application.user = res.user;
+			},
+			error: function(){
+				delete Application.user;
+			}
+		});
+		return result;			
+	 }
 
 })(Application, jQuery, Backbone, _, Handlebars, URI);
