@@ -100,7 +100,8 @@
         },
 
         onShow: function(){
-            this.delegatedEditor.onShow();
+            if(this.delegatedEditor)
+                this.delegatedEditor.onShow();
         },
 
         getValue: function() {

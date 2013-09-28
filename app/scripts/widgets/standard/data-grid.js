@@ -229,8 +229,10 @@ Application.Widget.register('DataGrid', function(){
         _showForm: function(recordId) {
             if (recordId) { //edit mode.
                 var m = this.collection.get(recordId);
-            } else //create mode.
-            var m = new this.collection.model();
+            } else {  //create mode.
+                var m = new this.collection.model();
+                m.collection = this.collection;
+            }
 
             if(this.formWidget && this.parentCt){
             	//create and show it
@@ -309,14 +311,17 @@ Application.Widget.register('DataGrid', function(){
             $el.find('[action=edit]').click();
         },
 
+        //WARNING:: Note that at this point we already set the values of the model on this form according to the user input values...
+        //Thus, after 'put' to the server, we really don't need to do any thing on the client side here.
         saveRecord: function(e, sheet) {
             e.stopPropagation();
             //1.if this grid is used as top-level record holder:
             var that = this;
             if (this.isRefMode()) {
                 var options = {
+                    wait: true,
                     notify: true,
-                    success: function(model, res) {
+                    success: function(res) {
                         that._applyToNewSortData();
                         that.$el.trigger('event_FormClose', sheet);
                     }
@@ -328,13 +333,13 @@ Application.Widget.register('DataGrid', function(){
                         this.$el.trigger('event_FormClose', sheet);
                         return;
                     }
-
-                    //clean up the model data for submission, only submit those that were changed.
-                    var id = {};
-                    id[sheet.model.idAttribute] = sheet.model.id;
-                    sheet.model.attributes = changed;
-                    sheet.model.set(id, {silent:true});
-                    sheet.model.save({}, options); //save the model to server
+                    //sheet.model.save(changed, options); //save the model to server - we use the following code now, to only put 'changed' attrs to server.
+                    $.ajax(_.extend(options, {
+                        url: sheet.model.url(),
+                        contentType: "application/json",
+                        type: 'PUT',
+                        data: JSON.stringify(changed)
+                    }));
                 }
                 else {
                     //create

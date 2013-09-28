@@ -99,7 +99,12 @@ var libMap = {};
 function combine(list, name){
 	var target = buildify().load('EMPTY.js');
 	_.each(list, function(lib){
-		console.log(lib.yellow, '[', libMap[lib].grey, ']');
+		if(libMap[lib])
+			console.log(lib.yellow, '[', libMap[lib].grey, ']');
+		else {
+			console.log(lib, 'not found!'.red);
+			return;
+		}
 		target.concat(libMap[lib]);
 	});
 	target.setDir('dist').save(name + '.js').uglify().save(name + '.min.js');
@@ -182,10 +187,35 @@ buildify.task({
 });
 
 buildify.task({
-	name: 'base-libs-with-widgets',
-	depends: ['base-libs'],
+	name: 'base-libs-latest', //with jquery2 and bootstrap3 , ie9+
+	depends: ['load-lib-map'],
 	task: function(){
-		//TBI. with form, form editors, grid, grid extensions and custom jquery widget plugins.
+		var list = [
+			'modernizr',
+			'jquery2',
+			'jquery.cookie',
+			'jquery-ui',
+			'jquery-sieve', //client side text search
+			//'flexslider',
+			'underscore',
+			'underscore.string',
+			'backbone', //include json2/3
+			'backbone-validation',
+			'backbone.paginator',
+			'marionette',
+			'handlebars.js',
+			'swag',
+			'bootstrap3', 
+			'store.js', //need json2 in backbone
+			'uri.js',
+			'momentjs',
+			'marked',			
+			'colorbox',
+			'noty',
+			'spin.js',
+			//'i18n', 'elMask'... are put into project infrustructure and maintained there.
+		]; //with widgets excluded e.g forms (validations) and datagrids.
+		combine(list, 'base-libs-latest');
 	}
 });
 

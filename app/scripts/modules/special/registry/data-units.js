@@ -44,7 +44,17 @@
 			//general model definition
 			Model: Backbone.Model.extend(_.extend({
 				name: name, //this is our extention
-				idAttribute : '_id'
+				idAttribute : '_id',
+		        //**EXTREMELY IMPORTANT**
+		        //backbone.model.save (thus backbone.collection.create) will use this to merge server response back to the model! SO YOU MUST SET THIS ONE !!
+		        //this behaviour is not even optional...We really don't want the model to have this pre-set behaviour...
+		        parse: function(response) {
+		            if (response.payload) {
+		            	if (_.isArray(response.payload)) return response.payload[0];
+		                return response.payload;
+		            }
+		            return response;
+		        }				
 			}, options.backboneOpts && options.backboneOpts.model))
 		};
 		//2. define collection and data url
@@ -61,15 +71,6 @@
 		}else {
 			module.map[name].Model = module.map[name].Model.extend({
 				urlRoot: dataURL, //this is to ignore collection's url, since it doesn't belong to one.
-		        //backbone.model.save will use this to merge server response back to model ??
-		        //this behaviour is not even optional...We really don't want the model to have this pre-set behaviour...
-		        parse: function(response) {
-		            if (response.payload) {
-		            	if (_.isArray(response.payload)) return response.payload[0];
-		                return response.payload;
-		            }
-		            return response;
-		        }
 	    	});
 		}
 
