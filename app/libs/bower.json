@@ -49,6 +49,7 @@
     "underscore": "~1.5.1",
     "uri.js": "~1.11.2",
     "bootstrap2": "bootstrap#2.3.2",
-    "bootstrap3": "bootstrap#~3.0.0"
+    "bootstrap3": "bootstrap#~3.0.0",
+    "tweenmax": "~1.10.3"
   }
 }

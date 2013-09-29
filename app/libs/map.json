@@ -5,6 +5,7 @@
   "backbone": "bower_components/backbone",
   "backgrid": "bower_components/backgrid",
   "blueimp-canvas-to-blob": "bower_components/blueimp-canvas-to-blob/js/canvas-to-blob.js",
+  "blueimp-tmpl": "bower_components/blueimp-tmpl/js/tmpl.js",
   "blueimp-load-image": [
     "bower_components/blueimp-load-image/js/load-image.js",
     "bower_components/blueimp-load-image/js/load-image-ios.js",
@@ -13,7 +14,10 @@
     "bower_components/blueimp-load-image/js/load-image-exif.js",
     "bower_components/blueimp-load-image/js/load-image-exif-map.js"
   ],
-  "blueimp-tmpl": "bower_components/blueimp-tmpl/js/tmpl.js",
+  "bootstrap": [
+    "bower_components/bootstrap/docs/assets/js/bootstrap.js",
+    "bower_components/bootstrap/docs/assets/css/bootstrap.css"
+  ],
   "bootstrap2": [
     "bower_components/bootstrap2/docs/assets/js/bootstrap.js",
     "bower_components/bootstrap2/docs/assets/css/bootstrap.css"
@@ -61,6 +65,7 @@
   "spin.js": "bower_components/spin.js/dist/spin.js",
   "store.js": "bower_components/store.js/store.js",
   "swag": "bower_components/swag/lib/swag.js",
+  "tweenmax": "bower_components/tweenmax/src/minified/TweenMax.min.js",
   "underscore.string": "bower_components/underscore.string",
   "underscore": "bower_components/underscore",
   "uri.js": [
