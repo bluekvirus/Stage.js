@@ -192,30 +192,37 @@ buildify.task({
 	task: function(){
 		var list = [
 			'modernizr',
-			'jquery2',
+			'jquery2', //version 2+
 			'jquery.cookie',
 			'jquery-ui',
-			'jquery-sieve', //client side text search
+			'jquery-sieve',
 			//'flexslider',
 			'underscore',
 			'underscore.string',
-			'backbone', //include json2/3
+			'backbone', 
 			'backbone-validation',
 			'backbone.paginator',
 			'marionette',
 			'handlebars.js',
 			'swag',
-			'bootstrap3', 
-			'store.js', //need json2 in backbone
+			'bootstrap3', //version 3+
+			'store.js', 
 			'uri.js',
 			'momentjs',
 			'marked',			
 			'colorbox',
 			'noty',
 			'spin.js',
-			//'i18n', 'elMask'... are put into project infrustructure and maintained there.
-		]; //with widgets excluded e.g forms (validations) and datagrids.
+		];
 		combine(list, 'base-libs-latest');
+	}
+});
+
+buildify.task({
+	name: 'all',
+	depends: ['fix-libs', 'base-libs', 'base-libs-latest'],
+	task: function(){
+		
 	}
 });
 
