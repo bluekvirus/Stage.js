@@ -18,6 +18,7 @@
 			View: {
 				Default: Backbone.Marionette.Layout.extend({
 					template: '#application-context-admin-tpl',
+					className: 'default row-fluid',
 					regions: {
 						sidebar: '.sidebar',
 						content: '.content',
@@ -35,9 +36,7 @@
 Template.extend(
 	'application-context-admin-tpl',
 	[
-        '<div class="default row-fluid">',
-            '<div class="sidebar span2"></div>',
-            '<div class="content span10"></div>',
-        '</div>'
+	    '<div class="sidebar span2"></div>',
+	    '<div class="content span10"></div>'
 	]
 );

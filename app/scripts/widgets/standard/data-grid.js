@@ -196,8 +196,8 @@ Application.Widget.register('DataGrid', function(){
             //if it is not in subDoc mode, we let the collection to fetch data itself.
             //this will trigger the 'reset' event which in turn will trigger 'backgrid:rendered' on backgrid
             this.body.show(this.grid);
-            this.footer.show(this.infoBar);
-            if (this.isRefMode()){ 
+            if (this.isRefMode()){
+                this.footer.show(this.infoBar); 
             	this.grid.$el.trigger('event_RefreshRecords');
             }
 

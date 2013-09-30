@@ -35,7 +35,10 @@
 	Application.addInitializer(function(options){
 		//Context switching utility
 		function switchContext(context, triggerNavi){
-			Application.currentContext = Application.Context.get(context);
+			var targetContext = Application.Context.get(context);
+			if(Application.currentContext === targetContext) return;
+			
+			Application.currentContext = targetContext;
 			if(Application.currentContext.requireLogin && !Application.touch()){
 				Application.currentContext = Application.Context.get('Login');
 				Application.currentContext.cachedRedirect = window.location.hash;

@@ -58,15 +58,15 @@
                     template: "gridField"
                 }
             },   
-            // comment4: {
-            //     editor: "CUSTOM_GRID",
-            //     title: "Comment Sub",
-            //     editorOpt: {
-            //         moduleRef: "Comment",
-            //         mode: "subDoc",
-            //         template: "gridField"
-            //     }
-            // },
+            comment4: {
+                editor: "CUSTOM_GRID",
+                title: "Comment Sub",
+                editorOpt: {
+                    moduleRef: "Admin.Comment",
+                    mode: "subDoc",
+                    template: "gridField"
+                }
+            },
             titleimage: {
                 editor: "File",
                 title: "Title Image",
