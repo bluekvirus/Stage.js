@@ -6,70 +6,88 @@
  */
 
 ;(function(app){
-
-	var tools = [
-		{
-			label: 'Manage Server Models',
-			action: '#navigate/Models',
-			icon: 'icon-hdd icon-white'
-		},
-	];
 	
 	//Context Definition
-	app.Context.create('_Dev', function(context){
+	var context = app.Context.create('_Dev'); //the tool UIs are hooked into the footer region.
 
-		return {
-			requireLogin: true,
-			defaults: {
-				region: 'content',
-				module: 'Models'
-			},
-			View: {
-				Default: Backbone.Marionette.Layout.extend({
-					template: '#application-context-_dev-tpl',
-					className: 'default row-fluid',
-					regions: {
-						sidebar: '.sidebar',
-						content: '.content',
-					},
-					onShow: function(){
-						//
-					}
-				})
-			}
-		} 
-	});
+	/*=====The immediate action buttons on the 'Developer Tools' bar.=====*/
+	//Note that this is different than the tool panel listing...which is determined by tool UI module labels.
+	var triggers = [
+		{
+			label: 'Toggle Tool Panels',
+			action: 'toggleToolPanel',
+			icon: 'icon-info-sign icon-white',
+			color: 'warning'
+		}
+	];
+	/*====================================================================*/
 
 	//Patch in UI hooks to footer UI.
-	var HookUI = Backbone.Marionette.ItemView.extend({
+	var HookUI = Backbone.Marionette.Layout.extend({
 		template: '#application-context-_dev-hookui-tpl',
+		regions: {
+			panel: '#dev-tool-panel'
+		},
 		initialize: function(options){
 			options = options || {};
 			this.model = options.model || new Backbone.Model({
-				tasks: tools
+				tasks: triggers
 			});
-			//$(window).on('resize', _.bind(this.onWindowResize, this));
 		},
 		onRender: function(){
-			app.main.ensureEl();
 			this.$el.css({
 				padding: '10px',
 				borderTop: '1px solid',
 				marginTop: '10px',
 				position: 'fixed',
+				backgroundColor: '#fff',
 				bottom: 0,
-				right: app.main.$el.css('paddingRight'),
-				left: app.main.$el.css('paddingLeft')
+				right: 0,
+				left: 0
 			});
+			this.panel.ensureEl();
 		},
 		onShow: function(){
+			//show the tool UI modules
+			_.each(context.submodules, _.bind(function(toolUI){
+				var id = 'tool-tab' + _.string.dasherize(toolUI.name);
+				//a. + tab nav entry
+				this.panel.getEl('ul.nav-tabs').append('<li><a data-toggle="tab" href="#'+id+'"><i class="'+toolUI.icon+'"></i> '+toolUI.label+'</a></li>');
+				//b. + actuall ui view
+				toolUI = (new toolUI.View.Default()).render();
+				toolUI.$el.attr('id', id);
+				this.panel.getEl('div.tab-content').append(toolUI.el);
+				toolUI.onShow();
+			},this));
 		},
-		// onWindowResize: function(){
-		// 	this.$el.width($(window).width());
-		// },
-		// onClose: function(){
-		// 	$(window).off('resize', this.onWindowResize);
-		// }
+		events: {
+			'click [action]': '_doAction'
+		},
+		_doAction: function(e){
+			e.stopPropagation();
+			var $el = $(e.currentTarget);
+			var action = $el.attr('action');
+			var doer = _.bind(this.actions[action], this);
+			if(doer) doer($el);
+			else throw new Error('DEV::DEV Tools::You have not yet implemented this action');
+		},
+		actions: {
+			toggleToolPanel: function($action){
+				if(this._expended){
+					this.panel.$el.hide();
+					this.$el.css('top', '');
+					this._expended = false;
+					return;
+				}
+				this.$el.animate(
+				{
+					top: '60%'
+				}, 500, _.bind(function(){
+					this._expended = true;
+					this.panel.$el.toggle();
+				}, this));
+			}
+		}
 	});
 
 	app.on("initialize:after", function(options){
@@ -77,6 +95,7 @@
 		var uihook = new HookUI().render();
 		if($hook.currentView){
 			$hook.$el.append(uihook.el);
+			uihook.onShow()
 		}else
 			$hook.show(uihook);
 
@@ -88,19 +107,20 @@
 Template.extend(
 	'application-context-_dev-hookui-tpl',
 	[
-		'<div class="clearfix">',
+		'<div>',
+			'<i class="icon-wrench"></i> ',
 			'Developer Tools',
 			'{{#each tasks}}',
-				'<span class="btn btn-small btn-warning pull-right" style="margin-left: 10px;" action="{{action}}"><i class="{{icon}}"></i> {{label}}</span>',
+				'<span class="btn btn-small btn-{{color}} pull-right" style="margin-left: 10px;" action="{{action}}"><i class="{{icon}}"></i> {{label}}</span>',
 			'{{/each}}',
+		'</div>',
+		'<div id="dev-tool-panel" style="display:none; margin-top:10px; padding-top:5px; border-top:5px solid #eee">',
+			'<div class="tabbable tabs-left" id="dev-tool-panel-tabs">',
+				//'<ul class="nav nav-tabs">/*<li><a data-toggle="tab" href="#tooltab1">123</a></li></ul>',
+				'<ul class="nav nav-tabs"></ul>',
+				//'<div class="tab-content"><div class="tab-pane" id="tooltab1">hello!!</div></div>',
+				'<div class="tab-content"></div>',
+			'</div>',
 		'</div>'
-	]
-);
-
-Template.extend(
-	'application-context-_dev-tpl',
-	[
-        '<div class="sidebar span2"></div>',
-        '<div class="content span10"></div>',
 	]
 );

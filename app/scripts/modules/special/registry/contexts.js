@@ -56,6 +56,7 @@
 					return app.module(['Context', name, subModName].join('.'));
 				}
 			}, factory && factory(ctx)); //note that we allow non-UI context for module grouping purposes.
+			return ctx;
 		}
 
 	});
