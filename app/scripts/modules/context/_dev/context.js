@@ -43,7 +43,8 @@
 				backgroundColor: '#fff',
 				bottom: 0,
 				right: 0,
-				left: 0
+				left: 0,
+				overflowY: 'auto'
 			});
 			this.panel.ensureEl();
 		},
@@ -59,6 +60,8 @@
 				this.panel.getEl('div.tab-content').append(toolUI.el);
 				toolUI.onShow();
 			},this));
+
+			this.panel.getEl('ul.nav-tabs li a:first').tab('show');
 		},
 		events: {
 			'click [action]': '_doAction'
@@ -81,7 +84,7 @@
 				}
 				this.$el.animate(
 				{
-					top: '60%'
+					top: '30%'
 				}, 500, _.bind(function(){
 					this._expended = true;
 					this.panel.$el.toggle();
@@ -119,7 +122,7 @@ Template.extend(
 				//'<ul class="nav nav-tabs">/*<li><a data-toggle="tab" href="#tooltab1">123</a></li></ul>',
 				'<ul class="nav nav-tabs"></ul>',
 				//'<div class="tab-content"><div class="tab-pane" id="tooltab1">hello!!</div></div>',
-				'<div class="tab-content"></div>',
+				'<div class="tab-content" style="border-left: 5px solid #eee; padding-left: 10px;"></div>',
 			'</div>',
 		'</div>'
 	]
