@@ -81,11 +81,16 @@
 						collection: new (Backbone.Collection.extend({
 							url: '/dev/models/',
 							parse: function(res){
-								return _.toArray(res);
+								var models = _.map(res, function(modelPath, modelName){
+									return {name: modelName, path: modelPath};
+								});
+								return _.sortBy(models, function(m){
+									return m.name;
+								}).reverse();
 							}
 						}))
 					}));
-					//hook up the model search input.
+					//TBI: hook up the model search input.
 					
 				},
 				//General Actions
@@ -135,7 +140,7 @@
 					submitModelDef: function($action){
 						var name = this.form.currentView.ui.modelNameInput.val();
 						var fNames = this.form.getEl('[name=fieldname]').map(function(index, el){
-							return $(this).val();
+							return _.string.slugify($(this).val());
 						}).get();
 						var fTypes = this.form.getEl('[name=fieldtype]').map(function(index, el){
 							return $(this).val();
@@ -147,16 +152,17 @@
 							notify: true,
 							contentType: 'application/json',
 							data: JSON.stringify({
-								name: name,
+								name: _.string.classify(name),
 								fields: fields	
 							}),
-							success: function(res){
-								console.log(res);
-							},
-							error: function(){
-
-							}
+							success: _.bind(function(res){
+								this.form.getEl('span[action=cancelModelForm]').click();
+							}, this)
 						})
+					},
+
+					refreshModelList: function($action){
+						this.list.currentView.collection.fetch();
 					}
 				}
 			})
@@ -168,7 +174,7 @@
 
 Template.extend('custom-module-_dev-servermodelgen-modelitem-tpl',
 [
-	'{{this.meta.name}}'
+	'{{name}}'
 ]
 );
 
@@ -179,6 +185,7 @@ Template.extend('custom-module-_dev-servermodelgen-modellist-tpl',
 		'<span class="add-on"><i class="icon-search"></i></span>',
 		'<input type="text" placeholder="Find Model..." class="input input-medium">', //model search/filter box
 		'<span class="btn btn-success" action="showNewModelForm"><i class="icon-plus-sign icon-white"></i> Server Model</span>', //+ Server Model button, show model form.
+		'<span class="btn" action="refreshModelList"><i class="icon-refresh"></i> Refresh List</span>',
 	'</div>'
 ]
 );
@@ -201,12 +208,14 @@ Template.extend('custom-module-_dev-servermodelgen-modelform-tpl',
 			'<input type="text" name="modelname" id="inputModelName" placeholder="Your Model Name Here...">', //model name input
 		'</div>',
 	'</div>',
-	'<div style="margin-bottom:5px;">Fields <span style="cursor:pointer;" action="addField"><i class="icon-plus-sign"></i></span></div>', //add field
-		'<blockquote>',
+		'<blockquote>', //help text on available field types [+]
 			'<p class="text-warning">Available Types: String, Number, Date, Buffer, Boolean, Mixed, Objectid, Array</p>',
-			'<small>e.g [String] or [\'Your Model Name\'] - shortcut for [Objectid] ref:\'Your Model\' see - /util/objectfactory.js</small>',
+			'<small>e.g [String] or [Number]</small>',
+			'<small>or [\'Your Model Name\'] - shortcut for [Objectid] ref:\'Your Model\'</small>',
+			'<small>or ^[\'Your Model Name\'] - sub:\'Your Model\' see - /util/objectfactory.js</small>',
 			'<small>MongooseJS Schema Types see - http://mongoosejs.com/docs/schematypes.html</small>',
-		'</blockquote>', //help text on available field types
+		'</blockquote>', //help text on available field types [.]	
+	'<div style="margin-bottom:5px;">Fields <span style="cursor:pointer;" action="addField"><i class="icon-plus-sign"></i></span></div>', //add field
 	'<div model-field-list></div>',
 	'<div><span class="btn btn-info" action="submitModelDef">Submit</span> <span class="btn" action="cancelModelForm">Cancel</span></div>' //submit model or cancel.
 ]

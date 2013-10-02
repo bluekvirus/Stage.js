@@ -84,7 +84,7 @@
 				}
 				this.$el.animate(
 				{
-					top: '30%'
+					top: '20%'
 				}, 500, _.bind(function(){
 					this._expended = true;
 					this.panel.$el.toggle();
