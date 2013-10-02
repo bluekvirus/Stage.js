@@ -63,6 +63,9 @@
 						padding: '10px',
 						borderTop: '5px dotted #eee'
 					});
+				},
+				ui: {
+					'modelNameInput': '[name=modelname]'
 				}
 			}),
 
@@ -127,6 +130,33 @@
 					cancelModelForm: function($action){
 						this.form.close();
 						this.list.getEl('span[action=showNewModelForm]').removeClass('disabled');
+					},
+
+					submitModelDef: function($action){
+						var name = this.form.currentView.ui.modelNameInput.val();
+						var fNames = this.form.getEl('[name=fieldname]').map(function(index, el){
+							return $(this).val();
+						}).get();
+						var fTypes = this.form.getEl('[name=fieldtype]').map(function(index, el){
+							return $(this).val();
+						}).get();
+						var fields = _.object(fNames, fTypes);
+						$.ajax({
+							url: '/dev/models/',
+							type: 'POST',
+							notify: true,
+							contentType: 'application/json',
+							data: JSON.stringify({
+								name: name,
+								fields: fields	
+							}),
+							success: function(res){
+								console.log(res);
+							},
+							error: function(){
+
+							}
+						})
 					}
 				}
 			})
@@ -172,9 +202,13 @@ Template.extend('custom-module-_dev-servermodelgen-modelform-tpl',
 		'</div>',
 	'</div>',
 	'<div style="margin-bottom:5px;">Fields <span style="cursor:pointer;" action="addField"><i class="icon-plus-sign"></i></span></div>', //add field
-	'<blockquote><p class="text-warning">Available Types: String, Number, Date, Buffer, Boolean, Mixed, Array (e.g [String] or [\'Your Model Name\'] - shortcut for [Objectid] ref:\'Your Model\' see - /util/objectfactory.js)</p></blockquote>', //help text on available field types
+		'<blockquote>',
+			'<p class="text-warning">Available Types: String, Number, Date, Buffer, Boolean, Mixed, Objectid, Array</p>',
+			'<small>e.g [String] or [\'Your Model Name\'] - shortcut for [Objectid] ref:\'Your Model\' see - /util/objectfactory.js</small>',
+			'<small>MongooseJS Schema Types see - http://mongoosejs.com/docs/schematypes.html</small>',
+		'</blockquote>', //help text on available field types
 	'<div model-field-list></div>',
-	'<div><span class="btn btn-info">Submit</span> <span class="btn" action="cancelModelForm">Cancel</span></div>' //submit model or cancel.
+	'<div><span class="btn btn-info" action="submitModelDef">Submit</span> <span class="btn" action="cancelModelForm">Cancel</span></div>' //submit model or cancel.
 ]
 );
 
