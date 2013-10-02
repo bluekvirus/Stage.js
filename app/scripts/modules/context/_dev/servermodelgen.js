@@ -85,7 +85,7 @@
 									return {name: modelName, path: modelPath};
 								});
 								return _.sortBy(models, function(m){
-									return m.name;
+									return m.path;
 								}).reverse();
 							}
 						}))
