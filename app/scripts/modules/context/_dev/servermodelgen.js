@@ -110,6 +110,7 @@
 							that[funcGroup][name] = _.bind(func, that);
 						});
 					});
+					this.initUILocks(); //see - infrustructure/base-lib-fix.js
 				},
 				onShow: function(){
 					this.list.show(new module.View.ModelList({
@@ -125,7 +126,12 @@
 							}
 						}))
 					}));
-					//TBI: hook up the model search input.
+					//hook up the model search input.
+					this.list.currentView.$el.sieve({
+						itemSelector: '.tool-servergen-model-list-item',
+						textSelector: 'span[model]',
+						searchInput: this.list.getEl('input.tool-servergen-model-list-item-search')
+					});
 					
 				},
 				//========General Actions==========
@@ -142,8 +148,8 @@
 				},
 				actions: {
 					showNewModelForm: function($action){
-						if($action.hasClass('disabled'))
-							return;
+						if(!this.lockUI('list')) return; //lock the list region
+
 						this.utils.clearModelSelection();//clear model listing selection highlight first;
 						this.form.show(new module.View.ModelForm({
 							collection: new Backbone.Collection([{
@@ -168,6 +174,8 @@
 					},
 
 					cancelModelForm: function($action){
+						if(!this.unlockUI('list')) return; //unlock the list region
+
 						this.form.close();
 						this.list.getEl('span[action=showNewModelForm]').removeClass('disabled');
 					},
@@ -200,7 +208,9 @@
 						this.list.currentView.collection.fetch();
 					},
 
-					showModelDefDetails: function($action){	
+					showModelDefDetails: function($action){
+						if(this.isUILocked('list')) return;
+
 						$.ajax({
 							url: module.toolURL + $action.attr('model'),
 							success: _.bind(function(res){
@@ -260,7 +270,7 @@ Template.extend('custom-module-_dev-servermodelgen-modellist-tpl',
 	'<div class="clearfix" item-view-ct style="margin-bottom:10px;"></div>',
 	'<div class="input-prepend input-append">',
 		'<span class="add-on"><i class="icon-search"></i></span>',
-		'<input type="text" placeholder="Find Model..." class="input input-medium">', //model search/filter box
+		'<input type="text" placeholder="Find Model..." class="input input-medium tool-servergen-model-list-item-search">', //model search/filter box
 		'<span class="btn btn-success" action="showNewModelForm"><i class="icon-plus-sign icon-white"></i> Server Model</span>', //+ Server Model button, show model form.
 		'<span class="btn" action="refreshModelList"><i class="icon-refresh"></i> Refresh List</span>',
 	'</div>'
