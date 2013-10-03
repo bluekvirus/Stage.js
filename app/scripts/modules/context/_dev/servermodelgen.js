@@ -222,10 +222,10 @@
 									if(description.caster){
 										//array
 										if(res.meta.ref && res.meta.ref[fieldName]){
-											type = "ref:'" + res.meta.ref[fieldName].model + "'";
+											type = "ref: '" + res.meta.ref[fieldName].model + "'";
 										}else if(res.meta.sub && res.meta.sub[fieldName])
-											type = "sub:'" + res.meta.sub[fieldName].model + "'";
-										type = '[' + type + ']';
+											type = "sub: '" + res.meta.sub[fieldName].model + "'";
+										type = '[ ' + type + ' ] - collection';
 									}else {
 										type = type || 'Date/Mixed';
 									}
@@ -234,6 +234,14 @@
 										type: type
 									};									
 								});
+								//add in the file fields, which we don't store in database but on the server file system.
+								_.each(res.restriction.file, function(fileRestr, fieldName){
+									modeldetails.fields[fieldName] = {
+										name: fieldName,
+										type: 'File - stored in OS file system'
+									}
+								});
+								delete modeldetails.fields.__v;
 								//console.log(modeldetails);
 								/*===========================================================================*/
 
@@ -311,7 +319,7 @@ Template.extend('custom-module-_dev-servermodelgen-modelform-tpl',
 		'</div>',
 	'</div>',
 		'<blockquote>', //help text on available field types [+]
-			'<p class="text-warning">Available Types: String, Number, Date, Buffer, Boolean, Mixed, Objectid, Array</p>',
+			'<p class="text-warning">Available Types: String, Number, Date, Buffer, Boolean, Mixed, Objectid, Array and \'__File\'</p>',
 			'<small>e.g [String] or [Number]</small>',
 			'<small>or [\'Your Model Name\'] - shortcut for [Objectid] ref:\'Your Model\'</small>',
 			'<small>or ^[\'Your Model Name\'] - sub:\'Your Model\' see - /util/objectfactory.js</small>',
