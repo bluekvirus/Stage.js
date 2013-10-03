@@ -14,11 +14,22 @@
 
 		label: _.string.titleize(_.string.humanize(module.moduleName)),
 		icon: 'icon-plus-sign',
+		toolURL: '/dev/models/',
 
 		View: {
+
+			//------------Model List--------------
+			ModelListItemDetail: Backbone.Marionette.ItemView.extend({
+				template: '#custom-module-_dev-servermodelgen-modelitem-detail-tpl',
+
+			}),
+
 			ModelListItem: Backbone.Marionette.ItemView.extend({
 				template: '#custom-module-_dev-servermodelgen-modelitem-tpl',
-				tagName: 'span',
+				className: 'tool-servergen-model-list-item',
+				ui: {
+					model: 'span[model]' //for locating the model tpl tags. (used for tooltip)
+				},
 				onRender: function(){
 					var size = 70;
 					this.$el.css({
@@ -30,10 +41,24 @@
 						lineHeight: size * 0.95 + 'px',						
 						marginLeft: size/10 + 'px',
 						cursor:'pointer',
-						float: 'left'
+						float:'left',
+					}).tooltip({
+						title: _.bind(function(){
+							return this.ui.model.attr('path');
+						}, this)
 					});
+				},
+				events: {
+					'click': function(e){
+						if(e.target !== e.currentTarget) { //let the event pass to View.Default's action event handler;
+							return;
+						}
+						e.stopPropagation();
+						this.ui.model.click(); //pass the click event to model tpl span[action]
+					}
 				}
 			}),
+
 			ModelList: Backbone.Marionette.CompositeView.extend({
 				template: '#custom-module-_dev-servermodelgen-modellist-tpl',
 				itemViewContainer: '[item-view-ct]',
@@ -44,7 +69,7 @@
 					this.collection.fetch();
 				}
 			}),
-
+			//-------------Form------------
 			ModelFormField: Backbone.Marionette.ItemView.extend({
 				template: '#custom-module-_dev-servermodelgen-modelform-field-tpl',
 				initialize: function(options){
@@ -69,6 +94,7 @@
 				}
 			}),
 
+			//----------Default View [as action coordinator]---------
 			Default: Backbone.Marionette.Layout.extend({
 				template: '#custom-module-_dev-servermodelgen-tpl',
 				className: 'tab-pane',
@@ -76,10 +102,19 @@
 					'list': '[region=modellist]',
 					'form': '[region=addmodel]'
 				},
+				initialize: function(options){
+					//bind all action listeners and util funcs to this.
+					var that = this;
+					_.each(['actions', 'utils'], function(funcGroup){
+						_.each(that[funcGroup], function(func, name){
+							that[funcGroup][name] = _.bind(func, that);
+						});
+					});
+				},
 				onShow: function(){
 					this.list.show(new module.View.ModelList({
 						collection: new (Backbone.Collection.extend({
-							url: '/dev/models/',
+							url: module.toolURL,
 							parse: function(res){
 								var models = _.map(res, function(modelPath, modelName){
 									return {name: modelName, path: modelPath};
@@ -93,7 +128,7 @@
 					//TBI: hook up the model search input.
 					
 				},
-				//General Actions
+				//========General Actions==========
 				events: {
 					'click [action]': '_doAction'
 				},
@@ -102,7 +137,6 @@
 					var $el = $(e.currentTarget);
 					var doer = this.actions[$el.attr('action')];
 					if(doer) {
-						doer = _.bind(doer, this);
 						doer($el);
 					}else throw new Error('DEV::DEV Tools::You have not yet implemented this action');
 				},
@@ -110,6 +144,7 @@
 					showNewModelForm: function($action){
 						if($action.hasClass('disabled'))
 							return;
+						this.utils.clearModelSelection();//clear model listing selection highlight first;
 						this.form.show(new module.View.ModelForm({
 							collection: new Backbone.Collection([{
 								fieldName: '',
@@ -147,7 +182,7 @@
 						}).get();
 						var fields = _.object(fNames, fTypes);
 						$.ajax({
-							url: '/dev/models/',
+							url: module.toolURL,
 							type: 'POST',
 							notify: true,
 							contentType: 'application/json',
@@ -163,6 +198,48 @@
 
 					refreshModelList: function($action){
 						this.list.currentView.collection.fetch();
+					},
+
+					showModelDefDetails: function($action){	
+						$.ajax({
+							url: module.toolURL + $action.attr('model'),
+							success: _.bind(function(res){
+								/*WARNING::Hardcoded Section::According to server model definition structure*/
+								//pre-process the model description
+								var modeldetails = _.extend({fields: {}}, _.pick(res, 'meta', 'restriction'));
+								_.each(res.Schema.paths, function(description, fieldName){
+									var type = description.instance || (description.caster && description.caster.instance);
+									if(description.caster){
+										//array
+										if(res.meta.ref && res.meta.ref[fieldName]){
+											type = "ref:'" + res.meta.ref[fieldName].model + "'";
+										}else if(res.meta.sub && res.meta.sub[fieldName])
+											type = "sub:'" + res.meta.sub[fieldName].model + "'";
+										type = '[' + type + ']';
+									}else {
+										type = type || 'Date/Mixed';
+									}
+									modeldetails.fields[fieldName] = {
+										name: fieldName,
+										type: type
+									};									
+								});
+								//console.log(modeldetails);
+								/*===========================================================================*/
+
+								//show it with proper view tpl
+								this.form.show(new module.View.ModelListItemDetail({
+									model: new Backbone.Model(modeldetails)
+								}));
+								this.utils.clearModelSelection();
+								$action.parent().addClass('btn-info');
+							},this)
+						})
+					}
+				},
+				utils: {
+					clearModelSelection: function(){
+						this.list.getEl('.tool-servergen-model-list-item').removeClass('btn-info');
 					}
 				}
 			})
@@ -174,7 +251,7 @@
 
 Template.extend('custom-module-_dev-servermodelgen-modelitem-tpl',
 [
-	'{{name}}'
+	'<span action="showModelDefDetails" model="{{name}}" path="{{path}}">{{name}}<span>'
 ]
 );
 
@@ -187,6 +264,21 @@ Template.extend('custom-module-_dev-servermodelgen-modellist-tpl',
 		'<span class="btn btn-success" action="showNewModelForm"><i class="icon-plus-sign icon-white"></i> Server Model</span>', //+ Server Model button, show model form.
 		'<span class="btn" action="refreshModelList"><i class="icon-refresh"></i> Refresh List</span>',
 	'</div>'
+]
+);
+
+Template.extend('custom-module-_dev-servermodelgen-modelitem-detail-tpl',
+[
+	'<div style="padding: 10px; border: 5px dashed #eee;">Model Definition Details for <i class="icon-hdd"></i> <strong>{{meta.name}}</strong></div>',
+	'<table class="table table-condensed">',
+		'<thead><tr><th>Field</th><th>Type</th></tr></thead>',
+		'{{#each fields}}',
+			'<tr>',
+				'<td>{{name}}</td>',
+				'<td>{{type}}</td>',
+			'</tr>',
+		'{{/each}}',
+	'</table>'
 ]
 );
 
