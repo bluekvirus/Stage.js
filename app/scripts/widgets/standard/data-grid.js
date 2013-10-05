@@ -198,7 +198,7 @@ Application.Widget.register('DataGrid', function(){
             this.body.show(this.grid);
             if (this.isRefMode()){
                 this.footer.show(this.infoBar); 
-            	this.grid.$el.trigger('event_RefreshRecords');
+            	this.grid.$el.trigger('event_reloadRecords');
             }
 
             //Do **NOT** register any event listeners here.
@@ -214,7 +214,7 @@ Application.Widget.register('DataGrid', function(){
             'click [action]': '_actionCalled',
             'dblclick .data-row': 'editRecordDbClick',
             'event_SaveRecord': 'saveRecord',
-            'event_RefreshRecords': 'refreshRecords',
+            'event_reloadRecords': 'reloadRecords',
             'event_FormClose': 'closeForm',
         },
         //Action listeners - through _actionCalled():
@@ -353,7 +353,7 @@ Application.Widget.register('DataGrid', function(){
                 this.$el.trigger('event_FormClose', sheet);
             }
         },
-        refreshRecords: function(e) {
+        reloadRecords: function(e) {
             if(e) e.stopPropagation();
             if (this.isRefMode()) {
                 this.collection.fetch({reset: true});

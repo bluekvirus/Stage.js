@@ -2,22 +2,30 @@
  * ==========================
  * Base Libs Warmup & Hacks
  * ==========================
+ * 1. +Swag (Handlebars Helpers)
+ * 2. +Handlebars to Backbone.Marionette
+ * 3. +UI Locking support to view regions (without Application scope total lockdown atm...)
+ * 4. +Pagination ability to Backbone.Collection
  *
  * @author Tim.Liu
  * @create 2013.09.11
  */
 ;(function(window, Swag, Backbone, Handlebars){
 
-	//Hook up additional Handlebars helpers.
+	//1 Hook up additional Handlebars helpers.
 	Swag.registerHelpers();
 
-	//Override to use Handlebars templating engine with Backbone.Marionette
+	//2 Override to use Handlebars templating engine with Backbone.Marionette
 	Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTemplate) {
 	  return Handlebars.compile(rawTemplate);
 	};
 
+	//3 UI Locks support
 	//Add a _uilocks map for each of the UI view on screen, for managing UI action locks for its regions
 	//Also it will add in a _all region for locking the whole UI
+	//Usage: 
+	//		1. lockUI/unlockUI([region], [caller])
+	//		2. isUILocked([region])
 	_.extend(Backbone.Marionette.View.prototype, {
 		//only for layouts
 		initUILocks: function(){
@@ -75,6 +83,49 @@
 		}
 		//=====Internal Workers=====				
 
+	});
+
+	//4 Pagination - extend the Backbone.Collection to let it have this ability
+	//(Warning: To make the code simpler, we put a special parse() in data-units.js for collections to save
+	//			the fetched result without feeding all of them to the model factory. (only in mode:client)
+	//			This way, we don't have to make another 'window' collection for updating the UI.
+	//)
+	//+Config: {
+	//	mode: client/server - non 'server' value means 'client' mode.
+	//	cache: false(default)/true (completely swap the content of this collection or incrementally feed it)
+	//	pageSize: (default: 25) - 0 means showing all
+	//	params: { optionally control the server params used.
+	//		offset: 'page', 
+	//		size: 'per_page'
+	//	}
+	//}
+	//+Properties: { should be Read-Only, can only be changed from calling the functions below.
+	//	currentPage:
+	//	totalRecords: in cached server mode, this can be null
+	//}
+	//+Func: { 
+	//	load: instead of calling fetch directly, we use load(options) to do some preprocess.
+	//		+options: apart from the normal options to be passed to fetch() we add
+	//				page: number or nothing -> load specific page or page 1
+	//			
+	//	nextPage: load currentPage + 1;
+	//	prevPage: only works if 'cache' is set to false;
+	//}
+	//Note that: at any given time, you can still use fetch(), using load() will always enforce a paginated fetch()
+	_.extend(Backbone.Collection.prototype, {
+		enablePagination: function(){
+			this.pagination = _.extend({
+				mode: 'client',
+				cache: false, //this means the collection is not used to cache previously loaded records. However, we do save the fetched result in client mode.
+				pageSize: 25,
+				$offset: 'page',
+				$size: 'per_page'
+			}, this.pagination);
+		},
+		load: function(options){
+			var page = options.page || 1;
+
+		}
 	});
 
 })(window, Swag, Backbone, Handlebars);

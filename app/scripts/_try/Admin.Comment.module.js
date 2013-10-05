@@ -20,7 +20,17 @@
                 	label: "Content Body",
                 }
             },
-		}
+		},
+
+        // dataUnitOpt: {
+        //     backboneOpts: {
+        //         collection: {
+        //             pagination: {
+        //                 mode: 'server'
+        //             }
+        //         }
+        //     }
+        // }
 	});
 
 })(Application);

@@ -64,6 +64,9 @@
 			module.map[name].Collection = Backbone.Collection.extend(_.extend({
 				model: module.map[name].Model,
 				url: dataURL,
+				initialize: function(options){
+					this.enablePagination(); //see - infrustructure/base-lib-fix.js
+				},
 		        parse: function(response) {
 		            return response.payload; //payload is the default server data field.
 		        }
