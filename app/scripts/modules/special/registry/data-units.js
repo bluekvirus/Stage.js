@@ -68,6 +68,13 @@
 					this.enablePagination(); //see - infrustructure/base-lib-fix.js
 				},
 		        parse: function(response) {
+		        	if(this.pagination && this.pagination.mode === 'client'){
+		        		this._cachedResponse = response.payload || [];
+		        		this.totalRecords = this._cachedResponse.length;
+		        		var page = this.currentPage || 1;
+		        		return this._cachedResponse.slice((page-1) * this.pagination.pageSize, page * this.pagination.pageSize); //return only one page of data.
+		        	}
+		        	this.totalRecords = response.total; //in cached server mode (e.g like 'infinity', we don't use this totalRecord at all, so the server doesn't have to return it)
 		            return response.payload; //payload is the default server data field.
 		        }
 			}, options.backboneOpts && options.backboneOpts.collection));

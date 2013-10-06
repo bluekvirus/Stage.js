@@ -116,15 +116,44 @@
 		enablePagination: function(){
 			this.pagination = _.extend({
 				mode: 'client',
-				cache: false, //this means the collection is not used to cache previously loaded records. However, we do save the fetched result in client mode.
-				pageSize: 25,
-				$offset: 'page',
-				$size: 'per_page'
+				cache: false, //this means the collection is not used to cache previously loaded records. However, we do save the fetched result in client mode. see - data-units.js
+				pageSize: 2,
 			}, this.pagination);
 		},
-		load: function(options){
-			var page = options.page || 1;
+		load: function(page, options){
+			if(_.isObject(page)){
+				options = page || {};
+			}
+			options = options || {};
 
+			if(this.pagination){
+				page = (_.isNumber(page) && page) || 1;
+				if(this.currentPage === page)
+					return;
+
+				this.currentPage = page;
+				if(this.pagination.mode === 'client'){
+					if(!this._cachedResponse || options.reset){
+						//go fetch the records again.
+						this.fetch(options);
+					}else {
+						//go to page
+						this.set(this._cachedResponse.slice((this.currentPage-1) * this.pagination.pageSize, this.currentPage * this.pagination.pageSize), {remove: !this.pagination.cache});
+					}
+				}else {
+					//server mode
+					options.data = _.extend(options.data || {}, {
+						page: this.currentPage,
+						per_page: this.pagination.pageSize
+					});
+					_.extend(options, {
+						remove: !this.pagination.cache
+					});
+					this.fetch(options);
+				}
+			}else {
+				this.fetch(options); //ignore pagination.
+			}
 		}
 	});
 

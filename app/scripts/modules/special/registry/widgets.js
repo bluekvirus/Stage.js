@@ -20,6 +20,7 @@
 	};
 
 	manager.get = function(name, options){
+		if(!manager[name]) throw new Error('DEV::Widget.Registry::The widget ' + name + ' you required is not found...');
 		return manager[name](options); //more options to pass into the widget factory.
 	}
 
@@ -28,7 +29,7 @@
 	manager.create = function(name, options){
 		if(manager[name])
 			return new (manager.get(name))(options);
-		app.error('Widget Registry Error', 'widget ', name, ' not found...');
+		throw new Error('DEV::Widget.Registry::The widget ' + name + ' you required is not found...');
 	}
 
 })(Application);

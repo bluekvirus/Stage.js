@@ -76,7 +76,9 @@ Application.Widget.register('DataGrid', function(){
         regions: {
             header: '.datagrid-header-container',
             body: '.datagrid-body-container',
-            footer: '.datagrid-footer-container'
+            footer: '.datagrid-footer-container',
+            info: '.datagrid-footer-container [region="footer-info-bar"]',
+            paginator: '.datagrid-footer-container [region="footer-paginator"]'
         },
 
         cells: {},//extend cells in .extension.js (Do NOT DELETE this empty block here!!)
@@ -84,9 +86,10 @@ Application.Widget.register('DataGrid', function(){
 
             //a. columns, mode, parent container $el:
             this.columns = options.columns || this.columns;
-            this.mode = options.mode; //subDoc or refDoc
+            this.mode = options.mode; //subDoc or refDoc, not pagination mode!! which is set in the collections.
             this.parentCt = options.parentCt; //for event relay and collaboration with sibling wigets.
             this.formWidget = options.formWidget || this.formWidget;// needed for editing/create records.
+
 
             var that = this;
             //b. cells
@@ -118,7 +121,7 @@ Application.Widget.register('DataGrid', function(){
             });
 
             //******************************************************************************
-            //c.2 create the footer UI view objects
+            //c.2 create the footer UI view objects (paginator, info bar...)
             this._createFooter();
 
             //d. listen to the 'mod_backgrid''s render event for once and plugin our sorter & filters.
@@ -169,6 +172,8 @@ Application.Widget.register('DataGrid', function(){
 
         _createFooter: function(){
             if(!this.isRefMode()) return;
+
+            //+ The INFO Bar.
             this.infoBar = new Backgrid.Extension.InfoBar({
                 model: new Backbone.Model({
                     lastSynced: new Date().toString(),
@@ -187,6 +192,14 @@ Application.Widget.register('DataGrid', function(){
                     'lastSynced': new Date().toString()
                 });
             }, this));
+
+            //+ Paginator UI.
+            if(this.collection.pagination && !this.collection.pagination.cache){
+                //if the collection has pagination enabled and it is not in the 'infinite' scrolling mode
+                this.paginatorUI = new Backgrid.Extension.Paginator({
+                    targetCollection: this.collection
+                });
+            }
         },
         //====================================
 
@@ -197,10 +210,11 @@ Application.Widget.register('DataGrid', function(){
             //this will trigger the 'reset' event which in turn will trigger 'backgrid:rendered' on backgrid
             this.body.show(this.grid);
             if (this.isRefMode()){
-                this.footer.show(this.infoBar); 
+                this.info.show(this.infoBar); 
             	this.grid.$el.trigger('event_reloadRecords');
             }
-
+            if(this.paginatorUI)
+                this.paginator.show(this.paginatorUI);
             //Do **NOT** register any event listeners here.
             //It might get registered again and again. 
         },
@@ -356,7 +370,7 @@ Application.Widget.register('DataGrid', function(){
         reloadRecords: function(e) {
             if(e) e.stopPropagation();
             if (this.isRefMode()) {
-                this.collection.fetch({reset: true});
+                this.collection.load({reset: true});
             }
         },        
         closeForm: function(e, $form){
@@ -418,7 +432,11 @@ Template.extend(
 			'</div>',
 		'</div>',
 		'<div class="datagrid-body-container"></div>',
-		'<div class="datagrid-footer-container"></div>'
+		'<div class="datagrid-footer-container">',
+            '<div region="footer-info-bar"></div>',
+            '<div region="footer-paginator"></div>',
+            
+        '</div>'
 	]
 );
 
@@ -440,10 +458,12 @@ Template.extend(
             '<small>Last Synchronized: <span class="sync-time-indicator">{{lastSynced}}</span></small>',
         '</div>',
         '<div class="info-bar-count pull-left">',
-            '<small>Record Count: <span class="total-visible-record">{{recordCount}}</span></small>',
+            '<small>Record Shown: <span class="total-visible-record">{{recordCount}}</span></small>',
         '</div>'
     ]
 );
+/*=================Paginator==================*/
+Backgrid.Extension.Paginator = Application.Widget.get('Paginator');
 
 /*===================Overriden Classes==============*/
 Backgrid.Extension.CustomRow = Backgrid.Row.extend({
