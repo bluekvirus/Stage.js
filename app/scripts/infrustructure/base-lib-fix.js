@@ -94,7 +94,7 @@
 	//	mode: client/server - non 'server' value means 'client' mode.
 	//	cache: false(default)/true (completely swap the content of this collection or incrementally feed it)
 	//	pageSize: (default: 25) - 0 means showing all
-	//	params: { optionally control the server params used.
+	//	params: { optionally control the server params used. //Hard coded atm...
 	//		offset: 'page', 
 	//		size: 'per_page'
 	//	}
@@ -111,15 +111,66 @@
 	//	nextPage: load currentPage + 1;
 	//	prevPage: only works if 'cache' is set to false;
 	//}
+	//+Events 
+	//	1. pagination:updatePageNumbers - fired upon 'sync' after 'reset';
+	//	2. pagination:updatePageNumbers:clientMode - fired upon 'sync' after 'add' and 'destroy' after 'remove', only in non-cached client mode.
 	//Note that: at any given time, you can still use fetch(), using load() will always enforce a paginated fetch()
 	_.extend(Backbone.Collection.prototype, {
+
+		//To opt-in the pagination with any Backbone.Collection
+		//Invoke this function in your collection definition's initialize()
+		//Warning:: your parse() method must be overridden to provide support to the load() method below, see collection's parse() method override in - special/registry/data-units.js
+		//You don't have to do anything if your collection is created by the DataUnits special registry module.
 		enablePagination: function(){
 			this.pagination = _.extend({
 				mode: 'client',
 				cache: false, //this means the collection is not used to cache previously loaded records. However, we do save the fetched result in client mode. see - data-units.js
-				pageSize: 2,
+				pageSize: 10,
 			}, this.pagination);
+
+			//we need to +/- related records from _cachedResponse array as well.
+			function signalClientModePageNumberUpdate(collection){
+				collection.totalRecords = collection._cachedResponse.length;
+				collection.trigger('pagination:updatePageNumbers:clientMode');
+			}
+			var eWhiteList = {
+				'sync': true,
+				'destroy': true
+			};
+			this.on('all', function(event, target){
+				if(!eWhiteList[event]) return;
+				if(this.pagination.cache) return;
+				if(this === target){
+					//Note that this === target means the 'sync' detected is after 'reset'. This is true for both client and server mode.
+					this.trigger('pagination:updatePageNumbers');
+					//1. we are only interested in sync after add and destroy after remove.
+					return;
+				}
+				if(this.pagination.mode !== 'client') return;
+				//2. we only need to do this for non-cached client mode, since in other modes, the page numbers are either not needed or updated by server's replay about total records.
+				switch(event){
+					case 'sync':
+						this._cachedResponse.push(target.attributes);
+						signalClientModePageNumberUpdate(this);
+						break;
+					case 'destroy':
+						console.log('-', target.id);
+						for (var i = this._cachedResponse.length - 1; i >= 0; i--) {
+							if(this._cachedResponse[i][target.idAttribute] === target.id){
+								this._cachedResponse.splice(i, 1);
+								break;
+							}
+						};
+						signalClientModePageNumberUpdate(this);
+						break;
+					default:
+						break;
+				}
+
+			});
 		},
+
+		//A version of fetch() with pagination config applied. Always use load if possible.
 		load: function(page, options){
 			if(_.isObject(page)){
 				options = page || {};
@@ -152,7 +203,7 @@
 					this.fetch(options);
 				}
 			}else {
-				this.fetch(options); //ignore pagination.
+				this.fetch(options); //ignore pagination. normal fetch();
 			}
 		}
 	});

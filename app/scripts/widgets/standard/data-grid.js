@@ -194,7 +194,7 @@ Application.Widget.register('DataGrid', function(){
             }, this));
 
             //+ Paginator UI.
-            if(this.collection.pagination && !this.collection.pagination.cache){
+            if(this.collection.pagination){
                 //if the collection has pagination enabled and it is not in the 'infinite' scrolling mode
                 this.paginatorUI = new Backgrid.Extension.Paginator({
                     targetCollection: this.collection

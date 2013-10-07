@@ -22,15 +22,14 @@
             },
 		},
 
-        // dataUnitOpt: {
-        //     backboneOpts: {
-        //         collection: {
-        //             pagination: {
-        //                 mode: 'server'
-        //             }
-        //         }
-        //     }
-        // }
+        dataUnitOpt: {
+            collection: {
+                pagination: {
+                    //mode: 'server',
+                    //cache: true
+                }
+            }
+        }
 	});
 
 })(Application);

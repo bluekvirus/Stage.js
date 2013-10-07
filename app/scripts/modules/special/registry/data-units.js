@@ -15,10 +15,9 @@
  * app.DataUnits.init([...]) or ('...single name...', options)
  * 		- options: {
  * 			modelOnly: false - only create model for given name(s).
- * 			backboneOpts: {
- * 				model: {},
- * 				collection: {}
- * 			} - for models and collections creation using pre-set options. see lib [Backbone.js, Backbone.Paginator.js]
+ * 			model: {}, //backboneOpts - for models and collections creation using pre-set options. see lib [Backbone.js, Backbone.Paginator.js]
+ * 			collection: {} //...
+ * 			 
  * 		}
  * app.DataUnits.get('...data object name...').Model or .Collection (as designed, it will also infer a hidden creation using app config defaults)
  *
@@ -55,7 +54,7 @@
 		            }
 		            return response;
 		        }				
-			}, options.backboneOpts && options.backboneOpts.model))
+			}, options && options.model))
 		};
 		//2. define collection and data url
 		var dataURL = ((app.config.apiBase && app.config.apiBase.data) || '/data') + '/' + name;
@@ -68,16 +67,23 @@
 					this.enablePagination(); //see - infrustructure/base-lib-fix.js
 				},
 		        parse: function(response) {
+		        	if(!(response && response.payload)) throw new Error('DEV::DataUnits::Server responded with no result collection in [payload]');
+
+		        	//////////For Pagination Support - See base-lib-fix.js //////////
 		        	if(this.pagination && this.pagination.mode === 'client'){
 		        		this._cachedResponse = response.payload || [];
 		        		this.totalRecords = this._cachedResponse.length;
 		        		var page = this.currentPage || 1;
-		        		return this._cachedResponse.slice((page-1) * this.pagination.pageSize, page * this.pagination.pageSize); //return only one page of data.
+		        		return response.payload.slice((page-1) * this.pagination.pageSize, page * this.pagination.pageSize); 
+		        		//return only one page of data if the collection is current set to paginate in client mode.
 		        	}
-		        	this.totalRecords = response.total; //in cached server mode (e.g like 'infinity', we don't use this totalRecord at all, so the server doesn't have to return it)
+		        	this.totalRecords = response.total; 
+		        	//Note that, in cached server mode (e.g like 'infinity', we don't use this totalRecord at all, so the server doesn't have to return it)
+		        	/////////////////////////////////////////////////////////////////
+
 		            return response.payload; //payload is the default server data field.
 		        }
-			}, options.backboneOpts && options.backboneOpts.collection));
+			}, options && options.collection));
 		}else {
 			module.map[name].Model = module.map[name].Model.extend({
 				urlRoot: dataURL, //this is to ignore collection's url, since it doesn't belong to one.
