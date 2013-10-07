@@ -194,7 +194,7 @@ Application.Widget.register('DataGrid', function(){
             }, this));
 
             //+ Paginator UI.
-            if(this.collection.pagination){
+            if(this.collection.pagination && !this.collection.pagination.cache){
                 //if the collection has pagination enabled and it is not in the 'infinite' scrolling mode
                 this.paginatorUI = new Backgrid.Extension.Paginator({
                     targetCollection: this.collection
@@ -209,12 +209,13 @@ Application.Widget.register('DataGrid', function(){
             //if it is not in subDoc mode, we let the collection to fetch data itself.
             //this will trigger the 'reset' event which in turn will trigger 'backgrid:rendered' on backgrid
             this.body.show(this.grid);
+            if(this.paginatorUI)
+                this.paginator.show(this.paginatorUI);
+
             if (this.isRefMode()){
                 this.info.show(this.infoBar); 
             	this.grid.$el.trigger('event_reloadRecords');
             }
-            if(this.paginatorUI)
-                this.paginator.show(this.paginatorUI);
             //Do **NOT** register any event listeners here.
             //It might get registered again and again. 
         },

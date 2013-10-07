@@ -121,12 +121,12 @@
 		//Invoke this function in your collection definition's initialize()
 		//Warning:: your parse() method must be overridden to provide support to the load() method below, see collection's parse() method override in - special/registry/data-units.js
 		//You don't have to do anything if your collection is created by the DataUnits special registry module.
-		enablePagination: function(){
+		enablePagination: function(config){
 			this.pagination = _.extend({
 				mode: 'client',
 				cache: false, //this means the collection is not used to cache previously loaded records. However, we do save the fetched result in client mode. see - data-units.js
 				pageSize: 10,
-			}, this.pagination);
+			}, this.pagination, config);
 
 			//we need to +/- related records from _cachedResponse array as well.
 			function signalClientModePageNumberUpdate(collection){
@@ -179,8 +179,7 @@
 
 			if(this.pagination){
 				page = (_.isNumber(page) && page) || 1;
-				if(this.currentPage === page)
-					return;
+				//Note that we don't skip fetch when (this.currentPage === page), coz the page would be the same during a 'UI module' swap/navigate, like in the Admin context.
 
 				this.currentPage = page;
 				if(this.pagination.mode === 'client'){

@@ -187,6 +187,7 @@
 				if(module.type === 'table'){
 					//table module
 					module.collection = new module.Collection();
+					module.collection.enablePagination({mode: 'server'});
 					module.Widgets.DataGrid = module.Widgets.DataGrid.extend({columns: config.columns, formWidget: module.Widgets.Form}); //+ columns, form to datagrid
 				}else {
 					//complex module

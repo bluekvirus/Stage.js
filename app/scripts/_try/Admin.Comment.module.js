@@ -20,16 +20,7 @@
                 	label: "Content Body",
                 }
             },
-		},
-
-        dataUnitOpt: {
-            collection: {
-                pagination: {
-                    //mode: 'server',
-                    //cache: true
-                }
-            }
-        }
+		}
 	});
 
 })(Application);
