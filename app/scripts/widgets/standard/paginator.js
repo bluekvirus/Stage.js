@@ -24,8 +24,10 @@ Application.Widget.register('Paginator', function(){
 			this.listenTo(this.targetCollection, 'pagination:updatePageNumbers pagination:updatePageNumbers:clientMode', function(){
 				//re-calculate the page numbers upon +/- records.
 				var pageRange = _.range(1, 1+ Math.ceil(this.targetCollection.totalRecords/this.targetCollection.pagination.pageSize));
+				pageRange[this.targetCollection.currentPage-1] = {current: this.targetCollection.currentPage};
 				this.model = this.model.set({
-					pages: pageRange
+					pages: pageRange,
+					current: this.targetCollection.currentPage
 				});
 				//a little page displaying fix here.
 				if(this.targetCollection.currentPage > pageRange.length)
@@ -55,7 +57,20 @@ Application.Widget.register('Paginator', function(){
 			goToPage: function($action){
 				var page = Number($action.attr('page'));
 				this.targetCollection.load(page);
+			},
+
+			prevPage: function($action){
+				var page = this.targetCollection.currentPage - 1;
+				if(page > 0)
+					this.targetCollection.load(page);
+			},
+
+			nextPage: function($action){
+				var page = this.targetCollection.currentPage + 1;
+				if(page <= this.model.get('pages').length)
+					this.targetCollection.load(page);
 			}
+
 		}
 	});
 
@@ -65,10 +80,14 @@ Application.Widget.register('Paginator', function(){
 
 Template.extend('widget-paginator-tpl', [
 	'<ul>',
-		'<li><a action="prevPage">«</a></li>',
+		'<li {{#is current 1}}class="disabled"{{/is}}><a action="prevPage">«</a></li>',
 		'{{#each pages}}',
-			'<li><a action="goToPage" page={{this}}>{{this}}</a></li>',
+			'{{#if this.current}}',
+				'<li class="active"><a action="goToPage" page={{this.current}}>{{this.current}}</a></li>',
+			'{{else}}',
+				'<li><a action="goToPage" page={{this}}>{{this}}</a></li>',
+			'{{/if}}',
 		'{{/each}}',
-		'<li><a action="nextPage">»</a></li>',
+		'<li {{#is current pages.length}}class="disabled"{{/is}}><a action="nextPage">»</a></li>',
 	'</ul>'
 ]);

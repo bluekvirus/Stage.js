@@ -148,7 +148,7 @@
 				},
 				actions: {
 					showNewModelForm: function($action){
-						if(!this.lockUI('list')) return; //lock the list region
+						if(!this.lockUI('list') || $action.hasClass('disabled')) return; //lock the list region
 
 						this.utils.clearModelSelection();//clear model listing selection highlight first;
 						this.form.show(new module.View.ModelForm({

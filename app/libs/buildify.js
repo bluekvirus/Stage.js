@@ -168,7 +168,7 @@ buildify.task({
 			'underscore.string',
 			'backbone', //include json2/3
 			'backbone-validation',
-			'backbone.paginator',
+			//'backbone.paginator',
 			'marionette',
 			'handlebars.js',
 			'swag',
@@ -201,7 +201,7 @@ buildify.task({
 			'underscore.string',
 			'backbone', 
 			'backbone-validation',
-			'backbone.paginator',
+			//'backbone.paginator',
 			'marionette',
 			'handlebars.js',
 			'swag',
