@@ -21,7 +21,7 @@ Application.Widget.register('Paginator', function(){
 
 			this.model = new Backbone.Model();
 			this.listenTo(this.model, 'change', this.render);
-			this.listenTo(this.targetCollection, 'pagination:updatePageNumbers pagination:updatePageNumbers:clientMode', _.bind(function(){
+			this.listenTo(this.targetCollection, 'pagination:updatePageNumbers pagination:updatePageNumbers:clientMode', function(){
 				//re-calculate the page numbers upon +/- records.
 				var pageRange = _.range(1, 1+ Math.ceil(this.targetCollection.totalRecords/this.targetCollection.pagination.pageSize));
 				this.model = this.model.set({
@@ -30,11 +30,11 @@ Application.Widget.register('Paginator', function(){
 				//a little page displaying fix here.
 				if(this.targetCollection.currentPage > pageRange.length)
 					this.targetCollection.load(pageRange.length);//reset to the last page.
-			}, this));
+			});
 
-			_.each(this.actions, _.bind(function(func, action){
+			_.each(this.actions, function(func, action){
 				this.actions[action] = _.bind(func, this);
-			}, this));
+			}, this);
 		},
 
 		events: {

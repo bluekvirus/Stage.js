@@ -114,6 +114,7 @@
 	//+Events 
 	//	1. pagination:updatePageNumbers - fired upon 'sync' after 'reset';
 	//	2. pagination:updatePageNumbers:clientMode - fired upon 'sync' after 'add' and 'destroy' after 'remove', only in non-cached client mode.
+	//	3. pagination:pageChanged - fired upon each time the collection change to hold another page of data.
 	//Note that: at any given time, you can still use fetch(), using load() will always enforce a paginated fetch()
 	_.extend(Backbone.Collection.prototype, {
 
@@ -189,15 +190,20 @@
 					}else {
 						//go to page
 						this.set(this._cachedResponse.slice((this.currentPage-1) * this.pagination.pageSize, this.currentPage * this.pagination.pageSize), {remove: !this.pagination.cache});
+						this.trigger('pagination:pageChanged');
 					}
 				}else {
 					//server mode
 					options.data = _.extend(options.data || {}, {
 						page: this.currentPage,
-						per_page: this.pagination.pageSize
+						per_page: this.pagination.pageSize,
 					});
+					var that = this;
 					_.extend(options, {
-						remove: !this.pagination.cache
+						remove: !this.pagination.cache,
+						success: function(){
+							that.trigger('pagination:pageChanged');
+						}
 					});
 					this.fetch(options);
 				}

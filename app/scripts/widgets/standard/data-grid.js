@@ -125,16 +125,16 @@ Application.Widget.register('DataGrid', function(){
             this._createFooter();
 
             //d. listen to the 'mod_backgrid''s render event for once and plugin our sorter & filters.
-            this.grid.listenTo(this.grid,'backgrid:rendered', _.bind(function(){
+            this.listenTo(this.grid,'backgrid:rendered', function(){
             	//the grid's global filter (top-right)
             	this._hookupGlobalFilter();
             	this._hookupColumnSorter();
-            }, this));
+            });
 
             this.listenTo(this.grid, 'show', this.afterRender);
             
             //e. hook up with 'backgrid:refresh' see this._hookupColumnSorter()
-            this.grid.listenTo(this.grid.collection,'backgrid:refresh', this.afterRefresh/*triggered by sort, reset event (see Backgrid.Body)*/);
+            this.listenTo(this.grid.collection,'backgrid:refresh', this.afterRefresh/*triggered by sort, reset event (see Backgrid.Body)*/);
             /*WARNING:: a fetch() will screw up the UI tableSorter, need to fire update/updateAll event*/        
         },
 
@@ -165,9 +165,9 @@ Application.Widget.register('DataGrid', function(){
         		sortReset: 'true'
         	});
         	//update the sorter if the data in the table are changed
-            this.listenTo(this.grid.collection, 'backgrid:refresh', _.bind(function(){
+            this.listenTo(this.grid.collection, 'backgrid:refresh pagination:pageChanged', function(){
             	this._applyToNewSortData();
-            }, this));        	
+            });     	
         },
 
         _createFooter: function(){
@@ -181,17 +181,17 @@ Application.Widget.register('DataGrid', function(){
                 })
             });
             //Set model val to trigger auto-re-render on 'InfoBar'            
-            this.listenTo(this.collection, 'add remove', _.bind(function(e){
+            this.listenTo(this.collection, 'add remove', function(e){
                 this.infoBar.model.set({
                     'recordCount': this.collection.length
                 });
-            }, this));
-            this.listenTo(this.collection, 'sync destroy', _.bind(function(e){
+            });
+            this.listenTo(this.collection, 'sync destroy', function(e){
                 this.infoBar.model.set({
                     'recordCount': this.collection.length,
                     'lastSynced': new Date().toString()
                 });
-            }, this));
+            });
 
             //+ Paginator UI.
             if(this.collection.pagination && !this.collection.pagination.cache){
