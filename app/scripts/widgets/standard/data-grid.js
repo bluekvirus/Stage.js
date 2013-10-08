@@ -196,7 +196,7 @@ Application.Widget.register('DataGrid', function(){
             //+ Paginator UI.
             if(this.collection.pagination && !this.collection.pagination.cache){
                 //if the collection has pagination enabled and it is not in the 'infinite' scrolling mode
-                this.paginatorUI = new Backgrid.Extension.Paginator({
+                this.paginatorUI = Application.Widget.create('Paginator', {
                     targetCollection: this.collection
                 });
             }
@@ -443,7 +443,7 @@ Template.extend(
 
 /*===================Info Bar=====================*/
 Backgrid.Extension.InfoBar = Backbone.Marionette.ItemView.extend({
-    //show some info and prepare a space for paginator
+    //show some info
     className: 'datagrid-infobar clearfix',
     template: '#widget-tpl-grid-info-bar',
     initialize: function(options){
@@ -463,8 +463,6 @@ Template.extend(
         '</div>'
     ]
 );
-/*=================Paginator==================*/
-Backgrid.Extension.Paginator = Application.Widget.get('Paginator');
 
 /*===================Overriden Classes==============*/
 Backgrid.Extension.CustomRow = Backgrid.Row.extend({
