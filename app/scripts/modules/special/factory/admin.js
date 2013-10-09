@@ -80,9 +80,11 @@
 ;(function(app, _, Backbone){
 
 	var Factory = app.Factory || app.module('Factory');
-	var Admin = app.Context.Admin;
+	var Admin = app.Context.get('Admin');
 
-	Factory.AdminModule = {
+	if(!Admin.factory) throw new Error('DEV::Factory.Admin::Context Admin does not have a factory name defined...');
+
+	var factory = _.extend(app.module('Factory.' + _.string.classify(Admin.factory)), {
 
 		get: function(name){
 			return Admin[name];
@@ -232,7 +234,9 @@
 			})(module, config, options);
 		},
 
-	};
+	});
+
+	Admin.factory = factory; //so whenever an Admin context module needs to be created by this factory, we don't need to refer to the app.Facotry module
 
 })(Application, _, Backbone);
 

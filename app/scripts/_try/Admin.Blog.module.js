@@ -4,10 +4,10 @@
 
 ;(function(app){
 
-	app.Factory.AdminModule.create({
+	app.Context.get('Admin').factory.create({
 		name: 'Blog',
         //type: 'complex',
-		menuPath: 'Test -> Blog',
+		menuPath: 'Test->Blog',
         actions: ['edit', 'delete'],
 		fields: {
             title: {

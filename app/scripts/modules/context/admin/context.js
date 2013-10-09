@@ -11,6 +11,7 @@
 
 		return {
 			requireLogin: true,
+			factory: 'AdminModule',
 			defaults: {
 				region: 'content',
 				module: 'Dashboard'

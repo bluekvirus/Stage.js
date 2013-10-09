@@ -4,10 +4,10 @@
 
 ;(function(app){
 
-	app.Factory.AdminModule.create({
+	app.Context.get('Admin').factory.create({
 		name: 'Comment',
         //type: 'complex',
-		menuPath: 'Test -> Comments',
+		menuPath: 'Test->Comments',
 		fields: {
             title: {
                 editor: "Text",
