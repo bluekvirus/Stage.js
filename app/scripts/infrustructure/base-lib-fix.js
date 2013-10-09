@@ -29,8 +29,14 @@
  * Usage:
  * 		1. add action tags to html template -> e.g <div ... action="method name"></div> 
  * 		2. implement the action method name in UI definition body's actions{} object. 
- * 		functions under actions{} are bind to 'this' scope (the view object).
+ * 		functions under actions{} are invoked with 'this' as scope (the view object).
  * 		functions under actions{} are called with a single param ($action) which is a jQuery object referencing the action tag.
+ *
+ * Note:
+ * We removed _.bind() altogether from the enableActionTags() function and use Function.apply(scope, args) instead for listener invocation to avoid actions{} methods binding problem.
+ * Functions under actions will only be bound ONCE to the first instance of the view definition, since _.bind() can not rebind functions that were already bound, other instances of
+ * the view prototype will have all the action listeners bound to the wrong view object. This holds true to all nested functions, if you assign the bound version of the function back to itself
+ * e.g. this.nest.func = _.bind(this.nest.func, this); - Do NOT do this in initialize()/constructor()!! Use Function.apply() for invocation instead!!!
  */
  	_.extend(Backbone.Marionette.View.prototype, {
 
@@ -39,29 +45,18 @@
  			//add general action tag clicking event and listener
  			_.extend(this.events, {
  				'click [action]': '_doAction'
- 			});
- 			this._doAction = function(e){
-				e.stopPropagation(); //Important::This is to prevent confusing the parent view's action tag listeners.
-				var $el = $(e.currentTarget);
-				var action = $el.attr('action') || 'UNKNOWN';
-				var doer = this._actions[action];
-				if(doer) {
-					doer($el);
-				}else throw new Error('DEV::' + (uiName || 'UI Component') + '::You have not yet implemented this action - [' + action + ']');
-			};
-			this.actions = this.actions || {};
-			//bind all action listeners funcs to this producing _actions 
-			//Warning:: By creating a new object to hold all the binded listeners is to avoid the 'Can NOT rebind' problem with _.bind()
-			//This is extremely important, since all 'this.func' in an initialize function refer to the prototype.func, if this.actions gets assigned
-			//to be the binded version, other view instances of the same prototype can NOT bind the actions to themselves.
-			_.each(['actions'], function(funcGroup){
-				this['_' + funcGroup] = {};
-				_.each(this[funcGroup], function(func, name){
-					this['_' + funcGroup][name] = _.bind(func, this);
-				}, this);
-			}, this);			
- 		}
+ 			}); 					
+ 		},
 
+		_doAction: function(e){
+			e.stopPropagation(); //Important::This is to prevent confusing the parent view's action tag listeners.
+			var $el = $(e.currentTarget);
+			var action = $el.attr('action') || 'UNKNOWN';
+			var doer = this.actions[action];
+			if(doer) {
+				doer.apply(this, [$el]); //use 'this' view object as scope when applying the action listeners.
+			}else throw new Error('DEV::' + (uiName || 'UI Component') + '::You have not yet implemented this action - [' + action + ']');
+		},		
  	});
 
 /**
