@@ -198,7 +198,10 @@
                     defaults: {
                         _options: this._options
                     }
-                })
+                }),
+                parse: function(res){
+                    return res.files; //Warning:: this is the collection that accepts the server returned file descriptions. Update this if jquery-file-upload-middleware changes the file listing reply.
+                }
             });
         },
 

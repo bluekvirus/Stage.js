@@ -37,7 +37,7 @@
             roles: {
                 editor: "CUSTOM_PICKER",
                 editorOpt: {
-                    dataSrc: "Role",
+                    dataSrc: "Admin.Role",
                     dndNS: "user-roles",
                     valueField: "name"
                 },
