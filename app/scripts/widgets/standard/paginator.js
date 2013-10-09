@@ -34,23 +34,7 @@ Application.Widget.register('Paginator', function(){
 					this.targetCollection.load(pageRange.length);//reset to the last page.
 			});
 
-			_.each(this.actions, function(func, action){
-				this.actions[action] = _.bind(func, this);
-			}, this);
-		},
-
-		events: {
-			'click [action]': '_doAction'
-		},
-		_doAction: function(e){
-			//e.preventDefault();
-			e.stopPropagation();
-
-			var $el = $(e.currentTarget);
-			var action = $el.attr('action');
-			if(!this.actions[action])
-				throw new Error('DEV::Widget.Paginator::Action ' + action + ' is not yet implemented!');
-			this.actions[action]($el);
+			this.enableActionTags('Widget.Paginator');
 		},
 
 		actions: {

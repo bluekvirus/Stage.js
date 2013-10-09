@@ -2,10 +2,14 @@
  * ==========================
  * Base Libs Warmup & Hacks
  * ==========================
+ * lib activation:
  * 1. +Swag (Handlebars Helpers)
  * 2. +Handlebars to Backbone.Marionette
- * 3. +UI Locking support to view regions (without Application scope total lockdown atm...)
- * 4. +Pagination ability to Backbone.Collection
+ *
+ * component opt-ins: (use in component initialize func)
+ * 3. +Action Tag listener mechanisms.
+ * 4. +UI Locking support to view regions (without Application scope total lockdown atm...)
+ * 5. +Pagination ability to Backbone.Collection
  *
  * @author Tim.Liu
  * @create 2013.09.11
@@ -20,15 +24,58 @@
 	  return Handlebars.compile(rawTemplate);
 	};
 
-	//3 UI Locks support
-	//Add a _uilocks map for each of the UI view on screen, for managing UI action locks for its regions
-	//Also it will add in a _all region for locking the whole UI
-	//Usage: 
-	//		1. lockUI/unlockUI([region], [caller])
-	//		2. isUILocked([region])
+/**
+ * 3 Action Tag listener hookups +actions{} +utils{}
+ * Usage:
+ * 		1. add action tags to html template -> e.g <div ... action="method name"></div> 
+ * 		2. implement the action method name in UI definition body's actions{} object. 
+ * 		functions under actions{} are bind to 'this' scope (the view object).
+ * 		functions under actions{} are called with a single param ($action) which is a jQuery object referencing the action tag.
+ * Plus:
+ * 		use the utils{} object for grouping shared utils for action implementations. 
+ * 		the functions defined under this object will also be bind to 'this' scope (the view object).
+ */
+ 	_.extend(Backbone.Marionette.View.prototype, {
+
+ 		enableActionTags: function(uiName){ //the uiName is just there to output meaningful dev msg if some actions haven't been implemented.
+ 			this.events = this.events || {};
+ 			//add general action tag clicking event and listener
+ 			_.extend(this.events, {
+ 				'click [action]': '_doAction'
+ 			});
+ 			this._doAction = function(e){
+				e.stopPropagation(); //Important::This is to prevent confusing the parent view's action tag listeners.
+				var $el = $(e.currentTarget);
+				var action = $el.attr('action') || 'UNKNOWN';
+				var doer = this.actions[action];
+				if(doer) {
+					doer($el);
+				}else throw new Error('DEV::' + (uiName || 'UI Component') + '::You have not yet implemented this action - [' + action + ']');
+			};
+			this.actions = this.actions || {};
+			this.utils = this.utils || {};
+			//bind all action listeners and util funcs to this.
+			var that = this;
+			_.each(['actions', 'utils'], function(funcGroup){
+				_.each(that[funcGroup], function(func, name){
+					that[funcGroup][name] = _.bind(func, that);
+				});
+			});			
+ 		}
+
+ 	});
+
+/**
+ * 4 UI Locks support
+ * Add a _uilocks map for each of the UI view on screen, for managing UI action locks for its regions
+ * Also it will add in a _all region for locking the whole UI
+ * Usage: 
+ * 		1. lockUI/unlockUI([region], [caller])
+ * 		2. isUILocked([region])
+ */
 	_.extend(Backbone.Marionette.View.prototype, {
 		//only for layouts
-		initUILocks: function(){
+		enableUILocks: function(){
 			if(this.regions){
 				this._uilocks = _.reduce(this.regions, function(memo, val, key, list){
 					memo[key] = false;
@@ -85,37 +132,39 @@
 
 	});
 
-	//4 Pagination - extend the Backbone.Collection to let it have this ability
-	//(Warning: To make the code simpler, we put a special parse() in data-units.js for collections to save
-	//			the fetched result without feeding all of them to the model factory. (only in mode:client)
-	//			This way, we don't have to make another 'window' collection for updating the UI.
-	//)
-	//+Config: {
-	//	mode: client/server - non 'server' value means 'client' mode.
-	//	cache: false(default)/true (completely swap the content of this collection or incrementally feed it)
-	//	pageSize: (default: 25) - 0 means showing all
-	//	params: { optionally control the server params used. //Hard coded atm...
-	//		offset: 'page', 
-	//		size: 'per_page'
-	//	}
-	//}
-	//+Properties: { should be Read-Only, can only be changed from calling the functions below.
-	//	currentPage:
-	//	totalRecords: in cached server mode, this can be null
-	//}
-	//+Func: { 
-	//	load: instead of calling fetch directly, we use load(options) to do some preprocess.
-	//		+options: apart from the normal options to be passed to fetch() we add
-	//				page: number or nothing -> load specific page or page 1
-	//			
-	//	nextPage: load currentPage + 1;
-	//	prevPage: only works if 'cache' is set to false;
-	//}
-	//+Events 
-	//	1. pagination:updatePageNumbers - fired upon 'sync' after 'reset';
-	//	2. pagination:updatePageNumbers:clientMode - fired upon 'sync' after 'add' and 'destroy' after 'remove', only in non-cached client mode.
-	//	3. pagination:pageChanged - fired upon each time the collection change to hold another page of data.
-	//Note that: at any given time, you can still use fetch(), using load() will always enforce a paginated fetch()
+/*	
+	5 Pagination - extend the Backbone.Collection to let it have this ability
+		(Warning: To make the code simpler, we put a special parse() in data-units.js for collections to save
+					the fetched result without feeding all of them to the model factory. (only in mode:client)
+					This way, we don't have to make another 'window' collection for updating the UI.
+		)
+		+Config: {
+			mode: client/server - non 'server' value means 'client' mode.
+			cache: false(default)/true (completely swap the content of this collection or incrementally feed it)
+			pageSize: (default: 25) - 0 means showing all
+			params: { optionally control the server params used. //Hard coded atm...
+				offset: 'page', 
+				size: 'per_page'
+			}
+		}
+		+Properties: { should be Read-Only, can only be changed from calling the functions below.
+			currentPage:
+			totalRecords: in cached server mode, this can be null
+		}
+		+Func: { 
+			load: instead of calling fetch directly, we use load(options) to do some preprocess.
+				+options: apart from the normal options to be passed to fetch() we add
+						page: number or nothing -> load specific page or page 1
+					
+			nextPage: load currentPage + 1;
+			prevPage: only works if 'cache' is set to false;
+		}
+		+Events 
+			1. pagination:updatePageNumbers - fired upon 'sync' after 'reset';
+			2. pagination:updatePageNumbers:clientMode - fired upon 'sync' after 'add' and 'destroy' after 'remove', only in non-cached client mode.
+			3. pagination:pageChanged - fired upon each time the collection change to hold another page of data.
+		Note that: at any given time, you can still use fetch(), using load() will always enforce a paginated fetch()
+*/
 	_.extend(Backbone.Collection.prototype, {
 
 		//To opt-in the pagination with any Backbone.Collection

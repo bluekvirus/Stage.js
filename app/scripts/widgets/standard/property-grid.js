@@ -95,7 +95,8 @@ Application.Widget.register('PropertyGrid', function(){
 				if (typeof(this.collection) === 'undefined') {
 					this.collection = new Backbone.Collection();
 				}
-				this.collection.reset(propList);
+				
+				this.collection.reset(propList); //The UI render will automatically be triggered.
 			},
 
 			refresh: function(data) {

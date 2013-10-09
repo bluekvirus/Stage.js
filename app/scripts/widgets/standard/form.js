@@ -42,20 +42,6 @@ Application.Widget.register('Form', function(){
 			controls: '.form-control-bar'
 		},
 
-		events: {
-			//hook up the generalized action clicking listener logic
-			'click [action]': function(e){
-				e.stopPropagation(); //this is to prevent the parent form to trigger actions as well.
-				$el = $(e.currentTarget);
-				var action =  'do' + _.string.titleize($el.attr('action'));
-				var doer = this.actions[action];
-				if(doer)
-					doer($el, this);
-				else
-					throw new Error('DEV::FormWidget::You must define a function named ' + action + '()');
-			}
-		},
-
 		initialize: function(options){
 			//0 choose the right template (according to this.type)
 			this.type = options.type || this.type || 'table';
@@ -77,68 +63,72 @@ Application.Widget.register('Form', function(){
                 //fieldsets: this.fieldsets
             });
             this.listenTo(this.form, 'show', this.afterRender);
+
+            this.enableUILocks();
+            this.enableActionTags('Widget.Form');
 		},
 
 		onShow: function(){
 			this.body.show(this.form);
-			this.refresh();	//apply to form:complex only.
+			this.utils.refresh();	//apply to form:complex only.
 		},
 		afterRender: $.noop(),
 
-		refresh: function(){
-			if(this.type === 'complex')
-				this.model.fetch({data: { page: 1, per_page: 1}, 
-					beforeSend: _.bind(function(){
-						this.showWaitingSpin(true);
-					}, this),
-					success: _.bind(function(m){
-						this.form.setValue(m.attributes);
-						this.showWaitingSpin(false);
-					}, this)
-				});//grab 1 record only.
-		},
-
-		//depends on spin.js jquery plugin
-		showWaitingSpin: function(flag){
-			if(flag)
-				this.form.$el.spin();
-			else
-				this.form.$el.spin(false);
-		},
-
 		actions: {
-			//if you want to use 'this', use widget instead.
-			doSubmit: function($btn, widget){
+			submit: function($action){
 				//1 check if there are validations to apply to the fields
-	            var error = widget.form.validate();
+	            var error = this.form.validate();
 	            if (error) { //output error and scroll to first error field.
 	                //console.log(error);
 	                for (var key in error) {
 	                    $('html').animate({
-	                        scrollTop: widget.form.$el.find('.invalid[name=' + key + ']').offset().top - 30
+	                        scrollTop: this.form.$el.find('.invalid[name=' + key + ']').offset().top - 30
 	                    }, 400);
 	                    break;
 	                }
 	            } else { //delegating the save/upate action to the recordManager.
-	                widget.model.set(widget.form.getValue());
+	                this.model.set(this.form.getValue());
 	            }				
 				//2 save the record
-				if(widget.recordManager) {
+				if(this.recordManager) {
 					//delegate to recordManager
-					widget.recordManager.$el.trigger('event_SaveRecord', widget);					
+					this.recordManager.$el.trigger('event_SaveRecord', this);					
 				}else {
-					//save it directly using widget.model.save
-					widget.model.save({}, {notify: true});
+					//save it directly using this.model.save
+					this.model.save({}, {notify: true});
 				}
 			},
 
-			doCancel: function($btn, widget){
-				widget.close();
+			cancel: function($action){
+				this.close();
 			},
 
-			doRefresh: function($btn, widget){
-				widget.refresh();
+			refresh: function($action){
+				this.utils.refresh();
 			}
+		},
+
+		utils: {
+			refresh: function(){
+				var that = this;
+				if(this.type === 'complex')
+					this.model.fetch({data: { page: 1, per_page: 1},
+						beforeSend: function(){
+							that.utils.showWaitingSpin(true);
+						},
+						success: function(m){
+							that.form.setValue(m.attributes);
+							that.utils.showWaitingSpin(false);
+						}
+					});//grab 1 record only.
+			},
+			//depends on spin.js jquery plugin
+			showWaitingSpin: function(flag){
+				if(flag)
+					this.form.$el.spin();
+				else
+					this.form.$el.spin(false);
+			}			
 		}
 
 	});

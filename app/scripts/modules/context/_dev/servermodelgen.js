@@ -103,14 +103,8 @@
 					'form': '[region=addmodel]'
 				},
 				initialize: function(options){
-					//bind all action listeners and util funcs to this.
-					var that = this;
-					_.each(['actions', 'utils'], function(funcGroup){
-						_.each(that[funcGroup], function(func, name){
-							that[funcGroup][name] = _.bind(func, that);
-						});
-					});
-					this.initUILocks(); //see - infrustructure/base-lib-fix.js
+					this.enableUILocks(); //see - infrustructure/base-lib-fix.js
+					this.enableActionTags('Context._DEV.ServerModelGen'); //see - infrustructure/base-lib-fix.js
 				},
 				onShow: function(){
 					this.list.show(new module.View.ModelList({
@@ -133,18 +127,6 @@
 						searchInput: this.list.getEl('input.tool-servergen-model-list-item-search')
 					});
 					
-				},
-				//========General Actions==========
-				events: {
-					'click [action]': '_doAction'
-				},
-				_doAction: function(e){
-					e.stopPropagation();
-					var $el = $(e.currentTarget);
-					var doer = this.actions[$el.attr('action')];
-					if(doer) {
-						doer($el);
-					}else throw new Error('DEV::DEV Tools::You have not yet implemented this action');
 				},
 				actions: {
 					showNewModelForm: function($action){

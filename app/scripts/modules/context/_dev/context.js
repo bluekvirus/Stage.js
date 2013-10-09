@@ -33,6 +33,8 @@
 			this.model = options.model || new Backbone.Model({
 				tasks: triggers
 			});
+
+			this.enableActionTags('Context._DEV.HookUI');
 		},
 		onRender: function(){
 			this.$el.css({
@@ -62,17 +64,6 @@
 			},this));
 
 			this.panel.getEl('ul.nav-tabs li a:first').tab('show');
-		},
-		events: {
-			'click [action]': '_doAction'
-		},
-		_doAction: function(e){
-			e.stopPropagation();
-			var $el = $(e.currentTarget);
-			var action = $el.attr('action');
-			var doer = _.bind(this.actions[action], this);
-			if(doer) doer($el);
-			else throw new Error('DEV::DEV Tools::You have not yet implemented this action');
 		},
 		actions: {
 			toggleToolPanel: function($action){

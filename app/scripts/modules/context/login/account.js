@@ -22,23 +22,19 @@
 				},
 
 				events: {
-					'click [action]': '_actionDispatcher',
 					'keydown': function(e){
 						if(e.keyCode === 13) 
 							this.ui.submitBtn.trigger('click');
 					}
 				},
 
-				_actionDispatcher: function(e){
-					e.stopPropagation();
-					var $el = $(e.currentTarget);
-					var doer = this.actions['do' + _.string.capitalize($el.attr('action'))];
-					if(doer) doer($el, this);
-					else throw new Error('DEV::Context.Login::You must have the doAction() method defined for this action...');
+				initialize: function(options){
+					this.enableActionTags('Context.Login.Account');
 				},
+
 				actions: {
-					doSignin: function($el, $view){
-						var login = $view.ui.form.serialize();
+					signin: function($el){
+						var login = this.ui.form.serialize();
 						$.ajax({
 							url: '/login',
 							type: 'POST',
