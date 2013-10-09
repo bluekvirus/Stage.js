@@ -70,7 +70,7 @@ Application.Widget.register('Form', function(){
 
 		onShow: function(){
 			this.body.show(this.form);
-			this.utils.refresh();	//apply to form:complex only.
+			this.refresh();	//apply to form:complex only.
 		},
 		afterRender: $.noop(),
 
@@ -104,32 +104,32 @@ Application.Widget.register('Form', function(){
 			},
 
 			refresh: function($action){
-				this.utils.refresh();
+				this.refresh();
 			}
 		},
 
-		utils: {
-			refresh: function(){
-				var that = this;
-				if(this.type === 'complex')
-					this.model.fetch({data: { page: 1, per_page: 1},
-						beforeSend: function(){
-							that.utils.showWaitingSpin(true);
-						},
-						success: function(m){
-							that.form.setValue(m.attributes);
-							that.utils.showWaitingSpin(false);
-						}
-					});//grab 1 record only.
-			},
-			//depends on spin.js jquery plugin
-			showWaitingSpin: function(flag){
-				if(flag)
-					this.form.$el.spin();
-				else
-					this.form.$el.spin(false);
-			}			
-		}
+
+		refresh: function(){
+			var that = this;
+			if(this.type === 'complex')
+				this.model.fetch({data: { page: 1, per_page: 1},
+					beforeSend: function(){
+						that.showWaitingSpin(true);
+					},
+					success: function(m){
+						that.form.setValue(m.attributes);
+						that.showWaitingSpin(false);
+					}
+				});//grab 1 record only.
+		},
+		//depends on spin.js jquery plugin
+		showWaitingSpin: function(flag){
+			if(flag)
+				this.form.$el.spin();
+			else
+				this.form.$el.spin(false);
+		}			
+
 
 	});
 

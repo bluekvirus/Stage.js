@@ -132,7 +132,7 @@
 					showNewModelForm: function($action){
 						if(!this.lockUI('list') || $action.hasClass('disabled')) return; //lock the list region
 
-						this.utils.clearModelSelection();//clear model listing selection highlight first;
+						this.clearModelSelection();//clear model listing selection highlight first;
 						this.form.show(new module.View.ModelForm({
 							collection: new Backbone.Collection([{
 								fieldName: '',
@@ -231,17 +231,17 @@
 								this.form.show(new module.View.ModelListItemDetail({
 									model: new Backbone.Model(modeldetails)
 								}));
-								this.utils.clearModelSelection();
+								this.clearModelSelection();
 								$action.parent().addClass('btn-info');
 							},this)
 						})
 					}
 				},
-				utils: {
-					clearModelSelection: function(){
-						this.list.getEl('.tool-servergen-model-list-item').removeClass('btn-info');
-					}
+
+				clearModelSelection: function(){
+					this.list.getEl('.tool-servergen-model-list-item').removeClass('btn-info');
 				}
+
 			})
 		}
 

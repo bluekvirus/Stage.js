@@ -25,15 +25,12 @@
 	};
 
 /**
- * 3 Action Tag listener hookups +actions{} +utils{}
+ * 3 Action Tag listener hookups +actions{}
  * Usage:
  * 		1. add action tags to html template -> e.g <div ... action="method name"></div> 
  * 		2. implement the action method name in UI definition body's actions{} object. 
  * 		functions under actions{} are bind to 'this' scope (the view object).
  * 		functions under actions{} are called with a single param ($action) which is a jQuery object referencing the action tag.
- * Plus:
- * 		use the utils{} object for grouping shared utils for action implementations. 
- * 		the functions defined under this object will also be bind to 'this' scope (the view object).
  */
  	_.extend(Backbone.Marionette.View.prototype, {
 
@@ -47,20 +44,22 @@
 				e.stopPropagation(); //Important::This is to prevent confusing the parent view's action tag listeners.
 				var $el = $(e.currentTarget);
 				var action = $el.attr('action') || 'UNKNOWN';
-				var doer = this.actions[action];
+				var doer = this._actions[action];
 				if(doer) {
 					doer($el);
 				}else throw new Error('DEV::' + (uiName || 'UI Component') + '::You have not yet implemented this action - [' + action + ']');
 			};
 			this.actions = this.actions || {};
-			this.utils = this.utils || {};
-			//bind all action listeners and util funcs to this.
-			var that = this;
-			_.each(['actions', 'utils'], function(funcGroup){
-				_.each(that[funcGroup], function(func, name){
-					that[funcGroup][name] = _.bind(func, that);
-				});
-			});			
+			//bind all action listeners funcs to this producing _actions 
+			//Warning:: By creating a new object to hold all the binded listeners is to avoid the 'Can NOT rebind' problem with _.bind()
+			//This is extremely important, since all 'this.func' in an initialize function refer to the prototype.func, if this.actions gets assigned
+			//to be the binded version, other view instances of the same prototype can NOT bind the actions to themselves.
+			_.each(['actions'], function(funcGroup){
+				this['_' + funcGroup] = {};
+				_.each(this[funcGroup], function(func, name){
+					this['_' + funcGroup][name] = _.bind(func, this);
+				}, this);
+			}, this);			
  		}
 
  	});
