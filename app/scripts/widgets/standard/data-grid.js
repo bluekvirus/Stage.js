@@ -196,7 +196,7 @@ Application.Widget.register('DataGrid', function(){
             //+ Paginator UI.
             if(this.collection.pagination && !this.collection.pagination.cache){
                 //if the collection has pagination enabled and it is not in the 'infinite' scrolling mode
-                this.paginatorUI = Application.Widget.create('Paginator', {
+                this.paginatorUI = new Backgrid.Extension.Paginator({
                     targetCollection: this.collection
                 });
             }
@@ -463,6 +463,10 @@ Template.extend(
         '</div>'
     ]
 );
+
+/*===================Paginator=====================*/
+Backgrid.Extension.Paginator = Application.Widget.get('Paginator');
+
 
 /*===================Overriden Classes==============*/
 Backgrid.Extension.CustomRow = Backgrid.Row.extend({

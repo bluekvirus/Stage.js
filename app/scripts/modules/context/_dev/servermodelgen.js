@@ -209,7 +209,7 @@
 											type = "sub: '" + res.meta.sub[fieldName].model + "'";
 										type = '[ ' + type + ' ] - collection';
 									}else {
-										type = type || 'Date/Mixed';
+										type = type || 'Boolean/Date/Mixed'; //undetectable schema types...
 									}
 									modeldetails.fields[fieldName] = {
 										name: fieldName,
