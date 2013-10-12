@@ -19,11 +19,14 @@ Application.Widget.register('Paginator', function(){
 			if(this.targetCollection.pagination.cache)
 				throw new Error('DEV::Widget.Paginator::You should NOT use a page cache enabled collection with the paginator UI.');
 
-			this.model = new Backbone.Model();
+			this.model = new Backbone.Model({
+				pages: [{current: 1}],
+				current: 1
+			});
 			this.listenTo(this.model, 'change', this.render);
 			this.listenTo(this.targetCollection, 'pagination:updatePageNumbers pagination:updatePageNumbers:clientMode', function(){
 				//re-calculate the page numbers upon +/- records.
-				var pageRange = _.range(1, 1+ Math.ceil(this.targetCollection.totalRecords/this.targetCollection.pagination.pageSize));
+				var pageRange = _.range(1, 1+ (Math.ceil(this.targetCollection.totalRecords/this.targetCollection.pagination.pageSize) || 1));
 				pageRange[this.targetCollection.currentPage-1] = {current: this.targetCollection.currentPage};
 				this.model = this.model.set({
 					pages: pageRange,

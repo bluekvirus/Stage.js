@@ -66,7 +66,7 @@
 					this.itemView = options.itemView || module.View.ModelListItem;
 				},
 				onShow:function(){
-					this.collection.fetch();
+					this.collection.fetch({notify:false});
 				}
 			}),
 			//-------------Form------------

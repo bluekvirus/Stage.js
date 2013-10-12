@@ -29,10 +29,22 @@
 					});
 					this.listenTo(this.model, 'change', this.render);
 					this.listenTo(app.Context.get('Login'), 'login:account:user-changed', this.onShow);
+					this.enableActionTags('Shared.Banner');
 				},
 
 				onShow: function(){
 					this.model.set(app.user);
+				},
+
+				actions: {
+					logout: function($action){
+						var that = this;
+						$.get('/logout', function() {
+							app.user = {name: undefined};
+							that.onShow();
+							app.trigger('app:switch-context', 'Login', '#navigate/Welcome');
+						});
+					}
 				}
 			})
 		}
@@ -69,7 +81,7 @@ Template.extend(
 								'<li><a href="#"><i class="icon-edit"></i> Edit Profile</a></li>',
 								'<li><a href="#"><i class="icon-comment"></i> Open Ticket</a></li>',
 								'<li class="divider"></li>',
-								'<li><a href="/logout"><i class="icon-share-alt"></i> Logout</a></li>',
+								'<li><a action="logout"><i class="icon-share-alt"></i> Logout</a></li>',
 	                        '</ul>',
                       	'</li>',
                     '{{/if}}',

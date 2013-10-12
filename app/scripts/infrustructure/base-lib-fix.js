@@ -45,7 +45,9 @@
  			//add general action tag clicking event and listener
  			_.extend(this.events, {
  				'click [action]': '_doAction'
- 			}); 					
+ 			});
+ 			this.actions = this.actions || {}; 	
+ 			this._uiDEVName = uiName;			
  		},
 
 		_doAction: function(e){
@@ -55,7 +57,7 @@
 			var doer = this.actions[action];
 			if(doer) {
 				doer.apply(this, [$el]); //use 'this' view object as scope when applying the action listeners.
-			}else throw new Error('DEV::' + (uiName || 'UI Component') + '::You have not yet implemented this action - [' + action + ']');
+			}else throw new Error('DEV::' + (this._uiDEVName || 'UI Component') + '::You have not yet implemented this action - [' + action + ']');
 		},		
  	});
 

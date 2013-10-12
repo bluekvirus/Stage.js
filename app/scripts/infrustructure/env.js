@@ -156,7 +156,13 @@ window.Application = new Backbone.Marionette.Application();
 			}catch(e){
 				var errorStr = errorStr || exception;
 			}
-				Application.error('Server Communication Error', settings.type, settings.url.split('?')[0], '|', errorStr);
+			var cb = '';
+			if(exception === 'Unauthorized'){
+				cb = function(){
+					window.location.reload();
+				}
+			}
+				Application.error('Server Communication Error', settings.type, settings.url.split('?')[0], '|', errorStr, cb);
 		});
 	}
 
