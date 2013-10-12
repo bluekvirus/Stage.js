@@ -20,6 +20,21 @@
                 },
                 column: true
             },
+            account_space: {
+                title: 'Account Type (Space)',
+                editor: 'Radio',
+                editorOpt: {
+                    options: [{
+                        val: 'User',
+                        label: 'User'
+                    },
+                    {
+                        val: 'Administrator',
+                        label: 'Administrator'
+                    }],
+                    inline: true
+                }
+            },
             password: {
                 editor: "Password"
             },

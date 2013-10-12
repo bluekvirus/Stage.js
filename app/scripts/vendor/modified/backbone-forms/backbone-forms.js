@@ -1626,7 +1626,7 @@ Form.editors = (function() {
    */
   editors.Radio = editors.Select.extend({
 
-    tagName: 'ul',
+    tagName: 'div', //'ul'
     className: 'bbf-radio',
     
     events: {
@@ -1684,19 +1684,18 @@ Form.editors = (function() {
       var self = this;
 
       //Tim.Liu changed to use name = self.key instead of self.id
-
       _.each(array, function(option, index) {
-        var itemHtml = '<li>';
+        var itemHtml = '<label for="'+self.id+'-'+index+'" class="radio ' + (self.schema.inline?'inline':'') + '">';//'<li>';
         if (_.isObject(option)) {
           var val = (option.val || option.val === 0) ? option.val : '';
           itemHtml += ('<input type="radio" name="'+self.key+'" value="'+val+'" id="'+self.id+'-'+index+'" />');
-          itemHtml += ('<label for="'+self.id+'-'+index+'">'+option.label+'</label>');
+          itemHtml += (/*'<label for="'+self.id+'-'+index+'">'+*/option.label/*+'</label>'*/);
         }
         else {
           itemHtml += ('<input type="radio" name="'+self.key+'" value="'+option+'" id="'+self.id+'-'+index+'" />');
-          itemHtml += ('<label for="'+self.id+'-'+index+'">'+option+'</label>');
+          itemHtml += (/*'<label for="'+self.id+'-'+index+'">'+*/option/*+'</label>'*/);
         }
-        itemHtml += '</li>';
+        itemHtml += '</label>';//'</li>';
         html.push(itemHtml);
       });
 
@@ -1717,7 +1716,7 @@ Form.editors = (function() {
    */
   editors.Checkboxes = editors.Select.extend({
 
-    tagName: 'ul',
+    tagName: 'div', //'ul'
     className: 'bbf-checkboxes',
     
     events: {
@@ -1774,17 +1773,17 @@ Form.editors = (function() {
       var self = this;
 
       _.each(array, function(option, index) {
-        var itemHtml = '<li>';
+        var itemHtml = '<label for="'+self.id+'-'+index+'" class="checkbox ' + (self.schema.inline?'inline':'') + '">';//'<li>';
         if (_.isObject(option)) {
           var val = (option.val || option.val === 0) ? option.val : '';
           itemHtml += ('<input type="checkbox" name="'+self.id+'" value="'+val+'" id="'+self.id+'-'+index+'" />');
-          itemHtml += ('<label for="'+self.id+'-'+index+'">'+option.label+'</label>');
+          itemHtml += (/*'<label for="'+self.id+'-'+index+'">'+*/option.label/*+'</label>'*/);
         }
         else {
           itemHtml += ('<input type="checkbox" name="'+self.id+'" value="'+option+'" id="'+self.id+'-'+index+'" />');
-          itemHtml += ('<label for="'+self.id+'-'+index+'">'+option+'</label>');
+          itemHtml += (/*'<label for="'+self.id+'-'+index+'">'+*/option/*+'</label>'*/);
         }
-        itemHtml += '</li>';
+        itemHtml += '</label>'; //'</li>';
         html.push(itemHtml);
       });
 
