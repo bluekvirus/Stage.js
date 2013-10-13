@@ -244,6 +244,9 @@ Application.Widget.register('DataGrid', function(){
         _showForm: function(recordId) {
             if (recordId) { //edit mode.
                 var m = this.collection.get(recordId);
+                if(this.isRefMode()){
+                    m.fetch({async:false}); //we refresh the model record before giving it to the form.
+                }
             } else {  //create mode.
                 var m = new this.collection.model();
                 m.collection = this.collection;
