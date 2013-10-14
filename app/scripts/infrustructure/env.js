@@ -162,7 +162,7 @@ window.Application = new Backbone.Marionette.Application();
 					window.location.reload();
 				}
 			}
-				Application.error('Server Communication Error', settings.type, settings.url.split('?')[0], '|', errorStr, cb);
+				Application.error('Server Error', settings.type, settings.url.split('?')[0], '|', errorStr, cb);
 		});
 	}
 

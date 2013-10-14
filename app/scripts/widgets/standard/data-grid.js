@@ -293,7 +293,7 @@ Application.Widget.register('DataGrid', function(){
             var that = this;
             $actionBtn.parentsUntil('tbody', 'tr.data-row').addClass('data-row-focused');
             Application.prompt('Are you sure?', 'error', function() {
-                if (that.isRefMode()) m.destroy();
+                if (that.isRefMode()) m.destroy({notify:true});
                 else that.collection.remove(m);
             }, $.noop, function(){
                 $actionBtn.parentsUntil('tbody', 'tr.data-row').removeClass('data-row-focused');

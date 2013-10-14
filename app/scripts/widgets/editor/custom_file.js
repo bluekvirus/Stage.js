@@ -14,21 +14,24 @@
         template: '#custom-tpl-widget-editor-file-item',
         tagName: 'tr',
         initialize: function(options) {
-            //Add actions:
+
+            //Add your file item actions here:
+            //Write the aciton listeners down below in the EditorView._actions
             _.extend(this.model.attributes, {
-                actions: [{
-                    action: 'delete',
-                    label: 'Delete',
-                    labelCls: 'important',
-                    method: this.model.get('delete_type'), //http method type used for this action
-                    url: this.model.get('delete_url')
-                }]
+                actions: [
+                    {
+                        action: 'delete',
+                        label: 'Delete',
+                        labelCls: 'important',
+                        method: 'DELETE', //http method type used for this action
+                        url: this.model.get('deleteUrl')
+                    },
+
+                ]
             });
         }
-        /**
-         * Write the aciton listeners down below in the EditorView._actions
-         */
     });
+    
     var FileProgressEleView = Backbone.Marionette.ItemView.extend({
         template: '#custom-tpl-widget-editor-file-progress-item',
         initialize: function(options){
@@ -299,7 +302,13 @@ Template.extend(
     [
     '<td><a href="{{url}}">{{name}}</a></td>',
     '<td>{{printSize "file" size}}</td>',
-    '{{#unless _options.noActions}}<td>{{#each actions}}<span class="action-trigger action-trigger-{{this.action}} label label-{{this.labelCls}} pointer-hand" action="{{this.action}}" _method="{{this.method}}" _url="{{this.url}}">{{this.label}}</span> {{/each}}{{/unless}}</td>'
+    '{{#unless _options.noActions}}',
+        '<td>',
+            '{{#each actions}}',
+            '<span class="action-trigger action-trigger-{{this.action}} label label-{{this.labelCls}} pointer-hand" action="{{this.action}}" _method="{{this.method}}" _url="{{this.url}}">{{this.label}}</span> ',
+            '{{/each}}',
+        '</td>',
+    '{{/unless}}'
     ]);
 
 Template.extend(
