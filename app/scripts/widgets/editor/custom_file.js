@@ -23,8 +23,7 @@
                         action: 'delete',
                         label: 'Delete',
                         labelCls: 'important',
-                        method: 'DELETE', //http method type used for this action
-                        url: this.model.get('deleteUrl')
+                        url: this.model.get('url')
                     },
 
                 ]
@@ -64,35 +63,6 @@
             filelist: '.file-editor-body'
         },
 
-        events: {
-            'click .action-trigger': '_runAction'
-        },
-
-        _runAction: function(e) {
-            e.stopPropagation();
-            var action = e.target.attributes.action.value;
-            if (this._actions[action]) this._actions[action]({
-                url: e.target.attributes._url.value,
-                type: e.target.attributes._method.value, //http method type used for this action
-            }, this);
-        },
-
-        _actions: {
-            'delete': function(info, editor) {
-                $.ajax({
-                    url: info.url,
-                    notify: true,
-                    type: info.type, //http method type used for this action
-                    success: function() {
-                        editor.collection.fetch();
-                    },
-                    error: function(err) {
-                        Application.error('File Deletion Error', err);
-                    }
-                });
-            },
-        },
-
         initialize: function(options) {
             this.listenTo(this.collection, 'sync', function() {
                 if (this.collection.length === 0) this.ui.filelist.hide();
@@ -101,7 +71,25 @@
 
             this.form = options.form;
             this.editorCt = options.editor;
+            this.enableActionTags('Widget.Editor.Files');
         },
+
+        actions: {
+            delete: function($action) {
+                var that = this;
+                $.ajax({
+                    url: $action.attr('_url'),
+                    notify: true,
+                    type: 'DELETE',
+                    success: function() {
+                        that.collection.fetch();
+                    },
+                    error: function(err) {
+                        Application.error('File Deletion Error', err);
+                    }
+                });
+            },            
+        }, 
 
         onRender: function() {
             var that = this;
@@ -194,7 +182,7 @@
             // Custom setup code.
             // this.schema.options
             this._options = options.schema.options || options.schema;
-            this._options.url = this._options.url || ((Application.config.apiBase && Application.config.apiBase.file && Application.config.apiBase.file.up) || '/upload')+'/' + this._options.hostName + '/' + (this._options.hostType === 'table' ? this.model.id : 'shared') + '/' + this.key;
+            this._options.url = this._options.url || ((Application.config.apiBase && Application.config.apiBase.file && Application.config.apiBase.file.upload) || '/upload')+'/' + this._options.hostName + '/' + (this._options.hostType === 'table' ? this.model.id : 'shared') + '/' + this.key;
             this.FileCollection = Backbone.Collection.extend({
                 url: this._options.url + '?listing=' + (new Date()).getTime(),
                 model: Backbone.Model.extend({
@@ -305,7 +293,7 @@ Template.extend(
     '{{#unless _options.noActions}}',
         '<td>',
             '{{#each actions}}',
-            '<span class="action-trigger action-trigger-{{this.action}} label label-{{this.labelCls}} pointer-hand" action="{{this.action}}" _method="{{this.method}}" _url="{{this.url}}">{{this.label}}</span> ',
+            '<span class="action-trigger action-trigger-{{this.action}} label label-{{this.labelCls}} pointer-hand" action="{{this.action}}" _url="{{this.url}}">{{this.label}}</span> ',
             '{{/each}}',
         '</td>',
     '{{/unless}}'
