@@ -12,7 +12,8 @@ path = require('path'),
 rimraf = require('rimraf'), //rm -rf;
 mkdirp = require('mkdirp'),
 ncp = require('ncp').ncp,
-gzip = require('../shared/gzip');
+gzip = require('../shared/gzip'),
+colors = require('colors');
 
 ncp.limit = 16; //ncp concurrency limit
 
@@ -20,7 +21,6 @@ module.exports = {
 
 	//create structure with pre-processed in memory files.
 	createFolderStructure: function(name, options, done) {
-		console.log('Creating Folders & Files...'.yellow);
 
 		options = _.extend({
 			structure: {}, //see config
@@ -29,8 +29,7 @@ module.exports = {
 
 		var targets = [];
 		var baseDir = path.join(options.distFolder, name);
-		//clear base dir
-		rimraf.sync(baseDir);
+
 		//prepare the structure description map
 		_.each(options.structure, function(content, key){
 			targets.push({
@@ -81,7 +80,16 @@ module.exports = {
 			}else 
 				done();
 		};
-		iterator(done);
+		//clear base dir and create the project structure.
+		rimraf(baseDir, function(err){
+			if(err) console.log('ERROR:'.red, err);
+			else {
+				console.log('Output Dir Cleared:'.green, baseDir);
+				console.log('Creating Folders & Files...'.yellow);
+				iterator(done);
+			}
+		});
+		
 	}	
 
 }

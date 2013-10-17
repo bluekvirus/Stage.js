@@ -18,10 +18,20 @@ module.exports = {
 	clientBase: '../../',
 	index: 'app/index.html',
 	structure : {
+		libs: {
+			'bower.json': 'app/libs/bower.json',
+			'buildify.js': 'app/libs/buildify.js',
+			'EMPTY.js': 'app/libs/EMPTY.js',
+			'map-fix.json': 'app/libs/map-fix.json',
+			'map.json': 'app/libs/map.json',
+			'README.md': 'app/libs/README.md',
+			'package.json': 'app/libs/package.json'
+		},
 		scripts: {
 			_try: {}, //autoload scripts - usually patches after dist built
 			modules: { //layouts/page wrapper
 				context: {
+					_dev: 'app/scripts/modules/context/_dev', //UI modules for developer tools
 					login: 'app/scripts/modules/context/login', //UI modules for the login (pre-login) context
 					admin: 'app/scripts/modules/context/admin',	//UI modules for context after the login goes through
 					shared: 'app/scripts/modules/context/shared' 				
@@ -38,7 +48,7 @@ module.exports = {
 			'base.js': true, //cached srcs see - loadIndexHTML() in spawn.js;
 			'infrustructure.js': false,
 			'core-modules.js': false,
-			'preset-widgets.js': true,
+			'preset-widgets.js': false,
 			'config.js': 'app/scripts/config.js' //-non minified or copied
 		},
 		static: {
