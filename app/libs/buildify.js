@@ -180,7 +180,7 @@ buildify.task({
 			'colorbox',
 			'noty',
 			'spin.js',
-			//'i18n', 'elMask'... are put into project infrustructure and maintained there.
+			//'i18n', 'elMask'... are put into project infrastructure and maintained there.
 		]; //with widgets excluded e.g forms (validations) and datagrids.
 		combine(list, 'base-libs');
 	}

@@ -46,7 +46,7 @@ module.exports = {
 				standard: {} //backbone view
 			},
 			'base.js': true, //cached srcs see - loadIndexHTML() in spawn.js;
-			'infrustructure.js': false,
+			'infrastructure.js': false,
 			'core-modules.js': false,
 			'preset-widgets.js': false,
 			'config.js': 'app/scripts/config.js' //-non minified or copied

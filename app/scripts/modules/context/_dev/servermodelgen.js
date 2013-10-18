@@ -103,8 +103,8 @@
 					'form': '[region=addmodel]'
 				},
 				initialize: function(options){
-					this.enableUILocks(); //see - infrustructure/base-lib-fix.js
-					this.enableActionTags('Context._DEV.ServerModelGen'); //see - infrustructure/base-lib-fix.js
+					this.enableUILocks(); //see - infrastructure/base-lib-fix.js
+					this.enableActionTags('Context._DEV.ServerModelGen'); //see - infrastructure/base-lib-fix.js
 				},
 				onShow: function(){
 					this.list.show(new module.View.ModelList({

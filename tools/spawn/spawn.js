@@ -1,6 +1,6 @@
 /**
  * This is the development kit spawning tool. 
- * 1. It combines core scripts into dev dependency js files; (libs, infrustructure, core-modules, widgets)
+ * 1. It combines core scripts into dev dependency js files; (libs, infrastructure, core-modules, widgets)
  * 2. It creates proper front-end development project structure; (based on the client framework dev project and a config file)
  * 3. It gives the spawned project a build tool, but NOT another spawning tool.
  *
@@ -16,8 +16,8 @@
  * Design
  * =======
  * The config folder should contain as many types of application development projects config as there is.
- * So far the ones that we are interested are free (base-lib, infrustructure, core-modules) and admin (+form, grid and admin factory...)
- * Note that although we want to put the index.html together with the config.js in spawn config, it is hard to test and development for the client framework project.
+ * So far the ones that we are interested are free (base-lib, infrastructure, core-modules) and admin (+form, grid and admin factory...)
+ * Note that although we want to put the index.html together with the config.js in spawn config, it is hard to test and develop for the client framework project.
  * Thus we put the different kinds of dev project index.html under client/app (client root) with naming convention:[type].index.html applied.
  *
  * Note that <script ... lib="N/A"></script> means the following scripts are not merged and replaced in the index.html.

@@ -2,6 +2,16 @@
  * This is the structure hammer that is shared between tools to create folder structures
  * according to a js object as structure blueprint.
  *
+ * =======
+ * Options
+ * =======
+ * required:
+ * 		structure - folder blueprint 
+ *   	clientBase - input base
+ *    	distFolder - output folder
+ * optional:
+ * 		cachedFiles - in memory file content
+ *
  * @author Tim.Liu
  * @created 2013.09.25
  */
