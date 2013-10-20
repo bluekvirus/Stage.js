@@ -6,7 +6,7 @@
  * ================
  * {} - create folder
  * 'string' - copy file or folder
- * true/false - read from task memory, Gzip or not.
+ * true/false - read from task memory, Gzip or not. 
  *
  * 
  * @author Tim.Liu
@@ -16,7 +16,7 @@
 module.exports = {
 	distFolder: 'dist',
 	clientBase: '../../',
-	index: 'app/index.html',
+	index: 'tools/spawn/indices/guireport.html',
 	structure : {
 		libs: {
 			'bower.json': 'app/libs/bower.json',

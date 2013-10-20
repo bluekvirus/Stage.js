@@ -30,6 +30,7 @@ var buildify = require('buildify'),
 _ = require('underscore'),
 cheerio = require('cheerio'), //as server side jquery
 path = require('path'),
+fs = require('fs'),
 mkdirp = require('mkdirp'),
 colors = require('colors'),
 moment = require('moment'),
@@ -96,18 +97,24 @@ function loadIndexHTML(target){
 
 }
 
-
-
 /*-----------Build Tasks-----------*/
-buildify.task({
-	name: 'admin',
-	task: function(){
-		var startTime = new Date().getTime();
-		var type = 'admin';
-		var cached = loadIndexHTML(type);
-		mkdirp(config.distFolder, function(error){
-			hammer.createFolderStructure(type, _.extend({cachedFiles: cached}, config), function(){
-				console.log(('Spawn Task ['+ type +'] Complete').green, '-', moment.utc(new Date().getTime() - startTime).format('HH:mm:ss.SSS').underline);
+fs.readdir('config', function(err, cfgs){
+	if(err) console.log('ERROR'.red, err.message);
+	else {
+		//auto register all the build targets.
+		_.each(cfgs, function(cfg){
+			var name = path.basename(cfg, '.js');
+			buildify.task({
+				name: name,
+				task: function(){
+					var startTime = new Date().getTime();
+					var cached = loadIndexHTML(name);
+					mkdirp(config.distFolder, function(error){
+						hammer.createFolderStructure(name, _.extend({cachedFiles: cached}, config), function(){
+							console.log(('Spawn Task ['+ name +'] Complete').green, '-', moment.utc(new Date().getTime() - startTime).format('HH:mm:ss.SSS').underline);
+						});
+					});
+				}
 			});
 		});
 	}
