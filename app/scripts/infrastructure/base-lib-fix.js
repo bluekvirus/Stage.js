@@ -11,6 +11,11 @@
  * 4. +UI Locking support to view regions (without Application scope total lockdown atm...)
  * 5. +Pagination ability to Backbone.Collection
  *
+ * planned:
+ * 6. tooltips activation upon 'show'
+ * 7. region show effect support (override Region.prototype.open and View.prototype.openEffect)
+ * 8. user action clicking statistics (use the view._uiDEVName set by enableActionTags(type.name.subname)) - type can be Context/Widget
+ *
  * @author Tim.Liu
  * @create 2013.09.11
  */

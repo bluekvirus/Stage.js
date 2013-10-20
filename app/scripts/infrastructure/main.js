@@ -82,22 +82,23 @@
 				'(navigate)(/:module)(/:region)' : 'navigateToModule', //navigate to a module's default view from certain region. (optional, use with caution...)
 			},
 			controller: {
-				navigateToModule: (function(){
-					var currentModule = '';
-					return function(module, region){
-							appRegion = Application.body.currentView.regionManager.get(region) || Application.body.currentView.regionManager.get(Application.currentContext.defaults.region);
-							var target = Application.currentContext[module] || Application.currentContext[Application.currentContext.defaults.module];
-							if(target && appRegion){
-								if(currentModule !== module){
-									appRegion.show(new target.View.Default());
-									Application.currentModule = currentModule = module;
-									Application.trigger('app:navigate-to-module', module, region);
-								}
-							}else
-								//fallback to default, if that fails show error
-								Application.error('Applicaton Routes Error', 'The module','<em class="label">', module,'</em>','you requested in context', Application.currentContext.name, 'can NOT be shown on region', region);
+				navigateToModule: function(module, region){
+					module = module || Application.currentContext.defaults.module;
+					region = region || Application.currentContext.defaults.region;
+
+					appRegion = Application.body.currentView.regionManager.get(region);
+					var target = Application.currentContext[module];
+					if(target && appRegion){
+						if(Application.currentModule !== module){
+							appRegion.show(new target.View.Default());
+							Application.currentModule = module;
+							Application.trigger('app:navigate-to-module', module, region);
 						}
-				})(),
+					}else {
+						//fallback to default, if that fails show error
+						Application.error('Applicaton Routes Error', 'The module','<em class="label">', module,'</em>','you requested in context', Application.currentContext.name, 'can NOT be shown on region', '<em class="label">', region,'</em>');						
+					}
+				},
 			}
 		});
 

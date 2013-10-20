@@ -33,7 +33,7 @@
         -->     
 
 
-    <!-- build:js scripts/lib.js -->
+        <!--Libs-->
         <script type="text/javascript" src="libs/dist/base-libs-latest.js" lib="base"></script>
         <script type="text/javascript" src="libs/bower_components/noty/dist/themes/default.js"></script>
 
@@ -50,24 +50,24 @@
         <script type="text/javascript" src="scripts/vendor/justgage/justgage.1.0.1.js"></script>
 
         <script type="text/javascript" src="libs/bower_components/flexslider/jquery.flexslider.js"></script>
-    <!-- endbuild -->
 
-    <!-- build:js scripts/application.js -->
+        <!--Core-->
         <script type="text/javascript" src="scripts/infrastructure/base-lib-fix.js" lib="infrastructure"></script>
-        <script type="text/javascript" src="scripts/infrastructure/template-builder.js"></script>
-        <script type="text/javascript" src="scripts/infrastructure/i18n.js"></script>
+        <script type="text/javascript" src="scripts/infrastructure/utils/template-builder.js"></script>
+        <script type="text/javascript" src="scripts/infrastructure/utils/i18n.js"></script>
         <script type="text/javascript" src="scripts/infrastructure/env.js"></script>
         <script type="text/javascript" src="scripts/infrastructure/main.js"></script>
-
-        <script type="text/javascript" src="scripts/modules/special/registry/widgets.js" lib="core-modules"></script>
+        
+        <script type="text/javascript" src="scripts/modules/special/registry/widgets.js"></script>
         <script type="text/javascript" src="scripts/modules/special/extension/manager.js"></script>
         <script type="text/javascript" src="scripts/modules/special/coordinate/datacenter.js"></script>
         <script type="text/javascript" src="scripts/modules/special/registry/data-units.js"></script>
         <script type="text/javascript" src="scripts/modules/special/registry/contexts.js"></script>
 
-        <script type="text/javascript" src="scripts/widgets/standard/property-grid.js" lib="preset-widgets"></script>
-        <script type="text/javascript" src="scripts/widgets/standard/data-grid.js"></script>
+        <!--Widgets-->
+        <script type="text/javascript" src="scripts/widgets/standard/property-grid.js"></script>
         <script type="text/javascript" src="scripts/widgets/standard/paginator.js"></script>        
+        <script type="text/javascript" src="scripts/widgets/standard/data-grid.js"></script>        
         <script type="text/javascript" src="scripts/widgets/standard/form.js"></script>
         <script type="text/javascript" src="scripts/widgets/standard/progress-bar.js"></script>
         <script type="text/javascript" src="scripts/widgets/standard/single-gauge.js"></script>
@@ -81,6 +81,7 @@
         <script type="text/javascript" src="scripts/widgets/plugin/selector-hover.js"></script>
         <script type="text/javascript" src="scripts/widgets/plugin/view-stack.js"></script>
 
+        <!--Contexts/Submodules/Factories-->
         <script type="text/javascript" src="scripts/modules/context/shared/context.js" lib="N/A"></script>
         <script type="text/javascript" src="scripts/modules/context/shared/banner.js"></script>
         <script type="text/javascript" src="scripts/modules/context/shared/footer.js"></script>
@@ -92,8 +93,6 @@
         <script type="text/javascript" src="scripts/modules/special/factory/admin.js"></script>
         <script type="text/javascript" src="scripts/modules/context/_dev/context.js" non-core></script>
         <script type="text/javascript" src="scripts/modules/context/_dev/servermodelgen.js" non-core></script>
-
-    <!-- endbuild -->
 
     <!-- patch scripts autoloader see env.js -->
         <script type="text/javascript" patch="*">
