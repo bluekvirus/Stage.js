@@ -42,13 +42,14 @@
                 editor: "Password",
                 title: "Comfirm Password"
             },
-            name: {
-                editor: "Text",
-                title: "Real Name"
-            },
-            birthday: {
-                editor: "Date"
-            },
+            // TBI. these should go into profile & preference
+            // name: { 
+            //     editor: "Text",
+            //     title: "Real Name"
+            // },
+            // birthday: {
+            //     editor: "Date"
+            // },
             roles: {
                 editor: "CUSTOM_PICKER",
                 editorOpt: {
