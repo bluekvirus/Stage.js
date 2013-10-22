@@ -83,7 +83,7 @@
 			},
 			controller: {
 				navigateToModule: function(module, region){
-					module = module || Application.currentContext.defaults.module;
+					module = Application.currentContext[module]? module : Application.currentContext.defaults.module;
 					region = region || Application.currentContext.defaults.region;
 
 					appRegion = Application.body.currentView.regionManager.get(region);
