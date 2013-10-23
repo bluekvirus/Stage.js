@@ -63,6 +63,7 @@ module.exports = {
 				'build.js': 'tools/build/build.js',
 			},
 			shared: 'tools/shared',
+			iconprep: 'tools/iconprep',
 			'package.json': 'tools/package.json'
 		},
 		'404.html': 'app/404.html',

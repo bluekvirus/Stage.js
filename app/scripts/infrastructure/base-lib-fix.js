@@ -307,10 +307,18 @@
 	_.extend(Backbone.Marionette.View.prototype, {
 		enableSVGCanvas: function(cb){
 			if(!Raphael) throw new Error('DEV::View::You did NOT have Raphael.js included in the libs.');
-			this.paper = Raphael(this.el, this.$el.width(), this.$el.height(), cb);
+			if(cb){
+				var that = this;
+				Raphael(this.el, this.$el.width(), this.$el.height(), function(){
+					that.paper = this;
+					cb.apply(this, arguments);
+				});
+			}else {
+				this.paper = Raphael(this.el, this.$el.width(), this.$el.height());
+			}
 			//resize paper upon window resize event.
 			this.listenTo(this, 'view:resized', function(e){
-				//this.paper.setSize(this.$el.width(), this.$el.height());
+				this.paper.setSize(this.$el.width(), this.$el.height());
 			});
 		}
 	});	
