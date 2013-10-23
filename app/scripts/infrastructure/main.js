@@ -39,12 +39,13 @@
 			if(Application.currentContext === targetContext) return;
 			
 			Application.currentContext = targetContext;
+			if(!Application.currentContext) throw new Error('DEV::MainApp::You must have the requred context module ' + context + ' defined...'); //see - special/registry/context.js
+
 			if(Application.currentContext.requireLogin && !Application.touch()){
 				Application.currentContext = Application.Context.get('Login');
 				Application.currentContext.cachedRedirect = window.location.hash;
 				window.location.assign('#'); //must clear the hash before switching to Context.Login (+ another route history page)
 			}	
-			if(!Application.currentContext) throw new Error('DEV::MainApp::You must have the requred context module ' + context + ' defined...'); //see - special/registry/context.js
 			Application.body.show(new Application.currentContext.View.Default());
 			if(triggerNavi){
 				Application.router.navigate(triggerNavi, {trigger:true}); //trigger: true, let the route controller re-evaluate the uri fragment.
@@ -83,6 +84,9 @@
 			},
 			controller: {
 				navigateToModule: function(module, region){
+
+					if(!Application.currentContext.defaults) return;//skip navigation, contexts without a defaults block doesn't support region switches by route.
+
 					module = Application.currentContext[module]? module : Application.currentContext.defaults.module;
 					region = region || Application.currentContext.defaults.region;
 

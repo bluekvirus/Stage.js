@@ -7,14 +7,15 @@
  * 2. +Handlebars to Backbone.Marionette
  *
  * component opt-ins: (use in component initialize func)
- * 3. +Action Tag listener mechanisms.
- * 4. +UI Locking support to view regions (without Application scope total lockdown atm...)
- * 5. +Pagination ability to Backbone.Collection
- *
+ * 3. +Action Tag listener mechanisms - View.
+ * 4. +UI Locking support to view regions (without Application scope total lockdown atm...) - Layout.
+ * 5. +Pagination ability - Backbone.Collection
+ * 6. +Layout regions fake content - Layout. 
+ * 
  * planned:
- * 6. tooltips activation upon 'show'
- * 7. region show effect support (override Region.prototype.open and View.prototype.openEffect)
- * 8. user action clicking statistics (use the view._uiDEVName set by enableActionTags(type.name.subname)) - type can be Context/Widget
+ * a. tooltips activation upon 'show'
+ * b. region show effect support (override Region.prototype.open and View.prototype.openEffect)
+ * c. user action clicking statistics (use the view._uiDEVName set by enableActionTags(type.name.subname)) - type can be Context/Widget
  *
  * @author Tim.Liu
  * @create 2013.09.11
@@ -259,6 +260,22 @@
 				}
 			}else {
 				this.fetch(options); //ignore pagination. normal fetch();
+			}
+		}
+	});
+
+
+	/**
+	 * 6. Layout region tests, put fake content into regions.
+	 * Do this in onShow() instead of initialize.
+	 */
+	_.extend(Backbone.Marionette.View.prototype, {
+		fakeRegions: function(){
+			if(this.regions){
+				_.each(this.regions, function(selector, name){
+					this[name].ensureEl();
+					this[name].$el.html('<p class="alert">Region <strong>' + name + '</strong></p>');
+				}, this);
 			}
 		}
 	});

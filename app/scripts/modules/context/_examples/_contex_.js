@@ -21,6 +21,7 @@
 			factory: '/*'Your Factory name defined.'*/', //name registered by the factory module under modules/special/factory/... for UI sub-modules of this context.
 			
 			//the default sub UI module to show when /#navigate/:module can't find a sub module registered under this context.
+			//if you DON'T need to support region switches by route (like in the Admin context), DELETE the defaults block below.
 			defaults: {
 				region: /*'a region you defined by the tpl below'*/,
 				module: /*'the default sub UI module to show'*/
