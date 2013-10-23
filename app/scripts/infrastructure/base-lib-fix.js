@@ -280,4 +280,39 @@
 		}
 	});
 
+	/**
+	 * 7. Respond to window resize event. (during initialize)
+	 * + Fire a event [view:resized] local to the view object so that sub-modules/widgets can listen to it.
+	 * + Added a cb for this event as default [this.onWindowResize()] - to be extended.
+	 */
+	_.extend(Backbone.Marionette.View.prototype, {
+		hookUpWindowResize: function(){
+			var that = this;
+			function onResize(e){
+				if(that.onWindowResize) that.onWindowResize(e);
+				that.trigger('view:resized', e);
+			}			
+			$(window).on('resize', onResize);
+			this.listenTo(this, 'item:before:close', function(){
+				$(window).off('resize', onResize);
+			});
+		}
+	});
+
+
+	/**
+	 * 8. Inject a svg canvas within view. - note that this in cb means paper.
+	 * Do this in onShow() instead of initialize.
+	 */
+	_.extend(Backbone.Marionette.View.prototype, {
+		enableSVGCanvas: function(cb){
+			if(!Raphael) throw new Error('DEV::View::You did NOT have Raphael.js included in the libs.');
+			this.paper = Raphael(this.el, this.$el.width(), this.$el.height(), cb);
+			//resize paper upon window resize event.
+			this.listenTo(this, 'view:resized', function(e){
+				//this.paper.setSize(this.$el.width(), this.$el.height());
+			});
+		}
+	});	
+
 })(window, Swag, Backbone, Handlebars);
