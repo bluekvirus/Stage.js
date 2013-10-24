@@ -15,7 +15,8 @@
     "json3": "~3.2.5",
     "rimraf": "~2.2.2",
     "commander": "~2.0.0",
-    "imagemagick": "~0.1.3"
+    "imagemagick": "~0.1.3",
+    "underscore.string": "~2.3.3"
   },
   "devDependencies": {},
   "scripts": {

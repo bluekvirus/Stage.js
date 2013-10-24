@@ -1,4 +1,21 @@
-#!/usr/bin/env node
+/**
+ * This tool resizes given png/jpg/jpeg images to wanted sizes.
+ * Note that the generated images will be grouped under each 'size folder' inside the src image folder.
+ *
+ * =====
+ * Usage
+ * =====
+ * See node [filename] -h
+ *
+ * ====
+ * GLUE
+ * ====
+ * You can use glue to produce css sprites from generated image files later:
+ * e.g. glue icons/ iconsprites -r --html (--less)
+ *
+ * @author Tim.Liu
+ * @created 2013.10.23
+ */
 
 var program = require('commander'),
 _ = require('underscore'),
