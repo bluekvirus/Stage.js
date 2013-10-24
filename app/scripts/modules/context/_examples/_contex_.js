@@ -37,6 +37,7 @@
 					},
 					onShow: function(){
 						//some code here...
+						//this.fakeRegions(); - fake content in the regions (Layout object only).
 					}
 				})
 			}

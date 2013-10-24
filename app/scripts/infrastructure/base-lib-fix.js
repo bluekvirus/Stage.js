@@ -10,7 +10,9 @@
  * 3. +Action Tag listener mechanisms - View.
  * 4. +UI Locking support to view regions (without Application scope total lockdown atm...) - Layout.
  * 5. +Pagination ability - Backbone.Collection
- * 6. +Layout regions fake content - Layout. 
+ * 6. +Layout regions fake content - Layout.
+ * 7. +Window resize awareness - View.
+ * 8. +SVG canvas support - View. 
  * 
  * planned:
  * a. tooltips activation upon 'show'

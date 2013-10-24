@@ -26,8 +26,15 @@
 				className: '',
 
 				initialize: function(options){
-					//this.enableUILocks(); - Layout View object only.
+					//this.enableUILocks(); - + lockUI(region)/unlockUI()/isUILocked() (Layout object only).
 					this.enableActionTags('Context./*'Your context name.'*/./*'Your sub module name.'*/'); //enable the action tags (attr. action=func)
+					//this.hookUpWindowResize(); - + view:resized event and this.onWindowResize()
+				},
+
+				onShow: function(){
+					//some code here...
+					//this.enableSVGCanvas([cb]); - get a full SVG canvas running inside the module html tag.
+					//this.fakeRegions(); - fake content in the regions (Layout object only).
 				},
 
 				actions: {
