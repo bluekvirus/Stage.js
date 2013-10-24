@@ -293,7 +293,8 @@
 			function onResize(e){
 				if(that.onWindowResize) that.onWindowResize(e);
 				that.trigger('view:resized', e);
-			}			
+			}
+			onResize = _.debounce(onResize, 200);			
 			$(window).on('resize', onResize);
 			this.listenTo(this, 'item:before:close', function(){
 				$(window).off('resize', onResize);

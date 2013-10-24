@@ -61,18 +61,31 @@
 	//init menu,(banner, footer) and dashboard/welcome view.
 	Application.addInitializer(function(options){
 
-		//1.Auto-detect and init context (view that replaces the body region). see the Context.Login
-		var context = Application.config.appContext; //go to default app context.
-		Application.trigger('app:switch-context', context);
-
-		//2.Show the shared UI modules, since these might depend on the Context.Login.Account.user
+		//1.Show the shared UI modules, since these might depend on the Context.Login.Account.user
 		var shared = {
 			banner: Application.Context.get('Shared.Banner'),
 			footer: Application.Context.get('Shared.Footer')
 		}
 		_.each(shared, function(UI, region){
+			Application.getRegion(region).ensureEl();
 			if(UI) Application.getRegion(region).show(new UI.View.Default());
-		});	
+		});
+
+		function trackAppHeight(){
+			//keeps track of context (body region) view port height. This is only useful for full-window web apps (no scroll on <html> or <body>).
+			Application.fullScreenContextHeight = {
+				window: this.innerHeight,
+				noHeader: this.innerHeight - Application.getRegion('banner').$el.outerHeight(true),
+				bodyOnly: this.innerHeight - Application.getRegion('banner').$el.outerHeight(true) - Application.getRegion('footer').$el.outerHeight(true)
+			}
+		};
+		trackAppHeight();
+		$(window).on('resize', trackAppHeight);
+
+		//2.Auto-detect and init context (view that replaces the body region). see the Context.Login
+		var context = Application.config.appContext; //go to default app context.
+		Application.trigger('app:switch-context', context);
+				
 	});
 
 	//Application init: Routes (can use href = #navigate/... to trigger them)
