@@ -85,6 +85,8 @@
 					memo[key] = false;
 					return memo;
 				}, {_all: false});
+			}else {
+				throw new Error('DEV::View::UI locks can only be applied to Layout view objects with valid regions...');
 			}
 		},
 
@@ -125,6 +127,8 @@
 
 		//=====Internal Workers=====
 		_checkRegion: function(region){
+			if(!this._uilocks) throw new Error('DEV::View::You need to enableUILocks() before you can use this...');
+
 			if(!region)
 				region = '_all';
 			else
@@ -304,7 +308,7 @@
 
 
 	/**
-	 * 8. Inject a svg canvas within view. - note that this in cb means paper.
+	 * 8. Inject a svg canvas within view. - note that 'this' in cb means paper.
 	 * Do this in onShow() instead of initialize.
 	 */
 	_.extend(Backbone.Marionette.View.prototype, {
@@ -324,6 +328,53 @@
 				this.paper.setSize(this.$el.width(), this.$el.height());
 			});
 		}
-	});	
+	});
+
+
+	/**
+	 * 9. Enable Tabbable (Bootstrap 2.3.2) sub-views/wigets in View (ItemView/Layout).
+	 * + addTab([View object]) 
+	 * + removeTab([id or number])
+	 * + showTab([id or number]) - for co-op event response to other part of the app.
+	 *
+	 * ---------
+	 * direction: top (default), right, below, and left
+	 * ---------
+	 * 
+	 * Do this in onShow() instead of initialize.
+	 */
+	_.extend(Backbone.Marionette.View.prototype, {
+		enableTabLayout: function(direction, region){
+			//1. prepare tab-layout skeleton
+			var skeleton = [
+				'<div class="tabbable tabs-{{direction}}">',
+					'{{#is direction "below"}}',
+						'<div class="tab-content"></div>',
+						'<ul class="nav nav-tabs"></ul>',
+					'{{else}}',
+						'<ul class="nav nav-tabs"></ul>',
+						'<div class="tab-content"></div>',
+					'{{/is}}',
+				'</div>'
+			];
+
+			skeleton = Handlebars.compile(skeleton.join(''));
+			var html = skeleton({
+				direction: direction || 'top'
+			});
+
+			//2. show the skeleton
+			if(region && this.regions && this[region]){
+				//Layout
+				this[region].ensureEl();
+				this[region].$el.html(html);
+			}else {
+				//ItemView
+				this.$el.html(html);
+			}
+
+			//3. instrument this view with add, remove and show tab methods
+		}
+	});
 
 })(window, Swag, Backbone, Handlebars);
