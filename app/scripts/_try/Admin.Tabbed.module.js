@@ -12,15 +12,20 @@
 		defaultAdminPath: "Test->TabbedLayout",
 
 		View: {
-			Default: Backbone.Marionette.Layout.extend({
+			Default: Backbone.Marionette.ItemView.extend({
 				template: '#custom-module-admin-tabbed-tpl',
-				regions: {
-					tools: '[region=toolbar]',
-					tabs: '[region=tabs]'
-				},
-				
+				// regions: {
+				// 	tools: '[region=toolbar]',
+				// 	tabs: '[region=tabs]'
+				// },
+
 				onShow: function(){
-					this.enableTabLayout('', 'tabs');
+					//this.fakeRegions();
+					this.enableTabLayout('top', 'tabs');
+					_.each(app.Context._Dev.submodules, function(m){
+						this.addTab(new m.View.Default());
+					}, this);
+					this.showTab(0);
 				}
 			})
 		}

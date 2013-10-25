@@ -12,7 +12,9 @@
  * 5. +Pagination ability - Backbone.Collection
  * 6. +Layout regions fake content - Layout.
  * 7. +Window resize awareness - View.
- * 8. +SVG canvas support - View. 
+ * 8. +SVG canvas support - View.
+ * 9. +Tab layout support - View. 
+ * 10.+Auto region resize evenly. - Layout.
  * 
  * planned:
  * a. tooltips activation upon 'show'
@@ -277,11 +279,13 @@
 	 */
 	_.extend(Backbone.Marionette.View.prototype, {
 		fakeRegions: function(){
-			if(this.regions){
+			try {
 				_.each(this.regions, function(selector, name){
 					this[name].ensureEl();
 					this[name].$el.html('<p class="alert">Region <strong>' + name + '</strong></p>');
 				}, this);
+			}catch(e){
+				throw new Error('DEV::View::You should define a proper Layout object to use fakeRegions()');
 			}
 		}
 	});
@@ -340,6 +344,11 @@
 	 * ---------
 	 * direction: top (default), right, below, and left
 	 * ---------
+	 *
+	 * ---------
+	 * tab Title/Icon (icon css className)
+	 * ---------
+	 * Use view.tab.{title: ..., icon: ...} to config. So make sure your defined it in the View object definition.
 	 * 
 	 * Do this in onShow() instead of initialize.
 	 */
@@ -372,8 +381,92 @@
 				//ItemView
 				this.$el.html(html);
 			}
+			//cache the ui locator.
+			var $tabs = {
+				navi: this.$('ul.nav-tabs'),
+				content: this.$('.tab-content')
+			}
 
 			//3. instrument this view with add, remove and show tab methods
+			//3.1 add - WRNING::no duplication check!
+			//		-view is a view instance with view.tabTitle set.
+			this.addTab = function(view){
+				var tabId = _.uniqueId('tab-view');
+				if(!view.tab) throw new Error('DEV::View::You are adding a tab view without the necessary view.tab config block!');
+				$tabs.navi.append('<li><a data-toggle="tab" href="#' + tabId + '"><i class="' + (view.tab.icon || 'icon-question-sign') + '"></i> ' + (view.tab.title || 'UNKNOWN Tab') + '</a></li>');
+				$tabs.content.append(view.render().$el.wrap('<div class="tab-pane"></div>').attr('id', tabId));
+				if(view.onShow) view.onShow();//call onShow() for view object.
+			}
+
+			//3.2 remove - by id/title TBI
+			
+			//3.3 show - by id/title/index
+			this.showTab = function(target){
+				if(_.isNumber(target)){
+					//index
+					$tabs.navi.find('li:eq(' + target + ') a').tab('show');
+				}else if (_.string.startsWith('tab-view')){
+					//id - TBI
+				}else {
+					//title - TBI
+				}
+			}
+
+			//3.4 tab:switch event response - co-op with others. TBI
+		}
+	});
+
+
+	/**
+	 * 10. Auto even Layout region size.
+	 * Do this in onShow() or initialize.
+	 * !Note! that you should also use 7.hookUpWindowResize() to make the even process keeps up with window resizing.
+	 * -------
+	 * options
+	 * -------
+	 * mode: vertical (default) | horizontal
+	 * min: 100 (default)
+	 */
+	_.extend(Backbone.Marionette.Layout.prototype, {
+		
+		evenRegionSize: function(options){
+
+			if(!this.regions) throw new Error('DEV::View::You can only even regions in a Layout object');
+			var keys = _.keys(this.regions) ;
+			var numOfRegions = _.size(this.regions);
+			options = _.extend({
+				mode: 'vertical',
+				min: 100,
+			}, options);
+
+			if(options.mode === 'horizontal'){
+				this.listenTo(this, 'view:resized', function(e){
+
+					var w = this.$el.width();
+					var perRegionWidth = w/numOfRegions;
+					perRegionWidth = perRegionWidth > options.min? perRegionWidth: options.min;
+
+					_.each(this.regions, function(selector, r){							
+						this[r].ensureEl();
+						this[r].$el.width(perRegionWidth).css('float', 'left');
+					},this);
+				});			
+			}else if(options.mode === 'vertical'){
+				this.listenTo(this, 'view:resized', function(e){						
+					
+					var h = Application.fullScreenContextHeight.bodyOnly;
+					var perRegionHeight = h/numOfRegions;
+					perRegionHeight = perRegionHeight > options.min? perRegionHeight: options.min;
+
+					_.each(this.regions,function(selector, r){							
+						this[r].ensureEl();
+						this[r].$el.height(perRegionHeight);
+					},this);
+				});	 	
+			}
+
+			this.trigger('view:resized');
+		
 		}
 	});
 

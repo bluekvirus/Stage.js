@@ -12,8 +12,6 @@
 
 	_.extend(module, {
 
-		label: _.string.titleize(_.string.humanize(module.moduleName)),
-		icon: 'icon-plus-sign',
 		toolURL: '/dev/models/',
 
 		View: {
@@ -98,6 +96,11 @@
 			Default: Backbone.Marionette.Layout.extend({
 				template: '#custom-module-_dev-servermodelgen-tpl',
 				className: 'tab-pane',
+				tab: {
+					title: _.string.titleize(_.string.humanize(module.moduleName)),
+					icon: 'icon-plus-sign',					
+				},
+
 				regions: {
 					'list': '[region=modellist]',
 					'form': '[region=addmodel]'

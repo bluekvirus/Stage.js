@@ -17,8 +17,6 @@
 
 	_.extend(module, {
 
-		label: _.string.titleize(_.string.humanize(module.moduleName)),
-		icon: 'icon-eye-open',
 		defaultSVGIconConfig: {
 			baseSize: 32,
 			showScale: 1.5,
@@ -29,6 +27,11 @@
 			Default: Backbone.Marionette.Layout.extend({
 				template: '#custom-module-_dev-svgiconpreview-tpl',
 				className: 'tab-pane',
+				tab: {
+					title: _.string.titleize(_.string.humanize(module.moduleName)),
+					icon: 'icon-eye-open'	
+				},
+
 				regions: {
 					'dndzone': '[region=dndzone]',
 					'iconlist': '[region=iconlist]'

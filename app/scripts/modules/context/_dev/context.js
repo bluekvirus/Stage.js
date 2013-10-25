@@ -52,18 +52,11 @@
 		},
 		onShow: function(){
 			//show the tool UI modules
-			_.each(context.submodules, function(toolUI){
-				var id = 'tool-tab' + _.string.dasherize(toolUI.moduleName);
-				//a. + tab nav entry
-				this.panel.getEl('ul.nav-tabs').append('<li><a action="toggleTab" data-toggle="tab" href="#'+id+'"><i class="'+toolUI.icon+'"></i> '+toolUI.label+'</a></li>');
-				//b. + actuall ui view
-				toolUI = (new toolUI.View.Default()).render();
-				toolUI.$el.attr('id', id);
-				this.panel.getEl('div.tab-content').append(toolUI.el);
-				toolUI.onShow();
+			this.enableTabLayout('left', 'panel');
+			_.each(context.submodules, function(tool){
+				this.addTab(new tool.View.Default());
 			}, this);
-
-			this.panel.getEl('ul.nav-tabs li a:first').tab('show');
+			this.showTab(0);
 		},
 		actions: {
 			toggleToolPanel: function($action){
@@ -81,10 +74,6 @@
 					this.panel.$el.toggle();
 				}, this));
 			},
-
-			toggleTab: function($action){
-				$action.tab('show');
-			}
 		}
 	});
 
