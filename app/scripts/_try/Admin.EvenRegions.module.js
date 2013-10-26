@@ -16,7 +16,10 @@
 				template: '#custom-module-admin-evenregions-tpl',
 				regions: {
 					tools: '[region=toolbar]',
-					tabs: '[region=tabs]'
+					tabs: '[region=tabs]',
+					test: '[region=test]',
+					tabs2: '[region=tabs2]',
+					test2: '[region=test2]'					
 				},
 
 				initialize: function(options){
@@ -26,7 +29,8 @@
 				onShow: function(){
 					this.fakeRegions();
 					this.evenRegionSize({
-						mode: 'vertical'
+						mode: 'horizontal'
+						//mode: 'vertical'
 					});
 				}
 			})
@@ -39,5 +43,8 @@
 Template.extend('custom-module-admin-evenregions-tpl',
 [
 	'<div region="toolbar"></div>',
-	'<div region="tabs"></div>'
+	'<div region="tabs"></div>',
+	'<div region="test"></div>',
+	'<div region="tabs2"></div>',
+	'<div region="test2"></div>'	
 ]);

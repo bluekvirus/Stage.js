@@ -437,18 +437,19 @@
 			options = _.extend({
 				mode: 'vertical',
 				min: 100,
+				hFloat: 'left',
 			}, options);
 
 			if(options.mode === 'horizontal'){
 				this.listenTo(this, 'view:resized', function(e){
 
 					var w = this.$el.width();
-					var perRegionWidth = w/numOfRegions;
+					var perRegionWidth = Math.round(w/numOfRegions - 0.6); //manually fixing what Math.floor() or -1 couldn't fix here.
 					perRegionWidth = perRegionWidth > options.min? perRegionWidth: options.min;
 
 					_.each(this.regions, function(selector, r){							
 						this[r].ensureEl();
-						this[r].$el.width(perRegionWidth).css('float', 'left');
+						this[r].$el.width(perRegionWidth).css('float', options.hFloat);
 					},this);
 				});			
 			}else if(options.mode === 'vertical'){
