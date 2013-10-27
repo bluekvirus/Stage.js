@@ -12,7 +12,7 @@
 
 	/*=====The immediate action buttons on the 'Developer Tools' bar.=====*/
 	//Note that this is different than the tool panel listing...which is determined by tool UI module labels.
-	var triggers = [
+	var buttons = [
 		{
 			label: 'Toggle Tool Panels',
 			action: 'toggleToolPanel',
@@ -28,15 +28,28 @@
 		regions: {
 			panel: '#dev-tool-panel'
 		},
+		ui: {
+			contextSwitcher: '[ui=contextSwitcher]'
+		},
 		initialize: function(options){
 			options = options || {};
 			this.model = options.model || new Backbone.Model({
-				tasks: triggers
+				tasks: buttons,
+				contexts: _.map(app.Context.submodules, function(m){
+					if(!_.contains(['Shared', '_Dev'], m.name))
+						return {name: m.name};
+					return {};
+				})
 			});
-
+			this.listenTo(app, 'app:context-switched', this.onContextSwitched);
 			this.enableActionTags('Context._DEV.HookUI');
 		},
-		onRender: function(){
+		onContextSwitched: function(context){
+			context = context || app.currentContext.name;
+			this.ui.contextSwitcher.find('[context]').removeClass('active');
+			this.ui.contextSwitcher.find('[context=' + context + ']').addClass('active');
+		},
+		onShow: function(){
 			this.$el.css({
 				padding: '10px',
 				borderTop: '1px solid',
@@ -48,15 +61,13 @@
 				left: 0,
 				overflowY: 'auto'
 			});
-			this.panel.ensureEl();
-		},
-		onShow: function(){
 			//show the tool UI modules
 			this.enableTabLayout('left', 'panel');
 			_.each(context.submodules, function(tool){
 				this.addTab(new tool.View.Default());
 			}, this);
 			this.showTab(0);
+			this.onContextSwitched();
 		},
 		actions: {
 			toggleToolPanel: function($action){
@@ -74,6 +85,10 @@
 					this.panel.$el.toggle();
 				}, this));
 			},
+
+			switchContext: function($action){
+				app.trigger('app:switch-context', $action.attr('context'), true);
+			}
 		}
 	});
 
@@ -95,11 +110,19 @@ Template.extend(
 	'application-context-_dev-hookui-tpl',
 	[
 		'<div>',
-			'<i class="icon-wrench"></i> ',
-			'Developer Tools',
+			'<i class="icon-wrench"></i> Developer Tools ',
+			//tool bar buttons
 			'{{#each tasks}}',
 				'<span class="btn btn-small btn-{{color}} pull-right" style="margin-left: 10px;" action="{{action}}"><i class="{{icon}}"></i> {{label}}</span>',
 			'{{/each}}',
+			//available contexts (quick switch)
+			'<div class="btn-group pull-right" ui="contextSwitcher" style="margin-left:10px;">',
+				'{{#each contexts}}',
+					'{{#if name}}',
+                		'<button type="button" class="btn btn-small" action="switchContext" context="{{name}}">{{name}}</button>',
+                	'{{/if}}',
+                '{{/each}}',
+            '</div>',
 		'</div>',
 		'<div id="dev-tool-panel" style="display:none; margin-top:10px; padding-top:5px; border-top:5px solid #eee">',
 			'<div class="tabbable tabs-left" id="dev-tool-panel-tabs">',

@@ -48,8 +48,11 @@
 			}	
 			Application.body.show(new Application.currentContext.View.Default());
 			if(triggerNavi){
+				if(!_.isString(triggerNavi)) triggerNavi = 'navigate/default_' + $.now();
 				Application.router.navigate(triggerNavi, {trigger:true}); //trigger: true, let the route controller re-evaluate the uri fragment.
 			}
+			//fire a notification round to the sky.
+			Application.trigger('app:context-switched', Application.currentContext.name);
 		};		
 		
 		Application.listenTo(Application, 'app:switch-context', function(context, triggerNavi){

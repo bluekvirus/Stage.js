@@ -284,7 +284,7 @@
 			if(!this.addRegions) throw new Error('DEV::View::You should use a Marionette.Layout object for region auto-detection');
 			
 			var that = this;
-			$($(this.template).html()).filter('[region]').each(function(index, el){
+			$('<div>' + $(this.template).html() + '</div>').find('[region]').each(function(index, el){
 				var r = $(this).attr('region');
 				that.regions[r] = '[region="' + r + '"]';
 			});
