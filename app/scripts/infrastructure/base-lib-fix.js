@@ -10,7 +10,7 @@
  * 3. +Action Tag listener mechanisms - View.
  * 4. +UI Locking support to view regions (without Application scope total lockdown atm...) - Layout.
  * 5. +Pagination ability - Backbone.Collection
- * 6. +Layout regions fake content - Layout.
+ * 6. +Layout regions auto-detects + optional fake content - Layout.
  * 7. +Window resize awareness - View.
  * 8. +SVG canvas support - View.
  * 9. +Tab layout support - View. 
@@ -274,10 +274,24 @@
 
 
 	/**
-	 * 6. Layout region tests, put fake content into regions.
-	 * Do this in onShow() instead of initialize.
+	 * 6. Layout region auto detection, (+ putting fake content into regions).
+	 * Do auto-detect in initialize().
+	 * Do fake region content in show().
 	 */
 	_.extend(Backbone.Marionette.View.prototype, {
+		//in init()
+		autoDetectRegions: function(){
+			if(!this.addRegions) throw new Error('DEV::View::You should use a Marionette.Layout object for region auto-detection');
+			
+			var that = this;
+			$($(this.template).html()).filter('[region]').each(function(index, el){
+				var r = $(this).attr('region');
+				that.regions[r] = '[region="' + r + '"]';
+			});
+			this.addRegions(this.regions);
+		},
+
+		//in show() - only useful during development...
 		fakeRegions: function(){
 			try {
 				_.each(this.regions, function(selector, name){
