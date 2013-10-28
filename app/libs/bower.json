@@ -51,6 +51,7 @@
     "bootstrap2": "bootstrap#2.3.2",
     "bootstrap3": "bootstrap#~3.0.0",
     "tweenmax": "~1.10.3",
-    "highcharts": "~3.0.5"
+    "highcharts": "~3.0.5",
+    "jquery.terminal": "~0.7.7"
   }
 }
