@@ -48,16 +48,17 @@ function loadIndexHTML(target, cb){
 			var coreJS = buildify().load('../shared/EMPTY.js');
 			$('script').each(function(index, el){
 				$script = $(el);
-				if($script.attr('non-core')) return;
-				var srcPath = $script.attr('src');
-				if(srcPath){
-					//ref-ed js, concat 
-					coreJS.concat(config.clientBase + 'app/' + srcPath);
-				}else {
-					//in-line
-					coreJS.perform(function(content){
-						return content + ';' + $script.html() + ';';
-					});
+				if(!$script.attr('non-core')){
+					var srcPath = $script.attr('src');
+					if(srcPath){
+						//ref-ed js, concat 
+						coreJS.concat(config.clientBase + 'app/' + srcPath);
+					}else {
+						//in-line
+						coreJS.perform(function(content){
+							return content + ';' + $script.html() + ';';
+						});
+					}
 				}
 				$script.remove();
 			});
