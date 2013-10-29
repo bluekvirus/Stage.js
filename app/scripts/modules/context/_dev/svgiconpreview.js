@@ -26,7 +26,6 @@
 
 			Default: Backbone.Marionette.Layout.extend({
 				template: '#custom-module-_dev-svgiconpreview-tpl',
-				className: 'tab-pane',
 				tab: {
 					title: _.string.titleize(_.string.humanize(module.moduleName)),
 					icon: 'icon-eye-open'	

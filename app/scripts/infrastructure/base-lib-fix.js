@@ -408,7 +408,7 @@
 				var tabId = _.uniqueId('tab-view');
 				if(!view.tab) throw new Error('DEV::View::You are adding a tab view without the necessary view.tab config block!');
 				$tabs.navi.append('<li><a data-toggle="tab" href="#' + tabId + '"><i class="' + (view.tab.icon || 'icon-question-sign') + '"></i> ' + (view.tab.title || 'UNKNOWN Tab') + '</a></li>');
-				$tabs.content.append(view.render().$el.wrap('<div class="tab-pane"></div>').attr('id', tabId));
+				$tabs.content.append(view.render().$el.addClass('tab-pane').attr('id', tabId));
 				if(view.onShow) view.onShow();//call onShow() for view object.
 			}
 

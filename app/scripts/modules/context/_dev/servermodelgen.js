@@ -95,7 +95,6 @@
 			//----------Default View [as action coordinator]---------
 			Default: Backbone.Marionette.Layout.extend({
 				template: '#custom-module-_dev-servermodelgen-tpl',
-				className: 'tab-pane',
 				tab: {
 					title: _.string.titleize(_.string.humanize(module.moduleName)),
 					icon: 'icon-plus-sign',					
