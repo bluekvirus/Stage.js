@@ -23,7 +23,8 @@
  * Init Options
  * ************
  * collection
- * columns
+ * tools/alterTools - for the toolbar buttons. (or use alterTools(tools) method for toolbar button group customization)
+ * columns - for column specific config and per record actions
  * mode
  * parentCt
  * formWidget (TBI: optional, inferred from model's name or schema in Admin meta module)
@@ -90,6 +91,31 @@ Application.Widget.register('DataGrid', function(){
             this.parentCt = options.parentCt; //for event relay and collaboration with sibling wigets.
             this.formWidget = options.formWidget || this.formWidget;// needed for editing/create records.
 
+            //a.+ toolbar prep with options.alterTools func support.
+            var tools = options.tools || this.tools || [{
+                //multiple button group can be added.
+                group: 'batch', //group name doesn't really matter atm.
+                buttons: [
+                    {
+                        label: 'New',
+                        icon: 'icon-plus-sign icon-white', //the icon class
+                        action: 'new' //the action attribute
+                    },
+                    {
+                        label: '',
+                        icon: 'icon-trash',
+                        action: 'remove'
+                    }
+                ]
+            }];
+            var alterToolsMethod = options.alterTools || this.alterTools;
+            if(alterToolsMethod){
+               alterToolsMethod(tools);
+            }
+            this.model = new Backbone.Model({
+                tools: tools,
+                help: 'This is the help text block', //or URL
+            });          
 
             var that = this;
             //b. cells
@@ -428,12 +454,19 @@ Template.extend(
 	'widget-datagrid-view-wrap-tpl',
 	[
 		'<div class="datagrid-header-container">',
-			'<a class="btn btn-success btn-action-new" action="new"><i class="icon-plus-sign icon-white"></i> New</a>',
-			//'<a class="btn btn-danger pull-right" action="delete"><i class="icon-trash"></i></a>',
-			'<div class="pull-right input-prepend local-filter-box">',
-				'<span class="add-on"><i class="icon-filter"></i></span>',
-				'<input type="text" class="input input-medium" name="filter" placeholder="Filter...">',
-			'</div>',
+            '<div class="btn-toolbar">',
+                '{{#each tools}}',
+                    '<div class="btn-group">',
+                        '{{#each buttons}}',
+                            '<a class="btn btn-action-{{action}}" action="{{action}}"><i class="{{icon}}"></i> {{label}}</a>',
+                        '{{/each}}',
+                    '</div>',
+                '{{/each}}',
+                '<div class="pull-right input-prepend local-filter-box">',
+                    '<span class="add-on"><i class="icon-filter"></i></span>',
+                    '<input type="text" class="input input-medium" name="filter" placeholder="Filter...">',
+                '</div>',
+            '</div>',
 		'</div>',
 		'<div class="datagrid-body-container"></div>',
 		'<div class="datagrid-footer-container">',

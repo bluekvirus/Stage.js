@@ -9,6 +9,18 @@
         //type: 'complex',
 		menuPath: 'Test->Blog',
         actions: ['edit', 'delete'],
+        alterTools: function(tools){
+            tools.push({
+                group: 'services',
+                buttons: [
+                    {
+                        label: 'Sync',
+                        icon: 'icon-circle-arrow-down',
+                        action: 'fetchFromServices'
+                    }
+                ]
+            });
+        },
 		fields: {
             title: {
                 title: "Title",

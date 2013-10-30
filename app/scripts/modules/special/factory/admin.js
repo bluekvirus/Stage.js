@@ -59,6 +59,7 @@
  * 			...
  * 		},
  * 		grid: ...a copy of widget definition (.extend({}))... see the Widgets Registry module [modules/special/registry/widgets.js]
+ * 		tools/alterTools: for toolbar setting and manipulation - see widgets/standard/data-grid.js
  * 		actions: [edit, delete] or none (which will remove both select_all and action columns) or {
  * 			batch: false,
  * 			list: [edit, delete, ...] 
@@ -190,7 +191,7 @@
 					//table module
 					module.collection = new module.Collection();
 					module.collection.enablePagination({mode: 'server'});
-					module.Widgets.DataGrid = module.Widgets.DataGrid.extend({columns: config.columns, formWidget: module.Widgets.Form}); //+ columns, form to datagrid
+					module.Widgets.DataGrid = module.Widgets.DataGrid.extend({columns: config.columns, tools: forwaredOptions.tools, alterTools: forwaredOptions.alterTools, formWidget: module.Widgets.Form}); //+ columns, form to datagrid
 				}else {
 					//complex module
 					module.model = new module.Model();
@@ -230,8 +231,8 @@
 					}
 
 				});
-				return module;
 			})(module, config, options);
+			return module;
 		},
 
 	});
