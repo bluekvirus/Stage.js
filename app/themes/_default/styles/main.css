@@ -1,4 +1,4 @@
-@import "../flexslider.css";/*!
+@import "../flexslider.css";@import "../jquery.ui.core.css";@import "../jquery.ui.datepicker.css";/*!
  * The main CSS [LESS pre-processor] file for the site.
  * This is rendered directly on the client side by less.js
  * @author Tim.Liu
