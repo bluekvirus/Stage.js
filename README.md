@@ -1,9 +1,9 @@
 The Framework
-===
+=============
 The client side app framework is still under active development, so the current upgrade process demands a bit efforts.
 
 Upgrade
----
+-------
 (make sure you save these when upgrading the client app framework)
 ```
 1. scripts/
@@ -21,7 +21,7 @@ Upgrade
 ```
 
 Update 
----
+------
 (if you don't need to upgrade to pick up new app structure and tools, can simply update these files only)
 ```
 scripts/
@@ -30,12 +30,35 @@ scripts/
 ```
 
 Plan
----
+----
 We will improve the update/upgrade process in future development.
 
 
+Include other js libs
+---------------------
+The default base.js contains selected libs for the project, if you would like to introduce more cd into `/app/libs`
+then `bower install && npm install` - you need to know how to use bower tho.
+include the lib your need in `index.html` from `bower_components`
+
+###buildify.js
+This is for building and combining required libs into a base-lib.js (before combined into the base.js with project specifics by `/tools/spawn`).
+Check its content for sample usage. If you don't want the base.js we prepared for you, this is where to start from scratch.
+
+
+Build for production use
+------------------------
+Use `/tools/build` you need to check the config file `config/app.js` (though, default should be good and ready)
+`node build.js app` will build your client app into `/tools/build/dist/app`
+Use attribute `non-core="true"` in the `<script>` tag within your index.html, if you don't want some scripts to be built into the big all-in-one js.
+
+
+Prepare icon css sprites or svg paths
+-------------------------------------
+see `/app/themes/_default/README.md`
+
+
 Spawn Projects from current code base
----
+-------------------------------------
 Config `/tools/spawn`
 ```
 config/ - has the folder structure settings for newly spawned projects.
@@ -51,12 +74,12 @@ Warning::
 
 
 Note 0.8.1 web client app framework 
----
+-----------------------------------
 ...
 
 
 Trouble Shooting
-===
+================
 
 gitlab_ci fix: 
 --------------
