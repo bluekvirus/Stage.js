@@ -170,9 +170,8 @@
 			prevPage: only works if 'cache' is set to false;
 		}
 		+Events 
-			1. pagination:updatePageNumbers - fired upon 'sync' after 'reset';
-			2. pagination:updatePageNumbers:clientMode - fired upon 'sync' after 'add' and 'destroy' after 'remove', only in non-cached client mode.
-			3. pagination:pageChanged - fired upon each time the collection change to hold another page of data.
+			1. pagination:updatePageNumbers - fired upon 'sync' after 'add' and 'destroy' after 'remove', only in non-cached client mode.
+			2. pagination:pageChanged - fired upon each time the collection change to hold another page of data.
 		Note that: at any given time, you can still use fetch(), using load() will always enforce a paginated fetch()
 */
 	_.extend(Backbone.Collection.prototype, {
@@ -191,8 +190,20 @@
 			//we need to +/- related records from _cachedResponse array as well.
 			function signalClientModePageNumberUpdate(collection){
 				collection.totalRecords = collection._cachedResponse.length;
-				collection.trigger('pagination:updatePageNumbers:clientMode');
+				collection.trigger('pagination:updatePageNumbers');
 			}
+
+			//expose a pair of api exclusively. (for loading data locally instead of 1st-time load from server.)
+			if(this.pagination.mode === 'client'){
+				this.prepDataStart = function(data){
+					this._cachedResponse = this._cachedResponse || [];
+					this._cachedResponse = this._cachedResponse.concat(data);
+				};
+				this.prepDataEnd = function(){
+					signalClientModePageNumberUpdate(this);
+				}
+			}
+
 			var eWhiteList = {
 				'sync': true,
 				'destroy': true
@@ -202,7 +213,7 @@
 				if(this.pagination.cache) return;
 				if(this === target){
 					//Note that this === target means the 'sync' detected is after 'reset'. This is true for both client and server mode.
-					this.trigger('pagination:updatePageNumbers');
+					//this.trigger('pagination:updatePageNumbers');
 					//1. we are only interested in sync after add and destroy after remove.
 					return;
 				}
@@ -228,6 +239,8 @@
 				}
 
 			});
+			
+			return this;
 		},
 
 		//A version of fetch() with pagination config applied. Always use load if possible.

@@ -3,8 +3,15 @@
  *
  * This is the general application widgets manager.
  * 
- * A module is an entity that has corresponding menu item with default view (layout)
+ * A module is an entity that has multiple view definitions and a default view to show in a layout.
  * A widget is a view that has actions that support application logics. Used within a module.
+ *
+ * Important
+ * =========
+ * Use create() at all times if possible, use get() definition with caution, instanciate only 1 instance per definition.
+ * There is something fishy about the initialize() function, events binding only get to execute once with this.listenTo(), if multiple instances of a widget
+ * listens to a same object's events in their initialize(), only one copy of the group of listeners are active.
+ * 
  *
  * @author Tim.Liu (zhiyuanliu@fortinet.com)
  * @update 2013.03.22

@@ -24,7 +24,7 @@ Application.Widget.register('Paginator', function(){
 				current: 1
 			});
 			this.listenTo(this.model, 'change', this.render);
-			this.listenTo(this.targetCollection, 'pagination:updatePageNumbers pagination:updatePageNumbers:clientMode', function(){
+			this.listenTo(this.targetCollection, 'pagination:pageChanged pagination:updatePageNumbers', function(){
 				//re-calculate the page numbers upon +/- records.
 				var pageRange = _.range(1, 1+ (Math.ceil(this.targetCollection.totalRecords/this.targetCollection.pagination.pageSize) || 1));
 				pageRange[this.targetCollection.currentPage-1] = {current: this.targetCollection.currentPage};
