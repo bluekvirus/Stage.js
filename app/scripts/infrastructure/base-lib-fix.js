@@ -9,7 +9,7 @@
  * component opt-ins: (use in component initialize func)
  * 3. +Action Tag listener mechanisms - View.
  * 4. +UI Locking support to view regions (without Application scope total lockdown atm...) - Layout.
- * 5. +Pagination ability - Backbone.Collection
+ * 5. +Pagination & Search/Filter & Recover ability - Backbone.Collection
  * 6. +Layout regions auto-detects + optional fake content - Layout.
  * 7. +Window resize awareness - View.
  * 8. +SVG canvas support - View.
@@ -199,7 +199,7 @@
 					this._cachedResponse = this._cachedResponse || [];
 					this._cachedResponse = this._cachedResponse.concat(data);
 				};
-				this.prepDataEnd = function(){
+				this.prepDataEnd = function(){ //also need to call this whenever the _cachedResponse changes(e.g search & recover).
 					signalClientModePageNumberUpdate(this);
 				}
 			}
@@ -269,6 +269,7 @@
 					options.data = _.extend(options.data || {}, {
 						page: this.currentPage,
 						per_page: this.pagination.pageSize,
+						criteria: this.criteria, //for remote search support
 					});
 					var that = this;
 					_.extend(options, {
@@ -282,6 +283,52 @@
 			}else {
 				this.fetch(options); //ignore pagination. normal fetch();
 			}
+		},
+
+		//Supporting simple search(filtering) in a collection through {key: val, key2: val2, ...}
+		//For complicated remote search use load() options instead.
+		//For complicated local search use fitler() iterator instead. 
+		//mode: client(local), server(remote) (this can be different than pagination mode)
+		search: function(criteria, mode){
+			this.recover();
+			mode = mode || (this.pagination && this.pagination.mode) || 'client';
+			//mode server, we send criteria through load();
+			if(mode === 'server'){
+				this.criteria = criteria;
+				this.load();
+			}else {
+				if(this._cachedResponse) {
+					//use cached json response array
+					this._recoverArray = this._cachedResponse;
+					this._cachedResponse = _.where(this._recoverArray, criteria);
+					this.prepDataEnd();
+					this.load();
+				}else {
+					//directly on collection.
+					this._recoverCollection = _.clone(this.models);
+					this.set(this.where(criteria));
+				}
+			}
+		},
+
+		//recover from search/filtering.
+		recover: function(){
+			if(this._recoverCollection) {
+				this.set(this._recoverCollection);
+				delete this._recoverCollection;
+				return;
+			}
+			if(this.criteria) {
+				delete this.criteria;
+				this.load();
+			}
+			if(this._recoverArray) {
+				this._cachedResponse = this._recoverArray;
+				delete this._recoverArray;
+				this.prepDataEnd();
+				this.load();
+			}
+			
 		}
 	});
 
