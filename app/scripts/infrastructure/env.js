@@ -324,6 +324,7 @@ window.Application = new Backbone.Marionette.Application();
 			success: function(res){
 				result = true;
 				Application.user = res.user;
+				Application.trigger('app:user-changed');
 			},
 			error: function(){
 				delete Application.user;

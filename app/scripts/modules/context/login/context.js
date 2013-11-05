@@ -3,19 +3,18 @@
 	app.Context.create('Login', function(context){
 		
 		return {
-			defaults: {
-				region: 'content',
-				module: 'Account'
-			},
 			View: {
 				Default: Backbone.Marionette.Layout.extend({
 					template: '#application-context-login-tpl',
-					regions: {
-						content: '.content'
+					className: 'container',
+					initialize: function(options){
+						this.autoDetectRegions();
+					},
+					onShow: function(){
+						this.form.show(new context.Account.View.Default());
 					}
 				})
 			}
-			//Do NOT need to use onShow() here, since the defaults config will put 'Account' module on page.
 		}
 
 	});
@@ -25,6 +24,6 @@
 Template.extend(
 	'application-context-login-tpl',
 	[
-		'<div class="container content"></div>'
+		'<div region="form"></div>'
 	]
 );

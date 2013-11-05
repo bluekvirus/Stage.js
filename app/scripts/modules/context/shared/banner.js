@@ -28,7 +28,7 @@
 						logo: 'Your project logo path',
 					});
 					this.listenTo(this.model, 'change', this.render);
-					this.listenTo(app.Context.get('Login'), 'login:account:user-changed', this.onShow);
+					this.listenTo(app, 'app:user-changed', this.onShow);
 					this.enableActionTags('Shared.Banner');
 				},
 
@@ -41,7 +41,8 @@
 						var that = this;
 						$.get('/logout', function() {
 							app.user = {name: undefined};
-							that.onShow();
+							that.onShow();//clear user display on banner.
+							delete app.user; //clean up user info in app.
 							app.trigger('app:switch-context', 'Login', '#navigate/Welcome');
 						});
 					}
@@ -81,7 +82,7 @@ Template.extend(
 								'<li><a href="#"><i class="icon-edit"></i> Edit Profile</a></li>',
 								'<li><a href="#"><i class="icon-comment"></i> Open Ticket</a></li>',
 								'<li class="divider"></li>',
-								'<li><a action="logout"><i class="icon-share-alt"></i> Logout</a></li>',
+								'<li><a href="#" action="logout"><i class="icon-share-alt"></i> Logout</a></li>',
 	                        '</ul>',
                       	'</li>',
                     '{{/if}}',
