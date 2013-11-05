@@ -71,6 +71,7 @@ module.exports = {
 			},
 			shared: 'tools/shared',
 			iconprep: 'tools/iconprep',
+			codesnippets: 'tools/codesnippets',
 			'package.json': 'tools/package.json'
 		}
 	}

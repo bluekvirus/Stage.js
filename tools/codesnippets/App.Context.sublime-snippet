@@ -1,0 +1,64 @@
+<snippet>
+	<content><![CDATA[
+/**
+ * New Context Module (UI or Non-UI related) Code Template.
+ *
+ * @author Tim.Liu
+ * @create 2013.10.20
+ * @version 1.0.1
+ * @sublime-snippet
+ */
+
+;(function(app){
+
+	//Non-UI related Context doesn't have to have the 2nd parameter (the constructor that returns a View.Default)
+	var context = app.Context.create('${1:Your context name}');
+
+	//Or
+	
+	//UI related Context should return an object that has a defaults config and a View.Default (BB.View or BM.View) object.
+	app.Context.create('${1:Your context name}', function(context){
+
+		return {
+			requireLogin: true, //if showing your context in app.body region requires the user to have logged in.
+			factory: '${4:Your Factory name}', //name registered by the factory module under modules/special/factory/... for UI sub-modules of this context.
+			
+			//the default sub UI module to show when /#navigate/:module can't find a sub module registered under this context.
+			//if you DON'T need to support region switches by route (like in the Admin context), DELETE the defaults block below.
+			defaults: {
+				region: '${2:Your default region name}',
+				module: '${3:Your default sub UI module to show}'
+			},
+			
+			//The View object block, a Default View object must be defined by a UI related context or sub module. - see _sub_example.js
+			View: {
+				Default: Backbone.Marionette.Layout.extend({
+					template: '#application-context-${1:Your context name}-tpl',
+					className: '',
+					initialize: function(options){
+						this.autoDetectRegions();
+					},
+					onShow: function(){
+						//some code here...
+						this.fakeRegions(); //fake content in the regions (Layout object only).
+					}
+				})
+			}
+		} 
+	});
+
+})(Application);
+
+Template.extend(
+	'application-context-${1:Your context name}-tpl',
+	[
+	    '<div class="" region="${2:Your default region name}"></div>',
+	    '<div class="" region=""></div>'
+	]
+);
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>app.context</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.js</scope>
+</snippet>
