@@ -9,6 +9,7 @@
  * Borrowed 
  * 1. twitter-bootstrap
  * 2. jquery-file-upload-ui
+ * 3. jquery-ui-core + datepicker
  * =======================
  */
 @import "../../../libs/bower_components/bootstrap2/less/bootstrap.less";
@@ -18,12 +19,13 @@
  * =========================
  */
 //Base
-@import "variables";
-@import "mixins";
-//Components
+@import "variables"; //colors and sizes
+@import "mixins"; //utils
+// @import "icons"; //icon sprites less (generated - see README.md under specific theme package)
+@import "fonts"; //fonts with web font
+@import "core"; //base theme and css components
 
-@import "layout";
-@import "menu-accordion";
+//Widgets
 @import "form";
 @import "datepicker";
 @import "file-editor";
@@ -34,47 +36,20 @@
 @import "datagrid";
 @import "mask";
 
-//Navbar - Top
-.banner {
-  .navbar-inner {
-    padding: 5px 20px;
-  }
-}
+//Modules
+//Context.Admin
+@import "menu-accordion";
+@import "admin-module";
 
-//Buttons, Label & Badges
-.btn-action {
-  &-new {
-    .buttonBackground(@btnCreateBG, @btnCreateBGHL);
-  }
-  &-save {
-    .buttonBackground(@btnSaveBG, @btnSaveBGHL);
-  }
-}
+//Context.Shared
+// @import "banner"; //main navigation/logo/info
+// @import "footer"; //additional info/contact/feedback/links
 
-.label {
-  &[action]:hover {
-      cursor: pointer;
-  }
-  &[action=edit] {
-    background-color: @color-sand;
-  }
-  &[action=delete] {
-    background-color: @color-red;
-  }
-
-  &-data-field {
-    background-color: @color-sand;
-  }
-  &-na {
-    background-color: @color-dark;
-  }
-}
 /*!
  * =========================
  * CSS END
  * =========================
  */
 
-@import "../flexslider.css";
 @import "../jquery.ui.core.css";
 @import "../jquery.ui.datepicker.css";

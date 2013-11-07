@@ -1,0 +1,53 @@
+/**
+ * This one sets up the base of the theme. 
+ * Utilizing variables.less, mixins.less and bootstrap provided mixins
+ *
+ * @author Tim.Liu
+ * @created 2013.11.07
+ */
+
+//1. General
+//====================
+//Background
+
+//Links
+
+//2. Style Components
+//====================
+//Panels
+//Alters & Messages
+//Tooltips & Popups
+
+//Buttons
+.btn-action {
+  &-new {
+    .buttonBackground(@btnCreateBG, @btnCreateBGHL);
+  }
+  &-save, &-primary {
+    .buttonBackground(@btnSaveBG, @btnSaveBGHL);
+  }
+}
+
+//Labels & Badges
+.label {
+  &[action]:hover {
+      cursor: pointer;
+  }
+  &[action=edit] {
+    background-color: @color-sand;
+  }
+  &[action=delete] {
+    background-color: @color-red;
+  }
+
+  &-data-field {
+    background-color: @color-sand;
+  }
+  &-na {
+    background-color: @color-dark;
+  }
+}
+
+
+
+

@@ -46,6 +46,8 @@
 				Application.currentContext = Application.Context.get('Login');
 				Application.currentContext.cachedRedirect = window.location.hash;
 				window.location.assign('#'); //must clear the hash before switching to Context.Login (+ another route history page)
+			}else {
+				delete Application.currentContext.cachedRedirect
 			}	
 			Application.body.show(new Application.currentContext.View.Default());
 			if(triggerNavi){

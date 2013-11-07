@@ -84,7 +84,7 @@ Template.extend(
 			'<div class="control-group">',
 				'<div class="controls">',
 					'<label class="checkbox"><input type="checkbox">Remember me</label>',
-					'<button class="btn" type="button" action="signin">Sign in</button>',
+					'<button class="btn btn-action-primary" type="button" action="signin">Sign in</button>', //css in core.less that utilizes variables.less and mixins.less
 				'</div>',
 			'</div>',
 		'</form>'
