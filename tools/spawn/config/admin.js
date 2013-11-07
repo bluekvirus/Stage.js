@@ -57,7 +57,8 @@ module.exports = {
 				resources: 'app/static/resources'
 			},
 			themes: {
-				_default: 'app/themes/_default'
+				_default: 'app/themes/_default',
+				'README.md': 'app/themes/README.md'
 			},
 			'404.html': 'app/404.html',
 			'index.html': false			
