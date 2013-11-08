@@ -34,12 +34,9 @@
 
 
         <!--Libs-->
-        <script type="text/javascript" src="libs/dist/base-libs-latest.js" lib="base"></script>
+        <script type="text/javascript" src="libs/dist/base-libs-latest.js" lib="libs"></script>
         <script type="text/javascript" src="libs/bower_components/noty/dist/themes/default.js"></script>
 
-        <script type="text/javascript" src="scripts/vendor/modified/backbone-forms/backbone-forms.js"></script>
-        <script type="text/javascript" src="scripts/vendor/modified/backbone-forms/backbone-form-bootstrap-tpl.js"></script>
-        <script type="text/javascript" src="libs/bower_components/backbone-forms/distribution/editors/list.js"></script>
         <script type="text/javascript" src="libs/bower_components/jquery-file-upload/js/jquery.fileupload.js"></script>
 
         <script type="text/javascript" src="libs/bower_components/backgrid/lib/backgrid.js"></script>
@@ -47,58 +44,61 @@
         <script type="text/javascript" src="libs/bower_components/jquery.tablesorter/js/jquery.tablesorter.js"></script>
 
         <script type="text/javascript" src="libs/bower_components/raphael/raphael.js"></script>
-        <script type="text/javascript" src="scripts/vendor/justgage/justgage.1.0.1.js"></script>
+        <script type="text/javascript" src="scripts/vendor/justgage/justgage.1.0.1.js"></script><!--Want to remove-->
 
-        <script type="text/javascript" src="libs/bower_components/flexslider/jquery.flexslider.js"></script>
+        <script type="text/javascript" src="libs/bower_components/flexslider/jquery.flexslider.js"></script><!--Want to remove-->
 
         <!--Core-->
-        <script type="text/javascript" src="scripts/infrastructure/base-lib-fix.js" lib="infrastructure"></script>
-        <script type="text/javascript" src="scripts/infrastructure/utils/template-builder.js"></script>
-        <script type="text/javascript" src="scripts/infrastructure/utils/i18n.js"></script>
-        <script type="text/javascript" src="scripts/infrastructure/env.js"></script>
-        <script type="text/javascript" src="scripts/infrastructure/main.js"></script>
-        
-        <script type="text/javascript" src="scripts/modules/special/registry/widgets.js"></script>
-        <script type="text/javascript" src="scripts/modules/special/extension/manager.js"></script>
-        <script type="text/javascript" src="scripts/modules/special/coordinate/datacenter.js"></script>
-        <script type="text/javascript" src="scripts/modules/special/registry/data-units.js"></script>
-        <script type="text/javascript" src="scripts/modules/special/registry/contexts.js"></script>
+        <script type="text/javascript" src="scripts/core/env.js" lib="core"></script>
+        <script type="text/javascript" src="scripts/core/enhancements/collection.js"></script>
+        <script type="text/javascript" src="scripts/core/enhancements/view.js"></script>
+        <script type="text/javascript" src="scripts/core/utils/i18n.js"></script>
+        <script type="text/javascript" src="scripts/core/utils/alerts.js"></script>
+        <script type="text/javascript" src="scripts/core/utils/theme-roller.js"></script>
+        <script type="text/javascript" src="scripts/core/utils/script-loader.js"></script>
+        <script type="text/javascript" src="scripts/core/utils/ajax-patch.js"></script>
+        <script type="text/javascript" src="scripts/core/utils/downloader.js"></script>
+        <script type="text/javascript" src="scripts/core/utils/user-session.js"></script>
+        <script type="text/javascript" src="scripts/core/modules/data-units.js"></script>
+        <script type="text/javascript" src="scripts/core/modules/contexts.js"></script>
+        <script type="text/javascript" src="scripts/core/modules/widgets.js"></script>
+        <script type="text/javascript" src="scripts/core/modules/editors.js"></script>
+        <script type="text/javascript" src="scripts/core/main.js"></script>
+
+        <!--Editors-->
+        <!--<script type="text/javascript" src="scripts/widgets/editor/custom_file.js"></script>Need to be ported to editor-->
+        <!--<script type="text/javascript" src="scripts/widgets/editor/custom_resource-control.js"></script>Need to be ported to widget/editor-->
+        <!--<script type="text/javascript" src="scripts/widgets/editor/custom_date-picker.js"></script>Need to be ported to editor-->
 
         <!--Widgets-->
-        <script type="text/javascript" src="scripts/widgets/standard/property-grid.js"></script>
-        <script type="text/javascript" src="scripts/widgets/standard/paginator.js"></script>        
-        <script type="text/javascript" src="scripts/widgets/standard/data-grid.js"></script>        
-        <script type="text/javascript" src="scripts/widgets/standard/form.js"></script>
-        <script type="text/javascript" src="scripts/widgets/standard/progress-bar.js"></script>
-        <script type="text/javascript" src="scripts/widgets/standard/single-gauge.js"></script>
-        <script type="text/javascript" src="scripts/widgets/editor/custom_grid.js"></script>
-        <script type="text/javascript" src="scripts/widgets/editor/custom_picker.js"></script>
-        <script type="text/javascript" src="scripts/widgets/editor/custom_file.js"></script>
-        <script type="text/javascript" src="scripts/widgets/editor/custom_resource-control.js"></script>
-        <script type="text/javascript" src="scripts/widgets/editor/custom_date-picker.js"></script>
-        <script type="text/javascript" src="scripts/widgets/plugin/mask.js"></script>
-        <script type="text/javascript" src="scripts/widgets/plugin/selector-flatten.js"></script>
-        <script type="text/javascript" src="scripts/widgets/plugin/selector-hover.js"></script>
-        <script type="text/javascript" src="scripts/widgets/plugin/view-stack.js"></script>
-        <script type="text/javascript" src="scripts/widgets/plugin/md-content.js"></script>
+        <script type="text/javascript" src="scripts/core/parts/widgets/standard/property-grid.js"></script>
+        <script type="text/javascript" src="scripts/core/parts/widgets/standard/paginator.js"></script>        
+        <script type="text/javascript" src="scripts/core/parts/widgets/standard/data-grid.js"></script>        
+        <script type="text/javascript" src="scripts/core/parts/widgets/standard/progress-bar.js"></script>
+        <script type="text/javascript" src="scripts/core/parts/widgets/standard/single-gauge.js"></script>
 
-        <!--Contexts/Submodules/Factories-->
-        <script type="text/javascript" src="scripts/modules/context/shared/context.js" lib="N/A"></script>
-        <script type="text/javascript" src="scripts/modules/context/shared/banner.js"></script>
-        <script type="text/javascript" src="scripts/modules/context/shared/footer.js"></script>
-        <script type="text/javascript" src="scripts/modules/context/login/context.js"></script>
-        <script type="text/javascript" src="scripts/modules/context/login/account.js"></script>
-        <script type="text/javascript" src="scripts/modules/context/admin/context.js"></script>
-        <script type="text/javascript" src="scripts/modules/context/admin/menu.js"></script>
-        <script type="text/javascript" src="scripts/modules/context/admin/dashboard.js"></script>
-        <script type="text/javascript" src="scripts/modules/special/factory/admin.js"></script>
-        <script type="text/javascript" src="scripts/modules/context/admin/role.js"></script>
-        <script type="text/javascript" src="scripts/modules/context/admin/user.js"></script>        
-        <script type="text/javascript" src="scripts/modules/context/_dev/context.js" non-core="true"></script>
-        <script type="text/javascript" src="scripts/modules/context/_dev/servermodelgen.js" non-core="true"></script>
-        <script type="text/javascript" src="scripts/modules/context/_dev/svgiconpreview.js" non-core="true"></script>
+        <script type="text/javascript" src="scripts/core/parts/widgets/plugin/mask.js"></script><!--Need to refine-->
+        <script type="text/javascript" src="scripts/core/parts/widgets/plugin/selector-flatten.js"></script>
+        <script type="text/javascript" src="scripts/core/parts/widgets/plugin/selector-hover.js"></script>
+        <script type="text/javascript" src="scripts/core/parts/widgets/plugin/view-stack.js"></script><!--Need to refine-->
+        <script type="text/javascript" src="scripts/core/parts/widgets/plugin/md-content.js"></script>
 
-    <!-- patch scripts autoloader see env.js -->
+        <!--Contexts/Submodules-->
+        <script type="text/javascript" src="scripts/contexts/shared/context.js" lib="N/A"></script>
+        <script type="text/javascript" src="scripts/contexts/shared/banner.js"></script>
+        <script type="text/javascript" src="scripts/contexts/shared/footer.js"></script>
+        <script type="text/javascript" src="scripts/contexts/login/context.js"></script>
+        <script type="text/javascript" src="scripts/contexts/login/account.js"></script>
+        <script type="text/javascript" src="scripts/contexts/admin/context.js"></script>
+        <script type="text/javascript" src="scripts/contexts/admin/menu.js"></script>
+        <script type="text/javascript" src="scripts/contexts/admin/dashboard.js"></script>
+        <!--Need to refine admin factory using the new 'Formless' concept-->
+        
+        <script type="text/javascript" src="scripts/contexts/_dev/context.js" non-core="true"></script>
+        <script type="text/javascript" src="scripts/contexts/_dev/servermodelgen.js" non-core="true"></script>
+        <script type="text/javascript" src="scripts/contexts/_dev/svgiconpreview.js" non-core="true"></script>
+
+    <!-- patch scripts autoloader see env.js, also used in build for marking a position to inject auto-loaded scripts -->
         <script type="text/javascript" patch="*">
             Application.patchScripts();
         </script>

@@ -31,30 +31,28 @@ module.exports = {
 			},
 			scripts: {
 				_try: {}, //autoload scripts - usually patches after dist built
-				modules: { //layouts/page wrapper
-					context: 'app/scripts/modules/context',
-					special: { //Non-UI worker modules.
-						factory: {
-							'admin.js': 'app/scripts/modules/special/factory/admin.js'
-						}
-					}
+				contexts: 'app/scripts/contexts',
+				parts: { //let developer build project specific parts.
+					editors: {
+						_examples: 'app/scripts/core/parts/editors/_examples',
+						'README.md': 'app/scripts/core/parts/editors/README.md'
+					},
+					widgets: {
+						_examples: 'app/scripts/core/parts/widgets/_examples',
+						'README.md': 'app/scripts/core/parts/widgets/README.md',
+						plugin: {}, //jquery plugins (as widgets)
+						standard: {} //backbone view
+					},
 				},
 				vendor: {}, //3rd party libs
-				widgets: {
-					_examples: 'app/scripts/widgets/_examples',
-					editor: {}, //form editors
-					plugin: {}, //jquery plugins (as widgets)
-					standard: {} //backbone view
-				},
-				'base.js': true, //cached srcs see - loadIndexHTML() in spawn.js;
-				'infrastructure.js': false,
+				'libs.js': true, //cached srcs see - loadIndexHTML() in spawn.js;
+				'core.js': false,
 				'config.js': 'app/scripts/config.js' //-non minified or copied
 			},
 			static: {
-				menu: {
-					'menu.json': 'app/static/menu/menu.json'
-				},
-				resources: 'app/static/resources'
+				resources: 'app/static/resources',
+				md: 'app/static/md',
+				admin: 'app/static/admin'
 			},
 			themes: {
 				_default: 'app/themes/_default',

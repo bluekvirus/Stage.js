@@ -9,6 +9,7 @@
  * 2. use '...string...'.i18n() instead of just '...string...',
  * 3. use {{i18n vars/paths or '...string...'}} in templates, {{{...}}} for un-escaped.
  * 4. use $.i18n(options) to translate html tags with [data-i18n-key] [data-i18n-module] data attributes. 
+ *
  * 
  * @author Yan Zhu (yanzhu@fortinet.com), Tim Liu (zhiyuanliu@fortinet.com)
  * @date 2013-08-26

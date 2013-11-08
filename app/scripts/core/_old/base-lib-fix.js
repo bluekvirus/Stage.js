@@ -17,9 +17,10 @@
  * 10.+Auto region resize evenly. - Layout.
  * 
  * planned:
- * a. tooltips activation upon 'show'
- * b. region show effect support (override Region.prototype.open and View.prototype.openEffect)
+ * a. activate editors. (turn this view into a form alike object)
+ * b. tooltips activation upon 'show'
  * c. user action clicking statistics (use the view._uiDEVName set by enableActionTags(type.name.subname)) - type can be Context/Widget
+ * d. region show effect support (override Region.prototype.open and View.prototype.openEffect)
  *
  * @author Tim.Liu
  * @create 2013.09.11

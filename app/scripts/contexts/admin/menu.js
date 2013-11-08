@@ -43,7 +43,7 @@
     module.Collection = Backbone.Collection.extend({
         model: module.Model,
     });
-    var _dataURL = 'static/menu/menu.json';
+    var _dataURL = 'static/admin/menu.json';
 
     /**
      * ================================
