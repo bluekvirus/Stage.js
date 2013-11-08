@@ -464,11 +464,14 @@
 			//3. instrument this view with add, remove and show tab methods
 			//3.1 add - WRNING::no duplication check!
 			//		-view is a view instance with view.tabTitle set.
-			this.addTab = function(view){
+			//		-cb is the callback function that used to setup additional event hooks to the tab layout. 
+			//		e.g hook up view:resized event if the tab layout has window-resize hook enabled.
+			this.addTab = function(view, cb){
 				var tabId = _.uniqueId('tab-view');
 				if(!view.tab) throw new Error('DEV::View::You are adding a tab view without the necessary view.tab config block!');
 				$tabs.navi.append('<li><a data-toggle="tab" href="#' + tabId + '"><i class="' + (view.tab.icon || 'icon-question-sign') + '"></i> ' + (view.tab.title || 'UNKNOWN Tab') + '</a></li>');
 				$tabs.content.append(view.render().$el.addClass('tab-pane').attr('id', tabId));
+				cb && cb(view, this);
 				if(view.onShow) view.onShow();//call onShow() for view object.
 			}
 
@@ -524,6 +527,7 @@
 					_.each(this.regions, function(selector, r){							
 						this[r].ensureEl();
 						this[r].$el.width(perRegionWidth).css('float', options.hFloat);
+						this[r].currentView && this[r].currentView.trigger('view:resized', {w: perRegionWidth, h: null});
 					},this);
 				});			
 			}else if(options.mode === 'vertical'){
@@ -536,6 +540,7 @@
 					_.each(this.regions,function(selector, r){							
 						this[r].ensureEl();
 						this[r].$el.height(perRegionHeight);
+						this[r].currentView && this[r].currentView.trigger('view:resized', {w: null, h: perRegionHeight});
 					},this);
 				});	 	
 			}
