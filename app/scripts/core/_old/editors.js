@@ -9,7 +9,7 @@
  * ======
  * Design
  * ======
- * A. Editor View.
+ * A. Editor View. (basic editors, this is what this registry is mainly focused on)
  * 	1. setVal()
  * 	2. getVal()
  * 	3. editor:changed:[fieldname]
