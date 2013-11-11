@@ -4,7 +4,7 @@
  * component opt-ins: (use in component initialize func)
  * 1. +Action Tag listener mechanisms - View.
  * 2. +UI Locking support to view regions (without Application scope total lockdown atm...) - Layout.
- * 3. +Layout regions auto-detects + optional fake content - Layout.
+ * 3. +View Region/UI auto-detects + optional fake content - Layout.
  * 4. +Window resize awareness - View.
  * 5. +SVG canvas support - View.
  * 6. +Tab layout support - View. 
@@ -135,12 +135,21 @@ _.extend(Backbone.Marionette.View.prototype, {
 
 
 /**
- * Layout region auto detection, (+ putting fake content into regions).
+ * Region/UI auto detection, (+ putting fake content into regions).
  * Do auto-detect in initialize().
  * Do fake region content in show().
  */
 _.extend(Backbone.Marionette.View.prototype, {
 	//in init()
+	autoDetectUIs: function(){
+		var that = this;
+		$('<div>' + $(this.template).html() + '</div>').find('[ui]').each(function(index, el){
+			var ui = $(this).attr('ui');
+			that.ui[ui] = '[ui="' + ui + '"]';
+		});
+		//this.bindUIElements();
+	},
+
 	autoDetectRegions: function(){
 		if(!this.addRegions) throw new Error('DEV::View::You should use a Marionette.Layout object for region auto-detection');
 		
