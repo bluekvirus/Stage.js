@@ -22,7 +22,7 @@ Application.Editor.register('...', function(factoryOpt){
 		},
 
 		onRender: function(){
-			//bind ui events here, e.g forwarding changed, blur and focus events.
+			//bind ui events here, e.g forwarding change, blur and focus events.
 		},
 
 		setVal: function(){
