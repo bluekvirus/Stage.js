@@ -10,21 +10,21 @@
  * @version 1.0.1
  */
 
-Application.Editor.register('${1:Editor}', function(factoryOpt){
+Application.Editor.register('${1:Editor}', function(){
 
 	var UI = Backbone.Marionette.ItemView.extend({
 
 		template: 'editor-${1:Editor}-tpl',
 		className: '',
+		events: {
+			'change input': 'onChange',
+			'blur input': 'onBlur',
+			'focus input': 'onFocus'
+		},		
 
 		initialize: function(options){
 			this.autoDetectUIs();
-			this.validate = options.validate || this.validate;
-			if(!_.isFunction(this.validate)) throw new Error('DEV::Editor.${1:Editor}::Has invalid validation function!');
-		},
-
-		onRender: function(){
-			//bind ui events here, e.g forwarding change, blur and focus events.
+			//collect name, label, type and validation settings
 		},
 
 		setVal: function(){
@@ -35,7 +35,12 @@ Application.Editor.register('${1:Editor}', function(factoryOpt){
 			throw new Error('DEV::Editor.${1:Editor}::Has not yet implemented getVal()!');
 		},
 
-		validate: factoryOpt.validate || $.noop
+		validate: \$.noop,
+		
+		//need to forward events if has this.parentCt
+		onChange: $.noop,
+		onBlur: $.noop,
+		onFocus: $.noop
 
 	});
 
