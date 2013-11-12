@@ -10,6 +10,7 @@
  * 6. +Tab layout support - View. 
  * 7. +Auto region resize evenly. - Layout.
  * 8. +Editors Activation - View.
+ * 9. +Enable Form (with +addFormPart(view)) - View. 
  * 
  * planned:
  * b. tooltips activation upon 'show'

@@ -26,10 +26,11 @@
 		View: {
 			Default: Backbone.Marionette.Layout.extend({
 				template: '#custom-module-Admin-EditorDemo-tpl',
-				className: 'form form-horizontal',
+				className: 'form ',
 
 				initialize: function(options){
 					//activate some view enhancements or coop events listening here.
+					this.enableActionTags('Test.EditorDemo');
 				},
 
 				onShow: function(){
@@ -79,7 +80,7 @@
 							checkboxes: {
 								label: 'Checkboxes',
 								type: 'checkbox',
-								help: 'choose the more than you like',
+								help: 'choose more than you like',
 								options: {
 									//data: ['a', 'b', 'c', 'd']
 									data: [
@@ -98,10 +99,26 @@
 					});
 					this.editors.abc.status('success', 'Yes!');
 					this.editors.radios.status('error', 'something wrong!');
+					//console.log(this.editors.abc.parentCt);
 				},
 
 				actions: {
 					//action func here...
+					getValues: function($action){
+						console.log(this.$el.serializeForm());
+						//or use _.reduce() to iterate through this.editors.
+					},
+
+					setValues: function($action){
+						var vals = {
+							abc: '123',
+							radios: 'a',
+							checkboxes: ['1231', '1233']
+						};
+						_.each(vals, function(v, editor){
+							this.editors[editor].setVal(v);
+						},this);
+					}
 				}
 			})
 		}
@@ -113,6 +130,9 @@
 Template.extend(
 	'custom-module-Admin-EditorDemo-tpl',
 	[
-		' '
+		'<div>',
+			'<span class="btn" action="getValues">Submit</span>',
+			'<span class="btn" action="setValues">Test</span>',
+		'</div>'
 	]
 );

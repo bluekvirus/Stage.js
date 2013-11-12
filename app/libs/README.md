@@ -3,7 +3,9 @@
 ##Usage##
 1. Install using bower ```bower install```
 2. Install build tool support ```npm install```
-3. Build some of the libs ```node buildify.js fix-libs```
+3. prepare the lib map ```bower list --path > map.json```
+4. fix lib map in ```map-fix.json```
+5. Build some of the libs ```node buildify.js all```
 
 Then select from ```/bower_components```
 

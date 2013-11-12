@@ -33,9 +33,9 @@ Application.Editor.register('Input', function(){
 		className: 'control-group',
 
 		events: {
-			'change input': 'onChange',
-			'blur input': 'onBlur',
-			'focus input': 'onFocus'
+			'change input': '_triggerEvent', //editor:change:[name]
+			'blur input': '_triggerEvent', //editor:focusout:[name]
+			'focus input': '_triggerEvent' //editor:focusin:[name]
 		},
 
 		initialize: function(options){
@@ -86,12 +86,24 @@ Application.Editor.register('Input', function(){
 			this.$('[data-toggle="tooltip"]').tooltip(this._tooltipOpt);
 		},
 
-		setVal: function(){
-			throw new Error('DEV::Editor.Input::Has not yet implemented setVal()!');
+		setVal: function(val){
+			//throw new Error('DEV::Editor.Input::Has not yet implemented setVal()!');
+			if(this.ui.inputs.length > 0){
+				//radios/checkboxes
+				this.ui.inputs.find('input').val(_.isArray(val)?val:[val]);
+			}else {
+				this.ui.input.val(val);
+			}
 		},
 
 		getVal: function(){
-			throw new Error('DEV::Editor.Input::Has not yet implemented getVal()!');
+			//throw new Error('DEV::Editor.Input::Has not yet implemented getVal()!');
+			if(this.ui.inputs.length > 0){
+				//radios/checkboxes
+				return this.ui.inputs.serializeForm()[this.model.get('name')];
+			}else {
+				return this.ui.input.val();
+			}
 		},
 
 		validate: $.noop,
@@ -112,9 +124,16 @@ Application.Editor.register('Input', function(){
 		},
 
 		//need to forward events if has this.parentCt
-		onChange: $.noop,
-		onBlur: $.noop,
-		onFocus: $.noop
+		_triggerEvent: function(e){
+			var host = this;
+			if(this.parentCt){
+				host = this.parentCt;
+			}
+			host.trigger('editor:' + e.type + ':' + this.model.get('name'), this);
+
+			//this.trigger(e.type, this); - need to hook up with passed-in callbacks from init options
+	
+		}
 
 	});
 
@@ -127,17 +146,17 @@ Template.extend('editor-Input-tpl', [
 	'<div class="controls">',
 		//checkboxes/radios
 		'{{#if options}}',
-			'<div id={{uiId}} data-toggle="tooltip" title="{{tooltip}}">',
+			'<div ui="inputs" id={{uiId}} data-toggle="tooltip" title="{{tooltip}}">',
 			'{{#each options.data}}',
 				'<label class="{{../type}} {{#if ../options.inline}}inline{{/if}}">',
-					'<input name="{{../name}}" type="{{../type}}" value={{value}}> {{label}}',
+					'<input name="{{../name}}{{#is ../type "checkbox"}}[]{{/is}}" type="{{../type}}" value={{value}}> {{label}}',
 				'</label>',
 			'{{/each}}',
 			'</div>',
 		//normal single field
 		'{{else}}',
 		'<div data-toggle="tooltip" title="{{tooltip}}">',
-			'<input name="{{name}}" class="input-block-level" type="{{type}}" id="{{uiId}}" placeholder="{{placeholder}}" style="margin-bottom:0">',
+			'<input ui="input" name="{{name}}" class="input-block-level" type="{{type}}" id="{{uiId}}" placeholder="{{placeholder}}" style="margin-bottom:0">',
 		'</div>',
 		'{{/if}}',
 		'<span class="help-block" style="margin-bottom:0"><small>{{help}}</small></span>',

@@ -162,15 +162,15 @@ buildify.task({
 			'jquery',
 			'jquery.cookie',
 			'jquery-ui',
-			'jquery-sieve', //client side text search
+			'jquery-serializeForm',
+			'jquery-sieve', //client side quick text search
 			//'flexslider',
 			'underscore',
 			'underscore.string',
 			'backbone', //include json2/3
 			'backbone-validation',
-			//'backbone.paginator',
 			'marionette',
-			'handlebars.js',
+			'handlebars',
 			'swag',
 			'bootstrap2', 
 			'store.js', //need json2 in backbone
@@ -180,8 +180,7 @@ buildify.task({
 			'colorbox',
 			'noty',
 			'spin.js',
-			//'i18n', 'elMask'... are put into project infrastructure and maintained there.
-		]; //with widgets excluded e.g forms (validations) and datagrids.
+		];
 		combine(list, 'base-libs');
 	}
 });
@@ -195,15 +194,15 @@ buildify.task({
 			'jquery2', //version 2+
 			'jquery.cookie',
 			'jquery-ui',
+			'jquery-serializeForm',
 			'jquery-sieve',
 			//'flexslider',
 			'underscore',
 			'underscore.string',
 			'backbone', 
 			'backbone-validation',
-			//'backbone.paginator',
 			'marionette',
-			'handlebars.js',
+			'handlebars',
 			'swag',
 			'bootstrap3', //version 3+
 			'store.js', 
