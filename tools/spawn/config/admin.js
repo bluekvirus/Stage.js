@@ -35,7 +35,8 @@ module.exports = {
 				parts: { //let developer build project specific parts.
 					editors: {
 						_examples: 'app/scripts/core/parts/editors/_examples',
-						'README.md': 'app/scripts/core/parts/editors/README.md'
+						'README.md': 'app/scripts/core/parts/editors/README.md',
+						enhanced: {}
 					},
 					widgets: {
 						_examples: 'app/scripts/core/parts/widgets/_examples',

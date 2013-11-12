@@ -123,16 +123,16 @@ Template.extend('editor-Input-tpl', [
 		'{{#if options}}',
 			'<div id={{uiId}} data-toggle="tooltip" title="{{tooltip}}">',
 			'{{#each options.data}}',
-				'<label class="{{../type}} {{#if ../options.inline}}inline{{/if}}">',
+				'<label class="{{../type}} {{#unless ../options.inline}}inline{{/unless}}">',
 					'<input type="{{../type}}" value={{value}}> {{label}}',
 				'</label>',
 			'{{/each}}',
 			'</div>',
 		//normal single field
 		'{{else}}',
-			'<input type="{{type}}" id="{{uiId}}" placeholder="{{placeholder}}" data-toggle="tooltip" title="{{tooltip}}">'
+			'<input class="input-block-level" type="{{type}}" id="{{uiId}}" placeholder="{{placeholder}}" data-toggle="tooltip" title="{{tooltip}}">',
 		'{{/if}}',
 		'<span class="help-block" ui="msg">{{msg}}</span>',
-		'<span class="help-block">{{help}}</span>'
+		'<span class="help-block">{{help}}</span>',
 	'<div>'
 ]);

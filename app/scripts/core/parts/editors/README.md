@@ -17,12 +17,12 @@ B. Form Part (editor group/fieldset) View. (rely on Editor View)
 	2. setVals({k:v, ...,})
 	3. fieldset:changed:[fieldset]:[fieldname](optional)
 	4. validate() - migth be overriden, default on delegated editor validators.
-	5. activateEditors() - replace editor tags in view templates with editor view instances (editor options in editors block)
+	5. activateEditors() - replace editor tags in view templates with editor view instances (editor options in editors block) (in view enhancement - activateEditors())
 
 
 C. Form View. (based on Fieldset View, see core/enhancements/view.js)
-	+. addFormPart(region, form-part view, cb)
-	+. submit, refresh, cancel actions implemented by default.
+	+. addFormPart(region, form-part view, cb) (introduced by view enhancement enableForm())
+	+. submit, refresh, cancel actions implemented by default. (introduced by view enhancement enableForm() - submit, refresh, reset, cancel)
 
 
 Editors

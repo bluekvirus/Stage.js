@@ -21,10 +21,6 @@ Application.Editor.register('...', function(factoryOpt){
 			if(!_.isFunction(this.validate)) throw new Error('DEV::Editor....::Has invalid validation function!');
 		},
 
-		onRender: function(){
-			//bind ui events here, e.g forwarding change, blur and focus events.
-		},
-
 		setVal: function(){
 			throw new Error('DEV::Editor....::Has not yet implemented setVal()!');
 		},
