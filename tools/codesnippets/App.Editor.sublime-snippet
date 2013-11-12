@@ -14,7 +14,7 @@ Application.Editor.register('${1:Editor}', function(){
 
 	var UI = Backbone.Marionette.ItemView.extend({
 
-		template: 'editor-${1:Editor}-tpl',
+		template: '#editor-${1:Editor}-tpl',
 		className: '',
 		events: {
 			'change input': 'onChange',

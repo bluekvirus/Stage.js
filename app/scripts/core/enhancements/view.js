@@ -9,9 +9,9 @@
  * 5. +SVG canvas support - View.
  * 6. +Tab layout support - View. 
  * 7. +Auto region resize evenly. - Layout.
+ * 8. +Editors Activation - View.
  * 
  * planned:
- * a. activate editors. (turn this view into a form alike object)
  * b. tooltips activation upon 'show'
  * c. user action clicking statistics (use the view._uiDEVName set by enableActionTags(type.name.subname)) - type can be Context/Widget
  * d. region show effect support (override Region.prototype.open and View.prototype.openEffect)
@@ -142,6 +142,7 @@ _.extend(Backbone.Marionette.View.prototype, {
 _.extend(Backbone.Marionette.View.prototype, {
 	//in init()
 	autoDetectUIs: function(){
+		this.ui = this.ui || {};
 		var that = this;
 		$('<div>' + $(this.template).html() + '</div>').find('[ui]').each(function(index, el){
 			var ui = $(this).attr('ui');
@@ -360,4 +361,56 @@ _.extend(Backbone.Marionette.Layout.prototype, {
 	
 	}
 });
+
+
+/**
+ * Editor Activation - do it in onShow() or onRender()
+ * Turn tags in the template into real editors.
+ *
+ * options
+ * -------
+ * triggerOnShow: true|false,
+ * editors: {
+ * 	fieldname: {
+ * 		type: ..., (*required)
+ * 		label: ...,
+ * 		help: ...,
+ * 		tooltip: ...,
+ * 		options: ...,
+ * 		validate: ...,
+ * 		
+ * 		appendTo: ...
+ * 	},
+ * 	...,
+ * }
+ * 
+ */
+
+_.extend(Backbone.Marionette.View.prototype, {
+
+	activateEditors: function(options){
+		this.editors = this.editors || {};
+		_.each(options.editors, function(editorCfg, fieldname){
+			//1. instantiate
+			editorCfg.type = editorCfg.type || 'text'; 
+			try{
+				var editorDef = Application.Editor.get(editorCfg.type);
+			}catch(e){
+				var editorDef = Application.Editor.get('Input');
+			}
+			var editor = new editorDef(_.extend(editorCfg, {name: fieldname, parentCt: this}));
+			this.editors[fieldname] = editor.render();
+			//2. add it into view (specific, appendTo, append)
+			var $position = this.$('[editor="' + fieldname + '"]');
+			if($position.length === 0 && editorCfg.appendTo)
+				$position = this.$(editorCfg.appendTo);
+			if($position.length === 0)
+				$position = this.$el;
+			$position.append(editor.el);
+			if(options.triggerOnShow) editor.trigger('show');
+		}, this);
+	}
+
+});
+
 

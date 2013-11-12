@@ -29,7 +29,7 @@ Application.Editor.register('Input', function(){
 
 	var UI = Backbone.Marionette.ItemView.extend({
 
-		template: 'editor-Input-tpl',
+		template: '#editor-Input-tpl',
 		className: 'control-group',
 
 		events: {
@@ -65,7 +65,7 @@ Application.Editor.register('Input', function(){
 				label: options.label || '', //optional
 				placeholder: options.placeholder || '', //optional
 				help: options.help || '', //optional
-				tooltip: _.isString(options.tooltip) || '', //optional
+				tooltip: (_.isString(options.tooltip) && options.tooltip) || '', //optional
 				options: options.options, //optional {inline: true|false, data:[{label:'l', val:'v', ...}, {label:'ll', val:'vx', ...}] or ['v', 'v1', ...], labelField:..., valueField:...}
 			});
 
@@ -76,8 +76,14 @@ Application.Editor.register('Input', function(){
 			}
 
 			if(_.isObject(options.tooltip)){
-				//activate tooltip with specific config object - see /libs/bower_components/bootstrap[x]/docs/javascript.html#tooltips
+				//will activate tooltip with specific config object - see /libs/bower_components/bootstrap[x]/docs/javascript.html#tooltips
+				this._tooltipOpt = options.tooltip;
 			}
+		},
+
+		onRender: function(){
+			//activate tooltips
+			this.$('[data-toggle="tooltip"]').tooltip(this._tooltipOpt);
 		},
 
 		setVal: function(){
@@ -117,22 +123,24 @@ Application.Editor.register('Input', function(){
 });
 
 Template.extend('editor-Input-tpl', [
-	'<label class="control-label" for="{{uiId}}">{{label}}</label>',
+	'<label class="control-label" for="{{uiId}}"><strong>{{label}}</strong></label>',
 	'<div class="controls">',
 		//checkboxes/radios
 		'{{#if options}}',
 			'<div id={{uiId}} data-toggle="tooltip" title="{{tooltip}}">',
 			'{{#each options.data}}',
-				'<label class="{{../type}} {{#unless ../options.inline}}inline{{/unless}}">',
-					'<input type="{{../type}}" value={{value}}> {{label}}',
+				'<label class="{{../type}} {{#if ../options.inline}}inline{{/if}}">',
+					'<input name="{{../name}}" type="{{../type}}" value={{value}}> {{label}}',
 				'</label>',
 			'{{/each}}',
 			'</div>',
 		//normal single field
 		'{{else}}',
-			'<input class="input-block-level" type="{{type}}" id="{{uiId}}" placeholder="{{placeholder}}" data-toggle="tooltip" title="{{tooltip}}">',
+		'<div data-toggle="tooltip" title="{{tooltip}}">',
+			'<input name="{{name}}" class="input-block-level" type="{{type}}" id="{{uiId}}" placeholder="{{placeholder}}" style="margin-bottom:0">',
+		'</div>',
 		'{{/if}}',
-		'<span class="help-block" ui="msg">{{msg}}</span>',
-		'<span class="help-block">{{help}}</span>',
-	'<div>'
+		'<span class="help-block" style="margin-bottom:0"><small>{{help}}</small></span>',
+		'<span class="help-block"><strong ui="msg">{{msg}}</strong></span>',		
+	'</div>'
 ]);

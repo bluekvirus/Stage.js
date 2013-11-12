@@ -21,10 +21,12 @@
 
 	_.extend(module, {
 
+		defaultAdminPath: "Test->EditorDemo",
+
 		View: {
 			Default: Backbone.Marionette.Layout.extend({
 				template: '#custom-module-Admin-EditorDemo-tpl',
-				className: '',
+				className: 'form form-horizontal',
 
 				initialize: function(options){
 					//activate some view enhancements or coop events listening here.
@@ -32,6 +34,70 @@
 
 				onShow: function(){
 					//some code here...
+					this.activateEditors({
+						editors: {
+							abc: {
+								type: 'text',
+								label: 'Abc',
+								help: 'This is abc',
+								tooltip: 'Hey Abc here!',
+
+							},
+							ab: {
+								label: 'Ab',
+								help: 'This is ab',
+								tooltip: 'Hey Ab here!',
+								placeholder: 'abc...'
+							},
+							efg: {
+								label: 'Ha Ha',
+								type: 'password'
+							},
+							xyz: {
+								label: 'File',
+								type: 'file',
+								help: 'Please choose your image to upload.'
+							},
+							radios: {
+								label: 'Radios',
+								type: 'radio',
+								help: 'choose the one you like',
+								tooltip: {
+									title: 'hahahaha'
+								},
+								options: {
+									inline: true,
+									//data: ['a', 'b', 'c', 'd']
+									data: [
+										{label: 'Haha', value: 'a'},
+										{label: 'Hb', value: 'b'},
+										{label: 'Hc', value: 'c'},
+										{label: 'Hd', value: 'd'}
+									]
+								}
+							},
+							checkboxes: {
+								label: 'Checkboxes',
+								type: 'checkbox',
+								help: 'choose the more than you like',
+								options: {
+									//data: ['a', 'b', 'c', 'd']
+									data: [
+										{key: 'abc1', val: '1231', other: 'bbb1'},
+										{key: 'abc2', val: '1232', other: 'bbb2'},
+										{key: 'abc3', val: '1233', other: 'bbb3'},
+										{key: 'abc4', val: '1234', other: 'bbb4'},
+										{key: 'abc5', val: '1235', other: 'bbb5'},
+									],
+									labelField: 'other',
+									valueField: 'val'
+								}
+							}							
+
+						}
+					});
+					this.editors.abc.status('success', 'Yes!');
+					this.editors.radios.status('error', 'something wrong!');
 				},
 
 				actions: {
