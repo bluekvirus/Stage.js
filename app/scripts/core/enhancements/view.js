@@ -377,8 +377,10 @@ _.extend(Backbone.Marionette.Layout.prototype, {
  * 		label: ...,
  * 		help: ...,
  * 		tooltip: ...,
+ * 		placeholder: ...,
  * 		options: ...,
  * 		validate: ...,
+ * 		... (see specific editor options in core/parts/editors)
  * 		
  * 		appendTo: ...
  * 	},
@@ -397,9 +399,9 @@ _.extend(Backbone.Marionette.View.prototype, {
 			try{
 				var editorDef = Application.Editor.get(editorCfg.type);
 			}catch(e){
-				var editorDef = Application.Editor.get('Input');
+				var editorDef = Application.Editor.get('Basic');
 			}
-			var editor = new editorDef(_.extend(editorCfg, {name: fieldname, parentCt: this}));
+			var editor = new editorDef(_.extend(editorCfg, {name: fieldname, parentCt: options.form || this}));
 			this.editors[fieldname] = editor.render();
 			//2. add it into view (specific, appendTo, append)
 			var $position = this.$('[editor="' + fieldname + '"]');
