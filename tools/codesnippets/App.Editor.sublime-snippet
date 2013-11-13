@@ -17,15 +17,33 @@ Application.Editor.register('${1:Editor}', function(){
 		template: '#editor-${1:Editor}-tpl',
 		className: '',
 		events: {
-			'change input': 'onChange',
-			'blur input': 'onBlur',
-			'focus input': 'onFocus'
+			'change input': '_triggerEvent', //editor:change:[name]
+			'focusout': '_triggerEvent', //editor:focusout:[name]
+			'focusin': '_triggerEvent' //editor:focusin:[name]
 		},		
 
 		initialize: function(options){
 			this.autoDetectUIs();
-			//collect name, label, type and validation settings
+			
+			//collect [parentCt](to fire events on), name, label, type, placeholder/help/tooltip, options(radios/checkboxes only) and validation settings
+			this.parentCt = options.parentCt;
+
+			if(options.validate) {
+				this.validate = function(){
+					//TBI
+				}
+			}
+
+			if(_.isObject(options.tooltip)){
+				//will activate tooltip with specific config object - see /libs/bower_components/bootstrap[x]/docs/javascript.html#tooltips
+				this._tooltipOpt = options.tooltip;
+			}
 		},
+
+		onRender: function(){
+			//activate tooltips
+			this.$('[data-toggle="tooltip"]').tooltip(this._tooltipOpt);
+		},		
 
 		setVal: function(){
 			throw new Error('DEV::Editor.${1:Editor}::Has not yet implemented setVal()!');
@@ -36,11 +54,33 @@ Application.Editor.register('${1:Editor}', function(){
 		},
 
 		validate: \$.noop,
+
+		status: function(status, msg){
+			//set or get status of this editor UI
+			if(status){
+				//set warning, error, info, success... status, no checking atm.				
+				this.$el
+					.removeClass(this.$el.data('status'))
+					.addClass(status)
+					.data('status', status);
+				//this.ui.msg.html(msg || '');
+			}else {
+				//get
+				return this.$el.data('status');
+			}
+		},		
 		
 		//need to forward events if has this.parentCt
-		onChange: $.noop,
-		onBlur: $.noop,
-		onFocus: $.noop
+		_triggerEvent: function(e){
+			var host = this;
+			if(this.parentCt){
+				host = this.parentCt;
+			}
+			host.trigger('editor:' + e.type + ':' + this.model.get('name'), this);
+
+			//this.trigger(e.type, this); - need to hook up with passed-in callbacks from init options
+	
+		}
 
 	});
 

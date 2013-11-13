@@ -103,10 +103,11 @@ Application.Editor.register('Input', function(){
 			//throw new Error('DEV::Editor.Input::Has not yet implemented getVal()!');
 			if(this.ui.inputs.length > 0){
 				//radios/checkboxes
-				var result = this.ui.inputs.serializeForm();
-				if(!result[this.model.get('fieldname') || this.model.get('name')])
-					return result;
-				return result[this.model.get('fieldname') || this.model.get('name')];
+				var result = this.$('input:checked').map(function(el, index){
+					return $(this).val();
+				}).get();
+				if(this.model.get('type') === 'radio') result = result.pop();
+				return result;
 			}else {
 				return this.ui.input.val();
 			}
