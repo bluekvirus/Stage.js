@@ -20,7 +20,7 @@
  * 	labelField
  * 	valueField
  * }
- * validate (custom function and/or rules see blow 'preset validators')
+ * validate (custom function and/or rules see core/parts/editors/basic/validations.js)
  *
  * The validation function should return null or 'error string' to be used in status.
  *
@@ -80,6 +80,8 @@ Application.Editor.register('Basic', function(){
 					choices.data = extractChoices(choices.data);
 				}
 			}
+
+			//prep basic editor display
 			this.model = new Backbone.Model({
 				uiId: _.uniqueId('basic-editor-'),
 				name: options.name, //*
@@ -94,9 +96,28 @@ Application.Editor.register('Basic', function(){
 				options: options.options || undefined, //optional {inline: true|false, data:[{label:'l', val:'v', ...}, {label:'ll', val:'vx', ...}] or ['v', 'v1', ...], labelField:..., valueField:...}
 			});
 
+			//prep validations
 			if(options.validate) {
+				this.validators = _.map(options.validate, function(validation, name){
+					if(_.isFunction(validation)){
+						return {fn: validation};
+					}else 
+						return {rule: name, options:validation};
+				});				
 				this.validate = function(){
-					//TBI
+					if(_.isFunction(options.validate)) return options.validate(this.getVal(), this.parentCt); //return error msg or nothing
+					else {
+						var error, validators = _.clone(this.validators);
+						while(validators.length > 0){
+							var validator = validators.shift();
+							if(validator.fn) {
+								error = validator.fn(this.getVal(), this.parentCt);
+							}else {
+								error = (Application.Editor.rules[validator.rule] && Application.Editor.rules[validator.rule](validator.options, this.getVal(), this.parentCt));
+							}
+							if(error) return error;
+						}
+					}
 				}
 			}
 

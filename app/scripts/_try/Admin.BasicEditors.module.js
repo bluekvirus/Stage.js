@@ -19,6 +19,10 @@
 	var context = app.Context.Admin;
 	var module = context.module('EditorDemo');
 
+	app.Editor.addRule('checkitout', function(options, val, form){
+		if(val !== 'abc') return app.Editor.errors['checkitout'];
+	}, 'Haha you suck! abc');
+
 	_.extend(module, {
 
 		defaultAdminPath: "Test->EditorDemo",
@@ -42,18 +46,32 @@
 								label: 'Abc',
 								help: 'This is abc',
 								tooltip: 'Hey Abc here!',
-								fieldname: 'newfield'
+								fieldname: 'newfield',
+								validate: {
+									required: {
+										msg: 'Hey input something!'
+									},
+									fn: function(val, form){
+										if(!_.string.startsWith(val, 'A')) return 'You must start with an A';
+									}
+								}
 
 							},
 							ab: {
 								label: 'Ab',
 								help: 'This is ab',
 								tooltip: 'Hey Ab here!',
-								placeholder: 'abc...'
+								placeholder: 'abc...',
+								validate: function(val, form){
+									if(val !== '123') return 'You must enter 123';
+								}
 							},
 							efg: {
 								label: 'Ha Ha',
-								type: 'password'
+								type: 'password',
+								validate: {
+									checkitout: true
+								}
 							},
 							xyz: {
 								label: 'File',
@@ -99,9 +117,6 @@
 
 						}
 					});
-					this.editors.abc.status('success', 'Yes!');
-					this.editors.radios.status('error', 'something wrong!');
-					//console.log(this.editors.abc.parentCt);
 				},
 
 				actions: {
@@ -123,6 +138,27 @@
 						_.each(vals, function(v, editor){
 							this.editors[editor].setVal(v, true);
 						},this);
+					},
+
+					//1 entering error state
+					//2 focus on the first error?
+					validate: function($action){
+						var errors = [];
+						_.each(this.editors, function(editor, f){
+							var error = editor.validate();
+							if(error) {
+								editor.status('error', error);
+								errors.push({name: f, editor: editor, error:error});
+							}
+							else {
+								if($action.attr('erroronly'))
+									editor.status(' ');
+								else
+									editor.status('success');
+							}
+						});
+						//console.log(errors);
+						errors[0].editor.ui.input.focus();
 					}
 				}
 			})
@@ -138,6 +174,7 @@ Template.extend(
 		'<div>',
 			'<span class="btn" action="getValues">Submit</span>',
 			'<span class="btn" action="setValues">Test</span>',
+			'<span class="btn" action="validate" erroronly="true">Validate</span>',
 		'</div>'
 	]
 );
