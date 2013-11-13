@@ -7,6 +7,7 @@
  * ============
  * name
  * type (see core/parts/editors/README.md)
+ * fieldname - this is to override the field this editor points to (in case of an array of inputs for one array field) e.g "abc[]" - see jquery-serializeForm in lib
  * label
  * help
  * tooltip
@@ -34,8 +35,8 @@ Application.Editor.register('Input', function(){
 
 		events: {
 			'change input': '_triggerEvent', //editor:change:[name]
-			'blur input': '_triggerEvent', //editor:focusout:[name]
-			'focus input': '_triggerEvent' //editor:focusin:[name]
+			'focusout': '_triggerEvent', //editor:focusout:[name]
+			'focusin': '_triggerEvent' //editor:focusin:[name]
 		},
 
 		initialize: function(options){
@@ -62,11 +63,12 @@ Application.Editor.register('Input', function(){
 				uiId: _.uniqueId('basic-editor-'),
 				name: options.name, //*
 				type: options.type, //*
+				fieldname: options.fieldname || undefined, //optional				
 				label: options.label || '', //optional
 				placeholder: options.placeholder || '', //optional
 				help: options.help || '', //optional
 				tooltip: (_.isString(options.tooltip) && options.tooltip) || '', //optional
-				options: options.options, //optional {inline: true|false, data:[{label:'l', val:'v', ...}, {label:'ll', val:'vx', ...}] or ['v', 'v1', ...], labelField:..., valueField:...}
+				options: options.options || undefined, //optional {inline: true|false, data:[{label:'l', val:'v', ...}, {label:'ll', val:'vx', ...}] or ['v', 'v1', ...], labelField:..., valueField:...}
 			});
 
 			if(options.validate) {
@@ -86,7 +88,7 @@ Application.Editor.register('Input', function(){
 			this.$('[data-toggle="tooltip"]').tooltip(this._tooltipOpt);
 		},
 
-		setVal: function(val){
+		setVal: function(val, loud){
 			//throw new Error('DEV::Editor.Input::Has not yet implemented setVal()!');
 			if(this.ui.inputs.length > 0){
 				//radios/checkboxes
@@ -94,13 +96,17 @@ Application.Editor.register('Input', function(){
 			}else {
 				this.ui.input.val(val);
 			}
+			if(loud) this._triggerEvent({type: 'change'});
 		},
 
 		getVal: function(){
 			//throw new Error('DEV::Editor.Input::Has not yet implemented getVal()!');
 			if(this.ui.inputs.length > 0){
 				//radios/checkboxes
-				return this.ui.inputs.serializeForm()[this.model.get('name')];
+				var result = this.ui.inputs.serializeForm();
+				if(!result[this.model.get('fieldname') || this.model.get('name')])
+					return result;
+				return result[this.model.get('fieldname') || this.model.get('name')];
 			}else {
 				return this.ui.input.val();
 			}
@@ -149,14 +155,15 @@ Template.extend('editor-Input-tpl', [
 			'<div ui="inputs" id={{uiId}} data-toggle="tooltip" title="{{tooltip}}">',
 			'{{#each options.data}}',
 				'<label class="{{../type}} {{#if ../options.inline}}inline{{/if}}">',
-					'<input name="{{../name}}{{#is ../type "checkbox"}}[]{{/is}}" type="{{../type}}" value={{value}}> {{label}}',
+					//note that the {{if}} within a {{each}} will impose +1 level down in the content scope.  
+					'<input name="{{#if ../fieldname}}{{../../fieldname}}{{else}}{{../../name}}{{/if}}{{#is ../type "checkbox"}}[]{{/is}}" type="{{../type}}" value={{value}}> {{label}}',
 				'</label>',
 			'{{/each}}',
 			'</div>',
 		//normal single field
 		'{{else}}',
 		'<div data-toggle="tooltip" title="{{tooltip}}">',
-			'<input ui="input" name="{{name}}" class="input-block-level" type="{{type}}" id="{{uiId}}" placeholder="{{placeholder}}" style="margin-bottom:0">',
+			'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" class="input-block-level" type="{{type}}" id="{{uiId}}" placeholder="{{placeholder}}" style="margin-bottom:0">',
 		'</div>',
 		'{{/if}}',
 		'<span class="help-block" style="margin-bottom:0"><small>{{help}}</small></span>',

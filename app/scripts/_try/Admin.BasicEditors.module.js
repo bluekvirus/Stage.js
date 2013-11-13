@@ -42,6 +42,7 @@
 								label: 'Abc',
 								help: 'This is abc',
 								tooltip: 'Hey Abc here!',
+								fieldname: 'newfield'
 
 							},
 							ab: {
@@ -81,6 +82,7 @@
 								label: 'Checkboxes',
 								type: 'checkbox',
 								help: 'choose more than you like',
+								fieldname: 'haha',
 								options: {
 									//data: ['a', 'b', 'c', 'd']
 									data: [
@@ -105,8 +107,11 @@
 				actions: {
 					//action func here...
 					getValues: function($action){
-						console.log(this.$el.serializeForm());
+						//console.log(this.$el.serializeForm());
 						//or use _.reduce() to iterate through this.editors.
+						_.each(this.editors, function(editor, field){
+							console.log(field, editor.getVal());
+						});
 					},
 
 					setValues: function($action){
@@ -116,7 +121,7 @@
 							checkboxes: ['1231', '1233']
 						};
 						_.each(vals, function(v, editor){
-							this.editors[editor].setVal(v);
+							this.editors[editor].setVal(v, true);
 						},this);
 					}
 				}
