@@ -367,12 +367,15 @@ _.extend(Backbone.Marionette.Layout.prototype, {
 /**
  * Editor Activation - do it in onShow() or onRender()
  * Turn tags in the template into real editors.
+ * You can activate editors in any view object, it doesn't have to be a enableForm() instrumented view.
+ * You can also send a view with activated editors to a form by using addFormPart()[in onShow() or onRender()] after enableForm()
  *
  * options
  * -------
+ * appendTo: [selector] - general appendTo cfg
  * triggerOnShow: true|false,
  * editors: {
- * 	fieldname: {
+ * 	name: {
  * 		type: ..., (*required)
  * 		label: ...,
  * 		help: ...,
@@ -380,12 +383,20 @@ _.extend(Backbone.Marionette.Layout.prototype, {
  * 		placeholder: ...,
  * 		options: ...,
  * 		validate: ...,
+ * 		fieldname: ..., optional for collecting values through $.serializeForm()
  * 		... (see specific editor options in core/parts/editors)
  * 		
- * 		appendTo: ...
+ * 		appendTo: ... - per editor appendTo cfg
  * 	},
  * 	...,
  * }
+ *
+ * This will add *this.editors* to the view object. Do NOT use a region name with region='editors'...
+ * 
+ * Add new: You can repeatedly invoke this method to add new editors to the view.
+ * Remove current: You can find the editor by name and use editor.close to remove it.
+ *
+ * optionally you can implement setValues()/getValues()/validate() in your view, and that will get invoked by the outter form view if there is one.
  * 
  */
 
@@ -393,7 +404,9 @@ _.extend(Backbone.Marionette.View.prototype, {
 
 	activateEditors: function(options){
 		this.editors = this.editors || {};
-		_.each(options.editors, function(editorCfg, fieldname){
+		if(this.editors.attachView) throw new Error('DEV::View::activateEditors enhancements will need this.editors object, it is now a Region!');
+
+		_.each(options.editors, function(editorCfg, name){
 			//1. instantiate
 			editorCfg.type = editorCfg.type || 'text'; 
 			try{
@@ -401,12 +414,14 @@ _.extend(Backbone.Marionette.View.prototype, {
 			}catch(e){
 				var editorDef = Application.Editor.get('Basic');
 			}
-			var editor = new editorDef(_.extend(editorCfg, {name: fieldname, parentCt: options.form || this}));
-			this.editors[fieldname] = editor.render();
-			//2. add it into view (specific, appendTo, append)
-			var $position = this.$('[editor="' + fieldname + '"]');
+			var editor = new editorDef(_.extend(editorCfg, {name: name, parentCt: this}));
+			this.editors[name] = editor.render();
+			//2. add it into view (specific, appendTo(editor cfg), appendTo(general cfg), append)
+			var $position = this.$('[editor="' + name + '"]');
 			if($position.length === 0 && editorCfg.appendTo)
 				$position = this.$(editorCfg.appendTo);
+			if($position.length === 0 && options.appendTo)
+				$position = this.$(options.appendTo);
 			if($position.length === 0)
 				$position = this.$el;
 			$position.append(editor.el);
@@ -416,4 +431,45 @@ _.extend(Backbone.Marionette.View.prototype, {
 
 });
 
+
+/**
+ * Enable Form - do it in initialize(); (though addformPart should be in onShow or onRender)
+ * Note that a form part will not be registered with a name, so do NOT try to co-op between form parts.
+ * This will turn a view into a form by giving it the following methods:
+ * required:
+ * 0. addFormPart(view, [{region: '' or appendTo: '' + cb: ''}]) * add an isolated form piece (an activateEditors instrumented view) into a region or tag selector or append to this.$el; 
+ * 1. getValues() * - default implementation will be to collect value by this.editors{} and merge with this.parts[]'s editors (the form parts will also have a chance to override getValues)
+ * 2. setValues(vals) * - default implementation will be to set value by this.editors{} and this.parts[]'s editors (the form parts will have a chance to override setValues)
+ * 3. validate(show) * - default implementation will be to validate by this.editors{} and this.parts[]'s editors (can be voerriden by the form part view)
+ * Note that after validation(show:true) got errors, those editors will become eagerly validated, it will turn off as soon as the user has input-ed the correct value.
+ * 
+ * optional: button action implementations, you still have to code your button's html into the template.
+ * 4. submit
+ * 5. reset
+ * 6. refresh
+ * 7. cancel
+ */
+
+_.extend(Backbone.Marionette.View.prototype, {
+
+	enableForm: function(options){
+		this.tagName = 'form';
+		//0.
+		this.parts = this.parts || [];
+		this.addFormPart = function(view, opt){
+			this.parts.push(view);
+			opt = opt || {};
+			if(opt.region) this[opt.region].show(view);
+			else {
+				var $position = opt.appendTo && this.$(opt.appendTo);
+				if(!$position || $position.length === 0) $position = this.$el;
+				$position.append(view.render().el);
+				opt.cb && opt.cb(view);
+			}
+		};
+
+		//1
+	}
+
+});
 

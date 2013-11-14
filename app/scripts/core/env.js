@@ -20,6 +20,7 @@ window.Template.extend = function (name, tplStrArray){
 	var tpl = tplStrArray.join('');
 	$('head').append(['<script type="text/tpl" id="',name,'">',tpl,'</script>'].join(''));
 }
+window.Template.extend('_blank', [' ']); //blank sheet template.
 
 /**
  * ================================

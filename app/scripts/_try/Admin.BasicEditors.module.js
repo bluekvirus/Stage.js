@@ -28,17 +28,10 @@
 		defaultAdminPath: "Test->EditorDemo",
 
 		View: {
-			Default: Backbone.Marionette.Layout.extend({
-				template: '#custom-module-Admin-EditorDemo-tpl',
-				className: 'form ',
 
-				initialize: function(options){
-					//activate some view enhancements or coop events listening here.
-					this.enableActionTags('Test.EditorDemo');
-				},
-
+			FormPartA: Backbone.Marionette.ItemView.extend({
+				template: '#_blank',
 				onShow: function(){
-					//some code here...
 					this.activateEditors({
 						editors: {
 							abc: {
@@ -72,7 +65,17 @@
 								validate: {
 									checkitout: true
 								}
-							},
+							}
+						}
+					});
+				}
+			}),
+
+			FormPartB: Backbone.Marionette.ItemView.extend({
+				template: '#_blank',
+				onShow: function(){
+					this.activateEditors({
+						editors: {
 							xyz: {
 								label: 'File',
 								type: 'file',
@@ -113,10 +116,65 @@
 									labelField: 'other',
 									valueField: 'val'
 								}
+							}		
+						}
+					});
+				}
+			}),
+
+			Default: Backbone.Marionette.Layout.extend({
+				template: '#custom-module-Admin-EditorDemo-tpl',
+				className: 'form ',
+
+				initialize: function(options){
+					//activate some view enhancements or coop events listening here.
+					this.autoDetectRegions();
+					this.enableActionTags('Test.EditorDemo');
+					this.enableForm()
+				},
+
+				onShow: function(){
+					//some code here...
+					this.activateEditors({
+						appendTo: '[region="formeditors"]',
+						editors: {
+							select: {
+								label: 'Select',
+								type: 'select',
+								help: 'choose 1 you like',
+								options: {
+									//data: ['a', 'b', 'c', 'd']
+									data: [
+										{key: 'abc1', val: '1231', other: 'bbb1'},
+										{key: 'abc2', val: '1232', other: 'bbb2'},
+										{key: 'abc3', val: '1233', other: 'bbb3'},
+										{key: 'abc4', val: '1234', other: 'bbb4'},
+										{key: 'abc5', val: '1235', other: 'bbb5'},
+									],
+									labelField: 'other',
+									valueField: 'val'
+								}
+							},
+
+							selectgroup: {
+								label: 'Group',
+								type: 'select',
+								options: {
+									data: {
+										group1: [{label: 'abc', value: '123'}, {label: '4555', value: '1111'}],
+										group2: [{label: 'abcx', value: '123x'}, {label: '4555x', value: '1111x'}],
+									}
+								}
 							}							
 
 						}
 					});
+
+					this.addFormPart(new module.View.FormPartA(), {appendTo: '[region=partA]', cb: function(view){
+						view.onShow();
+					}});
+					this.addFormPart(new module.View.FormPartB(), {region: 'partB'});
+
 				},
 
 				actions: {
@@ -131,12 +189,14 @@
 
 					setValues: function($action){
 						var vals = {
+							selectgroup: '123x',
 							abc: '123',
 							radios: 'a',
 							checkboxes: ['1231', '1233']
 						};
 						_.each(vals, function(v, editor){
-							this.editors[editor].setVal(v, true);
+							editor = this.editors[editor];
+							if(editor) editor.setVal(v, true);
 						},this);
 					},
 
@@ -158,7 +218,8 @@
 							}
 						});
 						//console.log(errors);
-						errors[0].editor.ui.input.focus();
+						if(errors.length > 0)
+							errors[0].editor.ui.input.focus();
 					}
 				}
 			})
@@ -172,6 +233,13 @@ Template.extend(
 	'custom-module-Admin-EditorDemo-tpl',
 	[
 		'<div>',
+			'<span style="font-weight: bold; font-size:15px;">Form Part B</span>',
+			'<div region="partB" style="padding:20px; border:5px solid #eee"></div>',
+			'<span style="font-weight: bold; font-size:15px;">Form Editors</span>',
+			'<div region="formeditors"></div>',
+			'<span style="font-weight: bold; font-size:15px;">Form Part A</span>',
+			'<div region="partA" style="padding:20px; border:5px solid #eee"></div>',
+
 			'<span class="btn" action="getValues">Submit</span>',
 			'<span class="btn" action="setValues">Test</span>',
 			'<span class="btn" action="validate" erroronly="true">Validate</span>',
