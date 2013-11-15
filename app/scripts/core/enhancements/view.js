@@ -509,7 +509,25 @@ _.extend(Backbone.Marionette.View.prototype, {
 			});
 		}
 
-		//3. 
+		//3. validate
+		this.validate = function(show){
+			var errors = {};
+			_.each(this.editors, function(editor, name){
+				var e = editor.validate(show);
+				if(e) errors[name] = e;
+			});
+			_.each(this.parts, function(part){
+				if(part.validate) _.extend(errors, part.validate(show));
+				else {
+					_.each(part.editors, function(editor, name){
+						var e = editor.validate(show);
+						if(e) errors[name] = e;
+					});
+				}
+			});
+			if(_.size(errors) === 0) return;
+			return errors; 
+		}
 		
 	}
 

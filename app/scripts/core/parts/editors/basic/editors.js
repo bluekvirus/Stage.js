@@ -104,8 +104,12 @@ Application.Editor.register('Basic', function(){
 					}else 
 						return {rule: name, options:validation};
 				});				
-				this.validate = function(){
-					if(_.isFunction(options.validate)) return options.validate(this.getVal(), this.parentCt); //return error msg or nothing
+				this.validate = function(show){
+					if(_.isFunction(options.validate)) {
+						var error = options.validate(this.getVal(), this.parentCt); 
+						if(error && show) this.status('error', error);
+						return error;//return error msg or nothing
+					}
 					else {
 						var error, validators = _.clone(this.validators);
 						while(validators.length > 0){
@@ -115,7 +119,10 @@ Application.Editor.register('Basic', function(){
 							}else {
 								error = (Application.Editor.rules[validator.rule] && Application.Editor.rules[validator.rule](validator.options, this.getVal(), this.parentCt));
 							}
-							if(error) return error;
+							if(error) {
+								if(show) this.status('error', error);
+								return error;
+							}
 						}
 					}
 				}

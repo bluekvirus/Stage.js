@@ -44,7 +44,7 @@
 									required: {
 										msg: 'Hey input something!'
 									},
-									fn: function(val, form){
+									fn: function(val, parentCt){
 										if(!_.string.startsWith(val, 'A')) return 'You must start with an A';
 									}
 								}
@@ -55,7 +55,7 @@
 								help: 'This is ab',
 								tooltip: 'Hey Ab here!',
 								placeholder: 'abc...',
-								validate: function(val, form){
+								validate: function(val, parentCt){
 									if(val !== '123') return 'You must enter 123';
 								}
 							},
@@ -196,32 +196,13 @@
 							radios: 'a',
 							checkboxes: ['1231', '1233']
 						};
-						_.each(vals, function(v, editor){
-							editor = this.editors[editor];
-							if(editor) editor.setVal(v, true);
-						},this);
+						this.setValues(vals);
 					},
 
 					//1 entering error state
 					//2 focus on the first error?
 					validate: function($action){
-						var errors = [];
-						_.each(this.editors, function(editor, f){
-							var error = editor.validate();
-							if(error) {
-								editor.status('error', error);
-								errors.push({name: f, editor: editor, error:error});
-							}
-							else {
-								if($action.attr('erroronly'))
-									editor.status(' ');
-								else
-									editor.status('success');
-							}
-						});
-						//console.log(errors);
-						if(errors.length > 0)
-							errors[0].editor.ui.input.focus();
+						this.validate(true);
 					}
 				}
 			})
