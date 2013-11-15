@@ -438,8 +438,8 @@ _.extend(Backbone.Marionette.View.prototype, {
  * This will turn a view into a form by giving it the following methods:
  * required:
  * 0. addFormPart(view, [{region: '' or appendTo: '' + cb: ''}]) * add an isolated form piece (an activateEditors instrumented view) into a region or tag selector or append to this.$el; 
- * 1. getValues() * - default implementation will be to collect value by this.editors{} and merge with this.parts[]'s editors (the form parts will also have a chance to override getValues)
- * 2. setValues(vals) * - default implementation will be to set value by this.editors{} and this.parts[]'s editors (the form parts will have a chance to override setValues)
+ * 1. getValues() * - default implementation will be to collect values by this.editors{} and merge with this.parts[]'s editors (the form parts will also have a chance to override getValues)
+ * 2. setValues(vals) * - default implementation will be to set values by this.editors{} and this.parts[]'s editors (the form parts will have a chance to override setValues)
  * 3. validate(show) * - default implementation will be to validate by this.editors{} and this.parts[]'s editors (can be voerriden by the form part view)
  * Note that after validation(show:true) got errors, those editors will become eagerly validated, it will turn off as soon as the user has input-ed the correct value.
  * 
@@ -448,13 +448,18 @@ _.extend(Backbone.Marionette.View.prototype, {
  * 5. reset
  * 6. refresh
  * 7. cancel
+ *
+ * No setVal getVal
+ * ----------------
+ * This is because we don't permit co-op between form parts, so there is no short-cut for getting/setting single editor/field value.
+ * 
  */
 
 _.extend(Backbone.Marionette.View.prototype, {
 
 	enableForm: function(options){
 		this.tagName = 'form';
-		//0.
+		//0. addFormPart
 		this.parts = this.parts || [];
 		this.addFormPart = function(view, opt){
 			this.parts.push(view);
@@ -468,7 +473,44 @@ _.extend(Backbone.Marionette.View.prototype, {
 			}
 		};
 
-		//1
+		//1. getValues (O(n) - n is the total number of editors on this form)
+		this.getValues = function(){
+			var vals = {};
+			_.each(this.editors, function(editor, name){
+				vals[name] = editor.getVal();
+			});
+			_.each(this.parts, function(part){
+				if(part.getValues)
+					_.extend(vals, part.getValues());
+				else {
+					_.each(part.editors, function(editor, name){
+						vals[name] = editor.getVal();
+					});
+				}
+			});
+			return vals;
+		};
+
+		//2. setValues (O(n) - n is the total number of editors on this form)
+		this.setValues = function(vals, loud){
+			_.each(this.editors, function(editor, name){
+				if(vals[name])
+					editor.setVal(vals[name], loud);
+			});
+			_.each(this.parts, function(part){
+				if(part.setValues)
+					part.setValues(vals, loud);
+				else {
+					_.each(part.editors, function(editor, name){
+						if(vals[name])
+							editor.setVal(vals[name], loud);
+					});
+				}
+			});
+		}
+
+		//3. 
+		
 	}
 
 });

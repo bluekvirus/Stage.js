@@ -68,6 +68,10 @@
 							}
 						}
 					});
+				},
+
+				getValues: function(){
+					return this.$el.serializeForm();
 				}
 			}),
 
@@ -181,10 +185,8 @@
 					//action func here...
 					getValues: function($action){
 						console.log(this.$el.serializeForm());
-						//or use _.reduce() to iterate through this.editors.
-						_.each(this.editors, function(editor, field){
-							console.log(field, editor.getVal());
-						});
+						//or
+						console.log(this.getValues());
 					},
 
 					setValues: function($action){
