@@ -179,6 +179,10 @@
 					}});
 					this.addFormPart(new module.View.FormPartB(), {region: 'partB'});
 
+					this.listenTo(this, 'test:event', function(){
+						console.log('hey!');
+					});
+
 				},
 
 				actions: {
@@ -224,8 +228,9 @@ Template.extend(
 			'<div region="partA" style="padding:20px; border:5px solid #eee"></div>',
 
 			'<span class="btn" action="getValues">Submit</span>',
-			'<span class="btn" action="setValues">Test</span>',
+			'<span class="btn" action="setValues">Set Vals</span>',
 			'<span class="btn" action="validate" erroronly="true">Validate</span>',
+			'<span class="btn" action=":test:event">Test Event</span>',
 		'</div>'
 	]
 );

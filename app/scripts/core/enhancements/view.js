@@ -27,8 +27,9 @@
 
 /**
  * Action Tag listener hookups +actions{}
+ * + event forwarding ability to action tags
  * Usage:
- * 		1. add action tags to html template -> e.g <div ... action="method name"></div> 
+ * 		1. add action tags to html template -> e.g <div ... action="method name or *:event name"></div> 
  * 		2. implement the action method name in UI definition body's actions{} object. 
  * 		functions under actions{} are invoked with 'this' as scope (the view object).
  * 		functions under actions{} are called with a single param ($action) which is a jQuery object referencing the action tag.
@@ -48,13 +49,21 @@ _.extend(Backbone.Marionette.View.prototype, {
 			'click [action]': '_doAction'
 		});
 		this.actions = this.actions || {}; 	
-		this._uiDEVName = uiName;			
+		this._uiDEVName = uiName || 'UNKNOWN.View';			
 	},
 
 	_doAction: function(e){
 		e.stopPropagation(); //Important::This is to prevent confusing the parent view's action tag listeners.
 		var $el = $(e.currentTarget);
 		var action = $el.attr('action') || 'UNKNOWN';
+
+		//allow triggering certain event only.
+		var eventForwarding = action.split(':');
+		if(eventForwarding.length >= 2) {
+			eventForwarding.shift();
+			return this.trigger(eventForwarding.join(':'));
+		}
+
 		var doer = this.actions[action];
 		if(doer) {
 			doer.apply(this, [$el]); //use 'this' view object as scope when applying the action listeners.
