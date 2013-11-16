@@ -52,6 +52,7 @@
     "marionette": "~1.2.2",
     "backbone-validation": "~0.9.0",
     "momentjs": "~2.4.0",
-    "handlebars": "~1.1.2"
+    "handlebars": "~1.1.2",
+    "selectivizr": "~1.0.2"
   }
 }

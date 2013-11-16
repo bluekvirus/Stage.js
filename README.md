@@ -9,6 +9,14 @@ Core Concepts
 -------------
 DataUnit(model,collection), Context(with sub-modules), Part(editor, widget) and Enhancements(to view and collection).
 
+With
+
+Application(container + context switch + module router) and Utils(theme, i18n, user-session, downloader, script patcher, alerts...)
+
+And
+
+Tools(build(minify, gzip and js-fix), spawn(js-fix), iconprep(css-sprites, svg-path))
+
 
 
 Development
@@ -110,3 +118,17 @@ Warning:
 1. If the app framework changes, please re-check the indices and configs before spawning new projects from the current code base.
 
 2. You can **NOT** spawn from a spawned project, it will only have the build tool (and the dev support tools e.g the iconprep tool).
+
+
+Note on IE(6-9)
+===============
+Before IE10, some efforts are still needed before the web app can work on an IE browser. We've prepared to add the following lib/tool to accommodate this in the future:
+1. selectivizr.js - client libs (already added in bower.json, not in use) We need to disable our app theme-roller for IE after adding this into index.html.
+```
+<!--[if (gte IE 6)&(lte IE 8)]>
+  <script type="text/javascript" src="selectivizr.js"></script>
+  <noscript><link rel="stylesheet" href="[fallback css]" /></noscript>
+<![endif]-->
+```
+
+2. fixmyjs - client tools npm (already added in package.json, not in use) Need to put it into both build and spawn tool (shared/hammer.js) before js minification.
