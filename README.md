@@ -131,4 +131,4 @@ Before IE10, some efforts are still needed before the web app can work on an IE 
 <![endif]-->
 ```
 
-2. fixmyjs - client tools npm (already added in package.json, not in use) Need to put it into both build and spawn tool (shared/hammer.js) before js minification.
+2. fixmyjs - client tools npm (already added in package.json, not in use) Need to put it into both build and spawn tool (shared/hammer.js) before js minification. This will fix the extra commas that IE complains about.
