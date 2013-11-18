@@ -27,7 +27,6 @@
  * columns - for column specific config and per record actions
  * mode
  * parentCt
- * formWidget (TBI: optional, inferred from model's name or schema in Admin meta module)
  *
  * *****
  * Note
@@ -89,7 +88,9 @@ Application.Widget.register('DataGrid', function(){
             this.columns = options.columns || this.columns;
             this.mode = options.mode; //subDoc or refDoc, not pagination mode!! which is set in the collections.
             this.parentCt = options.parentCt; //for event relay and collaboration with sibling wigets.
-            this.formWidget = options.formWidget || this.formWidget;// needed for editing/create records.
+            if(options.pagination) {
+                this.collection.enablePagination(options.pagination);
+            }
 
             //a.+ toolbar prep with options.alterTools func support.
             var tools = options.tools || this.tools || [{
@@ -254,7 +255,7 @@ Application.Widget.register('DataGrid', function(){
         events: {
             'click [action]': '_actionCalled',
             'dblclick .data-row': 'editRecordDbClick',
-            'event_SaveRecord': 'saveRecord',
+
             'event_reloadRecords': 'reloadRecords',
             'event_FormClose': 'closeForm',
         },
@@ -278,21 +279,8 @@ Application.Widget.register('DataGrid', function(){
                 m.collection = this.collection;
             }
 
-            if(this.formWidget && this.parentCt){
-            	//create and show it
-	            var formView = new this.formWidget({
-	                model: m,
-	                recordManager: this
-	            });
-	            this.parentCt.showForm(formView);
-                return formView;
-            }else if(this.parentCt) {
-            	//trigger an event so the parentCt can help get the form
-            	this.parentCt.$el.trigger('showForm', {
-            		model: m,
-            		grid: this
-            	});
-            }
+            var emitter = this.parentCt || this;
+        	emitter.trigger('grid:show-form', m);
 
         },
 
@@ -302,10 +290,12 @@ Application.Widget.register('DataGrid', function(){
 
         //---------------Action Workers---------------
         newRecord: function($actionBtn){
-        	this._animateFormUp(this.grid.$el.find('thead'), this.grid.$el.find('tbody'));
+            this._showForm();
+        	//this._animateFormUp(this.grid.$el.find('thead'), this.grid.$el.find('tbody'));
         },
         editRecord: function($actionBtn){
-        	this._animateFormUp($actionBtn.parentsUntil('tbody', 'tr.data-row'));
+            this._showForm($actionBtn.attr('target'));
+        	//this._animateFormUp($actionBtn.parentsUntil('tbody', 'tr.data-row'));
         },
         deleteRecord: function($actionBtn) {
         	var recordId = $actionBtn.attr('target');
@@ -357,8 +347,7 @@ Application.Widget.register('DataGrid', function(){
 
         //WARNING:: Note that at this point we already set the values of the model on this form according to the user input values...
         //Thus, after 'put' to the server, we really don't need to do any thing on the client side here.
-        saveRecord: function(e, sheet) {
-            e.stopPropagation();
+        saveRecord: function(sheet) {
             //1.if this grid is used as top-level record holder:
             var that = this;
             if (this.isRefMode()) {
@@ -418,29 +407,29 @@ Application.Widget.register('DataGrid', function(){
             this.grid.$el.removeClass('form-overlay');
         },
             //------: Form Slide-up-----------
-        _animateFormUp: function($toRow, $hideFormParts){
-            var formView = this._showForm($toRow.find('[action="edit"]').attr('target'));
-            var followingRecords = $hideFormParts || $toRow.nextAll('tr.data-row');        	
-            //scroll up the form
-            formView.$el.position({
-                my: 'center top',
-                at: 'center bottom+2',
-                of: $toRow,
-                collision: 'none none',
-                using: _.bind(function(prop, ref){
-                    this._lockUI();
-                    followingRecords.animate({opacity: 0.1});
-                    formView.$el.animate(prop);
-                }, this)
-            });
-            //recover
-            formView.once('close', _.bind(function(){
-                followingRecords.animate({
-                    opacity: 1
-                });
-                this._unlockUI();
-            }, this));
-        }
+        // _animateFormUp: function($toRow, $hideFormParts){
+        //     var formView = this._showForm($toRow.find('[action="edit"]').attr('target'));
+        //     var followingRecords = $hideFormParts || $toRow.nextAll('tr.data-row');        	
+        //     //scroll up the form
+        //     formView.$el.position({
+        //         my: 'center top',
+        //         at: 'center bottom+2',
+        //         of: $toRow,
+        //         collision: 'none none',
+        //         using: _.bind(function(prop, ref){
+        //             this._lockUI();
+        //             followingRecords.animate({opacity: 0.1});
+        //             formView.$el.animate(prop);
+        //         }, this)
+        //     });
+        //     //recover
+        //     formView.once('close', _.bind(function(){
+        //         followingRecords.animate({
+        //             opacity: 1
+        //         });
+        //         this._unlockUI();
+        //     }, this));
+        // }
         //--------------------------------------------
 
     });

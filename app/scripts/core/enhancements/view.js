@@ -382,7 +382,7 @@ _.extend(Backbone.Marionette.Layout.prototype, {
  * options
  * -------
  * appendTo: [selector] - general appendTo cfg
- * triggerOnShow: true|false,
+ * triggerOnShow: true|false[default],
  * editors: {
  * 	name: {
  * 		type: ..., (*required)
@@ -467,7 +467,9 @@ _.extend(Backbone.Marionette.View.prototype, {
 _.extend(Backbone.Marionette.View.prototype, {
 
 	enableForm: function(options){
+		options = options || {};
 		this.tagName = 'form';
+		this.template = options.template || this.template || '#_blank';
 		//0. addFormPart
 		this.parts = this.parts || [];
 		this.addFormPart = function(view, opt){
