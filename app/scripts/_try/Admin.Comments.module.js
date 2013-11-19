@@ -59,6 +59,9 @@
 				title: {
 					type: 'text',
 					label: 'Title',
+					validate: {
+						required: true
+					}
 				},
 				body: {
 					type: 'textarea',

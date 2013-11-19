@@ -92,6 +92,8 @@
 
 					View: {
 						List: type === 'table' ? app.Widget.get('DataGrid') : undefined,
+
+						/*This is a template for implementing your own Form*/
 						Detail: _.isFunction(options.form)?options.form:Backbone.Marionette.ItemView.extend({
 							initialize: function(opt){
 								this.template = '#custom-tpl-context-admin-submodule-general-form-' + type;
@@ -112,6 +114,9 @@
 							//pre-defined actions
 							actions: {
 								submit: function(){
+									var errors = this.validate(true);
+									if(errors) return;
+									
 									this.model.set(this.getValues());
 									this.trigger('form:save-record');
 								},

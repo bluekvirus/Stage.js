@@ -50,7 +50,7 @@
 	app.Editor.rules = {
 
 		required: function(options, val, form){
-			if(!val) return (_.isObject(options) && options.msg) || errors['required'];
+			if(!val) return (_.isObject(options) && options.msg) || app.Editor.errors['required'];
 		}
 
 	}

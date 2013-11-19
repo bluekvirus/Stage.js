@@ -64,29 +64,29 @@
 				model: module.map[name].Model,
 				url: dataURL,
 		        parse: function(response) {
-		        	if(!(response && response.payload)) throw new Error('DEV::DataUnits::Server responded with no result collection in [payload]');
-
-		        	//////////For Pagination Support - See base-lib-fix.js - use this.enablePagination(); to enable pagination inside a collection//////////
-		        	if(this.pagination){
-		        		switch(this.pagination.mode){
-		        			case 'client':
-				        		this._cachedResponse = response.payload || [];
-				        		this.totalRecords = this._cachedResponse.length;
-				        		var page = this.currentPage || 1;
-				        		return response.payload.slice((page-1) * this.pagination.pageSize, page * this.pagination.pageSize); 
-				        		//return only one page of data if the collection is current set to paginate in client mode.
-				        	case 'server':
-				        		if(response.total)
-				        			this.totalRecords = response.total;
-				        		else
-				        			this.pagination.cache = true; //automatically switch to infinite mode.
-				        			//Note that, in cached server mode (e.g like 'infinity', we don't use this totalRecord at all, so the server doesn't have to return it)				        	
-						        break;
-		        		}
+		        	if(response.payload) {
+			        	//////////For Pagination Support - See base-lib-fix.js - use this.enablePagination(); to enable pagination inside a collection//////////
+			        	if(this.pagination){
+			        		switch(this.pagination.mode){
+			        			case 'client':
+					        		this._cachedResponse = response.payload || [];
+					        		this.totalRecords = this._cachedResponse.length;
+					        		var page = this.currentPage || 1;
+					        		return response.payload.slice((page-1) * this.pagination.pageSize, page * this.pagination.pageSize); 
+					        		//return only one page of data if the collection is current set to paginate in client mode.
+					        	case 'server':
+					        		if(response.total)
+					        			this.totalRecords = response.total;
+					        		else
+					        			this.pagination.cache = true; //automatically switch to infinite mode.
+					        			//Note that, in cached server mode (e.g like 'infinity', we don't use this totalRecord at all, so the server doesn't have to return it)				        	
+							        break;
+			        		}
+			        	}
+			        	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			            return response.payload; //payload is the default server data field.
 		        	}
-		        	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-		            return response.payload; //payload is the default server data field.
+		        	return response;
 		        }
 			}, options && options.collection));
 		}else {
