@@ -235,13 +235,14 @@ Template.extend(
 	'custom-tpl-context-admin-submodule-general-form-table',
 	[
 
-		'<div editorarea="true" style="width: 600px; margin: 0 auto;"></div>',
+		'<div class="form-body" editorarea="true"></div>',
 		//buttons
-		'<div class="btn-bar">',
-			'<span class="btn btn-action-save" action="submit">Save</span> ',
-			'<span class="btn" action="cancel">Cancel</span> ',
+		'<div class="btn-bar-ct">',
+			'<div class="btn-bar">',
+				'<span class="btn btn-action-save" action="submit">Save</span> ',
+				'<span class="btn" action="cancel">Cancel</span> ',
+			'</div>',		
 		'</div>',
-
 	]
 );
 
@@ -250,7 +251,7 @@ Template.extend(
 	'custom-tpl-context-admin-submodule-general-form-complex',
 	[
 
-		'<div editorarea="true" style="width: 600px; margin: 0 auto;"></div>',
+		'<div class="form-body" editorarea="true"></div>',
 		//buttons
 		'<div class="btn-bar">',
 			'<span class="btn btn-action-save" action="submit">Save</span> ',

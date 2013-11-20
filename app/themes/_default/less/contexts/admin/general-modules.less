@@ -21,23 +21,36 @@
 
 	.default-layout-body {
 
-		border-top: 2px dotted #eee;
+		border-top: 2px dotted @color-bg;
+		padding-top: 10px;
 
 		.admin-submodule-general-form {
 
-			padding: 20px 0;
-			background-color: #eee;
-			margin-top: 5px;
+			border: 5px solid @color-bg;
+			margin-bottom: 10px;
 
-			.btn-bar {
-				width: 200px;
+			.form-body {
+				padding:10px 20px;
+				max-width: 660px;
 				margin: 0 auto;
-				margin-top: 20px;
-
-				.btn {
-					width: 70px;
-				}
 			}
+
+			.btn-bar-ct {
+
+				padding: 10px 0 5px 0;
+				background-color: @color-bg;
+				.btn-bar {
+					width: 200px;
+					margin: 0 auto;
+
+					.btn {
+						width: 70px;
+					}
+				}
+
+			}
+
+
 		}
 
 	}
