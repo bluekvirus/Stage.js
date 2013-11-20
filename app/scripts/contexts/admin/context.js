@@ -95,6 +95,8 @@
 
 						/*This is a template for implementing your own Form*/
 						Detail: _.isFunction(options.form)?options.form:Backbone.Marionette.ItemView.extend({
+
+							className: 'admin-submodule-general-form',
 							initialize: function(opt){
 								this.template = '#custom-tpl-context-admin-submodule-general-form-' + type;
 								this.autoDetectUIs();
@@ -221,8 +223,8 @@ Template.extend(
 	[
 		'{{#if title}}<div class="default-layout-header"><span class="default-layout-header-title">{{title}}</span></div>{{/if}}',
 		'<div class="default-layout-body">',
+			'<div region="detail"></div>',
             '<div region="list"></div>',
-            '<div region="detail"></div>',
 		'</div>',
 		'<div class="default-layout-footer"></div>',
 	]
@@ -232,15 +234,14 @@ Template.extend(
 Template.extend(
 	'custom-tpl-context-admin-submodule-general-form-table',
 	[
-		'<div><h3 class="record-action-type" style="border-bottom:2px solid #eee">{{#if _id}}Edit{{else}}Create{{/if}}</h3></div>',
-		'<div editorarea="true"></div>',
-		'<div>',
-			//buttons
-			'<div style="width:200px; margin: 0 auto;">',
-				'<span class="btn btn-action-save" action="submit">Save</span> ',
-				'<span class="btn" action="cancel">Cancel</span> ',
-			'</div>',
-		'<div>'
+
+		'<div editorarea="true" style="width: 600px; margin: 0 auto;"></div>',
+		//buttons
+		'<div class="btn-bar">',
+			'<span class="btn btn-action-save" action="submit">Save</span> ',
+			'<span class="btn" action="cancel">Cancel</span> ',
+		'</div>',
+
 	]
 );
 
@@ -248,14 +249,13 @@ Template.extend(
 Template.extend(
 	'custom-tpl-context-admin-submodule-general-form-complex',
 	[
-		'<div><h3 class="record-action-type" style="border-bottom:2px solid #eee">{{#if _id}}Edit{{else}}Create{{/if}}</h3></div>',
-		'<div editorarea="true"></div>',
-		'<div>',
-			//buttons
-			'<div style="width:200px; margin: 0 auto;">',
-				'<span class="btn btn-action-save" action="submit">Save</span> ',
-				'<span class="btn" action="refresh">Refresh</span> ',
-			'</div>',
-		'<div>'
+
+		'<div editorarea="true" style="width: 600px; margin: 0 auto;"></div>',
+		//buttons
+		'<div class="btn-bar">',
+			'<span class="btn btn-action-save" action="submit">Save</span> ',
+			'<span class="btn" action="refresh">Refresh</span> ',
+		'</div>',
+
 	]
 );
