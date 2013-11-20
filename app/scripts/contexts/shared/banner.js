@@ -20,7 +20,7 @@
 		View: {
 			Default: Backbone.Marionette.ItemView.extend({
 				template: '#custom-module-shared-banner-tpl',
-				className: 'navbar-inner',
+				className: 'banner',
 
 				initialize: function(){
 					this.model = new Backbone.Model({

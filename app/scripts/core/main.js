@@ -26,9 +26,9 @@
 	Application.addRegions({
 		//TBI:: auto-pickup from layouts?
 		main: '.application-container',
-		banner: '.application-container > .banner',
-		body: '.application-container > .body',
-		footer: '.application-container > .footer',
+		banner: '.application-container > [region="banner"]',
+		body: '.application-container > [region="body"]',
+		footer: '.application-container > [region="footer"]',
 
 	});
 

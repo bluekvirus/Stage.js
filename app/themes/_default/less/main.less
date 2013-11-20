@@ -25,24 +25,22 @@
 @import "fonts"; //fonts with web font
 @import "core"; //base theme and css components
 
-//Widgets
-@import "form";
-@import "datepicker";
-@import "file-editor";
-@import "select-editor";
-@import "dnd-picker";
-@import "resource-control";
-@import "table-sorter";
-@import "datagrid";
-@import "mask";
 
-//Modules
+//Editors
+@import "parts/editors/select-editor";
+
+//Widgets
+@import "parts/widgets/table-sorter";
+@import "parts/widgets/datagrid";
+@import "parts/widgets/mask";
+
+//Contexts (and their submodules)
 //Context.Admin
-@import "menu-accordion";
-@import "admin-module";
+@import "contexts/admin/menu-accordion";
+@import "contexts/admin/general-modules";
 
 //Context.Shared
-// @import "banner"; //main navigation/logo/info
+@import "contexts/shared/banner"; //main navigation/logo/info
 // @import "footer"; //additional info/contact/feedback/links
 
 /*!

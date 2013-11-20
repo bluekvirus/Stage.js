@@ -143,7 +143,7 @@
 								opt = opt || {};
 								this.model = opt.model || new Backbone.Model({
 									//the layout view info package (as a model to a view) see the admin layout template below.
-									title: _.string.titleize(_.string.humanize(name + 'Manager')) 
+									title: options.title || _.string.titleize(_.string.humanize(name)) 
 								});
 								this.autoDetectRegions();
 							},
@@ -219,7 +219,7 @@ Template.extend(
 Template.extend(
 	'custom-tpl-context-admin-submodule-general',
 	[
-		'{{#if title}}<div class="default-layout-header"><i class="icon-th-list"></i> <span class="default-layout-header-title">{{title}}</span></div>{{/if}}',
+		'{{#if title}}<div class="default-layout-header"><span class="default-layout-header-title">{{title}}</span></div>{{/if}}',
 		'<div class="default-layout-body">',
             '<div region="list"></div>',
             '<div region="detail"></div>',
