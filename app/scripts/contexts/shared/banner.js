@@ -24,8 +24,8 @@
 
 				initialize: function(){
 					this.model = new Backbone.Model({
-						projectName: 'Your Project Name Here',
-						logo: 'Your project logo path',
+						projectName: 'PRODUCT NAME', //your project/product/company name
+						logo: '', //your project logo icon class
 					});
 					this.listenTo(this.model, 'change', this.render);
 					this.listenTo(app, 'app:user-changed', this.onShow);
@@ -69,7 +69,7 @@ Template.extend(
 			'</a>',
 
 			'<!-- Be sure to leave the brand out there if you want it shown -->',
-			'<a class="brand" href="#">{{projectName}}</a>',
+			'<a class="brand" href="#"><i class="icon- {{logo}}"></i>{{projectName}}</a>',
 
 			'<!-- Everything you want hidden at 940px or less, place within here -->',
 			'<div class="nav-collapse collapse">',

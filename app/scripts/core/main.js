@@ -84,9 +84,13 @@
 				noHeader: this.innerHeight - Application.getRegion('banner').$el.outerHeight(true),
 				bodyOnly: this.innerHeight - Application.getRegion('banner').$el.outerHeight(true) - Application.getRegion('footer').$el.outerHeight(true)
 			}
+			Application.trigger('view:resized');
 		};
-		trackAppHeight();
-		$(window).on('resize', trackAppHeight);
+		if(Application.config.fullScreen){
+			trackAppHeight();
+			$(window).on('resize', trackAppHeight);
+			$('body').css('overflow', 'hidden');
+		}
 
 		//2.Auto-detect and init context (view that replaces the body region). see the Context.Login
 		var context = Application.config.appContext; //go to default app context.

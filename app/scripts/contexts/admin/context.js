@@ -24,10 +24,11 @@
 				Default: Backbone.Marionette.Layout.extend({
 					template: '#application-context-admin-tpl',
 					className: 'default row-fluid',
-					regions: {
-						sidebar: '.sidebar',
-						content: '.content',
+
+					initialize: function(){
+						this.autoDetectRegions();
 					},
+
 					onShow: function(){
 						this.sidebar.show(new context.Menu.View.Default());
 					}
@@ -148,6 +149,17 @@
 									title: options.title || _.string.titleize(_.string.humanize(name)) 
 								});
 								this.autoDetectRegions();
+								this.autoDetectUIs();
+
+								if(app.config.fullScreen){
+									this.resize = function(){
+										var headerOuterHeigth = this.ui.header.length > 0 ? this.ui.header.outerHeight(true): 0;
+										this.ui.body.height(app.fullScreenContextHeight.bodyOnly - headerOuterHeigth);
+									}
+									this.listenTo(app, 'view:resized', function(){
+										this.resize();
+									});
+								}
 							},
 
 							onShow: function(){
@@ -195,6 +207,10 @@
 									})
 
 								}
+
+								if(app.config.fullScreen) {
+									this.resize();
+								}
 							},
 						})
 					}
@@ -212,8 +228,8 @@
 Template.extend(
 	'application-context-admin-tpl',
 	[
-	    '<div class="sidebar span2"></div>',
-	    '<div class="content span10"></div>'
+	    '<div region="sidebar" class="span2"></div>',
+	    '<div region="content" class="span10"></div>'
 	]
 );
 
@@ -221,8 +237,8 @@ Template.extend(
 Template.extend(
 	'custom-tpl-context-admin-submodule-general',
 	[
-		'{{#if title}}<div class="default-layout-header"><span class="default-layout-header-title">{{title}}</span></div>{{/if}}',
-		'<div class="default-layout-body">',
+		'{{#if title}}<div class="default-layout-header" ui="header"><span class="default-layout-header-title">{{title}}</span></div>{{/if}}',
+		'<div class="default-layout-body" ui="body">',
 			'<div region="detail"></div>',
             '<div region="list"></div>',
 		'</div>',

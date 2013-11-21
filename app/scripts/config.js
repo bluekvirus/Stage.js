@@ -12,9 +12,9 @@
 	});
 	Application.config = _.extend(Application.config || {}, {
 
-		appContext: 'Admin', 
-		//TBI: appContext will be replaced by some sub-module dispatcher later. since we want the Login (before login) and App (after login) to be the two super contex.
-		//We want the Admin to be a sub-context module under App...
+		appContext: 'Admin', //This is the context the application will sit on upon loading.
+		fullScreen: true, //If set true, we will be tracking application body size upon window resizing events and put values in Application.fullScreenContextHeight as reference.
+						  //Note that this also indicates <body> will have overflow set to hidden in its css.
 
 		crossdomain: {
 			//enabled: true,
