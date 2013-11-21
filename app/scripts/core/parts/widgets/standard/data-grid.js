@@ -98,12 +98,12 @@ Application.Widget.register('DataGrid', function(){
                 group: 'batch', //group name doesn't really matter atm.
                 buttons: [
                     {
-                        label: 'New',
-                        icon: 'icon-plus-sign icon-white', //the icon class
+                        label: 'Create',
+                        icon: 'icon-plus-sign', //the icon class
                         action: 'new' //the action attribute
                     },
                     {
-                        label: '',
+                        label: 'Delete',
                         icon: 'icon-trash',
                         action: 'remove'
                     }
