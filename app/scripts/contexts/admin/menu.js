@@ -349,7 +349,7 @@ Template.extend(
     'custom-tpl-layout-menu-accordion',
     [
         '<div class="menu-header"></div>',
-        '<div class="menu-body"></div>',
+        '<div class="menu-body" style="padding:6px;"></div>',
         '<div class="menu-footer"></div>'
 
     ]

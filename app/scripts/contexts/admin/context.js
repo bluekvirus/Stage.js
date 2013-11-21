@@ -27,10 +27,21 @@
 
 					initialize: function(){
 						this.autoDetectRegions();
+						if(app.config.fullScreen){
+							this.resize = function(){
+								this.content.$el.height(app.fullScreenContextHeight.bodyOnly);
+							}
+							this.listenTo(app, 'view:resized', function(){
+								this.resize();
+							});
+						}						
 					},
 
 					onShow: function(){
 						this.sidebar.show(new context.Menu.View.Default());
+						this.content.ensureEl();
+						this.content.$el.css('overflowY', 'auto');
+						this.resize();
 					}
 				})
 			},
@@ -146,20 +157,9 @@
 								opt = opt || {};
 								this.model = opt.model || new Backbone.Model({
 									//the layout view info package (as a model to a view) see the admin layout template below.
-									title: options.title || _.string.titleize(_.string.humanize(name)) 
+									title: options.defaultAdminPath.split('->')
 								});
 								this.autoDetectRegions();
-								this.autoDetectUIs();
-
-								if(app.config.fullScreen){
-									this.resize = function(){
-										var headerOuterHeigth = this.ui.header.length > 0 ? this.ui.header.outerHeight(true): 0;
-										this.ui.body.height(app.fullScreenContextHeight.bodyOnly - headerOuterHeigth);
-									}
-									this.listenTo(app, 'view:resized', function(){
-										this.resize();
-									});
-								}
 							},
 
 							onShow: function(){
@@ -207,10 +207,6 @@
 									})
 
 								}
-
-								if(app.config.fullScreen) {
-									this.resize();
-								}
 							},
 						})
 					}
@@ -237,7 +233,13 @@ Template.extend(
 Template.extend(
 	'custom-tpl-context-admin-submodule-general',
 	[
-		'{{#if title}}<div class="default-layout-header" ui="header"><span class="default-layout-header-title">{{title}}</span></div>{{/if}}',
+		'<div class="default-layout-header" ui="header">',
+			'<ul class="inline" style="margin:0;">',
+				'{{#each title}}',
+					'<li><span>{{this}}</span> <i class="icon-chevron-right"></i></li>',
+				'{{/each}}',
+			'</ul>',
+		'</div>',
 		'<div class="default-layout-body" ui="body">',
 			'<div region="detail"></div>',
             '<div region="list"></div>',

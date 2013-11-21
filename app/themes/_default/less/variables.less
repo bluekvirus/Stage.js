@@ -24,13 +24,16 @@
 
 //Specific to our application
 //===========================
-@color-sand: #B8AE9C;
+@color-bg: #eee; /*Used in date-picker.less*/
+@color-sand: darken(@color-bg, 20%);
 @color-stone: #ACCFCC;
 @color-white: #FFFFFF;
 @color-black: #000000;
-@color-dark: #595241;
-@color-red: #8A0917;
-@color-bg: #eee; /*Used in date-picker.less*/
+@color-dark: darken(@color-bg, 35%);
+@color-red: @color-black;
+
+//Links
+@linkColor: darken(@color-dark, 50%);
 
 //Buttons
 

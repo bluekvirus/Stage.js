@@ -9,21 +9,23 @@
 
 	.default-layout-header {
 		padding: 5px 0;
-		
+		color: @color-black;
+		font-weight: bold;
+		font-size: 14px;
 
-		.default-layout-header-title {
-			font-size: 18px;
-			font-weight: bold;
-			color: @color-sand;
-			//text-shadow: 1px 1px 1px @color-dark;
+		ul > li {
+			padding-left: 0;
+			opacity: 0.3;
+			&:last-child{
+				opacity: 1;
+				i {
+					display: none;
+				}
+			} 
 		}
 	}
 
 	.default-layout-body {
-
-		border-top: 2px dotted @color-bg;
-		overflow-y: auto;
-		padding-top: 10px;
 
 		.admin-submodule-general-form {
 

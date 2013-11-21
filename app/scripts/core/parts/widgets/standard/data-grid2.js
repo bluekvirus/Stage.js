@@ -65,3 +65,33 @@
  * @author Tim.Liu
  * @created 2013.11.20
  */
+
+Application.Widget.register('DataGrid2', function(){
+
+	var DataGrid = Backbone.Marionette.Layout.extend({
+	        template: '#widget-datagrid-tpl',
+	        className: 'basic-datagrid-view-wrap',
+
+	        initialize: function(options) {
+	        }
+	});
+
+	return DataGrid;
+
+});
+
+Template.extend(
+	'widget-datagrid-tpl',
+	[
+		'<div region="header" class="datagrid-header-container"></div>',
+		'<div region="body" class="datagrid-body-container"></div>',
+		'<div region="footer" class="datagrid-footer-container"></div>'
+	]
+);
+
+Template.extend(
+	'widget-datagrid-footer-tpl',
+	[
+		' ' //TBI
+	]
+);
