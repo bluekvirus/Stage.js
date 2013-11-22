@@ -291,9 +291,10 @@ _.extend(Backbone.Marionette.View.prototype, {
 		this.addTab = function(view, cb){
 			var tabId = _.uniqueId('tab-view');
 			if(!view.tab) throw new Error('DEV::View::You are adding a tab view without the necessary view.tab config block!');
-			$tabs.navi.append('<li><a data-toggle="tab" href="#' + tabId + '"><i class="' + (view.tab.icon || 'icon-question-sign') + '"></i> ' + (view.tab.title || 'UNKNOWN Tab') + '</a></li>');
+			var $tabnavi = $('<li><a data-toggle="tab" href="#' + tabId + '"><i class="' + (view.tab.icon || 'icon-question-sign') + '"></i> ' + (view.tab.title || 'UNKNOWN Tab') + '</a></li>');
+			$tabs.navi.append($tabnavi);
 			$tabs.content.append(view.render().$el.addClass('tab-pane').attr('id', tabId));
-			cb && cb(view, this);
+			cb && cb($tabnavi, view, this);
 			if(view.onShow) view.onShow();//call onShow() for view object.
 		}
 
