@@ -59,7 +59,8 @@
  * 7. rowDetails: View object/['field1', 'field2']/fieldname/boolean (true for all fields).
  * If rowDetails is enabled, another row will appear under the data row for details (default on using a property grid as details view)
  *
- * Note that we no longer use parentCt or formWidget options. Collaboration with other widgets or view objects should be done with events (handshakes)
+ * Note that we no longer use parentCt or formWidget options.
+ * Collaboration with other widgets or view objects should be done with events (handshakes) up in the parent container.
  * 
  *
  * @author Tim.Liu
@@ -68,18 +69,81 @@
 
 Application.Widget.register('DataGrid2', function(){
 
-	var DataGrid = Backbone.Marionette.Layout.extend({
+	var View = Backbone.Marionette.Layout.extend({
 	        template: '#widget-datagrid-tpl',
 	        className: 'basic-datagrid-view-wrap',
 
 	        initialize: function(options) {
+	        	options = options || {};
+	        	this.autoDetectRegions();
+	        	//1. collection, pagination;
+	        	this.table = new Table(options); 
+	        	//2. columns (sortable, filterable), customized cells/header cells;
+	        	//3. toolbar; (link with our toolbar widget)
+	        	//4. row - actions, details, groups;
+	        },
+
+	        onShow: function(){
+	        	this.body.show(this.table);
 	        }
 	});
 
-	return DataGrid;
+	var Table = Backbone.Marionette.CompositeView.extend({
+		template: '#widget-datagrid-table-tpl',
+		tagName: 'table',
+		className: 'datagrid',
+		itemViewContainer: 'tbody',
+		itemView: Row,		
+
+		initialize: function(options){
+			this.columns = this.columns || options.columns || [];
+			//check
+			if(!this.collection || !this.columns) throw new Error('DEV::Widget.Datagrid2::You must init the grid with a collection and some columns!');
+			if(options.pagination) this.collection.enablePagination(options.pagination);
+			var that = this;
+			this.itemViewOptions = function(){
+				return {
+					columns: that.columns,
+					//need to pass down other options as well.
+					//see above 4-7 in code design comment
+				};
+			};
+		},
+
+	});
+
+	var Row = Backbone.Marionette.CollectionView.extend({
+		template: '#widget-datagrid-row-tpl',
+		tagName: 'tr',
+		itemView: Cell,
+
+		initialize: function(options){
+			this.collection = new Backbone.Collection(_.map(this.options.columns, function(col){
+				return this.model.get(col.name);
+			}, this));
+		}
+	});
+
+	var Cell = Backbone.Marionette.itemView.extend({
+		template: '#_blank',
+		tagName: 'td',
+
+		initialize: function(options){
+			//find the cell view or default on just showing the data as a string.
+		}
+	});
+
+	/*Actual impl of Cells are not here except for the default 'string' Cell*/	
+
+	var Footer = Backbone.Marionette.Layout.extend({
+		template: '#widget-datagrid-footer-tpl',
+	});
+
+	return View;
 
 });
 
+//Template:
 Template.extend(
 	'widget-datagrid-tpl',
 	[
@@ -89,6 +153,24 @@ Template.extend(
 	]
 );
 
+//Table:
+Template.extend(
+	'widget-datagrid-table-tpl',
+	[
+		'<thead></thead>',
+		'<tbody></tbody>'
+	]
+);
+
+//Row: 
+Template.extend(
+	'widget-datagrid-row-tpl',
+	[
+		' ' //TBI
+	]
+);
+
+//Footer:
 Template.extend(
 	'widget-datagrid-footer-tpl',
 	[
