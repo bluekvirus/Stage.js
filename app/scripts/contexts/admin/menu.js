@@ -78,6 +78,7 @@
             }
 
             this.$el.addClass(this.className);
+
         },
 
         onRender: function() {
@@ -266,7 +267,7 @@
 
         template: "#custom-tpl-layout-menu-accordion",            
         
-        className: "custom-tpl-layout-wrapper",
+        className: "menu-accordion-wrap",
 
         regions: {
             header: '.menu-header',
@@ -280,7 +281,7 @@
 
         initialize:function(options){
             if(!options || !options.model)
-                this.model = new Backbone.Model({meta:this.meta});
+                this.model = new Backbone.Model({meta:this.meta});            
         },
 
         onRender:function(){
@@ -349,7 +350,7 @@ Template.extend(
     'custom-tpl-layout-menu-accordion',
     [
         '<div class="menu-header"></div>',
-        '<div class="menu-body" style="padding:6px;"></div>',
+        '<div class="menu-body"></div>',
         '<div class="menu-footer"></div>'
 
     ]

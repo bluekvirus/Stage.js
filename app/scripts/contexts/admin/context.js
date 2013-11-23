@@ -7,6 +7,11 @@
  * We also provide a 'create' method for producing a UI submodule under Admin context. 
  * This way we can glue the data, datagrid, form, layout and effect together in a generalized way.
  *
+ *
+ * Menu
+ * ----
+ * We need both 1-level accordion and 2-level one so that if 1-level menu section list goes too long we can use the 2-level layout.
+ *
  * @author Tim.Liu
  * @created 2013.09.28
  */
@@ -30,6 +35,7 @@
 						if(app.config.fullScreen){
 							this.resize = function(){
 								this.content.$el.height(app.fullScreenContextHeight.bodyOnly);
+								this.sidebar.$el.height(app.fullScreenContextHeight.bodyOnly);
 							}
 							this.listenTo(app, 'view:resized', function(){
 								this.resize();
@@ -39,6 +45,7 @@
 
 					onShow: function(){
 						this.sidebar.show(new context.Menu.View.Default());
+						if(app.config.fullScreen) this.sidebar.$el.addClass('with-border-right');
 						this.content.ensureEl();
 						this.content.$el.css('overflowY', 'auto');
 						this.resize();
