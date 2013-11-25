@@ -81,10 +81,12 @@ Application.Widget.register('DataGrid2', function(){
 	        	//2. columns (sortable, filterable), customized cells/header cells;
 	        	//3. toolbar; (link with our toolbar widget)
 	        	//4. row - actions, details, groups;
+	        	
 	        },
 
 	        onShow: function(){
 	        	this.body.show(this.table);
+	        	this.table.collection.load();
 	        }
 	});
 
@@ -93,12 +95,12 @@ Application.Widget.register('DataGrid2', function(){
 		tagName: 'table',
 		className: 'datagrid',
 		itemViewContainer: 'tbody',
-		itemView: Row,		
-
+		
 		initialize: function(options){
+			this.itemView = Row; //specify here so it can be defined below Table definition.
 			this.columns = this.columns || options.columns || [];
-			//check
-			if(!this.collection || !this.columns) throw new Error('DEV::Widget.Datagrid2::You must init the grid with a collection and some columns!');
+			//check (Note that checking this.collection will return false in init, so don't check it...weird)
+			if(!this.columns) throw new Error('DEV::Widget.Datagrid2::You must init the grid with some columns!');
 			if(options.pagination) this.collection.enablePagination(options.pagination);
 			var that = this;
 			this.itemViewOptions = function(){
@@ -113,27 +115,33 @@ Application.Widget.register('DataGrid2', function(){
 	});
 
 	var Row = Backbone.Marionette.CollectionView.extend({
-		template: '#widget-datagrid-row-tpl',
 		tagName: 'tr',
-		itemView: Cell,
-
+	
 		initialize: function(options){
+			this.itemView = Cell; //specify here so it can be defined below Row definition.
 			this.collection = new Backbone.Collection(_.map(this.options.columns, function(col){
-				return this.model.get(col.name);
+				return {
+					val: this.model.get(col.name),
+					cell: this.model.get(col.cell)
+				}
 			}, this));
 		}
 	});
 
-	var Cell = Backbone.Marionette.itemView.extend({
+	var Cell = Backbone.Marionette.ItemView.extend({
 		template: '#_blank',
 		tagName: 'td',
 
 		initialize: function(options){
 			//find the cell view or default on just showing the data as a string.
+		},
+
+		onRender: function(){
+			if(!this.model.get('cell')) this.$el.html(this.model.get('val'));
 		}
 	});
 
-	/*Actual impl of Cells are not here except for the default 'string' Cell*/	
+	/*Actual impl of Cells are not here except for the default 'string' Cell above*/	
 
 	var Footer = Backbone.Marionette.Layout.extend({
 		template: '#widget-datagrid-footer-tpl',
@@ -162,13 +170,13 @@ Template.extend(
 	]
 );
 
-//Row: 
+//Cell: 
 Template.extend(
-	'widget-datagrid-row-tpl',
+	'widget-datagrid-cell-string-tpl',
 	[
-		' ' //TBI
+		'{{val}}'
 	]
-);
+)
 
 //Footer:
 Template.extend(

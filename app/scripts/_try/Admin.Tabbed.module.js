@@ -22,16 +22,38 @@
 				onShow: function(){
 					this.fakeRegions();
 					this.enableTabLayout('top', 'tabs');
-					_.each(app.Context._Dev.submodules, function(m){
-						this.addTab(new m.View.Default());
-					}, this);
-					this.showTab(0);
-					this.intro.$el.md({
-						file: 'testmd.test',
-						callback: function($el){
-							//console.log($el);
-						}
+					var grid = app.Widget.create('DataGrid2', {
+						collection: new (app.DataUnits.get('Comment').Collection)(),
+						columns: [
+							{
+								name: 'title',
+								label: 'Title'
+							},
+							{
+								name: 'updated_at',
+								label: 'Update'
+							}
+						]
 					});
+					grid.tab = {
+						title: 'Grid2 Test'
+					};
+					this.addTab(grid);
+					this.addTab(new (Backbone.Marionette.ItemView.extend({
+						template: '#_blank',
+						tab: {
+							title: '$.md Plugin Test'
+						},
+						onShow: function(){
+							this.$el.md({
+								file: 'testmd.test',
+								callback: function($el){
+									//console.log($el);
+								}
+							});
+						}
+					}))());
+					this.showTab(0);
 				}
 			})
 		}
@@ -42,6 +64,6 @@
 
 Template.extend('custom-module-admin-tabbed-tpl',
 [
-	'<div region="intro"></div>',
+	//'<div region="intro"></div>',
 	'<div region="tabs"></div>'
 ]);
