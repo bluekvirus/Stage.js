@@ -165,7 +165,7 @@ _.extend(Backbone.Marionette.View.prototype, {
 		if(!this.addRegions) throw new Error('DEV::View::You should use a Marionette.Layout object for region auto-detection');
 		
 		var that = this;
-		$('<div>' + $(this.template).html() + '</div>').find('[region]').each(function(index, el){
+		$('<'+this.tagName+'>' + $(this.template).html() + '</'+this.tagName+'>').find('[region]').each(function(index, el){
 			var r = $(this).attr('region');
 			that.regions[r] = '[region="' + r + '"]';
 		});

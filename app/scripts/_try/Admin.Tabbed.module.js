@@ -25,13 +25,22 @@
 					var grid = app.Widget.create('DataGrid2', {
 						collection: new (app.DataUnits.get('Comment').Collection)(),
 						columns: [
+							// {
+							// 	cell: 'select-all'
+							// },
 							{
 								name: 'title',
 								label: 'Title'
 							},
 							{
 								name: 'updated_at',
-								label: 'Update'
+								label: 'Update',
+								cell: Backbone.Marionette.ItemView.extend({
+									template: '#_blank',
+									onRender: function(){
+										this.$el.html(this.model.get('val') + ' new Cell');
+									}
+								})
 							}
 						]
 					});
