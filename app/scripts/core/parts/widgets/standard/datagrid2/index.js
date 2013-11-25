@@ -91,6 +91,7 @@ Application.Widget.register('DataGrid2', function(){
 	var Table = Backbone.Marionette.Layout.extend({
 		template: '#widget-datagrid-table-tpl',
 		tagName: 'table',
+		id: _.uniqueId('table-view'),
 		className: 'datagrid',
 		
 		initialize: function(options){
@@ -111,23 +112,7 @@ Application.Widget.register('DataGrid2', function(){
 					}
 				}, this);
 			});
-
-			// //2. for the table header row <th> in <thead>
-
-			// //3. for the table data rows <td> in <tbody>
-			// var that = this;
-			// this.itemViewOptions = function(model, index){
-			// 	return {
-			// 		collection: new Backbone.Collection(_.map(that.columns, function(col){
-			// 			return {
-			// 				val: model.get(col.name),
-			// 				column: col
-			// 			}
-			// 		}, that)),
-			// 		//need to pass down other options as well. (groupBy and details)
-			// 		//see above 6-7 in code design comment
-			// 	};
-			// };
+			//2. prepare the region $el(s)
 			this.autoDetectRegions();
 		},
 
@@ -142,12 +127,23 @@ Application.Widget.register('DataGrid2', function(){
 				}, this)),
 			}));
 			//tbody
-			this.tbody.show(new Backbone.Marionette.CollectionView.extend({
+			var that = this;
+			this.tbody.show(new Backbone.Marionette.CollectionView({
 				template: '#_blank',
+				el: 'table#' + this.id + ' > tbody', //hook the tbody view back to tbody.
 				itemView: Row,
-
-				//TBI
-			})());
+				itemViewOptions: function(model, index){
+					return {
+						collection: new Backbone.Collection(_.map(that.columns, function(col){
+							return {
+								val: model.get(col.name),
+								column: col
+							}
+						}))
+					}
+				},
+				collection: this.collection,
+			}));
 		}
 
 	});
