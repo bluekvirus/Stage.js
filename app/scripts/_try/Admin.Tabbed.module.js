@@ -25,7 +25,8 @@
 					var grid = app.Widget.create('DataGrid2', {
 						collection: new (app.DataUnits.get('Comment').Collection)(),
 						pagination: {
-							pageSize: 15
+							pageSize: 8,
+							mode: 'server'
 						},
 						columns: [
 							// {

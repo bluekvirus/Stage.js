@@ -195,6 +195,12 @@ Application.Widget.register('DataGrid2', function(){
 			this.autoDetectRegions();
 			this.listenTo(options.collection, 'all', function(){
 				//extract info from options.collection and show it through uis
+				var size = options.collection.size();
+				if(options.pagination) {
+					var index = ((options.collection.currentPage || 1) - 1) * options.pagination.pageSize + 1;
+					this.ui.number.html(index + '-' + (index+size-1) + '/' + options.collection.totalRecords);
+				}
+				else this.ui.number.html('1-'+ size);
 			});
 			if(options.pagination){
 				this.paginator = Application.Widget.create('Paginator', {
@@ -236,7 +242,7 @@ Template.extend(
 Template.extend(
 	'widget-datagrid-footer-tpl',
 	[
-		'<div class="pull-left" ui="stat" style="width:100px;"></div>',
-		'<div region="pager" style="margin-left:100px;">',
+		'<div class="pull-left collection-stat" style="width:200px;"><small>Records</small>: <small ui="number"></small></div>',
+		'<div region="pager" style="margin-left:200px;">',
 	]
 );
