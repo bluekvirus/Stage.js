@@ -24,6 +24,9 @@
 					this.enableTabLayout('top', 'tabs');
 					var grid = app.Widget.create('DataGrid2', {
 						collection: new (app.DataUnits.get('Comment').Collection)(),
+						pagination: {
+							pageSize: 15
+						},
 						columns: [
 							// {
 							// 	cell: 'select-all'

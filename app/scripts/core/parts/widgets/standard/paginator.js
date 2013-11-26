@@ -1,6 +1,11 @@
 /**
  * This is the paginator UI for controlling the pagination enabled collections.
  *
+ * Options
+ * -------
+ * 1. targetCollection - a backbone collection
+ * 2. alignment - left|right|centered
+ *
  * @author Tim.Liu
  * @created 2013.10.06
  */
@@ -9,9 +14,10 @@ Application.Widget.register('Paginator', function(){
 
 	var UI = Backbone.Marionette.ItemView.extend({
 		template: '#widget-paginator-tpl',
-		className:'pagination pagination-small pagination-centered',
+		className:'pagination pagination-small',
 
 		initialize: function(options){
+			this.options = options;
 			this.targetCollection = options.targetCollection;
 			if(!this.targetCollection || !this.targetCollection.pagination)
 				throw new Error('DEV::Widget.Paginator::You must pass in a pagination enabled collection to use the paginator UI.');
@@ -38,6 +44,10 @@ Application.Widget.register('Paginator', function(){
 			});
 
 			this.enableActionTags('Widget.Paginator');
+		},
+
+		onRender: function(){
+			this.$el.addClass('pagination-' + (this.options.alignment || 'centered'));
 		},
 
 		actions: {

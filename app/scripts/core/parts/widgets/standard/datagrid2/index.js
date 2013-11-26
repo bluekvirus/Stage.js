@@ -77,13 +77,13 @@ Application.Widget.register('DataGrid2', function(){
 	        	
 	        	//toolbar; (link with our toolbelt widget)
 	        	this.table = new Table(options); 
-	        	//footer;
+	        	this.footerbar = new FooterBar(options);
 	        },
 
 	        onShow: function(){
 	        	//toolbar
 	        	this.body.show(this.table);
-	        	//footer;
+	        	this.footer.show(this.footerbar);
 	        	this.table.collection.load();
 	        }
 	});
@@ -187,8 +187,26 @@ Application.Widget.register('DataGrid2', function(){
 	/*Actual impl of predefined Cells are not here, the pre-defined Cells are treated as standard widgets, and require only be named with a XxxxCell format*/	
 
 	//record statistics, paginator
-	var Footer = Backbone.Marionette.Layout.extend({
+	var FooterBar = Backbone.Marionette.Layout.extend({
 		template: '#widget-datagrid-footer-tpl',
+
+		initialize: function(options){
+			this.autoDetectUIs();
+			this.autoDetectRegions();
+			this.listenTo(options.collection, 'all', function(){
+				//extract info from options.collection and show it through uis
+			});
+			if(options.pagination){
+				this.paginator = Application.Widget.create('Paginator', {
+					targetCollection: options.collection,
+					alignment: 'right'
+				});
+			}
+		},
+
+		onShow: function(){
+			if(this.paginator) this.pager.show(this.paginator);
+		}
 	});
 
 	return View;
@@ -218,6 +236,7 @@ Template.extend(
 Template.extend(
 	'widget-datagrid-footer-tpl',
 	[
-		' ' //TBI
+		'<div class="pull-left" ui="stat" style="width:100px;"></div>',
+		'<div region="pager" style="margin-left:100px;">',
 	]
 );
