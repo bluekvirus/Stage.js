@@ -29,11 +29,11 @@
  * 			name: ...,
 			label: default on titleized field name, optional
 			cell: a string (looked up in app.Widget.get('..Cell')) or a view definition, default on null -> just display cell value as string.
-			headerCell: default on 'string', optional
+			header: default on 'string', optional
 			filterable: default on 'true' , searchable through jquery.sieve, optional
-			sortDisabled: default on 'false', apply local sort through $.tablesorter, optional
-			...
-		}, - see datagrid widget and lib Backgrid.js (we turned off sortable and editable by default)
+			sortable: default on 'false', apply local sort through $.tablesorter, optional
+			?editable?: default on 'false', whether or not the inline editor bar should include this column
+		},
 		...
  * ]
  * 
