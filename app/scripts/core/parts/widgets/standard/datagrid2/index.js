@@ -1,5 +1,12 @@
 /**
+ * Datagrid2
  * This is the new implementation of the DataGrid widget. We still utilizes the power of $.tablesorter;
+ *
+ * Layout
+ * ------
+ * [Header Bar]
+ * [Grid      ]
+ * [Footer Bar]
  *
  * Options
  * -------
@@ -37,24 +44,9 @@
 		...
  * ]
  * 
- * 5. (row) actions: [ (append to default row actions)
- * 		{
- * 			name: ...,
- * 			label: ...,
- * 			icon: ...,
- * 			fn: impl function(datagrid) with this =  row model object
- * 		},...,
- * ] or { (replace the actions)
- * 		'name': {
- * 			label: ...,
- * 			icon: ...,
- * 			fn: impl function(datagrid)
- * 		}
- * }
+ * 5. (row) groupBy: fieldname of a row model. (this will disable pagination)
  * 
- * 6. (row) groupBy: fieldname of a row model. (this will disable pagination)
- * 
- * 7. (row) details: View object/['field1', 'field2']/fieldname/boolean (true for all fields).
+ * 6. (row) details: View object/['field1', 'field2']/fieldname/boolean (true for all fields).
  * If details is enabled, another row will appear under the data row for details (default on using a property grid as details view)
  *
  * Note that we no longer use parentCt or formWidget options.
@@ -87,6 +79,8 @@ Application.Widget.register('DataGrid2', function(){
 	        	this.table.collection.load();
 	        }
 	});
+
+	//----------------Grid----------------
 
 	var Table = Backbone.Marionette.Layout.extend({
 		template: '#widget-datagrid-table-tpl',
@@ -139,7 +133,11 @@ Application.Widget.register('DataGrid2', function(){
 								val: model.get(col.name),
 								column: col
 							}
-						}))
+						})),
+						meta: { //Note that we didn't include this in the above collection as per-cell-meta since these metadata items are shared within a row.
+							record: model, //pass down the data model of this row
+							table: that, //pass down the table view object
+						}
 					}
 				},
 				collection: this.collection,
@@ -150,43 +148,42 @@ Application.Widget.register('DataGrid2', function(){
 
 	var HeaderRow = Backbone.Marionette.CollectionView.extend({
 		tagName: 'tr',
-		initialize: function(options){
-			this.itemView = HeaderCell; //specify here so it can be defined below HeaderRow definition.
-		}
-	});
-
-	var HeaderCell = Backbone.Marionette.ItemView.extend({
-		template: '#_blank',
-		tagName: 'th',
-
-		onRender: function(){
-			var HeaderView = this.model.get('column').header;
-			this.$el.html(new HeaderView({model: this.model}).render().el);
+		itemView: 'delegated',
+		buildItemView: function(item, ItemViewType, itemViewOptions){
+			// build the final list of options for the item view type
+			var options = _.extend({model: item, tagName:'th'}, itemViewOptions);
+			// create the item view instance
+			var View = item.get('column').header;
+			// return it
+			return new View(options);
 		}
 
 	});
 
 	var Row = Backbone.Marionette.CollectionView.extend({
 		tagName: 'tr',
+		itemView: 'delegated',
 		initialize: function(options){
-			this.itemView = Cell; //specify here so it can be defined below Row definition.
-		}
-	});
-
-	var Cell = Backbone.Marionette.ItemView.extend({
-		template: '#_blank',
-		tagName: 'td',
-
-		//find the cell view or default on just showing the data as a string.
-		onRender: function(){
-			var CellView = this.model.get('column').cell;
-			this.$el.html(new CellView({model: this.model}).render().el);
+			this.meta = options.meta; //grab the meta data passed down by tbody CollectionView.
+			this.itemViewOptions = {
+				row: this, //passing down this row view object so that row.meta can be used within each cells.
+			};
+		},
+		buildItemView: function(item, ItemViewType, itemViewOptions){
+			var options = _.extend({model: item, tagName:'td'}, itemViewOptions);
+			var View = item.get('column').cell;
+			return new View(options);
 		}
 	});
 
 	/*Actual impl of predefined Cells are not here, the pre-defined Cells are treated as standard widgets, and require only be named with a XxxxCell format*/	
 
-	//record statistics, paginator
+	//----------------Header/Footer Bars----------------
+
+	//HeaderBar: toolbelt (tools and search/filter)
+	//TBI
+	
+	//FooterBar: record statistics, paginator
 	var FooterBar = Backbone.Marionette.Layout.extend({
 		template: '#widget-datagrid-footer-tpl',
 
@@ -219,7 +216,7 @@ Application.Widget.register('DataGrid2', function(){
 
 });
 
-//Template:
+//Layout:
 Template.extend(
 	'widget-datagrid-tpl',
 	[
@@ -242,7 +239,7 @@ Template.extend(
 Template.extend(
 	'widget-datagrid-footer-tpl',
 	[
-		'<div class="pull-left collection-stat" style="width:200px;"><small>Records</small>: <small ui="number"></small></div>',
+		'<div class="pull-left collection-stat" style="width:200px;"><small>Records</small> <small ui="number"></small></div>',
 		'<div region="pager" style="margin-left:200px;">',
 	]
 );

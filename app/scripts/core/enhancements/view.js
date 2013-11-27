@@ -49,7 +49,7 @@ _.extend(Backbone.Marionette.View.prototype, {
 			'click [action]': '_doAction'
 		});
 		this.actions = this.actions || {}; 	
-		this._uiDEVName = uiName || 'UNKNOWN.View';			
+		this._uiDEVName = uiName || 'UNKNOWN.View';
 	},
 
 	_doAction: function(e){
@@ -67,7 +67,9 @@ _.extend(Backbone.Marionette.View.prototype, {
 		var doer = this.actions[action];
 		if(doer) {
 			doer.apply(this, [$el]); //use 'this' view object as scope when applying the action listeners.
-		}else throw new Error('DEV::' + (this._uiDEVName || 'UI Component') + '::You have not yet implemented this action - [' + action + ']');
+		}else {
+			throw new Error('DEV::' + (this._uiDEVName || 'UI Component') + '::You have not yet implemented this action - [' + action + ']');
+		}
 	},		
 });
 

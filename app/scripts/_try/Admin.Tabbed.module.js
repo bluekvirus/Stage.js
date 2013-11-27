@@ -25,7 +25,7 @@
 					var grid = app.Widget.create('DataGrid2', {
 						collection: new (app.DataUnits.get('Comment').Collection)(),
 						pagination: {
-							pageSize: 8,
+							pageSize: 10,
 							mode: 'server'
 						},
 						columns: [
@@ -45,8 +45,21 @@
 										this.$el.html(this.model.get('val') + ' new Cell');
 									}
 								})
+							},
+							{
+								label: 'Actions',
+								cell: 'action',
+								actions: [
+									{
+										name: 'test',
+										icon: 'icon-music',
+										// fn: function(record, row){
+										// 	console.log(record, row);
+										// }
+									}
+								]
 							}
-						]
+						],
 					});
 					grid.tab = {
 						title: 'Grid2 Test'
