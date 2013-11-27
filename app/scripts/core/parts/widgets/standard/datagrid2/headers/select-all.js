@@ -20,15 +20,9 @@ Application.Widget.register('SelectAllHeader', function(){
 		},
 
 		toggleAll: function(e){
-			var checked = this.ui.checkbox.attr('checked');
-			if(checked) {
-				checked = false;
-			}else {
-				checked = true;
-			}
-			this.ui.checkbox.attr('checked', checked);
-
-			this.row.meta.table.tbody.$el.find('.select-all-cell :checkbox').attr('checked', checked);
+			/*Important: use $.prop instead of $.attr for getting/setting checked status from <input> tags*/
+			var checked = this.ui.checkbox.prop('checked');
+			this.row.meta.table.tbody.$el.find('.select-all-cell :checkbox').prop('checked', checked);
 		}
 	});
 
