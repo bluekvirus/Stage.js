@@ -29,9 +29,10 @@
 							mode: 'server'
 						},
 						columns: [
-							// {
-							// 	cell: 'select-all'
-							// },
+							{
+								cell: 'select-all',
+								header: 'select-all'
+							},
 							{
 								name: 'title',
 								label: 'Title'

@@ -10,12 +10,14 @@
  * 			name: ...,
  * 			label: ...,
  * 			icon: ...,
+ * 			tooltip: ...,
  * 			fn: impl function(record, row) - with row record model and row view object. (Note that row.meta has both record and table view object, the first 'record' param is just a short cut)
  * 		},...,
  * ] or { (replace the actions)
  * 		'name': {
  * 			label: ...,
  * 			icon: ...,
+ * 			tooltip: ...,
  * 			fn: impl function(record, row)
  * 		}
  * }
@@ -36,14 +38,17 @@ Application.Widget.register('ActionCell', function(){
 			if(_.isArray(actions)){
 				actions = [{
 					name: 'detail',
-					icon: 'icon-eye-open'
+					icon: 'icon-eye-open',
+					tooltip: 'Show Details'
 				},
 				{
 					name: 'edit',
-					icon: 'icon-edit'
+					icon: 'icon-edit',
+					tooltip: 'Edit'
 				}, {
 					name: 'delete',
-					icon: 'icon-trash'
+					icon: 'icon-trash',
+					tooltip: 'Delete'
 				}].concat(actions);
 			}
 			//allow action impl overriden by action config.fn
@@ -56,6 +61,10 @@ Application.Widget.register('ActionCell', function(){
 			}, this);
 			this.model.set('actions', actions);
 			this.enableActionTags('Widget.ActionCell');
+		},
+
+		onRender: function(){
+			this.$('[data-toggle="tooltip"]').tooltip();
 		},
 
 		actions: {
@@ -73,7 +82,7 @@ Application.Widget.register('ActionCell', function(){
 Template.extend('widget-actioncell-tpl', [
 
 	'{{#each actions}}',
-		'<span class="action-cell-item" action={{name}}><i class="icon- {{icon}}"></i> {{label}}</span> ',
+		'<span class="action-cell-item" action={{name}} data-toggle="tooltip" title="{{tooltip}}"><i class="icon- {{icon}}"></i> {{label}}</span> ',
 	'{{/each}}'
 
 ])

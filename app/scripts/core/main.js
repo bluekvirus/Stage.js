@@ -110,14 +110,17 @@
 
 					if(!Application.currentContext.defaults) return;//skip navigation, contexts without a defaults block doesn't support region switches by route.
 
-					module = Application.currentContext[module]? module : Application.currentContext.defaults.module;
+					if(!Application.currentContext[module]){
+						var wanted = module; //you may do something here, like passing some config or msg to the default module.
+						module = Application.currentContext.defaults.module;
+					}
 					region = region || Application.currentContext.defaults.region;
 
 					appRegion = Application.body.currentView.regionManager.get(region);
 					var target = Application.currentContext[module];
 					if(target && appRegion){
 						if(Application.currentModule !== module){
-							appRegion.show(new target.View.Default());
+							appRegion.show(new target.View.Default(wanted === undefined?{}:{wanted: wanted}));
 							Application.currentModule = module;
 							Application.trigger('app:navigate-to-module', module, region);
 						}

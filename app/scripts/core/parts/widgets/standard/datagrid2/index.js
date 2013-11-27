@@ -111,6 +111,7 @@ Application.Widget.register('DataGrid2', function(){
 		},
 
 		onShow: function(){
+			var that = this;
 			//thead row
 			this.thead.show(new HeaderRow({
 				collection: new Backbone.Collection(_.map(this.columns, function(col){
@@ -119,9 +120,12 @@ Application.Widget.register('DataGrid2', function(){
 						column: col
 					}
 				}, this)),
+				meta: {
+					table: that
+				}
 			}));
+
 			//tbody
-			var that = this;
 			this.tbody.show(new Backbone.Marionette.CollectionView({
 				template: '#_blank',
 				el: 'table#' + this.id + ' > tbody', //hook the tbody view back to tbody.
@@ -149,6 +153,12 @@ Application.Widget.register('DataGrid2', function(){
 	var HeaderRow = Backbone.Marionette.CollectionView.extend({
 		tagName: 'tr',
 		itemView: 'delegated',
+		initialize: function(options){
+			this.meta = options.meta;
+			this.itemViewOptions = {
+				row: this
+			}
+		},
 		buildItemView: function(item, ItemViewType, itemViewOptions){
 			// build the final list of options for the item view type
 			var options = _.extend({model: item, tagName:'th'}, itemViewOptions);
