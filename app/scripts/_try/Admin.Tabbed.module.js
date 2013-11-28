@@ -50,15 +50,20 @@
 							{
 								label: 'Actions',
 								cell: 'action',
-								actions: [
-									{
-										name: 'test',
-										icon: 'icon-music',
-										// fn: function(record, row){
-										// 	console.log(record, row);
-										// }
+								// actions: [
+								// 	{
+								// 		name: 'test',
+								// 		icon: 'icon-music',
+								// 		// fn: function(record, row){
+								// 		// 	console.log(record, row);
+								// 		// }
+								// 	}
+								// ]
+								actions: {
+									test: {
+										icon: 'icon-music'
 									}
-								]
+								}
 							}
 						],
 					});

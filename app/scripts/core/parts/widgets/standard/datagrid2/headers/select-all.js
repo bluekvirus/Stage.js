@@ -8,7 +8,7 @@
 Application.Widget.register('SelectAllHeader', function(){
 
 	var UI = Backbone.Marionette.ItemView.extend({
-		template: '#widget-selectallcell-tpl',
+		template: '#widget-selectallcell-tpl', //re-use the SelectAllCell's template.
 
 		initialize: function(options){
 			this.row = options.row;

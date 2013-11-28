@@ -5,7 +5,7 @@
  * -------
  * passed down by this.model.get('column').actions
  * 
- * actions: [ (append to default row actions)
+ * actions: [ (append to default row actions) - default on having [detials] [edit] [delete]
  * 		{
  * 			name: ...,
  * 			label: ...,
@@ -36,6 +36,7 @@ Application.Widget.register('ActionCell', function(){
 			this.row = options.row;
 			var actions = this.model.get('column').actions || [];
 			if(_.isArray(actions)){
+				//concat
 				actions = [{
 					name: 'detail',
 					icon: 'icon-eye-open',
@@ -50,6 +51,13 @@ Application.Widget.register('ActionCell', function(){
 					icon: 'icon-trash',
 					tooltip: 'Delete'
 				}].concat(actions);
+			}else {
+				//override
+				actions = _.map(actions, function(action, name){
+					return _.extend({
+						name: name
+					}, action);
+				});
 			}
 			//allow action impl overriden by action config.fn
 			_.each(actions, function(action){

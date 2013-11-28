@@ -14,22 +14,7 @@
  * 
  * 2. pagination (for the collection) - see core/enhancements/collection.js
  * 
- * 3. tools: [ (append to default tools)
- * 		{
- * 			name: ..., action event string (*required)
- * 		 	label: ..., string [opt]
- * 		  	icon: ..., class string [opt]
- * 		  	group: ..., string [opt]
- * 		   	fn: impl function() with this = datagrid view
- * 		},...,
- * ] or { (replace the tools)
- * 		'name': { 
- * 			label: ..., string [opt]
- * 			icon: ..., class string [opt]
- * 			fn: impl function() [opt]
- * 		},...,
- * }
- * Advanced: since tool name is also the action trigger/event name, you can use ':name' to just fire event from datagrid.
+ * 3. tools: [] or {} (see core/parts/widgets/standard/toolbelt.js)
  *
  * 4 columns: [ (add in between selectAll and action columns)
  * 		{
@@ -42,6 +27,14 @@
 			?editable?: default on 'false', whether or not the inline editor bar should include this column
 		},
 		...
+		{
+			header: 'select-all',
+			cell: 'select-all'
+		},
+		{
+			cell: 'action',
+			actions: [] or {} - see core/parts/widgets/standard/datagrid2/cells/actions.js
+		}
  * ]
  * 
  * 5. (row) groupBy: fieldname of a row model. (this will disable pagination)
@@ -80,7 +73,7 @@ Application.Widget.register('DataGrid2', function(){
 	        }
 	});
 
-	//----------------Grid----------------
+	//----------------Table----------------
 
 	var Table = Backbone.Marionette.Layout.extend({
 		template: '#widget-datagrid-table-tpl',
@@ -200,6 +193,7 @@ Application.Widget.register('DataGrid2', function(){
 		initialize: function(options){
 			this.autoDetectUIs();
 			this.autoDetectRegions();
+			//record numbers on the left
 			this.listenTo(options.collection, 'all', function(){
 				//extract info from options.collection and show it through uis
 				var size = options.collection.size();
@@ -209,6 +203,7 @@ Application.Widget.register('DataGrid2', function(){
 				}
 				else this.ui.number.html('1-'+ size);
 			});
+			//paginator on the right
 			if(options.pagination){
 				this.paginator = Application.Widget.create('Paginator', {
 					targetCollection: options.collection,
