@@ -26,7 +26,7 @@
 						collection: new (app.DataUnits.get('Comment').Collection)(),
 						pagination: {
 							pageSize: 10,
-							mode: 'server'
+							//mode: 'server'
 						},
 						columns: [
 							{
@@ -50,27 +50,78 @@
 							{
 								label: 'Actions',
 								cell: 'action',
-								// actions: [
-								// 	{
-								// 		name: 'test',
-								// 		icon: 'icon-music',
-								// 		// fn: function(record, row){
-								// 		// 	console.log(record, row);
-								// 		// }
-								// 	}
-								// ]
-								actions: {
-									test: {
-										icon: 'icon-music'
+								actions: [
+									{
+										name: 'test',
+										icon: 'icon-music',
+										fn: function(record, row){
+											console.log(record);
+										}
 									}
-								}
+								]	
+								// actions: {
+								// 	test: {
+								// 		icon: 'icon-music'
+								// 	}
+								// }
 							}
 						],
+
+						tools: [
+							{
+								name: 'refresh',
+								label: 'Refresh',
+								icon: 'icon-refresh',
+								group: 'other'
+							},
+							{
+								name: 'search',
+								label: 'Search',
+								icon: 'icon-search',
+								group: 'search',
+								panel: new Backbone.Marionette.ItemView.extend({
+								  template: "#_blank",
+								  onShow: function(){
+								  	this.activateEditors({
+								  		editors: {
+											abc: {
+												type: 'text',
+												label: 'Abc',
+												help: 'This is abc',
+												tooltip: 'Hey Abc here!',
+												fieldname: 'newfield',
+												validate: {
+													required: {
+														msg: 'Hey input something!'
+													},
+													fn: function(val, parentCt){
+														if(!_.string.startsWith(val, 'A')) return 'You must start with an A';
+													}
+												}
+											},
+										}
+								  	});
+								  }
+								})
+							}
+						],
+						//filter: 'disabled'
+						// tools: {
+						// 	refresh: {
+						// 		label: 'Refresh',
+						// 		icon: 'icon-refresh',
+						// 	}
+						// }
 					});
 					grid.tab = {
 						title: 'Grid2 Test'
 					};
 					this.addTab(grid);
+
+					grid.actions.create = function($action){
+						console.log($action.attr('action'));
+					};
+
 					this.addTab(new (Backbone.Marionette.ItemView.extend({
 						template: '#_blank',
 						tab: {

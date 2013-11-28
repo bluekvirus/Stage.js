@@ -60,13 +60,15 @@ Application.Widget.register('DataGrid2', function(){
 	        	options = options || {};
 	        	this.autoDetectRegions();
 	        	
-	        	//toolbar; (link with our toolbelt widget)
+	        	this.headerbar = Application.Widget.create('ToolBelt', options);
 	        	this.table = new Table(options); 
 	        	this.footerbar = new FooterBar(options);
+
+	        	this.enableActionTags('Widget.DataGrid2');
 	        },
 
 	        onShow: function(){
-	        	//toolbar
+	        	this.header.show(this.headerbar);
 	        	this.body.show(this.table);
 	        	this.footer.show(this.footerbar);
 	        	this.table.collection.load();
@@ -184,7 +186,7 @@ Application.Widget.register('DataGrid2', function(){
 	//----------------Header/Footer Bars----------------
 
 	//HeaderBar: toolbelt (tools and search/filter)
-	//TBI
+	//delegating to ToolBelt widget atm
 	
 	//FooterBar: record statistics, paginator
 	var FooterBar = Backbone.Marionette.Layout.extend({

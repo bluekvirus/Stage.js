@@ -78,14 +78,14 @@ _.extend(Backbone.Collection.prototype, {
 		this.on('all', function(event, target){
 			if(!eWhiteList[event]) return;
 			if(this.pagination.cache) return;
+			if(this.pagination.mode !== 'client') return;
+			//1. we only need to do this for non-cached client mode, since in other modes, the page numbers are either not needed or updated by server's replay about total records.			
 			if(this === target){
 				//Note that this === target means the 'sync' detected is after 'reset'. This is true for both client and server mode.
-				//this.trigger('pagination:updatePageNumbers');
-				//1. we are only interested in sync after add and destroy after remove.
+				this.prepDataEnd();
 				return;
 			}
-			if(this.pagination.mode !== 'client') return;
-			//2. we only need to do this for non-cached client mode, since in other modes, the page numbers are either not needed or updated by server's replay about total records.
+			//2. we are only interested in sync after add and destroy after remove.
 			switch(event){
 				case 'sync':
 					this._cachedResponse.push(target.attributes);
