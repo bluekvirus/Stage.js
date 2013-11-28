@@ -66,52 +66,56 @@
 								// }
 							}
 						],
-
-						tools: [
-							{
-								name: 'refresh',
-								label: 'Refresh',
-								icon: 'icon-refresh',
-								group: 'other'
-							},
-							{
-								name: 'search',
-								label: 'Search',
-								icon: 'icon-search',
-								group: 'search',
-								panel: new Backbone.Marionette.ItemView.extend({
-								  template: "#_blank",
-								  onShow: function(){
-								  	this.activateEditors({
-								  		editors: {
-											abc: {
-												type: 'text',
-												label: 'Abc',
-												help: 'This is abc',
-												tooltip: 'Hey Abc here!',
-												fieldname: 'newfield',
-												validate: {
-													required: {
-														msg: 'Hey input something!'
-													},
-													fn: function(val, parentCt){
-														if(!_.string.startsWith(val, 'A')) return 'You must start with an A';
+						toolbar: {
+							tools: [
+								{
+									name: 'refresh',
+									label: 'Refresh',
+									icon: 'icon-refresh',
+									group: 'other',
+									fn: function(grid){
+										console.log(grid.table.collection.size());
+									}
+								},
+								{
+									name: 'search',
+									label: 'Search',
+									icon: 'icon-search',
+									group: 'search',
+									panel: new (Backbone.Marionette.ItemView.extend({
+									  template: "#_blank",
+									  onShow: function(){
+									  	this.activateEditors({
+									  		editors: {
+												abc: {
+													type: 'text',
+													label: 'Abc',
+													help: 'This is abc',
+													tooltip: 'Hey Abc here!',
+													fieldname: 'newfield',
+													validate: {
+														required: {
+															msg: 'Hey input something!'
+														},
+														fn: function(val, parentCt){
+															if(!_.string.startsWith(val, 'A')) return 'You must start with an A';
+														}
 													}
-												}
-											},
-										}
-								  	});
-								  }
-								})
-							}
-						],
-						//filter: 'disabled'
-						// tools: {
-						// 	refresh: {
-						// 		label: 'Refresh',
-						// 		icon: 'icon-refresh',
-						// 	}
-						// }
+												},
+											}
+									  	});
+									  }
+									}))
+								}
+							],
+							//filter: 'disabled'
+							// tools: {
+							// 	refresh: {
+							// 		label: 'Refresh',
+							// 		icon: 'icon-refresh',
+							// 	}
+							// }
+						}
 					});
 					grid.tab = {
 						title: 'Grid2 Test'

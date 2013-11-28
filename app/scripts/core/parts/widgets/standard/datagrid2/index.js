@@ -14,7 +14,7 @@
  * 
  * 2. pagination (for the collection) - see core/enhancements/collection.js
  * 
- * 3. tools: [] or {} (see core/parts/widgets/standard/toolbelt.js)
+ * 3. toolbar: [] or {} (see core/parts/widgets/standard/toolbelt.js)
  *
  * 4 columns: [ (add in between selectAll and action columns)
  * 		{
@@ -60,7 +60,7 @@ Application.Widget.register('DataGrid2', function(){
 	        	options = options || {};
 	        	this.autoDetectRegions();
 	        	
-	        	this.headerbar = Application.Widget.create('ToolBelt', options);
+	        	this.headerbar = Application.Widget.create('ToolBelt', _.extend({parentCt: this}, options.toolbar));
 	        	this.table = new Table(options); 
 	        	this.footerbar = new FooterBar(options);
 

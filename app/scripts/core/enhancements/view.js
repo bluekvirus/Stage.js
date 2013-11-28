@@ -34,6 +34,11 @@
  * 		functions under actions{} are invoked with 'this' as scope (the view object).
  * 		functions under actions{} are called with a single param ($action) which is a jQuery object referencing the action tag.
  *
+ * Options
+ * -------
+ * 1. uiName - [UNKNOWN.View] this is optional, mainly for better debugging msg;
+ * 2. passOn - [false] this is to let the clicking event of action tags bubble up if an action listener is not found. 
+ *
  * Note:
  * We removed _.bind() altogether from the enableActionTags() function and use Function.apply(scope, args) instead for listener invocation to avoid actions{} methods binding problem.
  * Functions under actions will only be bound ONCE to the first instance of the view definition, since _.bind() can not rebind functions that were already bound, other instances of
@@ -42,7 +47,12 @@
  */
 _.extend(Backbone.Marionette.View.prototype, {
 
-	enableActionTags: function(uiName){ //the uiName is just there to output meaningful dev msg if some actions haven't been implemented.
+	enableActionTags: function(uiName, passOn){ //the uiName is just there to output meaningful dev msg if some actions haven't been implemented.
+		if(_.isBoolean(uiName)){
+			passOn = uiName;
+			uiName = '';
+		}
+		passOn = passOn || false;
 		this.events = this.events || {};
 		//add general action tag clicking event and listener
 		_.extend(this.events, {
@@ -50,27 +60,35 @@ _.extend(Backbone.Marionette.View.prototype, {
 		});
 		this.actions = this.actions || {}; 	
 		this._uiDEVName = uiName || 'UNKNOWN.View';
+
+		this._doAction = function(e){
+			var $el = $(e.currentTarget);
+			var action = $el.attr('action') || 'UNKNOWN';
+
+			//allow triggering certain event only.
+			var eventForwarding = action.split(':');
+			if(eventForwarding.length >= 2) {
+				eventForwarding.shift();
+				e.stopPropagation(); //Important::This is to prevent confusing the parent view's action tag listeners.
+				return this.trigger(eventForwarding.join(':'));
+			}
+
+			var doer = this.actions[action];
+			if(doer) {
+				e.stopPropagation(); //Important::This is to prevent confusing the parent view's action tag listeners.
+				doer.apply(this, [$el]); //use 'this' view object as scope when applying the action listeners.
+			}else {
+				if(passOn){
+					return;
+				}else {
+					e.stopPropagation(); //Important::This is to prevent confusing the parent view's action tag listeners.
+				}
+				throw new Error('DEV::' + (this._uiDEVName || 'UI Component') + '::You have not yet implemented this action - [' + action + ']');
+			}
+		};		
 	},
 
-	_doAction: function(e){
-		e.stopPropagation(); //Important::This is to prevent confusing the parent view's action tag listeners.
-		var $el = $(e.currentTarget);
-		var action = $el.attr('action') || 'UNKNOWN';
-
-		//allow triggering certain event only.
-		var eventForwarding = action.split(':');
-		if(eventForwarding.length >= 2) {
-			eventForwarding.shift();
-			return this.trigger(eventForwarding.join(':'));
-		}
-
-		var doer = this.actions[action];
-		if(doer) {
-			doer.apply(this, [$el]); //use 'this' view object as scope when applying the action listeners.
-		}else {
-			throw new Error('DEV::' + (this._uiDEVName || 'UI Component') + '::You have not yet implemented this action - [' + action + ']');
-		}
-	},		
+		
 });
 
 
@@ -93,55 +111,55 @@ _.extend(Backbone.Marionette.View.prototype, {
 		}else {
 			throw new Error('DEV::View::UI locks can only be applied to Layout view objects with valid regions...');
 		}
-	},
 
-	//region, caller are optional
-	lockUI: function(region, caller){
-		region = this._checkRegion(region);
+		//region, caller are optional
+		this.lockUI = function(region, caller){
+			region = this._checkRegion(region);
 
-		caller = caller || '_default_';
-		if(!this._uilocks[region]){ //not locked, lock it with caller signature!
-			this._uilocks[region] = caller;
-			return true;
-		}
-		if(this._uilocks[region] === caller) //locked by caller already, bypass.
-			return true;
-		//else throw error...since it is already locked, by something else tho...
-		throw new Error('DEV::View UI Locks::This region ' + region + ' is already locked by ' + this._uilocks[region]);
-	},
+			caller = caller || '_default_';
+			if(!this._uilocks[region]){ //not locked, lock it with caller signature!
+				this._uilocks[region] = caller;
+				return true;
+			}
+			if(this._uilocks[region] === caller) //locked by caller already, bypass.
+				return true;
+			//else throw error...since it is already locked, by something else tho...
+			throw new Error('DEV::View UI Locks::This region ' + region + ' is already locked by ' + this._uilocks[region]);
+		};
 
-	//region, caller are optional
-	unlockUI: function(region, caller){
-		region = this._checkRegion(region);
+		//region, caller are optional
+		this.unlockUI = function(region, caller){
+			region = this._checkRegion(region);
 
-		caller = caller || '_default_';
-		if(!this._uilocks[region]) return true; //not locked, bypass.
-		if(this._uilocks[region] === caller){ //locked by caller, release it.
-			this._uilocks[region] = false;
-			return true;
-		}
-		//else throw error...
-		throw new Error('DEV::View UI Locks::This region ' + region + ' is locked by ' + this._uilocks[region] + ', you can NOT unlock it with ' + caller);
-	},
+			caller = caller || '_default_';
+			if(!this._uilocks[region]) return true; //not locked, bypass.
+			if(this._uilocks[region] === caller){ //locked by caller, release it.
+				this._uilocks[region] = false;
+				return true;
+			}
+			//else throw error...
+			throw new Error('DEV::View UI Locks::This region ' + region + ' is locked by ' + this._uilocks[region] + ', you can NOT unlock it with ' + caller);
+		};
 
-	isUILocked: function(region){
-		region = this._checkRegion(region);
+		this.isUILocked = function(region){
+			region = this._checkRegion(region);
 
-		return this._uilocks[region];
-	},
+			return this._uilocks[region];
+		};
 
-	//=====Internal Workers=====
-	_checkRegion: function(region){
-		if(!this._uilocks) throw new Error('DEV::View::You need to enableUILocks() before you can use this...');
+		//=====Internal Workers=====
+		this._checkRegion = function(region){
+			if(!this._uilocks) throw new Error('DEV::View::You need to enableUILocks() before you can use this...');
 
-		if(!region)
-			region = '_all';
-		else
-			if(!this.regions[region])
-				throw new Error('DEV::View UI Locks::This region does NOT exist - ' + region);
-		return region;
-	}
-	//=====Internal Workers=====				
+			if(!region)
+				region = '_all';
+			else
+				if(!this.regions[region])
+					throw new Error('DEV::View UI Locks::This region does NOT exist - ' + region);
+			return region;
+		};
+		//=====Internal Workers=====		
+	}				
 
 });
 

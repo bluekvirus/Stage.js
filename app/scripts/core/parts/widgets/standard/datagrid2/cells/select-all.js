@@ -17,6 +17,6 @@ Application.Widget.register('SelectAllCell', function(){
 
 Template.extend('widget-selectallcell-tpl', [
 
-	'<input ui="checkbox" type="checkbox" style="margin:0;">'
+	'<input ui="checkbox" tabindex="-1" type="checkbox" style="margin:0;">'
 
 ]);

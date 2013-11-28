@@ -10,7 +10,7 @@
  * 		  	icon: ..., class string [opt]
  * 		  	group: ..., string [opt]
  * 		  	panel: ..., view object - used for opening a customized view in the panel region below toolbar region for further iteractions.
- * 		   	fn: impl function() 
+ * 		   	fn: impl function() - note that if panel is specified, this will be ignored.
  * 		},...,
  * ] or { (replace the tools)
  * 		'name': { 
@@ -25,6 +25,8 @@
  * Advanced: since tool name is also the action trigger/event name, you can use ':name' to just fire event.
  *
  * 2 filter: enabled (default) | disabled - local collection filtering only
+ *
+ * 3 parentCt: the one to pass to the tool fn implementation.
  * 
  * [TBI] 3 search: true, false (default), or { panel: advanced search panel view, callback: function(panel, collection) to call when user clicked search}
  * Note that search will have two modes:
@@ -39,8 +41,14 @@ Application.Widget.register('ToolBelt', function(){
 
 	var UI = Backbone.Marionette.Layout.extend({
 		template: '#widget-toolbelt-tpl',
+		className: 'tool-belt',
 		initialize: function(options){
+
+			this.parentCt = options.parentCt;
+			if(!this.parentCt) throw new Error('DEV::Widget.ToolBelt::You must attach this toolbelt to a parentCt (action delegate)');
+
 			this.autoDetectRegions();
+			this.enableActionTags('Widget.ToolBelt', true);//letting action tag event pass if there is no impl found.
 			//sort out tools.
 			if(_.isArray(options.tools)){
 				options.tools = [{
@@ -59,20 +67,54 @@ Application.Widget.register('ToolBelt', function(){
 					}, tool);
 				});
 			}
-			//sort out groups
+			//sort out panel, fn and groups
 			var groups = { _default: [] };
+			this.panels = {};
+			this.fns = {};
 			_.each(options.tools, function(tool){
+				if(tool.panel) {
+					tool.delayAction = true;
+					this.panels[tool.name] = tool.panel;
+				}else if(tool.fn){
+					tool.customFn = true;
+					this.fns[tool.name] = tool.fn;
+				}
 				if(tool.group){
 					groups[tool.group] = groups[tool.group] || [];
 					groups[tool.group].push(tool);
 				}else
 					groups._default.push(tool);
-			});
+			}, this);
 
 			this.model = new Backbone.Model({
 				groups: groups,
 				filter: options.filter
 			});
+		},
+
+		events: {
+			'click [showPanel]': function(e){
+				e.preventDefault();
+				e.stopPropagation();
+				this.panel.ensureEl();
+				$btn = $(e.currentTarget);
+				if(this.panel.$el.hasClass('hide')){
+					this.panel.$el.removeClass('hide');
+					$btn.addClass('active');
+					this.panel.show(this.panels[$btn.attr('showPanel')]);
+				}else {
+					this.panel.$el.addClass('hide');
+					$btn.removeClass('active');
+				}
+				
+				
+			}
+		},
+
+		actions: {
+			customized: function($action){
+				this.fns[$action.attr('fn')](this.parentCt);
+			}
 		}
 
 	});
@@ -83,12 +125,12 @@ Application.Widget.register('ToolBelt', function(){
 
 Template.extend('widget-toolbelt-tpl', [
 
-    '<div class="btn-toolbar">',
+    '<div class="toolbelt-btns">',
     	//tools (by group)
         '{{#each groups}}',
             '<div class="tool-group">',
                 '{{#each this}}',
-                    '<a class="btn tool-btn-{{name}}" {{#unless panel}}action="{{name}}"{{/unless}}><i class="{{icon}}"></i> {{label}}</a>',
+                    '<a class="btn tool-btn-{{name}}" {{#if customFn}}action="customized" fn="{{name}}"{{/if}} {{#if delayAction}}showPanel="{{name}}"{{else}}action="{{name}}"{{/if}}><i class="{{icon}}"></i> {{label}}</a>',
                 '{{/each}}',
             '</div>',
         '{{/each}}',
@@ -101,6 +143,6 @@ Template.extend('widget-toolbelt-tpl', [
 	        '</div>',
 	    '{{/isnt}}',
     '</div>',
-    '<div region="panel"></div>'
+    '<div region="panel" class="toolbelt-panel hide"></div>'
 
 ]);
