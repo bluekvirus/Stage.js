@@ -96,7 +96,7 @@ Update
 ```
 scripts/
 	base.js (base.js.gz)
-	infrastructure.js
+	core.js
 ```
 
 
@@ -120,9 +120,23 @@ Warning:
 2. You can **NOT** spawn from a spawned project, it will only have the build tool (and the dev support tools e.g the iconprep tool).
 
 
+Note on *Ghost View*
+====================
+This is caused by removing a view's html but leaving the event listeners 'on'... Thus make sure you remove a view's html together with the event listeners by invoking the `view.close()`(Marionette) method, which will in turn invoke the `view.undelegateEvents()`(Backbone) method which will futher grab `$.off`(jQuery) to clean up the listerns.
+
+Note that calling `region.show()` will automatically `close()` the previously shown view object, the view object closed will still exist in the js runtime, if you somehow decide to `show()` it again, you need to manually call `view.delegateEvents()` to re-activate the event listeners.
+
+In other words, if you `show()` an old view without re-`new()` it, you will have to hook up the events again using `view.delegateEvents()`.
+
+Also, please use the `events:{...}` block to register listeners in a view definition, stop using `$.on()` in case you forgot to use `$.off()`.
+
+If you have to use `$.on()` use it in a delegated form (on a parent dom object).
+
+
 Note on IE(6-9)
 ===============
 Before IE10, some efforts are still needed before the web app can work on an IE browser. We've prepared to add the following lib/tool to accommodate this in the future:
+
 1. selectivizr.js - client libs (already added in bower.json, not in use) We need to disable our app theme-roller for IE after adding this into index.html.
 ```
 <!--[if (gte IE 6)&(lte IE 8)]>

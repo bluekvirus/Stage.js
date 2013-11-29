@@ -84,6 +84,11 @@
 									group: 'search',
 									panel: new (Backbone.Marionette.ItemView.extend({
 									  template: "#_blank",
+									  events: {
+									  	'keyup': function(e){
+									  		console.log(e);
+									  	}
+									  },
 									  onShow: function(){
 									  	this.activateEditors({
 									  		editors: {
@@ -106,7 +111,42 @@
 									  	});
 									  }
 									}))
-								}
+								},
+								{
+									name: 'search2',
+									label: 'Search2',
+									icon: 'icon-search',
+									group: 'search',
+									panel: new (Backbone.Marionette.ItemView.extend({
+									  template: "#_blank",
+									  events: {
+									  	'keyup': function(e){
+									  		console.log(e);
+									  	}
+									  },
+									  onShow: function(){
+									  	this.activateEditors({
+									  		editors: {
+												abc: {
+													type: 'text',
+													label: 'EFG',
+													help: 'This is another input',
+													tooltip: 'Whola!',
+													fieldname: 'newfield',
+													validate: {
+														required: {
+															msg: 'Hey input something!'
+														},
+														fn: function(val, parentCt){
+															if(!_.string.startsWith(val, 'A')) return 'You must start with an A';
+														}
+													}
+												},
+											}
+									  	});
+									  }
+									}))
+								}								
 							],
 							//filter: 'disabled'
 							// tools: {

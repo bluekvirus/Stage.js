@@ -98,16 +98,27 @@ Application.Widget.register('ToolBelt', function(){
 				e.stopPropagation();
 				this.panel.ensureEl();
 				$btn = $(e.currentTarget);
+				var name = $btn.attr('showPanel');
+
 				if(this.panel.$el.hasClass('hide')){
 					this.panel.$el.removeClass('hide');
 					$btn.addClass('active');
-					this.panel.show(this.panels[$btn.attr('showPanel')]);
+					if(this.currentPanel !== [name]){
+						this.panels[name].delegateEvents(); //re-activate the event handlers, since since the panel view object might have been closed during panel switching.[!Important!]
+						this.panel.show(this.panels[name]);
+						this.currentPanel = name;
+					}
 				}else {
-					this.panel.$el.addClass('hide');
-					$btn.removeClass('active');
+					this.$('[showPanel]').removeClass('active');
+					if(this.currentPanel === name){
+						this.panel.$el.addClass('hide');
+					}else {
+						$btn.addClass('active');
+						this.panels[name].delegateEvents(); //re-activate the event handlers.[!Important!]
+						this.panel.show(this.panels[name]);
+						this.currentPanel = name;
+					}
 				}
-				
-				
 			}
 		},
 
