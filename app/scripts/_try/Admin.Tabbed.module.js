@@ -148,7 +148,12 @@
 									}))
 								}								
 							],
-							//filter: 'disabled'
+							shortcut: {
+								//icon: 'icon-search',
+								fn: function(val, grid){
+									console.log(val, grid);
+								}
+							},
 							// tools: {
 							// 	refresh: {
 							// 		label: 'Refresh',
@@ -175,9 +180,9 @@
 							console.log(targetIds);
 						}
 					});
-					grid.filter = function(val){
-						console.log(val);
-					};
+					this.listenTo(grid, 'toolbelt:shortcut:input-changed', function(val, grid){
+						console.log('toolbelt:shortcut:input-changed', val);
+					});
 
 
 					this.addTab(new (Backbone.Marionette.ItemView.extend({

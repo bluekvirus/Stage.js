@@ -24,7 +24,13 @@
  *
  * Advanced: since tool name is also the action trigger/event name, you can use ':name' to just fire event.
  *
- * 2 filter: enabled (default) | disabled - local collection filtering only
+ * 2 shortcut: true (default) | false - a quick input box with event listener impl and icon config
+ * 			   or 
+ * 			   {
+ * 			   		icon: 'icon-filter',
+ * 			   		placeholder: 'Local Filter...',
+ * 			   		fn: action listener impl (upon keyup) with param parentCt.
+ * 			   }
  *
  * 3 parentCt: the one to pass to the tool fn implementation.
  * 
@@ -86,10 +92,18 @@ Application.Widget.register('ToolBelt', function(){
 				}else
 					groups._default.push(tool);
 			}, this);
-
+			//sort out shortcut input box
+			if(options.shortcut) {
+				this.shortcut = options.shortcut.fn;
+				delete options.shortcut.fn;
+				options.shortcut = _.extend({
+					icon: 'icon-filter',
+					placeholder: 'Local Filter...'
+				}, options.shortcut);
+			}
 			this.model = new Backbone.Model({
 				groups: groups,
-				filter: options.filter
+				shortcut: options.shortcut || false
 			});
 		},
 
@@ -122,8 +136,9 @@ Application.Widget.register('ToolBelt', function(){
 				}
 			},
 
-			'keyup [ui="toolbelt-filter"]': function(e){
-				this.trigger('toolbelt:filter:changed', this.ui['toolbelt-filter'].val());
+			'keyup [ui="shortcut"]': function(e){
+				if(this.shortcut) this.shortcut(this.ui.shortcut.val(), this.parentCt);
+				else this.parentCt.trigger('toolbelt:shortcut:input-changed', this.ui.shortcut.val());
 			}
 		},
 
@@ -152,12 +167,12 @@ Template.extend('widget-toolbelt-tpl', [
         '{{/each}}',
 
         //local data filter box (in a separate widget?)
-        '{{#isnt filter "disabled"}}',
-	        '<div class="pull-right input-prepend local-filter-box">',
-	            '<span class="add-on"><i class="icon-filter"></i></span>',
-	            '<input ui="toolbelt-filter" type="text" class="input input-medium" name="filter" placeholder="Local Filter...">',
+        '{{#if shortcut}}',
+	        '<div class="pull-right input-prepend local-shortcut-box">',
+	            '<span class="add-on"><i class="{{shortcut.icon}}"></i></span>',
+	            '<input ui="shortcut" type="text" class="input input-medium" placeholder="{{shortcut.placeholder}}">',
 	        '</div>',
-	    '{{/isnt}}',
+	    '{{/if}}',
     '</div>',
     '<div region="panel" class="toolbelt-panel hide"></div>'
 
