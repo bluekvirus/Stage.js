@@ -95,7 +95,7 @@ Application.Widget.register('DataGrid2', function(){
 			//1. sort out the cell/header view object. - this means customized/predefined cell/header should be defined with name XxxxCell and XxxxHeader in app.Widget registry
 			_.each(this.columns, function(col){
 				_.each(['cell', 'header'], function(tdType){
-					if(!col[tdType]) col[tdType] = 'string';
+					if(!col[tdType]) col[tdType] = col['header'] || 'string'; //if we can't find a cell's view widget, we use its column header's widget or 'string' cell
 					if(_.isString(col[tdType])){
 						col[tdType] = Application.Widget.get(_.string.classify(col[tdType] + ' ' + tdType));
 					}

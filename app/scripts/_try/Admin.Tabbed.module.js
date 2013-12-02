@@ -30,7 +30,6 @@
 						},
 						columns: [
 							{
-								cell: 'select-all',
 								header: 'select-all'
 							},
 							{

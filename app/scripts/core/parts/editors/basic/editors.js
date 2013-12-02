@@ -12,6 +12,7 @@
  * help
  * tooltip
  * placeholder
+ * value: default value (this is just for single input field, which don't have options.data config-ed)
  * multiple - select only
  * rows - textarea only
  * options: { 
@@ -20,6 +21,10 @@
  * 	labelField
  * 	valueField
  * }
+ * //specifically for single checkbox
+ * boxLabel: (single checkbox label other than field label.)
+ * unchecked: '...' (config.value for a single checkbox is the checkedVal)
+ * 
  * validate (custom function and/or rules see core/parts/editors/basic/validations.js)
  *
  * The validation function should return null or 'error string' to be used in status.
@@ -94,6 +99,10 @@ Application.Editor.register('Basic', function(){
 				help: options.help || '', //optional
 				tooltip: (_.isString(options.tooltip) && options.tooltip) || '', //optional
 				options: options.options || undefined, //optional {inline: true|false, data:[{label:'l', val:'v', ...}, {label:'ll', val:'vx', ...}] or ['v', 'v1', ...], labelField:..., valueField:...}
+				//specifically for a single checkbox field:
+				boxLabel: options.boxLabel || '',
+				value: options.value || (options.type === 'checkbox'? true: ''),
+				unchecked: options.unchecked || false
 			});
 
 			//prep validations
@@ -160,6 +169,9 @@ Application.Editor.register('Basic', function(){
 				if(this.model.get('type') === 'radio') result = result.pop();
 				return result;
 			}else {
+				if(this.model.get('type') === 'checkbox'){
+					return this.ui.input.prop('checked')? this.model.get('value'): this.model.get('unchecked');
+				}
 				return this.ui.input.val();
 			}
 		},
@@ -236,11 +248,20 @@ Template.extend('editor-Basic-tpl', [
 						'</label>',
 					'{{/each}}',
 					'</div>',
-				//normal single field
+				//single field
 				'{{else}}',
-				'<div data-toggle="tooltip" title="{{tooltip}}">',
-					'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" class="input-block-level" type="{{type}}" id="{{uiId}}" placeholder="{{placeholder}}" style="margin-bottom:0">',
-				'</div>',
+					'<div data-toggle="tooltip" title="{{tooltip}}">',
+					'{{#is type "checkbox"}}',
+						//single checkbox
+						'<label class="checkbox">',
+							//note that the {{if}} within a {{each}} will impose +1 level down in the content scope.  
+							'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" type="checkbox" value="{{value}}" unchecked="{{unchecked}}"> {{boxLabel}}',
+						'</label>',
+					'{{else}}',
+						//normal field
+						'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" class="input-block-level" type="{{type}}" id="{{uiId}}" placeholder="{{placeholder}}" style="margin-bottom:0" value="{{value}}">',
+					'{{/is}}',
+					'</div>',	
 				'{{/if}}',
 			'{{/is}}',
 		'{{/is}}',

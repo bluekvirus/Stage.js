@@ -55,6 +55,7 @@
 								help: 'This is ab',
 								tooltip: 'Hey Ab here!',
 								placeholder: 'abc...',
+								value: 'default',
 								validate: function(val, parentCt){
 									if(val !== '123') return 'You must enter 123';
 								}
@@ -120,6 +121,13 @@
 									labelField: 'other',
 									valueField: 'val'
 								}
+							},
+							singlecheckbox: {
+								label: 'Check?',
+								type: 'checkbox',
+								boxLabel: 'Select this one if you are smart...:D',
+								//value: 'enabled',
+								//unchecked: 'disabled',
 							}		
 						}
 					});

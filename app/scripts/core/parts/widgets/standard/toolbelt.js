@@ -34,10 +34,6 @@
  *
  * 3 parentCt: the one to pass to the tool fn implementation.
  * 
- * [TBI] 3 search: true, false (default), or { panel: advanced search panel view, callback: function(panel, collection) to call when user clicked search}
- * Note that search will have two modes:
- * 	a. remote - implemented by your panel and callback
- * 	b. local - linking with our extension to the collection. see core/enhancements/collection
  *
  * @author Tim.Liu
  * @created 2013.11.21
