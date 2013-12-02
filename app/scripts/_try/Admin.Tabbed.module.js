@@ -162,9 +162,23 @@
 					};
 					this.addTab(grid);
 
-					grid.actions.create = function($action){
-						console.log($action.attr('action'));
+					_.extend(grid.actions, {
+						create: function($action){
+							console.log($action.attr('action'));
+						},
+
+						delete: function($action){
+							var targetIds = this.table.getSelectedRows(function(row){
+								return row.meta.record.id;
+							});
+
+							console.log(targetIds);
+						}
+					});
+					grid.filter = function(val){
+						console.log(val);
 					};
+
 
 					this.addTab(new (Backbone.Marionette.ItemView.extend({
 						template: '#_blank',

@@ -48,6 +48,7 @@ Application.Widget.register('ToolBelt', function(){
 			if(!this.parentCt) throw new Error('DEV::Widget.ToolBelt::You must attach this toolbelt to a parentCt (action delegate)');
 
 			this.autoDetectRegions();
+			this.autoDetectUIs();
 			this.enableActionTags('Widget.ToolBelt', true);//letting action tag event pass if there is no impl found.
 			//sort out tools.
 			if(_.isArray(options.tools)){
@@ -119,12 +120,16 @@ Application.Widget.register('ToolBelt', function(){
 						this.currentPanel = name;
 					}
 				}
+			},
+
+			'keyup [ui="toolbelt-filter"]': function(e){
+				this.trigger('toolbelt:filter:changed', this.ui['toolbelt-filter'].val());
 			}
 		},
 
 		actions: {
 			customized: function($action){
-				this.fns[$action.attr('fn')](this.parentCt);
+				this.fns[$action.attr('fn')](this.parentCt);//this is for toolbar item action listener overriden in options.fn
 			}
 		}
 
@@ -150,7 +155,7 @@ Template.extend('widget-toolbelt-tpl', [
         '{{#isnt filter "disabled"}}',
 	        '<div class="pull-right input-prepend local-filter-box">',
 	            '<span class="add-on"><i class="icon-filter"></i></span>',
-	            '<input type="text" class="input input-medium" name="filter" placeholder="Local Filter...">',
+	            '<input ui="toolbelt-filter" type="text" class="input input-medium" name="filter" placeholder="Local Filter...">',
 	        '</div>',
 	    '{{/isnt}}',
     '</div>',

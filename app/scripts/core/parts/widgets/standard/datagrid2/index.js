@@ -64,8 +64,15 @@ Application.Widget.register('DataGrid2', function(){
 	        	this.table = new Table(options); 
 	        	this.footerbar = new FooterBar(options);
 
-	        	this.enableActionTags('Widget.DataGrid2');
+	        	this.enableActionTags('Widget.DataGrid2'); //note that this means the 'not-yet-implemented' toolbelt's action tags will be held and examined here.
+	        	//[might need to refine this]open a short-cut for answering data filtering interactions introduced by headerbar (toolbelt widget)
+	        	this.listenTo(this.headerbar, 'toolbelt:filter:changed', function(val){
+	        		if(this.filter) this.filter(val);
+	        		else this.trigger('grid:filter:changed', val);
+	        	});
 	        },
+
+	        //filter: function(){}, //implement this (e.g grid.filter) or listen to grid:filter:changed for data filtering impl.
 
 	        onShow: function(){
 	        	this.header.show(this.headerbar);
