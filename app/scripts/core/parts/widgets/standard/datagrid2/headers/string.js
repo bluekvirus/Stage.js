@@ -10,7 +10,7 @@
 	var View = Backbone.Marionette.ItemView.extend({
 		template: '#_blank',
 		onRender: function(){
-			this.$el.html(this.model.get('val'));
+			this.$el.html(String(this.model.get('val')));
 		}
 	});
 

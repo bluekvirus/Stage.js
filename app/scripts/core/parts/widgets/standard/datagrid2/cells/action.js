@@ -60,6 +60,7 @@ Application.Widget.register('ActionCell', function(){
 				});
 			}
 			//allow action impl overriden by action config.fn
+			this.actions = this.actions || {};
 			_.each(actions, function(action){
 				if(action.fn){
 					this.actions[action.name] = function($action){
@@ -73,13 +74,7 @@ Application.Widget.register('ActionCell', function(){
 
 		onRender: function(){
 			this.$('[data-toggle="tooltip"]').tooltip();
-			this.$('[action]').data('row', this.row); //easy implementation here, might have performance impact.
-		},
-
-		actions: {
-			test: function($action){
-				console.log(this.row);
-			}
+			this.$('[action]').data('row', this.row); //easy implementation here, might have performance impact?
 		}
 
 	});
