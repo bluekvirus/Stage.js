@@ -68,11 +68,12 @@ Application.Widget.register('ActionCell', function(){
 				}
 			}, this);
 			this.model.set('actions', actions);
-			this.enableActionTags('Widget.ActionCell');
+			this.enableActionTags('Widget.ActionCell', true); //let un-implemented actions be passed to DataGrid2.Table
 		},
 
 		onRender: function(){
 			this.$('[data-toggle="tooltip"]').tooltip();
+			this.$('[action]').data('row', this.row); //easy implementation here, might have performance impact.
 		},
 
 		actions: {

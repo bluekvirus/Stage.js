@@ -37,9 +37,9 @@
 		}
  * ]
  * 
- * 5. (row) groupBy: fieldname of a row model. (this will disable pagination)
+ * 5. [TBI](row) groupBy: fieldname of a row model. (this will disable pagination)
  * 
- * 6. (row) details: View object/['field1', 'field2']/fieldname/boolean (true for all fields).
+ * 6. [TBI](row) details: View object/['field1', 'field2']/fieldname/boolean (true for all fields).
  * If details is enabled, another row will appear under the data row for details (default on using a property grid as details view)
  *
  * Note that we no longer use parentCt or formWidget options.
@@ -72,7 +72,17 @@ Application.Widget.register('DataGrid2', function(){
 	        	this.body.show(this.table);
 	        	this.footer.show(this.footerbar);
 	        	this.table.collection.load();
-	        }
+	        },
+
+	        //add row actions impl to the grid (delegated to grid.table view object see Table.init - 3)
+	        rowActions: function(actionsImp){
+	        	_.each(actionsImp, function(fn, action){
+	        		this.table.actions[action] = function($action){
+	        			var row = $action.data('row');
+	        			return fn(row.meta.record, row);
+	        		}
+	        	}, this);
+	        },
 	});
 
 	//----------------Table----------------
@@ -103,6 +113,8 @@ Application.Widget.register('DataGrid2', function(){
 			});
 			//2. prepare the region $el(s)
 			this.autoDetectRegions();
+			//3. intercept row actions
+			this.enableActionTags('Widget.DataGrid2.Table - use grid.rowActions({action1: func1(record, row), action2: func2, ...})');
 		},
 
 		onShow: function(){

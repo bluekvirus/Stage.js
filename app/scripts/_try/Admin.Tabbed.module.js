@@ -183,6 +183,12 @@
 						console.log('toolbelt:shortcut:input-changed', val);
 					});
 
+					grid.rowActions({
+						'detail': function(record, row){
+							console.log(record.id);
+						}
+					})
+
 
 					this.addTab(new (Backbone.Marionette.ItemView.extend({
 						template: '#_blank',
