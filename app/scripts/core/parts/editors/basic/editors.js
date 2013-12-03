@@ -42,9 +42,17 @@ Application.Editor.register('Basic', function(){
 		className: 'control-group',
 
 		events: {
-			'change input': '_triggerEvent', //editor:change:[name]
+			'change': '_triggerEvent', //editor:change:[name]
+			'keyup input, textarea': '_triggerEvent', //editor:keyup:[name]
 			'focusout': '_triggerEvent', //editor:focusout:[name]
 			'focusin': '_triggerEvent' //editor:focusin:[name]
+		},
+
+		triggers: {
+			'change': 'editor:change',
+			'keyup input, textarea': 'editor:keyup',
+			'focusout': 'editor:blur',
+			'focusin': 'editor:focus'
 		},
 
 		initialize: function(options){
@@ -112,11 +120,15 @@ Application.Editor.register('Basic', function(){
 						return {fn: validation};
 					}else 
 						return {rule: name, options:validation};
-				});				
+				});
+				//forge the validation method of this editor				
 				this.validate = function(show){
 					if(_.isFunction(options.validate)) {
 						var error = options.validate(this.getVal(), this.parentCt); 
-						if(error && show) this.status('error', error);
+						if(!_.isEmpty(error) && show) {
+							this._followup(error);
+						}
+						else this.status(' ');
 						return error;//return error msg or nothing
 					}
 					else {
@@ -128,12 +140,23 @@ Application.Editor.register('Basic', function(){
 							}else {
 								error = (Application.Editor.rules[validator.rule] && Application.Editor.rules[validator.rule](validator.options, this.getVal(), this.parentCt));
 							}
-							if(error) {
-								if(show) this.status('error', error);
+							if(!_.isEmpty(error)) {
+								if(show) {
+									this._followup(error);
+								}
 								return error;
 							}
 						}
+						this.status(' ');
 					}
+				};
+				//internal helper function to group identical process (error -> eagerly validated)
+				this._followup = function(error){
+					this.status('error', error);
+					//become eagerly validated
+					this.listenToOnce(this, 'editor:change editor:keyup', function(){
+						this.validate(true);
+					});
 				}
 			}
 

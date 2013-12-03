@@ -66,6 +66,13 @@
 								validate: {
 									checkitout: true
 								}
+							},
+							area: {
+								label: 'Codes',
+								type: 'textarea',
+								validate: {
+									required: true
+								}
 							}
 						}
 					});
@@ -214,7 +221,7 @@
 					//1 entering error state
 					//2 focus on the first error?
 					validate: function($action){
-						this.validate(true);
+						console.log(this.validate(true));
 					}
 				}
 			})
