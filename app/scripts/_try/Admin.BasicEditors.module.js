@@ -73,6 +73,10 @@
 								validate: {
 									required: true
 								}
+							},
+							readonly: {
+								label: 'RO',
+								html: '<p class="text-success">Nothing...RO</p>'
 							}
 						}
 					});

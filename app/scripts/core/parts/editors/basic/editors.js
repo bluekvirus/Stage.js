@@ -13,6 +13,7 @@
  * tooltip
  * placeholder
  * value: default value (this is just for single input field, which don't have options.data config-ed)
+ * html: - indicating read-only text field (setting this will cause 'type' config to be ignored)
  * multiple - select only
  * rows - textarea only
  * options: { 
@@ -98,12 +99,13 @@ Application.Editor.register('Basic', function(){
 			this.model = new Backbone.Model({
 				uiId: _.uniqueId('basic-editor-'),
 				name: options.name, //*
-				type: options.type, //*
+				type: options.html? 'text': options.type, //*
 				multiple: options.multiple || false, //optional
 				rows: options.rows || 3, //optional
 				fieldname: options.fieldname || undefined, //optional
 				label: options.label || '', //optional
 				placeholder: options.placeholder || '', //optional
+				html: options.html || '', //optional
 				help: options.help || '', //optional
 				tooltip: (_.isString(options.tooltip) && options.tooltip) || '', //optional
 				options: options.options || undefined, //optional {inline: true|false, data:[{label:'l', val:'v', ...}, {label:'ll', val:'vx', ...}] or ['v', 'v1', ...], labelField:..., valueField:...}
@@ -282,7 +284,11 @@ Template.extend('editor-Basic-tpl', [
 						'</label>',
 					'{{else}}',
 						//normal field
-						'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" class="input-block-level" type="{{type}}" id="{{uiId}}" placeholder="{{placeholder}}" style="margin-bottom:0" value="{{value}}">',
+						'{{#unless html}}',
+							'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" class="input-block-level" type="{{type}}" id="{{uiId}}" placeholder="{{placeholder}}" style="margin-bottom:0" value="{{value}}">',
+						'{{else}}',
+							'<div ui="input-ro" data-value="{{value}}">{{{html}}}</div>', //read-only html instead
+						'{{/unless}}',
 					'{{/is}}',
 					'</div>',	
 				'{{/if}}',
