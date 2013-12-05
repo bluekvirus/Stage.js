@@ -11,6 +11,7 @@
  * Global VARs Creation
  * ================================
  */
+
 //0-1 Create the global Application var for modules to be registered on.
 window.Application = new Backbone.Marionette.Application();
 
