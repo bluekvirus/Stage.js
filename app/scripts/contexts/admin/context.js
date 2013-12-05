@@ -182,6 +182,9 @@
 										this.listenTo(form, 'form:save-record', function(){
 											grid.saveRecord(form);
 										});
+										form.openEffect({
+											name: 'scale'
+										});
 										this.detail.show(form);
 						            });
 									this.list.show(grid);

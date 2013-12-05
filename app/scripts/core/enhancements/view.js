@@ -3,19 +3,19 @@
  * 
  * component opt-ins: (use in component initialize func)
  * 1. +Action Tag listener mechanisms - View.
- * 2. +UI Locking support to view regions (without Application scope total lockdown atm...) - Layout.
+ * 2. +UI Locking support to view regions (without Application scope total lockdown atm...) - Layout. (+ Region.open enhancement)
  * 3. +View Region/UI auto-detects + optional fake content - Layout.
  * 4. +Window resize awareness - View.
  * 5. +SVG canvas support - View.
  * 6. +Tab layout support - View. 
  * 7. +Auto region resize evenly. - Layout.
  * 8. +Editors Activation - View.
- * 9. +Enable Form (with +addFormPart(view)) - View. 
+ * 9. +Enable Form (with +addFormPart(view)) - View.
+ * 10. +Enable Tooltips - View.  
  * 
  * planned:
- * b. tooltips activation upon 'show'
- * c. user action clicking statistics (use the view._uiDEVName set by enableActionTags(type.name.subname)) - type can be Context/Widget
- * d. region show effect support (override Region.prototype.open and View.prototype.openEffect)
+ * a. user action clicking statistics (use the view._uiDEVName set by enableActionTags(type.name.subname)) - type can be Context/Widget
+ * b. region show effect support (override Region.prototype.open and View.prototype.openEffect)
  * 
  * 
  * @author Tim.Liu
@@ -168,6 +168,15 @@ _.extend(Backbone.Marionette.View.prototype, {
  * Region/UI auto detection, (+ putting fake content into regions).
  * Do auto-detect in initialize().
  * Do fake region content in show().
+ *
+ * Effect
+ * ------
+ * If you want to show a view through a region with opening effect, set the view.openEffect to be 
+ * {
+ * 		name: [jQueryUI effect name],
+ * 		options: [jQueryUI effect options]
+ * 		duration: [200ms] effect duration in ms
+ * }
  */
 _.extend(Backbone.Marionette.View.prototype, {
 	//in init()
@@ -187,9 +196,18 @@ _.extend(Backbone.Marionette.View.prototype, {
 		var that = this;
 		$('<'+this.tagName+'>' + $(this.template).html() + '</'+this.tagName+'>').find('[region]').each(function(index, el){
 			var r = $(this).attr('region');
-			that.regions[r] = '[region="' + r + '"]';
+			//that.regions[r] = '[region="' + r + '"]';
+			that.regions[r] = {
+				selector: '[region="' + r + '"]'
+			};
 		});
 		this.addRegions(this.regions);
+	},
+
+	//set the opening effect of this view if shown by a region.
+	openEffect: function(effect){
+		this._openEffect = this._openEffect || {};
+		_.extend(this._openEffect, effect);
 	},
 
 	//in show() - only useful during development...
@@ -202,6 +220,18 @@ _.extend(Backbone.Marionette.View.prototype, {
 		}catch(e){
 			throw new Error('DEV::View::You should define a proper Layout object to use fakeRegions()');
 		}
+	}
+});
+//We override the Region open method to let it consult a view's openEffect attribute.
+_.extend(Backbone.Marionette.Region.prototype, {
+	open: function(view){
+		if(view._openEffect){
+			this.$el.hide();
+			this.$el.empty().append(view.el);
+			this.$el.show(view._openEffect.name, view._openEffect.options, view._openEffect.duration || 200);
+		}
+		else 
+			this.$el.empty().append(view.el);
 	}
 });
 
@@ -564,4 +594,27 @@ _.extend(Backbone.Marionette.View.prototype, {
 	}
 
 });
+
+
+/**
+ * Enable Tooltips (do it in initialize())
+ * This is used for automatically activate tooltips after render
+ *
+ * Options
+ * -------
+ * bootstrap tooltip config
+ */
+
+_.extend(Backbone.Marionette.View.prototype, {
+
+	enableTooltips: function(options){
+		this.listenTo(this, 'render', function(){
+			//will activate tooltip with specific options object - see /libs/bower_components/bootstrap[x]/docs/javascript.html#tooltips
+			this.$('[data-toggle="tooltip"]').tooltip(options);
+		});
+	}
+
+});
+
+
 

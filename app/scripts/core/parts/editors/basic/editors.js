@@ -162,15 +162,9 @@ Application.Editor.register('Basic', function(){
 				}
 			}
 
-			if(_.isObject(options.tooltip)){
-				//will activate tooltip with specific config object - see /libs/bower_components/bootstrap[x]/docs/javascript.html#tooltips
-				this._tooltipOpt = options.tooltip;
-			}
-		},
+			//prep tooltip upon rendered.
+			this.enableTooltips(_.isObject(options.tooltip)?options.tooltip:{});
 
-		onRender: function(){
-			//activate tooltips
-			this.$('[data-toggle="tooltip"]').tooltip(this._tooltipOpt);
 		},
 
 		setVal: function(val, loud){
