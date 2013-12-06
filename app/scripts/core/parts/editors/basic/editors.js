@@ -130,7 +130,10 @@ Application.Editor.register('Basic', function(){
 						if(!_.isEmpty(error) && show) {
 							this._followup(error);
 						}
-						else this.status(' ');
+						else {
+							this.status(' ');
+							this.eagerValidation = false;
+						}
 						return error;//return error msg or nothing
 					}
 					else {
@@ -150,16 +153,20 @@ Application.Editor.register('Basic', function(){
 							}
 						}
 						this.status(' ');
+						this.eagerValidation = false;
 					}
 				};
 				//internal helper function to group identical process (error -> eagerly validated)
 				this._followup = function(error){
 					this.status('error', error);
 					//become eagerly validated
-					this.listenToOnce(this, 'editor:change editor:keyup', function(){
-						this.validate(true);
-					});
+					this.eagerValidation = true;
 				}
+				//always prepared to eagerly validate an editor val
+				this.on('editor:change editor:keyup', function(){
+					if(this.eagerValidation)
+						this.validate(true);
+				}, this);
 			}
 
 			//prep tooltip upon rendered.

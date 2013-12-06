@@ -122,7 +122,7 @@ Warning:
 
 Note on *Ghost View*
 ====================
-This is caused by removing a view's html but leaving the event listeners 'on'... Thus make sure you remove a view's html together with the event listeners by invoking the `view.close()`(Marionette) method, which will in turn invoke the `view.undelegateEvents()`(Backbone) method which will futher grab `$.off`(jQuery) to clean up the listerns.
+This is caused by removing a view's html but leaving the event listeners 'on'... Thus make sure you remove a view's html together with the event listeners by invoking the `view.remove()`(Backbone) or `view.close()`(Marionette) method, which will in turn invoke the `view.undelegateEvents() + view.remove()`(Backbone) method which will futher grab `$.off`(jQuery) to clean up the listerns.
 
 Note that calling `region.show()` will automatically `close()` the previously shown view object, the view object closed will still exist in the js runtime, if you somehow decide to `show()` it again, you need to manually call `view.delegateEvents()` to re-activate the event listeners.
 
@@ -131,6 +131,11 @@ In other words, if you `show()` an old view without re-`new()` it, you will have
 Also, please use the `events:{...}` block to register listeners in a view definition, stop using `$.on()` in case you forgot to use `$.off()`.
 
 If you have to use `$.on()` use it in a delegated form (on a parent dom object).
+
+
+Note on listenTo in initialize()
+================================
+Avoid using `this.listenTo()` under `initialize()` at all cost if you want the View you've defined to be used as a Widget/Editor (a.k.a View blueprint), use on() instead or use listenTo upon on('render'); Since `this` refers to the View.prototype object under `initialize()`, a call to `this.listenTo()` will bind your event handler firmly to your View instance's prototype. Subsequent call to `new` will not be able to bind the event handler to a new instance because `_.bind()` can *NOT* rebind a function...
 
 
 Note on IE(6-9)
