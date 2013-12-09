@@ -519,7 +519,7 @@ _.extend(Backbone.Marionette.View.prototype, {
 
 	enableForm: function(options){
 		options = options || {};
-		this.tagName = 'form';
+		//this.tagName = 'form'; - this has no effect, do it in init.options.
 		this.template = options.template || this.template || '#_blank';
 		//0. addFormPart
 		this.parts = this.parts || [];

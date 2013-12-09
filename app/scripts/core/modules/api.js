@@ -16,7 +16,7 @@
  * 		- config: {
  * 			type: GET[/POST/UPDATE/DELETE]
  * 			url: string or function(namespace, data, params, options)
- * 		 	parse: string key, array of keys or function(response, [model or collection]),
+ * 		 	parse: string key, array of keys or function(response),
  *     		[optional] fn: (namespace, data, params, options)
  * 		}
  * 		Note that registering an api without config.fn will indicate using a standard (pre-defined) method structure;
@@ -112,7 +112,7 @@
 
 		call: function(namespace, data, params, options){
 			var config = lookup(namespace);
-			//1. prepare type, url(with params), data(with data in json), contentType, processData, success(using config.parse and options.success and options.model/collection) into ajax options
+			//1. prepare type, url(with params), data(with data in json), contentType, processData, success(using config.parse and options.success and config.model/collection) into ajax options
 			var prepedOpt = {
 				type: config.type,
 				url: _.isString(config.url)?(config.url + '?' + $.param(params)):config.url(namespace, data, params, options),
