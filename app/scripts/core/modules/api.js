@@ -6,7 +6,7 @@
  * ------
  * We no longer use the Backbone.Model/Collection to handle remote data interfacing for us.
  * Backbone.Model/Collection are now only used when there is a need to render a View through data.
- * The RESTful API module will help populating the content of a passed in Model/Collection instance.
+ * The RESTful API module will help populating the content of a passed-in Model/Collection instance.
  * We will trigger our own events on the Model/Collection instance once the data is prepared.
  * We still use the data reset/changed/removed/added events the Model/Collection provides.
  *
@@ -15,9 +15,9 @@
  * Application.API.register('Entity[.Category][.Method]', config);
  * 		- config: {
  * 			type: GET[/POST/UPDATE/DELETE]
- * 			url: string or function(options of your choices)
- * 		 	parse: string key, array of key or function(response, [model or collection]),
- *     		[optional] fn: (data, params, options)
+ * 			url: string or function(namespace, data, params, options)
+ * 		 	parse: string key, array of keys or function(response, [model or collection]),
+ *     		[optional] fn: (namespace, data, params, options)
  * 		}
  * 		Note that registering an api without config.fn will indicate using a standard (pre-defined) method structure;
  * 		If you want the full power of method customization, use the fn option when register.
@@ -62,7 +62,7 @@
  *
  * Fallback Seq
  * ------------
- * E.C.M -> E.C -> E -> _Default_.C.M -> _Default_.C -> _Default_
+ * Entity.Category.Method -> E.C -> E -> _Default_.C.M -> _Default_.C -> _Default_
  * This means you can register an api using E.C as namespace to deal with everything that is called using 'E.C.x'
  * Use Category for Method grouping purposes. Whenever you felt like using 'E.C.Group.M....' please refactor your design...
  *
@@ -113,6 +113,16 @@
 		call: function(namespace, data, params, options){
 			var config = lookup(namespace);
 			//1. prepare type, url(with params), data(with data in json), contentType, processData, success(using config.parse and options.success and options.model/collection) into ajax options
+			var prepedOpt = {
+				type: config.type,
+				url: _.isString(config.url)?(config.url + '?' + $.param(params)):config.url(namespace, data, params, options),
+				data: JSON.stringify(data),
+				contentType: 'application/json',
+				processData: false,
+				success: function(data, status, jqXHR){
+					//TBI
+				}
+			};
 			//2. extend options with prep-ed ajax options in 1;
 		}
 

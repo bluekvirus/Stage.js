@@ -127,10 +127,9 @@ Application.Editor.register('Basic', function(){
 				this.validate = function(show){
 					if(_.isFunction(options.validate)) {
 						var error = options.validate(this.getVal(), this.parentCt); 
-						if(!_.isEmpty(error) && show) {
+						if(show) {
 							this._followup(error);
 						}
-						else this.status(' ');
 						return error;//return error msg or nothing
 					}
 					else {
@@ -142,24 +141,29 @@ Application.Editor.register('Basic', function(){
 							}else {
 								error = (Application.Editor.rules[validator.rule] && Application.Editor.rules[validator.rule](validator.options, this.getVal(), this.parentCt));
 							}
-							if(!_.isEmpty(error)) {
-								if(show) {
-									this._followup(error);
-								}
-								return error;
+							if(show) {
+								this._followup(error);
 							}
+							return error;
 						}
-						this.status(' ');
 					}
 				};
 				//internal helper function to group identical process (error -> eagerly validated)
 				this._followup = function(error){
-					this.status('error', error);
-					//become eagerly validated
-					this.listenToOnce(this, 'editor:change editor:keyup', function(){
+					if(!_.isEmpty(error)){
+						this.status('error', error);
+						//become eagerly validated
+						this.eagerValidation = true;
+					}else {
+						this.status(' ');
+						this.eagerValidation = false;
+					}
+				};
+				this.listenTo(this, 'editor:change editor:keyup', function(){
+					if(this.eagerValidation)
 						this.validate(true);
-					});
-				}
+				});
+
 			}
 
 			//prep tooltip upon rendered.
