@@ -57,7 +57,6 @@
 								placeholder: 'abc...',
 								value: 'default',
 								validate: function(val, parentCt){
-									console.log(val);
 									if(val !== '123') return 'You must enter 123';
 								}
 							},

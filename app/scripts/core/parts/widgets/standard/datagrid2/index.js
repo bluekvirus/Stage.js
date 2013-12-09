@@ -208,7 +208,7 @@ Application.Widget.register('DataGrid2', function(){
 			this.autoDetectUIs();
 			this.autoDetectRegions();
 			//record numbers on the left
-			this.collection.on('all', function(){
+			this.listenTo(options.collection, 'all', function(){
 				//extract info from options.collection and show it through uis
 				var size = options.collection.size();
 				if(options.pagination) {
@@ -216,7 +216,7 @@ Application.Widget.register('DataGrid2', function(){
 					this.ui.number.html(index + '-' + (index+size-1) + '/' + options.collection.totalRecords);
 				}
 				else this.ui.number.html('1-'+ size);
-			}, this);
+			});
 			//paginator on the right
 			if(options.pagination){
 				this.paginator = Application.Widget.create('Paginator', {

@@ -250,9 +250,9 @@ _.extend(Backbone.Marionette.View.prototype, {
 		}
 		onResize = _.debounce(onResize, 200);			
 		$(window).on('resize', onResize);
-		this.on('item:before:close', function(){
+		this.listenTo(this, 'item:before:close', function(){
 			$(window).off('resize', onResize);
-		}, this);
+		});
 	}
 });
 
@@ -608,10 +608,10 @@ _.extend(Backbone.Marionette.View.prototype, {
 _.extend(Backbone.Marionette.View.prototype, {
 
 	enableTooltips: function(options){
-		this.on('render', function(){
+		this.listenTo(this, 'render', function(){
 			//will activate tooltip with specific options object - see /libs/bower_components/bootstrap[x]/docs/javascript.html#tooltips
 			this.$('[data-toggle="tooltip"]').tooltip(options);
-		}, this);
+		});
 	}
 
 });
