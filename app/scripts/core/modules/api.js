@@ -112,7 +112,26 @@
 
 		call: function(namespace, data, params, options){
 			var config = lookup(namespace);
-			//1. prepare type, url(with params), data(with data in json), contentType, processData, success(using config.parse and options.success and config.model/collection) into ajax options
+			if(_.isFunction(config.fn)){ //for total control take-over.
+				return config.fn(namespace, data, params, options);
+			}
+			//1. prepare type, url(with params), data(with data in json), contentType, processData, success(using config.parse and options.success and options.model/collection) into ajax options
+			if(config.parse){
+				var parse;
+				if(_.isString(conifg.parse)){
+					parse = function(data){
+						return data[config.parse];
+					}
+				}else if(_.isArray(config.parse)){
+					parse = function(data){
+						return _.pick(data, config.parse);
+					}
+				}else if(_.isFunction(config.parse)){
+					parse = config.parse;
+				}else {
+					throw new Error('DEV::App.API::You must pass in a valid parse config (string, array of keys, function)!');
+				}
+			}
 			var prepedOpt = {
 				type: config.type,
 				url: _.isString(config.url)?(config.url + '?' + $.param(params)):config.url(namespace, data, params, options),
@@ -120,10 +139,19 @@
 				contentType: 'application/json',
 				processData: false,
 				success: function(data, status, jqXHR){
-					//TBI
+					//1. process the data:
+					if(parse) data = parse(data);
+					//2. give data to cb or set it into model/collection (model will always have higher priority over collection)
+					if(options.success){
+						options.success(data);
+					}else {
+						var target = options.model || options.collection;
+						if(target) target.set(data);
+					}
 				}
 			};
 			//2. extend options with prep-ed ajax options in 1;
+			$.ajax(_.extend({}, options, prepedOpt));
 		}
 
 	});
