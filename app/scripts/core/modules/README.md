@@ -6,9 +6,9 @@ A core module should only be a registry, factory or a mix of the two for basic e
 --------------
 This is the context module registry/factory; (a context module is also instrumented with a .module() method for sub module registration)
 
-2. data-units.js
+2. api.js
 ----------------
-This is the model/collection registry/factory; (for easier server entity integration, with server data route config)
+This is the data service/remote api interfacing registry
 
 3. parts.js
 -----------

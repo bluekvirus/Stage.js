@@ -133,7 +133,7 @@
 				}
 			}
 			var prepedOpt = {
-				type: config.type,
+				type: config.type || 'GET',
 				url: _.isString(config.url)?(config.url + '?' + $.param(params)):config.url(namespace, data, params, options),
 				data: JSON.stringify(data),
 				contentType: 'application/json',

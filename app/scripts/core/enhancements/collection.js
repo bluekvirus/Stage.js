@@ -41,6 +41,7 @@
 		2. pagination:pageChanged - fired upon each time the collection change to hold another page of data.
 	Note that: at any given time, you can still use fetch(), using load() will always enforce a paginated fetch()
 */
+
 _.extend(Backbone.Collection.prototype, {
 
 	//To opt-in the pagination with any Backbone.Collection
@@ -133,7 +134,7 @@ _.extend(Backbone.Collection.prototype, {
 				}
 			}else {
 				//server mode
-				options.data = _.extend(options.data || {}, {
+				options.params = _.extend(options.params || {}, {
 					page: this.currentPage,
 					per_page: this.pagination.pageSize,
 					criteria: this.criteria, //for remote search support
