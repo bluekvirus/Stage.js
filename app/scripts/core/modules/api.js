@@ -16,7 +16,7 @@
  * 		- config: {
  * 			type: GET[/POST/UPDATE/DELETE]
  * 			url: string or function(namespace, data, params, options)
- * 		 	parse: string key, array of keys or function(response),
+ * 		 	parse: string key, array of keys or function(response, options), - delete options.model & options.collection to take over the data storage process inside parse()
  *     		[optional] fn: (namespace, data, params, options)
  * 		}
  * 		Note that registering an api without config.fn will indicate using a standard (pre-defined) method structure;
@@ -110,6 +110,26 @@
 			module.map[namespace] = config;
 		},
 
+		registerAll: function(pack){
+			function isConfig(obj){
+				if(obj.type || obj.url || obj.parse || obj.fn)
+					return true;
+				return false;
+			}
+
+			_.each(pack, function(ePack, entity){
+				if(isConfig(ePack)) module.register(entity, ePack);
+				else
+					_.each(ePack, function(cPack, category){
+						if(isConfig(cPack)) module.register([entity, category].join('.'), cPack);
+						else
+							_.each(cPack, function(config, method){
+								module.register([entity, category, method].join('.'), config);
+							});
+					});
+			});
+		},
+
 		call: function(namespace, data, params, options){
 			var config = lookup(namespace);
 			if(_.isFunction(config.fn)){ //for total control take-over.
@@ -140,7 +160,7 @@
 				processData: false,
 				success: function(data, status, jqXHR){
 					//1. process the data:
-					if(parse) data = parse(data);
+					if(parse) data = parse(data, options);
 					//2. give data to cb or set it into model/collection (model will always have higher priority over collection)
 					if(options.success){
 						options.success(data);
@@ -151,7 +171,7 @@
 				}
 			};
 			//2. extend options with prep-ed ajax options in 1;
-			$.ajax(_.extend({}, options, prepedOpt));
+			return $.ajax(_.extend({}, options, prepedOpt));
 		}
 
 	});

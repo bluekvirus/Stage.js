@@ -32,6 +32,11 @@
 
 	});
 
+	//Application init: Hook-up Default RESTful Data APIs (from config.js)
+	Application.addInitializer(function(options){
+		Application.API.registerAll(Application.config.api);
+	});
+
 	//Application init: Global listeners
 	Application.addInitializer(function(options){
 		//Context switching utility

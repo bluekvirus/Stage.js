@@ -26,6 +26,40 @@
 			/*----------------*/
 		},
 
+
+		//Pre-set RESTful API configs (see Application.API core module) - Modify this to fit your own backend apis.
+		api: {
+
+			_Default_: {
+				data: {
+					read: {
+						type: 'GET',
+						url: function(namespace, data, params, options){
+							var spaces = namespace.split('.');
+							if(options.model && options.model.id){
+								return '/data/' + spaces[0] + '/' + options.model.id;
+							}else {
+								return '/data/' + spaces[0];
+							}
+						},
+						// parse: function(resp, options){
+						// 	//TBI
+						// }
+					},
+					create: {
+						type: 'POST'
+					},
+					update: {
+						type: 'PUT'
+					},
+					'delete': {
+						type: 'DELETE'
+					}
+				}
+			}
+		
+		}
+
 	});
 
 })(Application);
