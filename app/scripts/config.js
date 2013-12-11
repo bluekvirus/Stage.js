@@ -42,6 +42,7 @@
 								return '/data/' + spaces[0];
 							}
 						},
+						parse: 'payload',
 						// parse: function(resp, options){
 						// 	//TBI
 						// }

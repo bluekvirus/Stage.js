@@ -92,6 +92,7 @@
 				if(!noimp){
 					noimp = true;
 					spaces = ['_Default_'].concat(namespace.split('.').slice(1));
+					config = module.map[spaces.join('.')];
 				}else
 					throw new Error('DEV::App.API::You do not have a fallback call for this namespace ' + namespace);
 			}else {
@@ -138,7 +139,7 @@
 			//1. prepare type, url(with params), data(with data in json), contentType, processData, success(using config.parse and options.success and options.model/collection) into ajax options
 			if(config.parse){
 				var parse;
-				if(_.isString(conifg.parse)){
+				if(_.isString(config.parse)){
 					parse = function(data){
 						return data[config.parse];
 					}

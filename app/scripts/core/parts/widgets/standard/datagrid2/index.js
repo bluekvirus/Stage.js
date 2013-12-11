@@ -10,7 +10,7 @@
  *
  * Options
  * -------
- * 1. collection (of course)
+ * 1. entity (collection will be created internally)
  * 
  * 2. pagination (for the collection) - see core/enhancements/collection.js
  * 
