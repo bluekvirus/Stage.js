@@ -15,9 +15,9 @@
  * Application.API.register('Entity[.Category][.Method]', config);
  * 		- config: {
  * 			type: GET[/POST/UPDATE/DELETE]
- * 			url: string or function(namespace, data, params, options)
+ * 			url: string or function(namespace, options)
  * 		 	parse: string key, array of keys or function(response, options), - return nothing instead of data to take over the data storage process inside parse()
- *     		[optional] fn: (namespace, data, params, options)
+ *     		[optional] fn: (namespace, data, params, options) - note that params is an object, call $.param() to encode it into url query.
  * 		}
  * 		Note that registering an api without config.fn will indicate using a standard (pre-defined) method structure;
  * 		If you want the full power of method customization, use the fn option when register.
@@ -29,7 +29,7 @@
  *   	- Category: the operation category, e.g data/file/logic...;
  *   	- Method: the method name, e.g create/update/read/delete/run/upload/download...;
  *   	- data: the data that need to be sent to server;
- *   	- param: the ?params in url; (this object will be converted to the encoded url counterpart by $.param())
+ *   	- param: the ?params in url; (this object will be converted to the encoded url counterpart by $.param(), note that $.param() will not accept empty param)
  *   	- options: {
  *   		$.ajax options
  *   		
@@ -42,14 +42,14 @@
  *   		success
  *   		
  *   		+ (these will be supported like new options which in turn affect the prepared ajax options)
- *   		success: function(result, options) - optional customized cb, this will be called after parse in the prepared success callback;
+ *   		success: function(parsed data, model/collection, response) - optional customized cb, this will be called after parse in the prepared success callback;
  *   		or just
  *   		model: the model to save the result in; - will trigger a api:data:preped event
  *   		collection: the collection to save the result in; - will trigger a api:data:preped event
  *
  * 			Note that:
- * 			If your config.parse() didn't return data, success can still be called;
- * 			If you pass in a success callback when calling the api, the default data storage will be left to you if you haven't done it in parse();
+ * 			If your config.parse() didn't return data, this means you want to have total control over the data storage process; success will still be called but without data;
+ * 			If you pass in a success callback when calling the api, it will be called in the end. (after parse, [after set model/collection data]);
  *
  * 			the reset of possible options are still supported (e.g async, dataType, timeout, error, notify...)
  *   	}
@@ -73,6 +73,18 @@
  * Warning
  * -------
  * You can NOT override (url, http method type and how to parse(returned val)) upon calling the a certain api.
+ *
+ * Related
+ * -------
+ * This module serves as a data interfacing layer and provides implementation to the overriden Backbone.sync method under core/env.js, thus
+ * 	- model (fetch, save, destroy) 
+ * 	- collection (fetch) 
+ * will be using the registered api config instead of the default Backbone one.
+ *
+ * Pagination Support
+ * ------------------
+ * The call() method will also take care of the pagination support for collections if they have pagination enabled.
+ * 
  *
  * @author Tim.Liu
  * @created 2013.12.05
@@ -159,19 +171,42 @@
 			}
 			var prepedOpt = {
 				type: config.type || 'GET',
-				url: _.isString(config.url)?(config.url + '?' + $.param(params)):config.url(namespace, data, params, options),
+				url: _.isString(config.url)?config.url:config.url(namespace, options) + (params ? ('?' + $.param(params)) : ''),
 				data: JSON.stringify(data),
 				contentType: 'application/json',
 				processData: false,
-				success: function(data, status, jqXHR){
-					//1. process the data:
-					if(parse) data = parse(data, options);
-					//2. give data to cb or set it into model/collection (model will always have higher priority over collection)
+				success: function(response, status, jqXHR){
+					//0. process the data:
+					if(parse) data = parse(response, options);
+					else data = response;
+
+					//1. take care of the collection pagination setup
+					if(options.collection && options.collection.pagination){
+						var collection = options.collection;
+		        		switch(collection.pagination.mode){
+		        			case 'client':
+				        		collection._cachedResponse = data || [];
+				        		collection.totalRecords = collection._cachedResponse.length;
+				        		var page = collection.currentPage || 1;
+				        		data = data.slice((page-1) * collection.pagination.pageSize, page * collection.pagination.pageSize); 
+				        		//return only one page of data if the collection is current set to paginate in client mode.
+				        	case 'server':
+				        		if(response.total)
+				        			collection.totalRecords = response.total;
+				        		else
+				        			collection.pagination.cache = true; //automatically switch to infinite mode.
+				        			//Note that, in cached server mode (e.g like 'infinity', we don't use this totalRecord at all, so the server doesn't have to return it)				        	
+						        break;
+		        		}						
+					}
+
+					//2. set data into model/collection (model will always have higher priority over collection)
+					var target = options.model || options.collection;
+					if(target && data) target.set(data, options);
+
+					//3. call the program supplied success callback 
 					if(options.success){
-						options.success(data, options);
-					}else {
-						var target = options.model || options.collection;
-						if(target && data) target.set(data, options);
+						options.success(data, target, response);
 					}
 				}
 			};

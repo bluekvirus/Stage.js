@@ -1,7 +1,8 @@
 /**
  * Backbone Collection Enhancement 
  * 
- * +Pagination & Search/Filter & Recover ability - Backbone.Collection
+ * 1. +Pagination & Search/Filter & Recover ability - Backbone.Collection
+ * 2. +bindToEntity/getEntityName to hookup with Application.API through Backbone.sync override (core/env.js)
  *
  * @author Tim.Liu
  * @created 2013.09.11
@@ -197,6 +198,20 @@ _.extend(Backbone.Collection.prototype, {
 			this.load();
 		}
 		
+	},
+
+
+	//Support Backbone.sync overriden code
+	getEntityName: function(){
+		return this._entity;
+	},
+
+	bindToEntity: function(entity){
+		if(!this.getEntityName())
+			this._entity = entity;
+		else
+			throw new Error('DEV::Enhancement.Collection::You have already bound this collection to entity ' + this.getEntityName());
+		return this;
 	}
 });
 

@@ -49,17 +49,19 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 };
 
 //1-3 Override Backbone.Sync - Use Application.API module instead for method implementation
-//+ entity, changedOnly, params options to .fetch, .save and .destroy methods of model & collection
+//+ entity, changeOnly, params options to .fetch, .save and .destroy methods of model & collection
 Backbone.sync = (function(){
 
   /*method = create, update, delete, read*/
-
   return function(method, model, options) {
     //check if this operation is toward an entity
+    options.entity = model.getEntityName() || options.entity;
     if(!options.entity) throw new Error('DEV::Backbone.Sync-Override::You must specify an [entity] name in the options');
     //figure out what the data is to send to server
     var data = model.attributes;
-    if(method === 'update' && options.changedOnly) data = model.changedAttributes();
+    //default on changeOnly = true, only to put changed data of a model to server
+    options.changeOnly = _.isUndefined(options.changeOnly)? true : options.changeOnly;    
+    if(method === 'update' && options.changeOnly) data = model.changedAttributes();
     //put model or collection into options
     if(model.isNew){
       options.model = model;
@@ -73,6 +75,9 @@ Backbone.sync = (function(){
     return xhr;
   };
 
-})(); 
+})();
+
+//1-4 Default Backbone.Model idAttribute to '_id'
+Backbone.Model.prototype.idAttribute = '_id';
 
 

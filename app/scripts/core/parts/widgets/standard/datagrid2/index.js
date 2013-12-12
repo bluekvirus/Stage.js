@@ -74,11 +74,11 @@ Application.Widget.register('DataGrid2', function(){
 	        	
 	        	//auto-load the data if  
 	        	if(this.table.entity)
-	        		this.table.collection.load({entity: this.table.entity});
+	        		this.table.collection.load();
 	        },
 
 	        //add row actions impl to the grid (delegated to grid.table view object see Table.init - 3)
-	        rowActions: function(actionsImp){
+	        implementRowActions: function(actionsImp){
 	        	_.each(actionsImp, function(fn, action){
 	        		this.table.actions[action] = function($action){
 	        			var row = $action.data('row');
@@ -105,6 +105,7 @@ Application.Widget.register('DataGrid2', function(){
 				this.collection = options.collection;
 			}
 			if(options.pagination) this.collection.enablePagination(options.pagination);
+			this.collection.bindToEntity(this.entity);
 
 			//columns (sortable, filterable), customized cells/header cells;
 			this.columns = this.columns || options.columns || [];
@@ -147,12 +148,7 @@ Application.Widget.register('DataGrid2', function(){
 				itemView: Row,
 				itemViewOptions: function(model, index){
 					return {
-						collection: new Backbone.Collection(_.map(that.columns, function(col){
-							return {
-								val: model.get(col.name),
-								column: col
-							}
-						})),
+						//collection init delayed within Row initialize() for per row re-render upon model change;
 						meta: { //Note that we didn't include this in the above collection as per-cell-meta since these metadata items are shared within a row.
 							record: model, //pass down the data model of this row
 							table: that, //pass down the table view object
@@ -193,6 +189,22 @@ Application.Widget.register('DataGrid2', function(){
 			this.itemViewOptions = {
 				row: this, //passing down this row view object so that row.meta can be used within each cells.
 			};
+
+			var prepCollection = _.bind(function(){
+				this.collection = new Backbone.Collection(_.map(this.meta.table.columns, function(col){
+					return {
+						val: this.meta.record.get(col.name),
+						column: col
+					}
+				}, this));
+			}, this);
+
+			//per row re-render upon row record data change
+			this.listenTo(this.meta.record, 'change', function(){
+				prepCollection();
+				this.render();
+			});
+			prepCollection();
 		},
 		buildItemView: function(item, ItemViewType, itemViewOptions){
 			var options = _.extend({model: item, tagName:'td'}, itemViewOptions);

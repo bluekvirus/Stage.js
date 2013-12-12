@@ -183,7 +183,7 @@
 						console.log('toolbelt:shortcut:input-changed', val);
 					});
 
-					grid.rowActions({
+					grid.implementRowActions({
 						'detail': function(record, row){
 							console.log(record.id);
 						}

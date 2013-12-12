@@ -34,18 +34,15 @@
 				data: {
 					read: {
 						type: 'GET',
-						url: function(namespace, data, params, options){
+						url: function(namespace, options){
 							var spaces = namespace.split('.');
 							if(options.model && options.model.id){
-								return '/data/' + spaces[0] + '/' + options.model.id;
+								return '/' + spaces[1] + '/' + spaces[0] + '/' + options.model.id;
 							}else {
-								return '/data/' + spaces[0];
+								return '/' + spaces[1] + '/' + spaces[0];
 							}
 						},
 						parse: 'payload',
-						// parse: function(resp, options){
-						// 	//TBI
-						// }
 					},
 					create: {
 						type: 'POST'
