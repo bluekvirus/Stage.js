@@ -72,8 +72,9 @@ Application.Widget.register('DataGrid2', function(){
 	        	this.body.show(this.table);
 	        	this.footer.show(this.footerbar);
 	        	
-	        	//load the data
-	        	//this.table.collection.load();
+	        	//auto-load the data if  
+	        	if(this.table.entity)
+	        		this.table.collection.load({entity: this.table.entity});
 	        },
 
 	        //add row actions impl to the grid (delegated to grid.table view object see Table.init - 3)
@@ -97,6 +98,7 @@ Application.Widget.register('DataGrid2', function(){
 		
 		initialize: function(options){
 			this.itemView = Row; //specify here so it can be defined below Table definition.
+			this.entity = options.entity;
 			//collection, pagination;
 			if(!options.collection) {
 				options.collection = new Backbone.Collection();

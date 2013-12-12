@@ -16,7 +16,7 @@
  * 		- config: {
  * 			type: GET[/POST/UPDATE/DELETE]
  * 			url: string or function(namespace, data, params, options)
- * 		 	parse: string key, array of keys or function(response, options), - delete options.model & options.collection to take over the data storage process inside parse()
+ * 		 	parse: string key, array of keys or function(response, options), - return nothing instead of data to take over the data storage process inside parse()
  *     		[optional] fn: (namespace, data, params, options)
  * 		}
  * 		Note that registering an api without config.fn will indicate using a standard (pre-defined) method structure;
@@ -42,10 +42,14 @@
  *   		success
  *   		
  *   		+ (these will be supported like new options which in turn affect the prepared ajax options)
- *   		success: function(result or model/collection) - optional customized cb, this will be called after parse in the prepared success callback;
+ *   		success: function(result, options) - optional customized cb, this will be called after parse in the prepared success callback;
  *   		or just
  *   		model: the model to save the result in; - will trigger a api:data:preped event
  *   		collection: the collection to save the result in; - will trigger a api:data:preped event
+ *
+ * 			Note that:
+ * 			If your config.parse() didn't return data, success can still be called;
+ * 			If you pass in a success callback when calling the api, the default data storage will be left to you if you haven't done it in parse();
  *
  * 			the reset of possible options are still supported (e.g async, dataType, timeout, error, notify...)
  *   	}
@@ -164,10 +168,10 @@
 					if(parse) data = parse(data, options);
 					//2. give data to cb or set it into model/collection (model will always have higher priority over collection)
 					if(options.success){
-						options.success(data);
+						options.success(data, options);
 					}else {
 						var target = options.model || options.collection;
-						if(target) target.set(data);
+						if(target && data) target.set(data, options);
 					}
 				}
 			};

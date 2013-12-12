@@ -29,7 +29,7 @@
 
 		//Pre-set RESTful API configs (see Application.API core module) - Modify this to fit your own backend apis.
 		api: {
-
+			//_Default_ entity is your fallback entity, only register common api method config to it would be wise, put specific ones into your context.module.
 			_Default_: {
 				data: {
 					read: {

@@ -23,7 +23,7 @@
 					this.fakeRegions();
 					this.enableTabLayout('top', 'tabs');
 					var grid = app.Widget.create('DataGrid2', {
-						
+						entity: 'Comment',
 						pagination: {
 							pageSize: 10,
 							//mode: 'server'
