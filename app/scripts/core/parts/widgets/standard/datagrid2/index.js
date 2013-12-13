@@ -123,7 +123,7 @@ Application.Widget.register('DataGrid2', function(){
 			//2. prepare the region $el(s)
 			this.autoDetectRegions();
 			//3. intercept row actions
-			this.enableActionTags('Widget.DataGrid2.Table - use grid.rowActions({action1: func1(record, row), action2: func2, ...})');
+			this.enableActionTags('Widget.DataGrid2.Table - use grid.implementRowActions({action1: func1(record, row), action2: func2, ...})');
 		},
 
 		onShow: function(){

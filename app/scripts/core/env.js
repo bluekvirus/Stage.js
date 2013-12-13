@@ -55,7 +55,7 @@ Backbone.sync = (function(){
   /*method = create, update, delete, read*/
   return function(method, model, options) {
     //check if this operation is toward an entity
-    options.entity = model.getEntityName() || options.entity;
+    options.entity = model.getEntityName() || (model.collection && model.collection.getEntityName()) || options.entity;
     if(!options.entity) throw new Error('DEV::Backbone.sync-Override::You must specify an [entity] name in the options');
     //figure out what the data is to send to server
     var data = model.attributes;
@@ -65,21 +65,17 @@ Backbone.sync = (function(){
     //put model or collection into options
     if(model.isNew){
 		options.model = model;
-		//hookup auto-add-to-collection upon creation & auto-recover-to-previous-attributes upon update & auto-remove from client pagination _cachedResponse
+		//hookup auto-add-to-collection upon creation & auto-recover-to-previous-attributes upon update
 		//create - auto-add-to-collection
 		if(method === 'create' && model.collection){
 			model.listenToOnce(model, 'sync', function(model){
 				var collection = model.collection;
 				if(collection.pagination && collection.pagination.cache === false){
-					if(collection.pagination.mode === 'client'){
-						collection.prepDataStart([model.attributes]);
-						collection.prepDataEnd();
-					}
 					if(collection.size() < collection.pagination.pageSize){
-						collection.set([model]); //intellegently add?? - not working atm
+						collection.add(model, {merge: true});
 					}
 				}else {
-					collection.set([model]); //intellegently add?? - not working atm
+					collection.add(model, {merge: true});
 				}
 			});
 		}else if(method === 'update'){
@@ -87,14 +83,6 @@ Backbone.sync = (function(){
 			var autorecovery = function(){
 				model.set(model.previousAttributes());
 			};
-		}else if (method === 'delete'){
-		//delete - auto-remove from mode:client paginated collection's _cachedResponse
-			var collection = model.collection;
-			if(collection.pagination && collection.pagination.mode === 'client') {
-				model.listenToOnce(model, 'sync', function(model){
-					collection.removeData([model]);
-				});
-			}
 		}
 
     }else {

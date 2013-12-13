@@ -78,7 +78,8 @@ _.extend(Backbone.Collection.prototype, {
 				var ids = _.reduce(models, function(memo, m){
 					if(!m.isNew) throw new Error('DEV::Enhancement.Collection::You must pass-in models array to remove[_cachedResponse]Data()');
 					idAttribute = m.idAttribute;
-					return memo[m.id] = true;
+					memo[m.id] = true;
+					return memo;
 				}, {});
 
 				this._cachedResponse = _.reject(this._cachedResponse, function(datum){
@@ -87,6 +88,7 @@ _.extend(Backbone.Collection.prototype, {
 			}
 		}
 
+		//monitoring collection -> server activities so that we can maintain a healthy _cachedResponse upon model creation and deletion
 		var eWhiteList = {
 			'sync': true,
 			'destroy': true
@@ -104,22 +106,16 @@ _.extend(Backbone.Collection.prototype, {
 			//2. we are only interested in sync after add and destroy after remove.
 			switch(event){
 				case 'sync':
-					this._cachedResponse.push(target.attributes);
-					signalClientModePageNumberUpdate(this);
+					this.prepDataStart([target.attributes]);
 					break;
 				case 'destroy':
-					console.log('-', target.id);
-					for (var i = this._cachedResponse.length - 1; i >= 0; i--) {
-						if(this._cachedResponse[i][target.idAttribute] === target.id){
-							this._cachedResponse.splice(i, 1);
-							break;
-						}
-					};
-					signalClientModePageNumberUpdate(this);
+					//console.log('-', target.id);
+					this.removeData([target]);
 					break;
 				default:
 					break;
 			}
+			this.prepDataEnd();
 
 		});
 		

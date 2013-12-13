@@ -186,6 +186,10 @@
 					grid.implementRowActions({
 						'detail': function(record, row){
 							console.log(record.id);
+						},
+
+						'delete': function(record, row){
+							record.destroy();
 						}
 					})
 

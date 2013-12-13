@@ -52,6 +52,10 @@
 					},
 					update: {
 						type: 'PUT',
+						parse: 'payload',
+						url: function(entity, category, method, options){
+							return '/' + category + '/' + entity + '/' + options.model.id;
+						}
 
 					},
 					'delete': {
