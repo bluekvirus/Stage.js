@@ -15,7 +15,7 @@
  * Application.API.register('Entity[.Category][.Method]', config);
  * 		- config: {
  * 			type: GET[/POST/UPDATE/DELETE]
- * 			url: string or function(namespace, options)
+ * 			url: string or function(entity, category, method, options)
  * 		 	parse: string key, array of keys or function(response, options), - return nothing instead of data to take over the data storage process inside parse()
  *     		[optional] fn: (namespace, data, params, options) - note that params is an object, call $.param() to encode it into url query.
  * 		}
@@ -168,9 +168,10 @@
 					throw new Error('DEV::App.API::You must pass in a valid parse config (string, array of keys, function)!');
 				}
 			}
+			var spaces = namespace.split('.');
 			var prepedOpt = {
 				type: config.type || 'GET',
-				url: _.isString(config.url)?config.url:config.url(namespace, options) + (params ? ('?' + $.param(params)) : ''),
+				url: _.isString(config.url)?config.url:config.url(spaces[0], spaces[1], spaces[2], options) + (params ? ('?' + $.param(params)) : ''),
 				data: JSON.stringify(data),
 				contentType: 'application/json',
 				processData: false,

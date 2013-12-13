@@ -56,7 +56,7 @@ Backbone.sync = (function(){
   return function(method, model, options) {
     //check if this operation is toward an entity
     options.entity = model.getEntityName() || options.entity;
-    if(!options.entity) throw new Error('DEV::Backbone.Sync-Override::You must specify an [entity] name in the options');
+    if(!options.entity) throw new Error('DEV::Backbone.sync-Override::You must specify an [entity] name in the options');
     //figure out what the data is to send to server
     var data = model.attributes;
     //default on changeOnly = true, only to put changed data of a model to server
@@ -64,9 +64,41 @@ Backbone.sync = (function(){
     if(method === 'update' && options.changeOnly) data = model.changedAttributes();
     //put model or collection into options
     if(model.isNew){
-      options.model = model;
+		options.model = model;
+		//hookup auto-add-to-collection upon creation & auto-recover-to-previous-attributes upon update & auto-remove from client pagination _cachedResponse
+		//create - auto-add-to-collection
+		if(method === 'create' && model.collection){
+			model.listenToOnce(model, 'sync', function(model){
+				var collection = model.collection;
+				if(collection.pagination && collection.pagination.cache === false){
+					if(collection.pagination.mode === 'client'){
+						collection.prepDataStart([model.attributes]);
+						collection.prepDataEnd();
+					}
+					if(collection.size() < collection.pagination.pageSize){
+						collection.set([model]); //intellegently add?? - not working atm
+					}
+				}else {
+					collection.set([model]); //intellegently add?? - not working atm
+				}
+			});
+		}else if(method === 'update'){
+		//update - auto-recovery
+			var autorecovery = function(){
+				model.set(model.previousAttributes());
+			};
+		}else if (method === 'delete'){
+		//delete - auto-remove from mode:client paginated collection's _cachedResponse
+			var collection = model.collection;
+			if(collection.pagination && collection.pagination.mode === 'client') {
+				model.listenToOnce(model, 'sync', function(model){
+					collection.removeData([model]);
+				});
+			}
+		}
+
     }else {
-      options.collection = model;
+		options.collection = model;
     }
     //internal usage only, signal the Application.API.call that this is coming from a .fetch .save or .destroy so the success callback can be sorted properly.
     //note that in such a case, the success callback is of the original backbone defined form.
@@ -75,6 +107,7 @@ Backbone.sync = (function(){
     // Make the request, allowing the user to override any Ajax options.
     var xhr = options.xhr = Application.API.call([options.entity, 'data', method].join('.'), data, options.params, options);
     model.trigger('request', model, xhr, options);
+    if(autorecovery) xhr = xhr.fail(autorecovery);
     return xhr;
   };
 
@@ -82,5 +115,17 @@ Backbone.sync = (function(){
 
 //1-4 Default Backbone.Model idAttribute to '_id'
 Backbone.Model.prototype.idAttribute = '_id';
+
+//1-5 Replace the original Backbone.Collection.create method to just prepare a new model for us.
+Backbone.Collection.prototype.create = function(attributes, idAttributeToRemove){
+	attributes = attributes || {};
+	idAttributeToRemove = idAttributeToRemove || Backbone.Model.prototype.idAttribute;
+	delete attributes[idAttributeToRemove];
+	var model = new Backbone.Model(attributes, {
+		collection: this
+	});
+	model.bindToEntity(this.getEntityName());
+	return model;
+};
 
 

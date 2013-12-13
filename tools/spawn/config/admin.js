@@ -68,6 +68,7 @@ module.exports = {
 			build: { //excluding the dist folder.
 				config: 'tools/build/config',
 				'build.js': 'tools/build/build.js',
+				'move.js': 'tools/build/move.js',
 			},
 			shared: 'tools/shared',
 			iconprep: 'tools/iconprep',

@@ -52,7 +52,7 @@ _.extend(Backbone.Collection.prototype, {
 	enablePagination: function(config){
 		this.pagination = _.extend({
 			mode: 'client',
-			cache: false, //this means the collection is not used to cache previously loaded records. However, we do save the fetched result in client mode. see - data-units.js
+			cache: false, //true to allow infinite scrolling mode (useful in server mode)
 			pageSize: 10,
 		}, this.pagination, config);
 
@@ -70,6 +70,20 @@ _.extend(Backbone.Collection.prototype, {
 			};
 			this.prepDataEnd = function(){ //also need to call this whenever the _cachedResponse changes(e.g search & recover).
 				signalClientModePageNumberUpdate(this);
+			};
+			//remove model(s) data from _cachedResponse
+			this.removeData = function(models){
+				models = models || [];
+				idAttribute = '';
+				var ids = _.reduce(models, function(memo, m){
+					if(!m.isNew) throw new Error('DEV::Enhancement.Collection::You must pass-in models array to remove[_cachedResponse]Data()');
+					idAttribute = m.idAttribute;
+					return memo[m.id] = true;
+				}, {});
+
+				this._cachedResponse = _.reject(this._cachedResponse, function(datum){
+					if(ids[datum[idAttribute]]) return true;
+				});
 			}
 		}
 
@@ -127,7 +141,7 @@ _.extend(Backbone.Collection.prototype, {
 			if(this.pagination.mode === 'client'){
 				if(!this._cachedResponse || options.reset){
 					//go fetch the records again.
-					this.fetch(options);
+					return this.fetch(options);
 				}else {
 					//go to page
 					this.set(this._cachedResponse.slice((this.currentPage-1) * this.pagination.pageSize, this.currentPage * this.pagination.pageSize), {remove: !this.pagination.cache});
@@ -147,10 +161,10 @@ _.extend(Backbone.Collection.prototype, {
 						that.trigger('pagination:pageChanged');
 					}
 				});
-				this.fetch(options);
+				return this.fetch(options);
 			}
 		}else {
-			this.fetch(options); //ignore pagination. normal fetch();
+			return this.fetch(options); //ignore pagination. normal fetch();
 		}
 	},
 

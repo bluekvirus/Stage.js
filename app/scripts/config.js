@@ -34,24 +34,31 @@
 				data: {
 					read: {
 						type: 'GET',
-						url: function(namespace, options){
-							var spaces = namespace.split('.');
+						url: function(entity, category, method, options){
 							if(options.model && options.model.id){
-								return '/' + spaces[1] + '/' + spaces[0] + '/' + options.model.id;
+								return '/' + category + '/' + entity + '/' + options.model.id;
 							}else {
-								return '/' + spaces[1] + '/' + spaces[0];
+								return '/' + category + '/' + entity;
 							}
 						},
 						parse: 'payload',
 					},
 					create: {
-						type: 'POST'
+						type: 'POST',
+						url: function(entity, category, method, options){
+							return '/' + category + '/' + entity;
+						},
+						parse: 'payload',
 					},
 					update: {
-						type: 'PUT'
+						type: 'PUT',
+
 					},
 					'delete': {
-						type: 'DELETE'
+						type: 'DELETE',
+						url: function(entity, category, method, options){
+							return '/' + category + '/' + entity + '/' + options.model.id;
+						}
 					}
 				}
 			}
