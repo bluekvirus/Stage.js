@@ -1,6 +1,4 @@
 {
-	"backbone-validation": "dist",
-	"backgrid": "lib",
 	"bootstrap2": "bootstrap.js",
 	"bootstrap3": "bootstrap.js",
 	"flexslider": "jquery.flexslider.js",

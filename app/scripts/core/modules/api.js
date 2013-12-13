@@ -41,12 +41,11 @@
  *   		processData: false
  *   		success
  *   		
- *   		+ (these will be supported like new options which in turn affect the prepared ajax options)
- *   		success: function(parsed data, model/collection, response) - optional customized cb, this will be called after parse in the prepared success callback;
- *   		or just
+ *   		+ (these will be supported like new options which in turn affect the prepared ajax options)  		
  *   		model: the model to save the result in; - will trigger a api:data:preped event
  *   		collection: the collection to save the result in; - will trigger a api:data:preped event
- *
+ *   		success: function(parsed data, model/collection, response, options) - optional customized cb, this will be called after parse in the prepared success callback;
+ * 
  * 			Note that:
  * 			If your config.parse() didn't return data, this means you want to have total control over the data storage process; success will still be called but without data;
  * 			If you pass in a success callback when calling the api, it will be called in the end. (after parse, [after set model/collection data]);
@@ -199,15 +198,27 @@
 						        break;
 		        		}						
 					}
+					//A. indirect API.call invocation:
+					if(options._backbonesync){ //see core/env.js - Backbone.sync override.
+						//hand over to backbone prepared success() by (.save, .fetch, .destroy)
+						options.success(data);
+						//note that this will ensure the success() option used in .save, .fecth, .destroy stays the way backbone defined it. 
+					}else {
+					//B. direct API.call invocation:
+						//2. set data into model/collection (model will always have higher priority over collection)
+						var target = options.model || options.collection;
+						if(target && data) {
+							target.set(data, options);
+							target.trigger('app:api:data-prepared'); //only triggered if you are using the API.call directly
+						}
 
-					//2. set data into model/collection (model will always have higher priority over collection)
-					var target = options.model || options.collection;
-					if(target && data) target.set(data, options);
-
-					//3. call the program supplied success callback 
-					if(options.success){
-						options.success(data, target, response);
+						//3. call the program supplied success callback 
+						if(options.success){
+							options.success(data, target, response, options);//only called if you are using the API.call directly
+							//note that, this callback is different than the one you use with model/collection .fetch, .save and .destroy.
+						}
 					}
+
 				}
 			};
 			//2. extend options with prep-ed ajax options in 1;

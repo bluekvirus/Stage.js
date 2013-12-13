@@ -168,7 +168,6 @@ buildify.task({
 			'underscore',
 			'underscore.string',
 			'backbone', //include json2/3
-			'backbone-validation',
 			'marionette',
 			'handlebars',
 			'swag',
@@ -200,7 +199,6 @@ buildify.task({
 			'underscore',
 			'underscore.string',
 			'backbone', 
-			'backbone-validation',
 			'marionette',
 			'handlebars',
 			'swag',

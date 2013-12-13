@@ -1,7 +1,5 @@
 {
-  "backbone-validation": "bower_components/backbone-validation",
   "backbone": "bower_components/backbone",
-  "backgrid": "bower_components/backgrid",
   "blueimp-canvas-to-blob": "bower_components/blueimp-canvas-to-blob/js/canvas-to-blob.js",
   "blueimp-load-image": [
     "bower_components/blueimp-load-image/js/load-image.js",
@@ -19,7 +17,10 @@
   "bootstrap3": [
     "bower_components/bootstrap3/dist/js/bootstrap.js",
     "bower_components/bootstrap3/dist/css/bootstrap.css",
-    "bower_components/bootstrap3/dist/fonts/*"
+    "bower_components/bootstrap3/dist/fonts/glyphicons-halflings-regular.eot",
+    "bower_components/bootstrap3/dist/fonts/glyphicons-halflings-regular.svg",
+    "bower_components/bootstrap3/dist/fonts/glyphicons-halflings-regular.ttf",
+    "bower_components/bootstrap3/dist/fonts/glyphicons-halflings-regular.woff"
   ],
   "codemirror": [
     "bower_components/codemirror/lib/codemirror.js",
@@ -37,15 +38,22 @@
     "bower_components/jqtree/tree.jquery.js"
   ],
   "jquery-file-upload": [
+    "bower_components/jquery-file-upload/css/jquery.fileupload.css",
+    "bower_components/jquery-file-upload/css/jquery.fileupload-ui.css",
+    "bower_components/jquery-file-upload/css/jquery.fileupload-noscript.css",
+    "bower_components/jquery-file-upload/css/jquery.fileupload-ui-noscript.css",
+    "bower_components/jquery-file-upload/js/cors/jquery.postmessage-transport.js",
+    "bower_components/jquery-file-upload/js/cors/jquery.xdr-transport.js",
     "bower_components/jquery-file-upload/js/vendor/jquery.ui.widget.js",
-    "bower_components/jquery-file-upload/js/jquery.fileupload-angular.js",
-    "bower_components/jquery-file-upload/js/jquery.fileupload-audio.js",
-    "bower_components/jquery-file-upload/js/jquery.fileupload-image.js",
-    "bower_components/jquery-file-upload/js/jquery.fileupload-process.js",
-    "bower_components/jquery-file-upload/js/jquery.fileupload-ui.js",
-    "bower_components/jquery-file-upload/js/jquery.fileupload-validate.js",
-    "bower_components/jquery-file-upload/js/jquery.fileupload-video.js",
     "bower_components/jquery-file-upload/js/jquery.fileupload.js",
+    "bower_components/jquery-file-upload/js/jquery.fileupload-process.js",
+    "bower_components/jquery-file-upload/js/jquery.fileupload-validate.js",
+    "bower_components/jquery-file-upload/js/jquery.fileupload-image.js",
+    "bower_components/jquery-file-upload/js/jquery.fileupload-audio.js",
+    "bower_components/jquery-file-upload/js/jquery.fileupload-video.js",
+    "bower_components/jquery-file-upload/js/jquery.fileupload-ui.js",
+    "bower_components/jquery-file-upload/js/jquery.fileupload-jquery-ui.js",
+    "bower_components/jquery-file-upload/js/jquery.fileupload-angular.js",
     "bower_components/jquery-file-upload/js/jquery.iframe-transport.js"
   ],
   "jquery-serializeForm": "bower_components/jquery-serializeForm",
@@ -57,13 +65,14 @@
   "jquery.transit": "bower_components/jquery.transit",
   "jquery": "bower_components/jquery/jquery.js",
   "jquery2": "bower_components/jquery2/jquery.js",
-  "json3": "bower_components/json3",
+  "json3": "bower_components/json3/lib/json3.min.js",
   "marionette": "bower_components/marionette/lib/backbone.marionette.js",
   "marked": "bower_components/marked",
   "modernizr": "bower_components/modernizr",
   "momentjs": "bower_components/momentjs/moment.js",
   "noty": "bower_components/noty",
   "raphael": "bower_components/raphael/raphael.js",
+  "selectivizr": "bower_components/selectivizr",
   "socket.io-client": "bower_components/socket.io-client",
   "spin.js": "bower_components/spin.js/dist/spin.js",
   "store.js": "bower_components/store.js/store.js",

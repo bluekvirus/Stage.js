@@ -68,6 +68,9 @@ Backbone.sync = (function(){
     }else {
       options.collection = model;
     }
+    //internal usage only, signal the Application.API.call that this is coming from a .fetch .save or .destroy so the success callback can be sorted properly.
+    //note that in such a case, the success callback is of the original backbone defined form.
+    options._backbonesync = true;
 
     // Make the request, allowing the user to override any Ajax options.
     var xhr = options.xhr = Application.API.call([options.entity, 'data', method].join('.'), data, options.params, options);
