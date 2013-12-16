@@ -73,7 +73,7 @@
 									icon: 'icon-refresh',
 									group: 'other',
 									fn: function(grid){
-										console.log(grid.table.collection.size());
+										grid.refresh({reset: true});
 									}
 								},
 								{
@@ -168,32 +168,40 @@
 					this.listenTo(grid, 'grid:show-form', function(form){
 						this.details.show(form);
 					});
+					var formOpt = {
+						layout: 'form-horizontal',
+						editors: {
+							title: {
+								label: 'Title'
+							},
+							body: {
+								label: 'Content',
+								type: 'textarea'
+							}
+						},
+						buttons: [
+							'save', 'cancel', {
+								name: 'nothing',
+								fn: function($action){
+									console.log('hey! nothing happened');
+								}
+							}
+						]
+					};					
 					_.extend(grid.actions, {
 						create: function($action){
 							//the form view.
-							var view = new (Backbone.Marionette.ItemView.extend({
-								template: '#_blank',
-								tagName: 'form',
-								className: 'form-horizontal',
-								initialize: function(){
-									this.enableActionTags('Test.EditorDemo');
-									this.enableForm();
+							var view = app.Widget.create('BasicForm', _.extend({
+								data: {
+									body: 'nothing new...'
 								},
-								onRender: function(){
-									this.activateEditors({
-										editors: {
-											title: {
-												label: 'Title'
-											},
-											content: {
-												label: 'Content',
-												type: 'textarea'
-											}
-										}
-									});
-								}
-							}))();
+								record: grid.table.collection.create()
+							}, formOpt));
 							this.trigger('grid:show-form', view);
+							this.listenToOnce(view, 'form:record-saved', function(){
+								view.close();
+								grid.refresh({reset: true});
+							});
 						},
 
 						delete: function($action){
@@ -211,6 +219,17 @@
 					grid.implementRowActions({
 						'detail': function(record, row){
 							console.log(record.id);
+						},
+
+						'edit': function(record, row){
+							var view = app.Widget.create('BasicForm', _.extend({}, {
+								data: record.attributes,
+								record: record,
+							}, formOpt));
+							grid.trigger('grid:show-form', view);
+							grid.listenToOnce(view, 'form:record-saved', function(){
+								view.close();
+							});
 						},
 
 						'delete': function(record, row){

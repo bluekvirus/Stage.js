@@ -44,6 +44,12 @@
  *
  * Note that we no longer use parentCt or formWidget options.
  * Collaboration with other widgets or view objects should be done with events (handshakes) up in the parent container.
+ *
+ *
+ * Grid Helpers
+ * ------------
+ * 1. refresh(options) - shortcut for table.collection.load(options);
+ * 2. implementRowActions() - shortcut for adding action cell item implementation
  * 
  *
  * @author Tim.Liu
@@ -74,11 +80,16 @@ Application.Widget.register('DataGrid2', function(){
 	        	
 	        	//auto-load the data if  
 	        	if(this.table.entity)
-	        		this.table.collection.load();
+	        		this.refresh();
 	        },
 
-	        //add row actions impl to the grid (delegated to grid.table view object see Table.init - 3)
+	        refresh: function(options){
+	        	this.table.collection.load(options);
+	        },
+
+	        //add row actions impl to the grid (delegated to grid.table view object see Table.init - 3 below)
 	        implementRowActions: function(actionsImp){
+	        	//var that = this;
 	        	_.each(actionsImp, function(fn, action){
 	        		this.table.actions[action] = function($action){
 	        			var row = $action.data('row');
