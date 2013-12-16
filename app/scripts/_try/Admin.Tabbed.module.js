@@ -165,10 +165,35 @@
 						title: 'Grid2 Test'
 					};
 					this.addTab(grid);
-
+					this.listenTo(grid, 'grid:show-form', function(form){
+						this.details.show(form);
+					});
 					_.extend(grid.actions, {
 						create: function($action){
-							console.log($action.attr('action'));
+							//the form view.
+							var view = new (Backbone.Marionette.ItemView.extend({
+								template: '#_blank',
+								tagName: 'form',
+								className: 'form-horizontal',
+								initialize: function(){
+									this.enableActionTags('Test.EditorDemo');
+									this.enableForm();
+								},
+								onRender: function(){
+									this.activateEditors({
+										editors: {
+											title: {
+												label: 'Title'
+											},
+											content: {
+												label: 'Content',
+												type: 'textarea'
+											}
+										}
+									});
+								}
+							}))();
+							this.trigger('grid:show-form', view);
 						},
 
 						delete: function($action){
@@ -219,6 +244,6 @@
 
 Template.extend('custom-module-admin-tabbed-tpl',
 [
-	//'<div region="intro"></div>',
+	'<div region="details"></div>',
 	'<div region="tabs"></div>'
 ]);

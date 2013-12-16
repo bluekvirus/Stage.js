@@ -295,6 +295,11 @@ _.extend(Backbone.Marionette.View.prototype, {
  * tab Title/Icon (icon css className)
  * ---------
  * Use view.tab.{title: ..., icon: ...} to config. So make sure your defined it in the View object definition.
+ *
+ * ---------
+ * Limitations
+ * ---------
+ * You can NOT use enableTabLayout on more than one region within a View object. Create a new View object to contain a new tab-layout if needs be.
  * 
  * Do this in onShow() instead of initialize.
  */
