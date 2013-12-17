@@ -57,7 +57,9 @@ Backbone.sync = (function(){
     //check if this operation is toward an entity
     options.entity = model.getEntityName() || (model.collection && model.collection.getEntityName()) || options.entity;
     if(!options.entity) throw new Error('DEV::Backbone.sync-Override::You must specify an [entity] name in the options');
-    //put model or collection into options
+
+    //put model or collection into options, note that this is not testing model.isNew().
+    //model: save,fetch,destroy
     if(model.isNew){
 		options.model = model;
 	    //figure out what the data is to send to server
@@ -69,7 +71,12 @@ Backbone.sync = (function(){
 		if(method === 'create' && model.collection){
 			model.listenToOnce(model, 'sync', function(model){
 				var collection = model.collection;
-				if(collection.pagination && collection.pagination.cache === false){
+				if(collection.pagination && collection.pagination.mode !== 'infinite'){
+					if(collection.pagination.mode === 'client'){
+						//need to add to the model cache array as well.
+						collection.prepDataStart([model.attributes]);
+						collection.prepDataEnd();
+					}
 					if(collection.size() < collection.pagination.pageSize){
 						collection.add(model, {merge: true});
 					}
@@ -86,10 +93,19 @@ Backbone.sync = (function(){
 		}else if (method === 'read'){
 			if(model.isNew()) return; //abort!
 			data = {};
+		}else if (method === 'delete' && model.collection){
+			var collection = model.collection;
+			if(collection.pagination && collection.pagination.mode === 'client'){
+				model.listenToOnce(model, 'sync', function(model){
+					collection.removeData([model]);
+					collection.prepDataEnd();
+				});
+			}
 		}
 
+	//collection: fetch
     }else {
-		options.collection = model;
+		options.collection = model; //for collection's data prep-ing with pagination see core/modules/api.js
     }
     //internal usage only, signal the Application.API.call that this is coming from a .fetch .save or .destroy so the success callback can be sorted properly.
     //note that in such a case, the success callback is of the original backbone defined form.

@@ -27,6 +27,7 @@
 						pagination: {
 							pageSize: 10,
 							//mode: 'server'
+							//mode: 'infinite'
 						},
 						columns: [
 							{
@@ -235,7 +236,9 @@
 						},
 
 						'delete': function(record, row){
-							record.destroy();
+							record.destroy().done(function(){
+								grid.refresh();
+							});
 						}
 					})
 

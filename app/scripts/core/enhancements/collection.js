@@ -17,13 +17,14 @@
 				This way, we don't have to make another 'window' collection for updating the UI.
 	)
 	+Config: {
-		mode: client/server - non 'server' value means 'client' mode.
-		cache: false(default)/true (completely swap the content of this collection or incrementally feed it)
+		mode: client/server/infinite - note that the infinite mode requires to use load(nextPage) constantly in respond to scroll-down events.
 		pageSize: (default: 25) - 0 means showing all
-		params: { optionally control the server params used. //Hard coded atm...
-			offset: 'page', 
-			size: 'per_page'
-		}
+
+		[Hardcoded at the moment]
+			params: { optionally control the server params used.
+				offset: 'page', 
+				size: 'per_page'
+			}
 	}
 	+Properties: { should be Read-Only, can only be changed from calling the functions below.
 		currentPage:
@@ -52,7 +53,6 @@ _.extend(Backbone.Collection.prototype, {
 	enablePagination: function(config){
 		this.pagination = _.extend({
 			mode: 'client',
-			cache: false, //true to allow infinite scrolling mode (useful in server mode)
 			pageSize: 10,
 		}, this.pagination, config);
 
@@ -87,38 +87,6 @@ _.extend(Backbone.Collection.prototype, {
 				});
 			}
 		}
-
-		//monitoring collection -> server activities so that we can maintain a healthy _cachedResponse upon model creation and deletion
-		var eWhiteList = {
-			'add': true,
-			'destroy': true
-		};
-		this.listenTo(this, 'all', function(event, target, data, options){
-			if(!eWhiteList[event]) return;
-			if(this.pagination.cache) return;
-			if(this.pagination.mode !== 'client') return;
-			//1. we only need to do this for non-cached client mode, since in other modes, the page numbers are either not needed or updated by server's replay about total records.
-			if(this === target){
-				//Note that this === target means the 'sync' detected is after 'reset'. This is true for both client and server mode.
-				this.prepDataEnd();
-				return;
-			}
-			//2. we are only interested in sync after add and destroy after remove.
-			switch(event){
-				case 'add':
-					if(options && options._backbonesync === 'create')
-						this.prepDataStart([target.attributes]);
-					break;
-				case 'destroy':
-					//console.log('-', target.id);
-					this.removeData([target]);
-					break;
-				default:
-					break;
-			}
-			this.prepDataEnd();
-
-		});
 		
 		return this;
 	},
@@ -141,7 +109,7 @@ _.extend(Backbone.Collection.prototype, {
 					return this.fetch(options);
 				}else {
 					//go to page
-					this.set(this._cachedResponse.slice((this.currentPage-1) * this.pagination.pageSize, this.currentPage * this.pagination.pageSize), {remove: !this.pagination.cache});
+					this.set(this._cachedResponse.slice((this.currentPage-1) * this.pagination.pageSize, this.currentPage * this.pagination.pageSize), {remove: !(this.pagination.mode==='infinite')});
 					this.trigger('pagination:pageChanged');
 				}
 			}else {
@@ -153,7 +121,8 @@ _.extend(Backbone.Collection.prototype, {
 				});
 				var that = this;
 				_.extend(options, {
-					remove: !this.pagination.cache,
+					//infinite mode
+					remove: !(this.pagination.mode === 'infinite'),
 					success: function(){
 						that.trigger('pagination:pageChanged');
 					}

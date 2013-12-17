@@ -22,8 +22,8 @@ Application.Widget.register('Paginator', function(){
 			if(!this.targetCollection || !this.targetCollection.pagination)
 				throw new Error('DEV::Widget.Paginator::You must pass in a pagination enabled collection to use the paginator UI.');
 
-			if(this.targetCollection.pagination.cache)
-				throw new Error('DEV::Widget.Paginator::You should NOT use a page cache enabled collection with the paginator UI.');
+			if(this.targetCollection.pagination.mode === 'infinite')
+				throw new Error('DEV::Widget.Paginator::You should NOT need the paginator UI with a collection that is in mode:infinite.');
 
 			this.model = new Backbone.Model({
 				pages: [{current: 1}],
