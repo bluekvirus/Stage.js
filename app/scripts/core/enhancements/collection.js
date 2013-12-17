@@ -85,6 +85,30 @@ _.extend(Backbone.Collection.prototype, {
 				this._cachedResponse = _.reject(this._cachedResponse, function(datum){
 					if(ids[datum[idAttribute]]) return true;
 				});
+			},
+			//similar to parse but does more...
+			this.prepDataFromResponse = function(response, parse){
+				var data = (parse && parse(response)) || response;
+				this._cachedResponse = data;
+				var page = this.currentPage || 1;
+				data = data.slice((page-1) * this.pagination.pageSize, page * this.pagination.pageSize);
+				this.prepDataEnd();
+				return data;
+			}
+		}else if(this.pagination.mode === 'server'){
+			//similar to parse but does more...
+			this.prepDataFromResponse = function(response, parse){
+				var data = (parse && parse(response)) || response;
+				if(response.total)
+					this.totalRecords = response.total;
+				else
+					throw new Error('DEV::App.API::You need the server to return a response.total field to support pagination mode:server...');
+				return data;
+			}
+		}else {
+			this.prepDataFromResponse = function(response, parse){
+				var data = (parse && parse(response)) || response;
+				return data;
 			}
 		}
 		

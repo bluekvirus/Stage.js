@@ -43,7 +43,7 @@
  *   		
  *   		+ (these will be supported like new options which in turn affect the prepared ajax options)  		
  *   		model: the model to save the result in; - will trigger a api:data:preped event
- *   		(caution) collection: the collection to save the result in; - will trigger a api:data:preped event - If you are using a direct API call instead of collection.fetch(), do NOT pass-in options.collection with pagination enabled!
+ *   		(caution) collection: the collection to save the result in; - will trigger a api:data:preped event - If you are using a direct API call instead of collection.fetch(), the pagination will be ignored!!
  *   		success: function(parsed data, model/collection, response, options) - optional customized cb, this will be called after parse in the prepared success callback;
  * 
  * 			Note that:
@@ -176,32 +176,8 @@
 				contentType: 'application/json',
 				processData: false,
 				success: function(response, status, jqXHR){
-					//0. process the data:
-					if(parse) data = parse(response, options);
-					else data = response;
-
-					//1. take care of the collection pagination setup
-					//We put it here since options.model/options.collection is set by Backbone.sync (our version), and only in collection:fetch do we set options.collection
-					//Warning:: Do NOT pass in an options.collection with pagination enabled during a direct API.call invocation, use collection.load/fetch instead.  
-					if(options.collection && options.collection.pagination){
-						var collection = options.collection;
-		        		switch(collection.pagination.mode){
-		        			case 'client':
-				        		collection._cachedResponse = data || [];
-				        		collection.totalRecords = collection._cachedResponse.length;
-				        		var page = collection.currentPage || 1;
-				        		data = data.slice((page-1) * collection.pagination.pageSize, page * collection.pagination.pageSize);
-				        		collection.prepDataEnd(); 
-				        		//return only one page of data if the collection is current set to paginate in client mode.
-				        	case 'server':
-				        		if(response.total)
-				        			collection.totalRecords = response.total;
-				        		else
-				        			throw new Error('DEV::App.API::You need the server to return a response.total field to support pagination mode:server...');
-				        			//Note that, in cached server mode (e.g like 'infinity', we don't use this totalRecord at all, so the server doesn't have to return it)				        	
-						        break;
-		        		}						
-					}
+					var target = options.model || options.collection;
+					var data = (target && target.prepDataFromResponse && target.prepDataFromResponse(response, parse)) || (parse && parse(response)) || response;
 
 					//A. indirect API.call invocation:
 					if(options._backbonesync){ //see core/env.js - Backbone.sync override.
@@ -209,15 +185,15 @@
 						options.success(data);
 						//note that this will ensure the success() option used in .save, .fecth, .destroy stays the way backbone defined it. 
 					}else {
+
 					//B. direct API.call invocation:
-						//2. set data into model/collection (model will always have higher priority over collection)
-						var target = options.model || options.collection;
+						//B.1 set data into model/collection (model will always have higher priority over collection)
 						if(target && data) {
 							target.set(data, options);
 							target.trigger('app:api:data-prepared'); //only triggered if you are using the API.call directly
 						}
 
-						//3. call the program supplied success callback 
+						//B.2 call the program supplied success callback 
 						if(options.success){
 							options.success(data, target, response, options);//only called if you are using the API.call directly
 							//note that, this callback is different than the one you use with model/collection .fetch, .save and .destroy.

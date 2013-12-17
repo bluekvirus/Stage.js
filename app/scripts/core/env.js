@@ -103,9 +103,9 @@ Backbone.sync = (function(){
 			}
 		}
 
-	//collection: fetch
+    //collection: fetch
     }else {
-		options.collection = model; //for collection's data prep-ing with pagination see core/modules/api.js
+      options.collection = model; //for collection's data prep-ing with pagination see core/enhancements/collection.js
     }
     //internal usage only, signal the Application.API.call that this is coming from a .fetch .save or .destroy so the success callback can be sorted properly.
     //note that in such a case, the success callback is of the original backbone defined form.
