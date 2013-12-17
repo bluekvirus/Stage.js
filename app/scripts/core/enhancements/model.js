@@ -2,6 +2,7 @@
  * This is the Backbone.Model enhancements.
  *
  * 1. +bindToEntity/getEntityName to hookup with Application.API through Backbone.sync override (core/env.js)
+ * 2. +load() [mirroring fetch() only] to be consistent with collections load() method.
  *
  * @author Tim.Liu
  * @created 2013.12.12
@@ -20,6 +21,10 @@ _.extend(Backbone.Model.prototype, {
 		else
 			throw new Error('DEV::Enhancement.Collection::You have already bound this model to entity ' + this.getEntityName());
 		return this;
+	},
+
+	load: function(options){
+		return this.fetch(options);
 	}
 
 });

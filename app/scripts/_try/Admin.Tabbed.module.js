@@ -185,7 +185,9 @@
 								fn: function($action){
 									console.log('hey! nothing happened');
 								}
-							}
+							}, {
+								name: 'refresh',
+							}, 'reset'
 						]
 					};					
 					_.extend(grid.actions, {
@@ -200,7 +202,7 @@
 							this.trigger('grid:show-form', view);
 							this.listenToOnce(view, 'form:record-saved', function(){
 								view.close();
-								grid.refresh({reset: true});
+								grid.refresh();
 							});
 						},
 

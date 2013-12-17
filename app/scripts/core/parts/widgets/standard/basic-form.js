@@ -31,6 +31,17 @@
  * 4. record [optional]
  * as a Backbone.Model used to submit changes upon save.
  *
+ * 
+ * Default Actions Impl
+ * --------------------
+ * 1. cancel: this will just close the form
+ *
+ * if you pass in a record 3 more actions will be implemented for you
+ * 2. save: this will create/update the record model to server.
+ * 3. reset: this will reset the form according to the record model's attributes
+ * 4. refresh: this will reload the record model from server.
+ *
+ * Name your buttons to the above 4 names to pick up the default action implementations.
  *
  * @author Tim.Liu
  * @created 2013.12.14
@@ -51,6 +62,8 @@ Application.Widget.register('BasicForm', function(){
 			this.options = _.extend({
 				appendTo: '[container="editors"]',
 			}, options);
+
+			//buttons:
 			options.buttons = options.buttons || ['save', 'cancel'];
 			var btns = _.map(options.buttons, function(btn){
 				if(_.isString(btn)){
@@ -70,19 +83,36 @@ Application.Widget.register('BasicForm', function(){
 				}
 			}, this);
 			this.collection = new Backbone.Collection(btns);
+
+			//if init with a data model record (note that we do NOT use model directly here to avoid the backbone-model->view linkage)
+			//we give it 2 default action implementations. save/refresh
 			if(this.options.record){
+				var that = this;
 				_.extend(this.actions, {
+					//default save action impl.
 					save: function(){
 						var error = this.validate(true);
 						if(error) return;
-						var that = this;
 						this.options.record.set(this.getValues());
 						this.options.record.save().done(function(){
 							that.trigger('form:record-saved');
 						});
+					},
+					//default refresh action impl.
+					refresh: function(){
+						this.options.record.load({
+							success: function(record){
+								that.setValues(record.attributes);								
+							}
+						});
+					},
+					//default reset action impl.
+					reset: function(){
+						this.setValues(this.options.data);
 					}
 				});
 			}
+			//default cancel action impl
 			_.extend(this.actions, {
 				cancel: function(){
 					this.close();
