@@ -167,6 +167,12 @@
 					};
 					this.addTab(grid);
 					this.listenTo(grid, 'grid:show-form', function(form){
+						form.openEffect({
+							name: 'slide',
+							options: {
+								direction: 'up'
+							}
+						});
 						this.details.show(form);
 					});
 					var formOpt = {
@@ -268,6 +274,6 @@
 
 Template.extend('custom-module-admin-tabbed-tpl',
 [
+	'<div region="tabs"></div>',
 	'<div region="details"></div>',
-	'<div region="tabs"></div>'
 ]);

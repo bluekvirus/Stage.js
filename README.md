@@ -1,17 +1,28 @@
 The Framework
 =============
+For building modern web application with many contexts (including a data-heavy administration context).
+
+
+What's next?
+------------
+1. Add general ajax/data op progress bar on top (nprogress) as application util
+2. Remove noty2 and replace it with a new messaging system + prompt(through colorbox inline mode) as application util
+3. Add a new 2-lvl accordion menu widget
+4. Leave nothing but titile <---> message, help on the banner, move user above the left menu accordion
+
 
 Current Version
 ---------------
-0.11.x
+0.12.x
+
 
 Core Concepts
 -------------
-DataUnit(model,collection), Context(with sub-modules), Part(editor, widget) and Enhancements(to view and collection).
+API(remote data interfacing), Context(with sub-modules), Part(editor, widget) and Enhancements(to view and collection/model).
 
 With
 
-Application(container + context switch + module router) and Utils(theme, i18n, user-session, downloader, script patcher, alerts...)
+Application(container + context switch + module router) and Utils(theme-roller, i18n, user-session, downloader, script patcher, alerts...)
 
 And
 
@@ -120,6 +131,7 @@ Warning:
 2. You can **NOT** spawn from a spawned project, it will only have the build tool (and the dev support tools e.g the iconprep tool).
 
 
+
 Note on *Ghost View*
 ====================
 This is caused by removing a view's html but leaving the event listeners 'on'... Thus make sure you remove a view's html together with the event listeners by invoking the `view.close()`(Marionette) method, which will in turn invoke the `view.undelegateEvents()`(Backbone) method which will futher grab `$.off`(jQuery) to clean up the listerns.
@@ -131,6 +143,7 @@ In other words, if you `show()` an old view without re-`new()` it, you will have
 Also, please use the `events:{...}` block to register listeners in a view definition, stop using `$.on()` in case you forgot to use `$.off()`.
 
 If you have to use `$.on()` use it in a delegated form (on a parent dom object).
+
 
 
 Note on IE(6-9)
