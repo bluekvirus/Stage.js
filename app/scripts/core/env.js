@@ -135,4 +135,14 @@ Backbone.Collection.prototype.create = function(attributes, idAttributeToRemove)
 	return model;
 };
 
+//1-6 Configure NProgress.configure
+NProgress.configure({
+  //minimum: 0.1
+  //template: "<div class='....'>...</div>"
+  //ease: 'ease', speed: 500
+  //trickle: false
+  //trickleRate: 0.02, trickleSpeed: 800
+  //showSpinner: false
+});
+
 
