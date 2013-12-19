@@ -71,6 +71,7 @@
   "modernizr": "bower_components/modernizr",
   "momentjs": "bower_components/momentjs/moment.js",
   "noty": "bower_components/noty",
+  "nprogress": "bower_components/nprogress/nprogress.js",
   "raphael": "bower_components/raphael/raphael.js",
   "selectivizr": "bower_components/selectivizr",
   "socket.io-client": "bower_components/socket.io-client",

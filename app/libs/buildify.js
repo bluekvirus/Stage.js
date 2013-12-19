@@ -160,6 +160,7 @@ buildify.task({
 		var list = [
 			'modernizr',
 			'jquery',
+			'jquery.transit',
 			'jquery.cookie',
 			'jquery-ui',
 			'jquery-serializeForm',
@@ -179,6 +180,7 @@ buildify.task({
 			'colorbox',
 			'noty',
 			'spin.js',
+			'nprogress',
 		];
 		combine(list, 'base-libs');
 	}
@@ -191,6 +193,7 @@ buildify.task({
 		var list = [
 			'modernizr',
 			'jquery2', //version 2+
+			'jquery.transit',
 			'jquery.cookie',
 			'jquery-ui',
 			'jquery-serializeForm',
@@ -210,6 +213,7 @@ buildify.task({
 			'colorbox',
 			'noty',
 			'spin.js',
+			'nprogress',
 		];
 		combine(list, 'base-libs-latest');
 	}

@@ -14,7 +14,33 @@
 //2. Style Components
 //====================
 //Panels
+
+//NProgress (progress bar)
+#nprogress {
+  
+  .bar {
+    background-color: @color-black;
+  }
+
+  .peg {
+    box-shadow: 0 0 8px @color-black, 0 0 5px @color-black;
+  }
+
+  .spinner-icon {
+    border-top-color:  @color-black;
+    border-left-color: @color-black;
+  }
+
+  //spinner position/show-hide
+  .spinner {
+    top: 15px;
+    right: 15px;
+  }
+
+}
+
 //Alters & Messages
+
 //Tooltips & Popups
 .tooltip-inner {
   padding: 4px 6px;
@@ -51,6 +77,11 @@
   border-bottom: 1px dashed @color-sand;
 }
 
+//Radio n Checkbox(es)
+input[type="checkbox"], input[type="radio"] {
+  margin-top: 2px;
+}
+
 //Table td
 .td-shrink {
   //auto td shrink;
@@ -75,11 +106,6 @@
   &-bottom {
     border-bottom: 1px solid @color-stone;
   } 
-}
-
-/*Radio n Checkbox(es)*/
-input[type="checkbox"], input[type="radio"] {
-  margin-top: 2px;
 }
 
 
