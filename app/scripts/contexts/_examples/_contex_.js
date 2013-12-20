@@ -18,7 +18,6 @@
 
 		return {
 			requireLogin: true, //if showing your context in app.body region requires the user to have logged in.
-			factory: '/*'Your Factory name defined.'*/', //name registered by the factory module under modules/special/factory/... for UI sub-modules of this context.
 			
 			//the default sub UI module to show when /#navigate/:module can't find a sub module registered under this context.
 			//if you DON'T need to support region switches by route (like in the Admin context), DELETE the defaults block below.
@@ -32,12 +31,12 @@
 				Default: Backbone.Marionette.Layout.extend({
 					template: '#application-context-/*'Your Context name here.'*/-tpl',
 					className: '',
-					regions: {
-						/*Your region names*/: '[region=/*'Region name defined down below.'*/]',
+					initialize: function(options){
+						this.autoDetectRegions();
 					},
 					onShow: function(){
+						this.fakeRegions(); - fake content in the regions (Layout object only).
 						//some code here...
-						//this.fakeRegions(); - fake content in the regions (Layout object only).
 					}
 				})
 			}

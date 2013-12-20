@@ -32,7 +32,12 @@
             </script>
         -->     
 
-
+        <!--
+            <script> attributes:
+                lib: This is for the spawn tool to group the libs.
+                non-core: This is for the build tool to ignore the script while building production all-in-one js.
+                patch=*: This is for the build tool to locate the point where it can put in patched script as if this page is loaded through browser.
+        -->
         <!--Libs-->
         <script type="text/javascript" src="libs/dist/base-libs-latest.js" lib="libs"></script>
         
@@ -82,18 +87,18 @@
         <script type="text/javascript" src="scripts/core/parts/widgets/plugin/md-content.js"></script>
 
         <!--Contexts/Submodules-->
-        <script type="text/javascript" src="scripts/contexts/shared/context.js" lib="N/A"></script>
+        <script type="text/javascript" src="scripts/contexts/shared/index.js" lib="N/A"></script>
         <script type="text/javascript" src="scripts/contexts/shared/banner.js"></script>
         <script type="text/javascript" src="scripts/contexts/shared/footer.js"></script>
-        <script type="text/javascript" src="scripts/contexts/login/context.js"></script>
+        <script type="text/javascript" src="scripts/contexts/login/index.js"></script>
         <script type="text/javascript" src="scripts/contexts/login/account.js"></script>
-        <script type="text/javascript" src="scripts/contexts/admin/context.js"></script>
+        <script type="text/javascript" src="scripts/contexts/admin/index.js"></script>
         <script type="text/javascript" src="scripts/contexts/admin/menu.js"></script>
         <script type="text/javascript" src="scripts/contexts/admin/dashboard.js"></script>
         <!--Need to refine admin factory using the new 'Formless' concept-->
         
         <!--
-        <script type="text/javascript" src="scripts/contexts/_dev/context.js" non-core="true"></script>
+        <script type="text/javascript" src="scripts/contexts/_dev/index.js" non-core="true"></script>
         <script type="text/javascript" src="scripts/contexts/_dev/servermodelgen.js" non-core="true"></script>
         <script type="text/javascript" src="scripts/contexts/_dev/svgiconpreview.js" non-core="true"></script>
         -->

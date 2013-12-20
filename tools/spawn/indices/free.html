@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <!-- Theme detector see core/utils/theme-roller.js or core.js -->
+        <link rel="stylesheet" id="theme-roller">
+
+    </head>
+    <body>
+
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+        <!-- This rolls with the theme roller -->
+        <div class="application-container"></div>
+       
+        <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. 
+            <script>
+                var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
+                (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+                g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+                s.parentNode.insertBefore(g,s)}(document,'script'));
+            </script>
+        -->     
+
+        <!--Libs-->
+        <script type="text/javascript" src="libs/dist/base-libs-latest.js" lib="libs"></script>
+        <script type="text/javascript" src="libs/bower_components/noty/dist/themes/default.js"></script>
+
+        <!--Core-->
+        <script type="text/javascript" src="scripts/core/env.js" lib="core"></script>
+        <script type="text/javascript" src="scripts/core/enhancements/model.js"></script>
+        <script type="text/javascript" src="scripts/core/enhancements/collection.js"></script>
+        <script type="text/javascript" src="scripts/core/enhancements/view.js"></script>
+        <script type="text/javascript" src="scripts/core/utils/i18n.js"></script>
+        <script type="text/javascript" src="scripts/core/utils/alerts.js"></script>
+        <script type="text/javascript" src="scripts/core/utils/theme-roller.js"></script>
+        <script type="text/javascript" src="scripts/core/utils/script-loader.js"></script>
+        <script type="text/javascript" src="scripts/core/utils/ajax-patch.js"></script>
+        <script type="text/javascript" src="scripts/core/utils/ajax-events.js"></script>
+        <script type="text/javascript" src="scripts/core/utils/downloader.js"></script>
+        <script type="text/javascript" src="scripts/core/utils/user-session.js"></script>
+        <script type="text/javascript" src="scripts/core/modules/api.js"></script>
+        <script type="text/javascript" src="scripts/core/modules/contexts.js"></script>
+        <script type="text/javascript" src="scripts/core/modules/parts.js"></script>
+        <script type="text/javascript" src="scripts/core/main.js"></script>
+
+        <!--Editors-->
+        <script type="text/javascript" src="scripts/core/parts/editors/basic/editors.js"></script>
+        <script type="text/javascript" src="scripts/core/parts/editors/basic/validations.js"></script>
+        <script type="text/javascript" src="scripts/core/parts/editors/enhanced/select/selector-flatten.js"></script>
+        <script type="text/javascript" src="scripts/core/parts/editors/enhanced/select/selector-hover.js"></script>
+
+        <!--Widgets-->
+        <script type="text/javascript" src="scripts/core/parts/widgets/standard/property-grid.js"></script>
+        <script type="text/javascript" src="scripts/core/parts/widgets/standard/paginator.js"></script>
+        <script type="text/javascript" src="scripts/core/parts/widgets/standard/toolbelt.js"></script>
+        <script type="text/javascript" src="scripts/core/parts/widgets/standard/basic-form.js"></script>
+        <script type="text/javascript" src="scripts/core/parts/widgets/standard/datagrid2/index.js"></script>
+        <script type="text/javascript" src="scripts/core/parts/widgets/standard/datagrid2/cells/string.js"></script>
+        <script type="text/javascript" src="scripts/core/parts/widgets/standard/datagrid2/headers/string.js"></script>
+        <script type="text/javascript" src="scripts/core/parts/widgets/standard/datagrid2/cells/action.js"></script>
+        <script type="text/javascript" src="scripts/core/parts/widgets/standard/datagrid2/cells/select-all.js"></script>
+        <script type="text/javascript" src="scripts/core/parts/widgets/standard/datagrid2/headers/select-all.js"></script>
+        <script type="text/javascript" src="scripts/core/parts/widgets/plugin/md-content.js"></script>
+
+        <!--Contexts/Submodules-->
+        <script type="text/javascript" src="scripts/contexts/shared/context.js" lib="N/A"></script>
+        <script type="text/javascript" src="scripts/contexts/shared/banner.js"></script>
+        <script type="text/javascript" src="scripts/contexts/shared/footer.js"></script>
+        <script type="text/javascript" src="scripts/contexts/login/context.js"></script>
+        <script type="text/javascript" src="scripts/contexts/login/account.js"></script>
+
+    <!-- patch scripts autoloader see env.js, also used in build for marking a position to inject auto-loaded scripts -->
+        <script type="text/javascript" patch="*">
+            Application.patchScripts();
+        </script>
+    <!-- end of scripts autoloader -->
+
+    </body>
+</html>
