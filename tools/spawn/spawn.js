@@ -79,13 +79,14 @@ function loadIndexHTML(target){
 					return content + ';' + $script.html() + ';';
 				});
 			}
+			if($script.attr('lib')) $script.after('<div replacewithlib="' + currentJS + '.js"></div>');//mark where to put the combined lib back.
 			$script.remove();
 		});
 		srcMap[currentJS + '.js'] = srcCache.getContent();
 		delete srcMap['N/A.js'];
 
 		_.each(_.keys(srcMap).reverse(), function(libName){
-			$('body .application-container').after('\n\t\t<script src="scripts/' + libName + '"></script>'); //Warning::We default the dev libs path to be under /scripts root.
+			$('body').find('[replacewithlib="' + libName + '"]').replaceWith('\n\t\t<script src="scripts/' + libName + '"></script>'); //Warning::We default the dev libs path to be under /scripts root.
 		});
 		content = $.html();
 

@@ -181,6 +181,7 @@ buildify.task({
 			'noty',
 			'spin.js',
 			'nprogress',
+			'raphael'
 		];
 		combine(list, 'base-libs');
 	}
@@ -214,6 +215,7 @@ buildify.task({
 			'noty',
 			'spin.js',
 			'nprogress',
+			'raphael'
 		];
 		combine(list, 'base-libs-latest');
 	}

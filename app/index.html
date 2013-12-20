@@ -34,24 +34,30 @@
 
         <!--
             <script> attributes:
-                lib: This is for the spawn tool to group the libs.
+                lib: This is for the spawn tool to group the libs in the spawned project.
                 non-core: This is for the build tool to ignore the script while building production all-in-one js.
                 patch=*: This is for the build tool to locate the point where it can put in patched script as if this page is loaded through browser.
         -->
-        <!--Libs-->
+        <!--Base-->
         <script type="text/javascript" src="libs/dist/base-libs-latest.js" lib="libs"></script>
+        <script type="text/javascript" src="libs/bower_components/noty/dist/themes/default.js"></script><!--Will be removed with noty2 later-->
+        <script type="text/javascript">
+            window.Application = new Backbone.Marionette.Application();
+        </script>        
         
-        <script type="text/javascript" src="libs/bower_components/noty/dist/themes/default.js"></script>
+        <!--Project Spec Libs-->
         <script type="text/javascript" src="libs/bower_components/jquery-file-upload/js/jquery.fileupload.js"></script>
         <script type="text/javascript" src="libs/bower_components/jquery.tablesorter/js/jquery.tablesorter.js"></script>
-        <script type="text/javascript" src="libs/bower_components/raphael/raphael.js"></script>
+        <script type="text/javascript" src="libs/bower_components/highcharts/highcharts-all.js"></script>
 
-        <!--Core-->
+        <!--APP Core-->
+        <script type="text/javascript" src="scripts/config.js" lib="N/A"></script>
         <script type="text/javascript" src="scripts/core/env.js" lib="core"></script>
-        <script type="text/javascript" src="scripts/core/enhancements/model.js"></script>
         <script type="text/javascript" src="scripts/core/enhancements/collection.js"></script>
+        <script type="text/javascript" src="scripts/core/enhancements/model.js"></script>
         <script type="text/javascript" src="scripts/core/enhancements/view.js"></script>
         <script type="text/javascript" src="scripts/core/utils/i18n.js"></script>
+        <script type="text/javascript" src="scripts/core/utils/template-builder.js"></script>
         <script type="text/javascript" src="scripts/core/utils/alerts.js"></script>
         <script type="text/javascript" src="scripts/core/utils/theme-roller.js"></script>
         <script type="text/javascript" src="scripts/core/utils/script-loader.js"></script>
@@ -103,11 +109,11 @@
         <script type="text/javascript" src="scripts/contexts/_dev/svgiconpreview.js" non-core="true"></script>
         -->
 
-    <!-- patch scripts autoloader see env.js, also used in build for marking a position to inject auto-loaded scripts -->
+        <!-- patch scripts autoloader see env.js, also used in build for marking a position to inject auto-loaded scripts -->
         <script type="text/javascript" patch="*">
             Application.patchScripts();
         </script>
-    <!-- end of scripts autoloader -->
+        <!-- end of scripts autoloader -->
 
     </body>
 </html>
