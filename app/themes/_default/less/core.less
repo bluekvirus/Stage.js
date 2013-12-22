@@ -75,9 +75,19 @@
 }
 
 //Forms
-.form-horizontal .control-label {
-  border-bottom: 1px dashed @color-sand;
+.form-horizontal {
+  .control-label {
+    border-bottom: 1px dashed @color-sand;
+  }  
+  .control-group {
+    margin-bottom: 12px;
+  }
 }
+
+.input-error {
+  font-size: @baseFontSize;
+}
+
 
 //Radio n Checkbox(es)
 input[type="checkbox"], input[type="radio"] {

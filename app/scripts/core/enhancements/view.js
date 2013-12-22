@@ -2,15 +2,15 @@
  * Backbone.Marionette View Object Enhancements
  * 
  * component opt-ins: (use in component initialize func)
- * 1. +Action Tag listener mechanisms - View.
- * 2. +UI Locking support to view regions (without Application scope total lockdown atm...) - Layout. (+ Region.open enhancement)
+ * 1. +Action Tag listener mechanisms - View. (ui locks [2] is automatically activated for you)
+ * 2. +UI Locking support to view regions (without Application scope total lockdown atm...) - View. (+ Region.open enhancement)
  * 3. +View Region/UI auto-detects + optional fake content - Layout.
  * 4. +Window resize awareness - View.
  * 5. +SVG canvas support - View.
  * 6. +Tab layout support - View. 
  * 7. +Auto region resize evenly. - Layout.
  * 8. +Editors Activation - View.
- * 9. +Enable Form (with +addFormPart(view)) - View.
+ * 9. +Enable Form (with +addFormPart(view)) - View. (will call activateEditors() [8] for you)
  * 10. +Enable Tooltips - View.  
  * 
  * planned:
@@ -48,6 +48,8 @@
 _.extend(Backbone.Marionette.View.prototype, {
 
 	enableActionTags: function(uiName, passOn){ //the uiName is just there to output meaningful dev msg if some actions haven't been implemented.
+		this.enableUILocks();
+
 		if(_.isBoolean(uiName)){
 			passOn = uiName;
 			uiName = '';
@@ -62,6 +64,7 @@ _.extend(Backbone.Marionette.View.prototype, {
 		this._uiDEVName = uiName || 'UNKNOWN.View';
 
 		this._doAction = function(e){
+			if(this.isUILocked()) return; //check on the general lock first (not per-region locks)
 			var $el = $(e.currentTarget);
 			var action = $el.attr('action') || 'UNKNOWN';
 
@@ -103,14 +106,11 @@ _.extend(Backbone.Marionette.View.prototype, {
 _.extend(Backbone.Marionette.View.prototype, {
 	//only for layouts
 	enableUILocks: function(){
-		if(this.regions){
-			this._uilocks = _.reduce(this.regions, function(memo, val, key, list){
-				memo[key] = false;
-				return memo;
-			}, {_all: false});
-		}else {
-			throw new Error('DEV::View::UI locks can only be applied to Layout view objects with valid regions...');
-		}
+		//collect valid regions besides _all
+		this._uilocks = _.reduce(this.regions, function(memo, val, key, list){
+			memo[key] = false;
+			return memo;
+		}, {_all: false});
 
 		//region, caller are optional
 		this.lockUI = function(region, caller){
@@ -154,7 +154,7 @@ _.extend(Backbone.Marionette.View.prototype, {
 			if(!region)
 				region = '_all';
 			else
-				if(!this.regions[region])
+				if(!this.regions || !this.regions[region])
 					throw new Error('DEV::View UI Locks::This region does NOT exist - ' + region);
 			return region;
 		};
@@ -517,7 +517,10 @@ _.extend(Backbone.Marionette.View.prototype, {
  * No setVal getVal
  * ----------------
  * This is because we don't permit co-op between form parts, so there is no short-cut for getting/setting single editor/field value.
- * 
+ *
+ * Pass in activateEditors options
+ * -------------------------------
+ * You can mix enableForm's options with activateEditors' options, so the view will be rendered with a starting set of editors and the ability to add more as form parts.
  */
 
 _.extend(Backbone.Marionette.View.prototype, {
@@ -527,7 +530,10 @@ _.extend(Backbone.Marionette.View.prototype, {
 		//this.tagName = 'form'; - this has no effect, do it in init.options.
 		this.template = options.template || this.template || '#_blank';
 		//0. addFormPart
-		this.parts = this.parts || [];
+		this.parts = this.parts || options.parts || [];
+		this.listenTo(this, 'render', function(){
+			this.activateEditors(options);
+		});
 		this.addFormPart = function(view, opt){
 			this.parts.push(view);
 			opt = opt || {};

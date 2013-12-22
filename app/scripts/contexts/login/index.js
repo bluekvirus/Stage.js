@@ -11,7 +11,7 @@
 						this.autoDetectRegions();
 					},
 					onShow: function(){
-						this.form.show(new context.Account.View.Default());
+						this.form.show(new context.Form.View.Default());
 					}
 				})
 			}

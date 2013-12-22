@@ -295,6 +295,6 @@ Template.extend('editor-Basic-tpl', [
 
 		//msg & help
 		'<span class="help-block" style="margin-bottom:0"><small>{{help}}</small></span>',
-		'<span class="help-block"><strong ui="msg">{{msg}}</strong></span>',
+		'<span class="help-block input-error"><strong ui="msg">{{msg}}</strong></span>',
 	'</div>'
 ]);
