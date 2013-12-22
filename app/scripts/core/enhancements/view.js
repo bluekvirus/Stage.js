@@ -32,7 +32,7 @@
  * 		1. add action tags to html template -> e.g <div ... action="method name or *:event name"></div> 
  * 		2. implement the action method name in UI definition body's actions{} object. 
  * 		functions under actions{} are invoked with 'this' as scope (the view object).
- * 		functions under actions{} are called with a single param ($action) which is a jQuery object referencing the action tag.
+ * 		functions under actions{} are called with a 2 params ($action, e) which is a jQuery object referencing the action tag and the jQuery prepared event object, use e.originalEvent to get the DOM one.
  *
  * Options
  * -------
@@ -40,10 +40,12 @@
  * 2. passOn - [false] this is to let the clicking event of action tags bubble up if an action listener is not found. 
  *
  * Note:
- * We removed _.bind() altogether from the enableActionTags() function and use Function.apply(scope, args) instead for listener invocation to avoid actions{} methods binding problem.
+ * A. We removed _.bind() altogether from the enableActionTags() function and use Function.apply(scope, args) instead for listener invocation to avoid actions{} methods binding problem.
  * Functions under actions will only be bound ONCE to the first instance of the view definition, since _.bind() can not rebind functions that were already bound, other instances of
  * the view prototype will have all the action listeners bound to the wrong view object. This holds true to all nested functions, if you assign the bound version of the function back to itself
  * e.g. this.nest.func = _.bind(this.nest.func, this); - Do NOT do this in initialize()/constructor()!! Use Function.apply() for invocation instead!!!
+ *
+ * B. We only do e.stopPropagation for you, if you need e.preventDefault(), do it yourself in the action impl;
  */
 _.extend(Backbone.Marionette.View.prototype, {
 
@@ -79,7 +81,7 @@ _.extend(Backbone.Marionette.View.prototype, {
 			var doer = this.actions[action];
 			if(doer) {
 				e.stopPropagation(); //Important::This is to prevent confusing the parent view's action tag listeners.
-				doer.apply(this, [$el]); //use 'this' view object as scope when applying the action listeners.
+				doer.apply(this, [$el, e]); //use 'this' view object as scope when applying the action listeners.
 			}else {
 				if(passOn){
 					return;
@@ -202,6 +204,11 @@ _.extend(Backbone.Marionette.View.prototype, {
 			};
 		});
 		this.addRegions(this.regions);
+		this.listenTo(this, 'render', function(){
+			_.each(this.regions, function(selector, region){
+				this[region].ensureEl();
+			},this);
+		});
 	},
 
 	//set the opening effect of this view if shown by a region.

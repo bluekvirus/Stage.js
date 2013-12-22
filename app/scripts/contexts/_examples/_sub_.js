@@ -26,8 +26,8 @@
 				className: '',
 
 				initialize: function(options){
-					//this.enableUILocks(); - + lockUI(region)/unlockUI()/isUILocked() (Layout object only).
-					this.enableActionTags('Context./*'Your context name.'*/./*'Your sub module name.'*/'); //enable the action tags (attr. action=func)
+					//this.enableUILocks(); - + lockUI(region)/unlockUI()/isUILocked() (already included if use enableActionTags()).
+					this.enableActionTags('/*'Your context name.'*/./*'Your sub module name.'*/'); //enable the action tags (attr. action=func)
 					//this.hookUpWindowResize(); - + view:resized event and this.onWindowResize()
 				},
 
