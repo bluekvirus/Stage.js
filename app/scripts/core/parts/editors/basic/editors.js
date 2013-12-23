@@ -141,11 +141,12 @@ Application.Editor.register('Basic', function(){
 							}else {
 								error = (Application.Editor.rules[validator.rule] && Application.Editor.rules[validator.rule](validator.options, this.getVal(), this.parentCt));
 							}
-							if(show) {
-								this._followup(error);
-							}
-							return error;
+							if(!_.isEmpty(error)) break;
 						}
+						if(show) {
+							this._followup(error);
+						}
+						return error;
 					}
 				};
 				//internal helper function to group identical process (error -> eagerly validated)
