@@ -29,11 +29,10 @@ module.exports = {
 			_try: {}, //autoload scripts - usually patches after dist built
 			'app.min.js': true, //!!Hardcoded path see - loadIndexHTML() below;
 			//'app.js': false,
-			'config.js': 'app/scripts/config.js' //-non minified or copied
 		},
 		static: {
 			menu: {
-				'menu.json': 'app/static/menu/menu.json'
+				'menu.json': 'app/static/admin/menu.json'
 			},
 			resources: 'app/static/resources'
 		},
