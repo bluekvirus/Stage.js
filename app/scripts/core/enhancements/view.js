@@ -66,7 +66,11 @@ _.extend(Backbone.Marionette.View.prototype, {
 		this._uiDEVName = uiName || 'UNKNOWN.View';
 
 		this._doAction = function(e){
-			if(this.isUILocked()) return; //check on the general lock first (not per-region locks)
+			if(this.isUILocked()) {
+				e.stopPropagation();
+				e.preventDefault();
+				return; //check on the general lock first (not per-region locks)
+			}
 			var $el = $(e.currentTarget);
 			var action = $el.attr('action') || 'UNKNOWN';
 

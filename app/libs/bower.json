@@ -41,7 +41,6 @@
     "uri.js": "~1.11.2",
     "bootstrap2": "bootstrap#2.3.2",
     "bootstrap3": "bootstrap#~3.0.0",
-    "highcharts": "~3.0.5",
     "jquery.terminal": "~0.7.7",
     "codemirror": "*",
     "socket.io-client": "*",
@@ -52,6 +51,7 @@
     "momentjs": "*",
     "handlebars": "*",
     "selectivizr": "~1.0.2",
-    "nprogress": "~0.1.2"
+    "nprogress": "~0.1.2",
+    "highcharts.com": "~3.0.7"
   }
 }
