@@ -32,7 +32,6 @@
     "jquery2": "jquery#~2.0.3",
     "marked": "*",
     "modernizr": "*",
-    "noty": "*",
     "raphael": "*",
     "spin.js": "*",
     "store.js": "*",

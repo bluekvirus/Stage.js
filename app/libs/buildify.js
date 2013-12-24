@@ -18,7 +18,7 @@ ncp.limit = 16;
 
 buildify.task({
 	name: 'fix-libs',
-	depends: ['uri-js', 'noty', 'spin-js', 'min'],
+	depends: ['uri-js', /*'noty', */'spin-js', 'min'],
 	task: function(){}
 });
 
@@ -178,7 +178,7 @@ buildify.task({
 			'momentjs',
 			'marked',			
 			'colorbox',
-			'noty',
+			// 'noty',
 			'spin.js',
 			'nprogress',
 			'raphael'
@@ -212,7 +212,7 @@ buildify.task({
 			'momentjs',
 			'marked',			
 			'colorbox',
-			'noty',
+			// 'noty',
 			'spin.js',
 			'nprogress',
 			'raphael'
