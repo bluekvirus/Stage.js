@@ -13,7 +13,7 @@
 	_.extend(module, {
 
 		View: {
-			Default: Backbone.Marionette.ItemView.extend({
+			Default: Backbone.Marionette.Layout.extend({
 				template: '#custom-module-shared-banner-tpl',
 				className: 'banner',
 
@@ -26,6 +26,11 @@
 						console.log('switched to context:', ctx, '- see context.shared.banner.js for menu/navi highlighting'); //ctx is the name of the context.
 					});
 					this.enableActionTags('Shared.Banner');
+					this.autoDetectRegions();
+				},
+
+				onShow: function(){
+					this.messagecount.show(new context.Notify.View.MessageCount());
 				}
 			})
 		}
@@ -52,7 +57,7 @@ Template.extend(
 			'<div class="nav-collapse collapse">',
 				'<!-- .nav, .navbar-search, .navbar-form, etc -->',
 				'<ul class="nav pull-right">',
-					'<li><a href="#"><i class="icon-envelope"></i> Message</a></li>',	
+					'<li region="messagecount"></li>',	
 					'<li><a href="#"><i class="icon-question-sign"></i> Help</a></li>',				
 				'</ul>',
 			'</div>',
