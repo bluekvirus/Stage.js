@@ -14,6 +14,20 @@
 	var context = app.Context.Shared;
 	var module = context.module('Prompt');
 
+	//dispatch various 
+	module.listenTo(app, 'app:prompt', function(opt){
+		switch(opt.type){
+			case 'confirm':
+			break;
+			case 'alert':
+			break;
+			case 'window':
+			break;
+			default: 
+			break;
+		}
+	})
+
 	_.extend(module, {
 
 		View: {

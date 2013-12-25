@@ -120,6 +120,6 @@ Template.extend(
 Template.extend(
 	'custom-module-shared-notify-message-box-item-tpl',
 	[
-		'<i class="icon-{{type}}"></i> <span>{{data.text}}</span> <span class="pull-right remove" action="remove"><i class="icon-remove"></i></span>'
+		'<i class="icon-{{type}}"></i> <span {{#is type "error"}}class="text-error"{{/is}}>{{data.text}}</span> <span class="pull-right remove" action="remove"><i class="icon-remove"></i></span>'
 	]
 );
