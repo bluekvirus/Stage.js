@@ -26,16 +26,14 @@
 						this.previewMessage(opt, _.bind(this.countMessages, this));
 					});
 					this.listenTo(this.msgQ, 'remove reset', this.countMessages);
+					this.box = new module.View.MessageBox();
 					this.listenTo(app, 'view:resized', function(){
-						this.adjustMsgBoxPosition();
-					});
+						if(this.box.shown) this.adjustMsgBoxPosition();
+					});						
 				},
 
 				onRender: function(){
 					this.countMessages();
-					//prepare msg box
-					if(this.box) this.box.close();
-					else this.box = new module.View.MessageBox();
 				},
 
 				previewMessage: function(opt, complete){
@@ -59,20 +57,22 @@
 				},
 
 				adjustMsgBoxPosition: function($anchor){
-					if(!this.box) return;
 					if($anchor) {
 						this.box.$anchor = $anchor;
 					}
 					this.box.flyTo({
 						my: 'center top',
-						at: 'center bottom+20',
+						at: 'center bottom+10',
 						of: this.box.$anchor
 					});
 				},
 
 				actions: {
 					showMessageBox: function($action){
-						this.adjustMsgBoxPosition($action);
+						if(!this.box.shown)
+							this.adjustMsgBoxPosition($action);
+						else
+							this.box.hide();
 					}
 				}
 			}),
@@ -85,19 +85,7 @@
 				}),
 				initialize: function(options){
 					this.collection = app.getMessages();
-				},
-
-				flyTo: function(options){
-					if(!this.$el){
-						$('body').append(this.render().el);
-						this.$el.hide();				
-					}
-					this.$el.show();
-					this.$el.position(options);
-				},
-
-				hide: function(){
-					this.$el.hide();
+					this.enableFreeFlow();
 				}
 			})
 

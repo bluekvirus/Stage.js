@@ -5,13 +5,14 @@
  * 1. +Action Tag listener mechanisms - View. (ui locks [2] is automatically activated for you)
  * 2. +UI Locking support to view regions (without Application scope total lockdown atm...) - View. (+ Region.open enhancement)
  * 3. +View Region/UI auto-detects + optional fake content - Layout.
- * 4. +Window resize awareness - View.
+ * 4. +Window resize awareness - View. - but usually you should be listening to app - view:resized event for window resize.
  * 5. +SVG canvas support - View.
  * 6. +Tab layout support - View. 
  * 7. +Auto region resize evenly. - Layout.
  * 8. +Editors Activation - View.
  * 9. +Enable Form (with +addFormPart(view)) - View. (will call activateEditors() [8] for you)
- * 10. +Enable Tooltips - View.  
+ * 10. +Enable Tooltips - View.
+ * 11. +Enable FreeFlow - View. This is to allow the view to fly to anywhere on screen using the $.position() jquery UI method.  
  * 
  * planned:
  * a. user action clicking statistics (use the view._uiDEVName set by enableActionTags(type.name.subname)) - type can be Context/Widget
@@ -634,6 +635,43 @@ _.extend(Backbone.Marionette.View.prototype, {
 			//will activate tooltip with specific options object - see /libs/bower_components/bootstrap[x]/docs/javascript.html#tooltips
 			this.$('[data-toggle="tooltip"]').tooltip(options);
 		});
+	}
+
+});
+
+/**
+ * Enable FreeFlow (do it in initialize())
+ *
+ * Options
+ * -------
+ * container - where to hide this view initially, this will affect the view's position when the container scrolls (up-down), the default container is 'body'
+ * 
+ */
+
+_.extend(Backbone.Marionette.View.prototype, {
+
+	enableFreeFlow: function(container){
+		if(!container) container = 'body';
+		if(_.isString(container)) container = $(container);
+		this.id = _.uniqueId('free-flow-');
+
+		this.flyTo = function(options){
+			if(!$('#' + this.id).length) {
+				this.render().$el.css('position: absolute;');
+				container.append(this.el);
+				if(this.onShow) this.onShow();
+			}
+			this.$el.show();
+			this.$el.position(options);
+			this.shown = true;
+		};
+
+		this.hide = function(){
+			this.$el.hide();
+			this.shown = false;
+		}
+
+		return this;
 	}
 
 });

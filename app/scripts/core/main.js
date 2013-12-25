@@ -92,7 +92,7 @@
 			Application.trigger('view:resized');
 		};
 		trackAppHeight();
-		$(window).on('resize', trackAppHeight);
+		$(window).on('resize', _.debounce(trackAppHeight, 200));
 		
 		if(Application.config.fullScreen){
 			$('body').css('overflow', 'hidden');
