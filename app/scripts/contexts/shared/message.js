@@ -23,20 +23,30 @@
 					this.autoDetectUIs();
 					this.msgQ = app.getMessages();
 					this.listenTo(app, 'app:message', function(opt){
-						this.previewMessage(opt);
-						this.countMessages();
+						this.previewMessage(opt, _.bind(this.countMessages, this));
 					});
 					this.listenTo(this.msgQ, 'remove reset', this.countMessages);
+					this.listenTo(app, 'view:resized', function(){
+						this.adjustMsgBoxPosition();
+					});
 				},
 
 				onRender: function(){
 					this.countMessages();
+					//prepare msg box
+					if(this.box) this.box.close();
+					else this.box = new module.View.MessageBox();
 				},
 
-				previewMessage: function(opt){
+				previewMessage: function(opt, complete){
 					if(!this.ui.msg) return;
 					this.ui.msg.html(_.string.prune(opt.data.text, 50));
-					this.ui.msg.finish().fadeIn().delay(5*1000).fadeOut(); //use finish() to cleanup the animation Q
+					if(opt.type === 'error'){ //we only highlight error msg in red.
+						this.ui.msg.addClass('text-error');
+					}else{
+						this.ui.msg.removeClass('text-error');
+					}
+					this.ui.msg.finish().fadeIn().delay(4*1000).fadeOut({complete: complete}); //use finish() to cleanup the animation Q
 				},
 
 				countMessages: function(){
@@ -48,21 +58,48 @@
 					}
 				},
 
+				adjustMsgBoxPosition: function($anchor){
+					if(!this.box) return;
+					if($anchor) {
+						this.box.$anchor = $anchor;
+					}
+					this.box.flyTo({
+						my: 'center top',
+						at: 'center bottom+20',
+						of: this.box.$anchor
+					});
+				},
+
 				actions: {
-					showMessageBox: function(){
-						console.log('TBI');
+					showMessageBox: function($action){
+						this.adjustMsgBoxPosition($action);
 					}
 				}
 			}),
 
-			// MessageBox: Backbone.Marionette.CollectionView.extend({
-			// 	itemView: Backbone.Marionette.ItemView.extend({
-			// 		template: '#custom-module-shared-notify-message-box-item-tpl'
-			// 		tag
-			// 	}),
+			MessageBox: Backbone.Marionette.CollectionView.extend({
+				className: 'message-box-ui',
+				itemView: Backbone.Marionette.ItemView.extend({
+					template: '#custom-module-shared-notify-message-box-item-tpl',
+					className: 'item'
+				}),
+				initialize: function(options){
+					this.collection = app.getMessages();
+				},
 
+				flyTo: function(options){
+					if(!this.$el){
+						$('body').append(this.render().el);
+						this.$el.hide();				
+					}
+					this.$el.show();
+					this.$el.position(options);
+				},
 
-			// })
+				hide: function(){
+					this.$el.hide();
+				}
+			})
 
 		}
 
@@ -74,7 +111,7 @@ Template.extend(
 	'custom-module-shared-notify-message-count-tpl',
 	[
 		'<span ui="msg" class="preview hide" style=""></span> ',
-		'<span action="showMessageBox" style="cursor:pointer;">',
+		'<span ui="msg-box-trigger" action="showMessageBox" style="cursor:pointer;position:relative;">',
 			'<i class="icon-envelope"></i> Message ',
 			'<i ui="count" class="count img-circle"></i>',
 		'</span>'
@@ -84,6 +121,6 @@ Template.extend(
 Template.extend(
 	'custom-module-shared-notify-message-box-item-tpl',
 	[
-		' '
+		'<i class="icon-{{type}}"></i> <span>{{data.text}}</span>'
 	]
 );

@@ -91,9 +91,10 @@
 			}
 			Application.trigger('view:resized');
 		};
+		trackAppHeight();
+		$(window).on('resize', trackAppHeight);
+		
 		if(Application.config.fullScreen){
-			trackAppHeight();
-			$(window).on('resize', trackAppHeight);
 			$('body').css('overflow', 'hidden');
 		}
 
