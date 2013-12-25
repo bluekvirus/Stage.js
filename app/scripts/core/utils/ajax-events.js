@@ -13,7 +13,7 @@
 	 */
 	$(document).ajaxSuccess(function(event, jqxhr, settings){
 		if(settings.notify)
-			Application.success();
+			Application.success('Operation Successful', '|', settings.type, settings.url.split('?')[0]);
 	});
 
 	$(document).ajaxError(function(event, jqxhr, settings, exception){
@@ -23,13 +23,7 @@
 		}catch(e){
 			var errorStr = errorStr || exception;
 		}
-		var cb = '';
-		if(exception === 'Unauthorized'){
-			cb = function(){
-				window.location.reload();
-			}
-		}
-			Application.error('Server Error', settings.type, settings.url.split('?')[0], '|', errorStr, cb);
+		Application.error(errorStr, '|', settings.type, settings.url.split('?')[0]);
 	});
 
 	$(document).ajaxStart(function() {

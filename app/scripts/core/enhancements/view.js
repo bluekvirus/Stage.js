@@ -656,8 +656,9 @@ _.extend(Backbone.Marionette.View.prototype, {
 		this.id = _.uniqueId('free-flow-');
 
 		this.flyTo = function(options){
+			// console.log($('#' + this.id));
 			if(!$('#' + this.id).length) {
-				this.render().$el.css('position: absolute;');
+				this.render().$el.attr('id', this.id).css('position', 'absolute');
 				container.append(this.el);
 				if(this.onShow) this.onShow();
 			}

@@ -20,7 +20,7 @@
  * short-cut call app.confirm(no-mask, with anchor selector), app.alert(focus, masked overlay), app.window(can move around, no-mask)
  * app.prompt(type, data)
  *
- * Note that prompt doesn't have a collection.
+ * Note that prompt doesn't have a collection. (see default impl in context/Shared.Prompt)
  * 
  * @author Tim.Liu
  * @created 2013.04.01
@@ -58,7 +58,7 @@
 
 
 	/**
-	 * Prompt the user if they are sure about this...
+	 * Prompt the user with a dialog box (modal/window)
 	 */
 	app.prompt = function(type, data){
 		var promptObj = {type: type, data: data};

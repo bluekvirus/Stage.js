@@ -63,7 +63,8 @@
 					this.box.flyTo({
 						my: 'center top',
 						at: 'center bottom+10',
-						of: this.box.$anchor
+						of: this.box.$anchor,
+						collision: 'fit'
 					});
 				},
 
@@ -81,11 +82,21 @@
 				className: 'message-box-ui',
 				itemView: Backbone.Marionette.ItemView.extend({
 					template: '#custom-module-shared-notify-message-box-item-tpl',
-					className: 'item'
+					className: 'item',
+					onRender: function(){
+						this.$el.data('entry', this.model);
+					}
 				}),
 				initialize: function(options){
 					this.collection = app.getMessages();
 					this.enableFreeFlow();
+					this.enableActionTags('Shared.Message.MsgBox');
+				},
+
+				actions: {
+					remove: function($action){
+						$action.parent().data('entry').destroy();
+					}
 				}
 			})
 
@@ -109,6 +120,6 @@ Template.extend(
 Template.extend(
 	'custom-module-shared-notify-message-box-item-tpl',
 	[
-		'<i class="icon-{{type}}"></i> <span>{{data.text}}</span>'
+		'<i class="icon-{{type}}"></i> <span>{{data.text}}</span> <span class="pull-right remove" action="remove"><i class="icon-remove"></i></span>'
 	]
 );
