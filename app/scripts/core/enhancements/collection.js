@@ -85,7 +85,17 @@ _.extend(Backbone.Collection.prototype, {
 				this._cachedResponse = _.reject(this._cachedResponse, function(datum){
 					if(ids[datum[idAttribute]]) return true;
 				});
-			},
+			};
+			//update model(s) data in _cachedResponse
+			this.updateData = function(models){
+				models = models || [];
+				_.each(models, function(m){
+					if(!m.isNew) throw new Error('DEV::Enhancement.Collection::You must pass-in models array to update[_cachedResponse]Data()');
+					var target = {}; target[m.idAttribute] = m.id;
+					var ref = _.where(this._cachedResponse, target);
+					if(ref[0]) _.extend(ref[0], m.attributes);
+				}, this);
+			};
 			//similar to parse but does more...
 			this.prepDataFromResponse = function(response, parse){
 				var data = (parse && parse(response)) || response;

@@ -66,6 +66,11 @@ Backbone.sync = (function(){
 			var autorecovery = function(){
 				model.set(model.previousAttributes());
 			};
+			if(model.collection && model.collection.pagination && model.collection.pagination.mode === 'client'){
+				model.listenToOnce(model, 'sync', function(model){
+					model.collection.updateData([model]);
+				});
+			}
 		}else if (method === 'read'){
 			if(model.isNew()) return; //abort!
 			data = {};
