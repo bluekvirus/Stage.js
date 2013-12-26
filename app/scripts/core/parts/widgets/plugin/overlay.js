@@ -16,11 +16,12 @@
  * 		content: 'text'/html or el,
  * 		onShow($el, $overlay) - show callback;
  * 		onClose($el, $overlay) - close callback;
+ * 		closeX: true|false - whether or not to show the x on the overlay container.
  * }
  *
  * Custom Content
  * --------------
- * You can change the content in onShow($el, $overlay) by $overlay.data('content')
+ * You can change the content in onShow($el, $overlay) by $overlay.data('content').html(...)
  * 
  * 
  * @author Tim.Liu
@@ -35,7 +36,7 @@
 			'<div class="overlay-outer" style="display: table;table-layout: fixed; height: 100%; width: 100%;">',
 				'<div class="overlay-inner" style="display: table-cell;text-align: center;vertical-align: middle; width: 100%;">',
 					'<div class="overlay-container" style="display: inline-block;outline: medium none; padding:20px; position:relative;">',
-						'<span class="close" style="cursor: pointer;display: block;font-size: 20px;font-weight: bold;padding: 0 6px;position: absolute;right: 0;top: 0;">×</span>',
+						'<span class="close hide" style="cursor: pointer;font-size: 20px;font-weight: bold;padding: 0 6px;position: absolute;right: 0;top: 0;">×</span>',
 						'<div class="overlay-container-content"></div>',
 					'</div>',
 				'</div>',
@@ -59,7 +60,9 @@
 			if(!show){
 				if(!$el.data('overlay')) return;
 
-				var $overlay = $el.data('overlay').hide({
+				var $overlay = $el.data('overlay');
+				$overlay.data('container').hide('fade');//hide the container first.
+				$overlay.hide({
 					effect: options.closeEffect || options.effect || 'clip',
 					duration: options.duration,
 					complete: function(){
@@ -85,18 +88,26 @@
 					'overflow': 'hidden'
 				});
 				$el.data('overlay', $overlay);
+				$container = $overlay.find('.overlay-container');
 				if(options.containerStyle)
-					$overlay.find('.overlay-container').css(options.containerStyle).addClass(options.containerClass);
-				$overlay.data('content', $overlay.find('.overlay-container-content').first());
+					$container.css(options.containerStyle).addClass(options.containerClass);
+				$overlay.data({
+					'content': $overlay.find('.overlay-container-content').first(),
+					'container': $container
+				});
 				$overlay.data('content').html(options.content);
 				$overlay.show({
 					effect: options.openEffect || options.effect || 'clip',
 					duration: options.duration,
 					complete: function(){
 						options.onShow && options.onShow($el, $overlay);
-						$overlay.on('click', 'span.close', function(){
-							$el.overlay(false, options);
-						});
+						_.isUndefined(options.closeX) && (options.closeX = true);
+						if(options.closeX){
+							$overlay.find('span.close').show();
+							$overlay.on('click', 'span.close', function(){
+								$el.overlay(false, options);
+							});
+						}	
 					}
 				});
 				
