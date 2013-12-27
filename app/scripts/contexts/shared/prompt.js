@@ -39,6 +39,7 @@
 })(Application);
 
 Template.extend(
+	//non-modal/alert
 	'custom-module-shared-notify-prompt-confirm-tpl',
 	[
 		' '
@@ -46,6 +47,15 @@ Template.extend(
 );
 
 Template.extend(
+	//modal/alert - overlay - static
+	'custom-module-shared-notify-prompt-alert-tpl',
+	[
+		' '
+	]	
+);
+
+Template.extend(
+	//modal/alert - overlay - movable ?
 	'custom-module-shared-notify-prompt-dialog-tpl',
 	[
 		' '

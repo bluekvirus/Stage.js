@@ -5,18 +5,28 @@
  * ---------
  * show: true|false show or close the overlay
  * options: {
- * 		class: custom overlay class - for css overriden,
+ * 		class: custom overlay class - for css overriden, note that you might need to change background and z-index in your stylesheet after you set this, since they will be removed.
  * 		effect: 'jquery ui effects string', or specifically:
  * 			openEffect: ...,
  * 			closeEffect: ...,
  * 		duration: 'jquery ui effects duration',
- * 		background: 'css background string',
- * 		containerStyle: 'jquery css style block for overlay content container',
- * 		containerClass: custom container class - for css overriden,
+ * 		background: 'css background string', - disabled if you've set options.class;		
+ * 		containerStyle: 'jquery css style object for overlay content container', - disabled if you've set containerClass;
+ * 		titleStyle: 'jquery css style object for overlay content title', - disabled if you've set containerClass;
+ * 		containerClass: custom container class - for css overriden, note that you MUST style the padding, it is removed if you specify containerClass in option
  * 		content: 'text'/html or el,
+ * 		title: 'html' or 'string' for title bar above content.
+ * 		titleIcon: class name of the icon.
+ * 		buttons: [ an array of bottons to show below or inline with the content.
+ * 			{title: ..., icon: ..., class: ..., fn($el, $overlay), context: ...},
+ * 			{...},
+ * 			...
+ * 		]
+ * 		buttonsAlign: 'left/right/center or inline',
  * 		onShow($el, $overlay) - show callback;
  * 		onClose($el, $overlay) - close callback;
  * 		closeX: true|false - whether or not to show the x on the overlay container.
+ * 		hrCSS: '<hr/> tags css string' NOT jquery style object. - this is not disabled if you set containerClass; also this options is rarely used.
  * }
  *
  * Custom Content
@@ -31,18 +41,30 @@
 (function($){
 
 	/*===============preparations======================*/
-	var template = [
-		'<div class="overlay hide" style="position:absolute; top: 0; left: 0; right: 0; bottom: 0;">',
+	var template = Handlebars.compile([
+		'<div class="overlay hide {{class}}" style="position:absolute; top: 0; left: 0; right: 0; bottom: 0; {{#unless class}}z-index:1000;background:{{background}};{{/unless}}">',
 			'<div class="overlay-outer" style="display: table;table-layout: fixed; height: 100%; width: 100%;">',
 				'<div class="overlay-inner" style="display: table-cell;text-align: center;vertical-align: middle; width: 100%;">',
-					'<div class="overlay-container" style="display: inline-block;outline: medium none; padding:20px; position:relative;">',
-						'<span class="close hide" style="cursor: pointer;font-size: 20px;font-weight: bold;padding: 0 6px;position: absolute;right: 0;top: 0;">×</span>',
+					'<div class="overlay-container {{containerClass}}" style="display: inline-block;outline: medium none; {{#unless containerClass}}padding:20px;{{/unless}} position:relative;">',
+						'{{#if title}}',
+							'<span class="title"><i class="title-icon {{titleIcon}}"></i> {{title}}</span>',
+							'<hr style="{{hrCSS}}"/>',
+						'{{/if}}',
+						'{{#if closeX}}',
+							'<span class="close" style="line-height: 20px;cursor: pointer;font-size: 20px;font-weight: bold;padding: 0 6px;position: absolute;right: 0;top: 0;">×</span>',
+						'{{/if}}',
 						'<div class="overlay-container-content"></div>',
+						'{{#if buttons}}',
+							'<hr style="{{hrCSS}}"/>',
+							'{{#each buttons}}',
+								'<span class="btn {{class}}"><i class="{{icon}}"></i> {{title}}</span> ',
+							'{{/each}}',
+						'{{/if}}',
 					'</div>',
 				'</div>',
 			'</div>',
 		'</div>'
-	].join('');	
+	].join(''));	
 
 	/*===============the util functions================*/
 
@@ -54,6 +76,7 @@
 		}
 		if(_.isUndefined(show)) show = true;
 		options = options || {};
+
 		return this.each(function(index, el){
 			var $el = $(this);
 
@@ -77,8 +100,27 @@
 				});
 			}else {
 				if($el.data('overlay')) return;
-				
-				$overlay = $(template).css('background', options.background || 'rgba(0, 0, 0, 0.7)').addClass(options.class);
+
+				//options default:
+				options = _.extend({
+					closeX: true,
+					background: 'rgba(0, 0, 0, 0.7)',
+					containerStyle: {background: '#FFF', textAlign: 'left'},
+					titleStyle: {fontSize: '15px', fontWeight: 'bold'},
+					hrCSS: 'margin: 5px 0;'
+				}, options);
+
+				$overlay = $(template({
+					closeX: options.closeX,
+					title: options.title,
+					titleIcon: options.titleIcon,
+					class: options.class,
+					containerClass: options.containerClass,
+					background: options.background,
+					buttons: options.buttons,
+					buttonsAlign: options.buttonsAlign,
+					hrCSS: options.hrCSS
+				}));
 				$el.data('overflow', {
 					x: $el.css('overflowX'),
 					y: $el.css('overflowY')
@@ -89,8 +131,9 @@
 				});
 				$el.data('overlay', $overlay);
 				$container = $overlay.find('.overlay-container');
-				if(options.containerStyle)
-					$container.css(options.containerStyle).addClass(options.containerClass);
+				if(!options.containerClass){
+					$container.css(options.containerStyle).find('> span.title').css(options.titleStyle);
+				}
 				$overlay.data({
 					'content': $overlay.find('.overlay-container-content').first(),
 					'container': $container
@@ -101,9 +144,7 @@
 					duration: options.duration,
 					complete: function(){
 						options.onShow && options.onShow($el, $overlay);
-						_.isUndefined(options.closeX) && (options.closeX = true);
 						if(options.closeX){
-							$overlay.find('span.close').show();
 							$overlay.on('click', 'span.close', function(){
 								$el.overlay(false, options);
 							});
