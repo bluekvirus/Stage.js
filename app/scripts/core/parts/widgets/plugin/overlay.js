@@ -14,19 +14,20 @@
  * 		containerStyle: 'jquery css style object for overlay content container', - disabled if you've set containerClass;
  * 		titleStyle: 'jquery css style object for overlay content title', - disabled if you've set containerClass;
  * 		containerClass: custom container class - for css overriden, note that you MUST style the padding, it is removed if you specify containerClass in option
- * 		content: 'text'/html or el,
+ * 		content: 'text'/html or el or a function($el, $overlay) that returns one of the three.
  * 		title: 'html' or 'string' for title bar above content.
  * 		titleIcon: class name of the icon.
+ * 		titleAlign: title text-alignment in css term 'left, right, center'
  * 		buttons: [ an array of bottons to show below or inline with the content.
  * 			{title: ..., icon: ..., class: ..., fn($el, $overlay), context: ...},
  * 			{...},
  * 			...
  * 		]
- * 		buttonsAlign: 'left/right/center or inline',
+ * 		buttonsAlign: 'left/right/center',
  * 		onShow($el, $overlay) - show callback;
  * 		onClose($el, $overlay) - close callback;
  * 		closeX: true|false - whether or not to show the x on the overlay container.
- * 		hrCSS: '<hr/> tags css string' NOT jquery style object. - this is not disabled if you set containerClass; also this options is rarely used.
+ * 		hrCSS: '<hr/> tags css string' or false to disable - NOT jquery style object. - this is not disabled if you set containerClass; this options is rarely used.
  * }
  *
  * Custom Content
@@ -47,18 +48,22 @@
 				'<div class="overlay-inner" style="display: table-cell;text-align: center;vertical-align: middle; width: 100%;">',
 					'<div class="overlay-container {{containerClass}}" style="display: inline-block;outline: medium none; {{#unless containerClass}}padding:20px;{{/unless}} position:relative;">',
 						'{{#if title}}',
-							'<span class="title"><i class="title-icon {{titleIcon}}"></i> {{title}}</span>',
-							'<hr style="{{hrCSS}}"/>',
+							'<div class="title-bar" {{#if titleAlign}}style="text-align:{{titleAlign}}"{{/if}}>',
+								'<span class="title"><i class="title-icon {{titleIcon}}"></i> {{title}}</span>',
+							'</div>',
+							'{{#if hrCSS}}<hr style="{{hrCSS}}"/>{{/if}}',
 						'{{/if}}',
 						'{{#if closeX}}',
 							'<span class="close" style="line-height: 20px;cursor: pointer;font-size: 20px;font-weight: bold;padding: 0 6px;position: absolute;right: 0;top: 0;">×</span>',
 						'{{/if}}',
 						'<div class="overlay-container-content"></div>',
 						'{{#if buttons}}',
-							'<hr style="{{hrCSS}}"/>',
-							'{{#each buttons}}',
-								'<span class="btn {{class}}"><i class="{{icon}}"></i> {{title}}</span> ',
-							'{{/each}}',
+							'{{#if hrCSS}}<hr style="{{hrCSS}}"/>{{/if}}',
+							'<div class="btn-bar" style="text-align:{{buttonsAlign}};">',
+								'{{#each buttons}}',
+									'<span class="btn {{class}}" data-fn="{{@index}}"><i class="{{icon}}"></i> {{title}}</span> ',
+								'{{/each}}',
+							'</div>',
 						'{{/if}}',
 					'</div>',
 				'</div>',
@@ -101,26 +106,17 @@
 			}else {
 				if($el.data('overlay')) return;
 
-				//options default:
+				//options default (template related):
 				options = _.extend({
 					closeX: true,
 					background: 'rgba(0, 0, 0, 0.7)',
 					containerStyle: {background: '#FFF', textAlign: 'left'},
 					titleStyle: {fontSize: '15px', fontWeight: 'bold'},
+					buttonsAlign: 'right',
 					hrCSS: 'margin: 5px 0;'
 				}, options);
 
-				$overlay = $(template({
-					closeX: options.closeX,
-					title: options.title,
-					titleIcon: options.titleIcon,
-					class: options.class,
-					containerClass: options.containerClass,
-					background: options.background,
-					buttons: options.buttons,
-					buttonsAlign: options.buttonsAlign,
-					hrCSS: options.hrCSS
-				}));
+				$overlay = $(template(options));
 				$el.data('overflow', {
 					x: $el.css('overflowX'),
 					y: $el.css('overflowY')
@@ -132,13 +128,13 @@
 				$el.data('overlay', $overlay);
 				$container = $overlay.find('.overlay-container');
 				if(!options.containerClass){
-					$container.css(options.containerStyle).find('> span.title').css(options.titleStyle);
+					$container.css(options.containerStyle).find('> div span.title').css(options.titleStyle);
 				}
 				$overlay.data({
 					'content': $overlay.find('.overlay-container-content').first(),
 					'container': $container
 				});
-				$overlay.data('content').html(options.content);
+				$overlay.data('content').html(_.isFunction(options.content)?options.content($el, $overlay):options.content);
 				$overlay.show({
 					effect: options.openEffect || options.effect || 'clip',
 					duration: options.duration,
@@ -147,6 +143,15 @@
 						if(options.closeX){
 							$overlay.on('click', 'span.close', function(){
 								$el.overlay(false, options);
+							});
+						}
+						if(options.buttons){
+							$overlay.on('click', '.btn-bar > span.btn', function(){
+								var btnCfg = options.buttons[$(this).data('fn')];
+								if(btnCfg.fn){
+									btnCfg.context = btnCfg.context || this;
+									return btnCfg.fn.apply(btnCfg.context, [$el, $overlay]);
+								}
 							});
 						}	
 					}
