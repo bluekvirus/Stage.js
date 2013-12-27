@@ -62,7 +62,7 @@
 	 */
 	app.prompt = function(type, data){
 		var promptObj = {type: type, data: data};
-		app.trigger('app:prompt', msgObj);
+		app.trigger('app:prompt', promptObj);
 	};
 
 	_.each(['confirm', 'alert', 'window'], function(type){

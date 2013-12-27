@@ -27,6 +27,7 @@
  * 		onShow($el, $overlay) - show callback;
  * 		onClose($el, $overlay) - close callback;
  * 		closeX: true|false - whether or not to show the x on the overlay container.
+ * 		move: true|false - whether or not to make the overlay-container draggable through jquery ui.
  * 		hrCSS: '<hr/> tags css string' or false to disable - NOT jquery style object. - this is not disabled if you set containerClass; this options is rarely used.
  * }
  *
@@ -113,7 +114,8 @@
 					containerStyle: {background: '#FFF', textAlign: 'left'},
 					titleStyle: {fontSize: '15px', fontWeight: 'bold'},
 					buttonsAlign: 'right',
-					hrCSS: 'margin: 5px 0;'
+					hrCSS: 'margin: 10px 0;',
+					move: false
 				}, options);
 
 				$overlay = $(template(options));
@@ -130,6 +132,7 @@
 				if(!options.containerClass){
 					$container.css(options.containerStyle).find('> div span.title').css(options.titleStyle);
 				}
+				if(options.move) $container.draggable({ containment: "parent" });
 				$overlay.data({
 					'content': $overlay.find('.overlay-container-content').first(),
 					'container': $container
