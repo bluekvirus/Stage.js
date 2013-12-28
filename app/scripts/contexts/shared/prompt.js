@@ -2,7 +2,7 @@
  * This is the Shared.Prompt module that renders a dialog(modal or window div) on screen upon app:prompt event.
  * Pre-defined dialogs are:
  * 1. confirm - with a text/html/view as question and Yes/No buttons; - $.overlay()
- * 2. alert - with a text/html/view as content and Close button; - $.overlay()
+ * 2. alert - with a text/html/view as content and optional action/decision buttons; - $.overlay()
  * 3. window - with html/view as content; - jquery ui dialog can move around
  *
  * Confirm (opt.data)
@@ -17,8 +17,6 @@
  * Alert (opt.data)
  * -----
  * $container: ($('body'))
- * title:  
- * icon: 
  * message: string or html or el or a function() that returns them.
  * buttons: $.overlay buttons options
  *
@@ -49,8 +47,7 @@
 				//default overlay config for confirm.
 				config = {
 					title: opt.data.question || 'Are you sure about this?',
-					titleIcon: 'icon-question-sign',
-					hrCSS: false,
+					titleIcon: opt.data.icon || 'icon-question-sign',
 					buttons: [{
 						title: 'Ok',
 						icon: 'icon-ok',
@@ -61,19 +58,25 @@
 						icon: 'icon-remove',
 						fn: opt.data.cancel || function($el){$el.overlay(false)},
 						context: opt.data.context
-					}]					
-				};
-				opt.data.$container.overlay(config);
+					}],
+					buttonsAlign: 'center'					
+				};				
 			break;
 			case 'alert':
 				//default overlay config for alert.
-				
+				config = {
+					content: opt.data.message || 'This is an alert!',
+				}
+				_.extend(config, _.pick(opt.data, 'buttons', 'buttonsAlign'));
 			break;
 			case 'window':
+				config = _.extend(opt.data, {move: true, resize: true});
 			break;
 			default: 
 			break;
 		}
+
+		if(config) opt.data.$container.overlay(config);
 	})
 
 	_.extend(module, {

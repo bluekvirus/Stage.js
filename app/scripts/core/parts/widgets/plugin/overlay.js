@@ -28,6 +28,7 @@
  * 		onClose($el, $overlay) - close callback;
  * 		closeX: true|false - whether or not to show the x on the overlay container.
  * 		move: true|false - whether or not to make the overlay-container draggable through jquery ui.
+ * 		resize: true|false - whether or not to make the overlay-container resizable through jquery ui.
  * 		hrCSS: '<hr/> tags css string' or false to disable - NOT jquery style object. - this is not disabled if you set containerClass; this options is rarely used.
  * }
  *
@@ -59,7 +60,7 @@
 						'{{/if}}',
 						'<div class="overlay-container-content"></div>',
 						'{{#if buttons}}',
-							'{{#if hrCSS}}<hr style="{{hrCSS}}"/>{{/if}}',
+							'{{#if hrCSS}}{{#if content}}<hr style="{{hrCSS}}"/>{{/if}}{{/if}}',
 							'<div class="btn-bar" style="text-align:{{buttonsAlign}};">',
 								'{{#each buttons}}',
 									'<span class="btn {{class}}" data-fn="{{@index}}"><i class="{{icon}}"></i> {{title}}</span> ',
@@ -114,8 +115,9 @@
 					containerStyle: {background: '#FFF', textAlign: 'left'},
 					titleStyle: {fontSize: '15px', fontWeight: 'bold'},
 					buttonsAlign: 'right',
-					hrCSS: 'margin: 10px 0;',
-					move: false
+					hrCSS: 'margin: 8px 0;',
+					move: false,
+					resize: false
 				}, options);
 
 				$overlay = $(template(options));
@@ -132,6 +134,7 @@
 				if(!options.containerClass){
 					$container.css(options.containerStyle).find('> div span.title').css(options.titleStyle);
 				}
+				if(options.resize) $container.resizable({ containment: "parent" });
 				if(options.move) $container.draggable({ containment: "parent" });
 				$overlay.data({
 					'content': $overlay.find('.overlay-container-content').first(),
