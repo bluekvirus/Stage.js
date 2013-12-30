@@ -92,6 +92,7 @@
 
 				var $overlay = $el.data('overlay');
 				$overlay.data('container').hide('fade');//hide the container first.
+				options = _.extend({}, $overlay.data('closeOptions'), options);
 				$overlay.hide({
 					effect: options.closeEffect || options.effect || 'clip',
 					duration: options.duration,
@@ -137,6 +138,7 @@
 				if(options.resize) $container.resizable({ containment: "parent" });
 				if(options.move) $container.draggable({ containment: "parent" });
 				$overlay.data({
+					'closeOptions': _.pick(options, 'closeEffect', 'effect', 'duration'),
 					'content': $overlay.find('.overlay-container-content').first(),
 					'container': $container
 				});
