@@ -138,7 +138,7 @@
 				if(options.resize) $container.resizable({ containment: "parent" });
 				if(options.move) $container.draggable({ containment: "parent" });
 				$overlay.data({
-					'closeOptions': _.pick(options, 'closeEffect', 'effect', 'duration'),
+					'closeOptions': _.pick(options, 'closeEffect', 'effect', 'duration', 'onClose'),
 					'content': $overlay.find('.overlay-container-content').first(),
 					'container': $container
 				});
@@ -150,7 +150,7 @@
 						options.onShow && options.onShow($el, $overlay);
 						if(options.closeX){
 							$overlay.on('click', 'span.close', function(){
-								$el.overlay(false, options);
+								$el.overlay(false);
 							});
 						}
 						if(options.buttons){

@@ -115,7 +115,7 @@ Application.Widget.register('BasicForm', function(){
 			//default cancel action impl
 			_.extend(this.actions, {
 				cancel: function(){
-					this.close();
+					this.trigger('form:cancelled');
 				}
 			});
 

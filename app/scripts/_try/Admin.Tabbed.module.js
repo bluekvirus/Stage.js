@@ -235,8 +235,9 @@
 								data: record.attributes,
 								record: record,
 							}, formOpt));
-							grid.trigger('grid:show-form', view);
-							grid.listenToOnce(view, 'form:record-saved', function(){
+							grid.highlight(row).trigger('grid:show-form', view);
+							grid.listenToOnce(view, 'form:record-saved form:cancelled', function(){
+								grid.highlight(row, false);
 								view.close();
 							});
 						},

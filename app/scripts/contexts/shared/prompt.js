@@ -73,42 +73,42 @@
 				config = _.extend(opt.data, {move: true, resize: true});
 			break;
 			default: 
+				//hook up your prompt dispatcher(type->view) here or override the above common ones.
 			break;
 		}
 
 		if(config) opt.data.$container.overlay(config);
 	})
 
-	_.extend(module, {
-
-		View: {
-
-		}
-
-	});
+	// _.extend(module, {
+	// 	View: {
+	// 		--define your common overlay content view to be prompted here--
+	// 	}
+	// });
 
 })(Application);
 
-Template.extend(
-	//non-modal/alert
-	'custom-module-shared-notify-prompt-confirm-tpl',
-	[
-		' '
-	]
-);
+//To be refined in your own project as the content view tpl for common confirm alert and dialog/window 
+// Template.extend(
+// 	//non-modal/alert
+// 	'custom-module-shared-notify-prompt-confirm-tpl',
+// 	[
+// 		' '
+// 	]
+// );
 
-Template.extend(
-	//modal/alert - overlay - static
-	'custom-module-shared-notify-prompt-alert-tpl',
-	[
-		' '
-	]	
-);
+// Template.extend(
+// 	//modal/alert - overlay - static
+// 	'custom-module-shared-notify-prompt-alert-tpl',
+// 	[
+// 		' '
+// 	]	
+// );
 
-Template.extend(
-	//modal/alert - overlay - movable ?
-	'custom-module-shared-notify-prompt-dialog-tpl',
-	[
-		' '
-	]
-);
+// Template.extend(
+// 	//modal/alert - overlay - movable ?
+// 	'custom-module-shared-notify-prompt-dialog-tpl',
+// 	[
+// 		' '
+// 	]
+// );

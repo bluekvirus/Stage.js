@@ -46,10 +46,12 @@
  * Collaboration with other widgets or view objects should be done with events (handshakes) up in the parent container.
  *
  *
- * Grid Helpers
- * ------------
+ * Grid Helpers API
+ * ----------------
  * 1. refresh(options) - shortcut for table.collection.load(options);
- * 2. implementRowActions() - shortcut for adding action cell item implementation
+ * 2. implementRowActions({action: function(record, row), ...}) - shortcut for adding action cell item implementation
+ * 3. highlight(row, true|false)
+ * 4. prompt(row, {question: ..., buttons: ...}) - inline question and buttons, not like the $.overlay plugin.
  * 
  *
  * @author Tim.Liu
@@ -83,8 +85,28 @@ Application.Widget.register('DataGrid2', function(){
 	        		this.refresh();
 	        },
 
+	        //refresh table data
 	        refresh: function(options){
-	        	this.table.collection.load(options);
+	        	return this.table.collection.load(options);
+	        },
+
+	        //highlight/recover specific row
+	        highlight: function(row, flag){
+	        	if(_.isUndefined(flag)) flag = true;
+	        	if(flag)
+		        	row.$el.siblings().css({
+		        		opacity: 0.2
+		        	});
+		        else 
+		        	row.$el.siblings().css({
+		        		opacity: 1
+		        	});
+		        return this;
+	        },
+
+	        //ask user about something about a specific row.
+	        prompt: function(row, options){
+
 	        },
 
 	        //add row actions impl to the grid (delegated to grid.table view object see Table.init - 3 below)
