@@ -64,7 +64,7 @@ Application.Widget.register('ActionCell', function(){
 			_.each(actions, function(action){
 				if(action.fn){
 					this.actions[action.name] = function($action){
-						action.fn(this.row.meta.record, this.row);
+						action.fn.apply(this.row, [this.row.meta.record, this.row]);
 						/*Warning:: If we use options.row here, it won't work, since the options object will change, hence this event listener will be refering to other record's row when triggered*/
 					}
 				}

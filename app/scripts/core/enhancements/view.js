@@ -663,14 +663,21 @@ _.extend(Backbone.Marionette.View.prototype, {
 				if(this.onShow) this.onShow();
 			}
 			this.$el.show();
-			this.$el.position(options);
 			this.shown = true;
+			this.adjust = function(){
+				if(this.shown)
+					this.$el.position(options);//remember the last $.position config
+			}
+			this.adjust();
+			
 		};
+
+		this.adjust = $.noop;
 
 		this.hide = function(){
 			this.$el.hide();
 			this.shown = false;
-		}
+		};
 
 		return this;
 	}

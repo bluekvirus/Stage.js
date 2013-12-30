@@ -51,7 +51,7 @@
  * 1. refresh(options) - shortcut for table.collection.load(options);
  * 2. implementRowActions({action: function(record, row), ...}) - shortcut for adding action cell item implementation
  * 3. highlight(row, true|false)
- * 4. prompt(row, {question: ..., buttons: ...}) - inline question and buttons, not like the $.overlay plugin.
+ * 4. confirm(row, question, cb(record, row, grid), [zIndex:200]) - inline question and yes/no buttons, not like the $.overlay plugin. Use zIndex = false to remove zIndex from the inlined css.
  * 
  *
  * @author Tim.Liu
@@ -94,19 +94,41 @@ Application.Widget.register('DataGrid2', function(){
 	        highlight: function(row, flag){
 	        	if(_.isUndefined(flag)) flag = true;
 	        	if(flag)
-		        	row.$el.siblings().css({
-		        		opacity: 0.2
+		        	row.$el.addClass('highlighted').siblings().css({
+		        		opacity: 0.1
 		        	});
 		        else 
-		        	row.$el.siblings().css({
+		        	row.$el.removeClass('highlighted').siblings().css({
 		        		opacity: 1
 		        	});
 		        return this;
 	        },
 
 	        //ask user about something about a specific row.
-	        prompt: function(row, options){
-
+	        confirm: function(row, question, cb, zIndex){
+	        	var confirmbox = new ConfirmBox({
+	        		question: question,
+	        		container: this.$el,
+	        		zIndex: _.isUndefined(zIndex)? 200 : zIndex
+	        	});
+	        	this.$el.overlay({closeX: false});
+	        	confirmbox.flyTo({
+	        		my: 'center top',
+	        		at: 'center bottom',
+	        		of: row.$el
+	        	});
+	        	confirmbox.listenTo(Application, 'view:resized', confirmbox.adjust);
+	        	this.highlight(row);
+	        	this.listenTo(confirmbox, 'confirm-box:confirmed', function(){
+	        		this.highlight(row, false);
+	        		this.$el.overlay(false);
+	        		//recover the visual effect first in case the row gets removed, and the row.$el.sibling() fails.
+	        		cb(row.meta.record, row, this);
+	        	});
+	        	this.listenTo(confirmbox, 'confirm-box:cancelled', function(){
+	        		this.highlight(row, false);
+	        		this.$el.overlay(false);
+	        	});
 	        },
 
 	        //add row actions impl to the grid (delegated to grid.table view object see Table.init - 3 below)
@@ -115,7 +137,7 @@ Application.Widget.register('DataGrid2', function(){
 	        	_.each(actionsImp, function(fn, action){
 	        		this.table.actions[action] = function($action){
 	        			var row = $action.data('row');
-	        			return fn(row.meta.record, row);
+	        			return fn.apply(row, [row.meta.record, row]);
 	        		}
 	        	}, this);
 	        },
@@ -284,6 +306,35 @@ Application.Widget.register('DataGrid2', function(){
 		}
 	});
 
+	//----------------Confirmation Box------------------
+	var ConfirmBox = Backbone.Marionette.ItemView.extend({
+		template: '#widget-datagrid-confirm-box-tpl',
+		className: 'confirm-box',
+		initialize: function(options){
+			this.enableActionTags('Widget.Datagrid2.ConfirmBox');
+			this.enableFreeFlow(options.container);
+			this.model = new Backbone.Model({
+				question: options.question
+			});
+			this._options = options;
+			this.listenTo(this, 'render', function(){
+				if(_.isNumber(options.zIndex))
+					this.$el.css('zIndex', options.zIndex);
+			});
+		},
+		actions: {
+			yes: function(){
+				this.trigger('confirm-box:confirmed');
+				this.close();
+			},
+
+			no: function(){
+				this.trigger('confirm-box:cancelled');
+				this.close();
+			}
+		}
+	});
+
 	return View;
 
 });
@@ -313,5 +364,13 @@ Template.extend(
 	[
 		'<div class="pull-left collection-stat" style="width:200px;"><small>Records</small> <small ui="number"></small></div>',
 		'<div region="pager" style="margin-left:200px;">',
+	]
+);
+
+//Confirmation box:
+Template.extend(
+	'widget-datagrid-confirm-box-tpl',
+	[
+		'<span class="question">{{question}}</span> <span class="btn yes-btn" action="yes">Yes</span><span class="btn no-btn" action="no">No</span>'
 	]
 );

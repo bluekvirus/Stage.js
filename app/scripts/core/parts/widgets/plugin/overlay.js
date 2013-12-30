@@ -10,6 +10,7 @@
  * 			openEffect: ...,
  * 			closeEffect: ...,
  * 		duration: 'jquery ui effects duration',
+ * 		zIndex: 'css z-index number' - disabled if you've set options.class;
  * 		background: 'css background string', - disabled if you've set options.class;		
  * 		containerStyle: 'jquery css style object for overlay content container', - disabled if you've set containerClass;
  * 		titleStyle: 'jquery css style object for overlay content title', - disabled if you've set containerClass;
@@ -35,6 +36,9 @@
  * Custom Content
  * --------------
  * You can change the content in onShow($el, $overlay) by $overlay.data('content').html(...)
+ * or
+ * You can pass in view.render().el if you have backbone based view as content. 
+ * Note that in order to prevent *Ghost View* you need to close()/clean-up your view object in onClose callback.
  * 
  * 
  * @author Tim.Liu
@@ -45,7 +49,7 @@
 
 	/*===============preparations======================*/
 	var template = Handlebars.compile([
-		'<div class="overlay hide {{class}}" style="position:absolute; top: 0; left: 0; right: 0; bottom: 0; {{#unless class}}z-index:1000;background:{{background}};{{/unless}}">',
+		'<div class="overlay hide {{class}}" style="position:absolute; top: 0; left: 0; right: 0; bottom: 0; {{#unless class}}z-index:{{zIndex}};background:{{background}};{{/unless}}">',
 			'<div class="overlay-outer" style="display: table;table-layout: fixed; height: 100%; width: 100%;">',
 				'<div class="overlay-inner" style="display: table-cell;text-align: center;vertical-align: middle; width: 100%;">',
 					'<div class="overlay-container {{containerClass}}" style="display: inline-block;outline: medium none; {{#unless containerClass}}padding:20px;{{/unless}} position:relative;">',
@@ -112,8 +116,9 @@
 				//options default (template related):
 				options = _.extend({
 					closeX: true,
-					background: 'rgba(0, 0, 0, 0.7)',
-					containerStyle: {background: '#FFF', textAlign: 'left'},
+					zIndex: 100,
+					background: options.content? 'rgba(0, 0, 0, 0.7)' : 'none',
+					containerStyle: {background: options.content? '#FFF' : 'none', textAlign: 'left'},
 					titleStyle: {fontSize: '15px', fontWeight: 'bold'},
 					buttonsAlign: 'right',
 					hrCSS: 'margin: 8px 0;',

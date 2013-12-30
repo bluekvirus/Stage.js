@@ -28,7 +28,7 @@
 					this.listenTo(this.msgQ, 'remove reset', this.countMessages);
 					this.box = new module.View.MessageBox();
 					this.listenTo(app, 'view:resized', function(){
-						if(this.box.shown) this.adjustMsgBoxPosition();
+						this.box.adjust();
 					});						
 				},
 
@@ -56,22 +56,15 @@
 					}
 				},
 
-				adjustMsgBoxPosition: function($anchor){
-					if($anchor) {
-						this.box.$anchor = $anchor;
-					}
-					this.box.flyTo({
-						my: 'center top',
-						at: 'center bottom+10',
-						of: this.box.$anchor,
-						collision: 'fit'
-					});
-				},
-
 				actions: {
 					showMessageBox: function($action){
 						if(!this.box.shown)
-							this.adjustMsgBoxPosition($action);
+							this.box.flyTo({
+								my: 'center top',
+								at: 'center bottom+10',
+								of: $action,
+								collision: 'fit'
+							});
 						else
 							this.box.hide();
 					}

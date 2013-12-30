@@ -55,7 +55,7 @@
 										name: 'test',
 										icon: 'icon-music',
 										fn: function(record, row){
-											console.log(record);
+											console.log(this, record);
 										}
 									}
 								]	
@@ -243,8 +243,10 @@
 						},
 
 						'delete': function(record, row){
-							record.destroy().done(function(){
-								grid.refresh();
+							grid.confirm(this, 'Do you want to delete this record?', function(record, row){
+								record.destroy().always(function(){
+									grid.refresh();
+								});
 							});
 						}
 					})
