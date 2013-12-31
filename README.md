@@ -6,7 +6,7 @@ For building modern web application with many contexts (including a data-heavy a
 What's next?
 ------------
 1. (done) Add general ajax/data op progress bar on top (nprogress) as application util
-2. Remove noty2 and replace it with a new alert/messaging system + prompt(through colorbox inline mode) as application util
+2. (done) Remove noty2 and replace it with a new alert/messaging system + prompt as application util (view.flyTo and $.overlay())
 3. Add a new 2-lvl accordion menu widget
 4. (done) Leave nothing but titile <---> message, help on the banner, move user above the left menu accordion
 5. Make file upload work (ajax?)

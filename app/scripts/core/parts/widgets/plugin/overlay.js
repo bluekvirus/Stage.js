@@ -117,8 +117,8 @@
 				options = _.extend({
 					closeX: true,
 					zIndex: 100,
-					background: options.content? 'rgba(0, 0, 0, 0.7)' : 'none',
-					containerStyle: {background: options.content? '#FFF' : 'none', textAlign: 'left'},
+					background: 'rgba(0, 0, 0, 0.7)',
+					containerStyle: {background: (options.content || options.title || options.buttons)? '#FFF' : 'none', textAlign: 'left'},
 					titleStyle: {fontSize: '15px', fontWeight: 'bold'},
 					buttonsAlign: 'right',
 					hrCSS: 'margin: 8px 0;',

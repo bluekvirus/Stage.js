@@ -284,7 +284,8 @@ Template.extend('editor-Basic-tpl', [
 					'{{else}}',
 						//normal field
 						'{{#unless html}}',
-							'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" class="input-block-level" type="{{type}}" id="{{uiId}}" placeholder="{{placeholder}}" style="margin-bottom:0" value="{{value}}">',
+							'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" {{#isnt type "file"}}class="input-block-level"{{/isnt}} type="{{type}}" id="{{uiId}}" placeholder="{{placeholder}}" style="margin-bottom:0" value="{{value}}">',
+							'{{#is type "file"}}<span action="upload"><i class="icon-upload file-upload-trigger"></i></span>{{/is}}',
 						'{{else}}',
 							'<div ui="input-ro" data-value="{{value}}">{{{html}}}</div>', //read-only html instead
 						'{{/unless}}',
