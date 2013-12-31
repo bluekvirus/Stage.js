@@ -96,7 +96,10 @@
 							xyz: {
 								label: 'File',
 								type: 'file',
-								help: 'Please choose your image to upload.'
+								help: 'Please choose your image to upload.',
+								upload: {
+									url: '/file/Blog/'
+								}
 							},
 							radios: {
 								label: 'Radios',

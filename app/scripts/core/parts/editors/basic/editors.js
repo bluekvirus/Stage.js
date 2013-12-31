@@ -189,13 +189,12 @@ Application.Editor.register('Basic', function(){
 					var _this = this;
 					this.$el.fileupload({
 						url: options.upload.url,
+						fileInput: null, //-remove the plugin's 'change' listener to delay the add event.
+						//forceIframeTransport: true, //-note that if iframe is used, error/fail callback will not be possible without further hack using frame['iframe name'].document
 						add: function (e, data) {
 							data.submit()
 								.success(function(result, textStatus, jqXHR){
-									if(options.cb) options.upload.cb(_this, result, textStatus, jqXHR);
-								})
-								.error(function(jqXHR, textStatus, errorThrown){
-
+									if(options.upload.cb) options.upload.cb(_this, result, textStatus, jqXHR);
 								});
 						}
 					});
@@ -207,8 +206,10 @@ Application.Editor.register('Basic', function(){
 					},
 					//3. implement [upload] button action
 					upload: function(){
-						console.log(this.ui.input.val());
 						//add file to fileupload plugin.
+						this.$el.fileupload('add', {
+							fileInput: this.ui.input
+						});
 					}
 				});
 
@@ -335,6 +336,7 @@ Template.extend('editor-Basic-tpl', [
 							'{{#is type "file"}}',
 								'<span action="upload" class="hide file-upload-action-trigger"><i class="icon-upload"></i></span>',
 								'<span action="clear" class="hide file-upload-action-trigger"><i class="icon-remove-circle"></i></span>',
+								'<span ui="result" class="file-upload-result"></span>',
 							'{{/is}}',
 						'{{else}}',
 							'<div ui="input-ro" data-value="{{value}}">{{{html}}}</div>', //read-only html instead
