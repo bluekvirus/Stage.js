@@ -50,7 +50,7 @@
  * 			If your config.parse() didn't return data, this means you want to have total control over the data storage process; success will still be called but without data;
  * 			If you pass in a success callback when calling the api, it will be called in the end. (after parse, [after set model/collection data]);
  *
- * 			the reset of possible options are still supported (e.g async, dataType, timeout, error, notify...)
+ * 			the rest of possible options are still supported (e.g async, dataType, timeout, error, notify...)
  *   	}
  *
  * Default Categories and Methods

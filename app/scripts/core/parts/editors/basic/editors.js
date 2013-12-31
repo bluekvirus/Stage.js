@@ -25,6 +25,10 @@
  * //specifically for single checkbox
  * boxLabel: (single checkbox label other than field label.)
  * unchecked: '...' (config.value for a single checkbox is the checkedVal)
+ * upload: { - input.type = file only 
+ * 	url - a string or function that gives a url string as where to upload the file to.
+ * 	cb (_this, result, textStatus, jqXHR) - the upload callback if successful.
+ * }
  * 
  * validate (custom function and/or rules see core/parts/editors/basic/validations.js)
  *
@@ -170,6 +174,46 @@ Application.Editor.register('Basic', function(){
 			//prep tooltip upon rendered.
 			this.enableTooltips(_.isObject(options.tooltip)?options.tooltip:{});
 
+			//prep fileupload if type === 'file'
+			if(options.type === 'file'){
+				//1. listen to editor:change so we can reveal [upload] and [clear] buttons
+				this.listenTo(this, 'editor:change', function(){
+					if(this.ui.input.val())
+						this.ui.input.siblings('.file-upload-action-trigger').show();
+					else
+						this.ui.input.siblings('.file-upload-action-trigger').hide();
+				});
+				this.enableActionTags('Editor.File');
+				if(!options.upload || !options.upload.url) throw new Error('DEV::Editor.Basic.File::You need options.upload.url to point to where to upload the file.');
+				this.onRender = function(){
+					var _this = this;
+					this.$el.fileupload({
+						url: options.upload.url,
+						add: function (e, data) {
+							data.submit()
+								.success(function(result, textStatus, jqXHR){
+									if(options.cb) options.upload.cb(_this, result, textStatus, jqXHR);
+								})
+								.error(function(jqXHR, textStatus, errorThrown){
+
+								});
+						}
+					});
+				},
+				_.extend(this.actions, {
+					//2. implement [clear] button action
+					clear: function(){
+						this.setVal('', true);
+					},
+					//3. implement [upload] button action
+					upload: function(){
+						console.log(this.ui.input.val());
+						//add file to fileupload plugin.
+					}
+				});
+
+			}
+
 		},
 
 		setVal: function(val, loud){
@@ -180,7 +224,10 @@ Application.Editor.register('Basic', function(){
 			}else {
 				this.ui.input.val(val);
 			}
-			if(loud) this._triggerEvent({type: 'change'});
+			if(loud) {
+				this._triggerEvent({type: 'change'});
+				this.trigger('editor:change');
+			}
 		},
 
 		getVal: function(){
@@ -285,7 +332,10 @@ Template.extend('editor-Basic-tpl', [
 						//normal field
 						'{{#unless html}}',
 							'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" {{#isnt type "file"}}class="input-block-level"{{/isnt}} type="{{type}}" id="{{uiId}}" placeholder="{{placeholder}}" style="margin-bottom:0" value="{{value}}">',
-							'{{#is type "file"}}<span action="upload"><i class="icon-upload file-upload-trigger"></i></span>{{/is}}',
+							'{{#is type "file"}}',
+								'<span action="upload" class="hide file-upload-action-trigger"><i class="icon-upload"></i></span>',
+								'<span action="clear" class="hide file-upload-action-trigger"><i class="icon-remove-circle"></i></span>',
+							'{{/is}}',
 						'{{else}}',
 							'<div ui="input-ro" data-value="{{value}}">{{{html}}}</div>', //read-only html instead
 						'{{/unless}}',

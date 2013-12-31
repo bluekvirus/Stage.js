@@ -18,7 +18,7 @@ ncp.limit = 16;
 
 buildify.task({
 	name: 'fix-libs',
-	depends: ['uri-js', /*'noty', */'spin-js', 'min'],
+	depends: ['uri-js', /*'noty', */'spin-js', 'jquery-file-upload', 'min'],
 	task: function(){}
 });
 
@@ -70,6 +70,18 @@ buildify.task({
 			.save('dist/spin-with-jqplugin.js')
 			.uglify()
 			.save('dist/spin-with-jqplugin.min.js');
+	}
+});
+
+buildify.task({
+	name: 'jquery-file-upload',
+	task: function(){
+		buildify()
+			.setDir('bower_components/jquery-file-upload/js')
+			.concat(['jquery.iframe-transport.js', 'jquery.fileupload.js'])
+			.save('../dist/jquery-file-upload-with-iframe.js')
+			.uglify()
+			.save('../dist/jquery-file-upload-with-iframe.min.js');
 	}
 });
 
@@ -165,6 +177,7 @@ buildify.task({
 			'jquery-ui',
 			'jquery-serializeForm',
 			'jquery-sieve', //client side quick text search
+			'jquery-file-upload',
 			//'flexslider',
 			'underscore',
 			'underscore.string',
@@ -178,8 +191,7 @@ buildify.task({
 			'momentjs',
 			'marked',			
 			'colorbox',
-			// 'noty',
-			'spin.js',
+			//'spin.js',
 			'nprogress',
 			'raphael'
 		];
@@ -199,6 +211,7 @@ buildify.task({
 			'jquery-ui',
 			'jquery-serializeForm',
 			'jquery-sieve',
+			'jquery-file-upload',
 			//'flexslider',
 			'underscore',
 			'underscore.string',
@@ -212,8 +225,7 @@ buildify.task({
 			'momentjs',
 			'marked',			
 			'colorbox',
-			// 'noty',
-			'spin.js',
+			//'spin.js',
 			'nprogress',
 			'raphael'
 		];
