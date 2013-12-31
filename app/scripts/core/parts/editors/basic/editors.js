@@ -188,7 +188,7 @@ Application.Editor.register('Basic', function(){
 				this.onRender = function(){
 					var _this = this;
 					this.$el.fileupload({
-						url: options.upload.url,
+						url: _.isFunction(options.upload.url)?options.upload.url():options.upload.url,
 						fileInput: null, //-remove the plugin's 'change' listener to delay the add event.
 						//forceIframeTransport: true, //-note that if iframe is used, error/fail callback will not be possible without further hack using frame['iframe name'].document
 						add: function (e, data) {

@@ -117,7 +117,7 @@
 				options = _.extend({
 					closeX: true,
 					zIndex: 100,
-					background: 'rgba(0, 0, 0, 0.7)',
+					background: (options.content || options.title || options.buttons)?'rgba(0, 0, 0, 0.7)':'none',
 					containerStyle: {background: (options.content || options.title || options.buttons)? '#FFF' : 'none', textAlign: 'left'},
 					titleStyle: {fontSize: '15px', fontWeight: 'bold'},
 					buttonsAlign: 'right',

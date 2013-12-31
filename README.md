@@ -9,7 +9,7 @@ What's next?
 2. (done) Remove noty2 and replace it with a new alert/messaging system + prompt as application util (view.flyTo and $.overlay())
 3. Add a new 2-lvl accordion menu widget
 4. (done) Leave nothing but titile <---> message, help on the banner, move user above the left menu accordion
-5. Make file upload work (ajax?)
+5. (done) Make file upload work (both ajax and iframe post)
 6. Give Context.Shared a default view that loads a basic development .md doc;
 
 

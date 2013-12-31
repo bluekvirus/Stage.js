@@ -98,7 +98,7 @@
 								type: 'file',
 								help: 'Please choose your image to upload.',
 								upload: {
-									url: '/file/Blog/'
+									url: function(){ return '/file/Blog2/';}
 								}
 							},
 							radios: {
