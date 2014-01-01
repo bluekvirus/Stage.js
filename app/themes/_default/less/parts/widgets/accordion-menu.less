@@ -1,0 +1,44 @@
+/**
+ * This is the style for the accordion menu widget
+ *
+ * @author Tim.Liu
+ * @created 2014.01.01
+ */
+
+.widget-accordion-menu {
+
+	margin-top: 4px;
+	background: @color-bg;
+	
+	.groups {
+
+		.group {
+			height: 80px;
+			padding: 10px 0 5px;
+			text-align: center;
+			border-bottom: 1px solid @color-dark;
+			cursor: pointer;
+
+			.group-icon-ct {
+				i {
+					display: block;
+					height: 48px;
+					width: 48px;
+					margin: 0 auto;
+					border-radius: 500px;
+					border: 3px solid @color-sand;
+				}
+			}
+
+			.group-label {
+				font-weight: bold;
+				margin-top: 5px;
+			}
+
+			&:hover {
+				background: darken(@color-bg, 5%);
+			}	
+		}
+	}
+
+}

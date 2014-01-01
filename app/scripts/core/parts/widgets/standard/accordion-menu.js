@@ -27,7 +27,7 @@ Application.Widget.register('AccordionMenu', function(){
 
 	var View = Backbone.Marionette.Layout.extend({
 		template: '#widget-accordion-menu-tpl',
-		className: 'row-fluid',
+		className: 'row-fluid widget-accordion-menu',
 		initialize: function(options){
 			options = _.extend({
 				//-----------------TDD-------------------
@@ -61,6 +61,7 @@ Application.Widget.register('AccordionMenu', function(){
 	});
 
 	var Groups = Backbone.Marionette.CollectionView.extend({
+		className: 'groups with-border-right',
 		itemView: Backbone.Marionette.ItemView.extend({
 			template: '#widget-accordion-menu-group-tpl',
 			className: 'group',
@@ -77,8 +78,8 @@ Application.Widget.register('AccordionMenu', function(){
 });
 
 Template.extend('widget-accordion-menu-tpl', [
-	'<div class="span4" region="groups"></div>',
-	'<div class="span8 hide" region="sections"></div>'
+	'<div class="span5" region="groups"></div>',
+	'<div class="span7 hide" region="sections"></div>'
 ]);
 
 Template.extend('widget-accordion-menu-group-tpl', [

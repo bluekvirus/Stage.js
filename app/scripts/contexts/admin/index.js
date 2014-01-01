@@ -64,11 +64,11 @@
 Template.extend(
 	'application-context-admin-tpl',
 	[
-	    '<div region="sidebar" class="span2 with-border-right">',
+	    '<div region="sidebar" class="span3 with-border-right">',
 	    	'<div region="user"></div>',
 	    	'<div region="menu"></div>',
 	    '</div>',
-	    '<div region="content" class="span10"></div>'
+	    '<div region="content" class="span9"></div>'
 	]
 );
 
