@@ -45,7 +45,8 @@
 
 					onShow: function(){
 						this.user.show(new app.Context.Shared.User.View.Default());
-						this.menu.show(new context.Menu.View.Default());
+						//this.menu.show(new context.Menu.View.Default());
+						this.menu.show(app.Widget.create('AccordionMenu'));
 						if(app.config.fullScreen) {
 							this.content.$el.css('overflowY', 'auto');
 							this.sidebar.$el.css('overflowY', 'auto');

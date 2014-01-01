@@ -207,7 +207,7 @@
 								record: grid.table.collection.create()
 							}, formOpt));
 							this.trigger('grid:show-form', view);
-							this.listenToOnce(view, 'form:record-saved', function(){
+							this.listenToOnce(view, 'form:record-saved form:cancelled', function(){
 								view.close();
 								grid.refresh();
 							});

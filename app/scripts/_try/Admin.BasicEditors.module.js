@@ -25,7 +25,7 @@
 
 	_.extend(module, {
 
-		defaultAdminPath: "Test->EditorDemo",
+		defaultAdminPath: "Test->Form->EditorDemo",
 
 		View: {
 
