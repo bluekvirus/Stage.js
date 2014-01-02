@@ -97,7 +97,7 @@ Application.Widget.register('AccordionMenu', function(){
 		className: 'sections',
 		initialize: function(options){
 			this._options = options;
-			var borderFix = Number(_.string.trim(this._options.group.$el.css('borderBottomWidth'), 'px'));
+			var borderFix = Number(_.string.trim(this._options.group.$el.css('borderBottomWidth'), 'px')); //tbh, this must also be the section header's border-bottom-width, see accordion-menu.less
 			this._itemHeight = (this._options.group.$el.innerHeight() - borderFix)/2; //dynamically make 2 section together to be as high as a group view block.
 		},
 		itemViewOptions: function(){

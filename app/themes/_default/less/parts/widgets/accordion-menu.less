@@ -6,6 +6,7 @@
  */
 
 @groupWidth: 100px;
+@borderBottomSize: 1px;
 .widget-accordion-menu {
 
 	margin-top: 4px;
@@ -21,7 +22,7 @@
 				height: 60px;
 				padding: 10px 0 5px;
 				text-align: center;
-				border-bottom: 1px solid @color-stone;
+				border-bottom: @borderBottomSize solid @color-stone;
 				cursor: pointer;
 
 				.group-icon-ct {
@@ -61,7 +62,7 @@
 
 			.section-header {
 				padding: 0 15px;
-				border-bottom: 1px solid @color-stone;
+				border-bottom: @borderBottomSize solid @color-stone;
 			}
 
 			&:hover {
