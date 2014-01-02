@@ -1,14 +1,14 @@
 /**
- * Backbone.Marionette View Object Enhancements
+ * Backbone.Marionette View Object Enhancements (opt-ins) non-opt-in please see core/env.js as lib overridens.
  * 
  * component opt-ins: (use in component initialize func)
  * 1. +Action Tag listener mechanisms - View. (ui locks [2] is automatically activated for you)
- * 2. +UI Locking support to view regions (without Application scope total lockdown atm...) - View. (+ Region.open enhancement)
+ * 2. +UI Locking support to view regions (without Application scope total lockdown atm...) - View. (+ view:resized propagation[down-ward] ->layout:resized
  * 3. +View Region/UI auto-detects + optional fake content - Layout.
  * 4. +Window resize awareness - View. - but usually you should be listening to app - view:resized event for window resize.
  * 5. +SVG canvas support - View.
  * 6. +Tab layout support - View. 
- * 7. +Auto region resize evenly. - Layout.
+ * 7. +Auto region resize evenly. - Layout. (Todo: make it proportionally sized instead of just evenlly)
  * 8. +Editors Activation - View.
  * 9. +Enable Form (with +addFormPart(view)) - View. (will call activateEditors() [8] for you)
  * 10. +Enable Tooltips - View.
@@ -212,6 +212,14 @@ _.extend(Backbone.Marionette.View.prototype, {
 		this.listenTo(this, 'render', function(){
 			_.each(this.regions, function(selector, region){
 				this[region].ensureEl();
+				this[region].$el.addClass(_.string.slugify(region) + '-ct');
+			},this);
+		});
+		//propagate a layout view:resized event down to its regional views.
+		this.listenTo(this, 'view:resized', function(args){
+			_.each(this.regions, function(selector, region){
+				var child = this[region].currentView;
+				if(child) child.trigger('layout:resized', this, args);
 			},this);
 		});
 	},
@@ -234,19 +242,6 @@ _.extend(Backbone.Marionette.View.prototype, {
 		}
 	}
 });
-//We override the Region open method to let it consult a view's openEffect attribute.
-_.extend(Backbone.Marionette.Region.prototype, {
-	open: function(view){
-		if(view._openEffect){
-			this.$el.hide();
-			this.$el.empty().append(view.el);
-			this.$el.show(view._openEffect.name, view._openEffect.options, view._openEffect.duration || 200);
-		}
-		else 
-			this.$el.empty().append(view.el);
-	}
-});
-
 
 /**
  * Respond to window resize event. (during initialize)
@@ -387,12 +382,14 @@ _.extend(Backbone.Marionette.View.prototype, {
 /**
  * Auto even Layout region size.
  * Do this in onShow() or initialize.
- * !Note! that you should also use 7.hookUpWindowResize() to make the even process keeps up with window resizing.
+ * !Note! that you may also use 7.hookUpWindowResize() to make the even process keeps up with window resizing.
  * -------
  * options
  * -------
  * mode: vertical (default) | horizontal
  * min: 100 (default)
+ * float: 'left' (default) /'right'
+ * view: false (default)/true resize the region container or the region's view.
  */
 _.extend(Backbone.Marionette.Layout.prototype, {
 	
@@ -404,7 +401,8 @@ _.extend(Backbone.Marionette.Layout.prototype, {
 		options = _.extend({
 			mode: 'vertical',
 			min: 100,
-			hFloat: 'left',
+			float: 'left',
+			view: false
 		}, options);
 
 		if(options.mode === 'horizontal'){
@@ -416,8 +414,8 @@ _.extend(Backbone.Marionette.Layout.prototype, {
 
 				_.each(this.regions, function(selector, r){							
 					this[r].ensureEl();
-					this[r].$el.width(perRegionWidth).css('float', options.hFloat);
-					this[r].currentView && this[r].currentView.trigger('view:resized', {w: perRegionWidth, h: null});
+					this[r].$el.css('float', options.float);
+					this[r].resize({w: perRegionWidth, view:options.view});
 				},this);
 			});			
 		}else if(options.mode === 'vertical'){
@@ -429,8 +427,7 @@ _.extend(Backbone.Marionette.Layout.prototype, {
 
 				_.each(this.regions,function(selector, r){							
 					this[r].ensureEl();
-					this[r].$el.height(perRegionHeight);
-					this[r].currentView && this[r].currentView.trigger('view:resized', {w: null, h: perRegionHeight});
+					this[r].resize({view: options.view, h: perRegionHeight});
 				},this);
 			});	 	
 		}

@@ -126,4 +126,34 @@ NProgress.configure({
   //showSpinner: false
 });
 
+//1-7,8 
+//We override the Region open method to let it consult a view's openEffect attribute.
+//We add a resize method to Region to allow easier layout sizing.
+//	config: {w: ..., h: ..., view: true - resize the view instead of region container, overflowX: hidden, overflowY: auto}
+_.extend(Backbone.Marionette.Region.prototype, {
+	open: function(view){
+		if(view._openEffect){
+			this.$el.hide();
+			this.$el.empty().append(view.el);
+			this.$el.show(view._openEffect.name, view._openEffect.options, view._openEffect.duration || 200);
+		}
+		else 
+			this.$el.empty().append(view.el);
+	},
+
+	resize: function(config){
+		config = _.extend({
+			view: true,
+			overflowX: 'hidden',
+			overflowY: 'auto'
+		},config);
+		var target = this.currentView;
+		if(!config.view) target = this;
+		if(!target) return;
+		if(config.h) target.$el.height(config.h).css('overflowY', config.overflowY);
+		if(config.w) target.$el.width(config.w).css('overflowX', config.overflowX);
+		target.trigger('view:resized', _.pick(config, 'h', 'w'));
+	}
+});
+
 

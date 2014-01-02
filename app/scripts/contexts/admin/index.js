@@ -28,17 +28,18 @@
 			View: {
 				Default: Backbone.Marionette.Layout.extend({
 					template: '#application-context-admin-tpl',
-					className: 'default row-fluid',
 
 					initialize: function(){
 						this.autoDetectRegions();
 						if(app.config.fullScreen){
-							this.resize = function(){
-								this.content.$el.height(app.fullScreenContextHeight.bodyOnly);
-								this.sidebar.$el.height(app.fullScreenContextHeight.bodyOnly);
+							this.resizeRegions = function(){
+								//content:
+								this.content.resize({h: app.fullScreenContextHeight.bodyOnly, view:false});
+								//menu:
+								this.menu.resize({h: app.fullScreenContextHeight.bodyOnly - this.user.$el.outerHeight(true)});
 							}
 							this.listenTo(app, 'view:resized', function(){
-								this.resize();
+								this.resizeRegions();
 							});
 						}						
 					},
@@ -47,11 +48,7 @@
 						this.user.show(new app.Context.Shared.User.View.Default());
 						//this.menu.show(new context.Menu.View.Default());
 						this.menu.show(app.Widget.create('AccordionMenu'));
-						if(app.config.fullScreen) {
-							this.content.$el.css('overflowY', 'auto');
-							this.sidebar.$el.css('overflowY', 'auto');
-						}
-						this.resize();
+						this.resizeRegions();
 					}
 				})
 			}
@@ -64,11 +61,11 @@
 Template.extend(
 	'application-context-admin-tpl',
 	[
-	    '<div region="sidebar" class="span3 with-border-right">',
+	    '<div class="pull-left" style="width:320px">',
 	    	'<div region="user"></div>',
 	    	'<div region="menu"></div>',
 	    '</div>',
-	    '<div region="content" class="span9"></div>'
+	    '<div region="content" class="with-border-left" style="margin-left:320px"></div>'
 	]
 );
 
