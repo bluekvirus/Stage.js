@@ -5,7 +5,7 @@
  * @created 2014.01.01
  */
 
-@groupWidth: 120px;
+@groupWidth: 100px;
 .widget-accordion-menu {
 
 	margin-top: 4px;
@@ -18,7 +18,7 @@
 
 		.groups {
 			.group {
-				height: 80px;
+				height: 60px;
 				padding: 10px 0 5px;
 				text-align: center;
 				border-bottom: 1px solid @color-dark;
@@ -27,8 +27,8 @@
 				.group-icon-ct {
 					i {
 						display: block;
-						height: 48px;
-						width: 48px;
+						height: 32px;
+						width: 32px;
 						margin: 0 auto;
 						border-radius: 500px;
 						border: 3px solid @color-sand;
@@ -41,7 +41,11 @@
 				}
 
 				&:hover {
-					background: darken(@color-bg, 5%);
+					background-color: darken(@color-bg, 5%);
+				}
+
+				&.active {
+					background-color: @color-white; 
 				}	
 			}
 		}

@@ -52,26 +52,63 @@ Application.Widget.register('AccordionMenu', function(){
 			}, options);
 			this._options = options;
 			this.autoDetectRegions();
-		},
-		onShow: function(){
-			this.groups.show(new Groups({
+			this.groups.schedule(new Groups({
 				collection: new Backbone.Collection(this._options.structure)
 			}));
+			this.listenTo(this.views.groups, 'group:clicked', function(group){
+				group.$el.siblings().removeClass('active');
+				group.$el.addClass('active');
+				//show this group's section accordions
+				this.sections.schedule(new Sections({
+					collection: new Backbone.Collection(group.model.get('sub'))
+				}), true);
+			});
 		}
 	});
 
+	//lvl-1 nodes
 	var Groups = Backbone.Marionette.CollectionView.extend({
 		className: 'groups',
 		itemView: Backbone.Marionette.ItemView.extend({
 			template: '#widget-accordion-menu-group-tpl',
 			className: 'group',
 			initialize: function(options){
+				this._options = options;
 				if(!this.model.get('label')){
 					this.model.set('label', this.model.get('name'));
 				}
+			},
+			events: {
+				click: function(){
+					this._options.parentCt.trigger('group:clicked', this);
+				}
 			}
-		})
+		}),
+		itemViewOptions: function(model, index){
+			return {
+				parentCt: this //let the individual group view to have a ref to the parent collection view.
+			}
+		}
 	});
+
+	//lvl-2 nodes (per level 1 node)
+	var Sections = Backbone.Marionette.CollectionView.extend({
+		className: 'sections',
+		itemView: Backbone.Marionette.Layout.extend({
+			template: '#widget-accordion-menu-section-tpl',
+			className: 'section',
+			initialize: function(options){
+				if(!this.model.get('label')){
+					this.model.set('label', this.model.get('name'));
+				}				
+				this.autoDetectRegions();
+				//this.tree.schedule()... //show the section items as tree in the tree region.
+			}
+		}),
+		onShow: function(){
+			//activate accordion
+		}
+	})
 
 	return View;
 
@@ -85,4 +122,9 @@ Template.extend('widget-accordion-menu-tpl', [
 Template.extend('widget-accordion-menu-group-tpl', [
 	'<div class="group-icon-ct"><i class="{{icon}}"></i></div>',
 	'<div name="{{name}}" class="group-label">{{label}}</div>',	
+]);
+
+Template.extend('widget-accordion-menu-section-tpl', [
+	'<div class="section-header" name="{{name}}"><i class="{{icon}}">{{label}}</i></div>',
+	'<div class="section-tree" region="tree"></div>'
 ]);

@@ -1,10 +1,10 @@
 /**
- * Backbone.Marionette View Object Enhancements (opt-ins) non-opt-in please see core/env.js as lib overridens.
+ * Backbone.Marionette View Object Enhancements (opt-ins) , for non-opt-ins please see core/env.js as lib overridens.
  * 
  * component opt-ins: (use in component initialize func)
  * 1. +Action Tag listener mechanisms - View. (ui locks [2] is automatically activated for you)
- * 2. +UI Locking support to view regions (without Application scope total lockdown atm...) - View. (+ view:resized propagation[down-ward] ->layout:resized
- * 3. +View Region/UI auto-detects + optional fake content - Layout.
+ * 2. +UI Locking support to view regions (without Application scope total lockdown atm...) - View.
+ * 3. +View Region/UI auto-detects + optional fake content - Layout.+name and layout to region obj + view:resized propagation[down-ward] ->layout:resized
  * 4. +Window resize awareness - View. - but usually you should be listening to app - view:resized event for window resize.
  * 5. +SVG canvas support - View.
  * 6. +Tab layout support - View. 
@@ -209,6 +209,13 @@ _.extend(Backbone.Marionette.View.prototype, {
 			};
 		});
 		this.addRegions(this.regions);
+		//add some util refs to regions
+		_.each(this.regions, function(selector, region){
+			_.extend(this[region], {
+				name: region,
+				layout: this
+			});
+		}, this);
 		this.listenTo(this, 'render', function(){
 			_.each(this.regions, function(selector, region){
 				this[region].ensureEl();

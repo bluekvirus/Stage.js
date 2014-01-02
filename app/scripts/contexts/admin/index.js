@@ -61,11 +61,11 @@
 Template.extend(
 	'application-context-admin-tpl',
 	[
-	    '<div class="pull-left" style="width:320px">',
+	    '<div class="pull-left" style="width:260px">',
 	    	'<div region="user"></div>',
 	    	'<div region="menu"></div>',
 	    '</div>',
-	    '<div region="content" class="with-border-left" style="margin-left:320px"></div>'
+	    '<div region="content" class="with-border-left" style="margin-left:260px"></div>'
 	]
 );
 
