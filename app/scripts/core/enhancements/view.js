@@ -508,6 +508,12 @@ _.extend(Backbone.Marionette.View.prototype, {
 			$position.append(editor.el);
 			if(options.triggerOnShow) editor.trigger('show');
 		}, this);
+
+		this.listenTo(this, 'before:close', function(){
+			_.each(this.editors, function(editorview){
+				editorview.close();
+			});
+		});
 	}
 
 });
@@ -561,6 +567,12 @@ _.extend(Backbone.Marionette.View.prototype, {
 				opt.cb && opt.cb(view);
 			}
 		};
+		//a little clean-up setups
+		this.listenTo(this, 'before:close', function(){
+			_.each(this.parts, function(partview){
+				partview.close();
+			});
+		});
 
 		//1. getValues (O(n) - n is the total number of editors on this form)
 		this.getValues = function(){

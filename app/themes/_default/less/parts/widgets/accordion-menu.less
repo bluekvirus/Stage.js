@@ -21,7 +21,7 @@
 				height: 60px;
 				padding: 10px 0 5px;
 				text-align: center;
-				border-bottom: 1px solid @color-dark;
+				border-bottom: 1px solid @color-stone;
 				cursor: pointer;
 
 				.group-icon-ct {
@@ -53,6 +53,26 @@
 	
 	.sections-ct {
 		margin-left: @groupWidth;
+		height: 100%;
+		background-color: lighten(@color-bg, 5%); 
+
+		.section {
+			cursor: pointer;
+
+			.section-header {
+				padding: 0 15px;
+				border-bottom: 1px solid @color-stone;
+			}
+
+			&:hover {
+				background-color: darken(@color-bg, 5%);
+			}
+
+			&.active {
+				background-color: @color-white; 
+			}
+
+		}
 	}
 
 }
