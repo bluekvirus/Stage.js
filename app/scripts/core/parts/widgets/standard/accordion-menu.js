@@ -33,19 +33,19 @@ Application.Widget.register('AccordionMenu', function(){
 				//-----------------TDD-------------------
 				structure: [
 					{name: 'aG', sub: [
-						{name: 'aS-1', sub: [{name: 'aS-1.item1'}, {name: 'aS-1.item2', sub:[{name:'aS-1.item2.itemA'}, {name:'aS-1.item2.itemB'}, {name:'aS-1.item2.itemC'}]}, {name: 'aS-1.item3'}]},
+						{name: 'aS-1', sub: [{name: 'aS-1.item1'}, {name: 'aS-1.item2', label: 'Expand-able', sub:[{name:'aS-1.item2.itemA'}, {name:'aS-1.item2.itemB'}, {name:'aS-1.item2.itemC'}]}, {name: 'aS-1.item3'}]},
 						{name: 'aS-2', sub: [{name: 'aS-2.item1'}, {name: 'aS-2.item2'}, {name: 'aS-2.item3'}]},
 						{name: 'aS-3', sub: [{name: 'aS-3.item1'}, {name: 'aS-3.item2'}]}
 					]},
 					{name: 'bG', sub: [
-						{name: 'bS-1', sub: [{name: 'bS-1.item1', sub:[{name:'bS-1.item1.itemA'}, {name:'bS-1.item1.itemB'}, {name:'bS-1.item1.itemC'}]}, {name: 'bS-1.item2'}]},
+						{name: 'bS-1', sub: [{name: 'bS-1.item1', label: 'Expand-able', sub:[{name:'bS-1.item1.itemA'}, {name:'bS-1.item1.itemB'}, {name:'bS-1.item1.itemC'}]}, {name: 'bS-1.item2'}]},
 						{name: 'bS-2', sub: [{name: 'bS-2.item1'}, {name: 'bS-2.item2'}]},
 						{name: 'bS-3', sub: [{name: 'bS-3.item1'}, {name: 'bS-3.item2'}]}
 					]},
 					{name: 'cG', sub: [
-						{name: 'cS-1', sub: [{name: 'cS-1.item1', sub:[{name:'cS-1.item1.itemA'}, {name:'cS-1.item1.itemB'}, {name:'cS-1.item1.itemC'}]}]},
+						{name: 'cS-1', sub: [{name: 'cS-1.item1', label: 'Expand-able', sub:[{name:'cS-1.item1.itemA'}, {name:'cS-1.item1.itemB'}, {name:'cS-1.item1.itemC'}]}]},
 						{name: 'cS-2', sub: [{name: 'cS-2.item1'}]},
-						{name: 'cS-3', sub: [{name: 'cS-3.item1'}, {name: 'cS-3.item2', sub:[{name:'cS-3.item2.itemA'}, {name:'cS-3.item2.itemB'}, {name:'cS-3.item2.itemC'}]}]}
+						{name: 'cS-3', sub: [{name: 'cS-3.item1'}, {name: 'cS-3.item2', label: 'Expand-able', sub:[{name:'cS-3.item2.itemA'}, {name:'cS-3.item2.itemB'}, {name:'cS-3.item2.itemC'}]}]}
 					]}
 				]
 				//---------------------------------------
@@ -96,7 +96,6 @@ Application.Widget.register('AccordionMenu', function(){
 		},
 		onShow: function(){
 			if(this.collection.size() > 1) this.trigger('groups:show');
-			this.chi
 		}
 	});
 
@@ -107,6 +106,10 @@ Application.Widget.register('AccordionMenu', function(){
 			this._options = options;
 			var borderFix = Number(_.string.trim(this._options.group.$el.css('borderBottomWidth'), 'px')); //tbh, this must also be the section header's border-bottom-width, see accordion-menu.less
 			this._itemHeight = (this._options.group.$el.innerHeight() - borderFix)/2; //dynamically make 2 sections together to be as high as a group view block.
+			this.listenTo(this, 'section:clicked', function(section){
+				section.$el.siblings().removeClass('active');
+				section.$el.addClass('active');
+			});
 		},
 		itemViewOptions: function(){
 			return {
@@ -134,11 +137,13 @@ Application.Widget.register('AccordionMenu', function(){
 					height: this._options.parentCt._itemHeight + 'px',
 					lineHeight: this._options.parentCt._itemHeight + 'px'
 				});
+			},
+			events: {
+				'click .section-header' : function(){
+					this._options.parentCt.trigger('section:clicked', this);
+				}
 			}
-		}),
-		onShow: function(){
-			//activate accordion
-		}
+		})
 	});
 
 	//lvl-3 nodes and their sub[] children nodes (per level 2 node) - generalize to be a widget?
@@ -148,27 +153,28 @@ Application.Widget.register('AccordionMenu', function(){
 		template: '#_blank',
 		initialize: function(options){
 			this._options = options;
-			if(this.model && !this.model.get('label')){
-				this.model.set('label', this.model.get('name'));
+			if(this.model){
+				this.enableActionTags('Widget.AccordionMenu.TreeNode');
+				if(!this.model.get('label'))
+					this.model.set('label', this.model.get('name'));
 			}
 		},
 		itemViewOptions: function(model, index){
 			var opt = {
 				parentCt: this, //while !parentCt._options.section till root.parentCt._options.section to find the section a node/leaf belongs to
+				template: '#widget-accordion-menu-treeitem-tpl'
 			};
 			if(model.get('sub')) {
 				_.extend(opt, {
 					collection : new Backbone.Collection(model.get('sub')),
 					tagName: 'ul',
 					className: 'node',
-					template: '#widget-accordion-menu-tree-node-tpl',
 					itemViewContainer: 'ul'
 				});
 			}else {
 				_.extend(opt, {
 					tagName: 'li',
-					className: 'leaf',
-					template: '#widget-accordion-menu-tree-leaf-tpl'
+					className: 'leaf'
 				});
 			}
 			switch(index){
@@ -182,6 +188,11 @@ Application.Widget.register('AccordionMenu', function(){
 					break;
 			}
 			return opt;
+		},
+		actions: {
+			toggle: function($action){
+				this.$el.toggleClass('active');
+			}
 		}
 	});
 
@@ -201,13 +212,16 @@ Template.extend('widget-accordion-menu-group-tpl', [
 
 Template.extend('widget-accordion-menu-section-tpl', [
 	'<div class="section-header" ui="header" name="{{name}}"><i class="{{icon}}"></i> <span class="section-label">{{label}}</span></div>',
-	'<div class="section-tree" region="tree"></div>'
+	'<div class="section-tree" ui="tree" region="tree"></div>'
 ]);
 
-Template.extend('widget-accordion-menu-tree-node-tpl', [
-	'<li class="meta"><span class="linkicon"><i></i></span> <i class="{{icon}}"></i> <span class="item-label">{{label}}</span></li>',
-	'<ul class="leafz"></ul>'
-]);
-Template.extend('widget-accordion-menu-tree-leaf-tpl', [
-	'<span class="linkicon"><i></i></span> <i class="{{icon}}"></i> <span class="item-label">{{label}}</span>'
+Template.extend('widget-accordion-menu-treeitem-tpl', [
+	'{{#if sub}}',
+		'<li class="meta" action="toggle">',
+	'{{/if}}',
+	'<i class="linkicon"></i> <i class="{{icon}}"></i> <span class="item-label">{{label}}</span>',
+	'{{#if sub}}',
+		'</li>',
+		'<ul class="leafz"></ul>',
+	'{{/if}}',
 ]);

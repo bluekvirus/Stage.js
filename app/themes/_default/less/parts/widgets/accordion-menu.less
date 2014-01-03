@@ -10,7 +10,7 @@
 .widget-accordion-menu {
 
 	margin-top: 4px;
-	background-color: lighten(@color-bg, 5%); 
+	background-color: lighten(@color-bg, 7%); 
 
 	.groups-ct {
 
@@ -36,7 +36,7 @@
 						width: 32px;
 						margin: 0 auto;
 						border-radius: 500px;
-						border: 3px solid @color-sand;
+						border: 3px solid darken(@color-sand, 7%);
 					}
 				}
 
@@ -46,7 +46,7 @@
 				}
 
 				&:hover {
-					background-color: darken(@color-bg, 5%);
+					background-color: darken(@color-bg, 10%);
 				}
 
 				&.active {
@@ -67,20 +67,37 @@
 
 		.section {
 			cursor: pointer;
+			&.active {
+				.section-header {
+					border-bottom: none;
+					background-color: lighten(@color-bg, 9%);
+					&:hover {
+						background-color: lighten(@color-bg, 9%);
+					}
+				}
+				.section-tree {
+					display: block;
+					background-color: @color-white;
+				}
+			}			
 
 			.section-header {
 				padding: 0 15px;
 				border-bottom: @borderBottomSize solid @color-stone;
+				background-color: @color-bg;
+
 				&:hover {
 					background-color: darken(@color-bg, 5%);
 				}
 
-				&.active {
-					background-color: @color-white; 
+				.section-label {
+					font-weight: bold
 				}				
 			}
 
 			.section-tree {
+				//tree style, this might be extracted to be in the stand-alone tree widget style
+				display: none;
 				border-bottom: @borderBottomSize solid @color-stone;
 
 				ul, li {
@@ -91,19 +108,40 @@
 				.root {
 					margin-left: 25px;
 
-					.meta, .leaf {
+					.linkicon {
+						display: inline-block;
+						//TBI with link icons
+					}
+
+					.leaf {
 						padding: 4px 0;
+						&:hover {
+							background-color: @color-bg;
+						}
 					}
 
 					.node {
+						.meta {
+							padding: 4px 0;
+							&:hover {
+								background-color: @color-bg;
+							}
+						}
+
 						.leafz {
+							display: none;
 							margin-left: 10px;
+						}
+
+						&.active {
+							.leafz {
+								display: block;
+							}
 						}
 					}
 				}
 
 			}
-
 		}
 	}
 

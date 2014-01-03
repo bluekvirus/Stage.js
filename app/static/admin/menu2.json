@@ -1,0 +1,29 @@
+[{
+    "label": "System",
+    "sub": [{
+        "label": "Overview"
+    },{
+        "label": "Configure"
+    }]
+},{
+    "label": "Application",
+    "sub": [
+        {"label": "Content Management"},
+        {"label": "RSS Feeds"},
+        {"label": "Materials"},
+        {"label": "Analytics"}
+    ]
+},{
+    "label": "Log & Report",
+    "sub": [
+        {"label": "N/A"}
+    ]
+},{
+    "label": "Tools",
+    "sub": [
+        {
+            "label": "Other",
+            "name": "Nothing"
+        }
+    ]
+}]
