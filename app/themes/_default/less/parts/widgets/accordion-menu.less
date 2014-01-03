@@ -82,6 +82,26 @@
 
 			.section-tree {
 				border-bottom: @borderBottomSize solid @color-stone;
+
+				ul, li {
+					list-style: none;
+					margin: 0;
+				}
+
+				.root {
+					margin-left: 25px;
+
+					.meta, .leaf {
+						padding: 4px 0;
+					}
+
+					.node {
+						.leafz {
+							margin-left: 10px;
+						}
+					}
+				}
+
 			}
 
 		}

@@ -38,14 +38,14 @@ Application.Widget.register('AccordionMenu', function(){
 						{name: 'aS-3', sub: [{name: 'aS-3.item1'}, {name: 'aS-3.item2'}]}
 					]},
 					{name: 'bG', sub: [
-						{name: 'bS-1', sub: [{name: 'bS-1.item1', sub:[{name:'bS-1.item2.itemA'}, {name:'bS-1.item2.itemB'}, {name:'bS-1.item2.itemC'}]}, {name: 'bS-1.item2'}]},
+						{name: 'bS-1', sub: [{name: 'bS-1.item1', sub:[{name:'bS-1.item1.itemA'}, {name:'bS-1.item1.itemB'}, {name:'bS-1.item1.itemC'}]}, {name: 'bS-1.item2'}]},
 						{name: 'bS-2', sub: [{name: 'bS-2.item1'}, {name: 'bS-2.item2'}]},
 						{name: 'bS-3', sub: [{name: 'bS-3.item1'}, {name: 'bS-3.item2'}]}
 					]},
 					{name: 'cG', sub: [
-						{name: 'cS-1', sub: [{name: 'cS-1.item1', sub:[{name:'cS-1.item2.itemA'}, {name:'cS-1.item2.itemB'}, {name:'cS-1.item2.itemC'}]}]},
+						{name: 'cS-1', sub: [{name: 'cS-1.item1', sub:[{name:'cS-1.item1.itemA'}, {name:'cS-1.item1.itemB'}, {name:'cS-1.item1.itemC'}]}]},
 						{name: 'cS-2', sub: [{name: 'cS-2.item1'}]},
-						{name: 'cS-3', sub: [{name: 'cS-3.item1'}, {name: 'cS-3.item2', sub:[{name:'cS-1.item2.itemA'}, {name:'cS-1.item2.itemB'}, {name:'cS-1.item2.itemC'}]}]}
+						{name: 'cS-3', sub: [{name: 'cS-3.item1'}, {name: 'cS-3.item2', sub:[{name:'cS-3.item2.itemA'}, {name:'cS-3.item2.itemB'}, {name:'cS-3.item2.itemC'}]}]}
 					]}
 				]
 				//---------------------------------------
@@ -145,7 +145,7 @@ Application.Widget.register('AccordionMenu', function(){
 	var Tree = Backbone.Marionette.CompositeView.extend({
 		tagName: 'ul',
 		className: 'root',
-		template: '#widget-accordion-menu-treeitem-tpl',
+		template: '#_blank',
 		initialize: function(options){
 			this._options = options;
 			if(this.model && !this.model.get('label')){
@@ -160,12 +160,15 @@ Application.Widget.register('AccordionMenu', function(){
 				_.extend(opt, {
 					collection : new Backbone.Collection(model.get('sub')),
 					tagName: 'ul',
-					className: 'node'
+					className: 'node',
+					template: '#widget-accordion-menu-tree-node-tpl',
+					itemViewContainer: 'ul'
 				});
 			}else {
 				_.extend(opt, {
 					tagName: 'li',
-					className: 'leaf'
+					className: 'leaf',
+					template: '#widget-accordion-menu-tree-leaf-tpl'
 				});
 			}
 			switch(index){
@@ -201,6 +204,10 @@ Template.extend('widget-accordion-menu-section-tpl', [
 	'<div class="section-tree" region="tree"></div>'
 ]);
 
-Template.extend('widget-accordion-menu-treeitem-tpl', [
+Template.extend('widget-accordion-menu-tree-node-tpl', [
+	'<li class="meta"><span class="linkicon"><i></i></span> <i class="{{icon}}"></i> <span class="item-label">{{label}}</span></li>',
+	'<ul class="leafz"></ul>'
+]);
+Template.extend('widget-accordion-menu-tree-leaf-tpl', [
 	'<span class="linkicon"><i></i></span> <i class="{{icon}}"></i> <span class="item-label">{{label}}</span>'
 ]);
