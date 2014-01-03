@@ -130,7 +130,7 @@ NProgress.configure({
 //7.We override the Region open method to let it consult a view's openEffect attribute.
 //8.We add a resize method to Region to allow easier layout sizing.
 //	config: {w: ..., h: ..., view: true - resize the view instead of region container, overflowX: hidden, overflowY: auto}
-//9.We add a schedule method to show a view when the parent layout is ready and shown, this should be used within the parent layout's initialize(). 
+//9.We add a schedule method to show a view when the parent layout is ready(rendered) or shown, this should be used within the parent layout's initialize(). 
 //	It also save a ref to the region's future view, so you can .listenTo the view by layout.views.[region name] in the initialize() after scheduling.
 _.extend(Backbone.Marionette.Region.prototype, {
 	open: function(view){
@@ -157,12 +157,12 @@ _.extend(Backbone.Marionette.Region.prototype, {
 		target.trigger('view:resized', _.pick(config, 'h', 'w'));
 	},
 
-	schedule: function(view, immediate){
+	schedule: function(view, immediate, uponRender){
 		this.layout.views = this.layout.views || {};
 		this.layout.views[this.name] = view;
 		if(immediate) this.show(view);
 		else
-			this.listenToOnce(this.layout, 'show', function(){
+			this.listenToOnce(this.layout, uponRender?'render':'show', function(){
 				this.show(view);
 			});
 	}

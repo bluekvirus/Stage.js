@@ -10,12 +10,16 @@
 .widget-accordion-menu {
 
 	margin-top: 4px;
-	background: @color-bg;
+	background-color: lighten(@color-bg, 5%); 
 
 	.groups-ct {
+
 		width: @groupWidth;
 		height: 100%;
+		background: @color-bg;
 		float: left;
+		overflow-x: hidden;
+		display: none;
 
 		.groups {
 			.group {
@@ -53,9 +57,13 @@
 	}
 	
 	.sections-ct {
-		margin-left: @groupWidth;
+		
+		&.make-room-for-groups {
+			margin-left: @groupWidth;
+		}
+
 		height: 100%;
-		background-color: lighten(@color-bg, 5%); 
+		//background-color: lighten(@color-bg, 5%); //moved up to menu bg
 
 		.section {
 			cursor: pointer;
@@ -63,14 +71,17 @@
 			.section-header {
 				padding: 0 15px;
 				border-bottom: @borderBottomSize solid @color-stone;
+				&:hover {
+					background-color: darken(@color-bg, 5%);
+				}
+
+				&.active {
+					background-color: @color-white; 
+				}				
 			}
 
-			&:hover {
-				background-color: darken(@color-bg, 5%);
-			}
-
-			&.active {
-				background-color: @color-white; 
+			.section-tree {
+				border-bottom: @borderBottomSize solid @color-stone;
 			}
 
 		}
