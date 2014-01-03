@@ -10,7 +10,7 @@
 .widget-accordion-menu {
 
 	margin-top: 4px;
-	background-color: lighten(@color-bg, 7%); 
+	background-color: @color-white;
 
 	.groups-ct {
 
@@ -50,7 +50,7 @@
 				}
 
 				&.active {
-					background-color: @color-white; 
+					background-color: lighten(@color-bg, 7%); 
 				}	
 			}
 		}
@@ -70,9 +70,9 @@
 			&.active {
 				.section-header {
 					border-bottom: none;
-					background-color: lighten(@color-bg, 9%);
+					background-color: lighten(@color-bg, 7%);
 					&:hover {
-						background-color: lighten(@color-bg, 9%);
+						background-color: lighten(@color-bg, 7%);
 					}
 				}
 				.section-tree {
@@ -107,6 +107,7 @@
 
 				.root {
 					margin-left: 25px;
+					color: darken(@color-dark, 10%);
 
 					.linkicon {
 						display: inline-block;
@@ -116,7 +117,9 @@
 					.leaf {
 						padding: 4px 0;
 						&:hover {
-							background-color: @color-bg;
+							//background-color: @color-bg;
+							color: @color-black;
+							font-weight: bold;
 						}
 					}
 
@@ -124,7 +127,9 @@
 						.meta {
 							padding: 4px 0;
 							&:hover {
-								background-color: @color-bg;
+								//background-color: @color-bg;
+								color: @color-black;
+								font-weight: bold;
 							}
 						}
 
