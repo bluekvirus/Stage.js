@@ -9,7 +9,7 @@
 
 	_.extend(module, {
 
-		defaultAdminPath: "Test->EvenRegions",
+		defaultMenuPath: "Test->Layout->EvenRegions",
 
 		View: {
 			Default: Backbone.Marionette.Layout.extend({

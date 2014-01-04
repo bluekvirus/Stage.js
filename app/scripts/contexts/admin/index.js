@@ -33,6 +33,7 @@
 
 					initialize: function(){
 						this.autoDetectRegions();
+						//resize
 						if(app.config.fullScreen){
 							this.resizeRegions = function(){
 								//content:
@@ -44,39 +45,68 @@
 								this.resizeRegions();
 							});
 						}
+						//menu loading event handle
 						this.listenTo(this, 'context:admin:load-menu', function(url, preProcess){
 							if(_.isFunction(url)){
 								preProcess = url;
 								url = '/static/admin/menu2.json';
 							}
-							this._loadMenuData(url, function(data){
+							var _this = this;
+							$.ajax({
+								url: url
+							}).done(function(data){
 								if(preProcess) data = preProcess(data);
-								this.menu.show(app.Widget.create('AccordionMenu', {
+								_this.menu.schedule(app.Widget.create('AccordionMenu', {
 									structure : data
-								}));
-								this.resizeRegions();							
-							});
+								}), true);
+								_this.resizeRegions();
+								_this.listenTo(_this.views.menu, 'menu:selected', function(name, item){
+									Application.router.navigate('navigate/' + name, {trigger:true});
+								});							
+							});							
 						});					
 					},
 
 					onShow: function(){
 						this.user.show(new app.Context.Shared.User.View.Default());
-						this.trigger('context:admin:load-menu', this._mergeAutoloadedModuleIntoMenu); //add menu items preprocessing here.
+						this.trigger('context:admin:load-menu', this.prepMenu); //add menu items preprocessing here.
 					},
 
-					_loadMenuData: function(url, cb){
-						var _this = this;
-						$.ajax({
-							url: url
-						}).done(function(data){
-							cb.apply(_this, [data]);
-						});
-					},
-
-					_mergeAutoloadedModuleIntoMenu: function(data){
+					prepMenu: function(data){
+						//merge admin.x sub module.defaultMenuPath into the menu data.
 						_.each(context.submodules, function(m){
-							console.log(m);
+							if(m.defaultMenuPath) {
+								var parts = m.defaultMenuPath.split('->');
+								while(parts.length < 3){
+									parts.unshift('Unknown');
+								}
+								var visitor = _.isArray(data)?data:data.sub;
+								_.each(parts, function(part, index){
+									var found = _.findWhere(visitor, {label: part});
+									if(found) {
+										if(!found.sub) found.sub = [];
+										visitor = found.sub;
+									}
+									else {
+										if(index !== parts.length - 1){
+											var node = {
+												label: part,
+												sub: []
+											};
+											visitor.push(node);
+											visitor = node.sub;
+										}else {
+											visitor.push({
+												label: part,
+												name: m.name,
+											})
+										}
+									}
+								});
+							}
+							console.log(m.name, m.defaultMenuPath);
 						});
+
 						return data;
 					}
 				})

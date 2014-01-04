@@ -53,7 +53,8 @@ Application.Widget.register('AccordionMenu', function(){
 			this._options = options;
 			this.autoDetectRegions();
 			this.groups.schedule(new Groups({
-				collection: new Backbone.Collection(this._options.structure)
+				collection: new Backbone.Collection(this._options.structure),
+				delegate: this
 			}));
 			this.listenTo(this.views.groups, 'group:clicked', function(group){
 				group.$el.siblings().removeClass('active');
@@ -74,6 +75,9 @@ Application.Widget.register('AccordionMenu', function(){
 	//lvl-1 nodes
 	var Groups = Backbone.Marionette.CollectionView.extend({
 		className: 'groups',
+		initialize: function(options){
+			this._options = options;
+		},
 		itemView: Backbone.Marionette.ItemView.extend({
 			template: '#widget-accordion-menu-group-tpl',
 			className: 'group',
@@ -162,6 +166,7 @@ Application.Widget.register('AccordionMenu', function(){
 		itemViewOptions: function(model, index){
 			var opt = {
 				parentCt: this, //while !parentCt._options.section till root.parentCt._options.section to find the section a node/leaf belongs to
+				belongsTo: this._options.section || this._options.belongsTo,
 				template: '#widget-accordion-menu-treeitem-tpl'
 			};
 			if(model.get('sub')) {
@@ -192,6 +197,9 @@ Application.Widget.register('AccordionMenu', function(){
 		actions: {
 			toggle: function($action){
 				this.$el.toggleClass('active');
+			},
+			select: function($action){
+				this._options.belongsTo._options.parentCt._options.group._options.parentCt._options.delegate.trigger('menu:selected', this.model.get('name'), this.model);
 			}
 		}
 	});
@@ -219,7 +227,7 @@ Template.extend('widget-accordion-menu-treeitem-tpl', [
 	'{{#if sub}}',
 		'<li class="meta" action="toggle">',
 	'{{/if}}',
-	'<i class="linkicon"></i> <i class="{{icon}}"></i> <span class="item-label">{{label}}</span>',
+	'<i class="linkicon"></i> <i class="{{icon}}"></i> <span class="item-label" {{#unless sub}}action="select"{{/unless}}>{{label}}</span>',
 	'{{#if sub}}',
 		'</li>',
 		'<ul class="leafz"></ul>',

@@ -53,7 +53,9 @@
 			_.extend(ctx, {
 				name: name,
 				module: function(subModName){
-					return app.module(['Context', name, subModName].join('.'));
+					return _.extend(app.module(['Context', name, subModName].join('.')), {
+						name: subModName
+					});
 				}
 			}, factory && factory(ctx)); //note that we allow non-UI context for module grouping purposes.
 			return ctx;

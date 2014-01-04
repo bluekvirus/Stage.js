@@ -9,7 +9,7 @@
 
 	_.extend(module, {
 
-		defaultAdminPath: "Test->TabbedLayout",
+		defaultMenuPath: "Test->Data->Grid & .MD->TabbedLayout",
 
 		View: {
 			Default: Backbone.Marionette.Layout.extend({

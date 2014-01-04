@@ -91,7 +91,7 @@
 	 */
 	module.View = {Default:PropertyLayout};
 
-	module.defaultAdminPath = "Test->Status Example";
+	module.defaultMenuPath = "Test->Widget->Status Example";
 
 })(Application);
 

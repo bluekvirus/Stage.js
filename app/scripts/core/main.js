@@ -7,9 +7,13 @@
  * 	- Hook up global routes and routing event trigger. (event name: 'app.navigate-to-module', on Application)
  *
  * Global Application Events:
- * app:user-changed - user will be stored at app.user (app.user === undefined means user has logged out see Context.Shared.Banner)
- * app:switch-context (contextName, naviFragment)
- * app:navigate-to-module (moduleName, regionName)
+ * login context.form fires:
+ * 		app:user-changed - user will be stored at app.user (app.user === undefined means user has logged out see Context.Shared.User)
+ * app listens to >>>
+ * 		app:switch-context (contextName, naviFragment)
+ * app fires >>>
+ * 		app:navigate-to-module (moduleName, regionName)
+ *   	app:context-switched (contextName)
  * 
  * 
  * @author Tim.Liu
