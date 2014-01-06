@@ -19,6 +19,13 @@
  * 	}, ..., 
  * ]
  *
+ *
+ * Events
+ * ------
+ * listens to -> navigate:to:item e(name)
+ * triggers -> item:selected e(name, item model)
+ * 
+ *
  * @author Tim.Liu
  * @created 2014.01.01
  */
@@ -68,6 +75,9 @@ Application.Widget.register('AccordionMenu', function(){
 			this.listenToOnce(this.views.groups, 'groups:show', function(){
 				this.sections.$el.addClass('make-room-for-groups');
 				this.groups.$el.show('slide');
+			});
+			this.listenTo(this, 'navigate:to:item', function(name){
+				//Todo
 			});
 		}
 	});
@@ -161,6 +171,10 @@ Application.Widget.register('AccordionMenu', function(){
 				this.enableActionTags('Widget.AccordionMenu.TreeNode');
 				if(!this.model.get('label'))
 					this.model.set('label', this.model.get('name'));
+				//leaf
+				if(!this.model.get('sub')){
+					this.delegate = this._options.belongsTo._options.parentCt._options.group._options.parentCt._options.delegate;
+				}
 			}
 		},
 		itemViewOptions: function(model, index){
@@ -199,7 +213,7 @@ Application.Widget.register('AccordionMenu', function(){
 				this.$el.toggleClass('active');
 			},
 			select: function($action){
-				this._options.belongsTo._options.parentCt._options.group._options.parentCt._options.delegate.trigger('menu:selected', this.model.get('name'), this.model);
+				this.delegate.trigger('item:selected', this.model.get('name'), this.model);
 			}
 		}
 	});

@@ -60,11 +60,27 @@
 									structure : data
 								}), true);
 								_this.resizeRegions();
-								_this.listenTo(_this.views.menu, 'menu:selected', function(name, item){
+								if(_this._preMenuInitNavigationCache) {
+									_this.views.menu.trigger('select:menu:item', _this._preMenuInitNavigationCache);
+									delete _this._preMenuInitNavigationCache;
+								}
+								_this.listenTo(_this.views.menu, 'item:selected', function(name, item){
 									Application.router.navigate('navigate/' + name, {trigger:true});
 								});							
 							});							
-						});					
+						});
+						//context sub-module navigation event handle
+						this.listenTo(context, 'context:navigate-to-module', function(name){
+							if(!this.views || !this.views.menu) {
+								this._preMenuInitNavigationCache = name; //save this navigation event.
+							}else
+								this.views.menu.trigger('navigate:to:item', name);
+							if(!context.currentModule || (context.currentModule.name !== name)){
+								context.currentModule = new (context[name].View.Default());
+								//error !! 
+								this.content.schedule(context.currentModule);
+							}
+						});
 					},
 
 					onShow: function(){
@@ -104,7 +120,7 @@
 									}
 								});
 							}
-							console.log(m.name, m.defaultMenuPath);
+							//console.log(m.name, m.defaultMenuPath);
 						});
 
 						return data;

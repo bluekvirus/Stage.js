@@ -12,8 +12,8 @@
  * app listens to >>>
  * 		app:switch-context (contextName, naviFragment)
  * app fires >>>
- * 		app:navigate-to-module (moduleName, regionName)
  *   	app:context-switched (contextName)
+ *   	context:navigate-to-module (moduleName)
  * 
  * 
  * @author Tim.Liu
@@ -49,7 +49,7 @@
 			if(Application.currentContext === targetContext) return;
 			
 			Application.currentContext = targetContext;
-			if(!Application.currentContext) throw new Error('DEV::MainApp::You must have the requred context module ' + context + ' defined...'); //see - special/registry/context.js
+			if(!Application.currentContext) throw new Error('DEV::MainApp::You must have the requred context ' + context + ' defined...'); //see - special/registry/context.js
 
 			if(Application.currentContext.requireLogin && !Application.touch()){
 				Application.currentContext = Application.Context.get('Login');
@@ -60,7 +60,7 @@
 			}	
 			Application.body.show(new Application.currentContext.View.Default());
 			if(triggerNavi){
-				if(!_.isString(triggerNavi)) triggerNavi = 'navigate/default_' + $.now();
+				if(!_.isString(triggerNavi)) triggerNavi = 'navigate/' + Application.currentContext.name + '/default_' + $.now();
 				Application.router.navigate(triggerNavi, {trigger:true}); //trigger: true, let the route controller re-evaluate the uri fragment.
 			}
 			//fire a notification round to the sky.
@@ -113,30 +113,19 @@
 		//init client page router and history:
 		var Router = Backbone.Marionette.AppRouter.extend({
 			appRoutes: {
-				'(navigate)(/:module)(/:region)' : 'navigateToModule', //navigate to a module's default view from certain region. (optional, use with caution...)
+				'(navigate)(/:context)(/:module)' : 'navigateToModule', //navigate to a module's default view within a context
 			},
 			controller: {
-				navigateToModule: function(module, region){
-
-					if(!Application.currentContext.defaults) return;//skip navigation, contexts without a defaults block doesn't support region switches by route.
-
-					/*string*/var wanted = module; //you may do something here, like passing some config or msg to the default module.
-					if(!Application.currentContext[module]){
-						/*string*/module = Application.currentContext.defaults.module;
+				navigateToModule: function(context, module){
+					if(!module){
+						module = context;
+						context = Application.config.appContext;
 					}
-					/*string*/region = region || Application.currentContext.defaults.region;
-					appRegion = Application.body.currentView.regionManager.get(region);
-					var target = Application.currentContext[module];
-
-					if(target && appRegion){
-						if(Application.currentModule !== wanted){
-							appRegion.show(new target.View.Default(wanted === undefined?{}:{wanted: wanted}));
-							Application.currentModule = wanted;/*string*/ //remember the user wanted module name (may not exist)
-							Application.trigger('app:navigate-to-module', module, region); //but will always switch to the correct module (exists or default).
-						}
-					}else {
-						//fallback to default, if that fails show error
-						Application.error('Applicaton Routes Error', 'The module','<em class="label">', module,'</em>','you requested in context', Application.currentContext.name, 'can NOT be shown on region', '<em class="label">', region,'</em>');						
+					var target = Application.currentContext;
+					if(!target || (target.name !== context))
+						Application.trigger('app:switch-context', context, ['#navigate', context, module].join('/'));
+					else {
+						target.trigger('context:navigate-to-module', module);
 					}
 				},
 			}
