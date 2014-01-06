@@ -61,25 +61,20 @@
 								}), true);
 								_this.resizeRegions();
 								if(_this._preMenuInitNavigationCache) {
-									_this.views.menu.trigger('select:menu:item', _this._preMenuInitNavigationCache);
-									delete _this._preMenuInitNavigationCache;
+									_this.navigateToModule();
 								}
 								_this.listenTo(_this.views.menu, 'item:selected', function(name, item){
-									Application.router.navigate('navigate/' + name, {trigger:true});
+									context.trigger('context:navigate-to-module', name, true);
 								});							
 							});							
 						});
 						//context sub-module navigation event handle
-						this.listenTo(context, 'context:navigate-to-module', function(name){
+						this.listenTo(context, 'context:navigate-to-module', function(name, userClicked){
 							if(!this.views || !this.views.menu) {
 								this._preMenuInitNavigationCache = name; //save this navigation event.
 							}else
-								this.views.menu.trigger('navigate:to:item', name);
-							if(!context.currentModule || (context.currentModule.name !== name)){
-								context.currentModule = new (context[name].View.Default());
-								//error !! 
-								this.content.schedule(context.currentModule);
-							}
+								this.navigateToModule(name, userClicked);
+							
 						});
 					},
 
@@ -124,6 +119,21 @@
 						});
 
 						return data;
+					},
+
+					navigateToModule: function(moduleName, userClicked) {
+						if(!moduleName) {
+							moduleName = this._preMenuInitNavigationCache;
+							delete this._preMenuInitNavigationCache;
+						}
+						if(!moduleName) return;
+						if(!context.currentModule || (context.currentModule.name !== moduleName)){
+							context.currentModule = new (context[moduleName].View.Default)();
+							this.content.show(context.currentModule);
+							if(!userClicked) this.views.menu.trigger('navigate:to:item', moduleName);
+							else Application.router.navigate('#navigate/Admin/' + moduleName); //change the location.hash only without triggering navigation
+						}
+
 					}
 				})
 			}

@@ -17,7 +17,9 @@
  * 	 		}]
  * 	 	}, ..., ]
  * 	}, ..., 
- * ]
+ * ],
+ *
+ * noGroup: show as a single accordion sections (TBI)
  *
  *
  * Events
@@ -59,11 +61,12 @@ Application.Widget.register('AccordionMenu', function(){
 			}, options);
 			this._options = options;
 			this.autoDetectRegions();
+			this._processStructure();//create a meta map about items and their groups n sections
 			this.groups.schedule(new Groups({
 				collection: new Backbone.Collection(this._options.structure),
 				delegate: this
 			}));
-			this.listenTo(this.views.groups, 'group:clicked', function(group){
+			this.listenTo(this.views.groups, 'group:clicked', function(group, drilldown){
 				group.$el.siblings().removeClass('active');
 				group.$el.addClass('active');
 				//show this group's section accordions
@@ -71,14 +74,52 @@ Application.Widget.register('AccordionMenu', function(){
 					collection: new Backbone.Collection(group.model.get('sub')),
 					group: group
 				}), true);
+				if(drilldown){
+					var target = this.views.sections.children.find(function(s){
+						if(s.model.get('name') === drilldown.section || s.model.get('label') === drilldown.section)
+							return true;
+					});
+					this.views.sections.trigger('section:clicked', target, {item: drilldown.item});
+				}
 			});
 			this.listenToOnce(this.views.groups, 'groups:show', function(){
 				this.sections.$el.addClass('make-room-for-groups');
 				this.groups.$el.show('slide');
 			});
 			this.listenTo(this, 'navigate:to:item', function(name){
-				//Todo
+				var meta = this._itemMap[name];
+				var target = this.views.groups.children.find(function(g){
+					if(g.model.get('name') === meta.group || g.model.get('label') === meta.group)
+						return true;
+				});
+				this.views.groups.trigger('group:clicked', target, {
+					item: name,
+					section: meta.section
+				});
 			});
+		},
+
+		_processStructure: function(){
+			this._itemMap = this._itemMap || {};
+			function visitor(node, lvl, memo, map){
+				//lvl.0 group name, lvl.1 section name
+				if (lvl === 1){
+					memo = _.extend({section: node.label || node.name}, memo);
+				}else {
+					if(!node.sub){
+						map[node.name] = memo;
+						return;
+					}
+				}
+				if(node.sub) {
+					_.each(node.sub, function(subNode){
+						visitor(subNode, lvl+1, memo, map);
+					});
+				}
+			};
+			_.each(this._options.structure, function(group){
+				visitor(group, 0, {group: group.label || group.name}, this._itemMap);
+			}, this);
 		}
 	});
 
@@ -120,9 +161,12 @@ Application.Widget.register('AccordionMenu', function(){
 			this._options = options;
 			var borderFix = Number(_.string.trim(this._options.group.$el.css('borderBottomWidth'), 'px')); //tbh, this must also be the section header's border-bottom-width, see accordion-menu.less
 			this._itemHeight = (this._options.group.$el.innerHeight() - borderFix)/2; //dynamically make 2 sections together to be as high as a group view block.
-			this.listenTo(this, 'section:clicked', function(section){
+			this.listenTo(this, 'section:clicked', function(section, drilldown){
 				section.$el.siblings().removeClass('active');
 				section.$el.addClass('active');
+				if(drilldown){
+					section.trigger('navigate:to:item', drilldown.item);
+				}
 			});
 		},
 		itemViewOptions: function(){
@@ -173,15 +217,31 @@ Application.Widget.register('AccordionMenu', function(){
 					this.model.set('label', this.model.get('name'));
 				//leaf
 				if(!this.model.get('sub')){
-					this.delegate = this._options.belongsTo._options.parentCt._options.group._options.parentCt._options.delegate;
+					this.delegate = this._options.root._options.section._options.parentCt._options.group._options.parentCt._options.delegate;
+					this.listenTo(this._options.root._options.section, 'navigate:to:item', function(item){
+						if(item !== this.model.get('name')) return;
+						this._options.root.trigger('close:all');
+						this.$el.addClass('active');
+						var expand = this;
+						while(!expand._options.section){
+							expand = expand._options.parentCt;
+							expand.$el.addClass('active');
+						}
+					});
 				}
+			}else {
+				//root
+				this.isRoot = true;
+				this.listenTo(this, 'close:all', function(){
+					this.$el.find('.active').removeClass('active');
+				});
 			}
 		},
 		itemViewOptions: function(model, index){
 			var opt = {
 				parentCt: this, //while !parentCt._options.section till root.parentCt._options.section to find the section a node/leaf belongs to
-				belongsTo: this._options.section || this._options.belongsTo,
-				template: '#widget-accordion-menu-treeitem-tpl'
+				template: '#widget-accordion-menu-treeitem-tpl',
+				root: this._options.root || this
 			};
 			if(model.get('sub')) {
 				_.extend(opt, {
@@ -213,6 +273,8 @@ Application.Widget.register('AccordionMenu', function(){
 				this.$el.toggleClass('active');
 			},
 			select: function($action){
+				this._options.root.$el.find('.leafz.active').removeClass('active');
+				this.$el.addClass('active');
 				this.delegate.trigger('item:selected', this.model.get('name'), this.model);
 			}
 		}
