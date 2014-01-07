@@ -5,17 +5,15 @@ For building modern web application with many contexts (including a data-heavy a
 
 What's next?
 ------------
-1. (done) Add general ajax/data op progress bar on top (nprogress) as application util
-2. (done) Remove noty2 and replace it with a new alert/messaging system + prompt as application util (view.flyTo and $.overlay())
-3. Add a new 2-lvl accordion menu widget
-4. (done) Leave nothing but titile <---> message, help on the banner, move user above the left menu accordion
-5. (done) Make file upload work (both ajax and iframe post)
-6. Give Context.Shared a default view that loads a basic development .md doc;
-
+1. Give Context.Shared a default view that loads a basic development .md doc;
+2. Enhancements: Dynamic Regions - Layout;
+3. Editor+ : Number Spinner, Flag Switches, DnD Listing, File Listing;
+4. Widget+ : Grid Local Column Sort/Filter;
+5. Widget+ : Accordion Menu lvl 1 (no groups);
 
 Current Version
 ---------------
-0.12.x
+0.13.x
 
 
 Core Concepts
@@ -161,3 +159,15 @@ Before IE10, some efforts are still needed before the web app can work on an IE 
 ```
 
 2. fixmyjs - client tools npm (already added in package.json, not in use) Need to put it into both build and spawn tool (shared/hammer.js) before js minification. This will fix the extra commas that IE complains about.
+
+
+Change Log
+----------
+
+0.13.x (2014-01-07)
+===================
+1. (done) Add general ajax/data op progress bar on top (nprogress) as application util
+2. (done) Remove noty2 and replace it with a new alert/messaging system + prompt as application util (view.flyTo and $.overlay())
+3. (done) Add a new 2-lvl accordion menu widget
+4. (done) Leave nothing but titile <---> message, help on the banner, move user above the left menu accordion
+5. (done) Make file upload work (both ajax and iframe post)

@@ -23,10 +23,8 @@
 
 		return {
 			requireLogin: true,
-			defaults: {
-				region: 'content',
-				module: 'Dashboard'
-			},
+			defaultModule: 'Dashboard',
+
 			View: {
 				Default: Backbone.Marionette.Layout.extend({
 					template: '#application-context-admin-tpl',
@@ -70,6 +68,7 @@
 						});
 						//context sub-module navigation event handle
 						this.listenTo(context, 'context:navigate-to-module', function(name, userClicked){
+							//name = name || context.defaultModule; //put default module here for fallback display. (must have entry in menu)
 							if(!this.views || !this.views.menu) {
 								this._preMenuInitNavigationCache = name; //save this navigation event.
 							}else
