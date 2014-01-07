@@ -13,7 +13,7 @@ What's next?
 
 Current Version
 ---------------
-0.13.x
+1.0.0-pre
 
 
 Core Concepts
