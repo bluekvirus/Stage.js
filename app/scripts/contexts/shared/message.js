@@ -102,7 +102,7 @@
 Template.extend(
 	'custom-module-shared-notify-message-count-tpl',
 	[
-		'<span ui="msg" class="preview hide" style=""></span> ',
+		'<span ui="msg" class="preview hide"></span> ',
 		'<span ui="msg-box-trigger" action="showMessageBox" style="cursor:pointer;position:relative;">',
 			'<i class="icon-envelope"></i> Message ',
 			'<i ui="count" class="count img-circle"></i>',

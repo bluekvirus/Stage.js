@@ -25,7 +25,7 @@
  * Events
  * ------
  * listens to -> navigate:to:item e(name)
- * triggers -> item:selected e(name, item model)
+ * triggers -> item:selected e(item)
  * 
  *
  * @author Tim.Liu
@@ -165,8 +165,13 @@ Application.Widget.register('AccordionMenu', function(){
 				section.$el.siblings().removeClass('active');
 				section.$el.addClass('active');
 				if(drilldown){
+					section.$el.find('.active').removeClass('active'); //reset this section
 					section.trigger('navigate:to:item', drilldown.item);
 				}
+			});
+			this.listenTo(this._options.group._options.parentCt._options.delegate, 'item:selected', function(item){
+				this.$el.find('.leaf.active').removeClass('active'); //reset leafz
+				item.$el.addClass('active');
 			});
 		},
 		itemViewOptions: function(){
@@ -220,7 +225,6 @@ Application.Widget.register('AccordionMenu', function(){
 					this.delegate = this._options.root._options.section._options.parentCt._options.group._options.parentCt._options.delegate;
 					this.listenTo(this._options.root._options.section, 'navigate:to:item', function(item){
 						if(item !== this.model.get('name')) return;
-						this._options.root.trigger('close:all');
 						this.$el.addClass('active');
 						var expand = this;
 						while(!expand._options.section){
@@ -231,10 +235,6 @@ Application.Widget.register('AccordionMenu', function(){
 				}
 			}else {
 				//root
-				this.isRoot = true;
-				this.listenTo(this, 'close:all', function(){
-					this.$el.find('.active').removeClass('active');
-				});
 			}
 		},
 		itemViewOptions: function(model, index){
@@ -273,9 +273,7 @@ Application.Widget.register('AccordionMenu', function(){
 				this.$el.toggleClass('active');
 			},
 			select: function($action){
-				this._options.root.$el.find('.leafz.active').removeClass('active');
-				this.$el.addClass('active');
-				this.delegate.trigger('item:selected', this.model.get('name'), this.model);
+				this.delegate.trigger('item:selected', this);
 			}
 		}
 	});

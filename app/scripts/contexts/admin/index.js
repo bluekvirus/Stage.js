@@ -63,8 +63,8 @@
 								if(_this._preMenuInitNavigationCache) {
 									_this.navigateToModule();
 								}
-								_this.listenTo(_this.views.menu, 'item:selected', function(name, item){
-									context.trigger('context:navigate-to-module', name, true);
+								_this.listenTo(_this.views.menu, 'item:selected', function(item){
+									context.trigger('context:navigate-to-module', item.model.get('name'), true);
 								});							
 							});							
 						});
