@@ -5,11 +5,12 @@ For building modern web application with many contexts (including a data-heavy a
 
 What's next?
 ------------
-1. Give Context.Shared a default view that loads a basic development .md doc;
-2. Enhancements: Dynamic Regions - Layout;
-3. Editor+ : Number Spinner, Flag Switches, DnD Listing, File Listing;
-4. Widget+ : Grid Local Column Sort/Filter;
-5. Widget+ : Accordion Menu lvl 1 (no groups);
+1. A basic development .md doc (static);
+2. Use more Promise/A+ patterns in async op sequence (animation, remote data, delays/ticks);
+Note that this is different than *Co-op Events* we used between views.
+3. Enhancements: Dynamic Regions - Layout;
+4. Editor+ : Number Spinner, Flag Switches, DnD Listing, File Listing;
+5. Widget+ : Grid Local Column Sort/Filter; Accordion Menu lvl 1 (no groups);
 
 Current Version
 ---------------
@@ -22,7 +23,7 @@ API(remote data interfacing), Context(with sub-modules), Part(editor, widget) an
 
 With
 
-Application(container + context switch + module router) and Utils(theme-roller, i18n, user-session, downloader, script patcher, alerts...)
+Application(container + context switch + module router) and Utils(theme-roller, i18n, user-session, downloader, script patcher, messages, prompts...)
 
 And
 

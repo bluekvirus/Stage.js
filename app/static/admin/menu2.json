@@ -13,17 +13,4 @@
         {"label": "Materials"},
         {"label": "Analytics"}
     ]
-},{
-    "label": "Log & Report",
-    "sub": [
-        {"label": "N/A"}
-    ]
-},{
-    "label": "Tools",
-    "sub": [
-        {
-            "label": "Other",
-            "name": "Nothing"
-        }
-    ]
 }]

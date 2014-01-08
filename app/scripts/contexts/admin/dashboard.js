@@ -541,7 +541,7 @@
 
 	module.View.Default = module.View.Dashboard;
 
-	module.defaultAdminPath = "System->Dashboard";
+	module.defaultMenuPath = "System->Overview->Dashboard";
 
 })(Application);
 
