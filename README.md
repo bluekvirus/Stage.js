@@ -6,9 +6,9 @@ For building modern web application with many contexts (including a data-heavy a
 What's next?
 ------------
 1. A basic development .md doc (static);
-2. Use more Promise/A+ patterns in async op sequence (animation, remote data, delays/ticks);
+2. Use more Promise/A+ patterns in async op sequence (animation, remote data, delays/ticks - jQuery & node[bluebird]);
 Note that this is different than *Co-op Events* we used between views.
-3. Enhancements: Dynamic Regions - Layout;
+3. Enhancements: Dynamic Regions - Layout (+gridster alike tool to create layout tpl);
 4. Editor+ : Number Spinner, Flag Switches, DnD Listing, File Listing;
 5. Widget+ : Grid Local Column Sort/Filter; Accordion Menu lvl 1 (no groups);
 
@@ -19,15 +19,7 @@ Current Version
 
 Core Concepts
 -------------
-API(remote data interfacing), Context(with sub-modules), Part(editor, widget) and Enhancements(to view and collection/model).
-
-With
-
-Application(container + context switch + module router) and Utils(theme-roller, i18n, user-session, downloader, script patcher, messages, prompts...)
-
-And
-
-Tools(build(minify, gzip and js-fix), spawn(js-fix), iconprep(css-sprites, svg-path))
+see `static/md/docs/framework.md`
 
 
 
@@ -36,13 +28,13 @@ Development
 
 Include other js libs
 ---------------------
-The default base.js contains selected libs for the project, if you would like to introduce more cd into `/app/libs`
+The default libs.js contains selected libs for the project, if you would like to introduce more cd into `/app/libs`
 then `bower install && npm install` - you need to know how to use bower tho.
 include the lib your need in `index.html` from `bower_components`
 
 ###buildify.js
-This is for building and combining required libs into a base-lib.js (before combined into the base.js with project specifics by `/tools/spawn`).
-Check its content for sample usage. If you don't want the base.js we prepared for you, this is where to start from scratch.
+This is for building and combining required libs into a base-lib.js (before combined into the libs.js with project specifics by `/tools/spawn`).
+Check its content for sample usage. If you don't want the libs.js we prepared for you, this is where to start from scratch.
 
 
 Build for production use
@@ -107,7 +99,7 @@ Update
 (if you don't need to upgrade to pick up new app structure and tools, can simply update these files only)
 ```
 scripts/
-	base.js (base.js.gz)
+	libs.js (libs.js.gz)
 	core.js
 ```
 
@@ -163,10 +155,10 @@ Before IE10, some efforts are still needed before the web app can work on an IE 
 
 
 Change Log
-----------
+==========
 
 0.13.x (2014-01-07)
-===================
+-------------------
 1. (done) Add general ajax/data op progress bar on top (nprogress) as application util
 2. (done) Remove noty2 and replace it with a new alert/messaging system + prompt as application util (view.flyTo and $.overlay())
 3. (done) Add a new 2-lvl accordion menu widget
