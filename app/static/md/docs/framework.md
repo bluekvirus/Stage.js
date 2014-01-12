@@ -1,12 +1,18 @@
 Introduction
 ============
-ProJS is a 2-part web application architecture that enables rapid development on both client and server side while reducing the pain in code implementation and later maintenance. Its implementation makes use of modern web tech and libs to maximize flexibility and scalability while employing common design patterns to promote cleaner design and the *write less do more* concept. It also comes in with build tools (minify, gzip, css-sprites...) and monitors (less auto-compile) to assist you in the development process.
+ProJS is a 2-part web application architecture that enables rapid development on both client and server side while reducing the pain in code implementation and later maintenance. Its implementation makes use of modern web technology and libraries(3rd party implementations) to maximize flexibility and scalability while employing common design patterns to promote cleaner design and the *write less do more* concept. It also comes in with build tools (minify, gzip, css-sprites...) and monitors (less auto-compile) to assist you in the development process.
 
 Client
 ------
-The client side is made on top of Underscore, jQuery, Handlebars, Backbone, Marionette and Bootstrap. Don't be afraid, we didn't wrap things around the basic libs here, there are no wrapper APIs or Classes to learn to use the same thing from Marionette or the original Backbone.js. It is designed so in order to let the developers (you) feel more comfortable while reusing existing web development knowledge and exp.
+The client side is made on top of Underscore, jQuery, Handlebars, Backbone, Marionette and Bootstrap. To flatten and lower the initial learning curve for adaptation, we didn't wrap things around the basic libs here, there are no wrapper APIs or Classes to learn to use the same thing from Marionette or the original Backbone.js. It is designed so in order to let the developers (you) feel more comfortable while reusing their (your) existing web development knowledge and experience.
 
-The reset of the utility libs (e.g jquery-file-upload, store.js, uri.js, raphael.js, marked, moment.js...) are carefully selected from the many open-source Javascript libs out there to help with specific but generally-will-appear problems that you will encounter during a web application development process.
+We also maintain a list of 3rd party libraries for you to choose from to be used as utilities. The utility libs (e.g jquery-file-upload, store.js, uri.js, raphael.js, marked, moment.js...) are carefully selected from the many open-source Javascript libs out there to help with specific but generally-will-appear problems that you will encounter during a web application development process.
+
+###Moving Away From ExtJS and All-in-All Frameworks###
+We have been developing in ExtJS4 for almost 2 years, starting form the last version of 4.0 which is the promising 4.0.7. As our knowledge base expands, we felt that it is time to form our own blueprint of a modern data heavy web application. Here is why:
+
+1. Although it is relatively fast to develop prototypes using a all-in-all framework like ExtJS or YUI, it is hard to maintain the code while keeping up with the changes.
+2. Loading, DOM interfacing, Widget and Application containers are all provided with a biased opinion, which could end up with a fighting with the framework here a there or messing around with the life-cycles defined. 
 
 ###Core Concepts###
 Forget about MVC, it really isn't magic. It is there in the old web development process because of the stateless character of HTTP and the url-to-page concept that was used to build JSP/PHP/RoR apps. Modern web apps blur the line between V and C by putting dynamic views generation (using Backbone and jQuery) into the user browser. A separately defined M is really unnecessary when you don't even need to specify the model attributes. Let's see what you really need by moving 1 level up and examining the *Big Picture*.
