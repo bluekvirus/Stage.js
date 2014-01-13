@@ -15,6 +15,30 @@
 //====================
 //Panels
 
+//MD contents
+.md-content {
+  font-size: @baseMDFontSize;
+  line-height: 1.7;
+  padding: @baseMDFontSize;
+
+  h1,h2,h3,h4,h5,h6 {
+    margin: 1em 0 @baseMDFontSize;
+  }
+
+  h1 {
+    margin-top: 0;
+    border-bottom: 1px solid @color-stone;
+  }
+
+  h2 {
+    border-bottom: 1px solid @color-bg;
+  }
+
+  code, pre {
+    font-size: @baseFontSize;
+  }
+}
+
 //Dropdowns
 a.dropdown-toggle {
   text-decoration: none;

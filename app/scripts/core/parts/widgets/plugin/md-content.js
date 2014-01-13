@@ -37,7 +37,7 @@
 		}, function(md){
 			return that.each(function(index, el){
 				var $el = $(this);
-				$el.html(marked(md, options.marked))
+				$el.html(marked(md, options.marked)).addClass('md-content');
 				options.callback && options.callback($el);
 			});
 		});

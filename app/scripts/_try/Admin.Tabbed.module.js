@@ -22,7 +22,7 @@
 				onShow: function(){
 					//this.fakeRegions();
 					this.enableTabLayout('top', 'tabs');
-					this.$el.css('margin', '0 10px');
+					//this.$el.css('margin', '0 10px');
 					var grid = app.Widget.create('DataGrid2', {
 						entity: 'Comment',
 						pagination: {
