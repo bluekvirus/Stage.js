@@ -267,7 +267,7 @@
 							});
 						}
 					}))());
-					this.showTab(0);
+					this.showTab(1);
 				}
 			})
 		}
