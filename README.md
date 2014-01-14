@@ -10,7 +10,7 @@ What's next?
 Note that this is different than *Co-op Events* we used between views.
 3. Enhancements: Dynamic Regions - Layout (+gridster alike tool to create layout tpl);
 4. Editor+ : Number Spinner, Flag Switches, DnD Listing, File Listing;
-5. Widget+ : MD menu listing; Grid Local Column Sort/Filter; Accordion Menu lvl 1 (no groups);
+5. Widget+ : MD menu listing; Grid Local Column +-/Sort/Filter; Accordion Menu lvl 1 (no groups);
 
 Current Version
 ---------------

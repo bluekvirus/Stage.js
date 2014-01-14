@@ -258,7 +258,15 @@
 						tab: {
 							title: '$.md Plugin Test'
 						},
+						events: {
+							'click' : _.throttle(function(){
+								this.loadDoc();
+							}, 3000) //simple refresh listener
+						},
 						onShow: function(){
+							this.loadDoc();
+						},
+						loadDoc: function(){
 							this.$el.md({
 								file: 'docs.framework',
 								callback: function($el){
