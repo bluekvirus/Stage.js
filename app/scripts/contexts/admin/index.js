@@ -68,7 +68,7 @@
 						});
 						//context sub-module navigation event handle
 						this.listenTo(context, 'context:navigate-to-module', function(name, userClicked){
-							//name = name || context.defaultModule; //put default module here for fallback display. (must have entry in menu)
+							name = name || context.defaultModule; //put default module here for fallback display. (must have entry in menu)
 							if(!this.views || !this.views.menu) {
 								this._preMenuInitNavigationCache = name; //save this navigation event.
 							}else
@@ -126,6 +126,7 @@
 							delete this._preMenuInitNavigationCache;
 						}
 						if(!moduleName) return;
+						if(!context[moduleName]) throw new Error('DEV::Context.Admin::No such module named ' + moduleName);
 						if(!context.currentModule || (context.currentModule.name !== moduleName)){
 							context.currentModule = new (context[moduleName].View.Default)();
 							this.content.show(context.currentModule);

@@ -35,7 +35,10 @@
 						$.get('/logout', function() {
 							app.user = {name: undefined, space: undefined};
 							delete app.user; //clean up user info in app.
-							app.trigger('app:switch-context', 'Login', '#navigate/Welcome');
+							app.trigger('app:switch-context', 'Login', true);
+
+							//better UIExp: cache the window.location.href string upon logout.
+							
 						});
 					}
 				}

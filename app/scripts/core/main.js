@@ -53,14 +53,14 @@
 
 			if(Application.currentContext.requireLogin && !Application.touch()){
 				Application.currentContext = Application.Context.get('Login');
-				Application.currentContext.cachedRedirect = window.location.hash;
+				Application.currentContext.cachedRedirect = window.location.hash.substring(1);
 				window.location.assign('#'); //must clear the hash before switching to Context.Login (+ another route history page)
 			}else {
 				delete Application.currentContext.cachedRedirect
 			}	
 			Application.body.show(new Application.currentContext.View.Default());
 			if(triggerNavi){
-				if(!_.isString(triggerNavi)) triggerNavi = 'navigate/' + Application.currentContext.name + '/default_' + $.now();
+				if(!_.isString(triggerNavi)) triggerNavi = ['navigate', Application.currentContext.name].join('/');
 				Application.router.navigate(triggerNavi, {trigger:true}); //trigger: true, let the route controller re-evaluate the uri fragment.
 			}
 			//fire a notification round to the sky.
@@ -117,13 +117,10 @@
 			},
 			controller: {
 				navigateToModule: function(context, module){
-					if(!module){
-						module = context;
-						context = Application.config.appContext;
-					}
 					var target = Application.currentContext;
 					if(!target || (target.name !== context))
 						Application.trigger('app:switch-context', context, ['#navigate', context, module].join('/'));
+						//Note that we moved context switching (actually showing of the context's default layout) into 'app:switch-context' listener above, see switchContext()
 					else {
 						target.trigger('context:navigate-to-module', module);
 					}
