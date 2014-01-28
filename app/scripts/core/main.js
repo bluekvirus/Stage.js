@@ -2,15 +2,13 @@
  * The main application module. 
  * 
  * Everything starts here. 
- * 	- Kicks start the application and modules.
- * 	- Managing app level region and layouts.
- * 	- Hook up global routes and routing event trigger. (event name: 'app.navigate-to-module', on Application)
+ * 	- Kicks start the application with content routing (context + module navigation).
  *
  * Global Application Events:
  * login context.form fires:
  * 		app:user-changed - user will be stored at app.user (app.user === undefined means user has logged out see Context.Shared.User)
  * app listens to >>>
- * 		app:switch-context (contextName, naviFragment)
+ *   	app:navigate (contextName, moduleName) this is used to invoke app.router.navigate method.
  * app fires >>>
  *   	app:context-switched (contextName)
  *   	context:navigate-to-module (moduleName)
@@ -18,6 +16,10 @@
  * 
  * @author Tim.Liu
  * @update 2013.09.11
+ * @update 2014.01.28 
+ * - refined/simplified the router handler and context-switch with module navigation support
+ * - use app:navigate (contextName, moduleName) at all times.
+
  */
 
 //When page is ready...
@@ -44,34 +46,26 @@
 	//Application init: Global listeners
 	Application.addInitializer(function(options){
 		//Context switching utility
-		function switchContext(context, module){
+		function navigate(context, module){
 			var targetContext = Application.Context.get(context);
-			if(Application.currentContext === targetContext) return;
-			
-			Application.currentContext = targetContext;
-			if(!Application.currentContext) throw new Error('DEV::MainApp::You must have the requred context ' + context + ' defined...'); //see - special/registry/context.js
+			if(Application.currentContext !== targetContext) {
+				Application.currentContext = targetContext;
+				if(!Application.currentContext) throw new Error('DEV::MainApp::You must have the requred context ' + context + ' defined...'); //see - special/registry/context.js
 
-			if(Application.currentContext.requireLogin && !Application.touch()){
-				Application.currentContext = Application.Context.get('Login');
-				Application.cachedRedirect = window.location.hash.substring(1);
-				window.location.assign('#'); //must clear the hash before switching to Context.Login (+ another route history page)
-			}else {
-				delete Application.cachedRedirect
-			}	
-			Application.body.show(new Application.currentContext.View.Default());
-			//fire a notification round to the sky.
-			Application.trigger('app:context-switched', Application.currentContext.name);			
-			if(!_.isString(module)) 
-				var triggerNavi = ['navigate', Application.currentContext.name].join('/');
-			else
-				var triggerNavi = ['navigate', Application.currentContext.name, module].join('/');
-			Application.router.navigate(triggerNavi, {trigger:true}); //trigger: true, let the route controller re-evaluate the uri fragment.
-
-
+				//if the context requires user to login but he/she didn't, we remember the navi hash path and switch to the 'Login' context.				
+				if(Application.currentContext.requireLogin && !Application.touch()){
+					Application.currentContext = Application.Context.get('Login');
+				}				
+				Application.body.show(new Application.currentContext.View.Default());
+				//fire a notification round to the sky.
+				Application.trigger('app:context-switched', Application.currentContext.name);
+			}			
+			Application.currentContext.trigger('context:navigate-to-module', module);
 		};		
 		
-		Application.listenTo(Application, 'app:switch-context', function(context, triggerNavi){
-			switchContext(context, triggerNavi);
+		Application._navigate = navigate; //this is in turn hooked with the app router, see below Application init: Routes
+		Application.listenTo(Application, 'app:navigate', function(context, module){
+			Application.router.navigate(_.string.rtrim(['#navigate', context, module].join('/'), '/'), true);
 		});
 	});	
 
@@ -120,13 +114,7 @@
 			},
 			controller: {
 				navigateToModule: function(context, module){
-					var target = Application.currentContext;
-					if(!target || (target.name !== context))
-						Application.trigger('app:switch-context', context, module);
-						//Note that we moved context switching (actually showing of the context's default layout) into 'app:switch-context' listener above, see switchContext()
-					else {
-						target.trigger('context:navigate-to-module', module);
-					}
+					Application._navigate(context, module);
 				},
 			}
 		});

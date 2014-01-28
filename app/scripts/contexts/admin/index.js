@@ -62,7 +62,7 @@
 									_this.navigateToModule();
 								}
 								_this.listenTo(_this.views.menu, 'item:selected', function(item){
-									context.trigger('context:navigate-to-module', item.model.get('name'), true);
+									app.trigger('app:navigate', 'Admin', item.model.get('name'));
 								});							
 							});							
 						});
@@ -131,7 +131,6 @@
 							context.currentModule = new (context[moduleName].View.Default)();
 							this.content.show(context.currentModule);
 							if(!userClicked) this.views.menu.trigger('navigate:to:item', moduleName);
-							else Application.router.navigate('#navigate/Admin/' + moduleName); //change the location.hash only without triggering navigation
 						}
 
 					}

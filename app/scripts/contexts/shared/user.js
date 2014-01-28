@@ -35,10 +35,9 @@
 						$.get('/logout', function() {
 							app.user = {name: undefined, space: undefined};
 							delete app.user; //clean up user info in app.
-							app.trigger('app:switch-context', 'Login', true);
-
-							//better UIExp: cache the window.location.href string upon logout.
-							
+							app.cachedRedirect = window.location.hash.substring(1);
+							app.trigger('app:navigate', 'Login');
+							//note that by using this we remember the current navi hash path, see main.js switchContext(), this is specific to the Login context.							
 						});
 					}
 				}

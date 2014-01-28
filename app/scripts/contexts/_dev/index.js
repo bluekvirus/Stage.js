@@ -87,7 +87,7 @@
 			},
 
 			switchContext: function($action){
-				app.trigger('app:switch-context', $action.attr('context'), true);
+				app.trigger('app:navigate', $action.attr('context'));
 			}
 		}
 	});
