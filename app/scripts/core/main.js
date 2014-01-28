@@ -44,7 +44,7 @@
 	//Application init: Global listeners
 	Application.addInitializer(function(options){
 		//Context switching utility
-		function switchContext(context, triggerNavi){
+		function switchContext(context, module){
 			var targetContext = Application.Context.get(context);
 			if(Application.currentContext === targetContext) return;
 			
@@ -53,18 +53,21 @@
 
 			if(Application.currentContext.requireLogin && !Application.touch()){
 				Application.currentContext = Application.Context.get('Login');
-				Application.currentContext.cachedRedirect = window.location.hash.substring(1);
+				Application.cachedRedirect = window.location.hash.substring(1);
 				window.location.assign('#'); //must clear the hash before switching to Context.Login (+ another route history page)
 			}else {
-				delete Application.currentContext.cachedRedirect
+				delete Application.cachedRedirect
 			}	
 			Application.body.show(new Application.currentContext.View.Default());
-			if(triggerNavi){
-				if(!_.isString(triggerNavi)) triggerNavi = ['navigate', Application.currentContext.name].join('/');
-				Application.router.navigate(triggerNavi, {trigger:true}); //trigger: true, let the route controller re-evaluate the uri fragment.
-			}
 			//fire a notification round to the sky.
-			Application.trigger('app:context-switched', Application.currentContext.name);
+			Application.trigger('app:context-switched', Application.currentContext.name);			
+			if(!_.isString(module)) 
+				var triggerNavi = ['navigate', Application.currentContext.name].join('/');
+			else
+				var triggerNavi = ['navigate', Application.currentContext.name, module].join('/');
+			Application.router.navigate(triggerNavi, {trigger:true}); //trigger: true, let the route controller re-evaluate the uri fragment.
+
+
 		};		
 		
 		Application.listenTo(Application, 'app:switch-context', function(context, triggerNavi){
@@ -103,9 +106,9 @@
 		}
 
 		//2.Auto-detect and init context (view that replaces the body region). see the Context.Login
-		var context = Application.config.appContext; //go to default app context.
-		Application.trigger('app:switch-context', context);
-				
+		if(!window.location.hash){
+			window.location.hash = ['#navigate', Application.config.defaultContext].join('/');
+		}
 	});
 
 	//Application init: Routes (can use href = #navigate/... to trigger them)
@@ -119,7 +122,7 @@
 				navigateToModule: function(context, module){
 					var target = Application.currentContext;
 					if(!target || (target.name !== context))
-						Application.trigger('app:switch-context', context, ['#navigate', context, module].join('/'));
+						Application.trigger('app:switch-context', context, module);
 						//Note that we moved context switching (actually showing of the context's default layout) into 'app:switch-context' listener above, see switchContext()
 					else {
 						target.trigger('context:navigate-to-module', module);

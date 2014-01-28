@@ -61,7 +61,7 @@
 								//the default reply from server is res.redirect
 								app.user = res.user;
 								app.trigger('app:user-changed');
-								app.trigger('app:switch-context', app.config.appContext, true); //use the triggerNavi flag to allow re-evaluation of uri fragment.
+								app.trigger('app:switch-context', app.config.defaultContext, true); //use the triggerNavi flag to allow re-evaluation of uri fragment.
 
 								//better UIExp: retrieve the cached window.location.href string upon login.
 								
