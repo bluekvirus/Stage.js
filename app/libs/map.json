@@ -1,4 +1,6 @@
 {
+  "backbone.babysitter": "bower_components/backbone.babysitter",
+  "backbone.wreqr": "bower_components/backbone.wreqr",
   "backbone": "bower_components/backbone",
   "blueimp-canvas-to-blob": "bower_components/blueimp-canvas-to-blob/js/canvas-to-blob.js",
   "blueimp-load-image": [
@@ -29,9 +31,12 @@
   "colorbox": "bower_components/colorbox/jquery.colorbox.js",
   "d3": "bower_components/d3/d3.js",
   "flexslider": "bower_components/flexslider",
-  "handlebars.js": "bower_components/handlebars.js",
   "handlebars": "bower_components/handlebars/handlebars.js",
-  "highcharts.com": "bower_components/highcharts.com",
+  "highcharts.com": [
+    "bower_components/highcharts.com/js/highcharts.src.js",
+    "bower_components/highcharts.com/js/highcharts-more.src.js",
+    "bower_components/highcharts.com/js/modules/exporting.src.js"
+  ],
   "jqtree": [
     "bower_components/jqtree/jqtree.css",
     "bower_components/jqtree/jqtree-circle.png",
@@ -74,7 +79,7 @@
   "raphael": "bower_components/raphael/raphael.js",
   "selectivizr": "bower_components/selectivizr",
   "socket.io-client": "bower_components/socket.io-client",
-  "spin.js": "bower_components/spin.js/dist/spin.js",
+  "spin.js": "bower_components/spin.js/spin.js",
   "store.js": "bower_components/store.js/store.js",
   "swag": "bower_components/swag/lib/swag.js",
   "underscore.string": "bower_components/underscore.string",

@@ -27,6 +27,7 @@ Table of Content
 	* Quick Start
 * Server
 * References
+* Notes
 
 Introduction
 ------------
@@ -115,6 +116,7 @@ So, we have identified the core problems, how do we form our solutions to them?
 
 ###Design Patterns Used
 For cleaner and less code while implementing the architecture, we employed the following design patterns:
+
 1. Bridge + Observer Pattern (event co-op between widgets, modules and contexts or with the application container)
 2. Decorator Pattern (overridden and enhancements)
 3. Command Pattern (passing callbacks + data as options around)
@@ -175,3 +177,11 @@ References
 ###Websites
 1. [Javascript Style Guide & Stuff](https://github.com/airbnb/javascript) - airbnb@github.com
 2. [Superhero.js](http://superherojs.com/) - Kim Joar Bekkelund, Mads Mobæk, & Olav Bjorkoy
+
+
+Notes
+-----
+###App Building Options
+1. HTML5, JS, CSS3 - Ubuntu OS, Firefox OS or with [node-webkit](https://github.com/rogerwang/node-webkit) (Win, MacOS, Linux)
+2. C++ with Boost & Qt(+QML) - Ubuntu OS and General (Win, MacOS/iOS, Linux/Andorid)
+3. Object-C & Java - iOS and Android
