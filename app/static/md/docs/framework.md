@@ -177,6 +177,7 @@ References
 ###Websites
 1. [Javascript Style Guide & Stuff](https://github.com/airbnb/javascript) - airbnb@github.com
 2. [Superhero.js](http://superherojs.com/) - Kim Joar Bekkelund, Mads Mobæk, & Olav Bjorkoy
+3. [Interview Qs](https://github.com/darcyclarke/Front-end-Developer-Interview-Questions) - darcyclarke@github.com
 
 
 Notes

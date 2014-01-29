@@ -10,6 +10,7 @@
 		defaultContext: 'Admin', //This is the context the application will sit on upon loading.
 		fullScreen: true, //Note that this only indicates <body> will have overflow set to hidden in its css.
 		//No matter true/false here, we will be tracking application window size upon window resizing events and put values in Application.fullScreenContextHeight as reference.
+		rapidEventDebounce: 200, //in ms this is the rapid event debounce value shared within the application (e.g window resize).
 
 		crossdomain: {
 			//enabled: true,

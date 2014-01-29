@@ -10,6 +10,7 @@
  * app listens to >>>
  *   	app:navigate (contextName, moduleName) this is used to invoke app.router.navigate method.
  * app fires >>>
+ * 		(app:)view:resized - upon window resize event
  *   	app:context-switched (contextName)
  *   	context:navigate-to-module (moduleName)
  * 
@@ -93,7 +94,7 @@
 			Application.trigger('view:resized');
 		};
 		trackAppHeight();
-		$(window).on('resize', _.debounce(trackAppHeight, 200));
+		$(window).on('resize', _.debounce(trackAppHeight, Application.config.rapidEventDebounce));
 		
 		if(Application.config.fullScreen){
 			$('body').css('overflow', 'hidden');
