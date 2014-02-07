@@ -37,6 +37,8 @@
     "bower_components/highcharts.com/js/highcharts-more.src.js",
     "bower_components/highcharts.com/js/modules/exporting.src.js"
   ],
+  "jasmine-sinon": "bower_components/jasmine-sinon/lib/jasmine-sinon.js",
+  "jasmine": "bower_components/jasmine",
   "jqtree": [
     "bower_components/jqtree/jqtree.css",
     "bower_components/jqtree/jqtree-circle.png",
@@ -71,13 +73,17 @@
   "jquery": "bower_components/jquery/jquery.js",
   "jquery2": "bower_components/jquery2/jquery.js",
   "json3": "bower_components/json3/lib/json3.min.js",
-  "marionette": "bower_components/marionette/lib/backbone.marionette.js",
+  "marionette": [
+    "bower_components/marionette/lib/backbone.marionette.js",
+    "bower_components/marionette/lib/core/amd/backbone.marionette.js"
+  ],
   "marked": "bower_components/marked",
   "modernizr": "bower_components/modernizr",
   "momentjs": "bower_components/momentjs/moment.js",
   "nprogress": "bower_components/nprogress/nprogress.js",
   "raphael": "bower_components/raphael/raphael.js",
   "selectivizr": "bower_components/selectivizr",
+  "sinonjs": "bower_components/sinonjs/sinon.js",
   "socket.io-client": "bower_components/socket.io-client",
   "spin.js": "bower_components/spin.js/spin.js",
   "store.js": "bower_components/store.js/store.js",

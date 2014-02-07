@@ -9,6 +9,7 @@
 	"jquery-sieve": "dist/jquery.sieve.js",
 	"jquery.tablesorter": "js",
 	"marked": "lib",
+	"marionette": "lib/backbone.marionette.js",
 	"underscore.string": "lib",
 	"uri.js": "bower_components/uri.js/dist",
 	"spin.js": "../spin-with-jqplugin.js"

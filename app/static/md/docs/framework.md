@@ -31,11 +31,21 @@ Table of Content
 
 Introduction
 ------------
+* What's a web application; (Browser/OS, Policy/Mechanism)
+* Why making this architecture and implementation;
+* How it simplifies development and maintenance work;
+* When to use this framework and when to break off and form your own; (Types of web applications supported)
+* Who will benefit from this framework;
+
+[The following paragraphs need to be updated]
+
 ProJS is a *2-part* web application architecture that enables rapid development on both client and server side while reducing the pain in code implementation and later maintenance. 
 
 The implementation makes use of modern web technology and libraries (3rd party implementations) to maximize flexibility and scalability while employing common design patterns to promote cleaner design and the *write less do more* concept. It also comes in with build tools (minify, gzip, svg-exractor, css-sprites-builder) and monitors (less auto-compile) to assist the developer (you) in the development process.
 
 Being *2-part* means that we design our client and server architectures separately and differently to better reflect the key points from each side. The client side is more focused on interactions, transitions and feedbacks (Contexts & Views) whereas the server side is more of a layer based (pipe-lined) data serving box with less co-operation between its components (Entities & Middlewares) than the client side. This separation helps simplify the architectures on both sides and should feel more natural by the developers. 
+
+[Warning]
 
 ###**NEVER** try to merge the two sides
 The client and server sides are different in purpose fundamentally. Thus, they should be designed and implemented differently. Shutting this door will preserve a significant amount of coding/maintenance energy for the application developer(s). The best software development practice encourages separation and delaying of implementation of related components so that each part can vary independently later. And to the author (me), abstraction should happen after categorization, or say, classification. This is why we are advising the developers (you) **NOT** to make an overly encapsulated framework with tools that try to bridge the gap for the developers. Trying to control everything using central planning is a human flaw, there is no silver-bullet for trying to solve web application building in 1 piece. It will always be 3 parties in the software application world:
@@ -44,7 +54,9 @@ The client and server sides are different in purpose fundamentally. Thus, they s
 
 As an engineer, the job is to find insights and solve problems between the 3 parties efficiently (profitably if you must insist...) so that the software/application serving the above system comes out correctly. This is hard in its nature. This is why we offer you a group of solutions combined to build this complex system.
 
-###Rule of Thumb
+[Software design and impl in general]
+
+###Rules of Thumb
 * Keep things simple, especially the simple ones.
 * Categorization before abstraction.
 * Separate, Reuse and Pipeline.
