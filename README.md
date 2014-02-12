@@ -1,10 +1,11 @@
 The Framework
 =============
-For building modern web application with many contexts (including a data-heavy administration context).
+ProJS.Client - an infrastructure for building modern web application with many contexts (e.g a data-heavy administration context).
 
 
 What's next?
 ------------
+0. New project folder structure;
 1. A basic development .md doc (static);
 2. Use more Promise/A+ patterns in async op sequence (animation, remote data, delays/ticks - jQuery & node[bluebird](https://github.com/petkaantonov/bluebird));
 Note that this is different than *Co-op Events* we used between views.
@@ -14,7 +15,7 @@ Note that this is different than *Co-op Events* we used between views.
 
 Current Version
 ---------------
-1.0.0-pre
+1.0.0-rc1
 
 
 Core Concepts
@@ -23,7 +24,7 @@ see `static/md/docs/framework.md`
 
 
 
-Development
+Development (need to be updated according to new project structure)
 ===========
 
 Include other js libs
@@ -156,6 +157,10 @@ Before IE10, some efforts are still needed before the web app can work on an IE 
 
 Change Log
 ==========
+1.0.0-pre (2014-02-12)
+----------------------
+1. updated framework documentation (still in progress)
+2. refined the client app route implementation
 
 0.13.x (2014-01-07)
 -------------------
