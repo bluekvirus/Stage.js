@@ -6,7 +6,7 @@ ProJS.Client - an infrastructure for building modern web application with many c
 What's next?
 ------------
 0. New project folder structure;
-1. A basic development .md doc (static);
+1. A basic development .md doc (static); A tool + fake data server to support development?
 2. Use more Promise/A+ patterns in async op sequence (animation, remote data, delays/ticks - jQuery & node[bluebird](https://github.com/petkaantonov/bluebird));
 Note that this is different than *Co-op Events* we used between views.
 3. Enhancements: Mixed(Fixed + Dynamic) Regions - Layout (+gridster alike tool to create layout tpl);
@@ -20,7 +20,7 @@ Current Version
 
 Core Concepts
 -------------
-see `static/md/docs/framework.md`
+see `design/docs/code/framework.md`
 
 
 
@@ -47,7 +47,7 @@ Use attribute `non-core="true"` in the `<script>` tag within your index.html, if
 
 Prepare icon css sprites or svg paths
 -------------------------------------
-see `/app/themes/README.md`
+see `/implementation/themes/README.md`
 
 
 Continuous Integration
@@ -75,34 +75,7 @@ Do **NOT** hang the build script, use `&` if needs be or avoid at all times.
 
 Upgrade/Update
 =============
-
-Upgrade
--------
-The client side app framework is still under active development, so the current upgrade process demands a bit efforts.
-We will automate/improve the update/upgrade process in future development.
-
-(make sure you save these when upgrading the client app framework)
-```
-1. scripts/
-    a. config.js
-	b. try/
-	c. parts/
-
-2. index.html
-
-3. static & themes/
-	(yours only)
-```
-
-
-Update 
-------
-(if you don't need to upgrade to pick up new app structure and tools, can simply update these files only)
-```
-scripts/
-	libs.js (libs.js.gz)
-	core.js
-```
+Download and replace infrastructure.js under `/implementation/app/libs/non-tracked/projs`
 
 
 
@@ -153,19 +126,3 @@ Before IE10, some efforts are still needed before the web app can work on an IE 
 ```
 
 2. fixmyjs - client tools npm (already added in package.json, not in use) Need to put it into both build and spawn tool (shared/hammer.js) before js minification. This will fix the extra commas that IE complains about.
-
-
-Change Log
-==========
-1.0.0-pre (2014-02-12)
-----------------------
-1. updated framework documentation (still in progress)
-2. refined the client app route implementation
-
-0.13.x (2014-01-07)
--------------------
-1. (done) Add general ajax/data op progress bar on top (nprogress) as application util
-2. (done) Remove noty2 and replace it with a new alert/messaging system + prompt as application util (view.flyTo and $.overlay())
-3. (done) Add a new 2-lvl accordion menu widget
-4. (done) Leave nothing but titile <---> message, help on the banner, move user above the left menu accordion
-5. (done) Make file upload work (both ajax and iframe post)
