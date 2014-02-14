@@ -5,7 +5,7 @@
  * 1. +Action Tag listener mechanisms - View. (ui locks [2] is automatically activated for you)
  * 2. +UI Locking support to view regions (without Application scope total lockdown atm...) - View.
  * 3. +View Region/UI auto-detects + optional fake content - Layout.+name and layout to region obj + view:resized propagation[down-ward] ->layout:resized
- * 4. +Window resize awareness - View. - but usually you should be listening to app - view:resized event for window resize.
+
  * 5. +SVG canvas support - View.
  * 6. +Tab layout support - View. 
  * 7. +Auto region resize evenly. - Layout. (Todo: make it proportionally sized instead of just evenlly)
@@ -247,26 +247,6 @@ _.extend(Backbone.Marionette.View.prototype, {
 		}catch(e){
 			throw new Error('DEV::View::You should define a proper Layout object to use fakeRegions()');
 		}
-	}
-});
-
-/**
- * Respond to window resize event. (during initialize)
- * + Fire a event [view:resized] local to the view object so that sub-modules/widgets can listen to it.
- * + Added a cb for this event as default [this.onWindowResize()] - to be extended.
- */
-_.extend(Backbone.Marionette.View.prototype, {
-	hookUpWindowResize: function(){
-		var that = this;
-		function onResize(e){
-			if(that.onWindowResize) that.onWindowResize(e);
-			that.trigger('view:resized', e);
-		}
-		onResize = _.debounce(onResize, 200);			
-		$(window).on('resize', onResize);
-		this.listenTo(this, 'item:before:close', function(){
-			$(window).off('resize', onResize);
-		});
 	}
 });
 

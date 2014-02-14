@@ -15,15 +15,6 @@ Table of Content
 		* What you *REALLY* need
 	* Design Patterns Used
 	* Project Structure
-		* Libraries
-		* Overridden & Enhancements
-		* Application
-			* APIs(Data)
-			* Contexts
-			* Parts(Editors, Widgets)
-			* Utils
-			* Main		
-		* Tools
 	* Quick Start
 * Server
 * References
@@ -118,9 +109,8 @@ So, we have identified the core problems, how do we form our solutions to them?
 2. Application Container:
 	* Navigation (context switch + context's sub module routing)
 	* Utils (theme-rolling, user-session, i18n, messaging, prompts, downloader-by-iframe, templates registry)
-3. Tools:
+3. Tools [optional]:
 	* Build (minify, gzip, move and [js-fix])
-	* Spawn ([js-fix])
 	* Icon preparation (css-sprites, svg-path)
 	* CSS monitor (less compiler)
 
@@ -143,33 +133,11 @@ The goal is to achieve the following goals encouraged by software design pattern
 We will be examining the implementations in the following section.
 
 ###Project Structure
-1. Libraries
-2. Overridden & Enhancements
-3. Application
-4. Tools
+see separate.md file.
 
-####Libraries
-see `app\libs\bower.json` and `app\libs\buildify.js` for the js libs listing.
-
-As you can see, only the finest libraries are included, they are all actively maintained and have easy-to-read documentations. This is a key criteria when selecting js libs for your project. They *MUST* be well tested and documented, and they *MUST* be clean and generalized enough to solve your problem at hand. Avoid trying to adapt to tricky and weired solutions will save you significant amount of energy and time for developing your own. Resist the temptation to use other people's solution first, carefully examine the solution and options they provide before accepting them. In other words, if you are going to write the same lines of code to build the *same* thing, by all means use an existing one, if not, write your own and generalize it later if you do think it can solve other people's problem as well.
-
-####Enhancement (to Libs)
-
-####Application
-#####APIs (Data)
-
-#####Contexts
-
-#####Parts (Editors, Widgets)
-
-#####Utils
-
-#####Main (Container)
-
-####Tools
-see separate .md file.
 
 ###Quick Start
+see separate.md file.
 
 
 Server

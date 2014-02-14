@@ -46,6 +46,18 @@
 
 _.extend(Backbone.Collection.prototype, {
 
+	//Replace the original Backbone.Collection.create method to just prepare a new model for us.
+	create: function(attributes, idAttributeToRemove){
+		attributes = attributes || {};
+		idAttributeToRemove = idAttributeToRemove || Backbone.Model.prototype.idAttribute;
+		delete attributes[idAttributeToRemove];
+		var model = new Backbone.Model(attributes, {
+			collection: this
+		});
+		model.bindToEntity(this.getEntityName());
+		return model;
+	},	
+
 	//To opt-in the pagination with any Backbone.Collection
 	//Invoke this function in your collection definition's initialize()
 	//Warning:: your parse() method must be overridden to provide support to the load() method below, see collection's parse() method override in - special/registry/data-units.js

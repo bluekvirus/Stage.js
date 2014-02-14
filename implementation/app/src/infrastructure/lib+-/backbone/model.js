@@ -9,6 +9,8 @@
  */
 
 _.extend(Backbone.Model.prototype, {
+	//Default Backbone.Model idAttribute to '_id'
+	idAttribute: '_id',
 
 	//Support Backbone.sync overriden code
 	getEntityName: function(){

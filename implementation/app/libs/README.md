@@ -1,0 +1,5 @@
+Libraries
+=========
+see `tracked\buildify.js` for the js libs listing.
+
+As you can see, only the finest libraries are included, they are all actively maintained and have easy-to-read documentations. This is a key criteria when selecting js libs for your project. They *MUST* be well tested and documented, and they *MUST* be clean and generalized enough to solve your problem at hand. Avoid trying to adapt to tricky and weired solutions will save you significant amount of energy and time for developing your own solution to the problem. Resist the temptation to use other people's solution first, carefully examine the solution and options they provide before accepting them. In other words, if you are going to write the same lines of code to build the *same* thing, by all means use an existing one, if not, write your own and generalize it later (into `homemade\`) if you do think it can solve other people's problem as well.
