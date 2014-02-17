@@ -1,7 +1,7 @@
 {
   "backbone.babysitter": "bower_components/backbone.babysitter",
   "backbone.wreqr": "bower_components/backbone.wreqr",
-  "backbone": "bower_components/backbone",
+  "backbone": "bower_components/backbone/backbone.js",
   "blueimp-canvas-to-blob": "bower_components/blueimp-canvas-to-blob/js/canvas-to-blob.js",
   "blueimp-load-image": [
     "bower_components/blueimp-load-image/js/load-image.js",
@@ -37,8 +37,6 @@
     "bower_components/highcharts.com/js/highcharts-more.src.js",
     "bower_components/highcharts.com/js/modules/exporting.src.js"
   ],
-  "jasmine-sinon": "bower_components/jasmine-sinon/lib/jasmine-sinon.js",
-  "jasmine": "bower_components/jasmine",
   "jqtree": [
     "bower_components/jqtree/jqtree.css",
     "bower_components/jqtree/jqtree-circle.png",
@@ -71,7 +69,7 @@
   "jquery.terminal": "bower_components/jquery.terminal",
   "jquery.transit": "bower_components/jquery.transit",
   "jquery": "bower_components/jquery/jquery.js",
-  "jquery2": "bower_components/jquery2/jquery.js",
+  "jquery2": "bower_components/jquery2",
   "json3": "bower_components/json3/lib/json3.min.js",
   "marionette": [
     "bower_components/marionette/lib/backbone.marionette.js",
@@ -83,7 +81,7 @@
   "nprogress": "bower_components/nprogress/nprogress.js",
   "raphael": "bower_components/raphael/raphael.js",
   "selectivizr": "bower_components/selectivizr",
-  "sinonjs": "bower_components/sinonjs/sinon.js",
+  "sizzle": "bower_components/sizzle/dist/sizzle.js",
   "socket.io-client": "bower_components/socket.io-client",
   "spin.js": "bower_components/spin.js/spin.js",
   "store.js": "bower_components/store.js/store.js",

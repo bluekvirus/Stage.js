@@ -6,6 +6,7 @@
 	"jqtree": "tree.jquery.js",
 	"jquery-file-upload": "bower_components/jquery-file-upload/dist/jquery-file-upload-with-iframe.js",
 	"jquery-serializeForm": "dist",
+	"jquery2": "dist/jquery.js",
 	"jquery-sieve": "dist/jquery.sieve.js",
 	"jquery.tablesorter": "js",
 	"marked": "lib",
