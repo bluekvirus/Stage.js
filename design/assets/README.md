@@ -13,6 +13,6 @@ They will be reflected on the following components (after the guideline is finis
 
 1. Brand logos
 2. Icons
-3. Form & controls
-4. List, Tree, Bar[header, footer with or w/o tools], Container, Event Display
+3. Form (Fieldset, Nesting/Jumping) & Controls/Editors
+4. Components (List, Tree, Bar[header, footer with or w/o tools], Container, Event/Alert Msg Display)
 5. Charts
