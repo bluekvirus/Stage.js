@@ -38,7 +38,7 @@ Swag.registerHelpers();
  * Define Application.setup() method
  * =================================
  */
-Application.setup = function(config, cb){
+Application.setup = function(config){
 	//1. Configure.
 	Application.config = _.extend({
 
@@ -189,13 +189,12 @@ Application.setup = function(config, cb){
 
 	});
 
-	//3. Run it.
+	return Application;
+};
+
+Application.run = function(){
 	//Stuff to do as soon as the DOM is ready. Use $() w/o colliding with other libs;
 	$document.ready(function($) {
-
-		if(cb) {
-			return cb(Application);
-		}
 
 		//Else use standard kickstart sequence and main region template:
 		//Note that these regions selectors must already be on the index.html page (through loaded layout.html by theme roller.)
@@ -225,9 +224,12 @@ Application.setup = function(config, cb){
 
 		//Kick start the application
 		Application.start();
-
+		
+		return Application;
 	});
 };
+
+
 
 
 
