@@ -3,8 +3,8 @@ UX/UI Guideline
 
 The guideline project will be targeting mainly on new products, the main areas of design that will be addressed are:
 
-1. Font[size, weight, family];
-2. Color[scheme and texture];
+1. Font[size, weight, family]; http://www.fontsquirrel.com/
+2. Color[scheme and texture]; https://kuler.adobe.com/explore/
 3. Layout[gap and border];
 4. Transition[effect and nesting]
 

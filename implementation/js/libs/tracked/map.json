@@ -37,6 +37,8 @@
     "bower_components/highcharts.com/js/highcharts-more.src.js",
     "bower_components/highcharts.com/js/modules/exporting.src.js"
   ],
+  "jasmine-sinon": "bower_components/jasmine-sinon/lib/jasmine-sinon.js",
+  "jasmine": "bower_components/jasmine",
   "jqtree": [
     "bower_components/jqtree/jqtree.css",
     "bower_components/jqtree/jqtree-circle.png",
@@ -65,7 +67,6 @@
   "jquery-sieve": "bower_components/jquery-sieve",
   "jquery-ui": "bower_components/jquery-ui/ui/jquery-ui.js",
   "jquery.cookie": "bower_components/jquery.cookie/jquery.cookie.js",
-  "jquery.tablesorter": "bower_components/jquery.tablesorter",
   "jquery.terminal": "bower_components/jquery.terminal",
   "jquery.transit": "bower_components/jquery.transit",
   "jquery": "bower_components/jquery/jquery.js",
@@ -80,7 +81,7 @@
   "momentjs": "bower_components/momentjs/moment.js",
   "nprogress": "bower_components/nprogress/nprogress.js",
   "raphael": "bower_components/raphael/raphael.js",
-  "selectivizr": "bower_components/selectivizr",
+  "sinonjs": "bower_components/sinonjs/sinon.js",
   "sizzle": "bower_components/sizzle/dist/sizzle.js",
   "socket.io-client": "bower_components/socket.io-client",
   "spin.js": "bower_components/spin.js/spin.js",

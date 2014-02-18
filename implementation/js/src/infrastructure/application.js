@@ -33,14 +33,6 @@ $document = $(document);
 //1 Hook up additional Handlebars helpers.
 Swag.registerHelpers();
 
-//2 Configure NProgress as global progress indicator.
-$document.ajaxStart(function() {
-	NProgress.start();
-});
-$document.ajaxStop(function() {
-	NProgress.done();
-});
-
 /**
  * =================================
  * Define Application.setup() method
@@ -50,73 +42,15 @@ Application.setup = function(config, cb){
 	//1. Configure.
 	Application.config = _.extend({
 
-		defaultContext: 'Admin', //This is the context the application will sit on upon loading.
+		//Defaults:
 		fullScreen: true, //Note that this only indicates <body> will have overflow set to hidden in its css.
-		//No matter true/false here, we will be tracking application window size upon window resizing events and put values in Application.fullScreenContextHeight as reference.
-		rapidEventDebounce: 200, //in ms this is the rapid event debounce value shared within the application (e.g window resize).
-
-		crossdomain: {
-			//enabled: true,
-			/**
-			 * CROSSDOMAIN ONLY
-			 * [Warning - During Development: Crossdomain Authentication]
-			 * If you ever need crossdomain development, we recommend that you TURN OFF local server's auth layer/middleware.
-			 */
-			protocol: '', //https or not? default: '' -> http
-			host: '127.0.0.1', 
-			port: '5000',
-			username: 'admin',
-			password: '123'
-			/*----------------*/
-		},
-
-
-		//Pre-set RESTful API configs (see Application.API core module) - Modify this to fit your own backend apis.
-		api: {
-			//_Default_ entity is your fallback entity, only register common api method config to it would be wise, put specific ones into your context.module.
-			_Default_: {
-				data: {
-					read: {
-						type: 'GET',
-						url: function(entity, category, method, options){
-							if(options.model && options.model.id){
-								return '/' + category + '/' + entity + '/' + options.model.id;
-							}else {
-								return '/' + category + '/' + entity;
-							}
-						},
-						parse: 'payload',
-					},
-					create: {
-						type: 'POST',
-						url: function(entity, category, method, options){
-							return '/' + category + '/' + entity;
-						},
-						parse: 'payload',
-					},
-					update: {
-						type: 'PUT',
-						parse: 'payload',
-						url: function(entity, category, method, options){
-							return '/' + category + '/' + entity + '/' + options.model.id;
-						}
-
-					},
-					'delete': {
-						type: 'DELETE',
-						url: function(entity, category, method, options){
-							return '/' + category + '/' + entity + '/' + options.model.id;
-						}
-					}
-				}
-			}
-		
-		}
+        //No matter true/false here, we will be tracking application window size upon window resizing events and put values in Application.fullScreenContextHeight as reference.
+        rapidEventDebounce: 200, //in ms this is the rapid event debounce value shared within the application (e.g window resize).
 
 	}, config);	
 
 	//2. Setup Application
-	//2.1 Notifications
+	//2.1 Ajax Notifications
 	/**
 	 * Default SUCCESS/ERROR reporting on ajax op globally.
 	 * Success Notify will only appear if ajax options.notify = true
@@ -135,6 +69,16 @@ Application.setup = function(config, cb){
 		}
 		Application.error(errorStr, '|', settings.type, settings.url.split('?')[0]);
 	});
+
+	/**
+	 * Configure NProgress as global progress indicator.
+	 */
+	$document.ajaxStart(function() {
+		NProgress.start();
+	});
+	$document.ajaxStop(function() {
+		NProgress.done();
+	});	
 
 	//2.2 Initializers (Layout, Navigation)
 	/**
@@ -247,7 +191,7 @@ Application.setup = function(config, cb){
 
 	//3. Run it.
 	//Stuff to do as soon as the DOM is ready. Use $() w/o colliding with other libs;
-	;$document.ready(function($) {
+	$document.ready(function($) {
 
 		if(cb) {
 			return cb(Application);

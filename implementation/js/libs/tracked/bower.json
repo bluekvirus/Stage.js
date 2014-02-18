@@ -1,6 +1,6 @@
 {
   "name": "web-dev-libs",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "authors": [
     "Tim.Liu <bluekvirus@gmail.com>"
   ],
@@ -26,7 +26,6 @@
     "jquery-sieve": "*",
     "jquery-ui": "~1.10.3",
     "jquery.cookie": "*",
-    "jquery.tablesorter": "*",
     "jquery.transit": "*",
     "jquery": "~1.10.2",
     "jquery2": "jquery#2.1.0",
@@ -45,11 +44,10 @@
     "socket.io-client": "*",
     "jquery-serializeForm": "*",
     "swag": "*",
-    "backbone": "~1.1.0",
+    "backbone": "*",
     "marionette": "*",
     "momentjs": "*",
     "handlebars": "*",
-    "selectivizr": "*",
     "nprogress": "*",
     "highcharts.com": "*"
   }

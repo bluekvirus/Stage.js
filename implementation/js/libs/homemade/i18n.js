@@ -1,6 +1,6 @@
 /**
  * i18n loading file
- * dependencies: jQuery, underscore, store.js
+ * dependencies: jQuery, underscore, store.js, [Handlebars]
  *
  * =====
  * Usage
@@ -45,7 +45,7 @@
 				resources = data.trans;
 			},
 			error: function(jqXHR, textStatus, errorThrown) {
-				console.log('Get resources error', errorThrown);
+				throw new Error('RUNTIME::i18n::' + errorThrown);
 			}
 		});
 

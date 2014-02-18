@@ -166,41 +166,7 @@ buildify.task({
 //-------------------------------------------
 
 buildify.task({
-	name: 'base-libs',
-	depends: ['load-lib-map'],
-	task: function(){
-		var list = [
-			'modernizr',
-			'jquery',
-			'jquery.transit',
-			'jquery.cookie',
-			'jquery-ui',
-			'jquery-serializeForm',
-			'jquery-sieve', //client side quick text search
-			'jquery-file-upload',
-			//'flexslider',
-			'underscore',
-			'underscore.string',
-			'backbone', //include json2/3
-			'marionette',
-			'handlebars',
-			'swag',
-			'bootstrap2', 
-			'store.js', //need json2 in backbone
-			'uri.js',
-			'momentjs',
-			'marked',			
-			'colorbox',
-			//'spin.js',
-			'nprogress',
-			'raphael'
-		];
-		combine(list, 'base-libs');
-	}
-});
-
-buildify.task({
-	name: 'base-libs-latest', //with jquery2 and bootstrap3 , ie9+
+	name: 'libs', //with jquery2 and bootstrap3 , ie9+
 	depends: ['load-lib-map'],
 	task: function(){
 		var list = [
@@ -212,7 +178,6 @@ buildify.task({
 			'jquery-serializeForm',
 			'jquery-sieve',
 			'jquery-file-upload',
-			//'flexslider',
 			'underscore',
 			'underscore.string',
 			'backbone', 
@@ -225,17 +190,17 @@ buildify.task({
 			'momentjs',
 			'marked',			
 			'colorbox',
-			//'spin.js',
+			//'spin.js', or nprogress
 			'nprogress',
 			'raphael'
 		];
-		combine(list, 'base-libs-latest');
+		combine(list, 'libs');
 	}
 });
 
 buildify.task({
 	name: 'all',
-	depends: ['fix-libs', 'base-libs', 'base-libs-latest'],
+	depends: ['fix-libs', 'libs'],
 	task: function(){
 		
 	}

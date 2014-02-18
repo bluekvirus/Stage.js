@@ -20,24 +20,25 @@
         <!--[if lt IE 7]>
             <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
         <![endif]-->
+
         <!-- This rolls with the theme roller -->
         <div class="application-container"></div>
        
         <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. 
-            <script>
-                var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
-                (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
-                g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
-                s.parentNode.insertBefore(g,s)}(document,'script'));
-            </script>
+        <script>
+            var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
         -->     
 
         <!--
-            <script> attributes:
+            Special <script> attributes for build/spawn:
                 lib: This is for the spawn tool to group the libs in the spawned project.
                 non-core: This is for the build tool to ignore the script while building production all-in-one js.
-                patch=*: This is for the build tool to locate the point where it can put in patched script as if this page is loaded through browser.
         -->
+
         <!--Base-->
         <script type="text/javascript" src="libs/dist/base-libs-latest.js" lib="libs"></script>
         
@@ -101,18 +102,82 @@
         <script type="text/javascript" src="scripts/contexts/admin/index.js"></script><!--Need to refine admin factory using the new 'Formless' concept-->
         <script type="text/javascript" src="scripts/contexts/admin/dashboard.js"></script><!--Need to rewrite-->
         
-        
-        <!--
-        <script type="text/javascript" src="scripts/contexts/_dev/index.js" non-core="true"></script>
-        <script type="text/javascript" src="scripts/contexts/_dev/servermodelgen.js" non-core="true"></script>
-        <script type="text/javascript" src="scripts/contexts/_dev/svgiconpreview.js" non-core="true"></script>
-        -->
 
-        <!-- patch scripts autoloader see env.js, also used in build for marking a position to inject auto-loaded scripts -->
-        <script type="text/javascript" patch="*" non-core="true">
-            Application.patchScripts();
+        <!--Kick Start App as an example in real development's main.js-->
+        <script type="text/javascript" non-core="true">
+            Application.setup({
+
+                /**
+                 * ================
+                 * Development ONLY
+                 * 
+                 */
+                
+                //CROSSDOMAIN [Warning: Crossdomain Authentication]
+                //If you ever need crossdomain development, we recommend that you TURN OFF local server's auth layer/middleware. 
+                crossdomain: {
+                    //enabled: true,
+                    protocol: '', //https or not? default: '' -> http
+                    host: '127.0.0.1', 
+                    port: '5000',
+                    username: 'admin',
+                    password: '123'
+                    /*----------------*/
+                },
+                // ================              
+
+                /**
+                 * =================
+                 * Production Config
+                 * 
+                 */
+                defaultContext: 'Admin', //This is the context the application will sit on upon loading.
+                //fullScreen: true, -- Note that this only indicates <body> will have overflow set to hidden in its css. No matter true/false here, we will be tracking application window size upon window resizing events and put values in Application.fullScreenContextHeight as reference.
+                //rapidEventDebounce: 200, -- in ms this is the rapid event debounce value shared within the application (e.g window resize).                
+
+                //Pre-set RESTful API configs (see Application.API core module) - Modify this to fit your own backend apis.
+                api: {
+                    //_Default_ entity is your fallback entity, only register common api method config to it would be wise, put specific ones into your context.module.
+                    _Default_: {
+                        data: {
+                            read: {
+                                type: 'GET',
+                                url: function(entity, category, method, options){
+                                    if(options.model && options.model.id){
+                                        return '/' + category + '/' + entity + '/' + options.model.id;
+                                    }else {
+                                        return '/' + category + '/' + entity;
+                                    }
+                                },
+                                parse: 'payload',
+                            },
+                            create: {
+                                type: 'POST',
+                                url: function(entity, category, method, options){
+                                    return '/' + category + '/' + entity;
+                                },
+                                parse: 'payload',
+                            },
+                            update: {
+                                type: 'PUT',
+                                parse: 'payload',
+                                url: function(entity, category, method, options){
+                                    return '/' + category + '/' + entity + '/' + options.model.id;
+                                }
+
+                            },
+                            'delete': {
+                                type: 'DELETE',
+                                url: function(entity, category, method, options){
+                                    return '/' + category + '/' + entity + '/' + options.model.id;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
         </script>
-        <!-- end of scripts autoloader -->
+
 
     </body>
 </html>

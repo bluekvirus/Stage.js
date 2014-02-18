@@ -38,7 +38,7 @@
 			});
 		}
 
-		//cache:[for IE]
+		//cache:[for IE?]
 		options.cache = false;
 
 	});
