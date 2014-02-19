@@ -18,11 +18,10 @@
 	        $('body').append('<iframe id="hidden-download-iframe" style="display:none"></iframe>');
 	        drone = $('#hidden-download-iframe');
 	    }
-	    drone.attr('src', new URI(ticket.url || '/').search(_.without(ticket, 'url')).toString());
+	    
+	    drone.attr('src', (new URI(ticket.url || '/').search(_.omit(ticket, 'url'))).toString());
 	};
 
-	Application.Util.download = function(ticket){
-		return _downloader('/download', ticket);
-	}
+	Application.Util.download = _downloader;
 
 })();

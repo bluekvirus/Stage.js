@@ -7,6 +7,8 @@
  * 3. Logout ?
  * 4. Privilege Eval() ?
  *
+ * Usage:
+ * app.Util.touch(url, yes(), no()).done().error()...
  *
  * @author Tim.Liu
  * @created 2013.04.01
@@ -15,26 +17,20 @@
  */
 ;(function(){
 
- Application.touch = function(){
+ Application.Util.touch = function(url, yes, no){
 	/**
 	 * This check with application server to see if the user is logged in or not...
-	 * @return {Boolean} see application server routes/landing/page.js
+	 * @return {Boolean}
 	 */
-	var result = false;
-	$.ajax({
-		url: '/login',
+	return $.ajax({
+		url: url || '/login',
 		notify: false,
-		async: false,
-		success: function(res){
-			result = true;
-			Application.user = res.user;
-			Application.trigger('app:user-changed');
-		},
-		error: function(){
-			delete Application.user;
-		}
-	});
-	return result;			
+	}).done(yes || function(res){
+		Application.user = res.user;
+		Application.trigger('app:user-changed');
+	}).error(no || function(){
+		delete Application.user;
+	});		
  }
 
 })();

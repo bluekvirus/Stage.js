@@ -36,7 +36,7 @@
 		return messages;
 	};
 
-	app.Util.notify = {}; 
+	app.Util.Notify = {}; 
 	function notify(type, data, q){
 		if(_.isArray(q))
 			q.add(data);
@@ -49,7 +49,7 @@
 	 * @arguments Messages ,...,
 	 */
 	_.each(['error', 'success', 'info', 'warning'], function(type){
-		app.Util.notify[type] = function(){
+		app.Util.Notify[type] = function(){
 			arguments = _.toArray(arguments);
 			notify('message', {
 				type: type,
@@ -65,7 +65,7 @@
 	 * @arguments Object {}
 	 */
 	_.each(['confirm', 'alert', 'window'], function(type){
-		app.Util.notify[type] = function(data){
+		app.Util.Notify[type] = function(data){
 			notify('prompt', _.extend({type: type}, data));
 		}
 	})

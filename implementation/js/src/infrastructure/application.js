@@ -257,6 +257,8 @@ Application.run = function(){
 
 	});
 
+	return Application;
+
 };
 
 

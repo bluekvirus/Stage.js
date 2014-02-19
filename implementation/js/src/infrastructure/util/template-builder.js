@@ -7,8 +7,6 @@
 
 ;(function(app){
 
-	if(window.Template) throw new Error('DEV::Core.Util.Template::Conflict! You need to move window.Template into a new global var...');
-
 	var map = {};
 	var Template = {
 		extend: function (name, tplStrArray){
@@ -29,11 +27,11 @@
 		}
 	}
 
-	window.Template = Template;
+	Application.Util.Template = Template;
 
 })(Application);
 
 /**
  * Pre-defined Global Templates
  */
-Template.extend('_blank', [' ']); //blank sheet template.
+Application.Util.Template.extend('_blank', [' ']); //blank sheet template.
