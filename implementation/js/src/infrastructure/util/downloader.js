@@ -2,6 +2,7 @@
  * ================================
  * Application universal downloader
  *
+ * 
  *
  * @author Tim.Liu
  * @created 2013.04.01
@@ -10,17 +11,17 @@
  */
 ;(function(){
 
-	var _downloader = function(server, ticket){
+	var _downloader = function(ticket){
 	    var drone = $('#hidden-download-iframe');
 	    if(drone.length > 0){
 	    }else{
 	        $('body').append('<iframe id="hidden-download-iframe" style="display:none"></iframe>');
 	        drone = $('#hidden-download-iframe');
 	    }
-	    drone.attr('src', (ticket.url || server)+'?name='+ticket.name+'&file='+ticket.file+'&type='+ticket.type);
+	    drone.attr('src', new URI(ticket.url || '/').search(_.without(ticket, 'url')).toString());
 	};
 
-	Application.downloader = function(ticket){
+	Application.Util.download = function(ticket){
 		return _downloader('/download', ticket);
 	}
 

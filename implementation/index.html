@@ -22,7 +22,7 @@
         <![endif]-->
 
         <!-- This rolls with the theme roller -->
-        <div class="application-container"></div>
+        <div id="main" class="application-container"></div>
        
         <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. 
         <script>
@@ -40,77 +40,44 @@
         -->
 
         <!--Base-->
-        <script type="text/javascript" src="libs/dist/base-libs-latest.js" lib="libs"></script>
+        <script type="text/javascript" src="js/libs/tracked/dist/libs.js"></script>
+        <script type="text/javascript" src="js/libs/homemade/i18n.js"></script>
         
-        <!--Project Spec Libs-->
-        <script type="text/javascript" src="libs/bower_components/jquery.tablesorter/js/jquery.tablesorter.js"></script>
+
+        <!--APP-->
+        <script type="text/javascript" src="js/src/infrastructure/application.js"></script>        
+        <!--APP Core-->
+        <script type="text/javascript" src="js/src/infrastructure/core/api.js"></script>
+        <script type="text/javascript" src="js/src/infrastructure/core/part.js"></script>
+        <script type="text/javascript" src="js/src/infrastructure/core/context.js"></script>        
+        <!--APP Util-->
+        <script type="text/javascript" src="js/src/infrastructure/util/notify.js"></script>
+        <script type="text/javascript" src="js/src/infrastructure/util/theme-roller.js"></script>
+        <script type="text/javascript" src="js/src/infrastructure/util/user-session.js"></script>
+        <script type="text/javascript" src="js/src/infrastructure/util/downloader.js"></script>
+        <script type="text/javascript" src="js/src/infrastructure/util/template-builder.js"></script>
+        <!--APP Libs-/+-->
+        <script type="text/javascript" src="js/src/infrastructure/lib+-/$/ajax.js"></script>
+        <script type="text/javascript" src="js/src/infrastructure/lib+-/backbone/collection.js"></script>
+        <script type="text/javascript" src="js/src/infrastructure/lib+-/backbone/model.js"></script>
+        <script type="text/javascript" src="js/src/infrastructure/lib+-/backbone/sync.js"></script>         
+        <script type="text/javascript" src="js/src/infrastructure/lib+-/marionette/template-compiler.js"></script>
+        <script type="text/javascript" src="js/src/infrastructure/lib+-/marionette/region.js"></script>
+        <script type="text/javascript" src="js/src/infrastructure/lib+-/marionette/view.js"></script>
+        
+        <!--Project Spec Libs
         <script type="text/javascript" src="libs/bower_components/highcharts.com/js/highcharts.src.js"></script>
         <script type="text/javascript" src="libs/bower_components/highcharts.com/js/highcharts-more.src.js"></script>
+        -->        
 
-        <!--APP Core-->
-        <script type="text/javascript" src="scripts/core/env.js" lib="core"></script>
-        <script type="text/javascript" src="scripts/core/enhancements/collection.js"></script>
-        <script type="text/javascript" src="scripts/core/enhancements/model.js"></script>
-        <script type="text/javascript" src="scripts/core/enhancements/view.js"></script>
-        <script type="text/javascript" src="scripts/core/utils/i18n.js"></script>
-        <script type="text/javascript" src="scripts/core/utils/template-builder.js"></script>
-        <script type="text/javascript" src="scripts/core/utils/notify.js"></script>
-        <script type="text/javascript" src="scripts/core/utils/theme-roller.js"></script>
-        <script type="text/javascript" src="scripts/core/utils/script-loader.js"></script>
-        <script type="text/javascript" src="scripts/core/utils/ajax-patch.js"></script>
-        <script type="text/javascript" src="scripts/core/utils/ajax-events.js"></script>
-        <script type="text/javascript" src="scripts/core/utils/downloader.js"></script>
-        <script type="text/javascript" src="scripts/core/utils/user-session.js"></script>
-        <script type="text/javascript" src="scripts/core/modules/api.js"></script>
-        <script type="text/javascript" src="scripts/core/modules/contexts.js"></script>
-        <script type="text/javascript" src="scripts/core/modules/parts.js"></script>
-        <script type="text/javascript" src="scripts/core/main.js"></script>
-
-        <!--Editors-->
-        <script type="text/javascript" src="scripts/core/parts/editors/basic/editors.js"></script>
-        <script type="text/javascript" src="scripts/core/parts/editors/basic/validations.js"></script>
-        <!--<script type="text/javascript" src="scripts/widgets/editor/custom_file.js"></script>Need to be ported to editor-->
-        <!--<script type="text/javascript" src="scripts/widgets/editor/custom_resource-control.js"></script>Need to be ported to widget/editor-->
-        <!--<script type="text/javascript" src="scripts/widgets/editor/custom_date-picker.js"></script>Need to be ported to editor-->
-        <script type="text/javascript" src="scripts/core/parts/editors/enhanced/select/selector-flatten.js"></script>
-        <script type="text/javascript" src="scripts/core/parts/editors/enhanced/select/selector-hover.js"></script>
-
-        <!--Widgets-->
-        <script type="text/javascript" src="scripts/core/parts/widgets/standard/property-grid.js"></script>
-        <script type="text/javascript" src="scripts/core/parts/widgets/standard/paginator.js"></script>
-        <script type="text/javascript" src="scripts/core/parts/widgets/standard/toolbelt.js"></script>
-        <script type="text/javascript" src="scripts/core/parts/widgets/standard/basic-form.js"></script>
-        <script type="text/javascript" src="scripts/core/parts/widgets/standard/datagrid2/index.js"></script>
-        <script type="text/javascript" src="scripts/core/parts/widgets/standard/datagrid2/cells/string.js"></script>
-        <script type="text/javascript" src="scripts/core/parts/widgets/standard/datagrid2/headers/string.js"></script>
-        <script type="text/javascript" src="scripts/core/parts/widgets/standard/datagrid2/cells/action.js"></script>
-        <script type="text/javascript" src="scripts/core/parts/widgets/standard/datagrid2/cells/select-all.js"></script>
-        <script type="text/javascript" src="scripts/core/parts/widgets/standard/datagrid2/headers/select-all.js"></script>
-        <script type="text/javascript" src="scripts/core/parts/widgets/standard/accordion-menu.js"></script>
-        <script type="text/javascript" src="scripts/core/parts/widgets/plugin/md-content.js"></script>
-        <script type="text/javascript" src="scripts/core/parts/widgets/plugin/overlay.js"></script>
-
-        <!--Contexts/Submodules-->
-        <script type="text/javascript" src="scripts/contexts/shared/index.js" lib="N/A"></script>
-        <script type="text/javascript" src="scripts/contexts/shared/banner.js"></script>
-        <script type="text/javascript" src="scripts/contexts/shared/footer.js"></script>
-        <script type="text/javascript" src="scripts/contexts/shared/user.js"></script>
-        <script type="text/javascript" src="scripts/contexts/shared/prompt.js"></script>
-        <script type="text/javascript" src="scripts/contexts/shared/message.js"></script>
-        <script type="text/javascript" src="scripts/contexts/login/index.js"></script>
-        <script type="text/javascript" src="scripts/contexts/login/form.js"></script>
-        <script type="text/javascript" src="scripts/contexts/admin/index.js"></script><!--Need to refine admin factory using the new 'Formless' concept-->
-        <script type="text/javascript" src="scripts/contexts/admin/dashboard.js"></script><!--Need to rewrite-->
-        
-
-        <!--Kick Start App as an example in real development's main.js-->
+        <!--Main.js-->
         <script type="text/javascript" non-core="true">
             Application.setup({
 
                 /**
                  * ================
                  * Development ONLY
-                 * 
+                 * ================
                  */
                 
                 //CROSSDOMAIN [Warning: Crossdomain Authentication]
@@ -124,57 +91,9 @@
                     password: '123'
                     /*----------------*/
                 },
-                // ================              
 
-                /**
-                 * =================
-                 * Production Config
-                 * 
-                 */
-                defaultContext: 'Admin', //This is the context the application will sit on upon loading.
-                //fullScreen: true, -- Note that this only indicates <body> will have overflow set to hidden in its css. No matter true/false here, we will be tracking application window size upon window resizing events and put values in Application.fullScreenContextHeight as reference.
-                //rapidEventDebounce: 200, -- in ms this is the rapid event debounce value shared within the application (e.g window resize).                
+                //You can override other production config vars if wanted.
 
-                //Pre-set RESTful API configs (see Application.API core module) - Modify this to fit your own backend apis.
-                api: {
-                    //_Default_ entity is your fallback entity, only register common api method config to it would be wise, put specific ones into your context.module.
-                    _Default_: {
-                        data: {
-                            read: {
-                                type: 'GET',
-                                url: function(entity, category, method, options){
-                                    if(options.model && options.model.id){
-                                        return '/' + category + '/' + entity + '/' + options.model.id;
-                                    }else {
-                                        return '/' + category + '/' + entity;
-                                    }
-                                },
-                                parse: 'payload',
-                            },
-                            create: {
-                                type: 'POST',
-                                url: function(entity, category, method, options){
-                                    return '/' + category + '/' + entity;
-                                },
-                                parse: 'payload',
-                            },
-                            update: {
-                                type: 'PUT',
-                                parse: 'payload',
-                                url: function(entity, category, method, options){
-                                    return '/' + category + '/' + entity + '/' + options.model.id;
-                                }
-
-                            },
-                            'delete': {
-                                type: 'DELETE',
-                                url: function(entity, category, method, options){
-                                    return '/' + category + '/' + entity + '/' + options.model.id;
-                                }
-                            }
-                        }
-                    }
-                }
             }).run();
         </script>
 

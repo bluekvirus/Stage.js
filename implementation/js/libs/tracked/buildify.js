@@ -176,7 +176,6 @@ buildify.task({
 			'jquery.cookie',
 			'jquery-ui',
 			'jquery-serializeForm',
-			'jquery-sieve',
 			'jquery-file-upload',
 			'underscore',
 			'underscore.string',
@@ -184,7 +183,8 @@ buildify.task({
 			'marionette',
 			'handlebars',
 			'swag',
-			'bootstrap3', //version 3+
+			//'bootstrap3', //version 3+
+			'bootstrap2',
 			'store.js', 
 			'uri.js',
 			'momentjs',

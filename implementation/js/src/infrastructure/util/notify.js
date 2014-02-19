@@ -36,10 +36,11 @@
 		return messages;
 	};
 
-	app.msg = function(type, data){
-		var msgObj = {type: type, data: data};
-		messages.add(msgObj);
-		app.trigger('app:message', msgObj);
+	app.Util.notify = {}; 
+	function notify(type, data, q){
+		if(_.isArray(q))
+			q.add(data);
+		app.trigger('app:notify:' + type, data);
 	}
 
 	/**
@@ -48,26 +49,24 @@
 	 * @arguments Messages ,...,
 	 */
 	_.each(['error', 'success', 'info', 'warning'], function(type){
-		app[type] = function(){
+		app.Util.notify[type] = function(){
 			arguments = _.toArray(arguments);
-			app.msg(type, {
+			notify('message', {
+				type: type,
 				text: arguments.join(' ')
-			});
+			}, app.getMessages());
 		}
 	});
 
 
 	/**
 	 * Prompt the user with a dialog box (modal/window)
+	 *
+	 * @arguments Object {}
 	 */
-	app.prompt = function(type, data){
-		var promptObj = {type: type, data: data};
-		app.trigger('app:prompt', promptObj);
-	};
-
 	_.each(['confirm', 'alert', 'window'], function(type){
-		app[type] = function(data){
-			app.prompt(type, data);
+		app.Util.notify[type] = function(data){
+			notify('prompt', _.extend({type: type}, data));
 		}
 	})
 
