@@ -1,16 +1,12 @@
 {
-	"bootstrap2": "bootstrap.js",
-	"bootstrap3": "bootstrap.js",
 	"flexslider": "jquery.flexslider.js",
 	"json3": "lib",
 	"jqtree": "tree.jquery.js",
-	"jquery-file-upload": "bower_components/jquery-file-upload/dist/jquery-file-upload-with-iframe.js",
+	"jquery-file-upload": "dist/jquery-file-upload-with-iframe.js",
 	"jquery-serializeForm": "dist",
-	"jquery2": "dist/jquery.js",
-	"jquery-sieve": "dist/jquery.sieve.js",
 	"marked": "lib",
 	"marionette": "lib/backbone.marionette.js",
 	"underscore.string": "lib",
-	"uri.js": "bower_components/uri.js/dist",
-	"spin.js": "../spin-with-jqplugin.js"
+	"uri.js": "dist",
+	"spin.js": "dist/spin-with-jqplugin.js"
 }

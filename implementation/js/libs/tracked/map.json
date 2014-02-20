@@ -12,17 +12,13 @@
     "bower_components/blueimp-load-image/js/load-image-exif-map.js"
   ],
   "blueimp-tmpl": "bower_components/blueimp-tmpl/js/tmpl.js",
-  "bootstrap2": [
-    "bower_components/bootstrap2/docs/assets/js/bootstrap.js",
-    "bower_components/bootstrap2/docs/assets/css/bootstrap.css"
-  ],
-  "bootstrap3": [
-    "bower_components/bootstrap3/dist/js/bootstrap.js",
-    "bower_components/bootstrap3/dist/css/bootstrap.css",
-    "bower_components/bootstrap3/dist/fonts/glyphicons-halflings-regular.eot",
-    "bower_components/bootstrap3/dist/fonts/glyphicons-halflings-regular.svg",
-    "bower_components/bootstrap3/dist/fonts/glyphicons-halflings-regular.ttf",
-    "bower_components/bootstrap3/dist/fonts/glyphicons-halflings-regular.woff"
+  "bootstrap": [
+    "bower_components/bootstrap/dist/css/bootstrap.css",
+    "bower_components/bootstrap/dist/js/bootstrap.js",
+    "bower_components/bootstrap/dist/fonts/glyphicons-halflings-regular.eot",
+    "bower_components/bootstrap/dist/fonts/glyphicons-halflings-regular.svg",
+    "bower_components/bootstrap/dist/fonts/glyphicons-halflings-regular.ttf",
+    "bower_components/bootstrap/dist/fonts/glyphicons-halflings-regular.woff"
   ],
   "codemirror": [
     "bower_components/codemirror/lib/codemirror.js",
@@ -37,8 +33,6 @@
     "bower_components/highcharts.com/js/highcharts-more.src.js",
     "bower_components/highcharts.com/js/modules/exporting.src.js"
   ],
-  "jasmine-sinon": "bower_components/jasmine-sinon/lib/jasmine-sinon.js",
-  "jasmine": "bower_components/jasmine",
   "jqtree": [
     "bower_components/jqtree/jqtree.css",
     "bower_components/jqtree/jqtree-circle.png",
@@ -69,8 +63,7 @@
   "jquery.cookie": "bower_components/jquery.cookie/jquery.cookie.js",
   "jquery.terminal": "bower_components/jquery.terminal",
   "jquery.transit": "bower_components/jquery.transit",
-  "jquery": "bower_components/jquery/jquery.js",
-  "jquery2": "bower_components/jquery2",
+  "jquery": "bower_components/jquery/dist/jquery.js",
   "json3": "bower_components/json3/lib/json3.min.js",
   "marionette": [
     "bower_components/marionette/lib/backbone.marionette.js",
@@ -81,14 +74,12 @@
   "momentjs": "bower_components/momentjs/moment.js",
   "nprogress": "bower_components/nprogress/nprogress.js",
   "raphael": "bower_components/raphael/raphael.js",
-  "sinonjs": "bower_components/sinonjs/sinon.js",
-  "sizzle": "bower_components/sizzle/dist/sizzle.js",
   "socket.io-client": "bower_components/socket.io-client",
   "spin.js": "bower_components/spin.js/spin.js",
   "store.js": "bower_components/store.js/store.js",
   "swag": "bower_components/swag/lib/swag.js",
   "underscore.string": "bower_components/underscore.string",
-  "underscore": "bower_components/underscore",
+  "underscore": "bower_components/underscore/underscore.js",
   "uri.js": [
     "bower_components/uri.js/src/URI.js",
     "bower_components/uri.js/src/IPv6.js",

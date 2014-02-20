@@ -114,12 +114,14 @@ function combine(list, name){
 		if(libMap[lib])
 			console.log(lib.yellow, '[', libMap[lib].grey, ']');
 		else {
-			console.log(lib, 'not found!'.red);
+			console.log(lib, ('not found! ' + libMap[lib]).red);
 			return;
 		}
 		target.concat(libMap[lib]);
 	});
+	console.log('tracked libs (selected/available):', (_.size(list) + '/' + String(_.size(libMap))).green, '[', ((_.size(list)/_.size(libMap)*100).toFixed(2) + '%').yellow, ']');
 	target.setDir('dist').save(name + '.js').uglify().save(name + '.min.js');
+	
 };
 //-------------------------------------------
 
@@ -127,40 +129,42 @@ buildify.task({
 	name: 'load-lib-map',
 	task: function(){
 		var map = require('./map.json'), fix = require('./map-fix.json');
-		var libs = _.union(_.keys(map), _.keys(fix));
+		var libs = _.keys(map);
+		function check(path){
+			if(!/\.js$/.test(path)) return false;
+			return path;
+		}
 		//1. fix lib name-file map
 		_.each(libs, function(lib){
-			if(!map[lib] || !fix[lib]){
-				libMap[lib] = map[lib] || fix[lib];
-				return;
-			}
-
-			//lib main js path need a fix
-			if(_.isString(map[lib])){ //map path is a string.
-				libMap[lib] = map[lib] + '/' + fix[lib]; //combine map path and fixed path.
-				return;
-			}
 
 			if(_.isArray(map[lib])){ //map path is an array.
 				_.each(map[lib], function(f){
-					if(f.match(fix[lib]+'$')) libMap[lib] = f; //select one from group.
+					if(libMap[lib]) return;
+					var reg = new RegExp(lib + '\.js$');
+					if(reg.test(f)) libMap[lib] = f; //select one from group.
 				});
-				if(!libMap[lib]) libMap[lib] = fix[lib]; //non selected, use fixed path directly.
-				return;
+				
 			}
 
+			//now libMap[lib] may or may not be a single string path			
+			if(fix[lib])
+				//reset to lib's root folder
+				libMap[lib] = 'bower_components/' + lib + '/' + fix[lib];
+			else
+				//use map path
+				libMap[lib] = _.isArray(map[lib])? libMap[lib] : map[lib];
+
+			if(!libMap[lib]) {
+				delete libMap[lib];
+				return; //skip this lib
+			}
+			//final fix on the lib js path
+			if(!check(libMap[lib])) libMap[lib] += '/' + lib;
+			if(!check(libMap[lib])) libMap[lib] += '.js';
+
 		});
 
-		//2. double check lib file path
-		_.each(libMap, function(path, key){
-			//skip the unfixed arrays.
-			if(_.isArray(path)) return;
-
-			if(!path.match('\.js$'))
-				libMap[key] = path + '/' + (key.match('\.js$')?key:(key + '.js'));
-		});
-
-		console.log('Total Libs:', String(_.size(libMap)).green);
+		//console.log('Total Libs Available:', String(_.size(libMap)).green);
 	}
 });
 //-------------------------------------------
@@ -171,7 +175,7 @@ buildify.task({
 	task: function(){
 		var list = [
 			'modernizr',
-			'jquery2', //version 2+
+			'jquery', //version 2+
 			'jquery.transit',
 			'jquery.cookie',
 			'jquery-ui',
@@ -183,14 +187,13 @@ buildify.task({
 			'marionette',
 			'handlebars',
 			'swag',
-			//'bootstrap3', //version 3+
-			'bootstrap2',
+			'bootstrap', //version 3+
 			'store.js', 
 			'uri.js',
 			'momentjs',
 			'marked',			
 			'colorbox',
-			//'spin.js', or nprogress
+			'spin.js', //or nprogress
 			'nprogress',
 			'raphael'
 		];
