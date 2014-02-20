@@ -50,9 +50,10 @@ Theme Package
 		```		
 		=> produces 1 big sprite with test page.
 
-4. styles/ 
+4. css/ 
 ---------
 (this is where the compiled main.css goes).
+You should also put 3rd-party css files in here.
 
 
 WARNING

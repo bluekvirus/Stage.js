@@ -47,7 +47,11 @@ Application.setup = function(config){
 
 		//Defaults:
 		theme: null,
-		template: '<div region="top"></div><div region="center"></div><div region="bottom"></div>',
+		template: [
+			'<div region="top"></div>',
+			'<div region="center"></div>',
+			'<div region="bottom"></div>'
+		].join(''),
 		//e.g:: have a unified layout template.
 		/**
 		 * ------------------------
@@ -66,7 +70,7 @@ Application.setup = function(config){
 		 */		
 		contextRegion: 'center',
 		defaultContext: 'Login', //This is the context the application will sit on upon loading.
-		fullScreen: true, //Note that this only indicates <body> will have overflow set to hidden in its css.
+		fullScreen: false, //Note that this only indicates <body> will have overflow set to hidden in its css.
         rapidEventDebounce: 200, //in ms this is the rapid event debounce value shared within the application (e.g window resize).
         //Pre-set RESTful API configs (see Application.API core module) - Modify this to fit your own backend apis.
         api: {

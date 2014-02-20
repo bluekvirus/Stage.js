@@ -8,5 +8,7 @@
 	"marionette": "lib/backbone.marionette.js",
 	"underscore.string": "lib",
 	"uri.js": "dist",
-	"spin.js": "dist/spin-with-jqplugin.js"
+	"spin.js": "dist/spin-with-jqplugin.js",
+	
+	"jquery-ui": "../../../non-tracked/jquery-ui-1.10.4-core-interaction-effect/js/jquery-ui-1.10.4.custom.js"
 }

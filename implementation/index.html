@@ -8,7 +8,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
         <title></title>
         <meta name="description" content="">
-        <meta name="viewport" content="width=device-width">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
         <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
         <!-- Theme detector see core/utils/theme-roller.js or core.js -->
@@ -23,26 +23,16 @@
 
         <!-- This rolls with the theme roller -->
         <div id="main" class="application-container"></div>
-       
-        <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. 
-        <script>
-            var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
-            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
-            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
-            s.parentNode.insertBefore(g,s)}(document,'script'));
-        </script>
-        -->     
 
         <!--
-            Special <script> attributes for build/spawn:
-                lib: This is for the spawn tool to group the libs in the spawned project.
-                non-core: This is for the build tool to ignore the script while building production all-in-one js.
+            Special <script> attributes for build:
+                exclude="true": This is for the build tool to ignore the script while building production all-in-one js.
         -->
 
+        <!--========Infrastructure Space: the engine=====-->
         <!--Base-->
         <script type="text/javascript" src="js/libs/tracked/dist/libs.js"></script>
         <script type="text/javascript" src="js/libs/homemade/i18n.js"></script>
-        
 
         <!--APP-->
         <script type="text/javascript" src="js/src/infrastructure/application.js"></script>        
@@ -64,14 +54,30 @@
         <script type="text/javascript" src="js/src/infrastructure/lib+-/marionette/template-compiler.js"></script>
         <script type="text/javascript" src="js/src/infrastructure/lib+-/marionette/region.js"></script>
         <script type="text/javascript" src="js/src/infrastructure/lib+-/marionette/view.js"></script>
+
+        <!--Predefined Goods(UI policy)-->
+        <!--Basic (provide in order):
+            [container] context layout & panel(header/footer + layered body);
+            [input] editors & form/fieldset;
+            optional:[display notification] event msg & user prompt;
+        -->
+        <!--Advanced (provide in order):
+            [display data] table/list & paginator;
+            [query/control] filter/search & toolbar;
+            optional:[aggregation/transition/info-hiding(reduce distraction)] tree/accordion/slide/mini-maximum/tab
+        -->
+        <!--==============End of the engine==============-->
         
-        <!--Project Spec Libs
-        <script type="text/javascript" src="libs/bower_components/highcharts.com/js/highcharts.src.js"></script>
-        <script type="text/javascript" src="libs/bower_components/highcharts.com/js/highcharts-more.src.js"></script>
-        -->        
+        <!--User/Programmer Space: the web application dev-->
+
+        <!--Project Spec Libs: e.g
+            <script type="text/javascript" src="libs/bower_components/highcharts.com/js/highcharts.src.js"></script>
+            <script type="text/javascript" src="libs/bower_components/highcharts.com/js/highcharts-more.src.js"></script>
+        -->
+        <!--Contexts/Parts-->                
 
         <!--Main.js-->
-        <script type="text/javascript" non-core="true">
+        <script type="text/javascript" exclude="true">
             Application.setup({
 
                 /**
@@ -93,10 +99,19 @@
                 },
 
                 //You can override other production config vars if wanted.
+                fullScreen: true
 
             }).run();
         </script>
 
+        <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. 
+            <script>
+                var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
+                (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+                g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+                s.parentNode.insertBefore(g,s)}(document,'script'));
+            </script>
+        -->
 
     </body>
 </html>
