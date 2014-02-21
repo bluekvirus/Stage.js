@@ -1,58 +1,55 @@
 /**
- * This is the application context registry. 
- * A context defines the scope of a group of modules that represent a phase of the application. (e.g. Login, Admin, AppUser, AppPublic(can be the same thing as Login) ...etc.)
+ * This is the Application context registry. 
+ * A context defines the scope of a group of modules that represent a phase/mode/page of the Application. 
+ * (e.g. Login, Admin, AppUser, AppPublic(can be the same thing as Login) ...etc.)
  *
- * ======
- * Design
- * ======
- * A context is a module that has a View.Default for basic layout management, but it also serves a registry for the sub-modules of that phase of the application.
- * A context is important for the application router, since the router will only search for modules and regions within the 'current' context. 
- * Switching of contexts should be signaled by the server. Thus when a 401 occurs the client side can switch the user back to the login phase.
- * A context will also have its name and default module and region defined.
- *
- * ======
- * Usage
- * ======
- * app.Context.create('name', [factory]) - factory should return a object that has View.Default(layout), name, default module and region defined.
- * app.Context.module('name') - create a context's sub-module.
- *
- * a context factory function should return at least an object that contains {
- *
- * 	requireLogin: true | false,
- * 	defaults: {
- * 		region: 'content',
- * 		module: 'Dashboard'
- * 		},
- * 	View: {
- * 		Default: ...
- * 	}
  * 
- * }
+ * Design
+ * ------
+ * A context is an Application sub-module that has a name and a layout template defined.
+ * Since it is a module itself it also serves as a registry for the sub-modules of that context of the Application.
+ * Context switch can be triggered by 
+ * 	a. use app:navigate (contextName, moduleName) event;
+ *  b. click <a href="#/navigate/[contextName][/moduleName]"/> tag;
+ *
+ * 
+ * Usage
+ * -----
+ * ###How to define one? 
+ * app.Context.create({
+ * 		name: 'name of the context',
+ * 		layout/template: 'html template of the view as in Marionette.Layout',
+ * 							- region=[] attribute --- mark a tag to be a region container
+ * 							- view=[] attribute ---mark this region to show an new instance of specified view definition
+ * 	    requireLogin: 'true' | 'false'
+ * });
+ *
+ * ###How to populate the context with sub-modules?
+ * context.create({
+ * 		[region]: ,
+ * 		[name]: ,
+ * 		layout/template: '',
+ * 		[type]: Marionette View type [ItemView(default), Layout, CollectionView, CompositeView]
+ * 		... rest of the config to the View definition?
+ * }) - create a context's regional sub-module.
+ *
  * 
  * @author Tim.Liu
  * @created 2013.09.21
+ * @updated 2014.02.21 (1.0.0-rc1)
  */
 
 ;(function(app, _){
 
-	var context = app.module('Context');
-	_.extend(context, {
+	var definition = app.module('Context');
+	_.extend(definition, {
 
-		get: function(dotedName){
-			var path = dotedName.split('.');
-			var result = this;
-			while(path.length > 0){
-				result = result[path.shift()];
-			}
-			if(result === this) return;
-			return result;
-		},
-
+		//TODO::
 		create: function(name, factory){
 			var ctx = app.module('Context.' + name); //create new context module as sub-modules.
 			_.extend(ctx, {
 				name: name,
-				module: function(subModName){
+				create: function(subModName){
 					return _.extend(app.module(['Context', name, subModName].join('.')), {
 						name: subModName
 					});

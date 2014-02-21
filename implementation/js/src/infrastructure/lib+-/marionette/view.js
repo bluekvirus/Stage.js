@@ -8,11 +8,11 @@
 
  * 5. +SVG canvas support - View.
  * 6. +Tab layout support - View. 
- * 7. +Auto region resize evenly. - Layout. (Todo: make it proportionally sized instead of just evenlly)
+
  * 8. +Editors Activation - View.
  * 9. +Enable Form (with +addFormPart(view)) - View. (will call activateEditors() [8] for you)
  * 10. +Enable Tooltips - View.
- * 11. +Enable FreeFlow - View. This is to allow the view to fly to anywhere on screen using the $.position() jquery UI method.  
+ * 11. +Enable FreeFloat - View. This is to allow the view to fly to anywhere on screen using the $.position() jquery UI method.  
  * 
  * planned:
  * a. user action clicking statistics (use the view._uiDEVName set by enableActionTags(type.name.subname)) - type can be Context/Widget
@@ -367,65 +367,6 @@ _.extend(Backbone.Marionette.View.prototype, {
 
 
 /**
- * Auto even Layout region size.
- * Do this in onShow() or initialize.
- * !Note! that you may also use 7.hookUpWindowResize() to make the even process keeps up with window resizing.
- * -------
- * options
- * -------
- * mode: vertical (default) | horizontal
- * min: 100 (default)
- * float: 'left' (default) /'right'
- * view: false (default)/true resize the region container or the region's view.
- */
-_.extend(Backbone.Marionette.Layout.prototype, {
-	
-	evenRegionSize: function(options){
-
-		if(!this.regions) throw new Error('DEV::View::You can only even regions in a Layout object');
-		var keys = _.keys(this.regions) ;
-		var numOfRegions = _.size(this.regions);
-		options = _.extend({
-			mode: 'vertical',
-			min: 100,
-			float: 'left',
-			view: false
-		}, options);
-
-		if(options.mode === 'horizontal'){
-			this.listenTo(this, 'view:resized', function(e){
-
-				var w = this.$el.width();
-				var perRegionWidth = Math.round(w/numOfRegions - 0.6); //manually fixing what Math.floor() or -1 couldn't fix here.
-				perRegionWidth = perRegionWidth > options.min? perRegionWidth: options.min;
-
-				_.each(this.regions, function(selector, r){							
-					this[r].ensureEl();
-					this[r].$el.css('float', options.float);
-					this[r].resize({w: perRegionWidth, view:options.view});
-				},this);
-			});			
-		}else if(options.mode === 'vertical'){
-			this.listenTo(this, 'view:resized', function(e){						
-				
-				var h = Application.fullScreenContextHeight.bodyOnly;
-				var perRegionHeight = h/numOfRegions;
-				perRegionHeight = perRegionHeight > options.min? perRegionHeight: options.min;
-
-				_.each(this.regions,function(selector, r){							
-					this[r].ensureEl();
-					this[r].resize({view: options.view, h: perRegionHeight});
-				},this);
-			});	 	
-		}
-
-		this.trigger('view:resized');
-	
-	}
-});
-
-
-/**
  * Editor Activation - do it in onShow() or onRender()
  * Turn tags in the template into real editors.
  * You can activate editors in any view object, it doesn't have to be a enableForm() instrumented view.
@@ -636,26 +577,26 @@ _.extend(Backbone.Marionette.View.prototype, {
 });
 
 /**
- * Enable FreeFlow (do it in initialize())
+ * Enable FreeFloat (do it in initialize())
  *
  * Options
  * -------
- * container - where to hide this view initially, this will affect the view's position when the container scrolls (up-down), the default container is 'body'
+ * anchor - where to hide this view initially, this will affect the view's position when the anchor scrolls (up-down), the default anchor is 'body'
  * 
  */
 
 _.extend(Backbone.Marionette.View.prototype, {
 
-	enableFreeFlow: function(container){
-		if(!container) container = 'body';
-		if(_.isString(container)) container = $(container);
+	enableFreeFloat: function(anchor){
+		if(!anchor) anchor = 'body';
+		if(_.isString(anchor)) anchor = $(anchor);
 		this.id = _.uniqueId('free-flow-');
 
 		this.flyTo = function(options){
 			// console.log($('#' + this.id));
 			if(!$('#' + this.id).length) {
 				this.render().$el.attr('id', this.id).css('position', 'absolute');
-				container.append(this.el);
+				anchor.append(this.el);
 				if(this.onShow) this.onShow();
 			}
 			this.$el.show();

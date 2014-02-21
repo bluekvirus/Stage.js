@@ -10,7 +10,7 @@
 	var map = {};
 	var Template = {
 		extend: function (name, tplStrArray){
-			if(map[name]) throw new Error('DEV::Core.Util.Template::Conflict! You have already named a template with id:' + name);
+			if(map[name]) throw new Error('DEV::APP.Util.Template::Conflict! You have already named a template with id:' + name);
 
 			var tpl = tplStrArray.join('');
 			$('head').append(['<script type="text/tpl" id="',name,'">',tpl,'</script>'].join(''));
