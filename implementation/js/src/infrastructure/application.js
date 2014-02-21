@@ -3,20 +3,11 @@
  *
  * Usage
  * -----
- * Use Application.setup({config}, cb) to start application. 
- * Feed in cb(app) function only when you want to extend Application object, change main template or customize and kickstart the Application yourself.
+ * Use Application.setup({config})[add your custom code in between].run() to start application. 
  *
  * Optional
  * --------
- * You can config NProgress later as well by using
-	NProgress.configure({
-	  //minimum: 0.1
-	  //template: "<div class='....'>...</div>"
-	  //ease: 'ease', speed: 500
-	  //trickle: false
-	  //trickleRate: 0.02, trickleSpeed: 800
-	  //showSpinner: false
-	});
+ * You can also config NProgress.
  *
  * @author Tim.Liu
  * @create 2014.02.17
@@ -35,6 +26,14 @@ _.each(['API', 'Context', 'Widget', 'Editor', 'Util'], function(coreModule){
  */
 //1 Hook up additional Handlebars helpers.
 Swag.registerHelpers();
+NProgress.configure({
+  //minimum: 0.1
+  //template: "<div class='....'>...</div>"
+  //ease: 'ease', speed: 500
+  //trickle: false
+  //trickleRate: 0.02, trickleSpeed: 800
+  //showSpinner: false
+});
 
 /**
  * =================================
@@ -73,6 +72,7 @@ Application.setup = function(config){
 		fullScreen: false, //Note that this only indicates <body> will have overflow set to hidden in its css.
         rapidEventDebounce: 200, //in ms this is the rapid event debounce value shared within the application (e.g window resize).
         //Pre-set RESTful API configs (see Application.API core module) - Modify this to fit your own backend apis.
+        baseAjaxURI: null,
         api: {
             //_Default_ entity is your fallback entity, only register common api method config to it would be wise, put specific ones into your context.module.
             _Default_: {
@@ -115,8 +115,10 @@ Application.setup = function(config){
 	}, config);	
 
 	//2. Setup Application
-	//2.1 Ajax Notifications
+	//2.1 Ajax Global
 	/**
+	 * Notifications
+	 * -------------
 	 * Default SUCCESS/ERROR reporting on ajax op globally.
 	 * Success Notify will only appear if ajax options.notify = true
 	 */
@@ -136,6 +138,8 @@ Application.setup = function(config){
 	});
 
 	/**
+	 * Progress
+	 * --------
 	 * Configure NProgress as global progress indicator.
 	 */
 	$document.ajaxStart(function() {
@@ -143,7 +147,42 @@ Application.setup = function(config){
 	});
 	$document.ajaxStop(function() {
 		NProgress.done();
-	});	
+	});
+
+	/**
+	 *
+	 * Base URI & Crossdomain
+	 * ----------------------
+	 * Preferred lvl of interference:
+	 * $.ajaxPrefilter()
+	 * [$.ajaxSetup()]
+	 * [$.ajaxTransport()]
+	 *
+	 * For instrumenting a global behavior on the ajax calls according to app.config
+	 * e.g:
+	 * 1. base uri is ?q=/.../... instead of /.../... directly
+	 * 2. crossdomain ajax support
+	 */
+		$.ajaxPrefilter('json', function(options){
+
+			//base uri:
+			if(Application.config.baseAjaxURI)
+				options.url = Application.config.baseAjaxURI + options.url;
+
+			//crossdomain:
+			var crossdomain = Application.config.crossdomain;
+			if(crossdomain.enabled){
+				options.url = (crossdomain.protocol || 'http') + '://' + (crossdomain.host || 'localhost') + ((crossdomain.port && (':'+crossdomain.port)) || '') + (/^\//.test(options.url)?options.url:('/'+options.url));
+				options.crossDomain = true;
+				options.xhrFields = _.extend(options.xhrFields || {}, {
+					withCredentials: true //persists session cookies.
+				});
+			}
+
+			//cache:[for IE?]
+			options.cache = false;
+
+		});		
 
 	//2.2 Initializers (Layout, Navigation)
 	/**
