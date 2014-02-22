@@ -81,11 +81,11 @@ _.each(['API', 'Context', 'Widget', 'Editor', 'Util'], function(coreModule){
 
 			//Defaults:
 			theme: null,
-			template: [
+			template: Application.Util.Template.build([
 				'<div region="top"></div>',
 				'<div region="center"></div>',
 				'<div region="bottom"></div>'
-			].join(''),
+			]).tpl,
 			//e.g:: have a unified layout template.
 			/**
 			 * ------------------------
@@ -231,7 +231,7 @@ _.each(['API', 'Context', 'Widget', 'Editor', 'Util'], function(coreModule){
 		 * app fires >>>
 		 * 		(app:)view:resized - upon window resize event
 		 *   	app:context-switched (contextName)
-		 *   	context:navigate-to-module (moduleName)
+		 *   	context:navigate-to (moduleName)
 		 * 
 		 * 
 		 * @author Tim.Liu
@@ -259,11 +259,11 @@ _.each(['API', 'Context', 'Widget', 'Editor', 'Util'], function(coreModule){
 					if(Application.currentContext.requireLogin && !Application.Util.touch()){
 						Application.currentContext = Application.Context.get('Login');
 					}				
-					Application[Application.config.contextRegion].show(new Application.currentContext.View.Default());
+					Application[Application.config.contextRegion].show(new Application.currentContext.Layout());
 					//fire a notification round to the sky.
 					Application.trigger('app:context-switched', Application.currentContext.name);
 				}			
-				Application.currentContext.trigger('context:navigate-to-module', module);
+				Application.currentContext.trigger('context:navigate-to', module);
 			};		
 			
 			Application._navigate = navigate; //this is in turn hooked with the app router, see below Application init: Routes
@@ -296,10 +296,10 @@ _.each(['API', 'Context', 'Widget', 'Editor', 'Util'], function(coreModule){
 			//init client page router and history:
 			var Router = Backbone.Marionette.AppRouter.extend({
 				appRoutes: {
-					'(navigate)(/:context)(/:module)' : 'navigateToModule', //navigate to a module's default view within a context
+					'(navigate)(/:context)(/:module)' : 'navigateTo', //navigate to a context and signal it about :module (can be a path for further navigation within)
 				},
 				controller: {
-					navigateToModule: function(context, module){
+					navigateTo: function(context, module){
 						Application._navigate(context, module);
 					},
 				}

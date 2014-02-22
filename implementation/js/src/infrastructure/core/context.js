@@ -20,17 +20,18 @@
  * 		name: 'name of the context',
  * 		layout/template: 'html template of the view as in Marionette.Layout',
  * 							- region=[] attribute --- mark a tag to be a region container
- * 							- view=[] attribute ---mark this region to show an new instance of specified view definition
- * 	    requireLogin: 'true' | 'false'
+ * 							- view=[] attribute --- mark this region to show an new instance of specified view definition
+ * 	    requireLogin: 'true' | 'false',
+ * 	    onNavigateTo: function(module or path) - upon getting the context:navigate-to event,
+ * 	    onShow: function() - specify this to override the default onShow() behavior
  * });
  *
- * ###How to populate the context with sub-modules?
+ * ###How to populate the context with regional views?
  * context.create({
- * 		[region]: ,
- * 		[name]: ,
+ * 		name: ,
  * 		layout/template: '',
  * 		[type]: Marionette View type [ItemView(default), Layout, CollectionView, CompositeView]
- * 		... rest of the config to the View definition?
+ * 		...: other Marionette View type .extend options.
  * }) - create a context's regional sub-module.
  *
  * 
@@ -44,17 +45,42 @@
 	var definition = app.module('Context');
 	_.extend(definition, {
 
-		//TODO::
-		create: function(name, factory){
-			var ctx = app.module('Context.' + name); //create new context module as sub-modules.
+		create: function(config){
+			var ctx = app.module('Context.' + config.name);
 			_.extend(ctx, {
-				name: name,
-				create: function(subModName){
-					return _.extend(app.module(['Context', name, subModName].join('.')), {
-						name: subModName
+				_config: config,
+
+				//big layout
+				name: config.name,
+				Layout: Backbone.Marionette.Layout.extend({
+					template: app.Util.Template.build(config.layout || config.template),
+					initialize: function(){
+						this.autoDetectRegions();
+					},
+					onShow: config.onShow || function(){
+						_.each(this.regions, function(r){
+							var RegionalViewDef = ctx.Views[$el.attr(view)];
+							if(RegionalViewDef) this[r].show(new RegionalViewDef());
+						}, this);
+					}
+				}),
+
+				//regional views
+				Views: {},
+				create: function(options){ //provide a way of registering sub regional views
+					_.extend(options, {
+						template: app.Util.Template.build(options.layout || options.template),
+						context: ctx
 					});
+					delete options.layout;
+					var View = ctx.Views[options.name] = Marionette[options.type || 'ItemView'].extend(options);
+
+					return View;
 				}
-			}, factory && factory(ctx)); //note that we allow non-UI context for module grouping purposes.
+			});
+
+			if(config.onNavigateTo)
+				ctx.listenTo('context:navigate-to', config.onNavigateTo);
 			return ctx;
 		}
 
@@ -67,7 +93,6 @@
  * ====================
  * Pre-Defined Contexts
  * ====================
- *
- * see modules/context/[specific context folder]/context.js
  */
+Application.create('Context', {name: 'Shared'});
 
