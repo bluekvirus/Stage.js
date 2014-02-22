@@ -81,7 +81,7 @@ _.each(['API', 'Context', 'Widget', 'Editor', 'Util'], function(coreModule){
 
 			//Defaults:
 			theme: null,
-			template: Application.Util.Template.build([
+			template: Application.Util.Tpl.build([
 				'<div region="top"></div>',
 				'<div region="center"></div>',
 				'<div region="bottom"></div>'
@@ -103,7 +103,8 @@ _.each(['API', 'Context', 'Widget', 'Editor', 'Util'], function(coreModule){
 			 * @type {String}
 			 */		
 			contextRegion: 'center',
-			defaultContext: 'Login', //This is the context the application will sit on upon loading.
+			defaultContext: '_default', //This is the context (name) the application will sit on upon loading.
+			loginContext: 'Login', //This is the fallback context (name) when the user needs to authenticate with server.
 			fullScreen: false, //Note that this only indicates <body> will have overflow set to hidden in its css.
 	        rapidEventDebounce: 200, //in ms this is the rapid event debounce value shared within the application (e.g window resize).
 	        //Pre-set RESTful API configs (see Application.API core module) - Modify this to fit your own backend apis.
@@ -251,13 +252,13 @@ _.each(['API', 'Context', 'Widget', 'Editor', 'Util'], function(coreModule){
 			//Context switching utility
 			function navigate(context, module){
 				var targetContext = Application.Context[context];
-				if(!targetContext || !Application.currentContext) throw new Error('DEV::MainApp::You must have the requred context ' + context + ' defined...'); //see - special/registry/context.js			
+				if(!targetContext) throw new Error('DEV::MainApp::You must have the requred context ' + context + ' defined...'); //see - special/registry/context.js			
 				if(Application.currentContext !== targetContext) {
 					Application.currentContext = targetContext;
 
 					//if the context requires user to login but he/she didn't, we remember the navi hash path and switch to the 'Login' context.				
-					if(Application.currentContext.requireLogin && !Application.Util.touch()){
-						Application.currentContext = Application.Context.get('Login');
+					if(Application.currentContext._config.requireLogin && !Application.Util.touch()){
+						Application.currentContext = Application.Context[Application.config.loginContext];
 					}				
 					Application[Application.config.contextRegion].show(new Application.currentContext.Layout());
 					//fire a notification round to the sky.

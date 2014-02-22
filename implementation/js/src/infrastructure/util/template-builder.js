@@ -1,6 +1,10 @@
 /**
  * This is the template builder/registry util, making it easier to create new templates for View objects.
  *
+ * Usage (name as id)
+ * -----
+ * app.Util.Tpl.build (name, [</>, </>, ...]) / ([</>, </>, ...]) / ('</></>...</>') / ()
+ *
  * @author Tim.Liu
  * @create 2013.12.20
  */
@@ -41,11 +45,11 @@
 
 	}
 
-	Application.Util.Template = Template;
+	Application.Util.Tpl = Template;
 
 })(Application);
 
 /**
  * Pre-defined Global Templates
  */
-Application.Util.Template.build('_blank', [' ']); //blank sheet template.
+Application.Util.Tpl.build('_blank', [' ']); //blank sheet template.

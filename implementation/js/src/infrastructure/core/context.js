@@ -21,7 +21,7 @@
  * 		layout/template: 'html template of the view as in Marionette.Layout',
  * 							- region=[] attribute --- mark a tag to be a region container
  * 							- view=[] attribute --- mark this region to show an new instance of specified view definition
- * 	    requireLogin: 'true' | 'false',
+ * 	    requireLogin: 'true' | 'false' (default),
  * 	    onNavigateTo: function(module or path) - upon getting the context:navigate-to event,
  * 	    onShow: function() - specify this to override the default onShow() behavior
  * });
@@ -46,6 +46,7 @@
 	_.extend(definition, {
 
 		create: function(config){
+			config.name = config.name || '_default';
 			var ctx = app.module('Context.' + config.name);
 			_.extend(ctx, {
 				_config: config,
@@ -53,13 +54,14 @@
 				//big layout
 				name: config.name,
 				Layout: Backbone.Marionette.Layout.extend({
-					template: app.Util.Template.build(config.layout || config.template),
+					template: app.Util.Tpl.build(config.layout || config.template).id,
 					initialize: function(){
 						this.autoDetectRegions();
 					},
 					onShow: config.onShow || function(){
-						_.each(this.regions, function(r){
-							var RegionalViewDef = ctx.Views[$el.attr(view)];
+						this.fakeRegions();
+						_.each(this.regions, function(selector, r){
+							var RegionalViewDef = ctx.Views[this[r].$el.attr('view')];
 							if(RegionalViewDef) this[r].show(new RegionalViewDef());
 						}, this);
 					}
@@ -69,7 +71,7 @@
 				Views: {},
 				create: function(options){ //provide a way of registering sub regional views
 					_.extend(options, {
-						template: app.Util.Template.build(options.layout || options.template),
+						template: app.Util.Tpl.build(options.layout || options.template),
 						context: ctx
 					});
 					delete options.layout;
