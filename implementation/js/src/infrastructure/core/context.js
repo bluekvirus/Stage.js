@@ -20,7 +20,7 @@
  * 		name: 'name of the context',
  * 		layout/template: 'html template of the view as in Marionette.Layout',
  * 							- region=[] attribute --- mark a tag to be a region container
- * 							- view=[] attribute --- mark this region to show an new instance of specified view definition
+ * 							- view=[] attribute --- mark this region to show an new instance of specified view definition (in context.Views, see context.create below)
  * 	    requireLogin: 'true' | 'false' (default),
  * 	    onNavigateTo: function(module or path) - upon getting the context:navigate-to event,
  * 	    onShow: function() - specify this to override the default onShow() behavior
@@ -47,6 +47,8 @@
 
 		create: function(config){
 			config.name = config.name || '_default';
+			if(app.Context[config.name]) console.warn('DEV::Core.Context::You have overriden context \'', config.name, '\'');
+
 			var ctx = app.module('Context.' + config.name);
 			_.extend(ctx, {
 				_config: config,
@@ -55,6 +57,7 @@
 				name: config.name,
 				Layout: Backbone.Marionette.Layout.extend({
 					template: app.Util.Tpl.build(config.layout || config.template).id,
+					className: 'context context-' + _.string.slugify(config.name),
 					initialize: function(){
 						this.autoDetectRegions();
 					},

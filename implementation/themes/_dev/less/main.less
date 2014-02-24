@@ -1,59 +1,6 @@
-/*!
- * The main CSS [LESS pre-processor] file for the site.
- * This is rendered directly on the client side by less.js
- * @author Tim.Liu
- * 
+/**
+ * Theme Base. Bootstrap 3.1.+
  */
-/*!
- * =======================
- * Borrowed 
- * 1. twitter-bootstrap
- * 2. jquery-file-upload-ui
- * 3. jquery-ui-core + datepicker
- * =======================
- */
-@import "../../../libs/bower_components/bootstrap2/less/bootstrap.less";
-/*!
- * =========================
- * CSS Start
- * =========================
- */
-//Base
-@import "variables"; //colors and sizes
-@import "mixins"; //utils
-// @import "icons"; //icon sprites less (generated - see README.md under specific theme package)
-@import "fonts"; //fonts with web font
-@import "core"; //base theme and css components (overriden included)
-
-
-//Editors
-@import "parts/editors/file";
-@import "parts/editors/datepicker";
-@import "parts/editors/select-editor";
-
-//Widgets
-@import "parts/widgets/table-sorter";
-@import "parts/widgets/toolbelt";
-@import "parts/widgets/datagrid";
-@import "parts/widgets/basic-form";
-@import "parts/widgets/accordion-menu";
-
-//Contexts (and their submodules)
-//Context.Admin
-
-//Context.Shared
-@import "contexts/shared/banner"; //main navigation/logo/info
-@import "contexts/shared/user";
-@import "contexts/shared/message";
-// @import "footer"; //additional info/contact/feedback/links
-
-/*!
- * =========================
- * CSS END
- * =========================
- */
-
-@import (inline) "../styles/vendor/jquery.ui.core.css";
-@import (inline) "../styles/vendor/jquery.ui.resizable.css";
-@import (inline) "../styles/vendor/jquery.ui.selectable.css";
-@import (inline) "../styles/vendor/nprogress.css";
+@import (inline) "../css/include/nprogress.css";
+@import (inline) "../css/include/jquery-ui-custom.css";
+@import (inline) "../css/include/bootstrap-cosmo.css";

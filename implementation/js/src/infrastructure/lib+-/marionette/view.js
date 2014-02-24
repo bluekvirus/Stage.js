@@ -219,7 +219,7 @@ _.extend(Backbone.Marionette.View.prototype, {
 		this.listenTo(this, 'render', function(){
 			_.each(this.regions, function(selector, region){
 				this[region].ensureEl();
-				this[region].$el.addClass(_.string.slugify(region) + '-ct');
+				this[region].$el.addClass('region region-' + _.string.slugify(region));
 			},this);
 		});
 		//propagate a layout view:resized event down to its regional views.

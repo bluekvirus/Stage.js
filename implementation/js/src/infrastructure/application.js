@@ -80,7 +80,7 @@ _.each(['API', 'Context', 'Widget', 'Editor', 'Util'], function(coreModule){
 		Application.config = _.extend({
 
 			//Defaults:
-			theme: null,
+			theme: '_dev',
 			template: Application.Util.Tpl.build([
 				'<div region="top"></div>',
 				'<div region="center"></div>',
@@ -313,7 +313,7 @@ _.each(['API', 'Context', 'Widget', 'Editor', 'Util'], function(coreModule){
 		});
 
 		//3 Detect Theme
-		var theme = URI(window.location.toString()).search(true).theme || Application.config.theme || '_default';
+		var theme = URI(window.location.toString()).search(true).theme || Application.config.theme;
 		Application.Util.rollTheme(theme);
 
 		return Application;
