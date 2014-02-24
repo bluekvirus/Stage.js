@@ -22,8 +22,8 @@
  * 							- region=[] attribute --- mark a tag to be a region container
  * 							- view=[] attribute --- mark this region to show an new instance of specified view definition (in context.Views, see context.create below)
  * 	    requireLogin: 'true' | 'false' (default),
- * 	    onNavigateTo: function(module or path) - upon getting the context:navigate-to event,
- * 	    onShow: function() - specify this to override the default onShow() behavior
+ * 	    onNavigateTo: function(module or path string) - upon getting the context:navigate-to event,
+ * 	    ...: other Marionette Layout options.
  * });
  *
  * ###How to populate the context with regional views?
@@ -42,22 +42,20 @@
 
 ;(function(app, _){
 
-	var definition = app.module('Context');
+	var definition = app.module('Core.Context');
 	_.extend(definition, {
 
 		create: function(config){
-			config.name = config.name || '_default';
-			if(app.Context[config.name]) console.warn('DEV::Core.Context::You have overriden context \'', config.name, '\'');
+			config.name = config.name || 'Default';
+			if(app.Core.Context[config.name]) console.warn('DEV::Core.Context::You have overriden context \'', config.name, '\'');
 
-			var ctx = app.module('Context.' + config.name);
+			var ctx = app.module('Core.Context.' + config.name);
 			_.extend(ctx, {
 				_config: config,
 
 				//big layout
 				name: config.name,
-				Layout: Backbone.Marionette.Layout.extend({
-					template: app.Util.Tpl.build(config.layout || config.template).id,
-					className: 'context context-' + _.string.slugify(config.name),
+				Layout: Backbone.Marionette.Layout.extend(_.extend({
 					initialize: function(){
 						this.autoDetectRegions();
 					},
@@ -68,13 +66,16 @@
 							if(RegionalViewDef) this[r].show(new RegionalViewDef());
 						}, this);
 					}
-				}),
+				}, config, {
+					template: app.Util.Tpl.build(config.layout || config.template).id,
+					className: 'context context-' + _.string.slugify(config.name)
+				})),
 
 				//regional views
 				Views: {},
-				create: function(options){ //provide a way of registering sub regional views
+				regional: function(options){ //provide a way of registering sub regional views
 					_.extend(options, {
-						template: app.Util.Tpl.build(options.layout || options.template),
+						template: app.Util.Tpl.build(options.layout || options.template).id,
 						context: ctx
 					});
 					delete options.layout;

@@ -1,4 +1,4 @@
-//1-3 Override Backbone.Sync - Use Application.API module instead for method implementation
+//1-3 Override Backbone.Sync - Use Application.Core.API module instead for method implementation
 //+ entity, changeOnly, params options to .fetch, .save and .destroy methods of model & collection
 Backbone.sync = (function(){
 
@@ -62,12 +62,12 @@ Backbone.sync = (function(){
     }else {
       options.collection = model; //for collection's data prep-ing with pagination see core/enhancements/collection.js
     }
-    //internal usage only, signal the Application.API.call that this is coming from a .fetch .save or .destroy so the success callback can be sorted properly.
+    //internal usage only, signal the Application.Core.API.call that this is coming from a .fetch .save or .destroy so the success callback can be sorted properly.
     //note that in such a case, the success callback is of the original backbone defined form.
     options._backbonesync = method;
 
     // Make the request, allowing the user to override any Ajax options.
-    var xhr = options.xhr = Application.API.call([options.entity, 'data', method].join('.'), _.isEmpty(data)? undefined: data, options.params, options);
+    var xhr = options.xhr = Application.Core.API.call([options.entity, 'data', method].join('.'), _.isEmpty(data)? undefined: data, options.params, options);
     model.trigger('request', model, xhr, options);
     if(autorecovery) xhr = xhr.fail(autorecovery);
     return xhr;

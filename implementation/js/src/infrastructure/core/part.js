@@ -16,7 +16,7 @@
 
 	function makeRegistry(regName){
 		regName = _.string.camelize(regName);
-		var manager = app.module(regName);
+		var manager = app.module('Core.' + regName);
 
 		//save factory (which returns the definition object)
 		manager.register = function(name, factory){

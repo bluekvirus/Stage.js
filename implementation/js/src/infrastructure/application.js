@@ -5,11 +5,31 @@
  * ----------------------------
  * ###How to start my app?
  * 1. Application.setup({config});
- * 2. [add your custom code in between];
+ * 2. [add your custom code in between for additional app initializers and events and route config];
  * 3. Application.run();
  *
  * ###How to create app elements?
  * 4. Application.create(type, config);
+ * 		1. Model/Collection: {
+ * 			entity: ...,
+ * 			[rest of normal Backbone.Model/Collection options]
+ * 		};
+ * 		2. Context: {
+ * 			[name]: if you don't name the context, we will use Default,
+ * 			layout/template: '#id' or '<...>' or ['<...>', '<...>'],(auto functional attribute: region, view)
+ * 			[requireLogin]: 'true' / 'false'(default)
+ * 			[onNavigateTo]: function(module path string)
+			[rest of normal Marionette.Layout options] - if you override initialize + onShow, the default region detect and view showing behavior will be removed.
+ * 		};
+ * 		3. Regional: {
+ * 			[context]: context name this regional View definition belongs to, omit to have this View registered into Application.Views
+ * 			name:,
+ * 			layout/template: '#id' or '<...>' or ['<...>', '<...>'], (possible functional attribute: region, ui)
+ * 			[type]: 'ItemView'(default)/ Layout/ CollectionView/ CompositeView (Marionette Views)
+ * 			[rest of normal Marionette.(View type of your choice) options] 
+ * 		};
+ * 		4. Parts: (shared widgets and editors)
+ * 		...TBI
  *
  * Optional
  * --------
@@ -47,7 +67,7 @@ NProgress.configure({
  * 	create(); - universal object (model/collection/views[context/regional-view/widget/editor]) creation point [hierarchy flattened to enhance transparency]. 
  */
 Application = new Backbone.Marionette.Application();
-_.each(['API', 'Context', 'Widget', 'Editor', 'Util'], function(coreModule){
+_.each(['Core', 'Util', 'Views'], function(coreModule){
 	Application.module(coreModule);
 });
 
@@ -81,11 +101,7 @@ _.each(['API', 'Context', 'Widget', 'Editor', 'Util'], function(coreModule){
 
 			//Defaults:
 			theme: '_dev',
-			template: Application.Util.Tpl.build([
-				'<div region="top"></div>',
-				'<div region="center"></div>',
-				'<div region="bottom"></div>'
-			]).tpl,
+			template: '',
 			//e.g:: have a unified layout template.
 			/**
 			 * ------------------------
@@ -102,12 +118,12 @@ _.each(['API', 'Context', 'Widget', 'Editor', 'Util'], function(coreModule){
 			 * 
 			 * @type {String}
 			 */		
-			contextRegion: 'center',
-			defaultContext: '_default', //This is the context (name) the application will sit on upon loading.
+			contextRegion: 'app',
+			defaultContext: 'Default', //This is the context (name) the application will sit on upon loading.
 			loginContext: 'Login', //This is the fallback context (name) when the user needs to authenticate with server.
-			fullScreen: false, //Note that this only indicates <body> will have overflow set to hidden in its css.
+			fullScreen: false, //This will put <body> to be full screen sized (window.innerHeight).
 	        rapidEventDebounce: 200, //in ms this is the rapid event debounce value shared within the application (e.g window resize).
-	        //Pre-set RESTful API configs (see Application.API core module) - Modify this to fit your own backend apis.
+	        //Pre-set RESTful API configs (see Application.Core.API core module) - Modify this to fit your own backend apis.
 	        baseAjaxURI: null,
 	        api: {
 	            //_Default_ entity is your fallback entity, only register common api method config to it would be wise, put specific ones into your context.module.
@@ -244,22 +260,23 @@ _.each(['API', 'Context', 'Widget', 'Editor', 'Util'], function(coreModule){
 
 		//Application init: Hook-up Default RESTful Data APIs (from config.js)
 		Application.addInitializer(function(options){
-			Application.API.registerAll(Application.config.api);
+			Application.Core.API.registerAll(Application.config.api);
 		});
 
 		//Application init: Global listeners
 		Application.addInitializer(function(options){
 			//Context switching utility
 			function navigate(context, module){
-				var targetContext = Application.Context[context];
-				if(!targetContext) throw new Error('DEV::MainApp::You must have the requred context ' + context + ' defined...'); //see - special/registry/context.js			
+				var targetContext = Application.Core.Context[context];
+				if(!targetContext) throw new Error('DEV::Application::You must have the requred context ' + context + ' defined...'); //see - special/registry/context.js			
 				if(Application.currentContext !== targetContext) {
 					Application.currentContext = targetContext;
 
 					//if the context requires user to login but he/she didn't, we remember the navi hash path and switch to the 'Login' context.				
 					if(Application.currentContext._config.requireLogin && !Application.Util.touch()){
-						Application.currentContext = Application.Context[Application.config.loginContext];
-					}				
+						Application.currentContext = Application.Core.Context[Application.config.loginContext];
+					}
+					if(!Application[Application.config.contextRegion]) throw new Error('DEV::Application::You don\'t have region \'' + Application.config.contextRegion + '\' defined');		
 					Application[Application.config.contextRegion].show(new Application.currentContext.Layout());
 					//fire a notification round to the sky.
 					Application.trigger('app:context-switched', Application.currentContext.name);
@@ -276,14 +293,23 @@ _.each(['API', 'Context', 'Widget', 'Editor', 'Util'], function(coreModule){
 		//Application init: Hookup window resize and app.config fullScreen, navigate to default context.
 		Application.addInitializer(function(options){
 
+			var $body = $('body');
+
 			function trackAppSize(){
 				Application.trigger('view:resized', {h: window.innerHeight, w: window.innerWidth});
+				if(Application.config.fullScreen){
+					$body.height(window.innerHeight);
+				}
 			};
 			trackAppSize();
 			$window.on('resize', _.debounce(trackAppSize, Application.config.rapidEventDebounce));
 			
 			if(Application.config.fullScreen){
-				$('body').css('overflow', 'hidden');
+				$body.css({
+					overflow: 'hidden',
+					margin: 0,
+					padding: 0					
+				});
 			}
 
 			//2.Auto-detect and init context (view that replaces the body region). see the Context.Login
@@ -329,14 +355,23 @@ _.each(['API', 'Context', 'Widget', 'Editor', 'Util'], function(coreModule){
 		$document.ready(function(){
 			//1. Put main template into position and scan for regions.
 			var regions = {};
-			$('#main').html(Application.config.template).find('[region]').each(function(index, el){
+			var tpl = Application.Util.Tpl.build(Application.config.template);
+			$('#main').html(tpl.string).find('[region]').each(function(index, el){
 				var name = $(el).attr('region');
-				//TODO:need to slagify or classify the name.
 				regions[name] = '#main div[region="' + name + '"]';
 			});
-			Application.addRegions(regions);
+			Application.addRegions(_.extend(regions, {
+				app: 'div[region="app"]'
+			}));
 
-			//2. Start the app
+			//2. Show Regional Views defined in Application.Views by region.$el.attr('view');
+			_.each(regions, function(selector, r){
+				Application[r].ensureEl();
+				var RegionalView = Application.Views[Application[r].$el.addClass('app-region region region-' + _.string.slugify(r)).attr('view')];
+				if(RegionalView) Application[r].show(new RegionalView());
+			});		
+
+			//3. Start the app
 			Application.start();
 
 		});
@@ -359,16 +394,22 @@ _.each(['API', 'Context', 'Widget', 'Editor', 'Util'], function(coreModule){
 
 
 			case 'Context':
-				return Application[type].create(config);
+				return Application.Core[type].create(config);
 			break;
 			case 'Regional':
-				return Application.Context[config.context].create(config);
+				if(config.context)
+					return Application.Core.Context[config.context].regional(config);
+				else {
+					Application.Views[config.name] = Marionette[config.type || 'ItemView'].extend(_.extend(config, {
+						template: Application.Util.Tpl.build(config.layout || config.template).id,
+					}));
+				}
 			break;
 
 
 			//need to define/register View definition before create...
 			case 'Widget': case 'Editor':
-				return Application[type].create(config.name, config);
+				return Application.Core[type].create(config.name, config);
 			break;
 
 

@@ -3,7 +3,7 @@
  *
  * Usage (name as id)
  * -----
- * app.Util.Tpl.build (name, [</>, </>, ...]) / ([</>, </>, ...]) / ('</></>...</>') / ()
+ * app.Util.Tpl.build (name, [</>, </>, ...]) / ([</>, </>, ...]) / ('</></>...</>') / () or (#id)
  *
  * @author Tim.Liu
  * @create 2013.12.20
@@ -15,14 +15,14 @@
 	var Template = {
 
 		build: function (name, tplStrArray){
-			if(this.length === 0) return { id: '#_blank', tpl: ' '};
-			if(_.isArray(name)){
+			if(arguments.length === 0 || _.string.trim(name) === '') return { id: '#_blank', string: ' '};
+			if(arguments.length === 1) {
+				if(_.string.startsWith(name, '#')) return {id: name};
 				tplStrArray = name;
 				name = _.uniqueId('tpl-gen-');
-			}else if(!tplStrArray){
-				name = _.uniqueId('tpl-gen-');
-				tplStrArray = [tplStrArray];
+				if(!_.isArray(tplStrArray))	tplStrArray = [tplStrArray];
 			}
+
 			if(map[name]) throw new Error('DEV::APP.Util.Template::Conflict! You have already named a template with id:' + name);
 
 			var tpl = tplStrArray.join('');
@@ -30,7 +30,7 @@
 			map[name] = true;
 			return {
 				id: '#' + name,
-				tpl: tpl
+				string: tpl
 			};
 		},
 

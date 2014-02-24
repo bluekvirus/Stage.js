@@ -10,6 +10,9 @@
  * Usage:
  * app.Util.touch(url, yes(), no()).done().error()...
  *
+ * Event:
+ * app:user-changed
+ *
  * @author Tim.Liu
  * @created 2013.04.01
  * @updated 2013.11.08
@@ -27,7 +30,7 @@
 		notify: false,
 	}).done(yes || function(res){
 		Application.user = res.user;
-		Application.trigger('app:user-changed');
+		Application.trigger('app:user-changed', Application.user);
 	}).error(no || function(){
 		delete Application.user;
 	});		

@@ -12,7 +12,7 @@
  *
  * Register
  * --------
- * Application.API.register('Entity[.Category][.Method]', config);
+ * Application.Core.API.register('Entity[.Category][.Method]', config);
  * 		- config: {
  * 			type: GET[/POST/UPDATE/DELETE]
  * 			url: string or function(entity, category, method, options)
@@ -24,7 +24,7 @@
  * 		
  * Usage
  * -----
- * Application.API.call('Entity.Category.Method', data, params, options);
+ * Application.Core.API.call('Entity.Category.Method', data, params, options);
  * 		- Entity: the remote data entity name, like User;
  *   	- Category: the operation category, e.g data/file/logic...;
  *   	- Method: the method name, e.g create/update/read/delete/run/upload/download...;
@@ -91,7 +91,7 @@
 
 ;(function(app){
 
-	var module = app.module('API');
+	var module = app.module('Core.API');
 	module.map = {};
 
 	function lookup(namespace){
