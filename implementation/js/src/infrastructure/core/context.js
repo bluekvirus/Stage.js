@@ -18,7 +18,7 @@
  * ###How to define one? 
  * app.Context.create({
  * 		name: 'name of the context',
- * 		layout/template: 'html template of the view as in Marionette.Layout',
+ * 		template: 'html template of the view as in Marionette.Layout',
  * 							- region=[] attribute --- mark a tag to be a region container
  * 							- view=[] attribute --- mark this region to show an new instance of specified view definition (in context.Views, see context.create below)
  * 	    requireLogin: 'true' | 'false' (default),
@@ -29,7 +29,7 @@
  * ###How to populate the context with regional views?
  * context.create({
  * 		name: ,
- * 		layout/template: '',
+ * 		template: '',
  * 		[type]: Marionette View type [ItemView(default), Layout, CollectionView, CompositeView]
  * 		...: other Marionette View type .extend options.
  * }) - create a context's regional sub-module.
@@ -52,41 +52,15 @@
 			var ctx = app.module('Core.Context.' + config.name);
 			_.extend(ctx, {
 				_config: config,
-
-				//big layout
 				name: config.name,
+				//big layout
 				Layout: Backbone.Marionette.Layout.extend(_.extend({
-					initialize: function(){
-						this.autoDetectRegions();
-					},
-					onShow: config.onShow || function(){
-						this.fakeRegions();
-						_.each(this.regions, function(selector, r){
-							var RegionalViewDef = ctx.Views[this[r].$el.attr('view')];
-							if(RegionalViewDef) this[r].show(new RegionalViewDef());
-						}, this);
-					}
-				}, config, {
-					template: app.Util.Tpl.build(config.layout || config.template).id,
 					className: 'context context-' + _.string.slugify(config.name)
-				})),
-
-				//regional views
-				Views: {},
-				regional: function(options){ //provide a way of registering sub regional views
-					_.extend(options, {
-						template: app.Util.Tpl.build(options.layout || options.template).id,
-						context: ctx
-					});
-					delete options.layout;
-					var View = ctx.Views[options.name] = Marionette[options.type || 'ItemView'].extend(options);
-
-					return View;
-				}
+				}, config))
 			});
 
 			if(config.onNavigateTo)
-				ctx.listenTo('context:navigate-to', config.onNavigateTo);
+				ctx.listenTo(ctx, 'context:navigate-to', config.onNavigateTo);
 			return ctx;
 		}
 

@@ -16,15 +16,14 @@
  * 		};
  * 		2. Context: {
  * 			[name]: if you don't name the context, we will use Default,
- * 			layout/template: '#id' or '<...>' or ['<...>', '<...>'],(auto functional attribute: region, view)
+ * 			template: '#id' or '<...>' or ['<...>', '<...>'],(auto functional attribute: region, view)
  * 			[requireLogin]: 'true' / 'false'(default)
  * 			[onNavigateTo]: function(module path string)
 			[rest of normal Marionette.Layout options] - if you override initialize + onShow, the default region detect and view showing behavior will be removed.
  * 		};
- * 		3. Regional: {
- * 			[context]: context name this regional View definition belongs to, omit to have this View registered into Application.Views
- * 			name:,
- * 			layout/template: '#id' or '<...>' or ['<...>', '<...>'], (possible functional attribute: region, ui)
+ * 		3. Regional: { -- for automatically loading through layout template. 
+ * 			name:, (id in Marionette.Layout.Views -- see lib+-/marionette/view.js)
+ * 			template: '#id' or '<...>' or ['<...>', '<...>'], (possible functional attribute: region, ui)
  * 			[type]: 'ItemView'(default)/ Layout/ CollectionView/ CompositeView (Marionette Views)
  * 			[rest of normal Marionette.(View type of your choice) options] 
  * 		};
@@ -164,10 +163,14 @@ _.each(['Core', 'Util', 'Views'], function(coreModule){
 	                }
 	            }
 	        }
-		}, config);	
+		}, config);
 
-		//2. Setup Application
-		//2.1 Ajax Global
+		//2 Detect Theme
+		var theme = URI(window.location.toString()).search(true).theme || Application.config.theme;
+		Application.Util.rollTheme(theme);			
+
+		//3. Setup Application
+		//3.1 Ajax Global
 		/**
 		 * Notifications
 		 * -------------
@@ -236,7 +239,7 @@ _.each(['Core', 'Util', 'Views'], function(coreModule){
 
 			});		
 
-		//2.2 Initializers (Layout, Navigation)
+		//3.2 Initializers (Layout, Navigation)
 		/**
 		 * Setup the application with content routing (context + module navigation).
 		 *
@@ -338,10 +341,6 @@ _.each(['Core', 'Util', 'Views'], function(coreModule){
 
 		});
 
-		//3 Detect Theme
-		var theme = URI(window.location.toString()).search(true).theme || Application.config.theme;
-		Application.Util.rollTheme(theme);
-
 		return Application;
 	};
 
@@ -364,10 +363,10 @@ _.each(['Core', 'Util', 'Views'], function(coreModule){
 				app: 'div[region="app"]'
 			}));
 
-			//2. Show Regional Views defined in Application.Views by region.$el.attr('view');
+			//2. Show Regional Views defined by region.$el.attr('view');
 			_.each(regions, function(selector, r){
 				Application[r].ensureEl();
-				var RegionalView = Application.Views[Application[r].$el.addClass('app-region region region-' + _.string.slugify(r)).attr('view')];
+				var RegionalView = Marionette.Layout.Views[Application[r].$el.addClass('app-region region region-' + _.string.slugify(r)).attr('view')];
 				if(RegionalView) Application[r].show(new RegionalView());
 			});		
 
@@ -397,13 +396,7 @@ _.each(['Core', 'Util', 'Views'], function(coreModule){
 				return Application.Core[type].create(config);
 			break;
 			case 'Regional':
-				if(config.context)
-					return Application.Core.Context[config.context].regional(config);
-				else {
-					Application.Views[config.name] = Marionette[config.type || 'ItemView'].extend(_.extend(config, {
-						template: Application.Util.Tpl.build(config.layout || config.template).id,
-					}));
-				}
+				return Marionette.Layout.regional(config);
 			break;
 
 
