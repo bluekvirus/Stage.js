@@ -175,7 +175,7 @@
 				this.paper = Raphael(this.el, this.$el.width(), this.$el.height());
 			}
 			//resize paper upon window resize event.
-			this.listenTo(this, 'view:resized', function(e){
+			this.listenTo(app, 'view:resized', function(e){
 				this.paper.setSize(this.$el.width(), this.$el.height());
 			});
 		}

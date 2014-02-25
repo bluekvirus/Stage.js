@@ -33,9 +33,11 @@
         //don't name it, thus defining the Default context.
         template: [
             '<div region="abc"></div>',
-            '<div region="efg"></div>'
+            '<div><span class="btn btn-primary" action="abc">123</span></div>'
         ],
-
+        initialize: function(){
+          this.enableActionTags('Nothing');
+        }
     });
 
     Application.create('Context', {
@@ -52,7 +54,11 @@
 
     Application.create('Regional', {
         name: 'FormA',
-        template: '<div>123</div>'
+        template: '#test',
+        className: 'container',
+        initialize: function(){
+          this.enableActionTags('FormA');
+        }
     });         
 
     //Regionals
