@@ -15,7 +15,7 @@
 	var Template = {
 
 		build: function (name, tplStrArray){
-			if(arguments.length === 0 || _.string.trim(name) === '') return { id: '#_blank', string: ' '};
+			if(arguments.length === 0 || _.string.trim(name) === '') throw new Error('DEV::Util.Tpl::Please assign a template string');
 			if(arguments.length === 1) {
 				if(_.string.startsWith(name, '#')) return {id: name};
 				tplStrArray = name;
@@ -48,8 +48,3 @@
 	Application.Util.Tpl = Template;
 
 })(Application);
-
-/**
- * Pre-defined Global Templates
- */
-Application.Util.Tpl.build('_blank', [' ']); //blank sheet template.

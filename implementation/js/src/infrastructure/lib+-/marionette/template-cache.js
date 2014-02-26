@@ -3,7 +3,7 @@
 Backbone.Marionette.TemplateCache.prototype.loadTemplate = function(idOrTplString){
 	if(_.string.startsWith(idOrTplString, '#')) return $(idOrTplString).html();
 	if(_.isArray(idOrTplString)) return idOrTplString.join('');
-	return idOrTplString || ' ';
+	return idOrTplString; //is can NOT be null or empty since Marionette.Render guards it so don't need to use idOrTplString || ' ';
 };
 
 //2 Override to use Handlebars templating engine with Backbone.Marionette

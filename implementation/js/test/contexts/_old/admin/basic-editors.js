@@ -32,55 +32,7 @@
 			FormPartA: Backbone.Marionette.ItemView.extend({
 				template: '#_blank',
 				onShow: function(){
-					this.activateEditors({
-						editors: {
-							abc: {
-								type: 'text',
-								label: 'Abc',
-								help: 'This is abc',
-								tooltip: 'Hey Abc here!',
-								fieldname: 'newfield',
-								validate: {
-									required: {
-										msg: 'Hey input something!'
-									},
-									fn: function(val, parentCt){
-										if(!_.string.startsWith(val, 'A')) return 'You must start with an A';
-									}
-								}
 
-							},
-							ab: {
-								label: 'Ab',
-								help: 'This is ab',
-								tooltip: 'Hey Ab here!',
-								placeholder: 'abc...',
-								value: 'default',
-								validate: function(val, parentCt){
-									console.log(val);
-									if(val !== '123') return 'You must enter 123';
-								}
-							},
-							efg: {
-								label: 'Ha Ha',
-								type: 'password',
-								validate: {
-									checkitout: true
-								}
-							},
-							area: {
-								label: 'Codes',
-								type: 'textarea',
-								validate: {
-									required: true
-								}
-							},
-							readonly: {
-								label: 'RO',
-								html: '<p class="text-success">Nothing...RO</p>'
-							}
-						}
-					});
 				},
 
 				getValues: function(){
@@ -93,57 +45,7 @@
 				onShow: function(){
 					this.activateEditors({
 						editors: {
-							xyz: {
-								label: 'File',
-								type: 'file',
-								help: 'Please choose your image to upload.',
-								upload: {
-									url: function(){ return '/file/Blog2/';}
-								}
-							},
-							radios: {
-								label: 'Radios',
-								type: 'radio',
-								help: 'choose the one you like',
-								tooltip: {
-									title: 'hahahaha'
-								},
-								options: {
-									inline: true,
-									//data: ['a', 'b', 'c', 'd']
-									data: [
-										{label: 'Haha', value: 'a'},
-										{label: 'Hb', value: 'b'},
-										{label: 'Hc', value: 'c'},
-										{label: 'Hd', value: 'd'}
-									]
-								}
-							},
-							checkboxes: {
-								label: 'Checkboxes',
-								type: 'checkbox',
-								help: 'choose more than you like',
-								fieldname: 'haha',
-								options: {
-									//data: ['a', 'b', 'c', 'd']
-									data: [
-										{key: 'abc1', val: '1231', other: 'bbb1'},
-										{key: 'abc2', val: '1232', other: 'bbb2'},
-										{key: 'abc3', val: '1233', other: 'bbb3'},
-										{key: 'abc4', val: '1234', other: 'bbb4'},
-										{key: 'abc5', val: '1235', other: 'bbb5'},
-									],
-									labelField: 'other',
-									valueField: 'val'
-								}
-							},
-							singlecheckbox: {
-								label: 'Check?',
-								type: 'checkbox',
-								boxLabel: 'Select this one if you are smart...:D',
-								//value: 'enabled',
-								//unchecked: 'disabled',
-							}		
+		
 						}
 					});
 				}
@@ -165,34 +67,7 @@
 					this.activateEditors({
 						appendTo: '[region="formeditors"]',
 						editors: {
-							select: {
-								label: 'Select',
-								type: 'select',
-								help: 'choose 1 you like',
-								options: {
-									//data: ['a', 'b', 'c', 'd']
-									data: [
-										{key: 'abc1', val: '1231', other: 'bbb1'},
-										{key: 'abc2', val: '1232', other: 'bbb2'},
-										{key: 'abc3', val: '1233', other: 'bbb3'},
-										{key: 'abc4', val: '1234', other: 'bbb4'},
-										{key: 'abc5', val: '1235', other: 'bbb5'},
-									],
-									labelField: 'other',
-									valueField: 'val'
-								}
-							},
-
-							selectgroup: {
-								label: 'Group',
-								type: 'select',
-								options: {
-									data: {
-										group1: [{label: 'abc', value: '123'}, {label: '4555', value: '1111'}],
-										group2: [{label: 'abcx', value: '123x'}, {label: '4555x', value: '1111x'}],
-									}
-								}
-							}							
+					
 
 						}
 					});

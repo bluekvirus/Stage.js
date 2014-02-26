@@ -52,14 +52,16 @@
         <script type="text/javascript" src="js/src/infrastructure/lib+-/backbone/sync.js"></script>         
         <script type="text/javascript" src="js/src/infrastructure/lib+-/marionette/template-cache.js"></script>
         <script type="text/javascript" src="js/src/infrastructure/lib+-/marionette/view.js"></script>
+        <script type="text/javascript" src="js/src/infrastructure/lib+-/marionette/item-view.js"></script>
         <script type="text/javascript" src="js/src/infrastructure/lib+-/marionette/layout.js"></script>
 
         <!--Predefined Goods(UI policy)-->
         <!--Basic (provide in order):
-            [container] context layout & panel(header/footer + layered body);
             [input] editors & form/fieldset;
             optional:[display notification] event msg & user prompt;
         -->
+        <script type="text/javascript" src="js/src/predefined/parts/editors/index.js"></script>
+        <script type="text/javascript" src="js/src/predefined/parts/editors/validations.js"></script>
         <!--Advanced (provide in order):
             [display data] table/list & paginator;
             [query/control] filter/search & toolbar;
@@ -92,7 +94,7 @@
 
         <script type="text/tpl" id="test" exclude="true">
             <div class="row">
-              <div class="col-lg-6">
+              <div class="col-sm-6">
                 <div class="well">
                   <form class="bs-example form-horizontal">
                     <fieldset>
@@ -166,6 +168,11 @@
                       </div>
                     </fieldset>
                   </form>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="well">
+                    <div region="formtest" view="FormA.FormTest" class="form-horizontal"></div>
                 </div>
               </div>
             </div>

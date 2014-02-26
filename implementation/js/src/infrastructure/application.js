@@ -15,14 +15,14 @@
  * 			[rest of normal Backbone.Model/Collection options]
  * 		};
  * 		2. Context: {
- * 			[name]: if you don't name the context, we will use Default,
+ * 			[name]: if you don't name the context, we will use 'Default' as its name,
  * 			template: '#id' or '<...>' or ['<...>', '<...>'],(auto functional attribute: region, view)
  * 			[requireLogin]: 'true' / 'false'(default)
  * 			[onNavigateTo]: function(module path string)
 			[rest of normal Marionette.Layout options] - if you override initialize + onShow, the default region detect and view showing behavior will be removed.
  * 		};
  * 		3. Regional: { -- for automatically loading through layout template. 
- * 			name:, (id in Marionette.Layout.Views -- see lib+-/marionette/view.js)
+ * 			name:, (id in static list:Marionette.Layout.Views -- see lib+-/marionette/view.js)
  * 			template: '#id' or '<...>' or ['<...>', '<...>'], (possible functional attribute: region, ui)
  * 			[type]: 'ItemView'(default)/ Layout/ CollectionView/ CompositeView (Marionette Views)
  * 			[rest of normal Marionette.(View type of your choice) options] 
@@ -66,7 +66,7 @@ NProgress.configure({
  * 	create(); - universal object (model/collection/views[context/regional-view/widget/editor]) creation point [hierarchy flattened to enhance transparency]. 
  */
 Application = new Backbone.Marionette.Application();
-_.each(['Core', 'Util', 'Views'], function(coreModule){
+_.each(['Core', 'Util'], function(coreModule){
 	Application.module(coreModule);
 });
 
@@ -366,7 +366,7 @@ _.each(['Core', 'Util', 'Views'], function(coreModule){
 			//2. Show Regional Views defined by region.$el.attr('view');
 			_.each(regions, function(selector, r){
 				Application[r].ensureEl();
-				var RegionalView = Marionette.Layout.Views[Application[r].$el.addClass('app-region region region-' + _.string.slugify(r)).attr('view')];
+				var RegionalView = Backbone.Marionette.Layout.Views[Application[r].$el.addClass('app-region region region-' + _.string.slugify(r)).attr('view')];
 				if(RegionalView) Application[r].show(new RegionalView());
 			});		
 
@@ -396,7 +396,7 @@ _.each(['Core', 'Util', 'Views'], function(coreModule){
 				return Application.Core[type].create(config);
 			break;
 			case 'Regional':
-				return Marionette.Layout.regional(config);
+				return Backbone.Marionette.Layout.regional(config);
 			break;
 
 
