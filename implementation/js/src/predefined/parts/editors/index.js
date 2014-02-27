@@ -150,7 +150,7 @@
 								if(validator.fn) {
 									error = validator.fn(this.getVal(), this.parentCt);
 								}else {
-									error = (Application.Editor.rules[validator.rule] && Application.Editor.rules[validator.rule](validator.options, this.getVal(), this.parentCt));
+									error = (app.Core.Editor.rules[validator.rule] && app.Core.Editor.rules[validator.rule](validator.options, this.getVal(), this.parentCt));
 								}
 								if(!_.isEmpty(error)) break;
 							}

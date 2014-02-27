@@ -99,7 +99,7 @@ _.each(['Core', 'Util'], function(coreModule){
 		Application.config = _.extend({
 
 			//Defaults:
-			theme: '_dev',
+			theme: 'default',
 			template: '',
 			//e.g:: have a unified layout template.
 			/**

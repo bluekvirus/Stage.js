@@ -7,7 +7,7 @@
  * =======
  * required:
  * 		structure - folder blueprint 
- *   	clientBase - input base
+ *   	src.root - input base
  *    	distFolder - output folder
  * optional:
  * 		cachedFiles - in memory file content
@@ -30,7 +30,7 @@ ncp.limit = 16; //ncp concurrency limit
 module.exports = {
 
 	//create structure with pre-processed in memory files.
-	createFolderStructure: function(name, options, done) {
+	createFolderStructure: function(options, done) {
 
 		options = _.extend({
 			structure: {}, //see config
@@ -38,7 +38,7 @@ module.exports = {
 		}, options);
 
 		var targets = [];
-		var baseDir = path.join(options.distFolder, name);
+		var baseDir = options.distFolder;
 
 		//prepare the structure description map
 		_.each(options.structure, function(content, key){
@@ -54,7 +54,7 @@ module.exports = {
 				var currentTarget = targets.shift();
 				if(_.isString(currentTarget.content)){
 					//path string - copy
-					var srcPath = path.join(options.clientBase, currentTarget.content);
+					var srcPath = path.join(options.src.root, currentTarget.content);
 					ncp(srcPath, currentTarget.path, function(error){
 						if(!error) console.log(srcPath, '==>'.grey, currentTarget.path, '[OK]'.green);
 						else console.log(srcPath, '==>'.grey, currentTarget.path, '[ERROR:'.red, error, ']'.red);

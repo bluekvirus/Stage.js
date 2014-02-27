@@ -24,35 +24,28 @@ json = require('json3');
 var config = {};
 
 /*-----------Util/Steps------------*/
-//0. load index.html (replace lib, tpl and application js section - compress js libs into core.js [app.min.js])
-function loadIndexHTML(target, cb){
-	config = require('./config/'+target);
-	if(!config) return console.log('Can NOT find build config for ', target);
+//0. load index.html (replace lib, tpl and application js section - compress js libs into all.js
+function loadIndexHTML(cb){
+	config = require('./config.js');
+	if(!config) return console.log('Can NOT find build config.js');
 	console.log('Processing Index...'.yellow);
 
 	function doProcessIndexHtml() {
-		buildify().load(config.clientBase + config.index).perform(function(content){
+		buildify().load(path.join(config.src.root, config.src.index)).perform(function(content){
 
 			//load html		
 			var $ = cheerio.load(content);
-			//patch it with autoloaded js		
-			if(config._try) {
-				var autoloadBase = url.parse(config.patchAutoLoad, true).query.payload;
-				_.each(config._try, function(js){
-					$('script[patch]').before('<script src="' + autoloadBase + '/' + js + '"></script>');
-				});
-			}
 
 			//extract build sections.
 			var $script;
 			var coreJS = buildify().load('../shared/EMPTY.js');
 			$('script').each(function(index, el){
 				$script = $(el);
-				if(!$script.attr('non-core')){
+				if(!$script.attr('exclude')){
 					var srcPath = $script.attr('src');
 					if(srcPath){
 						//ref-ed js, concat 
-						coreJS.concat(config.clientBase + 'app/' + srcPath);
+						coreJS.concat(path.join(config.src.root, srcPath));
 					}else {
 						//in-line
 						coreJS.perform(function(content){
@@ -63,30 +56,18 @@ function loadIndexHTML(target, cb){
 				$script.remove();
 			});
 
-			$('body').append('\n\t\t<script src="scripts/app.min.js"></script>\n'); //Warning::Hard Coded Core Lib Path!
+			$('#main').after('\n\t\t<script src="js/all.min.js"></script>\n'); //Warning::Hard Coded Core Lib Path!
 			content = $.html();
 
 			cb({
-				'app.js': coreJS.getContent(),
-				'app.min.js': coreJS.uglify().getContent(),
+				'all.js': coreJS.getContent(),
+				'all.min.js': coreJS.uglify().getContent(),
 				'index.html': content.replace(/\n\s+\n/gm, '\n')
 			});
 		});		
 	};
 
-	if(config.patchAutoLoad)
-		request(config.patchAutoLoad, function(error, response, body){
-			if (!error && response.statusCode == 200) {
-				body = json.parse(body);
-				config._try = [].concat(body.others, body.modules, body.extensions);
-				console.log('patching in autoloaded (_try) js...'.blue);
-			}else{
-				console.log(('autoloaded (_try) js excluded...[' + config.patchAutoLoad + ']').red);
-			}
-			doProcessIndexHtml();
-		});
-	else
-		doProcessIndexHtml();
+	doProcessIndexHtml();
 
 }
 
@@ -98,9 +79,9 @@ buildify.task({
 	task: function(){
 		var startTime = new Date().getTime();
 
-		loadIndexHTML('app', function(cached){
+		loadIndexHTML(function(cached){
 			mkdirp(config.distFolder, function(error){
-				hammer.createFolderStructure('app', _.extend({cachedFiles: cached}, config), function(){
+				hammer.createFolderStructure(_.extend({cachedFiles: cached}, config), function(){
 					console.log('Build Task [app] Complete'.rainbow, '-', moment.utc(new Date().getTime() - startTime).format('HH:mm:ss.SSS').underline);
 				});
 			});

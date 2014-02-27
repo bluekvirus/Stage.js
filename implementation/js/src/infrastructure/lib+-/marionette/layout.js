@@ -9,7 +9,7 @@
  * Fixed
  * -----
  * auto region detect and register
- * auto view 
+ * auto regional view display
  *
  * Note that: Layout class now has a static regional method to register sub regional View definitions into a static list.
  *
