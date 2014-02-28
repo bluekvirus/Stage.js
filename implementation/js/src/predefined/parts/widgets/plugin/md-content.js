@@ -5,7 +5,10 @@
  * =====
  * ```
  * $.md({
- * 	url: ... or file: a.b.c (=> /static/md/a/b/c.md)	
+ * 	url: ... 
+ * 		or 
+ * 	file: a.b.c (=> /static/md/a/b/c.md)	
+ * 	
  * 	callback: function($el)...
  * 	marked: marked options see [https://github.com/chjj/marked]	
  * })
@@ -19,9 +22,9 @@
 
 	/*===============the util functions================*/
 	function load(target, cb){
-		var url = target.url || ('/static/md/' + target.dottedPath.split('.').join('/'));
+		var url = target.url || ('/static/md/' + target.dottedPath.split('.').join('/') + '.md');
 		$.ajax({
-			url: url + '.md',
+			url: url,
 			type: 'GET',
 			success: function(res){
 				cb(res);
@@ -31,6 +34,10 @@
 	/*===============the plugin================*/
 	$.fn.md = function(options){
 		var that = this;
+		if(_.isString(options)) {
+			if(/\.md$/.test(options)) options = { url: options };
+			else options = { file: options };
+		}
 		load({
 			url: options.url,
 			dottedPath: options.file
