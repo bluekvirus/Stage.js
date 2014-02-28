@@ -65,10 +65,21 @@
     Application.create('Regional', {
         name: 'FormA.FormTest',
         className: 'fieldset',
+        template: [
+            '<div editors="*"></div>',
+            '<div class="col-sm-offset-2"><span class="btn btn-primary" action="test">Submit</span> <span class="btn btn-warning">Validate</span><div>'
+        ],
         initialize: function(){
+            this.enableActionTags();
+        },
+        actions: {
+            test: function($btn){
+                this.validate(true);
+            }
         },
         onShow: function(){
             this.activateEditors({
+                appendTo: 'div[editors]',
                 global: {
                     layout: {
                         label: 'col-sm-2',

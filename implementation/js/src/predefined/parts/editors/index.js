@@ -266,10 +266,11 @@
 				//set or get status of this editor UI
 				if(status){
 					//set warning, error, info, success... status, no checking atm.
+					var className = 'has-' + status;
 					this.$el
 						.removeClass(this.$el.data('status'))
-						.addClass(status)
-						.data('status', status);
+						.addClass(className)
+						.data('status', className);
 					this.ui.msg.html(msg || '');
 				}else {
 					//get
@@ -298,8 +299,8 @@
 
 
 	app.Util.Tpl.build('editor-basic-tpl', [
-		'<label class="control-label {{#if layout}}{{layout.label}}{{/if}}" for="{{uiId}}" data-toggle="tooltip" title="{{tooltip}}" data-placement="right">{{label}}</label>',
-		'<div class="{{#if layout}}{{layout.field}}{{/if}}">', //for positioning with the label.
+		'<label class="control-label {{#if layout}}{{layout.label}}{{/if}}" for="{{uiId}}">{{label}}</label>',
+		'<div class="{{#if layout}}{{layout.field}}{{/if}}" data-toggle="tooltip" title="{{tooltip}}">', //for positioning with the label.
 
 			//1. select
 			'{{#is type "select"}}',
@@ -364,7 +365,7 @@
 			'{{/is}}',
 
 			//msg & help
-			'<span class="help-block" style="margin-bottom:0"><small>{{help}}</small></span>',
+			'{{#if help}}<span class="help-block" style="margin-bottom:0"><small>{{help}}</small></span>{{/if}}',
 			'<span class="help-block input-error" ui="msg">{{msg}}</span>',
 		'</div>'
 	]);
