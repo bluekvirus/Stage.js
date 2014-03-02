@@ -27,9 +27,15 @@
  * 			[type]: 'ItemView'(default)/ Layout/ CollectionView/ CompositeView (Marionette Views)
  * 			[rest of normal Marionette.(View type of your choice) options] 
  * 		};
- * 		4. Parts: (shared widgets and editors)
- * 		...TBI
+ * 		4. Widget/Editor: parts
+ * 		as in infrastructure/core/part.js
  *
+ * ###How to define re-usable blueprints?
+ * 5. Application.define(type, factory); (try to store config in runtime data instead of definition)
+ * 		1. Widget/Editor: parts
+ *   	2. Validator (form inputs validation rules)
+ *   	
+ *   	
  * Optional
  * --------
  * You can also config NProgress.

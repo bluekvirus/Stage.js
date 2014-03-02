@@ -21,8 +21,8 @@
     //You can override other production config vars if wanted.
     //fullScreen: true,
     theme: '_dev',
-    //template: '<div region="banner" view="Banner"></div><div region="center"></div><div region="footer" view="Footer"></div>',
-    //contextRegion: 'center'
+    template: '<div region="banner" view="Banner"></div><div region="center"></div><div region="footer" view="Footer"></div>',
+    contextRegion: 'center'
 
 }).run();
 

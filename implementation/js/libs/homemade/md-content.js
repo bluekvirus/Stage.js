@@ -8,9 +8,15 @@
  * 	url: ...
  * 	marked: marked options see [https://github.com/chjj/marked]
  *
- *  callback: function($el)...
+ *  cb: function($el)...
  * })
  * ```
+ *
+ * the $(tag) you used to call .md() can have md="..." or data-md="..." attribute to indicate md file url.
+ *
+ * Note
+ * ====
+ * Use $.load() if you just want to load html content instead of md coded content into $(tag)
  *
  * @author Tim.Liu
  * @created 2013.11.05
@@ -32,7 +38,7 @@
 			var url = options.url || $el.attr('md') || $el.data('md');
 			$.get(url).done(function(res){
 				$el.html(marked(res, options.marked)).addClass('md-content');
-				options.callback && options.callback($el);
+				options.cb && options.cb($el);
 			});
 		});
 	}
