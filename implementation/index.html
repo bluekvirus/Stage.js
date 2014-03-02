@@ -32,6 +32,7 @@
         <!--Base-->
         <script type="text/javascript" src="js/libs/tracked/dist/libs.js"></script>
         <script type="text/javascript" src="js/libs/homemade/i18n.js"></script>
+        <script type="text/javascript" src="js/libs/homemade/md-content.js"></script>
 
         <!--APP-->
         <script type="text/javascript" src="js/src/infrastructure/application.js"></script>
@@ -63,7 +64,6 @@
         -->
         <script type="text/javascript" src="js/src/predefined/parts/editors/index.js"></script>
         <script type="text/javascript" src="js/src/predefined/parts/editors/validations.js"></script>
-        <script type="text/javascript" src="js/src/predefined/parts/widgets/plugin/md-content.js"></script>
         <!--Advanced (provide in order):
             [display data] table/list & paginator;
             [query/control] filter/search & toolbar;
@@ -93,91 +93,6 @@
             </script>
         -->
 
-
-        <script type="text/tpl" id="test" exclude="true">
-            <div class="row">
-              <div class="col-sm-6">
-                <div class="well">
-                  <form class="bs-example form-horizontal">
-                    <fieldset>
-                      <legend>Legend</legend>
-                      <div class="form-group">
-                        <label class="col-lg-2 control-label" for="inputEmail">Email</label>
-                        <div class="col-lg-10">
-                          <input type="text" placeholder="Email" id="inputEmail" class="form-control">
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-lg-2 control-label" for="inputPassword">Password</label>
-                        <div class="col-lg-10">
-                          <input type="password" placeholder="Password" id="inputPassword" class="form-control">
-                          <div class="checkbox">
-                            <label>
-                              <input type="checkbox"> Checkbox
-                            </label>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-lg-2 control-label" for="textArea">Textarea</label>
-                        <div class="col-lg-10">
-                          <textarea id="textArea" rows="3" class="form-control"></textarea>
-                          <span class="help-block">A longer block of help text that breaks onto a new line and may extend beyond one line.</span>
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-lg-2 control-label">Radios</label>
-                        <div class="col-lg-10">
-                          <div class="radio">
-                            <label>
-                              <input type="radio" checked="" value="option1" id="optionsRadios1" name="optionsRadios">
-                              Option one is this
-                            </label>
-                          </div>
-                          <div class="radio">
-                            <label>
-                              <input type="radio" value="option2" id="optionsRadios2" name="optionsRadios">
-                              Option two can be something else
-                            </label>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-lg-2 control-label" for="select">Selects</label>
-                        <div class="col-lg-10">
-                          <select id="select" class="form-control">
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
-                            <option>4</option>
-                            <option>5</option>
-                          </select>
-                          <br>
-                          <select class="form-control" multiple="">
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
-                            <option>4</option>
-                            <option>5</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <div class="col-lg-10 col-lg-offset-2">
-                          <button class="btn btn-default" type="button" action="cancel">Cancel</button>
-                          <button class="btn btn-primary" type="button" action="submit">Submit</button>
-                        </div>
-                      </div>
-                    </fieldset>
-                  </form>
-                </div>
-              </div>
-              <div class="col-sm-6">
-                <div class="well">
-                    <div region="formtest" view="FormA.FormTest" class="form-horizontal"></div>
-                </div>
-              </div>
-            </div>
         </script>
 
 

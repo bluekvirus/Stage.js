@@ -31,19 +31,22 @@
 
     Application.create('Context', {
         //don't name it, thus defining the Default context.
+        className: 'container',
         template: [
-            '<div region="abc"></div>',
-            '<div><span class="btn btn-primary" action="abc">123</span></div>'
+            '<div class="row">',
+                '<div region="toc" class="col-sm-3"></div>',
+                '<div region="doc" class="col-sm-9" md="static/resource/_default/md/test.md"></div>',
+            '</div>',
         ],
-        initialize: function(){
-          this.enableActionTags('Nothing');
+        onShow: function(){
+            this.doc.$el.md();
         }
     });
 
     Application.create('Context', {
         name: 'Login',
         template: [
-            '<div region="2" view="FormA"></div>',
+            '<div region="2" view="FormTest"></div>',
             '<div region="3"></div>'
         ],
         onNavigateTo: function(subPath){
@@ -53,17 +56,7 @@
     });
 
     Application.create('Regional', {
-        name: 'FormA',
-        template: '#test', //has another region which requires FormA.FormTest view
-        type: 'Layout',
-        className: 'container',
-        initialize: function(){
-          this.enableActionTags();
-        }
-    });
-
-    Application.create('Regional', {
-        name: 'FormA.FormTest',
+        name: 'FormTest',
         className: 'fieldset',
         template: [
             '<div editors="*"></div>',
