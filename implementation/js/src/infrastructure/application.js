@@ -405,9 +405,15 @@ _.each(['Core', 'Util'], function(coreModule){
 				return Backbone.Marionette.Layout.regional(config);
 			break;
 
+			case 'Validator':
+				return Application.Core.Editor.addRule(config.name, config.fn, config.error);
+			break;
 
-			//need to define/register View definition before create...
+
+			//exception: need to register View definition before create...(app.Core.Widget/Editor.register(name, factory))
 			case 'Widget': case 'Editor':
+				if(config.factory && _.isFunction(config.factory))
+					return Application.Core[type].register(config.name, config.factory);
 				return Application.Core[type].create(config.name, config);
 			break;
 

@@ -56,10 +56,9 @@
 	}
 
 	//adding new rules at runtime
-	app.Core.Editor.addRule = function(name, impl, error, override){
-		if(!name || !_.isFunction(impl)) throw new Error('DEV::Editor::Basic validation rule must have a name and a function implementation.')
-		if(_.isBoolean(error)) override = error;
-		if(app.Core.Editor.rules[name] && !override) throw new Error('DEV::Editor::Basic validation rule name ['+ name +'] is already defined, use override=true if want to override.');
+	app.Core.Editor.addRule = function(name, impl, error){
+		if(!name || !_.isFunction(impl)) throw new Error('DEV::Editor::Basic validation rule must have a name and a function implementation.');
+		if(app.Core.Editor.rules[name]) console.warn('DEV::Editor::Basic validation rule name ['+ name +'] is already defined.');
 
 		app.Core.Editor.rules[name] = impl;
 		if(_.isString(error)) app.Core.Editor.errors[name] = error;

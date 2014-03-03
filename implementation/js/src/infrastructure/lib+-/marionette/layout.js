@@ -10,7 +10,10 @@
  * -----
  * auto region detect and register
  * auto regional view display
- * default getValues/setValues and validate() method supporting editors activated 
+ * 
+ * Experimental
+ * ------------
+ * default getValues/setValues and validate() method supporting editors value collection and verification
  *
  * Note that: Layout class now has a static regional method to register sub regional View definitions into a static list.
  *
@@ -23,14 +26,13 @@
 	var old = Backbone.Marionette.Layout;
 
 	/**
-	 * TBI
-	 * Static Mixin of a Layout in case it is used as a Form.
-	 * 1. getValues() * - default implementation will be to collect values by this.editors{} and merge with this.parts[]'s editors (the form parts will also have a chance to override getValues)
-	 * 2. setValues(vals) * - default implementation will be to set values by this.editors{} and this.parts[]'s editors (the form parts will have a chance to override setValues)
-	 * 3. validate(show) * - default implementation will be to validate by this.editors{} and this.parts[]'s editors (can be voerriden by the form part view)
+	 * Static Mixin of a Layout in case it is used as a Form container.
+	 * 1. getValues() * - collects values from each region;
+	 * 2. setValues(vals) * - sets values to regions;
+	 * 3. validate(show) * - validate all the regions;
 	 * Note that after validation(show:true) got errors, those editors will become eagerly validated, it will turn off as soon as the user has input-ed the correct value.
 	 * 
-	 * optional: button action implementations, you still have to code your button's html into the template.
+	 * Not implemented: button action implementations, you still have to code your button's html into the template.
 	 * 4. submit
 	 * 5. reset
 	 * 6. refresh
@@ -51,7 +53,7 @@
 		getValues: function(){
 			var vals = {};
 			this.regionManager.each(function(region){
-				if(region.currentView && region.currentView._editors){
+				if(region.currentView && region.currentView.getValues){
 					_.extend(vals, region.currentView.getValues());
 				}
 			});
@@ -61,7 +63,7 @@
 		//2. setValues (O(n) - n is the total number of editors on this form)
 		setValues: function(vals, loud){
 			this.regionManager.each(function(region){
-				if(region.currentView && region.currentView._editors){
+				if(region.currentView && region.currentView.setValues){
 					region.currentView.setValues(vals, loud);
 				}
 			});
@@ -71,7 +73,7 @@
 		validate: function(show){
 			var errors = {};
 			this.regionManager.each(function(region){
-				if(region.currentView && region.currentView._editors){
+				if(region.currentView && region.currentView.validate){
 					_.extend(errors, region.currentView.validate(show));
 				}
 			});
