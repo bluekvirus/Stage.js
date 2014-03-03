@@ -36,4 +36,10 @@
 	});		
  }
 
+ //local data pref saving? TBI
+ Application.Util.save = function(data){
+
+ 	Application.trigger('app:local-data-saved', data);
+ }
+
 })();

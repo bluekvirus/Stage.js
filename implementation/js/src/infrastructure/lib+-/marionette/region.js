@@ -1,17 +1,10 @@
 /**
  * Enhancing the Backbone.Marionette.Region Class
  *
- * 1. open()+ -- consult view.effect config block when showing a view;
- *
- * effect config
+ * 1. open()+
  * --------------
- * 'string' name of the effect in jQuery;
- * or
- * {
- * 		name: ...
- * 	 	options: ...
- * 	 	duration: ...
- * }
+ * consult view.effect config block when showing a view;
+ * 
  *
  * @author Tim.Liu
  * @updated 2014.03.03
@@ -19,6 +12,17 @@
 
 ;(function(app){
 
+	/**
+	 * effect config
+	 * 
+	 * 'string' name of the effect in jQuery;
+	 * or
+	 * {
+	 * 		name: ...
+	 * 	 	options: ...
+	 * 	 	duration: ...
+	 * }
+	 */
 	_.extend(Backbone.Marionette.Region.prototype, {
 		open: function(view){
 			if(view.effect){

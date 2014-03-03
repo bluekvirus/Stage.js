@@ -393,26 +393,33 @@ _.each(['Core', 'Util'], function(coreModule){
 	 */
 	Application.create = function(type, config){
 		switch(type){
-			
+
+			//data			
 			case 'Model': case 'Collection':
 				var obj = new Backbone[type](config);
 				return obj.bindToEntity(config.entity);
 			break;
 
-
+			//basic component
 			case 'Context':
 				return Application.Core[type].create(config);
 			break;
 			case 'Regional':
 				return Backbone.Marionette.Layout.regional(config);
 			break;
-
 			case 'Validator':
 				return Application.Core.Editor.addRule(config.name, config.fn, config.error);
 			break;
 
+			//optional (TBI)
+			case 'Prompt':
+			break;
 
-			//exception: need to register View definition before create...(app.Core.Widget/Editor.register(name, factory))
+			case 'Notification':
+			break;
+
+			//re-usable
+			//exception: need to register View definition before create...(use config.factory = function(){...} to register)
 			case 'Widget': case 'Editor':
 				if(config.factory && _.isFunction(config.factory))
 					return Application.Core[type].register(config.name, config.factory);
