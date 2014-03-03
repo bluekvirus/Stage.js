@@ -3,13 +3,14 @@
  *
  * Important
  * =========
- * Use create() at all times if possible, use get()[deprecated...] definition with caution, instanciate only 1 instance per definition.
- * There is something fishy about the initialize() function, events binding only get to execute once with this.listenTo(), if multiple instances of a part
+ * Use create() at all times if possible, use get()[deprecated...] definition with caution, instantiate only 1 instance per definition.
+ * There is something fishy about the initialize() function (Backbone introduced), events binding only get to execute once with this.listenTo(), if multiple instances of a part
  * listens to a same object's events in their initialize(), only one copy of the group of listeners are active.
  * 
  *
  * @author Tim.Liu
  * @create 2013.11.10
+ * @update 2014.03.03
  */
 
 (function(app){
@@ -17,22 +18,27 @@
 	function makeRegistry(regName){
 		regName = _.string.camelize(regName);
 		var manager = app.module('Core.' + regName);
+		_.extend(manager, {
 
-		//save factory (which returns the definition object)
-		manager.register = function(name, factory){
-			manager[name] = factory;
-		};
+			map: {},
+			isDefined: function(name){
+				if(manager.map[name]) return true;
+				return false;
+			},
+			register: function(name, factory){
+				if(manager.isDefined(name))
+					console.warn('DEV::Overriden::' + regName + '.' + name);
+				manager.map[name] = factory();
+			},
 
-		//get definition object, with factory options - deprecating...
-		// manager.get = function(name, options){
-		// 	if(!manager[name]) throw new Error('DEV::' + regName + '.Registry::The part definition [' + name + '] you required is not found...');
-		// 	return manager[name](options);
-		// }
+			create: function(name, options){
+				if(manager.isDefined(name))
+					return new (manager.map[name])(options);
+				throw new Error('DEV::' + regName + '.Registry:: required definition [' + name + '] not found...');
+			}
 
-		//get the instance from definition object (produced by a default factory setting), options is for instantiating the definition object.
-		manager.create = function(name, options){
-			return new (manager.get(name))(options);
-		}
+		});
+
 	}
 
 	makeRegistry('Widget');

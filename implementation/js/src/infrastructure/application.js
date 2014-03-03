@@ -27,13 +27,15 @@
  * 			[type]: 'ItemView'(default)/ Layout/ CollectionView/ CompositeView (Marionette Views)
  * 			[rest of normal Marionette.(View type of your choice) options] 
  * 		};
- * 		4. Widget/Editor: parts
+ * 		4. Widget/Editor: parts (both define( has config.factory as function) and create)
  * 		as in infrastructure/core/part.js
  *
- * ###How to define re-usable blueprints?
- * 5. Application.define(type, factory); (try to store config in runtime data instead of definition)
- * 		1. Widget/Editor: parts
- *   	2. Validator (form inputs validation rules)
+ * 		5. Validator: { -- basic editor validators
+ * 			name: ...
+ * 			fn(val): function()
+ * 			error: ... - error string
+ * 		}
+ * 	 	
  *   	
  *   	
  * Optional

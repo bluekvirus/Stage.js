@@ -85,12 +85,9 @@
 				config = _.extend({}, global, config);
 				//1. instantiate
 				config.type = config.type || 'text'; 
-				try{
-					var editorDef = app.Core.Editor.get(config.type);
-				}catch(e){
-					var editorDef = app.Core.Editor.get('Basic');
-				}
-				var editor = new editorDef(_.extend(config, {name: name, parentCt: this}));
+				var Editor = app.Core.Editor.map[config.type] || app.Core.Editor.map['Basic'];
+				var editor = new Editor(_.extend(config, {name: name, parentCt: this}));
+				
 				this._editors[name] = editor.render();
 				//2. add it into view (specific, appendTo(editor cfg), appendTo(general cfg), append)
 				var $position = this.$('[editor="' + name + '"]');

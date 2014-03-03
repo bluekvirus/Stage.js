@@ -57,10 +57,14 @@
 
     Application.create('Regional', {
         name: 'FormTest',
-        className: 'fieldset',
+        className: 'well',
         template: [
-            '<div editors="*"></div>',
-            '<div class="col-sm-offset-2"><span class="btn btn-primary" action="test">Submit</span> <span class="btn btn-warning">Validate</span><div>'
+            '<div editors="*" class="row"></div>',
+            '<div class="row">',
+                '<div class="col-sm-10 col-sm-offset-2">',
+                    '<span class="btn btn-primary" action="test">Submit</span> <span class="btn btn-warning">Validate</span>',
+                '</div>',
+            '</div>'
         ],
         initialize: function(){
             this.enableActionTags();
@@ -217,6 +221,10 @@
     //Regionals
     Application.create('Regional', {
         name: 'Banner',
+        effect: {
+            name: 'fade',
+            duration: 500
+        },
         template: [
             '<div class="navbar navbar-default">',
 
