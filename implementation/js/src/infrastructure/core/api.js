@@ -42,8 +42,8 @@
  *   		success
  *   		
  *   		+ (these will be supported like new options which in turn affect the prepared ajax options)  		
- *   		model: the model to save the result in; - will trigger a api:data:preped event
- *   		(caution) collection: the collection to save the result in; - will trigger a api:data:preped event - If you are using a direct API call instead of collection.fetch(), the pagination will be ignored!!
+ *   		model: the model to save the result in;
+ *   		collection: the collection to save the result in; - (caution) If you are using a direct API call instead of collection.fetch(), the pagination will be ignored!!
  *   		success: function(parsed data, model/collection, response, options) - optional customized cb, this will be called after parse in the prepared success callback;
  * 
  * 			Note that:
@@ -190,7 +190,6 @@
 						//B.1 set data into model/collection (model will always have higher priority over collection)
 						if(target && data) {
 							target.set(data, options);
-							target.trigger('app:api:data-prepared'); //only triggered if you are using the API.call directly
 						}
 
 						//B.2 call the program supplied success callback 

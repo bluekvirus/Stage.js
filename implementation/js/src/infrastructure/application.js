@@ -1,4 +1,4 @@
-/**
+/*
  * Main application definition.
  *
  * Usage
@@ -32,19 +32,43 @@
  *
  * 		5. Validator: { -- basic editor validators
  * 			name: ...
- * 			fn(val): function()
+ * 			fn(options, val, parentCt): function()
  * 			error: ... - error string
  * 		}
  * 	 	
- *   	
+ * ###Application Events to the aid?
+ * 5. Use app:[your-event] format, and then register a global listener on app by using app.onYourEvent = function();
+ * You are in charge of event args as well.
+ *
+ * Pre-defined events are:
+ * app:navigate (contextName, moduleName) - app.onNavigate [pre-defined]
+ *
+ * Suggested events are: [you define, you fire to use]
+ * app:context-switched (contextName) [with context:navigate-to (moduleName) on context] - app.onContextSwitched [not-defined]
+ * app:prompt (options) - app.onPrompt [not-defined]
+ * app:message (options) - app.onMessage [not-defined]
+ * app:login (options) - app.onLogin [not-defined]
+ * app:logout (options) - app.onLogout [not-defined]
+ *
+ * 6. One special event to remove the need of your view objects to listen to window.resized events themselves is
+ * app fires >>>
+ * 		view:resized - upon window resize event
+ * Listen to this event on app please.
+ *   		
  *   	
  * Optional
  * --------
- * You can also config NProgress.
+ * You can also config NProgress through NProgress.configure({
+	minimum: 0.1
+	template: "<div class='....'>...</div>"
+	ease: 'ease', speed: 500
+	trickle: false
+	trickleRate: 0.02, trickleSpeed: 800
+ * })
  *
  * @author Tim.Liu
  * @create 2014.02.17
- */
+ 
 
 /**
  * Setup Global vars and Config Libs
@@ -56,12 +80,7 @@ _.each(['document', 'window'], function(coreDomObj){
 
 Swag.registerHelpers();
 NProgress.configure({
-  //minimum: 0.1
-  //template: "<div class='....'>...</div>"
-  //ease: 'ease', speed: 500
-  //trickle: false
-  //trickleRate: 0.02, trickleSpeed: 800
-  //showSpinner: false
+  showSpinner: false
 });
 
 /**
@@ -249,18 +268,7 @@ _.each(['Core', 'Util'], function(coreModule){
 
 		//3.2 Initializers (Layout, Navigation)
 		/**
-		 * Setup the application with content routing (context + module navigation).
-		 *
-		 * Global Application Events:
-		 * login context.form fires:
-		 * 		app:user-changed - user will be stored at app.user (app.user === undefined means user has logged out see Context.Shared.User)
-		 * app listens to >>>
-		 *   	app:navigate (contextName, moduleName) this is used to invoke app.router.navigate method.
-		 * app fires >>>
-		 * 		(app:)view:resized - upon window resize event
-		 *   	app:context-switched (contextName)
-		 *   	context:navigate-to (moduleName)
-		 * 
+		 * Setup the application with content routing (context + module navigation). 
 		 * 
 		 * @author Tim.Liu
 		 * @update 2013.09.11
@@ -276,6 +284,15 @@ _.each(['Core', 'Util'], function(coreModule){
 
 		//Application init: Global listeners
 		Application.addInitializer(function(options){
+			//Global App Events Listener Dispatcher
+			Application.listenTo(Application, 'all', function(e){
+				if(_.string.startsWith(e, 'app:')){
+					var args = _.toArray(arguments).slice(1);
+					var listener = 'on' + _.string.classify(e.split(':')[1]);
+					if(Application[listener]) Application[listener].apply(Application, args);
+				}
+			});
+
 			//Context switching utility
 			function navigate(context, module){
 				var targetContext = Application.Core.Context[context];
@@ -295,10 +312,10 @@ _.each(['Core', 'Util'], function(coreModule){
 				Application.currentContext.trigger('context:navigate-to', module);
 			};		
 			
-			Application._navigate = navigate; //this is in turn hooked with the app router, see below Application init: Routes
-			Application.listenTo(Application, 'app:navigate', function(context, module){
-				Application.router.navigate(_.string.rtrim(['#navigate', context, module].join('/'), '/'), true);
-			});
+			Application.onNavigate = function(context, module){
+				navigate(context, module);
+			};
+
 		});	
 
 		//Application init: Hookup window resize and app.config fullScreen, navigate to default context.
@@ -338,7 +355,7 @@ _.each(['Core', 'Util'], function(coreModule){
 				},
 				controller: {
 					navigateTo: function(context, module){
-						Application._navigate(context, module);
+						Application.trigger('app:navigate', context, module);
 					},
 				}
 			});
@@ -409,13 +426,6 @@ _.each(['Core', 'Util'], function(coreModule){
 			break;
 			case 'Validator':
 				return Application.Core.Editor.addRule(config.name, config.fn, config.error);
-			break;
-
-			//optional (TBI)
-			case 'Prompt':
-			break;
-
-			case 'Notification':
 			break;
 
 			//re-usable

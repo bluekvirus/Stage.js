@@ -239,7 +239,7 @@
 
                 '<div class="navbar-collapse collapse navbar-responsive-collapse">',//B
                   '<ul class="nav navbar-nav">',//1
-                    '<li class="active"><a href="#">Active</a></li>',
+                    '<li class="active"><a href="#navigate/Default">Active</a></li>',
                     '<li><a href="#">Link</a></li>',
                     '<li class="dropdown">',
                       '<a data-toggle="dropdown" class="dropdown-toggle" href="#">Dropdown <b class="caret"></b></a>',
@@ -258,7 +258,7 @@
                     '<input type="text" placeholder="Search" class="form-control col-lg-8">',
                   '</form>',
                   '<ul class="nav navbar-nav navbar-right">', //3
-                    '<li><a href="#">Link</a></li>',
+                    '<li><a href="#navigate/Login">Login</a></li>',
                     '<li class="dropdown">',
                       '<a data-toggle="dropdown" class="dropdown-toggle" href="#">Dropdown <b class="caret"></b></a>',
                       '<ul class="dropdown-menu">',

@@ -16,7 +16,7 @@
 (function(app){
 
 	function makeRegistry(regName){
-		regName = _.string.camelize(regName);
+		regName = _.string.classify(regName);
 		var manager = app.module('Core.' + regName);
 		_.extend(manager, {
 
