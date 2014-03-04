@@ -19,14 +19,15 @@ moment = require('moment'),
 hammer = require('../shared/hammer'),
 request = require('request'),
 url = require('url'),
-json = require('json3');
+json = require('json3'),
+rimraf = require('rimraf'),
+AdmZip = require('adm-zip');
 
-var config = {};
+var config = require('./config.js');
 
 /*-----------Util/Steps------------*/
 //0. load index.html (replace lib, tpl and application js section - compress js libs into all.js
 function loadIndexHTML(cb){
-	config = require('./config.js');
 	if(!config) return console.log('Can NOT find build config.js');
 	console.log('Processing Index...'.yellow);
 
@@ -78,7 +79,7 @@ buildify.task({
 	name: 'app',
 	task: function(){
 		var startTime = new Date().getTime();
-
+		rimraf.sync(config.distFolder);
 		loadIndexHTML(function(cached){
 			mkdirp(config.distFolder, function(error){
 				hammer.createFolderStructure(_.extend({cachedFiles: cached}, config), function(){

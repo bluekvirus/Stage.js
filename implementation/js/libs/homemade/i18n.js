@@ -16,7 +16,7 @@
  */
 ;(function($, _, URI) {
 	
-	var resources_path = 'static/resources/';
+	var resources_path = 'static/resource';
 	
 	var params = URI(window.location.toString()).search(true);
 	var locale = params.locale;
@@ -39,7 +39,7 @@
 		 * }
 		 */
 		$.ajax({
-			url: [resources_path, locale, '.json'].join(''),
+			url: [resources_path, locale, 'i18n.json'].join('/'),
 			async: false,
 			success: function(data, textStatus, jqXHR) {
 				resources = data.trans;

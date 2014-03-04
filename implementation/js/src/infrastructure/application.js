@@ -1,7 +1,7 @@
 /*
  * Main application definition.
  *
- * Usage
+ * Usage (General)
  * ----------------------------
  * ###How to start my app?
  * 1. Application.setup({config});
@@ -37,23 +37,36 @@
  * 		}
  * 	 	
  * ###Application Events to the aid?
- * 5. Use app:[your-event] format, and then register a global listener on app by using app.onYourEvent = function();
+ * 5. Use app:[your-event] format, and then register a global listener on app by using app.onYourEvent = function(e, your args);
  * You are in charge of event args as well.
  *
  * Pre-defined events are:
  * app:navigate (contextName, moduleName) - app.onNavigate [pre-defined]
- *
- * Suggested events are: [you define, you fire to use]
  * app:context-switched (contextName) [with context:navigate-to (moduleName) on context] - app.onContextSwitched [not-defined]
+ * 
+ * Suggested events are: [not included, but you define, you fire to use]
  * app:prompt (options) - app.onPrompt [not-defined]
  * app:message (options) - app.onMessage [not-defined]
  * app:login (options) - app.onLogin [not-defined]
  * app:logout (options) - app.onLogout [not-defined]
- *
+ * app:server-push (options) - app.onServerPush [not-defined]
+ * 
  * 6. One special event to remove the need of your view objects to listen to window.resized events themselves is
  * app fires >>>
  * 		view:resized - upon window resize event
- * Listen to this event on app please.
+ * Listen to this event within your view definition on the Application object please.
+ *
+ * Usage (Specific)
+ * ----------------------------
+ * ###Building a view piece in application?
+ * plugins to aid you:
+ * 
+ * 7. $.i18n
+ * 8. $.md
+ * 9. $.overlay
+ *
+ * Lib enhancements to aid you:
+ * 10. see lib+-/...
  *   		
  *   	
  * Optional
@@ -64,6 +77,7 @@
 	ease: 'ease', speed: 500
 	trickle: false
 	trickleRate: 0.02, trickleSpeed: 800
+	showSpinner: true/false
  * })
  *
  * @author Tim.Liu
