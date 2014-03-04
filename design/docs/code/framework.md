@@ -28,7 +28,7 @@ Introduction
 * When to use this framework and when to break off and form your own; (Types of web applications supported)
 * Who will benefit from this framework;
 
-[The following paragraphs need to be updated]
+[The following paragraphs need to be updated according to the above items]
 
 ProJS is a *2-part* web application architecture that enables rapid development on both client and server side while reducing the pain in code implementation and later maintenance. 
 

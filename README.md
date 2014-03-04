@@ -5,13 +5,10 @@ ProJS.Client - an infrastructure for building modern web application with many c
 
 What's next?
 ------------
-0. New project folder structure;
-1. A basic development .md doc (static); A tool + fake data server to support development?
-2. Use more Promise/A+ patterns in async op sequence (animation, remote data, delays/ticks - jQuery & node[bluebird](https://github.com/petkaantonov/bluebird));
-Note that this is different than *Co-op Events* we used between views.
-3. Enhancements: Mixed(Fixed + Dynamic) Regions - Layout (+gridster alike tool to create layout tpl);
-4. Editor+ : Number Spinner, Flag Switches, DnD Listing, File Listing;
-5. Widget+ : MD menu listing; Grid Local Column +-/Sort/Filter; Accordion Menu lvl 1 (no groups);
+1. Use more Promise/A+ patterns in async op sequence (animation, remote data, delays/ticks - jQuery & node[bluebird](https://github.com/petkaantonov/bluebird));
+2. Editor+ : Spinner, Switches, DnD Listing, File Listing;
+3. Widget+ : Break Widgets into List and Containers (e.g list[stacked(items and table rows), tabbed, nested(tree), queued(toolbar)]); Grid Local Column +-/Sort/Filter;
+
 
 Current Version
 ---------------
@@ -23,26 +20,9 @@ Core Concepts
 see `design/docs/code/framework.md`
 
 
-
-Development (need to be updated according to new project structure)
-===========
-
-Include other js libs
----------------------
-The default libs.js contains selected libs for the project, if you would like to introduce more cd into `/app/libs`
-then `bower install && npm install` - you need to know how to use bower tho.
-include the lib your need in `index.html` from `bower_components`
-
-###buildify.js
-This is for building and combining required libs into a base-lib.js (before combined into the libs.js with project specifics by `/tools/spawn`).
-Check its content for sample usage. If you don't want the libs.js we prepared for you, this is where to start from scratch.
-
-
-Build for production use
-------------------------
-Use `/tools/build` you need to check the config file `config/app.js` (though, default should be good and ready)
-`node build.js app` will build your client app into `/tools/build/dist/app`
-Use attribute `non-core="true"` in the `<script>` tag within your index.html, if you don't want some scripts to be built into the big all-in-one js.
+Development
+-----------
+see 'implementation/static/resource/default/md/how-to-use.md'
 
 
 Prepare icon css sprites or svg paths
@@ -73,34 +53,10 @@ Do **NOT** hang the build script, use `&` if needs be or avoid at all times.
 
 
 
-Upgrade/Update
-=============
-Download and replace infrastructure.js under `/implementation/app/libs/non-tracked/projs`
-
-
-
-Spawn
-=======
-
-Spawn Projects from current code base
--------------------------------------
-Config `/tools/spawn`
-```
-config/ - has the folder structure settings for newly spawned projects.
-indices/ - has the index.html files used for each of the spawned project.
-```
-then `node spawn.js [your config name]`
-
-Warning:
-
-1. If the app framework changes, please re-check the indices and configs before spawning new projects from the current code base.
-
-2. You can **NOT** spawn from a spawned project, it will only have the build tool (and the dev support tools e.g the iconprep tool).
-
-
-
+Notes
+=====
 Note on *Ghost View*
-====================
+--------------------
 This is caused by removing a view's html but leaving the event listeners 'on'... Thus make sure you remove a view's html together with the event listeners by invoking the `view.close()`(Marionette) method, which will in turn invoke the `view.undelegateEvents()`(Backbone) method which will futher grab `$.off`(jQuery) to clean up the listerns.
 
 Note that calling `region.show()` will automatically `close()` the previously shown view object, the view object closed will still exist in the js runtime, if you somehow decide to `show()` it again, you need to manually call `view.delegateEvents()` to re-activate the event listeners.
@@ -112,9 +68,8 @@ Also, please use the `events:{...}` block to register listeners in a view defini
 If you have to use `$.on()` use it in a delegated form (on a parent dom object).
 
 
-
 Note on IE(6-9)
-===============
+---------------
 Before IE10, some efforts are still needed before the web app can work on an IE browser. We've prepared to add the following lib/tool to accommodate this in the future:
 
 1. selectivizr.js - client libs (already added in bower.json, not in use) We need to disable our app theme-roller for IE after adding this into index.html.

@@ -56,6 +56,6 @@ module.exports = {
 			}
 		},
 		'index.html': false,
-		'README.md': 'static/resource/default/md/framework.md'
+		'README.md': 'static/resource/default/md/how-to-use.md'
 	}
 };
