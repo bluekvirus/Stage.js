@@ -1,22 +1,18 @@
 /**
  * This is the Application Build Config.
- *
- * ================
+ * The build tool simply loads in an index.html file (or any .html file) process it and combine all the js.
+ * After processing, 'all.js', 'all.min.js' and 'index.html' will be in buffer, 
+ * output them to desired location together with a wanted folder structure using this config file.
+ * 
  * Config/Structure
- * ================
+ * ----------------
  * {} - create folder
  * 'string' - copy file or folder
- * true/false - read'n'save from task memory, gzip or not.
- *
- * =====================
- * Client Deployment Seq
- * =====================
- * 1. check this config (patchAutoLoad url)
- * 2. build web client
- * 3. change server [production/test]:config to point to tools/build/dist/
+ * 'all.js', 'all.min.js' and 'index.html' are predefined file placeholder, use 'true'/'false' to choose whether to gzip them.
  * 
  * @author Tim.Liu
  * @created 2013.09.25
+ * @updated 2014.03.04 (minimum output)
  */
 
 module.exports = {
@@ -32,20 +28,6 @@ module.exports = {
 			'all.min.js': true, //'all' is a hard coded name - see loadIndexHTML() in build.js
 			'all.js': false,
 		},
-		static: {
-			'web+': 'static/web+',
-			'resource': {
-				'default': {
-					'data': {},
-					'md': {}
-				},
-				'zh_CN':{
-					'data': {},
-					'md': {},
-					'i18n.json': 'static/resource/zh_CN/i18n.json'
-				}
-			}
-		},
 		themes: {
 			_dev: {
 				css: {
@@ -55,6 +37,7 @@ module.exports = {
 				fonts: 'themes/_dev/fonts'
 			}
 		},
+		'web+': 'static/web+',
 		'index.html': false,
 		'README.md': 'static/resource/default/md/how-to-use.md'
 	}

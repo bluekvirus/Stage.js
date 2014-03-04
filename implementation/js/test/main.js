@@ -22,7 +22,8 @@
     //fullScreen: true,
     theme: '_dev',
     template: '<div region="banner" view="Banner"></div><div region="center"></div><div region="footer" view="Footer"></div>',
-    contextRegion: 'center'
+    contextRegion: 'center',
+    defaultContext: 'QuickStart'
 
 }).run();
 
@@ -30,7 +31,8 @@
 ;(function(){
 
     Application.create('Context', {
-        //don't name it, thus defining the Default context.
+        //don't name it, if want to define Default context.
+        name: 'QuickStart',
         className: 'container',
         template: [
             '<div class="row">',
@@ -44,10 +46,9 @@
     });
 
     Application.create('Context', {
-        name: 'Login',
+        name: 'Demo',
         template: [
-            '<div region="2" view="FormTest"></div>',
-            '<div region="3"></div>'
+            '<div region="center" view="FormTest"></div>',
         ],
         onNavigateTo: function(subPath){
             //console.log(subPath);
@@ -225,6 +226,19 @@
             name: 'fade',
             duration: 500
         },
+        initialize: function(){
+            this.enableActionTags();
+            this.listenTo(Application, 'app:context-switched', function(name){
+                this.$el.find('[context]').removeClass('active');
+                this.$el.find('[context="' + name + '"]').addClass('active');
+            });
+        },
+        actions: {
+            download: function($btn, e){
+                e.preventDefault();
+                Application.Util.download('/static/resource/default/data/framework.zip');  
+            }
+        },
         template: [
             '<div class="navbar navbar-default">',
 
@@ -234,17 +248,18 @@
                     '<span class="icon-bar"></span>',
                     '<span class="icon-bar"></span>',
                   '</button>',
-                  '<a href="#" class="navbar-brand">Brand</a>',//2
+                  '<a href="#navigate/Home" class="navbar-brand">Pro.js</a>',//2
                 '</div>',
 
                 '<div class="navbar-collapse collapse navbar-responsive-collapse">',//B
+
                   '<ul class="nav navbar-nav">',//1
-                    '<li class="active"><a href="#navigate/Default">Active</a></li>',
-                    '<li><a href="#">Link</a></li>',
-                    '<li class="dropdown">',
-                      '<a data-toggle="dropdown" class="dropdown-toggle" href="#">Dropdown <b class="caret"></b></a>',
+                    '<li context="Home"><a href="#navigate/Home"><i class="fa fa-home"></i> Home</a></li>',
+                    '<li context="QuickStart"><a href="#navigate/QuickStart"><i class="fa fa-bolt"></i> Quick Start</a></li>',
+                    '<li context="Demo" class="dropdown">',
+                      '<a data-toggle="dropdown" class="dropdown-toggle" href="#"><i class="fa fa-dashboard"></i> Demo <b class="caret"></b></a>',
                       '<ul class="dropdown-menu">',
-                        '<li><a href="#">Action</a></li>',
+                        '<li><a href="#navigate/Demo/Form">Form</a></li>',
                         '<li><a href="#">Another action</a></li>',
                         '<li><a href="#">Something else here</a></li>',
                         '<li class="divider"></li>',
@@ -254,22 +269,17 @@
                       '</ul>',
                     '</li>',
                   '</ul>',
+
                   '<form class="navbar-form navbar-left">', //2
                     '<input type="text" placeholder="Search" class="form-control col-lg-8">',
                   '</form>',
+
                   '<ul class="nav navbar-nav navbar-right">', //3
-                    '<li><a href="#navigate/Login">Login</a></li>',
-                    '<li class="dropdown">',
-                      '<a data-toggle="dropdown" class="dropdown-toggle" href="#">Dropdown <b class="caret"></b></a>',
-                      '<ul class="dropdown-menu">',
-                        '<li><a href="#">Action</a></li>',
-                        '<li><a href="#">Another action</a></li>',
-                        '<li><a href="#">Something else here</a></li>',
-                        '<li class="divider"></li>',
-                        '<li><a href="#">Separated link</a></li>',
-                      '</ul>',
-                    '</li>',
+                    '<li><a href="#" action="download"><i class="fa fa-download"></i> Download</a></li>',
+                    '<li context="RSS"><a href="#navigate/RSS"><i class="fa fa-rss"></i> RSS</a></li>',
+                    '<li><a href="#"><i class="fa fa-github-alt"></i></a></li>',
                   '</ul>',
+
                 '</div>',<!-- /.nav-collapse -->
             '</div>'
         ]
