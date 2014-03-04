@@ -83,6 +83,13 @@ buildify.task({
 		loadIndexHTML(function(cached){
 			mkdirp(config.distFolder, function(error){
 				hammer.createFolderStructure(_.extend({cachedFiles: cached}, config), function(){
+					if(config.pack) {
+						var zip = new AdmZip();
+						zip.addLocalFolder(config.distFolder);
+						var name = path.normalize(config.pack);
+						zip.writeZip(name);
+						console.log('Zipped into ', name.yellow);
+					}
 					console.log('Build Task [app] Complete'.rainbow, '-', moment.utc(new Date().getTime() - startTime).format('HH:mm:ss.SSS').underline);
 				});
 			});

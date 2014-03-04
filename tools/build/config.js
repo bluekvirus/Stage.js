@@ -20,7 +20,8 @@
  */
 
 module.exports = {
-	distFolder: '../../implementation/static/resource/default/data/framework', //path relative to this config.js
+	distFolder: 'dist', //path relative to this config.js
+	pack: '../../implementation/static/resource/default/data/framework.zip', //path relative to this config.js (false to ignore packing)
 	src: {
 		root: '../../implementation', //path relative to this config.js
 		index: 'index.html', //path relative to root
