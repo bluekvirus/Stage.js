@@ -18,7 +18,6 @@
   ],
   "dependencies": {
     "colorbox": "*",
-    "d3": "*",
     "flexslider": "*",
     "json3": "*",
     "jqtree": "*",
@@ -29,7 +28,9 @@
     "jquery.transit": "*",
     "marked": "*",
     "modernizr": "*",
+    "detectizr": "*",
     "raphael": "*",
+    "d3": "*",
     "spin.js": "*",
     "store.js": "*",
     "underscore.string": "*",
@@ -45,7 +46,7 @@
     "nprogress": "*",
     "highcharts.com": "*",
     "jquery": "~2.1.0",
-    "underscore": "~1.6.0",
+    "underscore": "*",
     "bootstrap": "~3.1.1",
     "backbone": "~1.1.1"
   }

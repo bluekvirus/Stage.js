@@ -21,7 +21,8 @@ request = require('request'),
 url = require('url'),
 json = require('json3'),
 rimraf = require('rimraf'),
-AdmZip = require('adm-zip');
+AdmZip = require('adm-zip'),
+targz = new (require('tar.gz'))(9, 9);
 
 var config = require('./config.js');
 
@@ -84,11 +85,18 @@ buildify.task({
 			mkdirp(config.distFolder, function(error){
 				hammer.createFolderStructure(_.extend({cachedFiles: cached}, config), function(){
 					if(config.pack) {
+						//zip
 						var zip = new AdmZip();
 						zip.addLocalFolder(config.distFolder);
-						var name = path.normalize(config.pack);
+						var name = path.normalize(config.pack + '.zip');
 						zip.writeZip(name);
 						console.log('Zipped into ', name.yellow);
+						//tar.gz
+						var tarball = path.normalize(config.pack + '.tar.gz');
+						targz.compress(config.distFolder, tarball, function(err){
+							if(err) console.log('ERROR'.red, err.message);
+							else console.log('Gzipped into ', tarball.yellow);
+						});
 					}
 					console.log('Build Task [app] Complete'.rainbow, '-', moment.utc(new Date().getTime() - startTime).format('HH:mm:ss.SSS').underline);
 				});

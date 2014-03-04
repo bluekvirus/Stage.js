@@ -92,6 +92,7 @@ _.each(['document', 'window'], function(coreDomObj){
 	window['$' + coreDomObj] = $(window[coreDomObj]);
 });
 
+Modernizr.Detectizr.detect();
 Swag.registerHelpers();
 NProgress.configure({
   showSpinner: false

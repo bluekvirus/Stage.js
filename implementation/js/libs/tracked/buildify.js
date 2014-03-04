@@ -175,6 +175,7 @@ buildify.task({
 	task: function(){
 		var list = [
 			'modernizr',
+			'detectizr',
 			'jquery', //version 2+
 			'jquery.transit',
 			'jquery.cookie',

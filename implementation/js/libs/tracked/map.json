@@ -1,5 +1,5 @@
 {
-  "backbone.babysitter": "bower_components/backbone.babysitter",
+  "backbone.babysitter": "bower_components/backbone.babysitter/lib/backbone.babysitter.js",
   "backbone.wreqr": "bower_components/backbone.wreqr",
   "backbone": "bower_components/backbone/backbone.js",
   "blueimp-canvas-to-blob": "bower_components/blueimp-canvas-to-blob/js/canvas-to-blob.js",
@@ -26,17 +26,13 @@
   ],
   "colorbox": "bower_components/colorbox/jquery.colorbox.js",
   "d3": "bower_components/d3/d3.js",
+  "detectizr": "bower_components/detectizr",
   "flexslider": "bower_components/flexslider",
   "handlebars": "bower_components/handlebars/handlebars.js",
   "highcharts.com": [
     "bower_components/highcharts.com/js/highcharts.src.js",
     "bower_components/highcharts.com/js/highcharts-more.src.js",
     "bower_components/highcharts.com/js/modules/exporting.src.js"
-  ],
-  "jqtree": [
-    "bower_components/jqtree/jqtree.css",
-    "bower_components/jqtree/jqtree-circle.png",
-    "bower_components/jqtree/tree.jquery.js"
   ],
   "jquery-file-upload": [
     "bower_components/jquery-file-upload/css/jquery.fileupload.css",
@@ -56,6 +52,11 @@
     "bower_components/jquery-file-upload/js/jquery.fileupload-jquery-ui.js",
     "bower_components/jquery-file-upload/js/jquery.fileupload-angular.js",
     "bower_components/jquery-file-upload/js/jquery.iframe-transport.js"
+  ],
+  "jqtree": [
+    "bower_components/jqtree/jqtree.css",
+    "bower_components/jqtree/jqtree-circle.png",
+    "bower_components/jqtree/tree.jquery.js"
   ],
   "jquery-serializeForm": "bower_components/jquery-serializeForm",
   "jquery-sieve": "bower_components/jquery-sieve",
