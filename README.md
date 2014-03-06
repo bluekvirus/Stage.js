@@ -1,6 +1,6 @@
-The Framework
-=============
-ProJS.Client - an infrastructure for building modern web application with many contexts (e.g a data-heavy administration context).
+The Factory Project
+===================
+This project produces **ProJS.Client** - an infrastructure for building modern web application client with many contexts (e.g a data-heavy administration context).
 
 
 What's next?
@@ -15,19 +15,36 @@ Current Version
 1.0.0-rc1
 
 
+Build Release
+-------------
+Run `node /tools/build/build.js` and see dist for uncompressed minimum project package using the latest built version of this framework and tools.
+A .zip and a .tar.gz will also be produced to facilitate framework download.
+
+
+Deploy-able
+-----------
+The `/implementation` folder is also servable as a product intro & download page of **ProJS.Client** releases.
+
+
+The Framework
+=============
+
 Core Concepts
 -------------
-see `design/docs/code/framework.md`
+See `design/docs/code/framework.md`
 
 
-Development
------------
-see 'implementation/static/resource/default/md/how-to-use.md'
+Simplified Development
+----------------------
+See 'implementation/static/resource/default/md/how-to-use.md'
 
+
+Tooling
+=======
 
 Prepare icon css sprites or svg paths
 -------------------------------------
-see `/implementation/themes/README.md`
+See `/implementation/themes/README.md`
 
 
 Continuous Integration

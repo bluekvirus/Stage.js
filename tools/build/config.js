@@ -23,22 +23,33 @@ module.exports = {
 		index: 'index.html', //path relative to root
 	},
 	structure : { //path are relative to the distFolder and src.root above
-		js: {
-			'bower.json': 'js/libs/tracked/bower.json',
-			'all.min.js': true, //'all' is a hard coded name - see loadIndexHTML() in build.js
-			'all.js': false,
+		client: {
+			js: {
+				'bower.json': 'js/libs/tracked/bower.json',
+				'all.min.js': true, //'all' is a hard coded name - see loadIndexHTML() in build.js
+				'all.js': false,
+			},
+			themes: {
+				'default': {
+					css: {
+						src: 'themes/_dev/css/include',
+						'main.css':'themes/_dev/css/main.css'
+					},
+					fonts: 'themes/_dev/fonts'
+				}
+			},
+			'web+': 'static/web+',
+			'index.html': false,
+			'README.md': 'static/resource/default/md/how-to-use.md'
 		},
-		themes: {
-			_dev: {
-				css: {
-					src: 'themes/_dev/css/include',
-					'main.css':'themes/_dev/css/main.css'
-				},
-				fonts: 'themes/_dev/fonts'
-			}
-		},
-		'web+': 'static/web+',
-		'index.html': false,
-		'README.md': 'static/resource/default/md/how-to-use.md'
+		tools: {
+			build: {
+				'build.js': '../tools/build/build.js',
+				'config.js': '../tools/build/config.sample.js'
+			},
+			shared: '../tools/shared',
+			'package.json': '../tools/package.json'
+		}
+
 	}
 };
