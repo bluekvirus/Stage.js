@@ -41,7 +41,15 @@
             '</div>',
         ],
         onShow: function(){
-            this.doc.$el.md();
+            var that = this;
+            this.doc.$el.md({
+                cb: function($el){
+                    $el.toc({
+                        ignoreRoot: true
+                    });
+                    that.toc.$el.html($el.data('toc'));
+                }
+            });
         }
     });
 
