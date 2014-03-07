@@ -18,7 +18,7 @@ Current Version
 Build Release
 -------------
 Run `node /tools/build/build.js` and see dist for uncompressed minimum project package using the latest built version of this framework and tools.
-A .zip and a .tar.gz will also be produced to facilitate framework download.
+A .zip and a .tar.gz will also be produced to facilitate framework download. **DO NOT BUILD .zip on a MAC OS X**
 
 
 Deploy-able

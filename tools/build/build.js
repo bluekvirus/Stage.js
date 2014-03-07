@@ -63,7 +63,7 @@ function loadIndexHTML(cb){
 
 			cb({
 				'all.js': coreJS.getContent(),
-				'all.min.js': coreJS.uglify().getContent(),
+				'all.min.js': coreJS.uglify().getContent() + ';',
 				'index.html': content.replace(/\n\s+\n/gm, '\n')
 			});
 		});		
@@ -85,12 +85,12 @@ buildify.task({
 			mkdirp(config.distFolder, function(error){
 				hammer.createFolderStructure(_.extend({cachedFiles: cached}, config), function(){
 					if(config.pack) {
-						//zip
-						var zip = new AdmZip();
-						zip.addLocalFolder(config.distFolder);
-						var name = path.normalize(config.pack + '.zip');
-						zip.writeZip(name);
-						console.log('Zipped into ', name.yellow);
+						//zip (problem on Unix based machine)
+						// var zip = new AdmZip();
+						// zip.addLocalFolder(config.distFolder);
+						// var name = path.normalize(config.pack + '.zip');
+						// zip.writeZip(name);
+						// console.log('Zipped into ', name.yellow);
 						//tar.gz
 						var tarball = path.normalize(config.pack + '.tar.gz');
 						targz.compress(config.distFolder, tarball, function(err){

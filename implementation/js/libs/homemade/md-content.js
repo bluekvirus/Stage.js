@@ -26,6 +26,15 @@
 (function($){
 
 	/*===============the util functions================*/
+	function theme($el){
+		$el.find('h3').addClass('text-primary');
+		$el.find('code').addClass('text-info');
+		$el.find('h1 > p').addClass('text-info');
+	}
+
+	function toc(memo, $el){
+		
+	}
 
 	/*===============the plugin================*/
 	$.fn.md = function(options){
@@ -38,8 +47,17 @@
 			var url = options.url || $el.attr('md') || $el.data('md');
 			$.get(url).done(function(res){
 				$el.html(marked(res, options.marked)).addClass('md-content');
+				theme($el);
 				options.cb && options.cb($el);
 			});
+		});
+	}
+
+	//store table-of-content listing in data-toc
+	$.fn.toc = function(){
+		return this.each(function(index, el){
+			var $el = $(el);
+			
 		});
 	}
 

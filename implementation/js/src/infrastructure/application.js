@@ -221,7 +221,10 @@ _.each(['Core', 'Util'], function(coreModule){
 		 */
 		$document.ajaxSuccess(function(event, jqxhr, settings){
 			if(settings.notify)
-				Application.Util.Notify.success('Operation Successful', '|', settings.type, settings.url.split('?')[0]);
+				Application.trigger('app:message', {
+					type: 'error',
+					message: ['Operation Successful', '|', settings.type, settings.url.split('?')[0]].join(' ')
+				});
 		});
 
 		$document.ajaxError(function(event, jqxhr, settings, exception){
@@ -231,7 +234,10 @@ _.each(['Core', 'Util'], function(coreModule){
 			}catch(e){
 				var errorStr = errorStr || exception;
 			}
-			Application.Util.Notify.error(errorStr, '|', settings.type, settings.url.split('?')[0]);
+			Application.trigger('app:message', {
+				type: 'error',
+				message: [errorStr, '|', settings.type, settings.url.split('?')[0]].join(' ')
+			});
 		});
 
 		/**

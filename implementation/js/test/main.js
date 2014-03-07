@@ -238,9 +238,9 @@
                 e.preventDefault();
                 //check user os. (use .tar.gz version if on Mac OS X)
                 var target = '/static/resource/default/data/framework';
-                if(!Modernizr.mac)
-                    target += '.zip';
-                else
+                // if(!Modernizr.mac)
+                //     target += '.zip';
+                // else
                     target += '.tar.gz';
                 Application.Util.download(target);  
             }
