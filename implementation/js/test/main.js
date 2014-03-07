@@ -47,7 +47,19 @@
                     $el.toc({
                         ignoreRoot: true
                     });
-                    that.toc.$el.html($el.data('toc'));
+                    that.toc.show(Application.create('Regional', {
+                        //no name means to use it anonymously, which in turn creates it right away. 
+                        template: $el.data('toc'),
+                        initialize: function(){
+                            this.enableActionTags();
+                        },
+                        actions: {
+                            goto: function($btn, e){
+                                e.preventDefault();
+                                console.log($btn.data('id'));
+                            }
+                        }
+                    }));
                 }
             });
         }

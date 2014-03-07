@@ -442,7 +442,7 @@ _.each(['Core', 'Util'], function(coreModule){
 			case 'Context':
 				return Application.Core[type].create(config);
 			break;
-			case 'Regional':
+			case 'Regional': //ignore config.name will return a instance of defined View. Since no name means to use it anonymously, which in turn creates it right away.
 				return Backbone.Marionette.Layout.regional(config);
 			break;
 			case 'Validator':

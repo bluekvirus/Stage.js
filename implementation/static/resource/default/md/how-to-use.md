@@ -1,11 +1,11 @@
 ProJS.Client
 =============
-An infrastructure for building modern web application with many contexts.
+*An infrastructure for building modern web application with many contexts.*
 
 
 Current Version
 ---------------
-1.0.0-rc1
+**@1.0.0-rc1**
 
 
 Quick Start
@@ -30,7 +30,7 @@ Append/Include your libs after all.js.
 
 Build for production use
 ------------------------
-Use `/tools/build` you need to check the config file though. **NOT INCLUDED ATM**
+Use `/tools/build` you need to change the config file if you want to include more files e.g `/static/...` in deployment.
 
 
 Upgrade/Update
