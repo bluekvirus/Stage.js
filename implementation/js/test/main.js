@@ -44,8 +44,11 @@
             var that = this;
             this.doc.$el.md({
                 cb: function($el){
-                    $el.toc({
-                        ignoreRoot: true
+                    $el.css({
+                        borderLeft: '1px solid #CCC'
+                    }).toc({
+                        ignoreRoot: true,
+                        className: 'md-toc list-unstyled'
                     });
                     that.toc.show(Application.create('Regional', {
                         //no name means to use it anonymously, which in turn creates it right away. 

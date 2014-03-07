@@ -39,7 +39,6 @@
 	//support bootstrap theme.
 	function theme($el){
 		$el.find('h3').addClass('text-primary');
-		$el.find('code').addClass('btn-info');
 		$el.find('h1 + p').addClass('text-info');
 	}
 	//build ul/li table-of-content listing

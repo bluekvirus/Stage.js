@@ -126,7 +126,7 @@
 		Views: {},
  		regional: function(options){ //provide a way of registering sub regional views [both by this Layout Class (through prototype.regional) and its instances]
 			if(this.Views[options.name]) console.warn('DEV::Lib+-.Marionette.Layout::Conflicting regional view definition --' + options.name + '--');
-			var View = Marionette[options.type || 'ItemView'].extend(options);
+			var View = Marionette[options.type || 'Layout'].extend(options);
 			if(options.name)
 				this.Views[options.name] = View;
 			//no name means to use it anonymously, which in turn creates it right away.
