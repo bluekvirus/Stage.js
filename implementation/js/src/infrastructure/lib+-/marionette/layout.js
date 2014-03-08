@@ -8,8 +8,10 @@
  *
  * Fixed
  * -----
- * auto region detect and register
- * auto regional view display
+ * auto region detect and register by region="" in template
+ * auto regional view display by attribute view="" in template
+ * change a region's view by trigger 'region:load:view' on that region, then give it a view name. (registered through B.M.Layout.regional() or say app.create('Regional', ...))
+ * 
  * 
  * Experimental
  * ------------
@@ -42,9 +44,6 @@
 	 * ----------------
 	 * This is because we don't permit co-op between form parts, so there is no short-cut for getting/setting single editor/field value.
 	 *
-	 * Pass in activateEditors options
-	 * -------------------------------
-	 * You can mix enableForm's options with activateEditors' options, so the view will be rendered with a starting set of editors and the ability to add more as form parts.
 	 */
 
 	_.extend(Backbone.Marionette.Layout.prototype, {
@@ -112,9 +111,17 @@
 					//automatically show a View from this.Views in marked region.
 					this.listenTo(this, 'show', function(){
 						_.each(this.regions, function(selector, r){
-							var RegionalViewDef = this.constructor.Views[this[r].$el.attr('view')];
-							if(RegionalViewDef) this[r].show(new RegionalViewDef()); //found corresponding View def.
-							else this[r].$el.html('<p class="alert">Region <strong>' + r + '</strong></p>'); //give it a fake one.		
+							this[r].$el.html('<p class="alert">Region <strong>' + r + '</strong></p>'); //give it a fake one.
+							this[r].listenTo(this[r], 'region:load:view', function(name){
+								if(!name) return;
+								var View = Backbone.Marionette.Layout.Views[name];
+								if(View)
+									this.show(new View());
+								else
+									throw new Error('DEV::Layout::View required ' + name + ' can NOT be found...use app.create(\'Regional\', {name: ..., ...}).');
+							});
+							this[r].trigger('region:load:view', this[r].$el.attr('view')); //found corresponding View def.
+
 						},this);
 					});								
 				}

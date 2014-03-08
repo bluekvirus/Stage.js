@@ -24,7 +24,7 @@ Quick Start
 
 ####Let's start
 You start developing using *Pro.js* by creating a `main.js` (you are free to choose whatever the name you like) 
-and include it in `client/index.html` below the `<!--Main.js-->` comment line.
+and include it in `/client/index.html` below the `<!--Main.js-->` comment line.
 
 ```
 <script src="js/all.min.js"></script>

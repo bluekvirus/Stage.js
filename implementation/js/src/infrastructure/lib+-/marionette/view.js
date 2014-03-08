@@ -130,7 +130,7 @@
 				if(this._uilocks[region] === caller) //locked by caller already, bypass.
 					return true;
 				//else throw error...since it is already locked, by something else tho...
-				throw new Error('DEV::View UI Locks::This region ' + region + ' is already locked by ' + this._uilocks[region]);
+				throw new Error('DEV::View::UI Locks::This region ' + region + ' is already locked by ' + this._uilocks[region]);
 			};
 
 			//region, caller are optional
@@ -144,7 +144,7 @@
 					return true;
 				}
 				//else throw error...
-				throw new Error('DEV::View UI Locks::This region ' + region + ' is locked by ' + this._uilocks[region] + ', you can NOT unlock it with ' + caller);
+				throw new Error('DEV::View::UI Locks::This region ' + region + ' is locked by ' + this._uilocks[region] + ', you can NOT unlock it with ' + caller);
 			};
 
 			this.isUILocked = function(region){
@@ -161,7 +161,7 @@
 					region = '_all';
 				else
 					if(!this.regions || !this.regions[region])
-						throw new Error('DEV::View UI Locks::This region does NOT exist - ' + region);
+						throw new Error('DEV::View::UI Locks::This region does NOT exist - ' + region);
 				return region;
 			};
 			//=====Internal Workers=====		
