@@ -59,7 +59,9 @@
                         actions: {
                             goto: function($btn, e){
                                 e.preventDefault();
-                                console.log($btn.data('id'));
+                                var $section = that.doc.$el.find('#' + $btn.data('id'));
+                                $window.scrollTop($section.offset().top);
+                                //Todo: highlight section
                             }
                         }
                     }));

@@ -65,7 +65,7 @@
 			var $this = $(this);
 			var tag = $this.context.localName; //or tagName which will be uppercased
 			var title = $this.html();
-			var $node = $('<li><a href="#" data-id="' + _.string.slugify(title) + '" action="goto">' + title + '</a><ul></ul></li>'); //like <li> <a>me</a> <ul>children[]</ul> </li>
+			var $node = $('<li><a href="#" data-id="' + $this.attr('id') + '" action="goto">' + title + '</a><ul></ul></li>'); //like <li> <a>me</a> <ul>children[]</ul> </li>
 			$node.$children = $node.find('> ul');
 
 			var gap = order[tag] - level;

@@ -68,7 +68,15 @@
  * Lib enhancements to aid you:
  * 10. see lib+-/...
  *   		
- *   	
+ * 
+ * Global vars
+ * ------------
+ * $window
+ * $document
+ * Application
+ * + libs
+ * 
+ * 
  * Optional
  * --------
  * You can also config NProgress through NProgress.configure({
@@ -92,7 +100,7 @@ _.each(['document', 'window'], function(coreDomObj){
 	window['$' + coreDomObj] = $(window[coreDomObj]);
 });
 
-Modernizr.Detectizr.detect();
+Modernizr.Detectizr.detect();//parse navigator.userAgent
 Swag.registerHelpers();
 NProgress.configure({
   showSpinner: false
