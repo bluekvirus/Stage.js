@@ -23,20 +23,18 @@ module.exports = {
 		index: 'index.html', //path relative to root
 	},
 	structure : { //path are relative to the distFolder and src.root above
-		client: {
+		design: {
+			assets: {},
+			docs: {}
+		},
+		implementation: {
 			js: {
 				'bower.json': 'js/libs/tracked/bower.json',
 				'all.min.js': true, //'all' is a hard coded name - see loadIndexHTML() in build.js
 				'all.js': false,
 			},
 			themes: {
-				'default': {
-					css: {
-						src: 'themes/_dev/css/include',
-						'main.css':'themes/_dev/css/main.css'
-					},
-					fonts: 'themes/_dev/fonts'
-				}
+				'default': 'themes/_dev'
 			},
 			'web+': 'static/web+',
 			'index.html': false,

@@ -47,8 +47,7 @@
                     $el.css({
                         borderLeft: '1px solid #CCC'
                     }).toc({
-                        ignoreRoot: true,
-                        className: 'md-toc list-unstyled'
+                        ignoreRoot: true
                     });
                     that.toc.show(Application.create('Regional', {
                         //no name means to use it anonymously, which in turn creates it right away. 

@@ -1,8 +1,22 @@
 /**
- * Theme Base. Bootstrap 3.1.+
+ * Theme Base. Bootstrap 3.1.+ using Bootswatch Cosmo
+ *
+ * Tim.Liu
+ * 2014.03.09
  */
+
+
+//Required
+//========
 @import (inline) "../css/include/nprogress.css";
 @import (inline) "../css/include/jquery-ui-custom.css";
-@import (inline) "../css/include/bootstrap-cosmo.css";
 @import (inline) "../css/include/font-awesome.css";
-@import (inline) "../css/include/md.css";
+
+@import "../../../js/libs/tracked/bower_components/bootstrap/less/bootstrap.less";
+@import "include/font.less"; // <- add new font css into this one
+
+//Remove/Change
+//=============
+//- swap these two or values in them if starting a new theme
+@import "include/cosmo/variables.less";
+@import "include/cosmo/bootswatch-cosmo.less";

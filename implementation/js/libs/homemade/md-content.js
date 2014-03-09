@@ -24,9 +24,15 @@
  * Use $.load() if you just want to load html content instead of md coded content into $(tag)
  *
  * Dependency
- * ==========
+ * ----------
  * jQuery, Underscore, Underscore.String
- * 
+ *
+ * Document format
+ * ---------------
+ * h1 -- book title
+ * h2 -- chapters
+ * h3 -- sections
+ * ...
  *
  * @author Tim.Liu
  * @created 2013.11.05
@@ -51,13 +57,13 @@
 		options = _.extend({
 
 			ignoreRoot: false,
-			className: 'doc-toc',
+			className: '',
 			headerHTML: '<h3>Table of Content</h3>'
 
 		}, options);
 
 		var $root = $('<div></div>').append(options.headerHTML).append('<ul></ul>');
-		$root.$children = $root.find('> ul').addClass(options.className);
+		$root.$children = $root.find('> ul').addClass('md-toc').addClass(options.className);
 		var $index = $root;
 		var level = options.ignoreRoot ? 1 : 0;
 		$el.find((options.ignoreRoot?'':'h1,') + 'h2,h3,h4,h5,h6').each(function(){
@@ -66,6 +72,16 @@
 			var tag = $this.context.localName; //or tagName which will be uppercased
 			var title = $this.html();
 			var $node = $('<li><a href="#" data-id="' + $this.attr('id') + '" action="goto">' + title + '</a><ul></ul></li>'); //like <li> <a>me</a> <ul>children[]</ul> </li>
+			switch(tag){
+				case 'h2': case 'H2':
+				$node.addClass('chapter');
+				break;
+				case 'h3': case 'H3':
+				$node.addClass('section');
+				break;
+				default:
+				break;
+			}
 			$node.$children = $node.find('> ul');
 
 			var gap = order[tag] - level;

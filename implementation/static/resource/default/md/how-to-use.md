@@ -14,7 +14,10 @@ Quick Start
 
 ####Project structure
 ```
-/client -- your web root
+/design
+	/assets
+	/docs
+/implementation -- your web root
 	/js
 	/themes
 	index.html
