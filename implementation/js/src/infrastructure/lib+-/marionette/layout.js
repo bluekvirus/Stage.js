@@ -10,7 +10,7 @@
  * -----
  * auto region detect and register by region="" in template
  * auto regional view display by attribute view="" in template
- * change a region's view by trigger 'region:load:view' on that region, then give it a view name. (registered through B.M.Layout.regional() or say app.create('Regional', ...))
+ * change a region's view by trigger 'region:load-view' on that region, then give it a view name. (registered through B.M.Layout.regional() or say app.create('Regional', ...))
  * 
  * 
  * Experimental
@@ -112,7 +112,7 @@
 					this.listenTo(this, 'show', function(){
 						_.each(this.regions, function(selector, r){
 							this[r].$el.html('<p class="alert">Region <strong>' + r + '</strong></p>'); //give it a fake one.
-							this[r].listenTo(this[r], 'region:load:view', function(name){
+							this[r].listenTo(this[r], 'region:load-view', function(name){
 								if(!name) return;
 								var View = Backbone.Marionette.Layout.Views[name];
 								if(View)
@@ -120,7 +120,7 @@
 								else
 									throw new Error('DEV::Layout::View required ' + name + ' can NOT be found...use app.create(\'Regional\', {name: ..., ...}).');
 							});
-							this[r].trigger('region:load:view', this[r].$el.attr('view')); //found corresponding View def.
+							this[r].trigger('region:load-view', this[r].$el.attr('view')); //found corresponding View def.
 
 						},this);
 					});								

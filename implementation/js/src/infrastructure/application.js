@@ -42,7 +42,9 @@
  *
  * Pre-defined events are:
  * app:navigate (contextName, moduleName) - app.onNavigate [pre-defined]
- * app:context-switched (contextName) [with context:navigate-to (moduleName) on context] - app.onContextSwitched [not-defined]
+ * app:context-switched (contextName) 
+ * 		[with context:navigate-to (moduleName) on context] - app.onContextSwitched [not-defined]
+ * region:load-view (view name registered in Layout.Views through app.create('Regional', ...))
  * 
  * Suggested events are: [not included, but you define, you fire to use]
  * app:prompt (options) - app.onPrompt [not-defined]
