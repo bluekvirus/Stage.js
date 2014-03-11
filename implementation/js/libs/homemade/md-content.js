@@ -12,7 +12,6 @@
  *
  * $.toc({
  * 	ignoreRoot: false | true - whether to ignore h1
- *  className: 'doc-toc' - class name of produced ul
  *  headerHTML: html before ul (sibling) - experimental
  * })
  * ```
@@ -57,13 +56,12 @@
 		options = _.extend({
 
 			ignoreRoot: false,
-			className: '',
-			headerHTML: '<h3>Table of Content</h3>'
+			headerHTML: '<h3><i class="fa fa-book"></i> Table of Content</h3>'
 
 		}, options);
 
 		var $root = $('<div></div>').append(options.headerHTML).append('<ul></ul>');
-		$root.$children = $root.find('> ul').addClass('md-toc').addClass(options.className);
+		$root.$children = $root.find('> ul');
 		var $index = $root;
 		var level = options.ignoreRoot ? 1 : 0;
 		$el.find((options.ignoreRoot?'':'h1,') + 'h2,h3,h4,h5,h6').each(function(){
@@ -109,7 +107,7 @@
 
 
 		});
-		$el.data('toc', $root.html());
+		$el.data('toc', '<div class="md-toc">' + $root.html() + '</div>');
 	}
 
 	/*===============the plugin================*/

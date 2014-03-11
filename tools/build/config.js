@@ -29,7 +29,11 @@ module.exports = {
 		},
 		implementation: {
 			js: {
-				'bower.json': 'js/libs/tracked/bower.json',
+				libs: {
+					tracked: {
+						'bower.json': 'js/libs/tracked/bower.json',
+					}
+				},				
 				'all.min.js': true, //'all' is a hard coded name - see loadIndexHTML() in build.js
 				'all.js': false,
 			},

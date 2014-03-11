@@ -27,7 +27,7 @@ Quick Start
 
 ####Let's start
 You start developing using *Pro.js* by creating a `main.js` (you are free to choose whatever the name you like) 
-and include it in `/client/index.html` below the `<!--Main.js-->` comment line.
+and include it in `/implementation/index.html` below the `<!--Main.js-->` comment line.
 
 ```
 <script src="js/all.min.js"></script>
@@ -36,7 +36,16 @@ and include it in `/client/index.html` below the `<!--Main.js-->` comment line.
 <script type="text/javascript" src="js/main.js"></script>
 ...
 ```
-**Note:** You can swap `js/all.min.js` with `js/all.js` to have better debug information during development.
+**Note:** You can swap `js/all.min.js` with `js/all.js` in `/implementation/index.html` to have better debug information during development.
+
+Minimun `main.js` script looks like this
+```
+;(function(app){
+	
+	app.setup().run();
+
+})(Application);
+```
 
 ###Mental preparation
 
@@ -50,10 +59,10 @@ and include it in `/client/index.html` below the `<!--Main.js-->` comment line.
 
 Include other js libs
 ---------------------
-The default all.js contains selected libs for the project, if you would like to introduce more use `bower` and the `bower.json` file included.
-Go into `/client/js` and run `bower install` to grab all the monitored 3rd-party libraries.
+The default `all.js` contains minimum selected libs for your project [read the list], if you would like to introduce more, use `bower` and the `bower.json` file included.
+Go into `/implementation/js/libs/tracked` and run `bower install` to grab all the monitored 3rd-party libraries.
 
-Append/Include your libs after all.js.
+Include your libs after `all.js` (or `all.min.js`) in `/implementation/index.html`.
 
 
 What's in `/web+`?
