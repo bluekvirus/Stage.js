@@ -44,7 +44,7 @@
  * app:navigate (contextName, moduleName) - app.onNavigate [pre-defined]
  * app:context-switched (contextName) 
  * 		[with context:navigate-to (moduleName) on context] - app.onContextSwitched [not-defined]
- * region:load-view (view name registered in Layout.Views through app.create('Regional', ...))
+ * region:load-view (view/widget name registered in app, [widget init options])
  * 
  * Suggested events are: [not included, but you define, you fire to use]
  * app:prompt (options) - app.onPrompt [not-defined]
@@ -422,7 +422,7 @@ _.each(['Core', 'Util'], function(coreModule){
 			//2. Show Regional Views defined by region.$el.attr('view');
 			_.each(regions, function(selector, r){
 				Application[r].ensureEl();
-				var RegionalView = Backbone.Marionette.Layout.Views[Application[r].$el.addClass('app-region region region-' + _.string.slugify(r)).attr('view')];
+				var RegionalView = Application.Core.Regional.get(Application[r].$el.addClass('app-region region region-' + _.string.slugify(r)).attr('view'));
 				if(RegionalView) Application[r].show(new RegionalView());
 			});		
 
@@ -440,6 +440,13 @@ _.each(['Core', 'Util'], function(coreModule){
 	 * ----------------------------------------------------
 	 */
 	Application.create = function(type, config){
+
+		//if omitting type, app.create will be a (fallback) short-cut for Backbone.Marionette.[ItemView/Layout/CollectionView/CompositeView...] definition creation
+		if(!_.isString(type)) {
+			config = type;
+			return Backbone.Marionette[config.type].extend(config);
+		}
+			
 		switch(type){
 
 			//data			
@@ -449,11 +456,8 @@ _.each(['Core', 'Util'], function(coreModule){
 			break;
 
 			//basic component
-			case 'Context':
-				return Application.Core[type].create(config);
-			break;
-			case 'Regional': //ignore config.name will return a instance of defined View. Since no name means to use it anonymously, which in turn creates it right away.
-				return Backbone.Marionette.Layout.regional(config);
+			case 'Context': case 'Regional':
+				return Application.Core[type].create(config); 
 			break;
 			case 'Validator':
 				return Application.Core.Editor.addRule(config.name, config.fn, config.error);

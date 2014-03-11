@@ -36,7 +36,7 @@ and include it in `/implementation/index.html` below the `<!--Main.js-->` commen
 <script type="text/javascript" src="js/main.js"></script>
 ...
 ```
-**Note:** You can swap `js/all.min.js` with `js/all.js` in `/implementation/index.html` to have better debug information during development.
+**Note:** You can swap `all.min.js` with `all.js` in `/implementation/index.html` to have better debug information during development.
 
 Minimun `main.js` script looks like this
 ```

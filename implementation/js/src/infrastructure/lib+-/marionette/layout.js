@@ -17,7 +17,6 @@
  * ------------
  * default getValues/setValues and validate() method supporting editors value collection and verification
  *
- * Note that: Layout class now has a static regional method to register sub regional View definitions into a static list.
  *
  * @author Tim.Liu
  * @create 2014.02.25
@@ -108,13 +107,18 @@
 							this[region].$el.addClass('region region-' + _.string.slugify(region));
 						},this);
 					});
-					//automatically show a View from this.Views in marked region.
+					//automatically show a registered View from a 'view=' marked region.
+					//automatically show a registered View/Widget through event 'region:load-view' (name [,options])
 					this.listenTo(this, 'show', function(){
 						_.each(this.regions, function(selector, r){
 							this[r].$el.html('<p class="alert">Region <strong>' + r + '</strong></p>'); //give it a fake one.
-							this[r].listenTo(this[r], 'region:load-view', function(name){
+							this[r].listenTo(this[r], 'region:load-view', function(name, options){ //can load both view and widget.
 								if(!name) return;
-								var View = Backbone.Marionette.Layout.Views[name];
+								if(options) {
+									this.show(app.Core.Widget.create(name, options));
+									return;
+								}
+								var View = app.Core.Regional.get(name);
 								if(View)
 									this.show(new View());
 								else
@@ -128,18 +132,6 @@
 
 			return old.prototype.constructor.call(this, options);
 		},	
-	}, {
-		//static.
-		Views: {},
- 		regional: function(options){ //provide a way of registering sub regional views [both by this Layout Class (through prototype.regional) and its instances]
-			if(this.Views[options.name]) console.warn('DEV::Lib+-.Marionette.Layout::Conflicting regional view definition --' + options.name + '--');
-			var View = Marionette[options.type || 'Layout'].extend(options);
-			if(options.name)
-				this.Views[options.name] = View;
-			//no name means to use it anonymously, which in turn creates it right away.
-			else return new View();
-			return View;
-		}		
 	});	
 
 })(Application);

@@ -58,9 +58,9 @@
 				_config: config,
 				name: config.name,
 				//big layout
-				Layout: Backbone.Marionette.Layout.extend(_.extend({
+				Layout: config.template ? Backbone.Marionette.Layout.extend(_.extend({
 					className: 'context context-' + _.string.slugify(config.name)
-				}, config)),
+				}, config)) : undefined,
 				display: function(){
 					this.layout = new this.Layout();
 					return this.layout;
