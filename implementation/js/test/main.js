@@ -72,16 +72,16 @@
     Application.create('Context', {
         name: 'Demo',
         template: [
-            '<div region="center" view="FormTest"></div>',
+            '<div region="center"></div>',
         ],
         onNavigateTo: function(subPath){
-            //console.log(subPath);
+            this.layout.center.trigger('region:load-view', subPath);
         }
 
     });
 
     Application.create('Regional', {
-        name: 'FormTest',
+        name: 'Editors',
         className: 'well',
         template: [
             '<div editors="*" class="row"></div>',
@@ -267,6 +267,10 @@
                 // else
                     target += '.tar.gz';
                 Application.Util.download(target);  
+            },
+            themePreview: function($btn, e){
+                e.preventDefault();
+                location.href = '/themes/' + Application.currentTheme;
             }
         },
         template: [
@@ -289,13 +293,16 @@
                     '<li context="Demo" class="dropdown">',
                       '<a data-toggle="dropdown" class="dropdown-toggle" href="#"><i class="fa fa-dashboard"></i> Demo <b class="caret"></b></a>',
                       '<ul class="dropdown-menu">',
-                        '<li><a href="#navigate/Demo/Form">Form</a></li>',
-                        '<li><a href="#">Another action</a></li>',
-                        '<li><a href="#">Something else here</a></li>',
+                        '<li><a href="#" action="themePreview">Theme Preview</a></li>',
                         '<li class="divider"></li>',
-                        '<li class="dropdown-header">Dropdown header</li>',
-                        '<li><a href="#">Separated link</a></li>',
-                        '<li><a href="#">One more separated link</a></li>',
+                        '<li class="dropdown-header">Basics</li>',
+                        '<li><a href="#navigate/Demo/Editors">Editors</a></li>',
+                        '<li><a href="#">Data Table</a></li>',
+                        '<li><a href="#">Tree</a></li>',
+                        '<li class="divider"></li>',
+                        '<li class="dropdown-header">Accessories</li>',
+                        '<li><a href="#">Notifications</a></li>',
+                        '<li><a href="#">Terminal</a></li>',
                       '</ul>',
                     '</li>',
                   '</ul>',

@@ -9,14 +9,14 @@
  * A context is an Application sub-module that has a name and a layout template defined.
  * Since it is a module itself it also serves as a registry for the sub-modules of that context of the Application.
  * Context switch can be triggered by 
- * 	a. use app:navigate (contextName, moduleName) event;
- *  b. click <a href="#/navigate/[contextName][/moduleName]"/> tag;
+ * 	a. use app:navigate (contextName, subPath) event;
+ *  b. click <a href="#/navigate/[contextName][/subPath]"/> tag;
  *
  * 
  * Usage
  * -----
  * ###How to define one? 
- * app.Context.create({
+ * app.Core.Context.create({
  * 		name: 'name of the context',
  * 		template: 'html template of the view as in Marionette.Layout',
  * 							- region=[] attribute --- mark a tag to be a region container
@@ -26,14 +26,18 @@
  * 	    ...: other Marionette Layout options.
  * });
  *
- * ###How to populate the context with regional views?
- * context.create({
- * 		name: ,
- * 		template: '',
- * 		[type]: Marionette View type [ItemView(default), Layout, CollectionView, CompositeView]
- * 		...: other Marionette View type .extend options.
- * }) - create a context's regional sub-module.
+ * or use the unified API entry point:
+ * app.create('Context', {...});
  *
+ * ###How to populate the context with regional views?
+ * app.create('Regional', {...});
+ *
+ * ###How to swap regional view on a region?
+ * use this.layout.[region name].show()
+ * or
+ * use this.layout.[region name].trigger('region:load-view', [view name])
+ *
+ * **Note** that this refers to the context module not the layout view instance.
  * 
  * @author Tim.Liu
  * @created 2013.09.21
@@ -56,7 +60,11 @@
 				//big layout
 				Layout: Backbone.Marionette.Layout.extend(_.extend({
 					className: 'context context-' + _.string.slugify(config.name)
-				}, config))
+				}, config)),
+				display: function(){
+					this.layout = new this.Layout();
+					return this.layout;
+				}
 			});
 
 			if(config.onNavigateTo)
