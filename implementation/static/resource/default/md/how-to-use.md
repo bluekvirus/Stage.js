@@ -10,6 +10,21 @@ Current Version
 
 Quick Start
 -----------
+You are assumed to have programed with:
+
+* Marionette.js
+* Handlebars.js
+
+and this indicates:
+
+* jQuery or Zepto
+* Underscore.js or Lo-Dash
+* Backbone.js
+
+If you don't know what they are, go for a quick look at their websites.
+
+###Mental preparation
+
 ###What's in the package
 
 ####Project structure
@@ -26,7 +41,7 @@ Quick Start
 
 ####Let's start
 You start developing using *Pro.js* by creating a `main.js` (you are free to choose whatever the name you like) 
-and include it in `/implementation/index.html` below the `<!--Main.js-->` comment line.
+and include it in `/implementation/index.html` below the `<!--Main.js-->` comment line:
 
 ```
 <script src="js/all.min.js"></script>
@@ -37,14 +52,24 @@ and include it in `/implementation/index.html` below the `<!--Main.js-->` commen
 ```
 **Note:** You can swap `all.min.js` with `all.js` in `/implementation/index.html` to have better debug information during development.
 
-Minimun `main.js` script looks like this
+Minimum `main.js` script looks like this:
 ```
 //main.js
 Application.setup().run();
-
 ```
-
-###Mental preparation
+You should now see a *blank* page without javascript error.
+If you are really in a hurry to see some stuff on the page, setup your application in `main.js` like this:
+```
+//main.js
+Application.setup({
+	template: [
+		'<div>',
+			'<h1>Hello World</h1>',
+			//put some html here as strings
+		'</div>'
+	]
+}).run();
+```
 
 ###Development steps
 

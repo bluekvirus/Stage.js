@@ -111,20 +111,24 @@ buildify.task({
 var libMap = {};
 function combine(list, name){
 	var target = buildify().load('EMPTY.js');
-	var versions = {};
+	var versions = {
+		created: new Date(),
+		list: []
+	};
 	_.each(list, function(lib){
 		if(libMap[lib]) {
-			
+			var version = 'unknown';
 			try {
-				versions[lib] = require('./bower_components/' + lib + '/bower.json').version;
+				version = require('./bower_components/' + lib + '/bower.json').version;
 			}catch (e){
 				try {
-					versions[lib] = require('./bower_components/' + lib + '/.bower.json').version;
+					version = require('./bower_components/' + lib + '/.bower.json').version;
 				}catch(e) {
-					versions[lib] = 'unknown';
+
 				}
 			}
-			console.log(lib.yellow, versions[lib].green, '[', libMap[lib].grey, ']');
+			versions.list.push({name: lib, version: version});
+			console.log(lib.yellow, version.green, '[', libMap[lib].grey, ']');
 			
 		}
 		else {
