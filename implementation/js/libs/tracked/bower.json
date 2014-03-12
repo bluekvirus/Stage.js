@@ -23,13 +23,13 @@
     "jqtree": "*",
     "jquery-file-upload": "*",
     "jquery-sieve": "*",
-    "jquery-ui": "~1.10.3",
+    "jquery-ui": "~1.x.x",
     "jquery.cookie": "*",
     "jquery.transit": "*",
     "marked": "*",
-    "modernizr": "*",
+    "modernizr": "~2.x.x",
     "detectizr": "*",
-    "raphael": "*",
+    "raphael": "~2.x.x",
     "d3": "*",
     "spin.js": "*",
     "store.js": "*",
@@ -40,14 +40,18 @@
     "socket.io-client": "*",
     "jquery-serializeForm": "*",
     "swag": "*",
-    "marionette": "*",
+    "marionette": "~1.x.x",
     "momentjs": "*",
-    "handlebars": "*",
+    "handlebars": "~1.x.x",
     "nprogress": "*",
     "highcharts.com": "*",
-    "jquery": "~2.1.0",
-    "underscore": "*",
-    "bootstrap": "~3.1.1",
-    "backbone": "~1.1.1"
+    "jquery": "~2.x.x",
+    "underscore": "~1.x.x",
+    "bootstrap": "~3.x.x",
+    "backbone": "~1.x.x"
+  },
+  "resolutions": {
+    "jquery": "~2.x.x",
+    "modernizr": "~2.x.x"
   }
 }

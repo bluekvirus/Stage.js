@@ -12,7 +12,8 @@ path = require('path'),
 fs = require('fs'),
 ncp = require('ncp').ncp,
 colors = require('colors'),
-_ = require('underscore');
+_ = require('underscore'),
+json = require('json3');
 
 ncp.limit = 16;
 
@@ -110,9 +111,18 @@ buildify.task({
 var libMap = {};
 function combine(list, name){
 	var target = buildify().load('EMPTY.js');
+	var versions = {};
 	_.each(list, function(lib){
-		if(libMap[lib])
+		if(libMap[lib]) {
 			console.log(lib.yellow, '[', libMap[lib].grey, ']');
+			//+ version dump to selected.json
+			try {
+				versions[lib] = require('./bower_components/' + lib + '/bower.json').version;
+			}catch (e){
+				versions[lib] = require('./bower_components/' + lib + '/.bower.json').version;
+			}
+			
+		}
 		else {
 			console.log(lib, ('not found! ' + libMap[lib]).red);
 			return;
@@ -120,6 +130,7 @@ function combine(list, name){
 		target.concat(libMap[lib]);
 	});
 	console.log('tracked libs (selected/available):', (_.size(list) + '/' + String(_.size(libMap))).green, '[', ((_.size(list)/_.size(libMap)*100).toFixed(2) + '%').yellow, ']');
+	buildify().setContent(json.stringify(versions)).setDir('dist').save('selected.json');
 	target.setDir('dist').save(name + '.js').uglify().save(name + '.min.js');
 	
 };
@@ -192,7 +203,8 @@ buildify.task({
 			'store.js', 
 			'uri.js',
 			'momentjs',
-			'marked',			
+			'marked',
+			'highlight.js',			
 			'colorbox',
 			'spin.js', //or nprogress
 			'nprogress',
