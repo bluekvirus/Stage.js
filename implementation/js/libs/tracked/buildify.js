@@ -19,7 +19,7 @@ ncp.limit = 16;
 
 buildify.task({
 	name: 'fix-libs',
-	depends: ['uri-js', /*'noty', */'spin-js', 'jquery-file-upload', 'min'],
+	depends: ['uri-js', /*'noty', */'spin-js', 'jquery-file-upload', 'jquery-ui', 'min'],
 	task: function(){}
 });
 
@@ -35,9 +35,9 @@ buildify.task({
 		buildify()
 			.setDir('bower_components/uri.js/src')
 			.concat(['URI.js', 'IPv6.js', 'SecondLevelDomains.js', 'punycode.js', 'URITemplate.js', 'jquery.URI.js', 'URI.fragmentURI.js'])
-			.save('../dist/uri.js')
-			.uglify()
-			.save('../dist/uri.min.js');
+			.save('../dist/uri.js');
+			// .uglify()
+			// .save('../dist/uri.min.js');
 	}
 });
 
@@ -52,9 +52,9 @@ buildify.task({
 			.setDir(notyBase + 'js/noty/layouts')
 			.concat(list)
 			.setDir(notyBase)
-			.save('dist/jquery.noty-with-layouts.js')
-			.uglify()
-			.save('dist/jquery.noty-with-layouts.min.js');
+			.save('dist/jquery.noty-with-layouts.js');
+			// .uglify()
+			// .save('dist/jquery.noty-with-layouts.min.js');
 
 		ncp(notyBase + 'js/noty/themes', notyBase + 'dist/themes', function(err){
 			if(err) console.log(err);
@@ -68,9 +68,9 @@ buildify.task({
 		buildify()
 			.setDir('bower_components/spin.js')
 			.concat(['spin.js', 'jquery.spin.js'])
-			.save('dist/spin-with-jqplugin.js')
-			.uglify()
-			.save('dist/spin-with-jqplugin.min.js');
+			.save('dist/spin-with-jqplugin.js');
+			// .uglify()
+			// .save('dist/spin-with-jqplugin.min.js');
 	}
 });
 
@@ -80,12 +80,26 @@ buildify.task({
 		buildify()
 			.setDir('bower_components/jquery-file-upload/js')
 			.concat(['jquery.iframe-transport.js', 'jquery.fileupload.js'])
-			.save('../dist/jquery-file-upload-with-iframe.js')
-			.uglify()
-			.save('../dist/jquery-file-upload-with-iframe.min.js');
+			.save('../dist/jquery-file-upload-with-iframe.js');
+			// .uglify()
+			// .save('../dist/jquery-file-upload-with-iframe.min.js');
 	}
 });
 
+buildify.task({
+	name: 'jquery-ui',
+	task: function(){
+		buildify()
+			.setDir('bower_components/jquery-ui/ui')
+			.concat(['jquery.ui.core.js', 'jquery.ui.widget.js', 'jquery.ui.mouse.js', 'jquery.ui.position.js', 'jquery.ui.draggable.js', 'jquery.ui.droppable.js', 'jquery.ui.resizable.js', 'jquery.ui.selectable.js', 'jquery.ui.sortable.js', 'jquery.ui.effect.js', 'jquery.ui.effect-blind.js', 'jquery.ui.effect-bounce.js', 'jquery.ui.effect-clip.js', 'jquery.ui.effect-drop.js', 'jquery.ui.effect-explode.js', 'jquery.ui.effect-fade.js', 'jquery.ui.effect-fold.js', 'jquery.ui.effect-highlight.js', 'jquery.ui.effect-pulsate.js', 'jquery.ui.effect-scale.js', 'jquery.ui.effect-shake.js', 'jquery.ui.effect-slide.js', 'jquery.ui.effect-transfer.js'])
+			.save('../dist/jquery-no-widget-ui.js')
+			.setDir('bower_components/jquery-ui/themes/base')
+			.setContent('')
+			.concat(['jquery.ui.core.css', 'jquery.ui.resizable.css', 'jquery.ui.selectable.css'])
+			.save('../../dist/jquery-no-widget-ui.css');
+	}
+
+});
 
 buildify.task({
 	name: 'min',
@@ -140,7 +154,7 @@ function combine(list, name){
 	console.log('tracked libs (selected/available):', (_.size(list) + '/' + String(_.size(libMap))).green, '[', ((_.size(list)/_.size(libMap)*100).toFixed(2) + '%').yellow, ']');
 	//+ version dump to selected.json
 	buildify().setContent(json.stringify(versions)).setDir('dist').save('selected.json');
-	target.setDir('dist').save(name + '.js').uglify().save(name + '.min.js');
+	target.setDir('dist').save(name + '.js')/*.uglify().save(name + '.min.js')*/;
 	
 };
 //-------------------------------------------
@@ -219,9 +233,7 @@ buildify.task({
 			'momentjs',
 			'marked',
 			'highlight.js',			
-			'colorbox',
-			'spin.js', //or nprogress
-			'nprogress',
+			'nprogress', //or spin.js
 			'raphael'
 		];
 		combine(list, 'libs');
