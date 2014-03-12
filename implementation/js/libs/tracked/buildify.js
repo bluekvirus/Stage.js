@@ -114,13 +114,17 @@ function combine(list, name){
 	var versions = {};
 	_.each(list, function(lib){
 		if(libMap[lib]) {
-			console.log(lib.yellow, '[', libMap[lib].grey, ']');
-			//+ version dump to selected.json
+			
 			try {
 				versions[lib] = require('./bower_components/' + lib + '/bower.json').version;
 			}catch (e){
-				versions[lib] = require('./bower_components/' + lib + '/.bower.json').version;
+				try {
+					versions[lib] = require('./bower_components/' + lib + '/.bower.json').version;
+				}catch(e) {
+					versions[lib] = 'unknown';
+				}
 			}
+			console.log(lib.yellow, versions[lib].green, '[', libMap[lib].grey, ']');
 			
 		}
 		else {
@@ -130,6 +134,7 @@ function combine(list, name){
 		target.concat(libMap[lib]);
 	});
 	console.log('tracked libs (selected/available):', (_.size(list) + '/' + String(_.size(libMap))).green, '[', ((_.size(list)/_.size(libMap)*100).toFixed(2) + '%').yellow, ']');
+	//+ version dump to selected.json
 	buildify().setContent(json.stringify(versions)).setDir('dist').save('selected.json');
 	target.setDir('dist').save(name + '.js').uglify().save(name + '.min.js');
 	
@@ -173,6 +178,11 @@ buildify.task({
 			if(!check(libMap[lib])) libMap[lib] += '/' + lib;
 			if(!check(libMap[lib])) libMap[lib] += '.js';
 
+		});
+
+		//additional non-tracked libs
+		_.each(_.keys(fix), function(flib){
+			if(!libMap[flib]) libMap[flib] = fix[flib];
 		});
 
 		//console.log('Total Libs Available:', String(_.size(libMap)).green);

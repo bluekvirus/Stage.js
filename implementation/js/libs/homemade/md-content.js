@@ -24,7 +24,7 @@
  *
  * Dependency
  * ----------
- * jQuery, Underscore, Underscore.String
+ * jQuery, Underscore, Underscore.String [, Highlight.js]
  *
  * Document format
  * ---------------
@@ -41,11 +41,16 @@
 (function($){
 
 	/*===============the util functions================*/
-	//support bootstrap theme.
+
+	//support bootstrap theme + hilight.js theme.
 	function theme($el){
 		$el.find('h3').addClass('text-primary');
 		$el.find('h1 + p').addClass('text-info');
+		$el.find('pre code').each(function(){
+			if(hljs) hljs.highlightBlock(this);
+		});
 	}
+
 	//build ul/li table-of-content listing
 	var order = {};
 	for (var i = 1; i <= 6; i++) {

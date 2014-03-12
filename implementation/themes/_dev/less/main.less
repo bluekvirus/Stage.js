@@ -1,13 +1,14 @@
 /**
  * Theme Base. Bootstrap 3.1.+ using Bootswatch Cosmo
  *
- * Tim.Liu
- * 2014.03.09
+ * @author Tim.Liu
+ * @2014.03.09
  */
 
 
 //Required
 //========
+@import (inline) "../css/include/highlight/monokai_sublime.css";
 @import (inline) "../css/include/nprogress.css";
 @import (inline) "../css/include/jquery-ui-custom.css";
 @import (inline) "../css/include/font-awesome.css";
@@ -19,4 +20,10 @@
 //=============
 //- swap these two or values in them if starting a new theme
 @import "include/cosmo/variables.less";
-@import "include/cosmo/bootswatch-cosmo.less";
+//optionally you can include a custom made mixins.less
+@import "include/cosmo/bootswatch-cosmo-modified.less"; // <- this is your theme.less which should be named with your theme name
+
+
+//==================================================================================================
+//DO NOT add anything below this line, always modify your theme.less, variables.less and mixins.less
+//==================================================================================================

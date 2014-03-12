@@ -13,17 +13,16 @@ Quick Start
 ###What's in the package
 
 ####Project structure
-```
-/design
-	/assets
-	/docs
-/implementation -- your web root
-	/js
-	/themes
-	index.html
-/tools
-	/build -- minify and concatenate your js files by scanning index.html
-```
+> * /design
+>	* /assets
+>	* /docs
+> * /implementation -- your web root
+>	* /js
+>	* /themes
+>	* index.html
+> * /tools
+>	* /build -- minify and concatenate your js files by scanning index.html
+
 
 ####Let's start
 You start developing using *Pro.js* by creating a `main.js` (you are free to choose whatever the name you like) 
@@ -40,11 +39,9 @@ and include it in `/implementation/index.html` below the `<!--Main.js-->` commen
 
 Minimun `main.js` script looks like this
 ```
-;(function(app){
-	
-	app.setup().run();
+//main.js
+Application.setup().run();
 
-})(Application);
 ```
 
 ###Mental preparation
