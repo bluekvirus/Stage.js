@@ -37,7 +37,7 @@
         template: [
             '<div class="row">',
                 '<div region="toc" class="col-sm-3"></div>',
-                '<div region="doc" class="col-sm-9" md="static/resource/default/md/how-to-use.md"></div>',
+                '<div region="doc" class="col-sm-9" md="HOWTO.md"></div>',
             '</div>',
         ],
         onShow: function(){

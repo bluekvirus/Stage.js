@@ -43,13 +43,14 @@ module.exports = {
 			},
 			'web+': 'static/web+',
 			'index.html': false,
-			'README.md': 'static/resource/default/md/how-to-use.md'
+			'README.md': 'HOWTO.md'
 		},
 		tools: {
 			build: {
 				'build.js': '../tools/build/build.js',
 				'config.js': '../tools/build/config.sample.js'
 			},
+			iconprep: '../tools/iconprep',
 			shared: '../tools/shared',
 			'package.json': '../tools/package.json'
 		}
