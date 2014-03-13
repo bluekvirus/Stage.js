@@ -100,8 +100,8 @@ Use `/tools/build` you need to change the config file if you want to include mor
 
 Upgrade/Update
 --------------
-Download and replace `js/all.js` to update the infrastructure;
-Use `bower update` to update other monitored libs you need;
+Download and replace `/implementation/js/all.js` to update the infrastructure;
+Use `bower update` to update other monitored libs you need under `/implementation/js/libs/tracked/`;
 
 
 Appendix

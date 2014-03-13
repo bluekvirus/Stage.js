@@ -16,8 +16,6 @@
  */
 
 module.exports = {
-	distFolder: 'dist', //path relative to this config.js
-	pack: '', //[both .zip & .tar.gz will be produced] path relative to this config.js (false to ignore packing)
 	src: {
 		root: '../../implementation', //path relative to this config.js
 		index: 'index.html', //path relative to root

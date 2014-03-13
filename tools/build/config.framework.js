@@ -16,11 +16,9 @@
  */
 
 module.exports = {
-	distFolder: 'dist', //path relative to this config.js
-	pack: '../../implementation/static/resource/default/data/framework', //[both .zip & .tar.gz will be produced] path relative to this config.js (false to ignore packing)
 	src: {
 		root: '../../implementation', //path relative to this config.js
-		index: 'index.html', //path relative to root
+		index: 'index.html' //path relative to root
 	},
 	structure : { //path are relative to the distFolder and src.root above
 		design: {
@@ -48,7 +46,7 @@ module.exports = {
 		tools: {
 			build: {
 				'build.js': '../tools/build/build.js',
-				'config.js': '../tools/build/config.sample.js'
+				'config.dist.js': '../tools/build/config.dist.js'
 			},
 			iconprep: '../tools/iconprep',
 			shared: '../tools/shared',

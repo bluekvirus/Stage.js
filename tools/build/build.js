@@ -9,99 +9,64 @@
  * @created 2013.09.26
  */
 
-var buildify = require('buildify'),
+var program = require('commander'), 
 _ = require('underscore'),
-cheerio = require('cheerio'), //as server side jquery
 path = require('path'),
 mkdirp = require('mkdirp'),
 colors = require('colors'),
 moment = require('moment'),
 hammer = require('../shared/hammer'),
-request = require('request'),
-url = require('url'),
-json = require('json3'),
+processor = require('../shared/process-html'),
 rimraf = require('rimraf'),
 AdmZip = require('adm-zip'),
 targz = new (require('tar.gz'))(9, 9);
 
-var config = require('./config.js');
+program.version('1.0.0')
+		.usage('[options] <output folder>')
+		.option('-C --config [dist]', 'config name used for the build, \'abc\' means to use \'config.abc.js\'')
+		.option('-G --targz <path>', 'put the output path into a compressed .tar.gz file')
+		.option('-Z --zip <path>', 'put the output path into a compressed .zip file [use only on non-Unix env]');
 
-/*-----------Util/Steps------------*/
-//0. load index.html (replace lib, tpl and application js section - compress js libs into all.js
-function loadIndexHTML(cb){
-	if(!config) return console.log('Can NOT find build config.js');
-	console.log('Processing Index...'.yellow);
+program.command('*').description('build your web front-end project using customized configure').action(function(outputFolder){
+	outputFolder = outputFolder || 'dist';
+	var startTime = new Date().getTime();
 
-	function doProcessIndexHtml() {
-		buildify().load(path.join(config.src.root, config.src.index)).perform(function(content){
+	//0. load build config according to --config
+	var configName = './config.' + (program.config || 'dist') + '.js';
+	var config = require(configName);
+	console.log('Start building using config ['.yellow, configName, '] >> ['.yellow, outputFolder, ']'.yellow);
 
-			//load html		
-			var $ = cheerio.load(content);
+	//1. start processing index page
+	var result = processor.combine({
+		root: config.src.root,
+		html: config.src.index,
+		excludeAttr: program.config
+	});
 
-			//extract build sections.
-			var $script;
-			var coreJS = buildify().load('../shared/EMPTY.js');
-			$('script').each(function(index, el){
-				$script = $(el);
-				if(!$script.attr('exclude')){
-					var srcPath = $script.attr('src');
-					if(srcPath){
-						//ref-ed js, concat 
-						coreJS.concat(path.join(config.src.root, srcPath));
-					}else {
-						//in-line
-						coreJS.perform(function(content){
-							return content + ';' + $script.html() + ';';
-						});
-					}
-				}
-				$script.remove();
+	//2. hammer the output folder structure out
+	hammer.createFolderStructure(_.extend({cachedFiles: result, output: outputFolder}, config), function(){
+		//check if --G
+		if(program.targz) {
+			//tar.gz
+			var tarball = path.normalize(program.targz);
+			targz.compress(outputFolder, tarball, function(err){
+				if(err) console.log('ERROR'.red, err.message);
+				else console.log('Gzipped into ', tarball.yellow);
 			});
+		}
+		//check if --Z
+		if(program.zip) {
+			//zip (problem on Unix based machine)
+			var zip = new AdmZip();
+			zip.addLocalFolder(outputFolder);
+			var name = path.normalize(program.zip);
+			zip.writeZip(name);
+			console.log('Zipped into ', name.yellow);
+		}
+		console.log('Build Task [app] Complete'.rainbow, '-', moment.utc(new Date().getTime() - startTime).format('HH:mm:ss.SSS').underline);
+	});
 
-			$('#main').after('\n\t\t<script src="js/all.min.js"></script>\n'); //Warning::Hard Coded Core Lib Path!
-			content = $.html();
-
-			cb({
-				'all.js': coreJS.getContent(),
-				'all.min.js': coreJS.uglify().getContent() + ';',
-				'index.html': content.replace(/\n\s+\n/gm, '\n')
-			});
-		});		
-	};
-
-	doProcessIndexHtml();
-
-}
-
-
-
-/*-----------Build Tasks-----------*/
-buildify.task({
-	name: 'app',
-	task: function(){
-		var startTime = new Date().getTime();
-		rimraf.sync(config.distFolder);
-		loadIndexHTML(function(cached){
-			mkdirp(config.distFolder, function(error){
-				hammer.createFolderStructure(_.extend({cachedFiles: cached}, config), function(){
-					if(config.pack) {
-						//zip (problem on Unix based machine)
-						// var zip = new AdmZip();
-						// zip.addLocalFolder(config.distFolder);
-						// var name = path.normalize(config.pack + '.zip');
-						// zip.writeZip(name);
-						// console.log('Zipped into ', name.yellow);
-						//tar.gz
-						var tarball = path.normalize(config.pack + '.tar.gz');
-						targz.compress(config.distFolder, tarball, function(err){
-							if(err) console.log('ERROR'.red, err.message);
-							else console.log('Gzipped into ', tarball.yellow);
-						});
-					}
-					console.log('Build Task [app] Complete'.rainbow, '-', moment.utc(new Date().getTime() - startTime).format('HH:mm:ss.SSS').underline);
-				});
-			});
-		});
-
-	}
 });
+
+program.parse(process.argv);
+

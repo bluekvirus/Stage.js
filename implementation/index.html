@@ -24,8 +24,9 @@
         <div id="main" region="app"></div>
 
         <!--
-            Special <script> attributes for build:
-                exclude="true": This is for the build tool to ignore the script while building production all-in-one js.
+            Bonus:: special <script> attributes for build:
+                [exclude attr]="false": This is for the build tool to ignore the script while building config file controlled all-in-one js.
+            Note that this attr is often the same as your build config name used in the build command.
         -->
 
         <!--========Infrastructure Space: the engine======================================================-->
@@ -82,7 +83,7 @@
         <!--Contexts/Parts-->            
 
         <!--Main.js-->
-        <script type="text/javascript" src="js/test/main.js" exclude="true"></script>
+        <script type="text/javascript" src="js/test/main.js" framework="false"></script>
 
         <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. 
             <script>

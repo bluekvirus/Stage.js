@@ -1,7 +1,7 @@
 {
-  "name": "web-client-build",
+  "name": "web-client-tools",
   "version": "0.1.0",
-  "description": "It builds web client structures and compress js files according to given index.html and structure object in config.",
+  "description": "client development tooling",
   "main": "build.js",
   "dependencies": {
     "buildify": "~0.4.0",

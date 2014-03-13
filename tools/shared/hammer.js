@@ -8,7 +8,7 @@
  * required:
  * 		structure - folder blueprint 
  *   	src.root - input base
- *    	distFolder - output folder
+ *    	output - output folder
  * optional:
  * 		cachedFiles - in memory file content
  *
@@ -38,7 +38,7 @@ module.exports = {
 		}, options);
 
 		var targets = [];
-		var baseDir = options.distFolder;
+		var baseDir = options.output;
 
 		//prepare the structure description map
 		_.each(options.structure, function(content, key){
