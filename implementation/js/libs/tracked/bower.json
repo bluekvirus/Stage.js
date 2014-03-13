@@ -51,7 +51,6 @@
     "backbone": "~1.x.x"
   },
   "resolutions": {
-    "jquery": "~2.x.x",
-    "modernizr": "~2.x.x"
+    "jquery": "~2.x.x"
   }
 }

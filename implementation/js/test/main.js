@@ -82,7 +82,7 @@
 
     Application.create('Regional', {
         name: 'Editors',
-        className: 'well',
+        className: 'well container',
         template: [
             '<div editors="*" class="row"></div>',
             '<div class="row">',
@@ -260,13 +260,8 @@
         actions: {
             download: function($btn, e){
                 e.preventDefault();
-                //check user os. (use .tar.gz version if on Mac OS X)
-                var target = '/static/resource/default/data/framework';
-                // if(!Modernizr.mac)
-                //     target += '.zip';
-                // else
-                    target += '.tar.gz';
-                Application.Util.download(target);  
+                var base = '/static/resource/default/download/';
+                Application.Util.download(base + $btn.attr('target'));  
             },
             themePreview: function($btn, e){
                 e.preventDefault();
@@ -312,12 +307,21 @@
                   '</form>',
 
                   '<ul class="nav navbar-nav navbar-right">', //3
-                    '<li><a href="#" action="download"><i class="fa fa-download"></i> Download</a></li>',
+                    '<li class="dropdown">',
+                        '<a data-toggle="dropdown" class="dropdown-toggle" href="#"><i class="fa fa-download"></i> Download <b class="caret"></b></a>',
+                        '<ul class="dropdown-menu">',
+                            '<li class="dropdown-header" >Client</li>',
+                            '<li><a href="#" action="download" target="projs.1.0.0-rc1.tar.gz">pro.js</a></li>',
+                            '<li class="divider"></li>',
+                            '<li class="dropdown-header">Server</li>',
+                            '<li><a href="#" action="download" target="ajax-box.0.10.1.tar.gz">ajax-box</a></li>',
+                        '</ul>',
+                    '</li>',
                     '<li context="RSS"><a href="#navigate/RSS"><i class="fa fa-rss"></i> RSS</a></li>',
                     '<li><a href="#"><i class="fa fa-github-alt"></i></a></li>',
                   '</ul>',
 
-                '</div>',<!-- /.nav-collapse -->
+                '</div>',//<!-- /.nav-collapse -->
             '</div>'
         ]
     });

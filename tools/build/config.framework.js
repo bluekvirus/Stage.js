@@ -46,7 +46,7 @@ module.exports = {
 		tools: {
 			build: {
 				'build.js': '../tools/build/build.js',
-				'config.dist.js': '../tools/build/config.dist.js'
+				'config.dist.js': '../tools/build/config.sample.js'
 			},
 			iconprep: '../tools/iconprep',
 			shared: '../tools/shared',

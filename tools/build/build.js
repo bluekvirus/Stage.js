@@ -28,11 +28,11 @@ program.version('1.0.0')
 		.option('-Z --zip <path>', 'put the output path into a compressed .zip file [use only on non-Unix env]');
 
 program.command('*').description('build your web front-end project using customized configure').action(function(outputFolder){
-	outputFolder = outputFolder || 'dist';
 	var startTime = new Date().getTime();
+	program.config = program.config || 'dist';
 
 	//0. load build config according to --config
-	var configName = './config.' + (program.config || 'dist') + '.js';
+	var configName = './config.' + program.config + '.js';
 	var config = require(configName);
 	console.log('Start building using config ['.yellow, configName, '] >> ['.yellow, outputFolder, ']'.yellow);
 

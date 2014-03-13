@@ -28,18 +28,11 @@ module.exports = {
 		themes: {
 			'default': {
 				css: {
-					'main.css':'themes/_dev/css/main.css'
+					'main.css':'themes/default/css/main.css'
 				},
-				fonts: 'themes/_dev/fonts'
+				fonts: 'themes/default/fonts'
 			}
 		},
-		static: {
-			resource: {
-				default: {
-					download: 'static/resource/default/download'
-				}
-			}
-		},		
 		'index.html': true
 
 	}

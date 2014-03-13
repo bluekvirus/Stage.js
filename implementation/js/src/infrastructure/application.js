@@ -10,6 +10,7 @@
  *
  * ###How to create app elements?
  * 4. Application.create(type, config);
+ * 		0. API //TBI - URL or Model/Collection based widget data management?
  * 		1. Model/Collection: {
  * 			entity: ...,
  * 			[rest of normal Backbone.Model/Collection options]
@@ -177,7 +178,7 @@ _.each(['Core', 'Util'], function(coreModule){
 	        //Pre-set RESTful API configs (see Application.Core.API core module) - Modify this to fit your own backend apis.
 	        baseAjaxURI: null,
 	        api: {
-	            //_Default_ entity is your fallback entity, only register common api method config to it would be wise, put specific ones into your context.module.
+	            //_Default_ entity is your fallback entity.
 	            _Default_: {
 	                data: {
 	                    read: {
@@ -449,7 +450,11 @@ _.each(['Core', 'Util'], function(coreModule){
 			
 		switch(type){
 
-			//data			
+			//data
+			case 'API':
+				throw new Error('DEV::Application::TBI...'); 
+			break;
+
 			case 'Model': case 'Collection':
 				var obj = new Backbone[type](config);
 				return obj.bindToEntity(config.entity);
