@@ -1,9 +1,21 @@
 Change Log
 ==========
+1.0.0-rc1 (2014-03-12)
+----------------------
+1. updated framework documentation (still in progress)
+2. formalized project file structure
+3. added unified app api entry point
+4. refined build & deploy script
+5. further reduced selected libs
+6. refined region view loading, added app Core.Regional module
+7. formalized theme building process and structure
+
+
 1.0.0-pre (2014-02-12)
 ----------------------
 1. updated framework documentation (still in progress)
 2. refined the client app route implementation
+
 
 0.13.x (2014-01-07)
 -------------------
