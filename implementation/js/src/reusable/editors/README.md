@@ -12,17 +12,12 @@ A. Editor View. (editors, this is what the Editor registry is mainly focused on)
 	4. validate() - this might be overriden or disabled if this editor is used to form some more complicated editor/formParts.
 
 
-B. Form Part (editor group/fieldset) View. (rely on Editor View)
-	1. getVals()/getVal(fname)
-	2. setVals({k:v, ...,})
-	3. fieldset:changed:[fieldset]:[fieldname](optional)
-	4. validate() - migth be overriden, default on delegated editor validators.
-	5. activateEditors() - replace editor tags in view templates with editor view instances (editor options in editors block) (in view enhancement - activateEditors())
+B. Form (editor group/fieldset) View.
+	1. A Form can be any Layout instance;
+	2.a A Layout has set/getVals() and validate() method hooked up on its regions, show a View with editors enabled into a region if you need a fieldset;
+	2.b Alternatively use the appendTo config and put editors into different fieldsets.
+	3. Submit a form through you own ajax way, but first gather value through validate(true:for display errors) and then getValues() on the outter-most View;
 
-
-C. Form View. (based on Fieldset View, see core/enhancements/view.js)
-	+. addFormPart(region, form-part view, cb) (introduced by view enhancement enableForm())
-	+. submit, refresh, cancel actions implemented by default. (introduced by view enhancement enableForm() - submit, refresh, reset, cancel)
 
 
 Editors

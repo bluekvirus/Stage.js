@@ -5,7 +5,7 @@
  *
  * Init Options
  * ============
- * [layout]: {
+ * [layout]: { - Note that if you use this layout class, you must also use form-horizontal in the outter most form container
  * 		label: in col-..-[1..12] bootstrap 3 grid class
  * 		field: ...
  * }
@@ -38,7 +38,8 @@
  *
  * The validation function should return null or 'error string' to be used in status.
  *
- * @author Tim.Liu, Yan.Zhu
+ * @author Tim.Liu
+ * @contributor Yan.Zhu
  * @created 2013.11.10
  * @updated 2014.02.26 [Bootstrap 3.1]
  * @version 1.2.0

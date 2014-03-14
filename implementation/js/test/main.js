@@ -84,7 +84,7 @@
         name: 'Editors',
         className: 'well container',
         template: [
-            '<div editors="*" class="row"></div>',
+            '<div editors="*" class="form form-horizontal"></div>', //the class form form-horizontal is required for the editor layout class config to work in bootstrap 3
             '<div class="row">',
                 '<div class="col-sm-10 col-sm-offset-2">',
                     '<span class="btn btn-primary" action="test">Submit</span> <span class="btn btn-warning">Validate</span>',
