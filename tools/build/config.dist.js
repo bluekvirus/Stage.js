@@ -26,11 +26,12 @@ module.exports = {
 			'all.min.js': true, //'all' is a hard coded name - see loadIndexHTML() in build.js
 		},
 		themes: {
-			'default': {
+			'_dev': {
 				css: {
 					'main.css':'themes/_dev/css/main.css'
 				},
-				fonts: 'themes/_dev/fonts'
+				fonts: 'themes/_dev/fonts',
+				'index.html': 'themes/_dev/index.html'
 			}
 		},
 		static: {
@@ -40,7 +41,8 @@ module.exports = {
 				}
 			}
 		},		
-		'index.html': true
+		'index.html': true,
+		'HOWTO.md': 'HOWTO.md'
 
 	}
 };
