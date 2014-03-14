@@ -445,7 +445,7 @@ _.each(['Core', 'Util'], function(coreModule){
 		//if omitting type, app.create will be a (fallback) short-cut for Backbone.Marionette.[ItemView/Layout/CollectionView/CompositeView...] definition creation
 		if(!_.isString(type)) {
 			config = type;
-			return Backbone.Marionette[config.type].extend(config);
+			return Backbone.Marionette[config.type || 'ItemView'].extend(config);
 		}
 			
 		switch(type){
