@@ -1,7 +1,7 @@
 /**
  * This is the Backbone.Model enhancements.
  *
- * 1. +bindToEntity/getEntityName to hookup with Application.Core.API through Backbone.sync override (core/env.js)
+ * 1. +bindToEntity/getEntityName to hookup with default RESTful api url
  * 2. +load() [mirroring fetch() only] to be consistent with collections load() method.
  *
  * @author Tim.Liu

@@ -5,8 +5,15 @@
  * ----------------------------
  * ###How to start my app?
  * 1. Application.setup({config});
- * 2. [add your custom code in between for additional app initializers and events and route config];
- * 3. Application.run();
+ * config:
+		* theme,
+		* template,
+		* contextRegion,
+		* defaultContext,
+		* fullScreen,
+		* rapidEventDebounce,
+		* baseAjaxURI
+ * 2. Application.run();
  *
  * ###How to create app elements?
  * 4. Application.create(type, config);
@@ -124,29 +131,7 @@ _.each(['Core', 'Util'], function(coreModule){
 });
 
 ;(function(){
-	/**
-	 * 
-	 * Application.setup(config) method
-	 * ---------------------------------
-	 * config:
-	 * theme,
-	 * template,
-	 * contextRegion,
-	 * defaultContext,
-	 * fullScreen,
-	 * rapidEventDebounce,
-	 * baseAjaxURI,
-	 * api: {
-	 * 	'entity': {
-	 * 		'type of ops': {
-	 * 			op1: {
-	 * 				type: , url: , parse: , fn: see - core/api.js
-	 * 			}
-	 * 		}
-	 * 	}
-	 * }
-	 * 
-	 */
+
 	Application.setup = function(config){
 		//1. Configure.
 		Application.config = _.extend({
@@ -175,47 +160,7 @@ _.each(['Core', 'Util'], function(coreModule){
 			loginContext: 'Login', //This is the fallback context (name) when the user needs to authenticate with server.
 			fullScreen: false, //This will put <body> to be full screen sized (window.innerHeight).
 	        rapidEventDebounce: 200, //in ms this is the rapid event debounce value shared within the application (e.g window resize).
-	        //Pre-set RESTful API configs (see Application.Core.API core module) - Modify this to fit your own backend apis.
-	        baseAjaxURI: null,
-	        api: {
-	            //_Default_ entity is your fallback entity.
-	            _Default_: {
-	                data: {
-	                    read: {
-	                        type: 'GET',
-	                        url: function(entity, category, method, options){
-	                            if(options.model && options.model.id){
-	                                return '/' + category + '/' + entity + '/' + options.model.id;
-	                            }else {
-	                                return '/' + category + '/' + entity;
-	                            }
-	                        },
-	                        parse: 'payload',
-	                    },
-	                    create: {
-	                        type: 'POST',
-	                        url: function(entity, category, method, options){
-	                            return '/' + category + '/' + entity;
-	                        },
-	                        parse: 'payload',
-	                    },
-	                    update: {
-	                        type: 'PUT',
-	                        parse: 'payload',
-	                        url: function(entity, category, method, options){
-	                            return '/' + category + '/' + entity + '/' + options.model.id;
-	                        }
-
-	                    },
-	                    'delete': {
-	                        type: 'DELETE',
-	                        url: function(entity, category, method, options){
-	                            return '/' + category + '/' + entity + '/' + options.model.id;
-	                        }
-	                    }
-	                }
-	            }
-	        }
+	        baseAjaxURI: null, //Modify this to fit your own backend apis. e.g index.php?q=
 		}, config);
 
 		//2 Detect Theme
@@ -308,11 +253,6 @@ _.each(['Core', 'Util'], function(coreModule){
 		 * - refined/simplified the router handler and context-switch navigation support
 		 * - use app:navigate (contextName, moduleName) at all times.
 		 */
-
-		//Application init: Hook-up Default RESTful Data APIs (from config.js)
-		Application.addInitializer(function(options){
-			Application.Core.API.registerAll(Application.config.api);
-		});
 
 		//Application init: Global listeners
 		Application.addInitializer(function(options){

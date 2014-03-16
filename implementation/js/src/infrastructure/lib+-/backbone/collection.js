@@ -2,7 +2,7 @@
  * Backbone Collection Enhancement 
  * 
  * 1. +Pagination & Search/Filter & Recover ability - Backbone.Collection
- * 2. +bindToEntity/getEntityName to hookup with Application.Core.API through Backbone.sync override (core/env.js)
+ * 2. +bindToEntity/getEntityName to hookup with default RESTful api url
  *
  * @author Tim.Liu
  * @created 2013.09.11
