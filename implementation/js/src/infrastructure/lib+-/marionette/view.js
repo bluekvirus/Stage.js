@@ -277,9 +277,8 @@
 					this[listener].apply(this, _.toArray(arguments).slice(1));
 			});
 
-			return Old.call(this, options);
-		},
-
+			return Old.prototype.constructor.call(this, options);
+		}
 	});	
 
 })(Application)

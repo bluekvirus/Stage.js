@@ -128,7 +128,7 @@
 					});								
 				}
 
-			return Old.call(this, options);
+			return Old.prototype.constructor.call(this, options);
 		},	
 	});	
 

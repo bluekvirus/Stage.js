@@ -75,13 +75,33 @@ Notes
 
 Note on *Class.extend*
 ----------------------
-Mind the prototypical (chain) inheritance, if B = A.extend({}) and then C = B.extend({}), changing B = B.extend({+ properties}) will **NOT** affect C with newly added properties in B.prototype, since this new B is not the one used to create the C.prototype [coz C.prototype = new B() previously in C = B.extend({})].
-However, new C() will still call B.apply(this, args) to create a new instance of itself [coz C.constructor = function(){B.apply(this, args)}], thus B = B.extend({* constructor}) can still work since this new constructor will be executed again whenever a new C() is called.
-Also, _.extend(B.prototype) will work (effectively change C) since all the *old* B instances [recall C.prototype = new B() previously in C = B.extend({})] will still have a reference to B.prototype, changing this will effectively adding new properties to new instances of C.
+Mind the prototypical (chain) inheritance, if B = A.extend({}) and then C = B.extend({}), changing B through B' = B.extend({+ properties}) will **NOT** affect C with newly added properties in B'.prototype, since this new B' is not the one used to create the C.prototype [coz C.prototype = new B() previously in C = B.extend({})]. Use _.extend(B.prototype) instead. _.extend(B'.prototype) will not affect previously/newly created C instances.
+However, new C() will still call the new B'.apply(this, args) to create a new instance of itself [coz C.constructor = function(){B/B'.apply(this, args)}], thus B' = B.extend({* constructor}) can work since this new B' will be executed again whenever a new C() is called. Though, the prototypical chain B->C is now broken. C will have to extend from B' again to pick up _.extend(B'.prototype, {...}) added properties.
 
-Not that you will NOT see this.prototype in a new C() instance points to C.prototype, but it is ensured by the language, you can use all of C.prototype's property/method in a new C() instance. You can augment a new C() by _.extend(C.prototype, {+ properties}) or (new C())[+ property] = ...;
+Note that Backbone define its special inheritance method extend({}) to accept {constructor} overriden, like this:
+```
+...
+    // The constructor function for the new subclass is either defined by you
+    // (the "constructor" property in your `extend` definition), or defaulted
+    // by us to simply call the parent's constructor.
+    if (protoProps && _.has(protoProps, 'constructor')) {
+      child = protoProps.constructor;
+    } else {
+      child = function(){ return parent.apply(this, arguments); };
+    }
+...
+```
+This is why B' = B.extend({* constructor}) works, it is never to change B.prototype.constructor, but to directly change B. This is how js works. When a function (like B) is defined, B.prototype.constructor gets created, it is just a property, changing it will not affect the way *new* B() behaves. B will still be called instead of the *changed* B.prototype.constructor, if you ever tried to change it.
 
-Changing B.prototype.constructor alone will not bring wanted effect as B = B.extend({*constructor}) would. Result would be in-correct as 'this' scope in this.listenTo(this, ...) will be messed up given the js functional scope mech.
+Also, _.extend(B'.prototype) will *NOT* work (to change C) since all the *old* B instances [recall C.prototype = new B() previously in C = B.extend({})] will still have the old prototype ref to the old B.prototype, changing this will *NOT* effectively add new properties to new instances of C. Do it before B' = B.extend({* constructor}).
+
+[or do C.prototype = new B' again after _.extend(B.'prototype) ??]
+
+Note that You can always augment a new B() by _.extend(B.prototype, {+ properties}) or (new B())[+ property] = ...; Only the former can affect C (from using B.extend()) since C.prototype = new B() and every instance of B will have it's property inherited from B.prototype. (The prototypical chain is walked dynamically upon searching of a property or method, so a later change to the B.prototype can still affect previously created B and C instances, you can think of B.prototype as a symbolic ref which will be interpreted each time the chain-walking-searching happens)
+
+Again, remember changing B.prototype.constructor alone will not bring wanted effect as B' = B.extend({*constructor}) would. And after B' = B.extend({* constructor}), if you still want _.extend(B'.prototype) to mean something in C, move it up before B' = B.extend({* constructor});
+
+_.extend(X.prototype) will affect both already and newly created insteances of X and those extended from X.
 
 
 Note on *Ghost View*
