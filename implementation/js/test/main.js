@@ -36,7 +36,11 @@
         className: 'container',
         template: [
             '<div class="row">',
-                '<div region="toc" class="col-sm-3"></div>',
+                '<div class="col-sm-3">',
+                    '<div region="toc" ></div>',
+                    '<hr/>',
+                    '<div region="libinfo"></div>',
+                '</div>',
                 '<div region="doc" class="col-sm-9" md="HOWTO.md"></div>',
             '</div>',
         ],
@@ -66,6 +70,19 @@
                     }));
                 }
             });
+            
+            this.libinfo.show(Application.create('Regional', {
+                tagName: 'ul',
+                className: 'list-group',
+                template: '{{#each items}}<li class="list-group-item">{{name}} @{{version}}</li>{{/each}}',
+                onShow: function(){
+                    var that = this;
+                    $.get('js/libs/tracked/dist/selected.json', function(data){
+                        that.collection = Application.create('Collection', data.list);
+                        that.render();
+                    });
+                }
+            }));
         }
     });
 

@@ -12,21 +12,20 @@ _.extend(Backbone.Model.prototype, {
 	//Default Backbone.Model idAttribute to '_id'
 	idAttribute: '_id',
 
-	//Support Backbone.sync overriden code
-	getEntityName: function(){
-		return this._entity;
-	},
-
 	bindToEntity: function(entity){
-		if(!this.getEntityName())
+		if(!this.getEntityName)
 			this._entity = entity;
 		else
 			throw new Error('DEV::Enhancement.Collection::You have already bound this model to entity ' + this.getEntityName());
+
+		this.getEntityName = function(){
+			return this._entity;
+		};
+
 		return this;
 	},
 
-	load: function(options){
+	load: function(){
 		return this.fetch(options);
-	}
-
+	}	
 });

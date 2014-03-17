@@ -9,6 +9,9 @@
  * Fixed
  * -----
  * auto ui tags detect and register.
+ * +meta event programming
+ * 	view:* (event-name) - on* (camelized)
+ * 
  *
  * Optional
  * --------
@@ -240,7 +243,9 @@
 
 	/**
 	 * Fixed enhancement
-	 * auto ui tags detection and register
+	 * +auto ui tags detection and register
+	 * +meta event programming
+	 * 	view:* (event-name) - on* (camelized)
 	 * 
 	 */
 	var old = Backbone.Marionette.View;
@@ -264,6 +269,14 @@
 				//fix default tpl to be ' '.
 				if(!options.template && !this.template) options.template = ' ';
 			}
+
+			this.listenTo(this, 'all', function(e){
+				var tmp = e.split(':');
+				if(tmp.length !== 2 || tmp[0] !== 'view') return;
+				var listener = _.string.camelize('on-' + tmp[1]);
+				if(this[listener])
+					this[listener].apply(this, _.toArray(arguments).slice(1));
+			});
 
 			return old.prototype.constructor.call(this, options);
 		}

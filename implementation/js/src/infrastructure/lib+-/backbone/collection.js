@@ -226,17 +226,16 @@ _.extend(Backbone.Collection.prototype, {
 		
 	},
 
-
-	//Support Backbone.sync overriden code
-	getEntityName: function(){
-		return this._entity;
-	},
-
 	bindToEntity: function(entity){
-		if(!this.getEntityName())
+		if(!this.getEntityName)
 			this._entity = entity;
 		else
 			throw new Error('DEV::Enhancement.Collection::You have already bound this collection to entity ' + this.getEntityName());
+
+		this.getEntityName = function(){
+			return this._entity;
+		}
+		
 		return this;
 	}
 });
