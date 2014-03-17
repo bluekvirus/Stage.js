@@ -24,8 +24,6 @@
 
 ;(function(app){
 
-	var old = Backbone.Marionette.Layout;
-
 	/**
 	 * Static Mixin of a Layout in case it is used as a Form container.
 	 * 1. getValues() * - collects values from each region;
@@ -81,8 +79,8 @@
 
 	});
 
-
-	Backbone.Marionette.Layout = Backbone.Marionette.Layout.extend({
+	var Old = Backbone.Marionette.Layout;
+	Backbone.Marionette.Layout = Old.extend({
 
 		constructor: function(options){
 			options = options || {};
@@ -130,7 +128,7 @@
 					});								
 				}
 
-			return old.prototype.constructor.call(this, options);
+			return Old.call(this, options);
 		},	
 	});	
 

@@ -72,9 +72,21 @@ Do **NOT** hang the build script, use `&` if needs be or avoid at all times.
 
 Notes
 =====
+
+Note on *Class.extend*
+----------------------
+Mind the prototypical (chain) inheritance, if B = A.extend({}) and then C = B.extend({}), changing B = B.extend({+ properties}) will **NOT** affect C with newly added properties in B.prototype, since this new B is not the one used to create the C.prototype [coz C.prototype = new B() previously in C = B.extend({})].
+However, new C() will still call B.apply(this, args) to create a new instance of itself [coz C.constructor = function(){B.apply(this, args)}], thus B = B.extend({* constructor}) can still work since this new constructor will be executed again whenever a new C() is called.
+Also, _.extend(B.prototype) will work (effectively change C) since all the *old* B instances [recall C.prototype = new B() previously in C = B.extend({})] will still have a reference to B.prototype, changing this will effectively adding new properties to new instances of C.
+
+Not that you will NOT see this.prototype in a new C() instance points to C.prototype, but it is ensured by the language, you can use all of C.prototype's property/method in a new C() instance. You can augment a new C() by _.extend(C.prototype, {+ properties}) or (new C())[+ property] = ...;
+
+Changing B.prototype.constructor alone will not bring wanted effect as B = B.extend({*constructor}) would. Result would be in-correct as 'this' scope in this.listenTo(this, ...) will be messed up given the js functional scope mech.
+
+
 Note on *Ghost View*
 --------------------
-This is caused by removing a view's html but leaving the event listeners 'on'... Thus make sure you remove a view's html together with the event listeners by invoking the `view.close()`(Marionette) method, which will in turn invoke the `view.undelegateEvents()`(Backbone) method which will futher grab `$.off`(jQuery) to clean up the listerns.
+This is caused by removing a view's html but leaving the event listeners 'on'... Thus make sure you remove a view's html together with the event listeners by invoking the `view.close()`(Marionette) method, which will in turn invoke the `view.undelegateEvents()`(Backbone) method which will futher grab `$.off`(jQuery) to clean up the listeners.
 
 Note that calling `region.show()` will automatically `close()` the previously shown view object, the view object closed will still exist in the js runtime, if you somehow decide to `show()` it again, you need to manually call `view.delegateEvents()` to re-activate the event listeners.
 

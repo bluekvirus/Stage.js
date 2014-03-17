@@ -178,7 +178,7 @@ _.each(['Core', 'Util'], function(coreModule){
 		$document.ajaxSuccess(function(event, jqxhr, settings){
 			if(settings.notify)
 				Application.trigger('app:message', {
-					type: 'error',
+					type: 'success',
 					message: ['Operation Successful', '|', settings.type, settings.url.split('?')[0]].join(' ')
 				});
 		});
@@ -397,7 +397,9 @@ _.each(['Core', 'Util'], function(coreModule){
 
 			case 'Model': case 'Collection':
 				var obj = new Backbone[type](config);
-				return obj.bindToEntity(config.entity);
+				if(config && config.entity)
+					return obj.bindToEntity(config.entity);
+				return obj;
 			break;
 
 			//basic component

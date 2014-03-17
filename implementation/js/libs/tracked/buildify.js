@@ -131,18 +131,24 @@ function combine(list, name){
 	};
 	_.each(list, function(lib){
 		if(libMap[lib]) {
-			var version = 'unknown';
+			var bowerInfo, packageInfo;
 			try {
-				version = require('./bower_components/' + lib + '/bower.json').version;
+				bowerInfo = require('./bower_components/' + lib + '/.bower.json');
 			}catch (e){
 				try {
-					version = require('./bower_components/' + lib + '/.bower.json').version;
+					bowerInfo = require('./bower_components/' + lib + '/bower.json');
 				}catch(e) {
-
+					bowerInfo = {version: 'N/A'};
 				}
 			}
-			versions.list.push({name: lib, version: version});
-			console.log(lib.yellow, version.green, '[', libMap[lib].grey, ']');
+			try {
+				packageInfo = require('./bower_components/' + lib + '/package.json');
+			}catch (e){
+				packageInfo = {};
+			}
+
+			versions.list.push({name: lib, version: bowerInfo.version, url: bowerInfo.homepage || packageInfo.homepage || (packageInfo.repository && packageInfo.repository.url)});
+			console.log(lib.yellow, bowerInfo.version.green, '[', libMap[lib].grey, ']');
 			
 		}
 		else {

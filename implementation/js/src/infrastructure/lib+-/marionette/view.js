@@ -11,8 +11,8 @@
  * auto ui tags detect and register.
  * +meta event programming
  * 	view:* (event-name) - on* (camelized)
+ * 	
  * 
- *
  * Optional
  * --------
  * 1. action tags auto listener hookup with mutex-locking on other action listeners. (this.un/lockUI(no param) and this.isUILocked(no param))
@@ -240,7 +240,6 @@
 
 	});
 
-
 	/**
 	 * Fixed enhancement
 	 * +auto ui tags detection and register
@@ -248,8 +247,8 @@
 	 * 	view:* (event-name) - on* (camelized)
 	 * 
 	 */
-	var old = Backbone.Marionette.View;
-	Backbone.Marionette.View = Backbone.Marionette.View.extend({
+	var Old = Backbone.Marionette.View;
+	Backbone.Marionette.View = Old.extend({
 
 		constructor: function(options){
 			options = options || {};
@@ -278,8 +277,8 @@
 					this[listener].apply(this, _.toArray(arguments).slice(1));
 			});
 
-			return old.prototype.constructor.call(this, options);
-		}
+			return Old.call(this, options);
+		},
 
 	});	
 
