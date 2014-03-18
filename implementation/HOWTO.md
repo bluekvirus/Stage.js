@@ -24,6 +24,25 @@ and this indicates:
 If you don't know what they are, go for a quick look at their websites.
 
 ###Mental preparation
+Before start, you need to understand what is a web application, here is a brief diagram:
+
+<img src="/static/resource/default/diagram/Diagram_1.png" alt="Web App Diagram" class="img-thumbnail center-block"></img>
+
+Note that you need to resolve 2 kinds of problem different in nature: *Interaction* and *Data Flow* in order to produce a web application.
+A successful one requires both parts to include careful design and feasible technique. We will examine the first part here.
+
+**Pro.js** will answer challenges from the *Interaction* problem domain (A.K.A UI/UX):
+
+<img src="/static/resource/default/diagram/Diagram_2.png" alt="UI/UX Problems" class="img-thumbnail center-block"></img>
+
+As you can see from the above, there are 3 problems here to address when implementing a UI/UX side for an application:
+1. Data -> Model/Collection [snapshot]
+2. Model/Collection [snapshot] -> View (UI)
+3. View -> Layout/Page + Transitions (UX)
+
+As a full stack solution to the UI/UX side, we address the 3 problems with an intuitive architecture:
+
+<img src="/static/resource/default/diagram/Diagram_3.png" alt="Pro.js Architecture" class="img-thumbnail center-block"></img>
 
 ###What's in the package
 
@@ -40,7 +59,7 @@ If you don't know what they are, go for a quick look at their websites.
 
 
 ####Let's start
-You start developing using *Pro.js* by creating a `main.js` (you are free to choose whatever the name you like) 
+You start developing by creating a `main.js` (you are free to choose whatever the name you like) 
 and include it in `/implementation/index.html` below the `<!--Main.js-->` comment line:
 
 ```
@@ -81,7 +100,7 @@ Application.setup({
 
 Include other js libs
 ---------------------
-The default `all.js` contains minimum selected libs for your project [read the list], if you would like to introduce more, use `bower` and the `bower.json` file included.
+The default `all.js` contains carefully (minimum) selected libs for your project, if you would like to introduce more, use `bower` and the `bower.json` file included.
 Go into `/implementation/js/libs/tracked` and run `bower install` to grab all the monitored 3rd-party libraries.
 
 Include your libs after `all.js` (or `all.min.js`) in `/implementation/index.html`.
@@ -94,8 +113,8 @@ It contains template 404/500 pages and robot.txt if you need them.
 
 Build for production use
 ------------------------
-Before you start building your app for deployment, go into `/tools` and run `npm install` to grab all necessary 3rd-party Node.js modules.
-Use `/tools/build` you need to change the config file if you want to include more files e.g `/static/*` in deployment.
+Before building your app for deployment, go into `/tools` and run `npm install` to grab all necessary 3rd-party Node.js modules.
+Use `/tools/build/node build.js dist` to build. (You might need to change the `config.dist.js` file if you want to include more files in deployment).
 
 
 Upgrade/Update

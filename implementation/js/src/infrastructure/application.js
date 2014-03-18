@@ -17,10 +17,9 @@
  *
  * ###How to create app elements?
  * 4. Application.create(type, config);
- * 		0. API //TBI - URL or Model/Collection based widget data management?
+ * 		0. API //TBI - URL or Entity base data interfacing?
  * 		1. Model/Collection: {
- * 			entity: ...,
- * 			[rest of normal Backbone.Model/Collection options]
+ * 			[normal Backbone.Model/Collection options]
  * 		};
  * 		2. Context: {
  * 			[name]: if you don't name the context, we will use 'Default' as its name,
@@ -397,8 +396,6 @@ _.each(['Core', 'Util'], function(coreModule){
 
 			case 'Model': case 'Collection':
 				var obj = new Backbone[type](config);
-				if(config && config.entity)
-					return obj.bindToEntity(config.entity);
 				return obj;
 			break;
 

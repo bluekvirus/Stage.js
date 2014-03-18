@@ -44,6 +44,7 @@ module.exports = {
 		static: {
 			resource: {
 				default: {
+					diagram: 'static/resource/default/diagram',
 					download: 'static/resource/default/download'
 				}
 			}
