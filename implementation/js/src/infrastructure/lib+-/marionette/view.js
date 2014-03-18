@@ -245,40 +245,39 @@
 	 * +auto ui tags detection and register
 	 * +meta event programming
 	 * 	view:* (event-name) - on* (camelized)
+	 *
+	 * Override View.constructor to affect only decendents, e.g ItemView and CollectionView... (This is the Backbone way of extend...)
 	 * 
 	 */
-	var Old = Backbone.Marionette.View;
-	Backbone.Marionette.View = Old.extend({
+	Backbone.Marionette.View.prototype.constructor = function(options){
+		options = options || {};
 
-		constructor: function(options){
-			options = options || {};
-
-			if(!_.isFunction(options)){
-				if(!this.ui && !options.ui){
-					//figure out ui tags
-					var tpl = Backbone.Marionette.TemplateCache.prototype.loadTemplate(options.template || this.template || ' ');
-					this.ui = {};
-					var that = this;
-					$('<div>' + tpl + '</div>').find('[ui]').each(function(index, el){
-						var ui = $(this).attr('ui');
-						that.ui[ui] = '[ui="' + ui + '"]';
-					});
-				}
-
-				//fix default tpl to be ' '.
-				if(!options.template && !this.template) options.template = ' ';
+		if(!_.isFunction(options)){
+			if(!this.ui && !options.ui){
+				//figure out ui tags
+				var tpl = Backbone.Marionette.TemplateCache.prototype.loadTemplate(options.template || this.template || ' ');
+				this.ui = {};
+				var that = this;
+				$('<div>' + tpl + '</div>').find('[ui]').each(function(index, el){
+					var ui = $(this).attr('ui');
+					that.ui[ui] = '[ui="' + ui + '"]';
+				});
 			}
 
-			this.listenTo(this, 'all', function(e){
-				var tmp = e.split(':');
-				if(tmp.length !== 2 || tmp[0] !== 'view') return;
-				var listener = _.string.camelize('on-' + tmp[1]);
-				if(this[listener])
-					this[listener].apply(this, _.toArray(arguments).slice(1));
-			});
-
-			return Old.prototype.constructor.call(this, options);
+			//fix default tpl to be ' '.
+			if(!options.template && !this.template) options.template = ' ';
 		}
-	});	
+
+		this.listenTo(this, 'all', function(e){
+			var tmp = e.split(':');
+			if(tmp.length !== 2 || tmp[0] !== 'view') return;
+			var listener = _.string.camelize('on-' + tmp[1]);
+			if(this[listener])
+				this[listener].apply(this, _.toArray(arguments).slice(1));
+		});
+
+		return Backbone.Marionette.View.apply(this, arguments);
+	}
+
 
 })(Application)

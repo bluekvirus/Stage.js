@@ -79,6 +79,13 @@
 
 	});
 
+
+	/**
+	 * Fixed behavior overridden. 
+	 *
+	 * Using standard Class overriding technique to change Backbone.Marionette.Layout 
+	 * (this is different than what we did for Backbone.Marionette.View)
+	 */
 	var Old = Backbone.Marionette.Layout;
 	Backbone.Marionette.Layout = Old.extend({
 

@@ -74,12 +74,13 @@
             this.libinfo.show(Application.create('Regional', {
                 tagName: 'ul',
                 className: 'list-group',
-                template: '<h4 class="text-center"><i class="fa fa-cogs"></i> Selected Libraries</h4>{{#each items}}<li class="list-group-item">{{#if url}}<a href="{{url}}">{{name}}</a>{{else}}{{name}}{{/if}}<span class="badge">@ {{version}}</span></li>{{/each}}',
+                template: '<h4 class="text-center"><i class="fa fa-cogs"></i> Selected Libraries</h4>{{#each items}}<li class="list-group-item" ui="libitem">{{#if url}}<a href="{{url}}">{{name}}</a>{{else}}{{name}}{{/if}}<span class="badge">@ {{version}}</span></li>{{/each}}',
                 onShow: function(){
                     var that = this;
                     $.get('js/libs/tracked/dist/selected.json', function(data){
                         that.collection = Application.create('Collection', data.list);
                         that.render();
+                        //console.log(that.ui.libitem);
                     });
                 }
             }));

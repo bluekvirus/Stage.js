@@ -76,9 +76,10 @@ Notes
 Note on *Class.extend*
 ----------------------
 Mind the prototypical (chain) inheritance, if B = A.extend({}) and then C = B.extend({}), changing B through B' = B.extend({+ properties}) will **NOT** affect C with newly added properties in B'.prototype, since this new B' is not the one used to create the C.prototype [coz C.prototype = new B() previously in C = B.extend({})]. Use _.extend(B.prototype) instead. _.extend(B'.prototype) will not affect previously/newly created C instances.
+
 However, new C() will still call the new B'.apply(this, args) to create a new instance of itself [coz C.constructor = function(){B/B'.apply(this, args)}], thus B' = B.extend({* constructor}) can work since this new B' will be executed again whenever a new C() is called. Though, the prototypical chain B->C is now broken. C will have to extend from B' again to pick up _.extend(B'.prototype, {...}) added properties.
 
-Note that Backbone define its special inheritance method extend({}) to accept {constructor} overriden, like this:
+Note that Backbone define its special inheritance method extend({}) to accept {constructor} overridden, like this:
 ```
 ...
     // The constructor function for the new subclass is either defined by you
@@ -93,20 +94,24 @@ Note that Backbone define its special inheritance method extend({}) to accept {c
 ```
 This is why B' = B.extend({* constructor}) works, it is never to change B.prototype.constructor, but to directly change B. This is how js works. When a function (like B) is defined, B.prototype.constructor gets created, it is just a property, changing it will not affect the way *new* B() behaves. B will still be called instead of the *changed* B.prototype.constructor, if you ever tried to change it.
 
+However, Backbone supports changing B.prototype.constructor to affect C without affecting new B instances. Since all Backbone classes use parent.prototype.constructor.apply() instead of just parent.apply() like in its extend method (supported by the extend method itself, see above code block)
+
 Also, _.extend(B'.prototype) will *NOT* work (to change C) since all the *old* B instances [recall C.prototype = new B() previously in C = B.extend({})] will still have the old prototype ref to the old B.prototype, changing this will *NOT* effectively add new properties to new instances of C. Do it before B' = B.extend({* constructor}).
 
-[or do C.prototype = new B' again after _.extend(B.'prototype) ??]
+Note that by doing C.prototype = new B' again after _.extend(B'.prototype) will amend the broken prototypical chain for C and C only, it will not work for D (D = C.extend()) because chain C->D is now broken... D will suffer from property lost.
 
 Note that You can always augment a new B() by _.extend(B.prototype, {+ properties}) or (new B())[+ property] = ...; Only the former can affect C (from using B.extend()) since C.prototype = new B() and every instance of B will have it's property inherited from B.prototype. (The prototypical chain is walked dynamically upon searching of a property or method, so a later change to the B.prototype can still affect previously created B and C instances, you can think of B.prototype as a symbolic ref which will be interpreted each time the chain-walking-searching happens)
 
 Again, remember changing B.prototype.constructor alone will not bring wanted effect as B' = B.extend({*constructor}) would. And after B' = B.extend({* constructor}), if you still want _.extend(B'.prototype) to mean something in C, move it up before B' = B.extend({* constructor});
 
-_.extend(X.prototype) will affect both already and newly created insteances of X and those extended from X.
+_.extend(X.prototype) will affect both already and newly created instances of X and those extended from X.
+
+Don't mess up things by just changing X.prototype. Do 'X = Y and then X'.prototype = new X and lastly X'.prototype.constructor = X'.
 
 
 Note on *Ghost View*
 --------------------
-This is caused by removing a view's html but leaving the event listeners 'on'... Thus make sure you remove a view's html together with the event listeners by invoking the `view.close()`(Marionette) method, which will in turn invoke the `view.undelegateEvents()`(Backbone) method which will futher grab `$.off`(jQuery) to clean up the listeners.
+This is caused by removing a view's html but leaving the event listeners 'on'... Thus make sure you remove a view's html together with the event listeners by invoking the `view.close()`(Marionette) method, which will in turn invoke the `view.undelegateEvents()`(Backbone) method which will further grab `$.off`(jQuery) to clean up the listeners.
 
 Note that calling `region.show()` will automatically `close()` the previously shown view object, the view object closed will still exist in the js runtime, if you somehow decide to `show()` it again, you need to manually call `view.delegateEvents()` to re-activate the event listeners.
 
