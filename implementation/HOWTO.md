@@ -1,6 +1,6 @@
 Pro.js
 ======
-*An infrastructure for building modern web application with many contexts.*
+*An infrastructure for building modern web application with many contexts.* [@Tim Liu](mailto:zhiyuanliu@fortinet.com)
 
 
 Current Version
@@ -26,23 +26,24 @@ If you don't know what they are, go for a quick look at their websites.
 ###Mental preparation
 Before start, you need to understand what is a web application, here is a brief diagram:
 
-<img src="/static/resource/default/diagram/Diagram_1.png" alt="Web App Diagram" class="img-thumbnail center-block"></img>
+<img src="/static/resource/default/diagram/Diagram-1.png" alt="Web App Diagram" class="center-block"></img>
 
 Note that you need to resolve 2 kinds of problem different in nature: *Interaction* and *Data Flow* in order to produce a web application.
 A successful one requires both parts to include careful design and feasible technique. We will examine the first part here.
 
-**Pro.js** will answer challenges from the *Interaction* problem domain (A.K.A UI/UX):
+**Pro.js** answers challenges from the *Interaction* problem domain (A.K.A UI/UX):
 
-<img src="/static/resource/default/diagram/Diagram_2.png" alt="UI/UX Problems" class="img-thumbnail center-block"></img>
+<img src="/static/resource/default/diagram/Diagram-2.png" alt="UI/UX Problems" class="center-block"></img>
 
 As you can see from the above, there are 3 problems here to address when implementing a UI/UX side for an application:
-1. Data -> Model/Collection [snapshot]
-2. Model/Collection [snapshot] -> View (UI)
-3. View -> Layout/Page + Transitions (UX)
+1. Data <i class="fa fa-arrows-h"></i> Model/Collection [snapshot]
+2. Model/Collection [snapshot] <i class="fa fa-arrows-h"></i> View (UI)
+3. View <i class="fa fa-arrows-h"></i> Layout/Page + Transitions (UX)
 
-As a full stack solution to the UI/UX side, we address the 3 problems with an intuitive architecture:
+As a full stack solution to the UI/UX side, we address these 3 problems with an intuitive architecture:
 
-<img src="/static/resource/default/diagram/Diagram_3.png" alt="Pro.js Architecture" class="img-thumbnail center-block"></img>
+<img src="/static/resource/default/diagram/Diagram-3.png" alt="Pro.js Architecture" class="center-block"></img>
+
 
 ###What's in the package
 
@@ -60,12 +61,12 @@ As a full stack solution to the UI/UX side, we address the 3 problems with an in
 
 ####Let's start
 You start developing by creating a `main.js` (you are free to choose whatever the name you like) 
-and include it in `/implementation/index.html` below the `<!--Main.js-->` comment line:
+and include it in `/implementation/index.html` below the `<!--main.js-->` comment line:
 
 ```
 <script src="js/all.min.js"></script>
 ...  
-<!--Main.js-->
+<!--main.js-->
 <script type="text/javascript" src="js/main.js"></script>
 ...
 ```
@@ -93,6 +94,8 @@ Application.setup({
 ###Development steps
 
 ###Unified API entry point
+
+###View Class+
 
 ###Create a new theme
 
