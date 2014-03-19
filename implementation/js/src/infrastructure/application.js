@@ -266,6 +266,7 @@ _.each(['Core', 'Util'], function(coreModule){
 
 			//Context switching utility
 			function navigate(context, module){
+				if(!context) return;
 				var targetContext = Application.Core.Context[context];
 				if(!targetContext) throw new Error('DEV::Application::You must have the requred context ' + context + ' defined...'); //see - special/registry/context.js			
 				if(Application.currentContext !== targetContext) {
@@ -313,7 +314,10 @@ _.each(['Core', 'Util'], function(coreModule){
 
 			//2.Auto-detect and init context (view that replaces the body region). see the Context.Login
 			if(!window.location.hash){
-				window.location.hash = ['#navigate', Application.config.defaultContext].join('/');
+				if(!Application.Core.Context[Application.config.defaultContext])
+					console.warn('DEV::Application::You might want to define a Default context using app.create(\'Context\', {...})');
+				else
+					window.location.hash = ['#navigate', Application.config.defaultContext].join('/');
 			}
 		});
 

@@ -126,7 +126,7 @@ var libMap = {};
 function combine(list, name){
 	var target = buildify().load('EMPTY.js');
 	var versions = {
-		created: new Date(),
+		created: new Date().toGMTString(),
 		list: []
 	};
 	_.each(list, function(lib){

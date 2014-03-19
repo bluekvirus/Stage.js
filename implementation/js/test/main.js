@@ -72,17 +72,20 @@
             });
             
             this.libinfo.show(Application.create('Regional', {
+                tagName: 'ul',
+                className: 'list-group',
                 template:[ 
-                        '<h4 class="text-center"><i class="fa fa-cogs"></i> Included Libraries</h4>',
-                        '<ul class="list-group" style="padding:6px;">',
-                            '{{#each items}}<li class="list-group-item" ui="libitem">{{#if url}}<a href="{{url}}">{{name}}</a>{{else}}{{name}}{{/if}}<span class="badge">@ {{version}}</span></li>{{/each}}',
-                        '</ul>',
+                    '<h4 class="text-center panel-heading"><i class="fa fa-cogs"></i> Included Libraries</h4>',    
+                    '{{#each list}}<li class="list-group-item" ui="libitem">{{#if url}}<a href="{{url}}">{{name}}</a>{{else}}{{name}}{{/if}}<span class="badge">@ {{version}}</span></li>{{/each}}',
+                    '<li class="list-group-item text-center panel-footer"><small>{{created}}</small></li>',
                 ],
                 onShow: function(){
                     var that = this;
                     $.get('js/libs/tracked/dist/selected.json', function(data){
-                        that.collection = Application.create('Collection', data.list);
-                        that.render();
+                        that.model = Application.create('Model', data);
+                        that.render().$el.css({
+                            padding: '0 6px'
+                        });
                         //console.log(that.ui.libitem);
                     });
                 }

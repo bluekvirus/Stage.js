@@ -24,11 +24,11 @@ and this indicates:
 If you don't know what they are, go for a quick look at their websites.
 
 ###Mental preparation
-Before start, you need to understand what is a web application, here is a brief diagram:
+Before start, you need to understand what is a *GUI application*, here is a brief diagram (casted upon the web realm):
 
 <img src="/static/resource/default/diagram/Diagram-1.png" alt="Web App Diagram" class="center-block"></img>
 
-Note that you need to resolve 2 kinds of problem different in nature: *Interaction* and *Data Flow* in order to produce a web application.
+Note that you need to resolve 2 kinds of problem different in nature: *Interaction* and *Data Flow* in order to produce an application.
 A successful one requires both parts to include careful design and feasible technique. We will examine the first part here.
 
 **Pro.js** answers challenges from the *Interaction* problem domain (A.K.A UI/UX):
@@ -44,6 +44,7 @@ As a full stack solution to the UI/UX side, we address these 3 problems with an 
 
 <img src="/static/resource/default/diagram/Diagram-3.png" alt="Pro.js Architecture" class="center-block"></img>
 
+To focus, think of your application in terms of *Context*s and *Regional*s. Use *Model*/*Collection* wisely, try not to involve them before relating to any *View*. That is to say, fetch/persist data through a unified *Data API* (CRUD or Restful). Unless you want a dynamic *View*, do **NOT** use *Model*/*Collection* to store and operate on the data. Focus on UI/UX and make the data interfacing with server as thin as possible.
 
 ###What's in the package
 
@@ -78,6 +79,7 @@ Minimum `main.js` script looks like this:
 Application.setup().run();
 ```
 You should now see a *blank* page without javascript error.
+
 If you are really in a hurry to see some stuff on the page, setup your application in `main.js` like this:
 ```
 //main.js
@@ -90,6 +92,8 @@ Application.setup({
 	]
 }).run();
 ```
+
+You will start real development by adding *region*s to your application template and define *Context*s and *Regional*s. Let's examine a standard list of development steps in the following section.
 
 ###Development steps
 
