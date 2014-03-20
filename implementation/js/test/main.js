@@ -76,7 +76,7 @@
                 className: 'list-group',
                 template:[ 
                     '<h4 class="text-center panel-heading"><i class="fa fa-cogs"></i> Included Libraries</h4>',    
-                    '{{#each list}}<li class="list-group-item" ui="libitem">{{#if url}}<a href="{{url}}">{{name}}</a>{{else}}{{name}}{{/if}}<span class="badge">@ {{version}}</span></li>{{/each}}',
+                    '{{#each list}}<li class="list-group-item" ui="libitem">{{#if url}}<a href="{{url}}">{{name}}</a>{{else}}{{name}}{{/if}}<span class="badge">{{version}}</span></li>{{/each}}',
                     '<li class="list-group-item text-center panel-footer"><small>{{created}}</small></li>',
                 ],
                 onShow: function(){
@@ -88,6 +88,12 @@
                         that.model = Application.create('Model', data);
                         that.render().$el.css({
                             padding: '0 6px'
+                        });
+                        var versionBadges = that.$('.badge');
+                        versionBadges.css({
+                            background: 'transparent',
+                            color: versionBadges.css('backgroundColor'),
+                            border: '1px solid'
                         });
                         //console.log(that.ui.libitem);
                     });

@@ -96,13 +96,35 @@ Application.setup({
 You will start real development by adding *region*s to your application template and define *Context*s and *Regional*s. Let's examine a standard list of development steps in the following section.
 
 ###Development steps
+* Setup
+* Context
+* Regional
+* General Views
+* app:meta-event
 
 ###Unified API entry point
+* app.create('Context')
+* app.create('Regional')
+* app.create() - shortcut to Marionette Views
+* app.create('Widget/Editor')
+* app.create('API/Model/Collection')?
+* app.create('Validator')
 
 ###View Class+
+* actions
+* editors
+* effect
+* view:meta-event
 
 ###Create a new theme
-
+* Theme Structure
+* Demo Page
+* Steps
+	* variables.less
+	* theme.less
+	* font.less (optional)
+	* print.less (optional)
+* LESS to CSS
 
 
 Include other js libs
