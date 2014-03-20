@@ -82,6 +82,9 @@
                 onShow: function(){
                     var that = this;
                     $.get('js/libs/tracked/dist/selected.json', function(data){
+                        _.extend(data, {
+                            created: moment(data.created).fromNow()
+                        });
                         that.model = Application.create('Model', data);
                         that.render().$el.css({
                             padding: '0 6px'
