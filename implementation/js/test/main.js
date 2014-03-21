@@ -41,10 +41,19 @@
                     '<hr/>',
                     '<div region="libinfo"></div>',
                 '</div>',
-                '<div region="doc" class="col-sm-9" md="HOWTO.md"></div>',
+                '<div region="doc" class="col-sm-9" md="HOWTO.md" action="refresh"></div>',
             '</div>',
         ],
-        onShow: function(){
+        initialize: function(){
+            this.enableActionTags();
+        },
+        actions: {
+            refresh: function($region, e){
+                if(e.altKey !== true || e.ctrlKey !== true) return;
+                this.trigger('view:reload-doc');
+            }
+        },
+        onReloadDoc: function(){ //meta:event programming
             var that = this;
             this.doc.$el.md({
                 cb: function($el){
@@ -70,7 +79,10 @@
                     }));
                 }
             });
-            
+        },
+        onShow: function(){
+
+            this.trigger('view:reload-doc');
             this.libinfo.show(Application.create('Regional', {
                 tagName: 'ul',
                 className: 'list-group',
@@ -85,6 +97,25 @@
                         _.extend(data, {
                             created: moment(data.created).fromNow()
                         });
+                        //push additional lib info
+                        var additionals = [
+                            {
+                                name: 'highlight.js',
+                                version: '8.0',
+                                url: 'http://highlightjs.org/'
+                            },
+                            {
+                                name: 'font-awesome',
+                                version: '4.0.3',
+                                url: 'http://fontawesome.io/'
+                            }
+                        ]
+                        _.each(additionals, function(add){
+                            var target = _.findWhere(data.list, {name: add.name});
+                            if(!target) data.list.push(add);
+                            else _.extend(target, add);
+                        });
+                        //------------------------
                         that.model = Application.create('Model', data);
                         that.render().$el.css({
                             padding: '0 6px'

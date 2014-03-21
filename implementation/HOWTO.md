@@ -24,6 +24,8 @@ and this indicates:
 If you don't know what they are, go for a quick look at their websites.
 
 ###Mental preparation
+
+####Define the problem
 Before start, you need to understand what is a *GUI application*, here is a brief diagram (casted upon the web realm):
 
 <img src="/static/resource/default/diagram/Diagram-1.png" alt="Web App Diagram" class="center-block"></img>
@@ -35,11 +37,12 @@ A successful one requires both parts to include careful design and feasible tech
 
 <img src="/static/resource/default/diagram/Diagram-2.png" alt="UI/UX Problems" class="center-block"></img>
 
-As you can see from the above, there are 3 problems here to address when implementing a UI/UX side for an application:
+As you can see from the above diagram, there are 3 problems here to address when implementing a UI/UX side for an application:
 1. Data <i class="fa fa-arrows-h"></i> Model/Collection [snapshot]
 2. Model/Collection [snapshot] <i class="fa fa-arrows-h"></i> View (UI)
 3. View <i class="fa fa-arrows-h"></i> Layout/Page + Transitions (UX)
 
+####Solution architecture
 As a full stack solution to the UI/UX side, we address these 3 problems with an intuitive architecture:
 
 <img src="/static/resource/default/diagram/Diagram-3.png" alt="Pro.js Architecture" class="center-block"></img>
@@ -99,7 +102,7 @@ You will start real development by adding *region*s to your application template
 * Setup
 * Context
 * Regional
-* General Views
+* Views
 * app:meta-event
 
 ###Unified API entry point
@@ -117,14 +120,36 @@ You will start real development by adding *region*s to your application template
 * view:meta-event
 
 ###Create a new theme
-* Theme Structure
-* Demo Page
-* Steps
-	* variables.less
-	* theme.less
-	* font.less (optional)
-	* print.less (optional)
-* LESS to CSS
+
+####Theme Structure
+* @import (inline) "../css/include/*.css" (the statically included styles)
+* bootstrap.less (do **NOT** change) - includes all the original bootstrap styles
+* **variables.less** - basic css override through pre-defined variables
+* **theme.less** - components and components override
+* mixins.less (optional)
+* font.less (optional) - extra web fonts
+* print.less (optional)
+
+You should be focusing on changing the theme.less and variables.less files.
+
+####LESS to CSS
+The `main.less` loads/glues all the above files and compiles into main.css, you do not need to compile the included .less files separately and put the compiled .css back into the `main.less`. The statically inlined css files are those that we want to copy into the compiled main.css without any change.
+
+In any .less file you can @include (to merge with, to have) other .less/.css files and you can define styles using LESS or css as well. That's why `bootstrap.less` loads other style definition files but doesn't have its own definition, it is used solely as a glue file. `variables.less` is another extreme, it only contains LESS vars to be reused in other style definition files so you can override the basic styles with ease later.
+
+One perk of using LESS is that you can define each .less to do only one thing, e.g:
+* static.less - to copy static css files;
+* vars.less - to define reusable css codes into variables;
+* component.less - use styles loaded/defined in static.less/vars.less to define new css styles in a nested class format;
+* main.less - glue(@include) the above .less files and let the compiler compile into main.css;
+
+####Icon Processing
+If you need to have customized icons, please ask your designer for 64x64 or even 128x128 sized icon files in png format. You can use the icon preparation tool to resize and combine them into a single CSS sprite package (.css + icons.png + demo.html). 
+
+See `/implementation/themes/README.md` for more details.
+
+####Preview Page
+There is a bootstrap components preview page at `[your theme folder]/index.html`. Change it to include more static components and use it to demo your new theme. `URL://[your host]/themes/[your theme]/`
 
 
 Include other js libs

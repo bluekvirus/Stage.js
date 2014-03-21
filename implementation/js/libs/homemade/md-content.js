@@ -92,13 +92,11 @@
 			if(gap > 0) { //drilling in (always 1 lvl down)
 				$node.$parent = $index;
 				$index.$children.append($node);
-				$index = $node; //point $index to this new node
 				level ++;
 			}else if (gap === 0) {
 				//back to same level ul (parent li's ul)
 				$node.$parent = $index.$parent;
 				$index.$parent.$children.append($node);
-				$index = $node;
 			}else {
 				while (gap < 0){
 					gap ++;
@@ -109,6 +107,7 @@
 				$node.$parent = $index.$parent;
 				$index.$parent.$children.append($node); //insert a same level node besides the found targeting level node
 			}
+			$index = $node; //point $index to this new node
 
 
 		});
