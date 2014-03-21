@@ -393,11 +393,6 @@ _.each(['Core', 'Util'], function(coreModule){
 			
 		switch(type){
 
-			//data
-			case 'API':
-				throw new Error('DEV::Application::TBI...'); 
-			break;
-
 			case 'Model': case 'Collection':
 				var obj = new Backbone[type](config);
 				return obj;

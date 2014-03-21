@@ -3,12 +3,45 @@ Pro.js
 *An infrastructure for building modern web application with many contexts.* [@Tim Liu](mailto:zhiyuanliu@fortinet.com)
 
 
-Current Version
+Current version
 ---------------
 **@1.0.0-rc1**
 
 
-Quick Start
+Mental preparation
+------------------
+Technique means nothing if people have no purposes in their mind. To prepare mentally to adapt something is to synchronize the mind around the subject domain behind so you can develop insights into the subject while applying the technique. The ultimate goal is always to understand the subject (in our case the problem) better.
+
+Make sure to ask enough questions, so you can quickly locate the core problem that a given technique is trying to solve efficiently. Soon enough, you will start to see things like the solution inventor, and you will have a high chance of becoming one yourself later. True understanding is almost always developed this way.
+
+If you can not agree with the author after reading this preparation chapter, do not bother with this framework.
+
+###Define the problem
+Before start, you need to understand what is a *GUI application*, here is a brief diagram (casted upon the web realm):
+
+<img src="/static/resource/default/diagram/Diagram-1.png" alt="Web App Diagram" class="center-block"></img>
+
+Note that you need to resolve 2 kinds of problem different in nature: *Interaction* and *Data Flow* in order to produce an application.
+A successful one requires both parts to include careful design and feasible technique. We examine the first part here.
+
+**Pro.js** answers challenges from the *Interaction* problem domain (A.K.A UI/UX):
+
+<img src="/static/resource/default/diagram/Diagram-2.png" alt="UI/UX Problems" class="center-block"></img>
+
+As you can see from the above diagram, there are 3 problems here to address when implementing a UI/UX side for an application:
+1. Data <i class="fa fa-arrows-h"></i> Model/Collection [snapshot]
+2. Model/Collection [snapshot] <i class="fa fa-arrows-h"></i> View (UI)
+3. View <i class="fa fa-arrows-h"></i> Layout/Page + Transitions (UX)
+
+###Solution architecture
+As a full stack solution to the UI/UX side, we address these 3 problems with an intuitive architecture:
+
+<img src="/static/resource/default/diagram/Diagram-3.png" alt="Pro.js Architecture" class="center-block"></img>
+
+To focus, think of your application in terms of *Context*s and *Regional*s. Use *Model*/*Collection* wisely, try not to involve them before relating to any *View*. That is to say, fetch/persist data through a unified *Data API* (CRUD or Restful). Unless you want a dynamic *View*, do **NOT** use *Model*/*Collection* to store and operate on the data. Focus on UI/UX and make the data interfacing with server as thin as possible.
+
+
+Getting started
 -----------
 You are assumed to have programed with:
 
@@ -21,46 +54,22 @@ and this indicates:
 * Underscore.js or Lo-Dash
 * Backbone.js
 
-If you don't know what they are, go for a quick look at their websites.
-
-###Mental preparation
-
-####Define the problem
-Before start, you need to understand what is a *GUI application*, here is a brief diagram (casted upon the web realm):
-
-<img src="/static/resource/default/diagram/Diagram-1.png" alt="Web App Diagram" class="center-block"></img>
-
-Note that you need to resolve 2 kinds of problem different in nature: *Interaction* and *Data Flow* in order to produce an application.
-A successful one requires both parts to include careful design and feasible technique. We will examine the first part here.
-
-**Pro.js** answers challenges from the *Interaction* problem domain (A.K.A UI/UX):
-
-<img src="/static/resource/default/diagram/Diagram-2.png" alt="UI/UX Problems" class="center-block"></img>
-
-As you can see from the above diagram, there are 3 problems here to address when implementing a UI/UX side for an application:
-1. Data <i class="fa fa-arrows-h"></i> Model/Collection [snapshot]
-2. Model/Collection [snapshot] <i class="fa fa-arrows-h"></i> View (UI)
-3. View <i class="fa fa-arrows-h"></i> Layout/Page + Transitions (UX)
-
-####Solution architecture
-As a full stack solution to the UI/UX side, we address these 3 problems with an intuitive architecture:
-
-<img src="/static/resource/default/diagram/Diagram-3.png" alt="Pro.js Architecture" class="center-block"></img>
-
-To focus, think of your application in terms of *Context*s and *Regional*s. Use *Model*/*Collection* wisely, try not to involve them before relating to any *View*. That is to say, fetch/persist data through a unified *Data API* (CRUD or Restful). Unless you want a dynamic *View*, do **NOT** use *Model*/*Collection* to store and operate on the data. Focus on UI/UX and make the data interfacing with server as thin as possible.
+If you don't know what they are, go for a quick look at their websites.(links are provided under the *Included Libraries* area on the left sidebar)
 
 ###What's in the package
 
 ####Project structure
 > * /design
->	* /assets
->	* /docs
+>   * /assets
+>   * /docs
 > * /implementation -- your web root
->	* /js
->	* /themes
->	* index.html
+>   * /js
+>   * /themes
+>   * /static
+>   * index.html
 > * /tools
->	* /build -- minify and concatenate your js files by scanning index.html
+>   * /build -- minify and concatenate your js files by scanning index.html
+>   * /iconprep -- build icons into big css sprite
 
 
 ####Let's start
@@ -98,30 +107,36 @@ Application.setup({
 
 You will start real development by adding *region*s to your application template and define *Context*s and *Regional*s. Let's examine a standard list of development steps in the following section.
 
-###Development steps
-* Setup
-* Context
-* Regional
-* Views
+###Quick steps
+
+####Init
+* app.setup()
+* app.run()
 * app:meta-event
 
-###Unified API entry point
+####Context
 * app.create('Context')
-* app.create('Regional')
-* app.create() - shortcut to Marionette Views
-* app.create('Widget/Editor')
-* app.create('API/Model/Collection')?
-* app.create('Validator')
 
-###View Class+
-* actions
-* editors
+####Regional
+* app.create('Regional')
+
+####Reusable
+* app.create('Widget/Editor')
+
+####Views+
+* app.create() - shortcut to Marionette Views
+* actions (and ui-locks)
 * effect
+* editors (and app.create('Validator'))
 * view:meta-event
+
+####Data handling
+* app.create('Model/Collection')
+* app.remote(options, payload)
 
 ###Create a new theme
 
-####Theme Structure
+####Theme structure
 * @import (inline) "../css/include/*.css" (the statically included styles)
 * bootstrap.less (do **NOT** change) - includes all the original bootstrap styles
 * **variables.less** - basic css override through pre-defined variables
@@ -143,12 +158,14 @@ One perk of using LESS is that you can define each .less to do only one thing, e
 * component.less - use styles loaded/defined in static.less/vars.less to define new css styles in a nested class format;
 * main.less - glue(@include) the above .less files and let the compiler compile into main.css;
 
-####Icon Processing
-If you need to have customized icons, please ask your designer for 64x64 or even 128x128 sized icon files in png format. You can use the icon preparation tool to resize and combine them into a single CSS sprite package (.css + icons.png + demo.html). 
+####Icons
+If you can, always use bootstrap & font-awesome icon fonts included in the package.
+
+If you need to have customized icons, please ask your designer for 64x64 or even 128x128 sized icon files in png format. You can use the icon preparation tool to resize and combine them into a single CSS sprite package (.css + icons.png + demo.html). Note that background image can **NOT** be combined into the CSS sprite. 
 
 See `/implementation/themes/README.md` for more details.
 
-####Preview Page
+####Preview page
 There is a bootstrap components preview page at `[your theme folder]/index.html`. Change it to include more static components and use it to demo your new theme. `URL://[your host]/themes/[your theme]/`
 
 
@@ -160,9 +177,10 @@ Go into `/implementation/js/libs/tracked` and run `bower install` to grab all th
 Include your libs after `all.js` (or `all.min.js`) in `/implementation/index.html`.
 
 
-What's in `/web+`?
+What should I put in `/static`?
 -----------------
-It contains template 404/500 pages and robot.txt if you need them.
+* `/resource` should contain static resources per locale. (xx_XX folder, `/default` for locale independent)
+* `/web+` now contains template 404/500 pages and robot.txt if you need them, they should be put under your web root once the development is done.
 
 
 Build for production use
