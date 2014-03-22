@@ -15,7 +15,7 @@
  * @updated 2013.11.08
  * @updated 2014.03.04
  */
-;(function(){
+;(function(app){
 
 	var _downloader = function(ticket){
 	    var drone = $('#hidden-download-iframe');
@@ -29,6 +29,6 @@
 	    drone.attr('src', (new URI(ticket.url || '/').search(_.omit(ticket, 'url'))).toString());
 	};
 
-	Application.Util.download = _downloader;
+	app.Util.download = _downloader;
 
-})();
+})(Application);

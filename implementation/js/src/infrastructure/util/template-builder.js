@@ -45,7 +45,7 @@
 
 	}
 
-	Application.Util.Tpl = Template;
+	app.Util.Tpl = Template;
 
 })(Application);
 

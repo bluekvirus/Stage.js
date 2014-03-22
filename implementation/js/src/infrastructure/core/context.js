@@ -67,8 +67,7 @@
 				}
 			});
 
-			if(config.onNavigateTo)
-				ctx.listenTo(ctx, 'context:navigate-to', config.onNavigateTo);
+			app.Util.addMetaEvent(ctx, 'context', config);
 			return ctx;
 		}
 

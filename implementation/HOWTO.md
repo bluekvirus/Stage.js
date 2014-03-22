@@ -7,10 +7,15 @@ Current version
 ---------------
 **@1.0.0-rc1**
 
+###What's next
+1.0.0-rc2 will bring:
+* app.remote() - for remote data interfacing through RESTful/CRUD format
+* editor="" - special template attribute for speeding up editors setup
+
 
 Mental preparation
 ------------------
-Technique means nothing if people have no purposes in their mind. To prepare mentally to adapt something is to synchronize the mind around the subject domain behind so you can develop insights into the subject while applying the technique. The ultimate goal is always to understand the subject (in our case the problem) better.
+Technique means nothing if people have no purposes in their mind. To prepare mentally to adapt something is to synchronize the mind around the subject domain so you can develop insights while applying the technique. The ultimate goal is always to understand the subject (in our case the problem) better.
 
 Make sure to ask enough questions, so you can quickly locate the core problem that a given technique is trying to solve efficiently. Soon enough, you will start to see things like the solution inventor, and you will have a high chance of becoming one yourself later. True understanding is almost always developed this way.
 
@@ -21,10 +26,8 @@ Before start, you need to understand what is a *GUI application*, here is a brie
 
 <img src="/static/resource/default/diagram/Diagram-1.png" alt="Web App Diagram" class="center-block"></img>
 
-Note that you need to resolve 2 kinds of problem different in nature: *Interaction* and *Data Flow* in order to produce an application.
-A successful one requires both parts to include careful design and feasible technique. We examine the first part here.
-
-**Pro.js** answers challenges from the *Interaction* problem domain (A.K.A UI/UX):
+You need to resolve 2 kinds of problem different in nature: *Interaction* and *Data Flow* in order to produce an application.
+A successful one requires both parts to employ careful design and feasible technique. We examine the first problem here:
 
 <img src="/static/resource/default/diagram/Diagram-2.png" alt="UI/UX Problems" class="center-block"></img>
 
@@ -34,7 +37,7 @@ As you can see from the above diagram, there are 3 problems here to address when
 3. View <i class="fa fa-arrows-h"></i> Layout/Page + Transitions (UX)
 
 ###Solution architecture
-As a full stack solution to the UI/UX side, we address these 3 problems with an intuitive architecture:
+As a full stack solution to the UI/UX side, we address those 3 problems with an intuitive architecture:
 
 <img src="/static/resource/default/diagram/Diagram-3.png" alt="Pro.js Architecture" class="center-block"></img>
 
@@ -110,18 +113,18 @@ You will start real development by adding *region*s to your application template
 ###Quick steps
 
 ####Init
-* app.setup()
+* app.setup() - template, defaultContext, ...
 * app.run()
 * app:meta-event
 
 ####Context
-* app.create('Context')
+* app.create('Context') - name, region="", view="", onNavigateTo
 
 ####Regional
-* app.create('Regional')
+* app.create('Regional') - name, region="", view=""
 
 ####Reusable
-* app.create('Widget/Editor')
+* app.create('Widget/Editor') - both instantiation and factory
 
 ####Views+
 * app.create() - shortcut to Marionette Views

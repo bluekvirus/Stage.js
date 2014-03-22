@@ -268,13 +268,7 @@
 			if(!options.template && !this.template) options.template = ' ';
 		}
 
-		this.listenTo(this, 'all', function(e){
-			var tmp = e.split(':');
-			if(tmp.length !== 2 || tmp[0] !== 'view') return;
-			var listener = _.string.camelize('on-' + tmp[1]);
-			if(this[listener])
-				this[listener].apply(this, _.toArray(arguments).slice(1));
-		});
+		app.Util.addMetaEvent(this, 'view');
 
 		return Backbone.Marionette.View.apply(this, arguments);
 	}

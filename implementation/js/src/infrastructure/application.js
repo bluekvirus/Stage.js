@@ -256,14 +256,8 @@ _.each(['Core', 'Util'], function(coreModule){
 		//Application init: Global listeners
 		Application.addInitializer(function(options){
 			//Global App Events Listener Dispatcher
-			Application.listenTo(Application, 'all', function(e){
-				if(_.string.startsWith(e, 'app:')){
-					var args = _.toArray(arguments).slice(1);
-					var listener = 'on' + _.string.classify(e.split(':')[1]);
-					if(Application[listener]) Application[listener].apply(Application, args);
-				}
-			});
-
+			Application.Util.addMetaEvent(Application, 'app');
+			
 			//Context switching utility
 			function navigate(context, module){
 				if(!context) return;

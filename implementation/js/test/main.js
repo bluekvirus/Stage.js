@@ -49,7 +49,7 @@
         },
         actions: {
             refresh: function($region, e){
-                if(e.altKey !== true || e.ctrlKey !== true) return;
+                if(e.altKey !== true) return; //both Unix and Windows
                 this.trigger('view:reload-doc');
             }
         },

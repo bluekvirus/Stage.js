@@ -8,18 +8,18 @@
  * @updated 2013.11.08
  * ============================
  */
-;(function(){
+;(function(app){
 
 	var _themeRoller = function(theme){
 	    $('#theme-roller').attr('href', 'themes/'+theme+'/css/main.css');
-	    Application.currentTheme = theme;
+	    app.currentTheme = theme;
 	};	
 
 	//Can expose the api to the Application
 	//To be considered...
-	Application.Util.rollTheme = function(theme){
+	app.Util.rollTheme = function(theme){
 		//TODO: re-render after theme re-apply.
 		_themeRoller(theme);
 	}
 
-})();
+})(Application);
