@@ -26,13 +26,18 @@
   ],
   "colorbox": "bower_components/colorbox/jquery.colorbox.js",
   "d3": "bower_components/d3/d3.js",
-  "detectizr": "bower_components/detectizr",
+  "detectizr": "bower_components/detectizr/dist/detectizr.js",
   "flexslider": "bower_components/flexslider",
   "handlebars": "bower_components/handlebars/handlebars.js",
   "highcharts.com": [
     "bower_components/highcharts.com/js/highcharts.src.js",
     "bower_components/highcharts.com/js/highcharts-more.src.js",
     "bower_components/highcharts.com/js/modules/exporting.src.js"
+  ],
+  "jqtree": [
+    "bower_components/jqtree/jqtree.css",
+    "bower_components/jqtree/jqtree-circle.png",
+    "bower_components/jqtree/tree.jquery.js"
   ],
   "jquery-file-upload": [
     "bower_components/jquery-file-upload/css/jquery.fileupload.css",
@@ -53,11 +58,6 @@
     "bower_components/jquery-file-upload/js/jquery.fileupload-angular.js",
     "bower_components/jquery-file-upload/js/jquery.iframe-transport.js"
   ],
-  "jqtree": [
-    "bower_components/jqtree/jqtree.css",
-    "bower_components/jqtree/jqtree-circle.png",
-    "bower_components/jqtree/tree.jquery.js"
-  ],
   "jquery-serializeForm": "bower_components/jquery-serializeForm",
   "jquery-sieve": "bower_components/jquery-sieve",
   "jquery-ui": "bower_components/jquery-ui/ui/jquery-ui.js",
@@ -65,7 +65,6 @@
   "jquery.terminal": "bower_components/jquery.terminal",
   "jquery.transit": "bower_components/jquery.transit",
   "jquery": "bower_components/jquery/dist/jquery.js",
-  "json3": "bower_components/json3/lib/json3.min.js",
   "marionette": [
     "bower_components/marionette/lib/backbone.marionette.js",
     "bower_components/marionette/lib/core/amd/backbone.marionette.js"
@@ -88,5 +87,6 @@
     "bower_components/uri.js/src/punycode.js",
     "bower_components/uri.js/src/URITemplate.js",
     "bower_components/uri.js/src/jquery.URI.js"
-  ]
+  ],
+  "yepnope": "bower_components/yepnope"
 }

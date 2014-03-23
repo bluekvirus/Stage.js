@@ -109,7 +109,6 @@ _.each(['document', 'window'], function(coreDomObj){
 	window['$' + coreDomObj] = $(window[coreDomObj]);
 });
 
-Modernizr.Detectizr.detect();//parse navigator.userAgent
 Swag.registerHelpers();
 NProgress.configure({
   showSpinner: false
@@ -257,7 +256,7 @@ _.each(['Core', 'Util'], function(coreModule){
 		Application.addInitializer(function(options){
 			//Global App Events Listener Dispatcher
 			Application.Util.addMetaEvent(Application, 'app');
-			
+
 			//Context switching utility
 			function navigate(context, module){
 				if(!context) return;

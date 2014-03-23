@@ -221,11 +221,11 @@ buildify.task({
 		var list = [
 			'modernizr',
 			'detectizr',
+			'yepnope',
 			'jquery', //version 2+
 			'jquery.transit',
 			'jquery.cookie',
 			'jquery-ui',
-			'jquery-serializeForm',
 			'jquery-file-upload',
 			'underscore',
 			'underscore.string',
@@ -238,9 +238,10 @@ buildify.task({
 			'uri.js',
 			'momentjs',
 			'marked',
-			'highlight.js',			
-			'nprogress', //or spin.js
-			'raphael'
+			'highlight.js',
+			'raphael',			
+			'nprogress' //or spin.js
+			
 		];
 		combine(list, 'libs');
 	}
