@@ -49,13 +49,13 @@
  *
  * Pre-defined events are:
  * app:navigate (contextName, moduleName) - app.onNavigate [pre-defined]
- * app:context-switched (contextName) 
- * 		[with context:navigate-to (moduleName) on context] - app.onContextSwitched [not-defined]
+ * app:context-switched (contextName)  - app.onContextSwitched [not-defined]
+ * 		[with context:navigate-to (moduleName) on context] - context.onNavigateTo [not-defined]
  * region:load-view (view/widget name registered in app, [widget init options])
  * 
  * Suggested events are: [not included, but you define, you fire to use]
  * app:prompt (options) - app.onPrompt [not-defined]
- * app:message (options) - app.onMessage [not-defined]
+ * app:error/info/success/warning (options) - app.onError [not-defined]
  * app:login (options) - app.onLogin [not-defined]
  * app:logout (options) - app.onLogout [not-defined]
  * app:server-push (options) - app.onServerPush [not-defined]
@@ -109,10 +109,12 @@ _.each(['document', 'window'], function(coreDomObj){
 	window['$' + coreDomObj] = $(window[coreDomObj]);
 });
 
-Swag.registerHelpers();
-NProgress.configure({
-  showSpinner: false
-});
+if(Swag)
+	Swag.registerHelpers();
+if(NProgress)
+	NProgress.configure({
+	  showSpinner: false
+	});
 
 /**
  * Define Application & Core Modules
@@ -167,32 +169,6 @@ _.each(['Core', 'Util'], function(coreModule){
 
 		//3. Setup Application
 		//3.1 Ajax Global
-		/**
-		 * Notifications
-		 * -------------
-		 * Default SUCCESS/ERROR reporting on ajax op globally.
-		 * Success Notify will only appear if ajax options.notify = true
-		 */
-		$document.ajaxSuccess(function(event, jqxhr, settings){
-			if(settings.notify)
-				Application.trigger('app:message', {
-					type: 'success',
-					message: ['Operation Successful', '|', settings.type, settings.url.split('?')[0]].join(' ')
-				});
-		});
-
-		$document.ajaxError(function(event, jqxhr, settings, exception){
-			if(settings.notify === false) return;
-			try{
-				var errorStr = $.parseJSON(jqxhr.responseText).error;
-			}catch(e){
-				var errorStr = errorStr || exception;
-			}
-			Application.trigger('app:message', {
-				type: 'error',
-				message: [errorStr, '|', settings.type, settings.url.split('?')[0]].join(' ')
-			});
-		});
 
 		/**
 		 * Progress

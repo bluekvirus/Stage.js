@@ -23,7 +23,7 @@
     theme: '_dev',
     template: '<div region="banner" view="Banner"></div><div region="center"></div><div region="footer" view="Footer"></div>',
     contextRegion: 'center',
-    defaultContext: 'QuickStart'
+    defaultContext: 'Document'
 
 }).run();
 
@@ -32,7 +32,7 @@
 
     Application.create('Context', {
         //don't name it, if want to define Default context.
-        name: 'QuickStart',
+        name: 'Document',
         className: 'container',
         template: [
             '<div class="row">',
@@ -348,10 +348,10 @@
                 '<div class="navbar-collapse collapse navbar-responsive-collapse">',//B
 
                   '<ul class="nav navbar-nav">',//1
-                    '<li context="Home"><a href="#navigate/Home"><i class="fa fa-home"></i> Home</a></li>',
-                    '<li context="QuickStart"><a href="#navigate/QuickStart"><i class="fa fa-bolt"></i> Quick Start</a></li>',
+                    '<li context="Home"><a href="#navigate/Home">Home</a></li>',
+                    '<li context="Document"><a href="#navigate/Document">Document</a></li>',
                     '<li context="Demo" class="dropdown">',
-                      '<a data-toggle="dropdown" class="dropdown-toggle" href="#"><i class="fa fa-dashboard"></i> Demo <b class="caret"></b></a>',
+                      '<a data-toggle="dropdown" class="dropdown-toggle" href="#">Demo <b class="caret"></b></a>',
                       '<ul class="dropdown-menu">',
                         '<li><a href="#" action="themePreview">Theme Preview</a></li>',
                         '<li class="divider"></li>',
@@ -382,7 +382,6 @@
                             '<li><a href="#" action="download" target="ajax-box.0.10.1.tar.gz"><i class="fa fa-arrow-circle-o-down"></i> ajax-box</a></li>',
                         '</ul>',
                     '</li>',
-                    '<li context="RSS"><a href="#navigate/RSS"><i class="fa fa-rss"></i> RSS</a></li>',
                     '<li><a href="#"><i class="fa fa-github-alt"></i></a></li>',
                   '</ul>',
 
