@@ -6,6 +6,8 @@ Pro.js
 Current version
 ---------------
 **@1.0.0-rc1**
+([Why is it versioned like this?](http://semver.org/))
+
 
 ###What's next
 1.0.0-rc2 will bring:
@@ -180,10 +182,14 @@ There is a bootstrap components preview page at `[your theme folder]/index.html`
 
 Include other js libs
 ---------------------
-The default `all.js` contains carefully (minimum) selected libs for your project, if you would like to introduce more, use `bower` and the `bower.json` file included.
+The default `all.js` contains carefully (minimum) selected libs for your project, if you would like to introduce more, use [bower](http://bower.io/) and the `bower.json` file included.
 Go into `/implementation/js/libs/tracked` and run `bower install` to grab all the monitored 3rd-party libraries.
 
 Include your libs after `all.js` (or `all.min.js`) in `/implementation/index.html`.
+
+**Tip:** 
+
+Alternatively, you can always use a *CDN* (Content Delivery Network) to load the js libraries into your index.html (e.g [jsDelivr](http://www.jsdelivr.com/)) However, this will affect the build process since these libs will not be combined if they are not from local.
 
 
 What should I put in `/static`?

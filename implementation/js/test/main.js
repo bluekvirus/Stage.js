@@ -90,6 +90,7 @@
                     '<h4 class="text-center panel-heading"><i class="fa fa-cogs"></i> Included Libraries</h4>',    
                     '{{#each list}}<li class="list-group-item" ui="libitem">{{#if url}}<a href="{{url}}">{{name}}</a>{{else}}{{name}}{{/if}}<span class="badge">{{version}}</span></li>{{/each}}',
                     '<li class="list-group-item text-center panel-footer"><small>{{created}}</small></li>',
+                    '<h5 class="text-center"><small>Learn more about <a href="http://bower.io/">bower</a> js package manager</small></h5>',
                 ],
                 onShow: function(){
                     var that = this;
