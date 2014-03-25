@@ -15,9 +15,11 @@
 		* baseAjaxURI
  * 2. Application.run();
  *
+ * ###How to interface with remote data?
+ * 3. Application.remote(options); see core/remote-data.js
+ *
  * ###How to create app elements?
  * 4. Application.create(type, config);
- * 		0. API //TBI - URL or Entity base data interfacing?
  * 		1. Model/Collection: {
  * 			[normal Backbone.Model/Collection options]
  * 		};
@@ -52,6 +54,7 @@
  * app:context-switched (contextName)  - app.onContextSwitched [not-defined]
  * 		[with context:navigate-to (moduleName) on context] - context.onNavigateTo [not-defined]
  * region:load-view (view/widget name registered in app, [widget init options])
+ * ...(see core/remote-data.js for more.)
  * 
  * Suggested events are: [not included, but you define, you fire to use]
  * app:prompt (options) - app.onPrompt [not-defined]
@@ -62,7 +65,7 @@
  * 
  * 6. One special event to remove the need of your view objects to listen to window.resized events themselves is
  * app fires >>>
- * 		view:resized - upon window resize event
+ * 		app:resized - upon window resize event
  * Listen to this event within your view definition on the Application object please.
  *
  * Usage (Specific)
@@ -160,7 +163,7 @@ _.each(['Core', 'Util'], function(coreModule){
 			loginContext: 'Login', //This is the fallback context (name) when the user needs to authenticate with server.
 			fullScreen: false, //This will put <body> to be full screen sized (window.innerHeight).
 	        rapidEventDebounce: 200, //in ms this is the rapid event debounce value shared within the application (e.g window resize).
-	        baseAjaxURI: null, //Modify this to fit your own backend apis. e.g index.php?q=
+	        baseAjaxURI: '/api', //Modify this to fit your own backend apis. e.g index.php?q= or '/api'
 		}, config);
 
 		//2 Detect Theme
@@ -175,47 +178,33 @@ _.each(['Core', 'Util'], function(coreModule){
 		 * --------
 		 * Configure NProgress as global progress indicator.
 		 */
-		$document.ajaxStart(function() {
+		Application.onAjaxStart = function() {
 			NProgress.start();
-		});
-		$document.ajaxStop(function() {
+		};
+		Application.onAjaxStop = function() {
 			NProgress.done();
-		});
+		};
 
 		/**
 		 *
-		 * Base URI & Crossdomain
+		 * Crossdomain Support
 		 * ----------------------
-		 * Preferred lvl of interference:
-		 * $.ajaxPrefilter()
-		 * [$.ajaxSetup()]
-		 * [$.ajaxTransport()]
-		 *
-		 * For instrumenting a global behavior on the ajax calls according to app.config
-		 * e.g:
-		 * 1. base uri is ?q=/.../... instead of /.../... directly
-		 * 2. crossdomain ajax support
 		 */
-			$.ajaxPrefilter('json', function(options){
+		Application.onAjax = function(options){
+			//crossdomain:
+			var crossdomain = Application.config.crossdomain;
+			if(crossdomain.enabled){
+				options.url = (crossdomain.protocol || 'http') + '://' + (crossdomain.host || 'localhost') + ((crossdomain.port && (':'+crossdomain.port)) || '') + (/^\//.test(options.url)?options.url:('/'+options.url));
+				options.crossDomain = true;
+				options.xhrFields = _.extend(options.xhrFields || {}, {
+					withCredentials: true //persists session cookies.
+				});
+			}
 
-				//base uri:
-				if(Application.config.baseAjaxURI)
-					options.url = Application.config.baseAjaxURI + options.url;
-
-				//crossdomain:
-				var crossdomain = Application.config.crossdomain;
-				if(crossdomain.enabled){
-					options.url = (crossdomain.protocol || 'http') + '://' + (crossdomain.host || 'localhost') + ((crossdomain.port && (':'+crossdomain.port)) || '') + (/^\//.test(options.url)?options.url:('/'+options.url));
-					options.crossDomain = true;
-					options.xhrFields = _.extend(options.xhrFields || {}, {
-						withCredentials: true //persists session cookies.
-					});
-				}
-
-				//cache:[for IE?]
-				options.cache = false;
-
-			});		
+			//cache:[disable it for IE only]
+			if(Modernizr.ie)
+				options.cache = false;			
+		}
 
 		//3.2 Initializers (Layout, Navigation)
 		/**
@@ -265,7 +254,7 @@ _.each(['Core', 'Util'], function(coreModule){
 			var $body = $('body');
 
 			function trackAppSize(){
-				Application.trigger('view:resized', {h: window.innerHeight, w: window.innerWidth});
+				Application.trigger('app:resized', {h: window.innerHeight, w: window.innerWidth});
 				if(Application.config.fullScreen){
 					$body.height(window.innerHeight);
 				}
@@ -349,7 +338,7 @@ _.each(['Core', 'Util'], function(coreModule){
 	};
 
 	/**
-	 * Define app universal object creation api entry point
+	 * Universal app object creation api entry point
 	 * ----------------------------------------------------
 	 */
 	Application.create = function(type, config){
@@ -388,6 +377,18 @@ _.each(['Core', 'Util'], function(coreModule){
 				throw new Error('DEV::APP::create() - You can not create an object of type ' + type);
 			break;
 		}
+	}
+
+	/**
+	 * Universal remote data interfacing api entry point
+	 * -------------------------------------------------
+	 * @returns jqXHR object (use promise pls)
+	 */
+	Application.remote = function(options){
+		if(options.payload)
+			return Application.Core.Remote.change(options);
+		else
+			return Application.Core.Remote.get(options);
 	}
 
 })();

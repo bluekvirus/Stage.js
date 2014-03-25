@@ -5,20 +5,14 @@ Pro.js
 
 Current version
 ---------------
-**@1.0.0-rc1**
+**@1.0.0-rc2**
 ([Why is it versioned like this?](http://semver.org/))
 
 
 ###What's next
-1.0.0-rc2 will bring:
-* app.remote() - for remote data interfacing through RESTful/CRUD format
-	- entity + id (no id means to create if offered entity name)
-	- url (either this or entity name)
-	- data (undefined data means to GET, null means to DELETE)
-	- querys (query params to put to url)
-	- other options (normal $.ajax options minus url/data)
+1.0.0-rc3 will bring:
 * editor="" - special template attribute for speeding up editors setup in views
-	- use 'data-' html5 data-attribute to indicate editor config
+	- use 'data-' html5 data-attribute to indicate editor config 
 
 
 Mental preparation

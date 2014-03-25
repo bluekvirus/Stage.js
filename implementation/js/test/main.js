@@ -94,7 +94,7 @@
                 ],
                 onShow: function(){
                     var that = this;
-                    $.get('js/libs/tracked/dist/selected.json', function(data){
+                    Application.remote('js/libs/tracked/dist/selected.json').done(function(data){
                         _.extend(data, {
                             created: moment(data.created).fromNow()
                         });
@@ -376,7 +376,7 @@
                         '<a data-toggle="dropdown" class="dropdown-toggle" href="#"><i class="fa fa-download"></i> Download <b class="caret"></b></a>',
                         '<ul class="dropdown-menu">',
                             '<li class="dropdown-header" >Client</li>',
-                            '<li><a href="#" action="download" target="projs.1.0.0-rc1.tar.gz"><i class="fa fa-arrow-circle-o-down"></i> pro.js</a></li>',
+                            '<li><a href="#" action="download" target="projs.1.0.0-rc2.tar.gz"><i class="fa fa-arrow-circle-o-down"></i> pro.js</a></li>',
                             '<li class="divider"></li>',
                             '<li class="dropdown-header">Server</li>',
                             '<li><a href="#" action="download" target="ajax-box.0.10.1.tar.gz"><i class="fa fa-arrow-circle-o-down"></i> ajax-box</a></li>',
