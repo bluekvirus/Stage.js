@@ -21,7 +21,6 @@
  * 		template: 'html template of the view as in Marionette.Layout',
  * 							- region=[] attribute --- mark a tag to be a region container
  * 							- view=[] attribute --- mark this region to show an new instance of specified view definition (in context.Views, see context.create below)
- * 	    requireLogin: 'true' | 'false' (default),
  * 	    onNavigateTo: function(module or path string) - upon getting the context:navigate-to event,
  * 	    ...: other Marionette Layout options.
  * });

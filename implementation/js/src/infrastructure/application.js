@@ -26,7 +26,6 @@
  * 		2. Context: {
  * 			[name]: if you don't name the context, we will use 'Default' as its name,
  * 			template: '#id' or '<...>' or ['<...>', '<...>'],(auto functional attribute: region, view)
- * 			[requireLogin]: 'true' / 'false'(default)
  * 			[onNavigateTo]: function(module path string)
 			[rest of normal Marionette.Layout options] - if you override initialize + onShow, the default region detect and view showing behavior will be removed.
  * 		};
@@ -160,7 +159,6 @@ _.each(['Core', 'Util'], function(coreModule){
 			 */		
 			contextRegion: 'app',
 			defaultContext: 'Default', //This is the context (name) the application will sit on upon loading.
-			loginContext: 'Login', //This is the fallback context (name) when the user needs to authenticate with server.
 			fullScreen: false, //This will put <body> to be full screen sized (window.innerHeight).
 	        rapidEventDebounce: 200, //in ms this is the rapid event debounce value shared within the application (e.g window resize).
 	        baseAjaxURI: '/api', //Modify this to fit your own backend apis. e.g index.php?q= or '/api'
@@ -230,10 +228,6 @@ _.each(['Core', 'Util'], function(coreModule){
 				if(Application.currentContext !== targetContext) {
 					Application.currentContext = targetContext;
 
-					//if the context requires user to login but he/she didn't, we remember the navi hash path and switch to the 'Login' context.				
-					if(Application.currentContext._config.requireLogin && !Application.Util.touch()){
-						Application.currentContext = Application.Core.Context[Application.config.loginContext];
-					}
 					if(!Application[Application.config.contextRegion]) throw new Error('DEV::Application::You don\'t have region \'' + Application.config.contextRegion + '\' defined');		
 					Application[Application.config.contextRegion].show(Application.currentContext.display());
 					//fire a notification round to the sky.
@@ -270,7 +264,7 @@ _.each(['Core', 'Util'], function(coreModule){
 				});
 			}
 
-			//2.Auto-detect and init context (view that replaces the body region). see the Context.Login
+			//2.Auto-detect and init context (view that replaces the body region)
 			if(!window.location.hash){
 				if(!Application.Core.Context[Application.config.defaultContext])
 					console.warn('DEV::Application::You might want to define a Default context using app.create(\'Context\', {...})');

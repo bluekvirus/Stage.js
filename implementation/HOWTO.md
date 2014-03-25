@@ -43,6 +43,15 @@ As a full stack solution to the UI/UX side, we address those 3 problems with an 
 
 <img src="/static/resource/default/diagram/Diagram-3.png" alt="Pro.js Architecture" class="center-block"></img>
 
+####What's Navigation?
+
+We achieve client-side multi-page through switching *Context*s on a pre-defined application region by responding to the URL fragment change event. (e.g #navigate/Context/...)
+
+####What's a Context?
+
+####What's a Regional?
+
+####Seems complicated...
 To focus, think of your application in terms of *Context*s and *Regional*s. Use *Model*/*Collection* wisely, try not to involve them before relating to any *View*. That is to say, fetch/persist data through a unified *Data API* (CRUD or Restful). Unless you want a dynamic *View*, do **NOT** use *Model*/*Collection* to store and operate on the data. Focus on UI/UX and make the data interfacing with server as thin as possible.
 
 
@@ -50,16 +59,21 @@ Getting started
 -----------
 You are assumed to have programed with:
 
-* Marionette.js
-* Handlebars.js
+* Marionette.js 
+<small class="text-muted">(Layout, Collection/CompositeView, ItemView)</small>
+* Handlebars.js 
+<small class="text-muted">(as template engine)</small>
 
 and this indicates:
 
-* jQuery or Zepto
-* Underscore.js or Lo-Dash
-* Backbone.js
+* jQuery or Zepto 
+<small class="text-muted">(DOM manipulator through CSS selectors)</small>
+* Underscore.js or Lo-Dash 
+<small class="text-muted">(handy js functions)</small>
+* Backbone.js 
+<small class="text-muted">(Model/Collection, View, Event, Router)</small>
 
-If you don't know what they are, go for a quick look at their websites.(links are provided under the *Included Libraries* area on the left sidebar)
+If you don't know what they are, go for a quick look at their websites. (links are provided under the *Included Libraries* area on the left sidebar)
 
 ###What's in the package
 
@@ -113,11 +127,48 @@ Application.setup({
 You will start real development by adding *region*s to your application template and define *Context*s and *Regional*s. Let's examine a standard list of development steps in the following section.
 
 ###Quick steps
+Here is the recommended work-flow by this framework. You should follow the steps each time you want to start a new project with *Pro.js*. We assume that you have downloaded the *Pro.js* client package now and extracted to your project folder of choice.
 
-####Init
-* app.setup() - template, defaultContext, ...
-* app.run()
-* app:meta-event
+Remember, creating a web application is like drawing a picture. Start by laying things out and gradually refine the details. In our case, always start by defining application regions and the *Context*s.
+
+####Step 1. Initialize
+Go to your `main.js` and setup the application by using `Application.setup()`:
+``` 
+//main.js
+Application.setup({
+    theme: 'your theme name',
+    fullScreen: false | true,
+    template: '#id' or ['<div>...</div>', '<div>...</div>'] or '<div>...</div>'
+    contextRegion: 'your context region marked in template',
+    defaultContext: 'your default context shown upon dom-ready',
+    baseAjaxURI: 'your base url for using app.remote()'
+}).run();
+```
+Each setup configure variable has its own default value, you can safely skip configuring them here, however, there is one you might want to change now -- `template`.
+
+Since your goal is to build a *multi-context* application, you need more *regions* in the application template:
+```
+//main.js
+Application.setup({
+    ...
+    template: [
+        '<div region="banner" view="Banner"></div>',
+        '<div region="body"></div>',
+        '<div region="footer"></div>'
+    ],
+    contextRegion: 'body',
+    ...
+}).run();
+```
+By using `region=""` attribute in any html tag, we marked pre-defined regions in the template, you can do this with any *Marionette.Layout* in our framework. They are already enhanced to pickup the attribute.
+
+Note that you can also use `view=""` attribute to load up a named *Regional* view in a given region, only tags marked with `region=""` first will continue to verify if there is an assigned *Regional* view through the `view=""` attribute.
+
+Now, given that you've changed the template, you need to also change `contextRegion` to point to the area that you use to swap between different *Context*s.
+
+If your application is a single-page application, you probably don't need more than one *Context*, in such a case, you don't need to change the application template. There will always be a region that wraps the whole application -- the *app* region. The **Default** *Context* will automatically show on region *app* with the default application setup.
+
+Since we've marked our context region and some regional views to show, let's proceed to define them in the following sections.
 
 ####Context
 * app.create('Context') - name, region="", view="", onNavigateTo
@@ -125,19 +176,26 @@ You will start real development by adding *region*s to your application template
 ####Regional
 * app.create('Regional') - name, region="", view=""
 
-####Reusable
-* app.create('Widget/Editor') - both instantiation and factory
-
 ####Views+
-* app.create() - shortcut to Marionette Views
-* actions (and ui-locks)
 * effect
-* editors (and app.create('Validator'))
-* view:meta-event
+* actions (and ui-locks)
+* editors
+* app.create('Validator')
+* app.create() - shortcut to Marionette Views
 
 ####Data handling
 * app.create('Model/Collection')
-* app.remote(options, payload)
+* app.remote(options)
+
+####Events
+* app:meta-event
+* context:meta-event
+* view:meta-event
+* region:load-view
+
+####Reusable
+* app.create('Widget/Editor') - both instantiation and factory
+
 
 ###Create a new theme
 

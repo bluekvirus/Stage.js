@@ -1,5 +1,12 @@
 Change Log
 ==========
+1.0.0-rc2 (2014-03-25)
+----------------------
+1. updated framework documentation (still in progress)
+2. replaced the remote data interfacing core module.
+3. added/formalized object meta-event programming util.
+
+
 1.0.0-rc1 (2014-03-12)
 ----------------------
 1. updated framework documentation (still in progress)
