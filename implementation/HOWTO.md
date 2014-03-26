@@ -1,18 +1,23 @@
-Pro.js
+Pro.js <sub class="text-muted" style="font-size:36%">based on Marionette.js</sub>
 ======
-*An infrastructure for building modern web application with many contexts.* [@Tim Liu](mailto:zhiyuanliu@fortinet.com)
+*An infrastructure for building modern web application with many contexts.*
+[@Tim Liu](mailto:zhiyuanliu@fortinet.com)
 
 
 Current version
 ---------------
 **@1.0.0-rc2**
-([Why is it versioned like this?](http://semver.org/))
+([Why is it version-ed like this?](http://semver.org/))
 
 
 ###What's next
-1.0.0-rc3 will bring:
+1.0.0-rc3 might bring:
 * editor="" - special template attribute for speeding up editors setup in views
-	- use 'data-' html5 data-attribute to indicate editor config 
+* use 'data-' html5 data-attribute to indicate editor configure
+* add pagination ability back to collections
+* add persist ability back to models
+* allow developers their own choices of template engine other than handlebars
+* provide a way to persist context status between context switches.
 
 
 Mental preparation
@@ -45,14 +50,30 @@ As a full stack solution to the UI/UX side, we address those 3 problems with an 
 
 ####What's Navigation?
 
-We achieve client-side multi-page through switching *Context*s on a pre-defined application region by responding to the URL fragment change event. (e.g #navigate/Context/...)
+We achieve client-side multi-page-alike navigation through switching *Context*s on a pre-defined application region by responding to the URL fragment change event. (e.g #navigate/Context/...)
 
 ####What's a Context?
+A *Context* is a *Marionette.Layout* wrapped inside a *Marionette* module, you can just think of it as a *Layout*. *Context*s only appear on the application's context region (each application can have only 1 such region). If you have more than 1 *Context*s defined, they will automatically swap on the context region in response to the navigation event. You will not have more than 1 active *Context* at any given time.
 
 ####What's a Regional?
+A *Regional* is a *Marionette.View* with name, it is to be shown on a region in template of your application or any *Marionette.Layout* instance. As you can see, since a *Context* is a *Layout* with extra functions, *Regional*s will be used closely with it. You will read about why a *Regional* needs a name in the **Quick steps** section.
+
+####Remote data handling?
+Modern web application generates views according to user data dynamically. This is why we picked *Backbone/Marionette* as our implementation base -- to use data-centered views. Plus, there is no doubt about wiring in remote data into your application through *Ajax* now. However, the way we handle remote data in our framework is a bit different than the original design in *Backbone*.
+
+We introduce a unified *DATA API* for handling all the in/out of remote server data, skipping the *Model/Collection* centered way of data manipulation. *Model/Collection* are only used as dumb data snapshot object on the client side to support views. The goal is to make the data interfacing layer *as thin as possible* on the client side. You will find more details in the **Quick steps** section.
+
+####Reuse view definitions?
+As *Design Patterns* dictates, we need to code in a way to:
+
+<img src="/static/resource/default/diagram/Diagram-4.png" alt="Design Pattern Goals" class="center-block"></img>
+
+For *Regional*s (or any *Marionette.View*) that you need to use again and again but with different configuration (e.g a Datagrid). Register it as a *Widget* or, in case of a basic input, an *Editor*. These reusable view definitions are call *Reusable*s in the framework. Think in terms of the **List and Container** technique as much as possible when creating them.
 
 ####Seems complicated...
-To focus, think of your application in terms of *Context*s and *Regional*s. Use *Model*/*Collection* wisely, try not to involve them before relating to any *View*. That is to say, fetch/persist data through a unified *Data API* (CRUD or Restful). Unless you want a dynamic *View*, do **NOT** use *Model*/*Collection* to store and operate on the data. Focus on UI/UX and make the data interfacing with server as thin as possible.
+To focus, think of your application in terms of *Context*s and *Regional*s. Like drawing a series of pictures, each page is a *Context* and you lay things out by sketching out regions first on each page then refined the details (*Regional*) within each region. 
+
+Use *Model*/*Collection* wisely, try not to involve them before relating to any *Marionette.View*. That is to say, fetch/persist data through a unified *Data API* (CRUD or Restful). Unless you want a dynamic view, do **NOT** use *Model*/*Collection* to store and operate on the data. Focus on UI/UX and make the data interfacing with server as thin as possible.
 
 
 Getting started
@@ -67,7 +88,7 @@ You are assumed to have programed with:
 and this indicates:
 
 * jQuery or Zepto 
-<small class="text-muted">(DOM manipulator through CSS selectors)</small>
+<small class="text-muted">(DOM manipulation through CSS selectors)</small>
 * Underscore.js or Lo-Dash 
 <small class="text-muted">(handy js functions)</small>
 * Backbone.js 
@@ -127,7 +148,7 @@ Application.setup({
 You will start real development by adding *region*s to your application template and define *Context*s and *Regional*s. Let's examine a standard list of development steps in the following section.
 
 ###Quick steps
-Here is the recommended work-flow by this framework. You should follow the steps each time you want to start a new project with *Pro.js*. We assume that you have downloaded the *Pro.js* client package now and extracted to your project folder of choice.
+Here is the recommended **workflow**. You should follow the steps each time you want to start a new project with *Pro.js*. We assume that you have downloaded the *Pro.js* client package now and extracted to your project folder of choice.
 
 Remember, creating a web application is like drawing a picture. Start by laying things out and gradually refine the details. In our case, always start by defining application regions and the *Context*s.
 
@@ -168,32 +189,33 @@ Now, given that you've changed the template, you need to also change `contextReg
 
 If your application is a single-page application, you probably don't need more than one *Context*, in such a case, you don't need to change the application template. There will always be a region that wraps the whole application -- the *app* region. The **Default** *Context* will automatically show on region *app* with the default application setup.
 
-Since we've marked our context region and some regional views to show, let's proceed to define them in the following sections.
+Now we've marked our context region and some regional views to show, let's proceed to define them in the following sections.
 
-####Context
+####Step 2. Define Contexts
 * app.create('Context') - name, region="", view="", onNavigateTo
 
-####Regional
+####Step 3. Define Regionals
 * app.create('Regional') - name, region="", view=""
 
-####Views+
+####Step 4. Handle data
+* app.create('Model/Collection')
+* app.remote(options)
+
+####Step 5. Add interactions
+#####Views+
 * effect
 * actions (and ui-locks)
 * editors
 * app.create('Validator')
 * app.create() - shortcut to Marionette Views
 
-####Data handling
-* app.create('Model/Collection')
-* app.remote(options)
-
-####Events
+#####Meta events
 * app:meta-event
 * context:meta-event
 * view:meta-event
 * region:load-view
 
-####Reusable
+####Step 6. Make Reusables
 * app.create('Widget/Editor') - both instantiation and factory
 
 
