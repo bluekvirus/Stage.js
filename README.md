@@ -1,18 +1,27 @@
 The Factory Project
 ===================
-This project produces **ProJS.Client** - an infrastructure for building modern web application client with many contexts (e.g a data-heavy administration context).
+This project produces **ProJS.Client** - an infrastructure for building modern web application client with many contexts (e.g a data-heavy administration app).
 
 
 What's next?
 ------------
-1. Use more Promise/A+ patterns in async op sequence (animation, remote data, delays/ticks - jQuery & node[bluebird](https://github.com/petkaantonov/bluebird));
-2. Editor+ : Spinner, Switches, DnD Listing, File Listing;
-3. Widget+ : Break Widgets into List and Containers (e.g list[stacked(items and table rows), tabbed, nested(tree), queued(toolbar)]); Grid Local Column +-/Sort/Filter;
+1.0.0-rc3 might bring:
+* editor="" - special template attribute for speeding up editors setup in views
+* use 'data-' html5 data-attribute to indicate editor configure
+* add pagination ability back to collections
+* add persist ability back to models
+* allow developers their own choices of template engine other than handlebars
+* provide a way to persist context status between context switches.
+
+1.0.0-release might bring:
+* Use more Promise/A+ patterns in async op sequence (animation, remote data, delays/ticks - jQuery & node[bluebird](https://github.com/petkaantonov/bluebird));
+* Editor+ : Spinner, Switches, DnD Listing, File Listing;
+* Widget+ : Break Widgets into List and Containers (e.g list[stacked(items and table rows), tabbed, nested(tree), queued(toolbar)]); Grid Local Column +-/Sort/Filter;
 
 
 Current Version
 ---------------
-1.0.0-rc1
+1.0.0-rc2
 
 
 Build Release
@@ -34,9 +43,9 @@ Core Concepts
 See `design/docs/code/framework.md`
 
 
-Simplified Development
+Workflow
 ----------------------
-See 'implementation/static/resource/default/md/how-to-use.md'
+See 'implementation/HOWTO.md'
 
 
 Tooling

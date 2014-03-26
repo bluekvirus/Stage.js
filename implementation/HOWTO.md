@@ -10,16 +10,6 @@ Current version
 ([Why is it version-ed like this?](http://semver.org/))
 
 
-###What's next
-1.0.0-rc3 might bring:
-* editor="" - special template attribute for speeding up editors setup in views
-* use 'data-' html5 data-attribute to indicate editor configure
-* add pagination ability back to collections
-* add persist ability back to models
-* allow developers their own choices of template engine other than handlebars
-* provide a way to persist context status between context switches.
-
-
 Mental preparation
 ------------------
 Technique means nothing if people have no purposes in their mind. To prepare mentally to adapt something is to synchronize the mind around the subject domain so you can develop insights while applying the technique. The ultimate goal is always to understand the subject (in our case the problem) better.
