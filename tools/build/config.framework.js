@@ -41,7 +41,7 @@ module.exports = {
 			},
 			'web+': 'static/web+',
 			'index.html': false,
-			'README.md': 'HOWTO.md'
+			'HOWTO.md': 'HOWTO.md'
 		},
 		tools: {
 			build: {
