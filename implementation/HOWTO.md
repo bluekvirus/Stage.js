@@ -137,10 +137,11 @@ Application.setup({
 
 You will start real development by adding *region*s to your application template and define *Context*s and *Regional*s. Let's examine a standard list of development steps in the following section.
 
+
 ###Quick steps
 Here is the recommended **workflow**. You should follow the steps each time you want to start a new project with *Pro.js*. We assume that you have downloaded the *Pro.js* client package now and extracted to your project folder of choice.
 
-Remember, creating a web application is like drawing a picture. Start by laying things out and gradually refine the details. In our case, always start by defining application regions and the *Context*s.
+Remember, creating a web application is like drawing a picture. Start by laying things out and gradually refine the details. In our case, always start by defining application template with regions and the *Context*s.
 
 ####Step 1. Initialize
 Go to your `main.js` and setup the application by using `Application.setup()`:
@@ -158,7 +159,7 @@ Application.setup({
 Each setup configure variable has its own default value, you can safely skip configuring them here, however, there is one you might want to change now -- `template`.
 
 Since your goal is to build a *multi-context* application, you need more *regions* in the application template:
-```
+```javascript
 //main.js
 Application.setup({
     ...
@@ -179,17 +180,143 @@ Now, given that you've changed the template, you need to also change `contextReg
 
 If your application is a single-page application, you probably don't need more than one *Context*, in such a case, you don't need to change the application template. There will always be a region that wraps the whole application -- the *app* region. The **Default** *Context* will automatically show on region *app* with the default application setup.
 
-Now we've marked our context region and some regional views to show, let's proceed to define them in the following sections.
+Now we've marked our context region and some regional views to show, let's proceed to define them through our powerful *Unified APIs* `Application.create()` and `Application.remote()` in the following sections.
 
 ####Step 2. Define Contexts
-* app.create('Context') - name, region="", view="", onNavigateTo
+Create a new file named `myContextA.js`, remember a *Context* is just a *Marionette app module* wrapped around a *Marionette.Layout* definition. We've taken care of the wrapping process, all you need to do is give the definition a name and the ordinary *Marionette.Layout* options:
+```
+//myContextA.js
+(function(app) {
+    app.create('Context', {
+        name: 'MyContextA', //omitting the name indicates context:Default
+        template: '...',
+        //..., normal Marionette.Layout options
+        onNavigateTo: function(subpath) {
+            //...
+        }
+    });
+})(Application);
+```
+You can still use the `region=""` and `view=""` attributes in the template. 
+
+Note that you should name your *Context* as if it is a *Class*. The name is important as it links the *Context* with the global navigation mechanism. 
+
+The `onNavigateTo` method denotes the `context:navigate-to` event listener. This event will get triggered if the application switched to `MyContextA` on the context region, so that you can do some *in-context* navigation followed by. (e.g if the navigation is at `#navigate/MyContextA/SubViewA...`)
+
+Now, with a *Context* defined, you will need *Regional*s to populate its regions.
 
 ####Step 3. Define Regionals
-* app.create('Regional') - name, region="", view=""
+Before creating a *Regional*, change your `myContextA.js` into `/context-a/index.js` so you can start adding regional definitions into the context folder as separate code files. Always maintain a clear code hierarchy through file structures. (You don't need to if you can be sure that the `myContextA.js` file will not exceed 400 lines with all the *Regional* code added.)
+
+Create `/context-a/myRegionalA.js` like this:
+```
+//myRegionalA.js
+(function(app) {
+    app.create('Regional', {
+        name: 'MyRegionalA', //omitting the name gets you an instance of this definition.
+        type: 'CollectionView', //omitting this indicates 'Layout'
+        template: '...',
+        //..., normal Marionette.xView options
+    });
+})(Application);
+```
+You can still use the `region=""` and `view=""` attributes in the template.
+
+Note that you should name your *Regional* as if it is a *Class*. The name is important if you want to use the auto-regional-loading mechanism through the `view=""` attribute in any *Marionette.Layout*. 
+
+By default, any *Regional* you define will be a *Marionette.Layout*, you can change this through the `type` option.
+
+By default, `app.create('Regional', {...})` returns the definition of the view, if you want to use the returned view anonymously, remove the `name` option. You will get a instance of the view definition to `show()` on a region right away. 
+
+Now, we've sketched the layout of our application, you might want more contexts defined before continue but that's the easy part, just repeat Step 1-2 till you are ready to proceed to stream in remote data to light-up the views.
 
 ####Step 4. Handle data
-* app.create('Model/Collection')
-* app.remote(options)
+Though we do not agree with *Backbone*'s way of loading and persisting data through *Model/Collection*s. We do agree that **data** should be the central part of every computer program. In our case, the remote data from server are still used to power the dynamic views we've just defined. We use *Backbone.Model/Collection* only when there is a *View*. In other words, *data* and *View*s are centric in our framework paradigm, *Model/Collection*s are not. Try to think of them as a integrated part of *View*s. 
+
+Having said that, you can still create *Backbone.Model/Collection* through our *Unified API* `Application.create()` like this:
+```
+Application.create('Model/Collection', {options})
+```
+The options passed will be the normal *Backbone.Model/Collection* ones.
+
+Our recommended way of loading/persisting remote data is through:
+```
+//returns the $.ajax() object - jqXHR for using promises.
+Application.remote('...' or {
+    entity: '',//entity name of resource
+    params/querys: {...},
+    _id: '',
+    _method: '',
+    payload: {...},
+    ..., //normal $.ajax options without (type, data, processData, contentType)
+});
+```
+This method will intelligently guess which of the four HTTP method to use for each request according to the options passed. Here is some examples:
+```
+//GET: /abc
+Application.remote('/abc');
+
+//GET: /abc?x=1&y=2
+Application.remote({
+    url: '/abc',
+    params/querys: {
+        x: 1,
+        y: 2
+    }
+});
+
+//GET: /user/1/details
+Application.remote({
+    entity: 'user',
+    _id: 1,
+    _method: 'details'
+});
+
+//POST: /user
+Application.remote({
+    entity: 'user',
+    payload: {...} //without _id
+});
+
+//PUT: /user/1
+Application.remote({
+    entity: 'user',
+    payload: { _id: 1, ...} //non-empty + _id
+});
+
+//DELETE: /user/1
+Application.remote({
+    entity: 'user',
+    payload: { _id: 1 } //just _id
+});
+
+```
+It is recommended to handle the callbacks through promises on the returned jqXHR object:
+```
+Application.remote(...)
+    .done(function(){...})
+    .fail(function(){...})
+    .always(...);
+```
+You can now render through remote data in a *Regional* like this:
+```
+//myRegionalA.js
+(function(app) {
+    app.create('Regional', {
+        name: 'MyRegionalA',
+        template: '...',
+        onShow: function(){
+            //load data and render through it:
+            var that = this;
+            app.remote({...}).done(function(data){
+                that.trigger('view:render-data', data);
+            });
+        }
+    });
+})(Application);
+```
+Note that we've used a meta-event programming concept here through `view:render-data` to eliminate the need of handling data through *Model/Collection*. the next section will contain detailed explanation on this subject.
+
 
 ####Step 5. Add interactions
 #####Views+
@@ -202,11 +329,18 @@ Now we've marked our context region and some regional views to show, let's proce
 #####Meta events
 * app:meta-event
 * context:meta-event (navigate-to)
-* view:meta-event (load-data)
+* view:meta-event (render-data)
 * region:load-view
 
-####Step 6. Make Reusables
+
+###Widgets/Editors
+* reusable views - the List'n'Container technique 
 * app.create('Widget/Editor') - both instantiation and factory
+
+
+###i18n/l10n
+* locale based `/static/resource` folder
+* String.i18n() - for internationalization and localization
 
 
 ###Create a new theme

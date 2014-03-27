@@ -280,10 +280,10 @@
 	//---------------------------------
 	_.extend(Backbone.Marionette.View.prototype, {
 
-		//1. view:load-data - for hiding model/collection manipulation most of the time
+		//1. view:render-data - for hiding model/collection manipulation most of the time
 		//	data - can be [...] or {obj}
 		//	reRender - true | false flag
-		onLoadData: function(data, reRender){
+		onRenderData: function(data, forceReRender){
 			if(_.isArray(data)){
 				this.collection = this.collection || app.create('Collection');
 				//local pagination support? TBI
@@ -293,7 +293,8 @@
 				this.model.set(data);
 			}
 
-			if(reRender)
+			if(forceReRender || this.model) //for model/collection change won't trigger Marionette.ItemView re-render.
+											//but collection change in a CollectionView will automatically trigger re-render.
 				this.render();
 		}
 	})

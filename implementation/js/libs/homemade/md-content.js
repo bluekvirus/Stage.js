@@ -1,5 +1,6 @@
 /**
  * This is the jquery plugin that fetch and show static .md contents through markd js lib
+ * (If you have highlight.js, the code block will be themed for you...)
  *
  * Usage
  * =====
@@ -7,6 +8,7 @@
  * $.md({
  * 	url: ...
  * 	marked: marked options see [https://github.com/chjj/marked]
+ * 	hljs: highlight js configure (e.g languages, classPrefix...)
  *  cb: function($el)...
  * })
  *
@@ -43,12 +45,18 @@
 	/*===============the util functions================*/
 
 	//support bootstrap theme + hilight.js theme.
-	function theme($el){
+	function theme($el, options){
 		$el.find('h3').addClass('text-primary');
 		$el.find('h1 + p').addClass('text-info');
-		$el.find('pre code').each(function(){
-			if(hljs) hljs.highlightBlock(this);
-		});
+		if(hljs){
+			hljs.configure(options && options.hljs);
+			$el.find('pre code').each(function(){
+
+				//TBI: detect class:lang-xxxx and color the code block accordingly
+				
+				hljs.highlightBlock(this);
+			});
+		}
 	}
 
 	//build ul/li table-of-content listing
@@ -125,7 +133,7 @@
 			var url = options.url || $el.attr('md') || $el.data('md');
 			$.get(url).done(function(res){
 				$el.html(marked(res, options.marked)).addClass('md-content');
-				theme($el);
+				theme($el, options);
 				options.cb && options.cb($el);
 			});
 		});

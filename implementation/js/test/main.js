@@ -56,6 +56,9 @@
         onReloadDoc: function(){ //meta:event programming
             var that = this;
             this.doc.$el.md({
+                hljs: {
+                    languages: ['js', 'html']
+                },
                 cb: function($el){
                     $el.css({
                         borderLeft: '1px solid #CCC'
@@ -117,7 +120,7 @@
                             else _.extend(target, add);
                         });
                         //------------------------
-                        that.trigger('view:load-data', data, true);
+                        that.trigger('view:render-data', data);
                         that.$el.css({
                             padding: '0 6px'
                         });
