@@ -117,8 +117,8 @@
                             else _.extend(target, add);
                         });
                         //------------------------
-                        that.model = Application.create('Model', data);
-                        that.render().$el.css({
+                        that.trigger('view:load-data', data, true);
+                        that.$el.css({
                             padding: '0 6px'
                         });
                         var versionBadges = that.$('.badge');

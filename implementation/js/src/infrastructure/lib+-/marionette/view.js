@@ -253,6 +253,7 @@
 		options = options || {};
 
 		if(!_.isFunction(options)){
+			//auto ui pick-up
 			if(!this.ui && !options.ui){
 				//figure out ui tags
 				var tpl = Backbone.Marionette.TemplateCache.prototype.loadTemplate(options.template || this.template || ' ');
@@ -268,10 +269,34 @@
 			if(!options.template && !this.template) options.template = ' ';
 		}
 
+		//meta-event programming ability
 		app.Util.addMetaEvent(this, 'view');
 
 		return Backbone.Marionette.View.apply(this, arguments);
 	}
+
+	//---------------------------------
+	//	Default meta-event responders
+	//---------------------------------
+	_.extend(Backbone.Marionette.View.prototype, {
+
+		//1. view:load-data - for hiding model/collection manipulation most of the time
+		//	data - can be [...] or {obj}
+		//	reRender - true | false flag
+		onLoadData: function(data, reRender){
+			if(_.isArray(data)){
+				this.collection = this.collection || app.create('Collection');
+				//local pagination support? TBI
+				this.collection.set(data);
+			}else{
+				this.model = this.model || app.create('Model');
+				this.model.set(data);
+			}
+
+			if(reRender)
+				this.render();
+		}
+	})
 
 
 })(Application)

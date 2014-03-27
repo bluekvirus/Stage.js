@@ -201,8 +201,8 @@ Now we've marked our context region and some regional views to show, let's proce
 
 #####Meta events
 * app:meta-event
-* context:meta-event
-* view:meta-event
+* context:meta-event (navigate-to)
+* view:meta-event (load-data)
 * region:load-view
 
 ####Step 6. Make Reusables
