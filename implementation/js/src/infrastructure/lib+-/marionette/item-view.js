@@ -17,7 +17,7 @@
 	 * Do this in onShow() instead of initialize.
 	 */
 	_.extend(Backbone.Marionette.ItemView.prototype, {
-		enableSVGCanvas: function(cb){
+		enableSVG: function(cb){
 			if(!Raphael) throw new Error('DEV::View::You did NOT have Raphael.js included in the libs.');
 			if(cb){
 				var that = this;
@@ -44,7 +44,6 @@
 	 * options
 	 * -------
 	 * global: general config as a base for all editors, (overriden by individual editor config)
-	 * appendTo: [selector] - general appendTo css selector
 	 * triggerOnShow: true|false[default],
 	 * editors: {
 	 * 	name: {
@@ -93,8 +92,6 @@
 				var $position = this.$('[editor="' + name + '"]');
 				if($position.length === 0 && config.appendTo)
 					$position = this.$(config.appendTo);
-				if($position.length === 0 && options.appendTo)
-					$position = this.$(options.appendTo);
 				if($position.length === 0)
 					$position = this.$el;
 				$position.append(editor.el);

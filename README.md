@@ -6,8 +6,6 @@ This project produces **ProJS.Client** - an infrastructure for building modern w
 What's next?
 ------------
 1.0.0-rc3 might bring:
-* editor="" - special template attribute for speeding up editors setup in views
-* use 'data-' html5 data-attribute to indicate editor configure
 * add pagination ability back to collections
 * add persist ability back to models
 * allow developers their own choices of template engine other than handlebars

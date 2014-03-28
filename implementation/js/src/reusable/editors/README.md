@@ -27,7 +27,7 @@ Basic Editors
 -------------
 (required) - browser compatibility ref: IE9+/FF/Chrome/Safari/Opera [http://www.w3schools.com/tags/att_input_type.asp])
 
-Input - (text, password, url, email, checkbox(s), radios, file, hidden) - from `<input>`
+Input - (text, password, url, email, checkbox(s), radios, file, hidden, ro) - from `<input>`
 Texts - (texts) - from `<textarea>`
 Select - from `<select>`
 

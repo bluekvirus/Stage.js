@@ -9,34 +9,44 @@
  * 		label: in col-..-[1..12] bootstrap 3 grid class
  * 		field: ...
  * }
- * name
  * type (see predefined/parts/editors/README.md)
- * fieldname - this is to override the field this editor points to (in case of an array of inputs for one array field) e.g "abc[]" - see jquery-serializeForm in lib
  * label
  * help
  * tooltip
  * placeholder
  * value: default value (this is just for single input field, which don't have options.data config-ed)
- * html: - indicating read-only text field (setting this will cause 'type' config to be ignored)
- * multiple - select only
- * rows - textarea only
+ *
+ * //special
+ * html: - indicating read-only text field (setting this will cause 'type' config to be 'ro')
+ * 
+ * //radios/selects/checkboxes only
  * options: { 
  * 	inline: true|false (for radios and checkboxes only - note that the choice data should be prepared and passed in instead of using url or callbacks to fetch within the editor)
  * 	data: [] or {group:[], group2:[]} - (groups are for select only)
  * 	labelField
  * 	valueField
  * }
- * //specifically for single checkbox
+ *
+ * //select only
+ * multiple
+ * 
+ * //textarea only 
+ * rows
+ * 
+ * //single checkbox only
  * boxLabel: (single checkbox label other than field label.)
- * unchecked: '...' (config.value for a single checkbox is the checkedVal)
- * upload: { - input.type = file only 
+ * checked: '...' - checked value
+ * unchecked: '...' - unchecked value
+ *
+ * //specifically for file only
+ * upload: {
  * 	url - a string or function that gives a url string as where to upload the file to.
  * 	cb (_this, result, textStatus, jqXHR) - the upload callback if successful.
  * }
  * 
- * validate (custom function and/or rules see core/parts/editors/basic/validations.js)
- *
- * The validation function should return null or 'error string' to be used in status.
+ * validate (custom function and/or rules see core/parts/editors/basic/validations.js) - The validation function should return null or 'error string' to be used in status.
+ * parentCt - event delegate.
+ * 
  *
  * @author Tim.Liu
  * @contributor Yan.Zhu
@@ -69,7 +79,7 @@
 			},
 
 			initialize: function(options){
-				//collect [parentCt](to fire events on), name, label, type, placeholder/help/tooltip, options(radios/checkboxes only) and validation settings
+				//[parentCt](to fire events on) as delegate
 				this.parentCt = options.parentCt;
 				
 				//prep the choices data for select/radios/checkboxes
@@ -111,10 +121,10 @@
 					uiId: _.uniqueId('basic-editor-'),
 					layout: options.layout || '',
 					name: options.name, //*
-					type: options.html? 'text': options.type, //*
+					type: options.html? 'ro': options.type, //*
 					multiple: options.multiple || false, //optional
 					rows: options.rows || 3, //optional
-					fieldname: options.fieldname || undefined, //optional
+					fieldname: options.fieldname || undefined, //optional - not recommended, require jquery.serializeForm plugin to collect value
 					label: options.label || '', //optional
 					placeholder: options.placeholder || '', //optional
 					html: options.html || '', //optional
@@ -123,7 +133,8 @@
 					options: options.options || undefined, //optional {inline: true|false, data:[{label:'l', val:'v', ...}, {label:'ll', val:'vx', ...}] or ['v', 'v1', ...], labelField:..., valueField:...}
 					//specifically for a single checkbox field:
 					boxLabel: options.boxLabel || '',
-					value: options.value || (options.type === 'checkbox'? true: ''),
+					value: options.value,
+					checked: options.checked || true,
 					unchecked: options.unchecked || false
 				});
 
@@ -236,6 +247,9 @@
 					//radios/checkboxes
 					this.ui.inputs.find('input').val(_.isArray(val)?val:[val]);
 				}else {
+					if(this.model.get('type') === 'checkbox'){
+						if(val === this.model.get('checked')) this.ui.input.prop('checked', true);
+					}
 					this.ui.input.val(val);
 				}
 				if(loud) {
@@ -255,7 +269,7 @@
 					return result;
 				}else {
 					if(this.model.get('type') === 'checkbox'){
-						return this.ui.input.prop('checked')? this.model.get('value'): this.model.get('unchecked');
+						return this.ui.input.prop('checked')? (this.model.get('checked') || true) : (this.model.get('unchecked') || false);
 					}
 					return this.ui.input.val();
 				}
@@ -345,20 +359,20 @@
 							//single checkbox
 							'<label>',
 								//note that the {{if}} within a {{each}} will impose +1 level down in the content scope.  
-								'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" type="checkbox" value="{{value}}" unchecked="{{unchecked}}"> {{boxLabel}}',
+								'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" type="checkbox" value="{{value}}"> {{boxLabel}}',
 							'</label>',
 						'{{else}}',
 							//normal field
-							'{{#unless html}}',
+							'{{#is type "ro"}}',//read-only
+								'<div ui="input-ro" data-value="{{{value}}}" class="form-control-static">{{#if html}}{{{html}}}{{else}}{{{value}}}{{/if}}</div>',
+							'{{else}}',
 								'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" {{#isnt type "file"}}class="form-control"{{else}} style="display:inline;" {{/isnt}} type="{{type}}" id="{{uiId}}" placeholder="{{placeholder}}" value="{{value}}"> <!--1 space-->',
 								'{{#is type "file"}}',
 									'<span action="upload" class="hide file-upload-action-trigger" ui="upload" style="cursor:pointer;"><i class="glyphicon glyphicon-upload"></i> <!--1 space--></span>',
 									'<span action="clear" class="hide file-upload-action-trigger" ui="clearfile"  style="cursor:pointer;"><i class="glyphicon glyphicon-remove-circle"></i></span>',
 									'<span ui="result" class="file-upload-result"></span>',
-								'{{/is}}',
-							'{{else}}',
-								'<div ui="input-ro" data-value="{{value}}" class="form-control-static">{{{html}}}</div>', //read-only html instead
-							'{{/unless}}',
+								'{{/is}}',							
+							'{{/is}}',
 						'{{/is}}',
 						'</div>',	
 					'{{/if}}',

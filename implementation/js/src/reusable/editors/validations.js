@@ -38,30 +38,22 @@
 
 ;(function(app){
 
-	//preset error strings
-	app.Core.Editor.errors = {
-
-		required: 'This field is required',
-		unique: 'This value has been taken'
-
-	};
 
 	//preset rules
 	app.Core.Editor.rules = {
 
 		required: function(options, val, form){
-			if(!val) return (_.isObject(options) && options.msg) || app.Core.Editor.errors['required'];
+			if(!val) return (_.isObject(options) && options.msg) || 'This field is required';
 		}
 
 	}
 
 	//adding new rules at runtime
-	app.Core.Editor.addRule = function(name, fn, error){
+	app.Core.Editor.addRule = function(name, fn){
 		if(!name || !_.isFunction(fn)) throw new Error('DEV::Editor::Basic validation rule must have a name and a function implementation.');
 		if(app.Core.Editor.rules[name]) console.warn('DEV::Editor::Basic validation rule name ['+ name +'] is already defined.');
 
 		app.Core.Editor.rules[name] = fn;
-		if(_.isString(error)) app.Core.Editor.errors[name] = error;
 	}
 
 })(Application);

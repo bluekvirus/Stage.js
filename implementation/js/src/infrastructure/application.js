@@ -355,7 +355,7 @@ _.each(['Core', 'Util'], function(coreModule){
 				return Application.Core[type].create(config); 
 			break;
 			case 'Validator':
-				return Application.Core.Editor.addRule(config.name, config.fn, config.error);
+				return Application.Core.Editor.addRule(config.name, config.fn);
 			break;
 
 			//re-usable

@@ -155,7 +155,9 @@
             '<div editors="*" class="form form-horizontal"></div>', //the class form form-horizontal is required for the editor layout class config to work in bootstrap 3
             '<div class="row">',
                 '<div class="col-sm-10 col-sm-offset-2">',
-                    '<span class="btn btn-primary" action="test">Submit</span> <span class="btn btn-warning">Validate</span>',
+                    '<span class="btn btn-primary" action="submit">Submit</span> ',
+                    '<span class="btn btn-warning" action="validate">Validate</span> ',
+                    '<span class="btn btn-default" action="test">Test</span> ',
                 '</div>',
             '</div>'
         ],
@@ -163,18 +165,29 @@
             this.enableActionTags();
         },
         actions: {
-            test: function($btn){
+            validate: function($btn){
                 this.validate(true);
+            },
+            submit: function(){
+                console.log(this.getValues());
+            },
+            test: function(){
+                this.setValues({
+                    checkboxes: [1231, 1233],
+                    readonly2: 'Hello!',
+                    singlecheckbox: 'enabled'
+                });
             }
         },
         onShow: function(){
             this.activateEditors({
-                appendTo: 'div[editors]',
+                
                 global: {
                     layout: {
                         label: 'col-sm-2',
                         field: 'col-sm-10'
-                    }
+                    },
+                    appendTo: 'div[editors]',
                 },
                 editors: {
                     abc: {
@@ -220,7 +233,13 @@
                     },
                     readonly: {
                         label: 'RO',
-                        html: '<p class="text-success">Nothing...RO</p>'
+                        html: '<p class="text-success">Nothing...but HTML</p>'
+                    },
+
+                    readonly2: {
+                        label: 'RO 2',
+                        type: 'ro',
+                        value: 'Unchange-able'
                     },
 
                     xyz: {
@@ -272,8 +291,8 @@
                         label: 'Check?',
                         type: 'checkbox',
                         boxLabel: 'Select this one if you are smart...:D',
-                        //value: 'enabled',
-                        //unchecked: 'disabled',
+                        checked: 'enabled',
+                        unchecked: 'disabled',
                     },
 
                     select: {

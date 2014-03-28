@@ -382,11 +382,134 @@ Any *Marionette.View* can have its actions configure block activated like this (
     });
 })(Application);
 ```
-Note that `this.enableActions()` is recommended to be called within the `initialize()` function introduced by *Marionette*.
+Note that `enableActions()` is recommended to be called within the `initialize()` function introduced by *Marionette*.
 
-Use `this.enableActions(true)` if you want the click event to **propagate** to the parent view/container. `e.preventDefault()` needs to be specified in the action listeners if you don't want a clicking on `<a href="#xyz" action="another"></a>` tag to affect the navigation.
+Use `enableActions(true)` if you want the click event to **propagate** to the parent view/container. `e.preventDefault()` needs to be specified in the action listeners if you don't want a clicking on `<a href="#xyz" action="another"></a>` tag to affect the navigation.
 
 #####Inputs
+We have already prepared the basic html editors for you in the framework. You don't have to code `<input>, <select> or <textarea>` in any of your view template. Instead, you can activate them in any *Marionette.xView* like this:
+```
+Application.create({
+    //It is recommended to do it in the onShow() event listener
+    onShow: function(){
+        this.activateEditors({
+            editors: { //editors per fieldname
+                abc: {
+                    type: 'text', //other types are available as well.
+                    label: 'Abc',
+                    help: 'This is abc',
+                    tooltip: 'Hey Abc here!',
+                    placeholder: 'abc...',
+                    value: 'default',
+                    validate: { //validators are executed in sequence:
+                        required: { //named validator
+                            msg: 'Hey input something!', //options
+                            ...,
+                        },
+                        fn: function(val, parentCt){ //anonymous validator
+                            if(!_.string.startsWith(val, 'A')) return 'You must start with an A';
+                        }
+                    }
+
+                },
+                ..., //other editor configures
+            }
+        });
+    }
+});
+```
+The `activateEditors()` method accepts:
+```
+this.activateEditors({
+    global: {...}, //globally shared editor configure (e.g layout, appendTo or parentCt...),
+    triggerOnShow: false | true, //whether to trigger 'show' on an editor after appending.
+    editors: {...} //individual editor configure by fieldname
+});
+```
+
+A little bit more about the basic options: 
+* appendTo - in case you don't have `editor=""` in your template
+* parentCt - in case you want to delegate editor events to a parent container object (e.g a view object called form).
+* type - text, password, url, email, checkbox(s), radios, file, hidden, ro, textarea, select
+* label
+* help
+* tooltip
+* placeholder
+* value
+* validate - (custom function or list of validators and rules)
+
+A custom validate function can be configured like this:
+```
+...
+validate: function(val, parentCt){
+    if(val !== '123') return 'You must enter 123';
+},
+...
+```
+**The validate function or validators should return undefined or 'error string' for passed and rejected respectively**
+
+You can always register more named validators by:
+```
+Application.create('Validator', {
+    name: '...',
+    fn: function(options, val, parentCt){...},
+});
+```
+
+Additional advanced options
+* layout 
+ - label - css class (e.g col-sm-2)
+ - field - css class (e.g col-sm-10)
+* html: - indicating read-only text field (setting this will cause 'type' to be 'ro')
+* options: (radios/selects/checkboxes only)
+    * inline: true|false 
+    * data: [] or {group:[], group2:[]} - (groups are for select only)
+    * labelField
+    * valueField
+* multiple - true|false (select only)
+* rows - number (textarea only) 
+* boxLabel: (single checkbox label other than field label.)
+* checked: '...' - (checked value, single checkbox only)
+* unchecked: '...' - (unchecked value, single checkbox only)
+* upload: (file only)
+    * url - a string or function that gives a url string as where to upload the file to.
+    * cb (this, result, textStatus, jqXHR) - the upload callback if successful.
+
+Remember, you can always layout your editors in a *Marionette.xView* through the `editor=""` attribute in the template: 
+```
+template: [
+    '<div editor="abc"></div>', //use fieldname to identify editor
+    '<div editor="efg"></div>'
+]
+```
+Don't forget to call `this.enableEditors()` during `onShow()` or the attributes will not have any effect to the view. You will also get the following apis attached to the **view** instance object:
+```
+this.getVal(name);
+this.getValues();
+this.setVal(name, val, loud); //set loud to true if you want to fire change event on the editor.
+this.setValues(vals, loud);
+this.validate(true|false); //true for showing the validation errors.
+```
+
+#####Graphs
+We support graphs through SVG. A basic SVG library is integrated with the framework (Raphaël.js). You can use it in any *Marionette.xView* through:
+```
+Application.create({
+    onShow: function(){
+        this.enableSVG(function(){
+            this.paper... //do your svg drawing
+        });
+    }
+});
+//or synced version:
+Application.create({
+    onShow: function(){
+        this.enableSVG();
+        this.paper... //do your svg drawing
+    }
+});
+```
+Don't worry about container resizing, it is automatically taken cared for you. 
 
 #####Meta-events
 * app:meta-event
@@ -478,3 +601,24 @@ see PHILOSOPHY.md
 
 ###B. Change log
 see CHANGELOG.md
+
+###C. Useful sites
+####CDN
+* [jsDelivr](http://www.jsdelivr.com/)
+
+####Javascript
+* [Douglas Crockford on js](http://www.crockford.com/javascript/)
+* [Superherojs](http://superherojs.com)
+
+####HTML5/CSS3
+* [HTML5 boilerplate](http://html5boilerplate.com/)
+* [Initializr](http://www.initializr.com/) - faster way of using h5bp
+* [HTML5 rocks!](http://www.html5rocks.com/en/)
+* [HTML5.org](http://html5.org/)
+
+####Look'n'Feel
+* [Bootswatch](http://bootswatch.com/) - Bootstrap themes
+* [WrapBootstrap](https://wrapbootstrap.com/) - Advanced Bootstrap themes
+* [H5BP.showcase](http://h5bp.net/) - Site examples
+* [Subtlepatterns](http://subtlepatterns.com/) - web texture
+* [Google Fonts](http://www.google.com/fonts/)/[Font Squirrel](http://www.fontsquirrel.com/) - web fonts
