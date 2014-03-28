@@ -226,7 +226,16 @@ Note that you should name your *Regional* as if it is a *Class*. The name is imp
 
 By default, any *Regional* you define will be a *Marionette.Layout*, you can change this through the `type` option.
 
-By default, `app.create('Regional', {...})` returns the definition of the view, if you want to use the returned view anonymously, remove the `name` option. You will get a instance of the view definition to `show()` on a region right away. 
+By default, `Application.create('Regional', {...})` returns the **definition** of the view, if you want to use the returned view **anonymously**, remove the `name` option. You will get a **instance** of the view definition to `show()` on a region right away. 
+
+Sometimes your *Regional* is comprised of other sub-regional views and that's fine, you can nest *Regional*s with the `region=""` and `view=""` attributes in the template. There will also be time when you just need plain *Marionette.xView* definitions without naming them to be *Regional*s. You can do it like this:
+```
+Application.create({
+    type: '...', //ItemView, Layout, CollectionView or CompositeView
+    ..., //rest of normal Marionette.xView options
+});
+```
+Unlike the *anonymous* call to `Application.create('Regional', {...})`, the above call returns a **definition** of the view.
 
 Now, we've sketched the layout of our application, you might want more contexts defined before continue but that's the easy part, just repeat Step 1-2 till you are ready to proceed to stream in remote data to light-up the views.
 
@@ -318,15 +327,68 @@ You can now render through remote data in a *Regional* like this:
 Note that we've used a meta-event programming concept here through `view:render-data` to eliminate the need of handling data through *Model/Collection*. the next section will contain detailed explanation on this subject.
 
 
-####Step 5. Add interactions
-#####Views+
-* effect
-* actions (and ui-locks)
-* editors
-* app.create('Validator')
-* app.create() - shortcut to Marionette Views
+####Step 5. Adding UI/UX
+UI is a set of interface elements for the user to click/interact through to perform desired tasks. Without these click-ables, your web application will just be a static page. UX stands for user experience, it is not just about look'n'feel but also transitions/animations that links between interactions. UI/UX are hard to design, without a clear think-through over the purposes and targeted user tasks, it can be a total chaos... Make sure you have had your plan/sketch test-driven by targeted audience/friends or colleagues before implementation.
 
-#####Meta events
+To implement your design is, however, very easy. We have enhanced *Marionette.View* thus its sub-classes (*ItemView, Layout, CollectionView and CompositeView*) with opt-in abilities, you can use them while adding user interactions and view transitions to the application.
+
+Though you can add any transition to any view, it is recommended to add interactions only to *Regional*s or *Marionette.Layout* in general so the event delegation can be efficient.
+
+#####Effect
+Any *Marionette.View* can have an `effect` configure to control the effect through which it will shown on a region:
+```
+//myRegionalA.js or any Marionette.xView
+(function(app) {
+    app.create('Regional', {
+        name: 'MyRegionalA',
+        ...,
+        effect: 'string' or
+        {
+            name: ..., //name of the effect in jQueryUI.Effect
+            options: ..., //effect specific options
+            duration: ...
+        },
+        ...
+    });
+})(Application);
+```
+Pass just an effect name as a string to the configure if you don't need more tweak on the effect. For more information regarding the effect options, please go to [jQuery.Effect](http://jqueryui.com/effect/).
+
+#####Actions
+Actions are click-ables marked by `action=""` attribute in your view template. The original way of registering events and listeners introduced by *Backbone.View* are flexible but tedious and repetitive. We offer you *Action Tags* instead to speed things up when implementing user interactions. 
+
+Any *Marionette.View* can have its actions configure block activated like this (3 easy steps):
+```
+//myRegionalA.js or any Marionette.xView
+(function(app) {
+    app.create('Regional', {
+        name: 'MyRegionalA',
+        ...,
+        template: [
+            '<div>',
+                '<span class="btn" action="opA">Do it!</span>', //1. mark action tag(s).
+                ...,
+            '</div>',
+        ],
+        ...,
+        initialize: function(){
+            this.enableActions(); //2. activate actions block.
+        },
+        ...,
+        actions: { //3. implement the action listeners.
+            'opA': function($triggerTag, e){...},
+            'opB': ...
+        }
+    });
+})(Application);
+```
+Note that `this.enableActions()` is recommended to be called within the `initialize()` function introduced by *Marionette*.
+
+Use `this.enableActions(true)` if you want the click event to **propagate** to the parent view/container. `e.preventDefault()` needs to be specified in the action listeners if you don't want a clicking on `<a href="#xyz" action="another"></a>` tag to affect the navigation.
+
+#####Inputs
+
+#####Meta-events
 * app:meta-event
 * context:meta-event (navigate-to)
 * view:meta-event (render-data)
@@ -335,7 +397,8 @@ Note that we've used a meta-event programming concept here through `view:render-
 
 ###Widgets/Editors
 * reusable views - the List'n'Container technique 
-* app.create('Widget/Editor') - both instantiation and factory
+* app.create('Widget/Editor') - both instantiation and factory registration
+* app.create() - shortcut to Marionette Views
 
 
 ###i18n/l10n
