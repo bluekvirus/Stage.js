@@ -46,7 +46,6 @@
 
 	//support bootstrap theme + hilight.js theme.
 	function theme($el, options){
-		$el.find('h3').addClass('text-primary');
 		$el.find('h1 + p').addClass('text-info');
 		if(hljs){
 			hljs.configure(options && options.hljs);

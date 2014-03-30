@@ -14,7 +14,7 @@ Mental preparation
 ------------------
 Technique means nothing if people have no purposes in their mind. To prepare mentally to adapt something is to synchronize the mind around the subject domain so you can develop insights while applying the technique. The ultimate goal is always to understand the subject (in our case the problem) better.
 
-Make sure to ask enough questions, so you can quickly locate the core problem that a given technique is trying to solve efficiently. Soon enough, you will start to see things like the solution inventor, and you will have a high chance of becoming one yourself later. True understanding is almost always developed this way.
+Make sure to ask enough questions, so you can quickly locate the core problem that a given technique is trying to solve efficiently. Soon enough, you will start to see things like the solution builder, and you will have a high chance of becoming one yourself later. True understanding is almost always developed this way.
 
 If you can not agree with the author after reading this preparation chapter, do not bother with this framework.
 
@@ -59,6 +59,9 @@ As *Design Patterns* dictates, we need to code in a way to:
 <img src="/static/resource/default/diagram/Diagram-4.png" alt="Design Pattern Goals" class="center-block"></img>
 
 For *Regional*s (or any *Marionette.View*) that you need to use again and again but with different configuration (e.g a Datagrid). Register it as a *Widget* or, in case of a basic input, an *Editor*. These reusable view definitions are call *Reusable*s in the framework. Think in terms of the **List and Container** technique as much as possible when creating them.
+
+####Glue through events
+We encourage event programming in this framework. We glue views into a functioning whole by using meta-events. Whenever an interaction or transiting happens (e.g navigation, context-swap, login, error, data-ready...), intead of calling the actual *doer*s, fire/trigger an event first, so that later the actual behavior triggered by this event can be changed without affecting the glue/interfacing logic. Read carefully through the **Meta-events** subsection below so you understand how to implement and extend application behaviors. 
 
 ####Seems complicated...
 To focus, think of your application in terms of *Context*s and *Regional*s. Like drawing a series of pictures, each page is a *Context* and you lay things out by sketching out regions first on each page then refined the details (*Regional*) within each region. 
@@ -512,16 +515,83 @@ Application.create({
 Don't worry about container resizing, it is automatically taken cared for you. 
 
 #####Meta-events
-* app:meta-event
-* context:meta-event (navigate-to)
-* view:meta-event (render-data)
-* region:load-view
+Some interactions demand collaboration between view objects, this is why we introduce the concept of meta-event programming. It is like coding through just interfaces in a object-oriented programming language but much more flexible. The goal is to let the developer code with events instead of APIs so the implementation can be delayed as much as possible. The underlying principle is very simple:
+```
+//event format : namespace:worda-wordb-...
+object.trigger('object:meta-event', arguments);
+//will invoke listener : onWordaWordb...
+object.onMetaEvent(arguments);
+```
+We have `Application`, `Context` and all the `Marionette.xView` enhanced to accept meta-event triggers. Some of the events are already listened/triggered for you:
+* Application -- app:meta-event
+```
+app:navigate (contextName, moduleName) - Application.onNavigate [pre-defined]
+app:context-switched (contextName)  - [empty stub] - triggered after app:navigate
+//the followings are triggered by Application.remote():
+app:ajax - Application.onAjax [pre-defined]
+app:success - [empty stub]
+app:error - [empty stub]
+app:ajax-start - Application.onAjaxStart [pre-defined]
+app:ajax-stop - Application.onAjaxStop [pre-defined]
+```
+* Context -- context:meta-event
+```
+context:navigate-to (moduleName) - [empty stub] - triggered after app:navigate
+```
+* Marionette.xView -- view:meta-event
+```
+view:render-data (data, forceReRender) - onRenderData [pre-defined]
+```
+
+Remember, you can always trigger a customized event `my-event-xyz` and implement it later on the object by creating `onMyEventXyz()`.
+
+Though you can not yet use meta-event on Marionette.Regions, there is one convenient event for you:
+```
+//region:load-view
+myregion.trigger('region:load-view', name[, options]);
+```
+The `region:load-view` event listener is implemented for you and can search through both the *Regional* and *Widget* registry to find the view by name and show it on the region. You can pass in addition factory options to the event trigger if they are for a *Widget*.
+
+Don't know what a *Widget* registry is? Keep reading.
 
 
 ###Widgets/Editors
-* reusable views - the List'n'Container technique 
-* app.create('Widget/Editor') - both instantiation and factory registration
-* app.create() - shortcut to Marionette Views
+To make your view definitions reusable, we offer a way of registering *Widget*s and *Editor*s:
+```
+Application.create('Widget/Editor', {
+	name: '', //name can be used in region:load-view meta event trigger
+	factory: function(){
+		var View;
+		...
+		return View;
+	}
+})
+```
+It is recommended to employ the **List'n'Container** technique when creating *Widget*s. Note that basic *Editors* are already provided for you. If you need more editors please register them while providing the `getVal`, `setVal` and `validate` methods.
+
+Note that you will need some sub-views to help compose the *Widget/Editor*, use the short-cut we provide to define them for better extensibility in the future:
+```
+var MyItemView = Application.create({
+	type: 'ItemView', //default on ItemView, can also be Layout, CollectionView and CompositeView.
+	..., //normal Marionette.xView options.
+});
+```
+
+To instantiate a *Widget*, use either `region.trigger('region:load-view', name, options)` or:
+```
+Application.create('Widget', {
+	name: '',
+	..., //rest of the init options, don't pass in a config named 'factory' as it will trigger the registration process instead of instantiation. 
+})
+```
+
+To instantiate a *Editor*, use either `this.enableEditors()` within a view's `onShow()` or :
+```
+Application.create('Editor', {
+	name: '',
+	..., //rest of the init options, don't pass in a config named 'factory' as it will trigger the registration process instead of instantiation. 
+})
+```
 
 
 ###i18n/l10n

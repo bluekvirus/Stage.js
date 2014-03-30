@@ -52,8 +52,9 @@
  * app:navigate (contextName, moduleName) - app.onNavigate [pre-defined]
  * app:context-switched (contextName)  - app.onContextSwitched [not-defined]
  * 		[with context:navigate-to (moduleName) on context] - context.onNavigateTo [not-defined]
- * region:load-view (view/widget name registered in app, [widget init options])
  * ...(see core/remote-data.js for more.)
+ * region:load-view (view/widget name registered in app, [widget init options])
+ * view:render-data (data, forceReRender)
  * 
  * Suggested events are: [not included, but you define, you fire to use]
  * app:prompt (options) - app.onPrompt [not-defined]
