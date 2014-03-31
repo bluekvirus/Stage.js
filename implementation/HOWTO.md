@@ -492,6 +492,7 @@ this.getValues();
 this.setVal(name, val, loud); //set loud to true if you want to fire change event on the editor.
 this.setValues(vals, loud);
 this.validate(true|false); //true for showing the validation errors.
+this.status(status, messages); //for highlighting status per editor. no arguments means to clear.
 ```
 
 #####Graphs
@@ -567,7 +568,7 @@ Application.create('Widget/Editor', {
 	}
 })
 ```
-It is recommended to employ the **List'n'Container** technique when creating *Widget*s. Note that basic *Editors* are already provided for you. If you need more editors please register them while providing the `getVal`, `setVal` and `validate` methods.
+It is recommended to employ the **List'n'Container** technique when creating *Widget*s. Note that basic *Editors* are already provided for you. If you need more editors please register them while providing the `getVal`, `setVal`, `validate` and `status` methods.
 
 Note that you will need some sub-views to help compose the *Widget/Editor*, use the short-cut we provide to define them for better extensibility in the future:
 ```

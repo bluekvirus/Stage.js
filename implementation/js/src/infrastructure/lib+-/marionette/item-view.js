@@ -76,7 +76,7 @@
 
 		activateEditors: function(options){
 			this._editors = this._editors || {};
-			if(this._editors.attachView) throw new Error('DEV::View::activateEditors enhancements will need this._editors object, it is now a Region!');
+			if(this._editors.attachView) throw new Error('DEV::ItemView::activateEditors enhancements will need this._editors object, it is now a Region!');
 
 			var global = options.global || {};
 			_.each(options.editors, function(config, name){
@@ -125,7 +125,7 @@
 			};
 			this.setVal = function(name, value, loud){
 				this._editors[name] && this._editors[name].setVal(value, loud);
-			}
+			};
 
 			//3. validate
 			this.validate = function(show){
@@ -136,6 +136,42 @@
 				});
 				if(_.size(errors) === 0) return;
 				return errors; 
+			};
+
+			//4. highlight status
+			//status(messages) - indicates that global status is 'error'
+			//or 
+			//status(status, messages) - allow individual editor status overriden
+			//	messages: {
+			//		editor1: 'string 1',
+			//		or
+			//		editor2: {
+			//			status: '...',
+			//			message: '...'
+			//		}
+			//	}
+			this.status = function(status, msgs){
+				if(!msgs){
+					msgs = status;
+					status = 'error';
+				}
+				if(!msgs) {
+					//clear status
+					_.each(this._editors, function(editor, name){
+						editor.status(' ');
+					});
+					return;
+				}
+				if(_.isString(msgs)) throw new Error('DEV::ItemView::activateEditors - You need to pass in messages object');
+				_.each(msgs, function(msg, name){
+
+					if(this._editors[name]) {
+						if(_.isString(msg)) this._editors[name].status(status, msg);
+						else {
+							this._editors[name].status(msg.status || status, msg.message);
+						}
+					} 
+				}, this);
 			}
 			
 		}

@@ -158,6 +158,8 @@
                     '<span class="btn btn-primary" action="submit">Submit</span> ',
                     '<span class="btn btn-warning" action="validate">Validate</span> ',
                     '<span class="btn btn-default" action="test">Test</span> ',
+                    '<span class="btn btn-info" action="info">Inform</span> ',
+                    '<span class="btn btn-info" action="clearinfo">Clear Info</span> ',
                 '</div>',
             '</div>'
         ],
@@ -177,6 +179,19 @@
                     readonly2: 'Hello!',
                     singlecheckbox: 'enabled'
                 });
+            },
+            info: function(){
+                this.status('success', {
+                    singlecheckbox: 'passed!',
+                    efg: {
+                        status: 'error',
+                        message: 'another server error!'
+                    }
+                });
+            },
+
+            clearinfo: function(){
+                this.status();
             }
         },
         onShow: function(){
