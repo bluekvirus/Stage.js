@@ -581,7 +581,7 @@ To instantiate a *Widget*, use either `region.trigger('region:load-view', name, 
 ```
 Application.create('Widget', {
 	name: '',
-	..., //rest of the init options, don't pass in a config named 'factory' as it will trigger the registration process instead of instantiation. 
+	..., //rest of the init options, don't pass in a config named 'factory'. 
 })
 ```
 
@@ -589,9 +589,12 @@ To instantiate a *Editor*, use either `this.enableEditors()` within a view's `on
 ```
 Application.create('Editor', {
 	name: '',
-	..., //rest of the init options, don't pass in a config named 'factory' as it will trigger the registration process instead of instantiation. 
+	..., //rest of the init options, don't pass in a config named 'factory'.
 })
 ```
+
+####List'n'Container technique
+Coming soon...
 
 
 ###i18n/l10n
@@ -680,8 +683,24 @@ The default settings will always look for `http://your host'n'app/static/resourc
 
 
 ###Create a new theme
+You can have multiple themes for an application and switch between them. The default theme will be the one that you set during `Application.setup()`. However, you can force the application to pickup other themes by:
+```
+http(s)://your host'n'app/?theme=xyz
+```
 
 ####Theme structure
+Themes are located at `/implementation/themes/[your theme name]/` with the following structure:
+> * /css
+>     - /include
+>     - main.css -- do *NOT* change this one directly
+> * /fonts
+> * /img
+> * /less
+>     - /include
+>     - main.less -- always start with this file
+> * index.html
+
+Open up the `/less/main.less` file and you will see the following:
 * @import (inline) "../css/include/*.css" (the statically included styles)
 * bootstrap.less (do **NOT** change) - includes all the original bootstrap styles
 * **variables.less** - basic css override through pre-defined variables
@@ -690,7 +709,7 @@ The default settings will always look for `http://your host'n'app/static/resourc
 * font.less (optional) - extra web fonts
 * print.less (optional)
 
-You should be focusing on changing the theme.less and variables.less files.
+You should be focusing on changing the theme.less and variables.less files. Note that the *Bootstrap* .less files are *NOT* included in the framework package. Your LESS compiler might pop errors as it can not find the required `bootstrap.less` file. Go to `/implementation/js/libs/tracked/` and run `bower update` (you should have bower installed through [npm](https://www.npmjs.org/) first). It will fetch you the required *Bootstrap* package.
 
 ####LESS to CSS
 The `main.less` loads/glues all the above files and compiles into main.css, you do not need to compile the included .less files separately and put the compiled .css back into the `main.less`. The statically inlined css files are those that we want to copy into the compiled main.css without any change.
