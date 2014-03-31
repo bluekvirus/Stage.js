@@ -2,6 +2,14 @@
  * i18n loading file
  * dependencies: jQuery, underscore, store.js, [Handlebars]
  *
+ * ======
+ * Config
+ * ======
+ * I18N.configure(options) - change the resource folder path or key-trans file name per locale.
+ * 	options:
+ * 		resourcePath: ... - resource folder path without locale
+ * 		translationFile: ... - the file name that holds the key trans pairs for a certain locale.
+ *
  * =====
  * Usage
  * =====
@@ -14,9 +22,18 @@
  * @author Yan Zhu (yanzhu@fortinet.com), Tim Liu (zhiyuanliu@fortinet.com)
  * @date 2013-08-26
  */
+var I18N = {};
 ;(function($, _, URI) {
 	
-	var resources_path = 'static/resource';
+	//----------------configure utils------------------
+	var configure = {
+		resourcePath: 'static/resource',
+		translationFile: 'i18n.json'
+	};
+	I18N.configure = function(options){
+		_.extend(configure, options);
+	};
+	//-------------------------------------------------
 	
 	var params = URI(window.location.toString()).search(true);
 	var locale = params.locale;
@@ -31,7 +48,7 @@
 		 * {
 		 * 	locale: {locale},
 		 *  trans: {
-		 * 	 key: "" | {
+		 * 	 key: "" or {
 		 * 	  "_default": "",
 		 *    {ns}: ""
 		 *   }
@@ -39,7 +56,7 @@
 		 * }
 		 */
 		$.ajax({
-			url: [resources_path, locale, 'i18n.json'].join('/'),
+			url: [configure.resourcePath, locale, configure.translationFile].join('/'),
 			async: false,
 			success: function(data, textStatus, jqXHR) {
 				resources = data.trans;

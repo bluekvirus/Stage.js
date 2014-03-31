@@ -595,8 +595,88 @@ Application.create('Editor', {
 
 
 ###i18n/l10n
-* locale based `/static/resource` folder
-* String.i18n() - for internationalization and localization
+The internationalization is always a painful process, making substitution dynamically to the strings and labels appear in the application according to the user locale settings can interfere with the coding process if every string must be coded with a `getResource('actual string')` wrapped around.
+
+Luckily, javascript is a prototypical language, we can extend the `String` class through its prototype and give every string a way of finding its own translation.
+
+####Cast i18n strings
+To use the i18n mechanism in your application, simply add `.i18n()` to the tail of your string:
+```
+//directly
+'String to be translated'.i18n()
+//indirectly by auto type cast
+var s = 'Another string to translate';
+s.i18n()
+```
+You can also use it in template as a *Handlebars.js* helper:
+```
+template: [
+    '<div>',
+        '{{i18n key}}', //this will translate whatever string the var 'key' is holding
+    '<div>'
+]
+```
+If you need to cast i18n on a block of text, we suggest that you use our $.md jQuery plugin and manage blocks of text and their translations in separate markdown files. If you are really in a hurry, you can also use our i18n mechanism as a jQuery plugin:
+```
+<div>
+    <span data-i18n-key="*">abcd...</span>
+    <span data-i18n-key="efg">abcd...</span>
+</div>
+
+$('span').i18n();
+$('div').i18n({search: true}); //if you want to use parent container to cast
+```
+Remember to use the `data-i18n-key` attribute to identify the content of a tag for translation. If you want to use the entire content text as a *big* key of the translation, use `data-i18n-key="*"`. If you use `data-i18n-key="efg"` to identify a tag, its content will be translated as if you were using string `efg`.
+
+####Translation file
+The translation files are needed to complete the i18n mechanism. We use a simple opt-in way of loading resource file for a given locale:
+```
+http(s)://your host'n'app/?locale=xx_XX
+```
+The query param **locale** in the url will tell the i18n mechanism to load a specific resource file.
+
+#####Format
+Your translation file should be in the [JSON](http://json.org/) format, like this:
+```
+{
+    locale: 'xx_XX',
+    trans: {
+        "string": "translation", 
+        //or 
+        "string": {
+           "_default": "", //the default translating if not specifying namespace
+           "namespace-a": "",
+           "namespace-b": "",
+           "senario-x": "",
+           "module-y": ""
+        },
+        ..., //other key-trans pairs
+    }
+}
+```
+Note that, we allow you the freedom to translate the same string into different things according to module/namespace/senario settings. You can activate a module/namespace/senario translation like this:
+```
+//directly in javascript
+'String to translate'.i18n({module: 'module/namespace/senario'});
+
+//or in a Handlebar.js template
+{{i18n key module}}
+
+//or as jQuery plugin
+<span data-i18n-key="*" data-i18n-module="module-y">abc</span>
+$('span').i18n();
+```
+
+
+####Configuration
+You can configure where and what the i18n mechanism need to look for its required translation files through the I18N global variable:
+```
+I18N.configure({
+    resourcePath: 'static/resource',
+    translationFile: 'i18n.json'
+});
+```
+The default settings will always look for `http://your host'n'app/static/resource/xx_XX/i18n.json`.
 
 
 ###Create a new theme
