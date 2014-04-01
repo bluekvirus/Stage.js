@@ -175,9 +175,9 @@ Application.setup({
     ...
 }).run();
 ```
-By using `region=""` attribute in any html tag, we marked pre-defined regions in the template, you can do this with any *Marionette.Layout* in our framework. They are already enhanced to pickup the attribute.
+By using `region=""` attribute in any html tag, we marked pre-defined regions in the template, **you can also do this with any *Marionette.Layout*** in our framework. They are already enhanced to pickup the attribute.
 
-Note that you can also use `view=""` attribute to load up a named *Regional* view in a given region, only tags marked with `region=""` first will continue to verify if there is an assigned *Regional* view through the `view=""` attribute.
+Note that **you can use an additional `view=""` attribute to load up a named *Regional* view in a given region**, only tags marked with `region=""` first will continue to verify if there is an assigned *Regional* view through the `view=""` attribute.
 
 Now, given that you've changed the template, you need to also change `contextRegion` to point to the area that you use to swap between different *Context*s.
 
@@ -202,7 +202,7 @@ Create a new file named `myContextA.js`, remember a *Context* is just a *Marione
 ```
 You can still use the `region=""` and `view=""` attributes in the template. 
 
-Note that you should name your *Context* as if it is a *Class*. The name is important as it links the *Context* with the global navigation mechanism. 
+Note that you should name your *Context* as if it is a *Class*. **The name is important as it links the *Context* with the global navigation mechanism**. 
 
 The `onNavigateTo` method denotes the `context:navigate-to` event listener. This event will get triggered if the application switched to `MyContextA` on the context region, so that you can do some *in-context* navigation followed by. (e.g if the navigation is at `#navigate/MyContextA/SubViewA...`)
 
@@ -225,7 +225,7 @@ Create `/context-a/myRegionalA.js` like this:
 ```
 You can still use the `region=""` and `view=""` attributes in the template.
 
-Note that you should name your *Regional* as if it is a *Class*. The name is important if you want to use the auto-regional-loading mechanism through the `view=""` attribute in any *Marionette.Layout*. 
+Note that you should name your *Regional* as if it is a *Class*. **The name is important if you want to use the auto-regional-loading mechanism through the `view=""` attribute in any *Marionette.Layout***. 
 
 By default, any *Regional* you define will be a *Marionette.Layout*, you can change this through the `type` option.
 
@@ -594,8 +594,16 @@ Application.create('Editor', {
 })
 ```
 
-####List'n'Container technique
-Coming soon...
+####List/Container technique
+This is the golden technique to use when planning your reusable views or, say, any view on screen. Any widget on screen can be decoupled into lists and containers, like this:
+
+<img src="/static/resource/default/diagram/Diagram-5.png" alt="List'n'Containers" class="center-block"></img>
+
+* Starts by choosing a proper container with desired layout, nest containers if needs be.
+* Put lists into the container.
+* Figure out the view to show within each list item.
+
+You can always nest another layer of container-list-item into an item of parent layer to form even more complex views.
 
 
 ###i18n/l10n
