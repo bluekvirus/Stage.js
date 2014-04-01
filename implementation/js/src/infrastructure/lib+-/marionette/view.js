@@ -283,19 +283,23 @@
 		//1. view:render-data - for hiding model/collection manipulation most of the time
 		//	data - can be [...] or {obj}
 		//	reRender - true | false flag
-		onRenderData: function(data, forceReRender){
+		onRenderData: function(data){
 			if(_.isArray(data)){
-				this.collection = this.collection || app.create('Collection');
+				if(!this.collection){
+					this.collection = app.create('Collection');
+					this.listenTo(this.collection, 'add', this.addChildView);
+					this.listenTo(this.collection, 'remove', this.removeItemView);
+					this.listenTo(this.collection, 'reset', this.render);
+				}
 				//local pagination support? TBI
 				this.collection.set(data);
 			}else{
-				this.model = this.model || app.create('Model');
+				if(!this.model){
+					this.model = app.create('Model');
+					this.listenTo(this.model, 'change', this.render);
+				}
 				this.model.set(data);
 			}
-
-			if(forceReRender || this.model) //for model/collection change won't trigger Marionette.ItemView re-render.
-											//but collection change in a CollectionView will automatically trigger re-render.
-				this.render();
 		}
 	})
 

@@ -603,7 +603,7 @@ The internationalization is always a painful process, making substitution dynami
 
 Luckily, javascript is a prototypical language, we can extend the `String` class through its prototype and give every string a way of finding its own translation.
 
-####Cast i18n strings
+####Cast i18n on strings
 To use the i18n mechanism in your application, simply add `.i18n()` to the tail of your string:
 ```
 //directly

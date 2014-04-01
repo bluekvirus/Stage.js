@@ -33,8 +33,8 @@ module.exports = {
 						'selected.json': 'js/libs/tracked/dist/selected.json'
 					}
 				},				
-				'all.min.js': true, //'all' is a hard coded name - see loadIndexHTML() in build.js
-				'all.js': false,
+				//'all.min.js': true,
+				'all.js': false, //'all is hardcoded name, see shared/process-html.js'
 			},
 			themes: {
 				'default': 'themes/_dev'
