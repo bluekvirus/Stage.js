@@ -45,7 +45,7 @@ We choose what we choose when designing this framework simply because we want to
 
 **The Backbone library can implement them all** (Yes, any client side framework). (Not 100% for Meteor though, since Meteor combines its server into a full-stack solution. You need nodejs in the picture for that). And, if you need more evidence, YUI3 has the exact same concepts in Backbone implemented as its infrastructure. 
 
-In order to accomplish more with lesser code using Backbone, we picked Backbone.Marionette as our pattern library. It offers cleanup/boilerplate routines and very neat concepts for building large Javascript front-end projects. The resulting framework accomplishes all the big frameworks have promised but with **a thiner and flattener structure**. We believe scripting languages are always going to be the perfect thin glue layer between mechanisms and policies. The Javascript language were picked to glue HTML/CSS and UX but nothing more, it should not be overdosed and mimic Java.
+In order to accomplish more with lesser code using Backbone, we picked Backbone.Marionette as our pattern library. It offers cleanup/boilerplate routines and very neat concepts for building large Javascript front-end projects. The resulting framework accomplishes all the big frameworks have promised but with **a thiner and flattener structure**. We believe scripting languages are always going to be the perfect thin glue layer between mechanisms and policies. The Javascript language were picked to glue HTML/CSS and UX but nothing more, it should not be overdosed and attempt to mimic Java.
 
 
 Mental preparation
@@ -61,8 +61,10 @@ Before start, you need to understand what is a *GUI application*, here is a brie
 
 <img src="/static/resource/default/diagram/Diagram-1.png" alt="Web App Diagram" class="center-block"></img>
 
-You need to resolve 2 kinds of problem different in nature: *Interaction* and *Data Flow* in order to produce an application.
-A successful one requires both parts to employ careful design and feasible technique. We examine the first problem here:
+The client and server sides are different in purpose fundamentally. Thus, they should be designed and implemented differently. Shutting this door will preserve a significant amount of coding/maintenance energy for the application developer(s). The best software development practice encourages separation and delaying of implementation of related components so that each part can vary independently later. And to the author (me), abstraction should happen after categorization, or say, classification. This is why we are advising the developers (you) **NOT** to make an overly encapsulated framework with tools that try to bridge the gap for the developers. Trying to control everything using central planning is a human flaw, there is no silver-bullet for trying to solve web application building in 1 piece. It will always 3 parties in the software application world.
+
+As an engineer, the job is to find insights and solve problems between the 3 parties efficiently (profitably if you must insist...) so that the software/application serving the above system comes out correctly. This is hard. Specifically, You need to resolve 2 kinds of problem different in nature: *Interaction* and *Data Flow* in order to produce an application.
+A successful one requires both parts to employ careful design and feasible technique. We illustrate the first problem here:
 
 <img src="/static/resource/default/diagram/Diagram-2.png" alt="UI/UX Problems" class="center-block"></img>
 
@@ -70,6 +72,10 @@ As you can see from the above diagram, there are 3 problems here to address when
 1. Data <i class="fa fa-arrows-h"></i> Model/Collection [snapshot]
 2. Model/Collection [snapshot] <i class="fa fa-arrows-h"></i> View (UI)
 3. View <i class="fa fa-arrows-h"></i> Layout/Page + Transitions (UX)
+
+Failing to address any of the 3 parts above will cost the project a significant amount of refractory time. **DO NOT** skip or trying to merge them into one big abstraction. Conquer each one with a consistent API style (like parameters and naming conventions) then combine the result. A complete system is never a destination, it is only a state of being or appearance. In other words, anytime you want your solution appear to be *a complete one*, focus on identifying the key problems and then solve them. **DO NOT** set your goal to be *a complete system* when start.
+
+So, we have identified the core problems, how do we form our solutions to them?
 
 ###Solution architecture
 As a full stack solution to the UI/UX side, we address those 3 problems with an intuitive architecture:
@@ -532,6 +538,18 @@ this.setValues(vals, loud);
 this.validate(true|false); //true for showing the validation errors.
 this.status(status, messages); //for highlighting status per editor. no arguments means to clear.
 ```
+There are also events emitted that you can use when dealing with these inputs (basic editors):
+```
+editor:change
+editor:change:fieldname
+editor:keyup
+editor:keyup:fieldname
+editor:focusin // - focus
+editor:focusin:fieldname
+editor:focusout // - blur
+editor:focusout:fieldname
+```
+If you use `options.parentCt` to pass in another view instance, the events will be fired on that view instance instead of on the editor itself. It is useful when you want every event to be fired on a parent container or, say, a form view.
 
 #####Graphs
 We support graphs through SVG. A basic SVG library is integrated with the framework (Raphaël.js). You can use it in any *Marionette.xView* through:

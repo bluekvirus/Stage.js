@@ -46,6 +46,14 @@
  * 
  * validate (custom function and/or rules see core/parts/editors/basic/validations.js) - The validation function should return null or 'error string' to be used in status.
  * parentCt - event delegate.
+ *
+ * Events
+ * ======
+ * editor:change
+ * editor:change:fieldname
+ * editor:keyup
+ * editor:keyup:fieldname
+ * editor:focusin/out(:fieldname)
  * 
  *
  * @author Tim.Liu
