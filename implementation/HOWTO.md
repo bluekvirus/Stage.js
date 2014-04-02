@@ -10,6 +10,44 @@ Current version
 ([Why is it version-ed like this?](http://semver.org/))
 
 
+Introduction
+------------
+The framework is made on top of **Backbone.Marionette** and **Bootstrap**. To flatten and lower the initial learning curve of adaptation, we restrict ourselves to only the following APIs:
+
+* Application.setup(options)
+* Application.run()
+* Application.create(type, options)
+* Application.create(options)
+* Application.remote(options)
+
+You will use `create()` most of the time for creating application elements (*Context*s and *Regional*s). It is designed so in order to let the developers feel more comfortable picking up the workflow while reusing their existing web development knowledge and experience with the base libraries.
+
+We also maintain a list of 3rd party libraries for the developers to choose from in addition to the base libraries (as utilities). The utility libs (e.g jquery-file-upload, store.js, uri.js, raphael.js, marked, moment.js, socket.io.js...) are carefully selected from the many open-source Javascript libs out there to help with specific but generally-will-appear problems that a developer will encounter during the web application development process. (see more in the *Include other js libs* chapter)
+
+###Moving away from all-in-ones
+We have been developing in ExtJS4 for 2+ years, starting form the last version of 4.0 which is the promising 4.0.7. As our knowledge base expands, we felt that it is time to form our own blueprint of a modern data heavy web application to shorten the development cycles. Here are some of the main reasons:
+
+1. Although it is relatively fast to develop prototypes using an all-in-one framework like ExtJS, it is hard to maintain the code while keeping up with the changes required by the users and those that come from Sencha. The widgets are bound too tight with the framework.
+2. Loading, DOM interfacing, Widget and Application containers are all provided with a biased opinion, which always lead to fightings with the framework here and there or messing around with the life-cycles defined when trying to implement application specific user requirements. 
+3. Performance issues. There are often a massive amount of unnecessary DOM elements lurking in the client browser. We have very limited control over the life-cycles nor the HTML template structure of the components. Making widgets as Classes and loading like Java is really a bad idea for Javascript.
+4. Theming difficulties. It is hard to theme an ExtJS application correctly given the extensively nested component structure and the lack of SASS/Compass adaptation among developers.
+5. Payed solution. The commercial version of ExtJS and the tools (IDE) are expensive. This also makes the community size smaller than its full/free open source counterparts, making it difficult to find solutions from sources other than the documentation.
+
+We choose to move away from this heavy framework to avoid its complexity (tightly bound all-in-one solution) and to have more control over the component lifecycles, interactions and application container separately. An equally powerful yet still lightweight solution combining the best practices in the field is thus made. 
+
+###Why not using...
+Why not using AngularJS/EmberJS/Meteor or YUI/ExtJS? Yes you can, but, if you can, **always favor libraries over frameworks**. Given that *Pro.js* is also a framework. The advise here should be extended to: 
+> If you can *NOT* agree with the workflow/abstraction, always favor libraries over frameworks.
+
+We choose what we choose when designing this framework simply because we want total control over our product. There are often 2 types of framework to choose from when developing a web application:
+* Development Framework - AngularJS/EmberJS/Meteor (infrastructure only)
+* Application Framework (All-in-One) - YUI/ExtJS (infrastructure plus widgets and tools)
+
+**The Backbone library can implement them all** (Yes, any client side framework). (Not 100% for Meteor though, since Meteor combines its server into a full-stack solution. You need nodejs in the picture for that). And, if you need more evidence, YUI3 has the exact same concepts in Backbone implemented as its infrastructure. 
+
+In order to accomplish more with lesser code using Backbone, we picked Backbone.Marionette as our pattern library. It offers cleanup/boilerplate routines and very neat concepts for building large Javascript front-end projects. The resulting framework accomplishes all the big frameworks have promised but with **a thiner and flattener structure**. We believe scripting languages are always going to be the perfect thin glue layer between mechanisms and policies. The Javascript language were picked to glue HTML/CSS and UX but nothing more, it should not be overdosed and mimic Java.
+
+
 Mental preparation
 ------------------
 Technique means nothing if people have no purposes in their mind. To prepare mentally to adapt something is to synchronize the mind around the subject domain so you can develop insights while applying the technique. The ultimate goal is always to understand the subject (in our case the problem) better.
@@ -123,7 +161,7 @@ Minimum `main.js` script looks like this:
 //main.js
 Application.setup().run();
 ```
-You should now see a *blank* page without javascript error.
+You should now see a *blank* page without Javascript error.
 
 If you are really in a hurry to see some stuff on the page, setup your application in `main.js` like this:
 ```
@@ -603,13 +641,13 @@ This is the golden technique to use when planning your reusable views or, say, a
 * Put lists into the container.
 * Figure out the view to show within each list item.
 
-You can always nest another layer of container-list-item into an item of parent layer to form even more complex views.
+You can always nest another layer of container-list-item into an item of parent layer to form even more complex views. Make sure you use the `Application.create(options)` API when defining the list item views. *DO NOT* use `Application.create('Regional', options)` unless its the outer most view definition for a region.
 
 
 ###i18n/l10n
 The internationalization is always a painful process, making substitution dynamically to the strings and labels appear in the application according to the user locale settings can interfere with the coding process if every string must be coded with a `getResource('actual string')` wrapped around.
 
-Luckily, javascript is a prototypical language, we can extend the `String` class through its prototype and give every string a way of finding its own translation.
+Luckily, Javascript is a prototypical language, we can extend the `String` class through its prototype and give every string a way of finding its own translation.
 
 ####Cast i18n on strings
 To use the i18n mechanism in your application, simply add `.i18n()` to the tail of your string:
@@ -775,7 +813,15 @@ Use `bower update` to update other monitored libs you need under `/implementatio
 Appendix
 --------
 ###A. Philosophy behind
-see PHILOSOPHY.md
+####Rules of Thumb
+* Keep things simple, especially the simple ones.
+* Categorization before abstraction.
+* Separate, Reuse and Pipeline.
+* Cleaner method signature. Options as a single object parameter.
+* Events for collaborations instead of APIs. Promises for asynchronise operations instead of callbacks.
+
+Start with user requirements/stories and focus on serving the customers' need. Use the 80/20 rule to pick out important features/functionalities and implement them first. Gradually refine code and documentation later. Remember to write down **why** before **how** in the code comments. !FOCUS!
+
 
 ###B. Change log
 see CHANGELOG.md

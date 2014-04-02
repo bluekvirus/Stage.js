@@ -71,13 +71,6 @@
 				'focusin': '_triggerEvent' //editor:focusin:[name]
 			},
 
-			triggers: {
-				'change': 'editor:change',
-				'keyup input, textarea': 'editor:keyup',
-				'focusout': 'editor:blur',
-				'focusin': 'editor:focus'
-			},
-
 			initialize: function(options){
 				//[parentCt](to fire events on) as delegate
 				this.parentCt = options.parentCt;
@@ -254,7 +247,6 @@
 				}
 				if(loud) {
 					this._triggerEvent({type: 'change'});
-					this.trigger('editor:change');
 				}
 			},
 
@@ -299,6 +291,7 @@
 				if(this.parentCt){
 					host = this.parentCt;
 				}
+				host.trigger('editor:' + e.type, this.model.get('name'), this);
 				host.trigger('editor:' + e.type + ':' + this.model.get('name'), this);
 
 				//this.trigger(e.type, this); - need to hook up with passed-in callbacks from init options
