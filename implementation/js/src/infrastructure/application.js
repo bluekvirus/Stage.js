@@ -243,7 +243,7 @@ _.each(['Core', 'Util'], function(coreModule){
 
 		});	
 
-		//Application init: Hookup window resize and app.config fullScreen, navigate to default context.
+		//Application init: Hookup window resize/scroll and app.config fullScreen, navigate to default context.
 		Application.addInitializer(function(options){
 
 			var $body = $('body');
@@ -256,6 +256,12 @@ _.each(['Core', 'Util'], function(coreModule){
 			};
 			trackAppSize();
 			$window.on('resize', _.debounce(trackAppSize, Application.config.rapidEventDebounce));
+
+			function trackScroll(){
+				var top = $window.scrollTop();
+				Application.trigger('app:scroll', top, top + window.innerHeight * 0.3);
+			}
+			$window.on('scroll', _.debounce(trackScroll, Application.config.rapidEventDebounce * 2))
 			
 			if(Application.config.fullScreen){
 				$body.css({

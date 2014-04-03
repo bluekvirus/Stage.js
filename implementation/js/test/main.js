@@ -46,6 +46,26 @@
         ],
         initialize: function(){
             this.enableActionTags();
+            this.listenTo(Application, 'app:scroll', function(offset, eye){
+                if(!this.headerOffsets) return;
+                var stop = false, result = '';
+                _.each(this.headerOffsets, function(ho, index){
+                    if(stop) return;
+                    if(ho.offset > eye) {
+                        result = this.headerOffsets[index-1];
+                        stop = true;
+                    }
+                }, this);
+
+                //hilight this header and its parents
+                var path = [result.title];
+                $parent = $('#' + $('#' + result.id).data('parent').id);
+                while($parent.length){
+                    path.unshift($parent.data('title'));
+                    $parent = $('#' + $parent.data('parent').id);
+                }
+                console.log(path);
+            })
         },
         actions: {
             refresh: function($region, e){
@@ -67,7 +87,7 @@
                     });
                     that.toc.show(Application.create('Regional', {
                         //no name means to use it anonymously, which in turn creates it right away. 
-                        template: $el.data('toc'),
+                        template: $el.data('toc').html,
                         initialize: function(){
                             this.enableActionTags();
                         },
@@ -80,6 +100,7 @@
                             }
                         }
                     }));
+                    that.headerOffsets = that.doc.$el.data('toc').offsets;
                 }
             });
         },

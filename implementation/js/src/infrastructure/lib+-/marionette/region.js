@@ -37,6 +37,7 @@
 			}
 			else 
 				this.$el.empty().append(view.el);
+			view.parentCt = this;
 		}
 	});
 

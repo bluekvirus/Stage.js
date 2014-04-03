@@ -72,6 +72,10 @@
 
 		}, options);
 
+		//statistical registry
+		var offsets = [];
+
+		//traverse the document tree
 		var $root = $('<div></div>').append(options.headerHTML).append('<ul></ul>');
 		$root.$children = $root.find('> ul');
 		var $index = $root;
@@ -81,7 +85,18 @@
 			var $this = $(this);
 			var tag = $this.context.localName; //or tagName which will be uppercased
 			var title = $this.html();
-			var $node = $('<li><a href="#" data-id="' + $this.attr('id') + '" action="goto">' + title + '</a><ul></ul></li>'); //like <li> <a>me</a> <ul>children[]</ul> </li>
+			var id = $this.attr('id');
+			$this.data({
+				title: title,
+				id: id
+			});
+			offsets.push({ offset: $this.offset().top, id: id, title: title});
+
+			var $node = $('<li><a href="#" data-id="' + id + '" action="goto">' + title + '</a><ul></ul></li>'); //like <li> <a>me</a> <ul>children[]</ul> </li>
+			$node.data({
+				title: title,
+				id: id
+			});
 			switch(tag){
 				case 'h2': case 'H2':
 				$node.addClass('chapter');
@@ -115,10 +130,14 @@
 				$index.$parent.$children.append($node); //insert a same level node besides the found targeting level node
 			}
 			$index = $node; //point $index to this new node
-
-
+			//link the document $header elements.
+			$this.data('parent', $node.$parent && $node.$parent.data());
+			
 		});
-		$el.data('toc', '<div class="md-toc">' + $root.html() + '</div>');
+		$el.data('toc', {
+			html: '<div class="md-toc">' + $root.html() + '</div>',
+			offsets: offsets, //offsets array calculator - to use with $window.scrollTop()
+		});
 	}
 
 	/*===============the plugin================*/

@@ -17,7 +17,6 @@
     "tests"
   ],
   "dependencies": {
-
     "spin.js": "*",
     "colorbox": "*",
     "flexslider": "*",
@@ -29,10 +28,10 @@
     "jquery-serializeForm": "*",
     "d3": "*",
     "highcharts.com": "*",
-
+    "jvectormap": "*",
     "modernizr": "~2.x.x",
     "detectizr": "~2.x.x",
-    "yepnope": "~1.x.x",    
+    "yepnope": "~1.x.x",
     "jquery": "~2.x.x",
     "underscore": "~1.x.x",
     "underscore.string": "~2.x.x",
@@ -51,7 +50,6 @@
     "raphael": "~2.x.x",
     "marked": "*",
     "nprogress": "*"
-
   },
   "resolutions": {
     "jquery": "~2.x.x"
