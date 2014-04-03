@@ -80,5 +80,5 @@
  * Pre-Defined Contexts
  * ====================
  */
-Application.create('Context', {name: 'Shared'});
+//Application.create('Context', {name: 'Shared'});
 

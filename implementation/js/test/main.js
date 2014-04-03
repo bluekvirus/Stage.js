@@ -41,30 +41,38 @@
                     '<hr/>',
                     '<div region="libinfo"></div>',
                 '</div>',
-                '<div region="doc" class="col-sm-9" md="HOWTO.md" action="refresh"></div>',
+                '<div class="col-sm-9" style="border-left:1px solid">',
+                    '<div region="breadcrumbs" view="Doc.Breadcrumbs" style="position: fixed; top: 0; right: 0"></div>',
+                    '<div region="doc" md="HOWTO.md" action="refresh"></div>',
+                '</div>',
             '</div>',
         ],
         initialize: function(){
             this.enableActionTags();
-            this.listenTo(Application, 'app:scroll', function(offset, eye){
-                if(!this.headerOffsets) return;
+            this.listenTo(Application, 'app:scroll', function(offset, viewportH){
+                if(!this.headerOffsets || offset < 150) {
+                    this.breadcrumbs.$el.hide();
+                    return;
+                }
                 var stop = false, result = '';
                 _.each(this.headerOffsets, function(ho, index){
                     if(stop) return;
-                    if(ho.offset > eye) {
+                    if(ho.offset > offset + viewportH * 0.35) {
                         result = this.headerOffsets[index-1];
                         stop = true;
                     }
                 }, this);
 
-                //hilight this header and its parents
+                //hilight this header and its parents in breadcrumbs
                 var path = [result.title];
                 $parent = $('#' + $('#' + result.id).data('parent').id);
                 while($parent.length){
-                    path.unshift($parent.data('title'));
-                    $parent = $('#' + $parent.data('parent').id);
+                    var info = $parent.data();
+                    path.unshift(info.title);
+                    $parent = $('#' + info.parent.id);
                 }
-                console.log(path);
+                this.breadcrumbs.$el.show();
+                this.breadcrumbs.currentView.trigger('view:render-data', {path: path});
             })
         },
         actions: {
@@ -80,9 +88,7 @@
                     languages: ['js', 'html']
                 },
                 cb: function($el){
-                    $el.css({
-                        borderLeft: '1px solid #CCC'
-                    }).toc({
+                    $el.toc({
                         ignoreRoot: true
                     });
                     that.toc.show(Application.create('Regional', {
@@ -158,6 +164,23 @@
         }
     });
 
+    //Document - Regionals
+    Application.create('Regional', {
+        name: 'Doc.Breadcrumbs',
+        tagName: 'ol',
+        className: 'breadcrumb',
+        template: [
+            '{{#each path}}',
+                '<li><a href="#">{{ this }}</a></li>',
+            '{{/each}}',
+            '<li><i class="fa fa-arrow-up"></i></li>',
+        ],
+        initialize: function(){
+            //TBI - scrollTo (top or parent topic)
+        }
+
+    });
+
     Application.create('Context', {
         name: 'Demo',
         template: [
@@ -169,6 +192,7 @@
 
     });
 
+    //Demo - Regionals
     Application.create('Regional', {
         name: 'Editors',
         className: 'well container',
@@ -366,7 +390,7 @@
         }
     });             
 
-    //Regionals
+    //Shared - Regionals
     Application.create('Regional', {
         name: 'Banner',
         effect: {

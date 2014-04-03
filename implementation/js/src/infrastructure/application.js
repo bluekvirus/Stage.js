@@ -87,6 +87,11 @@
  * $document
  * Application
  * + libs
+ *
+ * Global events
+ * ------------
+ * app:resized
+ * app:scroll
  * 
  * 
  * Optional
@@ -259,9 +264,9 @@ _.each(['Core', 'Util'], function(coreModule){
 
 			function trackScroll(){
 				var top = $window.scrollTop();
-				Application.trigger('app:scroll', top, top + window.innerHeight * 0.3);
+				Application.trigger('app:scroll', top, window.innerHeight);
 			}
-			$window.on('scroll', _.debounce(trackScroll, Application.config.rapidEventDebounce * 2))
+			$window.on('scroll', _.debounce(trackScroll, Application.config.rapidEventDebounce))
 			
 			if(Application.config.fullScreen){
 				$body.css({

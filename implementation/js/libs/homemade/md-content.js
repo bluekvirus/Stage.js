@@ -86,11 +86,13 @@
 			var tag = $this.context.localName; //or tagName which will be uppercased
 			var title = $this.html();
 			var id = $this.attr('id');
+			var offset = $this.offset().top;
 			$this.data({
 				title: title,
-				id: id
+				id: id,
+				offset: offset
 			});
-			offsets.push({ offset: $this.offset().top, id: id, title: title});
+			offsets.push({ offset: offset, id: id, title: title});
 
 			var $node = $('<li><a href="#" data-id="' + id + '" action="goto">' + title + '</a><ul></ul></li>'); //like <li> <a>me</a> <ul>children[]</ul> </li>
 			$node.data({

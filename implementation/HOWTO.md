@@ -571,7 +571,7 @@ Application.create({
 ```
 Don't worry about container resizing, it is automatically taken cared for you. 
 
-#####Meta-events
+#####Events
 Some interactions demand collaboration between view objects, this is why we introduce the concept of meta-event programming. It is like coding through just interfaces in a object-oriented programming language but much more flexible. The goal is to let the developer code with events instead of APIs so the implementation can be delayed as much as possible. The underlying principle is very simple:
 ```
 //event format : namespace:worda-wordb-...
@@ -590,6 +590,9 @@ app:success - [empty stub]
 app:error - [empty stub]
 app:ajax-start - Application.onAjaxStart [pre-defined]
 app:ajax-stop - Application.onAjaxStop [pre-defined]
+//triggered by window
+app:resized - [empty stub]
+app:scroll - [empty stub]
 ```
 * Context -- context:meta-event
 ```
@@ -597,7 +600,8 @@ context:navigate-to (moduleName) - [empty stub] - triggered after app:navigate
 ```
 * Marionette.xView -- view:meta-event
 ```
-view:render-data (data, forceReRender) - onRenderData [pre-defined]
+view:render-data (data) - onRenderData [pre-defined]
+//Do not use a collection in a ItemView/Layout with this event.
 ```
 
 Remember, you can always trigger a customized event `my-event-xyz` and implement it later on the object by creating `onMyEventXyz()`.
