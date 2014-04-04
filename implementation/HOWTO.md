@@ -25,7 +25,7 @@ You will use `create()` most of the time for creating application elements (*Con
 We also maintain a list of 3rd party libraries for the developers to choose from in addition to the base libraries (as utilities). The utility libs (e.g jquery-file-upload, store.js, uri.js, raphael.js, marked, moment.js, socket.io.js...) are carefully selected from the many open-source Javascript libs out there to help with specific but generally-will-appear problems that a developer will encounter during the web application development process. (see more in the *Include other js libs* chapter)
 
 ###Moving away from all-in-ones
-We have been developing in ExtJS4 for 2+ years, starting form the last version of 4.0 which is the promising 4.0.7. As our knowledge base expands, we felt that it is time to form our own blueprint of a modern data heavy web application to shorten the development cycles. Here are some of the main reasons:
+We have been developing in ExtJS4 for 2+ years, starting form the last version of 4.0.x which is the promising 4.0.7. As our knowledge base expands, we felt that it is time to form our own blueprint of a modern data heavy web application to shorten the development cycles. Here are some of the main reasons:
 
 1. Although it is relatively fast to develop prototypes using an all-in-one framework like ExtJS, it is hard to maintain the code while keeping up with the changes required by the users and those that come from Sencha. The widgets are bound too tight with the framework.
 2. Loading, DOM interfacing, Widget and Application containers are all provided with a biased opinion, which always lead to fightings with the framework here and there or messing around with the life-cycles defined when trying to implement application specific user requirements. 
@@ -277,7 +277,7 @@ By default, any *Regional* you define will be a *Marionette.Layout*, you can cha
 
 By default, `Application.create('Regional', {...})` returns the **definition** of the view, if you want to use the returned view **anonymously**, remove the `name` option. You will get a **instance** of the view definition to `show()` on a region right away. 
 
-Sometimes your *Regional* is comprised of other sub-regional views and that's fine, you can nest *Regional*s with the `region=""` and `view=""` attributes in the template. There will also be time when you just need plain *Marionette.xView* definitions without naming them to be *Regional*s. You can do it like this:
+Sometimes your *Regional* is comprised of other sub-regional views and that's fine, you can nest *Regional*s with the `region=""` and `view=""` attributes in the template (**only if it is of type:Layout**). There will also be time when you just need plain *Marionette.xView* definitions to be used as item views within *Regional*s. You can do it like this:
 ```
 Application.create({
     type: '...', //ItemView, Layout, CollectionView or CompositeView
