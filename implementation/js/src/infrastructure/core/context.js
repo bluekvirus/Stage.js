@@ -62,6 +62,7 @@
 				}, config)) : undefined,
 				display: function(){
 					this.layout = new this.Layout();
+					this.layout.parentContext = this;
 					return this.layout;
 				}
 			});

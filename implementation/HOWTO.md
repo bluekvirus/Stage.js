@@ -617,10 +617,13 @@ The `region:load-view` event listener is implemented for you and can search thro
 
 Don't know what a *Widget* registry is? Keep reading.
 
-######What's parentCt?
-Before you move on, there is one more thing in this event section we want to clarify. If you use `region=""` in your template to define regions in a *Context*/*Marionette.Layout*, your sub-view instances within those regions will receive a `parentCt` property which should help you find its parent container view instance (which is the layout instance).
+######Use parentCt?
+Before you move on, there is one more thing in this event section we want to clarify. If you use `region=""` in your template to define regions in a *Context*/*Marionette.Layout*, your sub-view instances within those regions will receive a `parentCt` property upon shown which should help you find its parent container view instance (which is the layout instance).
 
 This is helpful when you want to achieve **collaborations** between sub-views of a layout by using event managed by the layout.
+
+######Use parentContext?
+Additional `parentContext` property will be added to each view instances to help triggering collaboration events on the *Context* the view sits on.
 
 
 ###Widgets/Editors
@@ -852,6 +855,11 @@ Appendix
 Start with user requirements/stories and focus on serving the customers' need. Use the 80/20 rule to pick out important features/functionalities and implement them first. Gradually refine code and documentation later. Remember to write down **why** before **how** in the code comments. !FOCUS!
 
 ####GUI
+* Concision - exact but nothing more
+* Expressive-ness - allow useful possibilities be deducted
+* Ease - low mnemonic load on commands, control sequence
+* Transparency - low mnemonic load on user's mind on states/layers of problem
+* Scriptability - batch-able, automate-able
 
 
 ###B. Change log

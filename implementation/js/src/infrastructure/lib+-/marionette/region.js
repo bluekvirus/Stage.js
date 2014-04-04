@@ -39,8 +39,10 @@
 				this.$el.empty().append(view.el);
 
 			//inject parent view container through region into the regional views
-			if(this.parentLayout)
+			if(this.parentLayout){
 				view.parentCt = this.parentLayout;
+				if(view.parentCt.parentContext) view.parentContext = view.parentCt.parentContext;
+			}
 		}
 	});
 
