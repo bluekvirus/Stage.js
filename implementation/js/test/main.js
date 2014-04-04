@@ -1,23 +1,5 @@
 ;Application.setup({
 
-    /**
-     * ================
-     * Development ONLY
-     * ================
-     */
-    
-    //CROSSDOMAIN [Warning: Crossdomain Authentication]
-    //If you ever need crossdomain development, we recommend that you TURN OFF local server's auth layer/middleware. 
-    crossdomain: {
-        //enabled: true,
-        protocol: '', //https or not? default: '' -> http
-        host: '127.0.0.1', 
-        port: '5000',
-        username: 'admin',
-        password: '123'
-        /*----------------*/
-    },
-
     //You can override other production config vars if wanted.
     //fullScreen: true,
     theme: '_dev',
@@ -42,7 +24,7 @@
                     '<div region="libinfo"></div>',
                 '</div>',
                 '<div class="col-sm-9" style="border-left:1px solid">',
-                    '<div region="breadcrumbs" view="Doc.Breadcrumbs" style="position: fixed; top: 0; right: 0"></div>',
+                    '<div region="breadcrumbs" view="Doc.Breadcrumbs" style="position: fixed; top: 0; right: 0; display:none"></div>',
                     '<div region="doc" md="HOWTO.md" action="refresh"></div>',
                 '</div>',
             '</div>',
@@ -50,25 +32,29 @@
         initialize: function(){
             this.enableActionTags();
             this.listenTo(Application, 'app:scroll', function(offset, viewportH){
-                if(!this.headerOffsets || offset < 150) {
+                if(!this.$headers || offset < 150) {
                     this.breadcrumbs.$el.hide();
                     return;
                 }
-                var stop = false, result = '';
-                _.each(this.headerOffsets, function(ho, index){
+                var stop = false, $result;
+                _.each(this.$headers, function($h, index){
                     if(stop) return;
-                    if(ho.offset > offset + viewportH * 0.35) {
-                        result = this.headerOffsets[index-1];
+                    if($h.offset().top > offset + viewportH * 0.35) {
+                        $result = this.$headers[index-1];
                         stop = true;
                     }
                 }, this);
+                if(!$result) throw new Error('document headers error!');
 
                 //hilight this header and its parents in breadcrumbs
-                var path = [result.title];
-                $parent = $('#' + $('#' + result.id).data('parent').id);
+                var path = [{title: $result.data('title'), id: $result.data('id')}];
+                $parent = $('#' + $result.data('parent').id);
                 while($parent.length){
                     var info = $parent.data();
-                    path.unshift(info.title);
+                    path.unshift({
+                        title: info.title,
+                        id: info.id
+                    });
                     $parent = $('#' + info.parent.id);
                 }
                 this.breadcrumbs.$el.show();
@@ -98,17 +84,20 @@
                             this.enableActionTags();
                         },
                         actions: {
-                            goto: function($btn, e){
+                            goTo: function($btn, e){
                                 e.preventDefault();
-                                var $section = that.doc.$el.find('#' + $btn.data('id'));
-                                $window.scrollTop($section.offset().top);
-                                //Todo: highlight section
+                                that.trigger('view:go-to-topic', $btn.data('id'));
                             }
                         }
                     }));
-                    that.headerOffsets = that.doc.$el.data('toc').offsets;
+                    that.$headers = that.doc.$el.data('toc').$headers;
                 }
             });
+        },
+        onGoToTopic: function(id){
+            if(!id) return;
+            var $topic = this.doc.$el.find('#' + id);
+            $window.scrollTop($topic.offset().top - window.innerHeight*0.16);
         },
         onShow: function(){
 
@@ -170,13 +159,22 @@
         tagName: 'ol',
         className: 'breadcrumb',
         template: [
+            '<li><i class="btn btn-primary btn-xs fa fa-arrow-up" action="goTop"></i></li>',
             '{{#each path}}',
-                '<li><a href="#">{{ this }}</a></li>',
+                '<li><a href="#" action="goTo" data-id="{{id}}">{{ title }}</a></li>',
             '{{/each}}',
-            '<li><i class="fa fa-arrow-up"></i></li>',
         ],
         initialize: function(){
-            //TBI - scrollTo (top or parent topic)
+            this.enableActionTags();
+        },
+        actions: {
+            goTop: function(){
+                $window.scrollTop(0);
+            },
+            goTo: function($btn, e){
+                e.preventDefault();
+                this.parentCt.trigger('view:go-to-topic', $btn.data('id'));
+            }
         }
 
     });

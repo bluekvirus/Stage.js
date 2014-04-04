@@ -167,7 +167,19 @@ _.each(['Core', 'Util'], function(coreModule){
 			defaultContext: 'Default', //This is the context (name) the application will sit on upon loading.
 			fullScreen: false, //This will put <body> to be full screen sized (window.innerHeight).
 	        rapidEventDebounce: 200, //in ms this is the rapid event debounce value shared within the application (e.g window resize).
-	        baseAjaxURI: '/api', //Modify this to fit your own backend apis. e.g index.php?q= or '/api'
+	        baseAjaxURI: '/api', //Modify this to fit your own backend apis. e.g index.php?q= or '/api',
+			/*CROSSDOMAIN Settings*/
+			//see MDN - https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS
+			//If you ever need crossdomain development, we recommend that you TURN OFF local server's auth layer/middleware. 
+			crossdomain: {
+			    //enabled: true,
+			    protocol: '', //https or not? default: '' -> http
+			    host: '127.0.0.1', 
+			    port: '5000',
+			    username: 'admin',
+			    password: '123'
+			}
+
 		}, config);
 
 		//2 Detect Theme

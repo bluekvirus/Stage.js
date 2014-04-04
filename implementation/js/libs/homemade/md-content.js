@@ -73,7 +73,7 @@
 		}, options);
 
 		//statistical registry
-		var offsets = [];
+		var $headers = [];
 
 		//traverse the document tree
 		var $root = $('<div></div>').append(options.headerHTML).append('<ul></ul>');
@@ -86,15 +86,13 @@
 			var tag = $this.context.localName; //or tagName which will be uppercased
 			var title = $this.html();
 			var id = $this.attr('id');
-			var offset = $this.offset().top;
 			$this.data({
 				title: title,
 				id: id,
-				offset: offset
 			});
-			offsets.push({ offset: offset, id: id, title: title});
+			$headers.push($this);
 
-			var $node = $('<li><a href="#" data-id="' + id + '" action="goto">' + title + '</a><ul></ul></li>'); //like <li> <a>me</a> <ul>children[]</ul> </li>
+			var $node = $('<li><a href="#" data-id="' + id + '" action="goTo">' + title + '</a><ul></ul></li>'); //like <li> <a>me</a> <ul>children[]</ul> </li>
 			$node.data({
 				title: title,
 				id: id
@@ -138,7 +136,7 @@
 		});
 		$el.data('toc', {
 			html: '<div class="md-toc">' + $root.html() + '</div>',
-			offsets: offsets, //offsets array calculator - to use with $window.scrollTop()
+			$headers: $headers, //actual document $(header) node refs
 		});
 	}
 

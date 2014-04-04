@@ -45,7 +45,9 @@ We choose what we choose when designing this framework simply because we want to
 
 **The Backbone library can implement them all** (Yes, any client side framework). (Not 100% for Meteor though, since Meteor combines its server into a full-stack solution. You need nodejs in the picture for that). And, if you need more evidence, YUI3 has the exact same concepts in Backbone implemented as its infrastructure. 
 
-In order to accomplish more with lesser code using Backbone, we picked Backbone.Marionette as our pattern library. It offers cleanup/boilerplate routines and very neat concepts for building large Javascript front-end projects. The resulting framework accomplishes all the big frameworks have promised but with **a thiner and flattener structure**. We believe scripting languages are always going to be the perfect thin glue layer between mechanisms and policies. The Javascript language were picked to glue HTML/CSS and UX but nothing more, it should not be overdosed and attempt to mimic Java.
+In order to accomplish more with lesser code using Backbone, we picked Backbone.Marionette as our pattern library. It offers cleanup/boilerplate routines and very neat concepts for building large Javascript front-end projects. The resulting framework accomplishes all the big frameworks have promised but with **a thiner and flattener structure**. We believe scripting languages are always going to be the perfect thin glue layer between mechanisms and policies. The Javascript language were picked to glue HTML/CSS and UX but nothing more, it should not be overdosed and attempt to mimic Java. In other words, **only the burger is important**:
+
+<img src="/static/resource/default/diagram/Diagram-6.png" alt="HTML is the burger" class="center-block"></img>
 
 
 Mental preparation
@@ -572,14 +574,14 @@ Application.create({
 Don't worry about container resizing, it is automatically taken cared for you. 
 
 #####Events
-Some interactions demand collaboration between view objects, this is why we introduce the concept of meta-event programming. It is like coding through just interfaces in a object-oriented programming language but much more flexible. The goal is to let the developer code with events instead of APIs so the implementation can be delayed as much as possible. The underlying principle is very simple:
+Some interactions demand **collaboration** between view objects, this is why we introduce the concept of meta-event programming. It is like coding through just interfaces in a object-oriented programming language but much more flexible. The goal is to let the developer code with events instead of APIs so the implementation can be delayed as much as possible. The underlying principle is very simple:
 ```
 //event format : namespace:worda-wordb-...
 object.trigger('object:meta-event', arguments);
 //will invoke listener : onWordaWordb...
 object.onMetaEvent(arguments);
 ```
-We have `Application`, `Context` and all the `Marionette.xView` enhanced to accept meta-event triggers. Some of the events are already listened/triggered for you:
+We have `Application (app:)`, `Context (context:)` and all the `Marionette.xView (view:)` enhanced to accept meta-event triggers. Some of the events are already listened/triggered for you:
 * Application -- app:meta-event
 ```
 app:navigate (contextName, moduleName) - Application.onNavigate [pre-defined]
@@ -614,6 +616,11 @@ myregion.trigger('region:load-view', name[, options]);
 The `region:load-view` event listener is implemented for you and can search through both the *Regional* and *Widget* registry to find the view by name and show it on the region. You can pass in addition factory options to the event trigger if they are for a *Widget*.
 
 Don't know what a *Widget* registry is? Keep reading.
+
+######What's parentCt?
+Before you move on, there is one more thing in this event section we want to clarify. If you use `region=""` in your template to define regions in a *Context*/*Marionette.Layout*, your sub-view instances within those regions will receive a `parentCt` property which should help you find its parent container view instance (which is the layout instance).
+
+This is helpful when you want to achieve **collaborations** between sub-views of a layout by using event managed by the layout.
 
 
 ###Widgets/Editors
@@ -834,8 +841,8 @@ Use `bower update` to update other monitored libs you need under `/implementatio
 
 Appendix
 --------
-###A. Philosophy behind
-####Rules of Thumb
+###A. Rules of Thumb
+####General
 * Keep things simple, especially the simple ones.
 * Categorization before abstraction.
 * Separate, Reuse and Pipeline.
@@ -844,11 +851,17 @@ Appendix
 
 Start with user requirements/stories and focus on serving the customers' need. Use the 80/20 rule to pick out important features/functionalities and implement them first. Gradually refine code and documentation later. Remember to write down **why** before **how** in the code comments. !FOCUS!
 
+####GUI
+
 
 ###B. Change log
 see CHANGELOG.md
 
 ###C. Useful sites
+####MDN
+* [CORS](https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS) - crossdomain ajax support.
+* [Web API](https://developer.mozilla.org/en-US/docs/Web/API)
+
 ####CDN
 * [jsDelivr](http://www.jsdelivr.com/)
 

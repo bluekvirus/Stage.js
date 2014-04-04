@@ -37,7 +37,10 @@
 			}
 			else 
 				this.$el.empty().append(view.el);
-			view.parentCt = this;
+
+			//inject parent view container through region into the regional views
+			if(this.parentLayout)
+				view.parentCt = this.parentLayout;
 		}
 	});
 
