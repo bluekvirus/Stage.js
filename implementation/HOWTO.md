@@ -421,7 +421,7 @@ Any *Marionette.View* can have its actions configure block activated like this (
         ],
         ...,
         initialize: function(){
-            this.enableActions(); //2. activate actions block.
+            this.enableActionTags(); //2. activate actions block.
         },
         ...,
         actions: { //3. implement the action listeners.
@@ -431,9 +431,9 @@ Any *Marionette.View* can have its actions configure block activated like this (
     });
 })(Application);
 ```
-Note that `enableActions()` is recommended to be called within the `initialize()` function introduced by *Marionette*.
+Note that `enableActionTags()` is recommended to be called within the `initialize()` function introduced by *Marionette*.
 
-Use `enableActions(true)` if you want the click event to **propagate** to the parent view/container. `e.preventDefault()` needs to be specified in the action listeners if you don't want a clicking on `<a href="#xyz" action="another"></a>` tag to affect the navigation.
+Use `enableActionTags(true)` if you want the click event to **propagate** to the parent view/container. `e.preventDefault()` needs to be specified in the action listeners if you don't want a clicking on `<a href="#xyz" action="another"></a>` tag to affect the navigation.
 
 #####Inputs
 We have already prepared the basic html editors for you in the framework. You don't have to code `<input>, <select> or <textarea>` in any of your view template. Instead, you can activate them in any *Marionette.xView* like this:
