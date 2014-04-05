@@ -12,7 +12,7 @@
 
 ;(function(){
 
-    Application.create('Context', {
+    Application.create('Page', {
         //don't name it, if want to define Default context.
         name: 'Document',
         className: 'container',
@@ -154,7 +154,7 @@
     });
 
     //Document - Regionals
-    Application.create('Regional', {
+    Application.create('Area', {
         name: 'Doc.Breadcrumbs',
         tagName: 'ol',
         className: 'breadcrumb',
@@ -179,7 +179,7 @@
 
     });
 
-    Application.create('Context', {
+    Application.create('Page', {
         name: 'Demo',
         template: [
             '<div region="center"></div>',
@@ -191,7 +191,7 @@
     });
 
     //Demo - Regionals
-    Application.create('Regional', {
+    Application.create('Area', {
         name: 'Editors',
         className: 'well container',
         template: [

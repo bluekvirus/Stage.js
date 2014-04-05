@@ -23,13 +23,13 @@
  * 		1. Model/Collection: {
  * 			[normal Backbone.Model/Collection options]
  * 		};
- * 		2. Context: {
+ * 		2. Context/alias:Page: {
  * 			[name]: if you don't name the context, we will use 'Default' as its name,
  * 			template: '#id' or '<...>' or ['<...>', '<...>'],(auto functional attribute: region, view)
  * 			[onNavigateTo]: function(module path string)
 			[rest of normal Marionette.Layout options] - if you override initialize + onShow, the default region detect and view showing behavior will be removed.
  * 		};
- * 		3. Regional: { -- for automatically loading through layout template. 
+ * 		3. Regional/alias:Area: { -- for automatically loading through layout template. 
  * 			name:, (id in static list:Marionette.Layout.Views -- see lib+-/marionette/view.js)
  * 			template: '#id' or '<...>' or ['<...>', '<...>'], (possible functional attribute: region, ui)
  * 			[type]: 'ItemView'(default)/ Layout/ CollectionView/ CompositeView (Marionette Views)
@@ -366,6 +366,13 @@ _.each(['Core', 'Util'], function(coreModule){
 			config = type;
 			return Backbone.Marionette[config.type || 'ItemView'].extend(config);
 		}
+
+		//allow alias to free developers from mental stress.
+		var alias = {
+			'Page': 'Context',
+			'Area': 'Regional'
+		};
+		if(alias[type]) type = alias[type];
 			
 		switch(type){
 

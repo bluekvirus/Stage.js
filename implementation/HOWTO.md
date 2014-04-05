@@ -1,7 +1,7 @@
 Pro.js <sub class="text-muted" style="font-size:36%">based on Marionette.js</sub>
 ======
 *An infrastructure for building modern web application with many contexts.*
-[@Tim Liu](mailto:zhiyuanliu@fortinet.com)
+[@Tim (Zhiyuan) Liu](mailto:zhiyuanliu@fortinet.com)
 
 
 Current version
@@ -20,18 +20,18 @@ The framework is made on top of **Backbone.Marionette** and **Bootstrap**. To fl
 * Application.create(options)
 * Application.remote(options)
 
-You will use `create()` most of the time for creating application elements (*Context*s and *Regional*s). It is designed so in order to let the developers feel more comfortable picking up the workflow while reusing their existing web development knowledge and experience with the base libraries.
+You will use `Application.create()` most of the time for creating application elements (*Context*s and *Regional*s or in a sense, pages and areas). It is designed so in order to let the developers feel more comfortable picking up the workflow while reusing their existing web development knowledge and experience with the base libraries.
 
 We also maintain a list of 3rd party libraries for the developers to choose from in addition to the base libraries (as utilities). The utility libs (e.g jquery-file-upload, store.js, uri.js, raphael.js, marked, moment.js, socket.io.js...) are carefully selected from the many open-source Javascript libs out there to help with specific but generally-will-appear problems that a developer will encounter during the web application development process. (see more in the *Include other js libs* chapter)
 
 ###Moving away from all-in-ones
 We have been developing in ExtJS4 for 2+ years, starting form the last version of 4.0.x which is the promising 4.0.7. As our knowledge base expands, we felt that it is time to form our own blueprint of a modern data heavy web application to shorten the development cycles. Here are some of the main reasons:
 
-1. Although it is relatively fast to develop prototypes using an all-in-one framework like ExtJS, it is hard to maintain the code while keeping up with the changes required by the users and those that come from Sencha. The widgets are bound too tight with the framework.
+1. Although it is relatively fast to develop prototypes using an all-in-one framework like ExtJS, it is hard to maintain the code while keeping up with the changes required by the users and those that come from Sencha. The widgets are bound too tightly with the framework.
 2. Loading, DOM interfacing, Widget and Application containers are all provided with a biased opinion, which always lead to fightings with the framework here and there or messing around with the life-cycles defined when trying to implement application specific user requirements. 
 3. Performance issues. There are often a massive amount of unnecessary DOM elements lurking in the client browser. We have very limited control over the life-cycles nor the HTML template structure of the components. Making widgets as Classes and loading like Java is really a bad idea for Javascript.
 4. Theming difficulties. It is hard to theme an ExtJS application correctly given the extensively nested component structure and the lack of SASS/Compass adaptation among developers.
-5. Payed solution. The commercial version of ExtJS and the tools (IDE) are expensive. This also makes the community size smaller than its full/free open source counterparts, making it difficult to find solutions from sources other than the documentation.
+5. Payed solution. The commercial version of ExtJS and the tools (IDE) are expensive. This also makes the community size smaller than its full/free open source counterparts, making it difficult to find solutions from resources other than the documentation.
 
 We choose to move away from this heavy framework to avoid its complexity (tightly bound all-in-one solution) and to have more control over the component lifecycles, interactions and application container separately. An equally powerful yet still lightweight solution combining the best practices in the field is thus made. 
 
@@ -43,7 +43,7 @@ We choose what we choose when designing this framework simply because we want to
 * Development Framework - AngularJS/EmberJS/Meteor (infrastructure only)
 * Application Framework (All-in-One) - YUI/ExtJS (infrastructure plus widgets and tools)
 
-**The Backbone library can implement them all** (Yes, any client side framework). (Not 100% for Meteor though, since Meteor combines its server into a full-stack solution. You need nodejs in the picture for that). And, if you need more evidence, YUI3 has the exact same concepts in Backbone implemented as its infrastructure. 
+**The Backbone library can implement them all** (Yes, any client side framework). (Not 100% for Meteor though, since Meteor combines its server into a full-stack solution. You need nodejs in the picture for that and we do have a package called **ajax-box** for just that based on the [express.js](http://expressjs.com/4x/) framework). And, if you need more evidence, YUI3 has the exact same concepts in Backbone implemented as its infrastructure. 
 
 In order to accomplish more with lesser code using Backbone, we picked Backbone.Marionette as our pattern library. It offers cleanup/boilerplate routines and very neat concepts for building large Javascript front-end projects. The resulting framework accomplishes all the big frameworks have promised but with **a thiner and flattener structure**. We believe scripting languages are always going to be the perfect thin glue layer between mechanisms and policies. The Javascript language were picked to glue HTML/CSS and UX but nothing more, it should not be overdosed and attempt to mimic Java. In other words, **only the burger is important**:
 
@@ -52,9 +52,10 @@ In order to accomplish more with lesser code using Backbone, we picked Backbone.
 
 Mental preparation
 ------------------
-Technique means nothing if people have no purposes in their mind. To prepare mentally to adapt something is to synchronize the mind around the subject domain so you can develop insights while applying the technique. The ultimate goal is always to understand the subject (in our case the problem) better.
+> Technique means nothing if people have no purposes in their mind. To prepare mentally to adapt something is to synchronize the mind around the subject domain so that insights can be developed while applying the technique. The ultimate goal is always to understand the subject (in our case the problem) better.
 
-Make sure to ask enough questions, so you can quickly locate the core problem that a given technique is trying to solve efficiently. Soon enough, you will start to see things like the solution builder, and you will have a high chance of becoming one yourself later. True understanding is almost always developed this way.
+> Make sure to ask enough questions, so you can quickly locate the core problem that a given technique is trying to solve efficiently. Then go apply the technique and try making changes. Soon enough, you will start to see things like the solution creator, and concepts and ideas start to come out naturally. True understanding is almost always developed this way.
+> <footer>[Tim (Zhiyuan) Liu](mailto:zhiyuanliu@fortinet.com)</footer>
 
 If you can not agree with the author after reading this preparation chapter, do not bother with this framework.
 
@@ -63,10 +64,10 @@ Before start, you need to understand what is a *GUI application*, here is a brie
 
 <img src="/static/resource/default/diagram/Diagram-1.png" alt="Web App Diagram" class="center-block"></img>
 
-The client and server sides are different in purpose fundamentally. Thus, they should be designed and implemented differently. Shutting this door will preserve a significant amount of coding/maintenance energy for the application developer(s). The best software development practice encourages separation and delaying of implementation of related components so that each part can vary independently later. And to the author (me), abstraction should happen after categorization, or say, classification. This is why we are advising the developers (you) **NOT** to make an overly encapsulated framework with tools that try to bridge the gap for the developers. Trying to control everything using central planning is a human flaw, there is no silver-bullet for trying to solve web application building in 1 piece. It will always 3 parties in the software application world.
+The client and server sides are different in purpose fundamentally. Thus, they should be designed and implemented differently. **Do NOT mix them**. Shutting this door will preserve a significant amount of coding/maintenance energy for the application developer(s). The best software development practice encourages separation and delaying of implementation of related components so that each part can vary independently later. And to the author, abstraction should happen after categorization (or say, classification). This is why we are advising the developers *NOT* to make an overly encapsulated framework with tools that try to bridge the gaps. Trying to control everything using central planning is a human flaw, there is no silver-bullet for trying to solve web application building in 1 piece. It will always 3 parties in the software application world.
 
 As an engineer, the job is to find insights and solve problems between the 3 parties efficiently (profitably if you must insist...) so that the software/application serving the above system comes out correctly. This is hard. Specifically, You need to resolve 2 kinds of problem different in nature: *Interaction* and *Data Flow* in order to produce an application.
-A successful one requires both parts to employ careful design and feasible technique. We illustrate the first problem here:
+A successful one requires both parts to employ careful design and feasible technique. We illustrate the *Interaction* problem's technical side here, since the framework is more about supporting a good design with cleaner implementation:
 
 <img src="/static/resource/default/diagram/Diagram-2.png" alt="UI/UX Problems" class="center-block"></img>
 
@@ -75,9 +76,9 @@ As you can see from the above diagram, there are 3 problems here to address when
 2. Model/Collection [snapshot] <i class="fa fa-arrows-h"></i> View (UI)
 3. View <i class="fa fa-arrows-h"></i> Layout/Page + Transitions (UX)
 
-Failing to address any of the 3 parts above will cost the project a significant amount of refractory time. **DO NOT** skip or trying to merge them into one big abstraction. Conquer each one with a consistent API style (like parameters and naming conventions) then combine the result. A complete system is never a destination, it is only a state of being or appearance. In other words, anytime you want your solution appear to be *a complete one*, focus on identifying the key problems and then solve them. **DO NOT** set your goal to be *a complete system* when start.
+Failing to address any of the 3 parts above will cost the project a significant amount of refractory time. Do *NOT* skip or trying to merge them into one big abstraction. Conquer each one with a consistent API style (like parameters and naming conventions) then combine the result. A complete system is never a destination, it is only a state of being or appearance. In other words, anytime you want your solution appear to be *a complete one*, focus on identifying the key problems and then solve them. Do *NOT* set your goal to be *a complete system* when start.
 
-So, we have identified the core problems, how do we form our solutions to them?
+So, how do we form our solution?
 
 ###Solution architecture
 As a full stack solution to the UI/UX side, we address those 3 problems with an intuitive architecture:
@@ -91,28 +92,32 @@ We achieve client-side multi-page-alike navigation through switching *Context*s 
 ####What's a Context?
 A *Context* is a *Marionette.Layout* wrapped inside a *Marionette* module, you can just think of it as a *Layout*. *Context*s only appear on the application's context region (each application can have only 1 such region). If you have more than 1 *Context*s defined, they will automatically swap on the context region in response to the navigation event. You will not have more than 1 active *Context* at any given time.
 
+alias: Page
+
 ####What's a Regional?
-A *Regional* is a *Marionette.View* with name, it is to be shown on a region in template of your application or any *Marionette.Layout* instance. As you can see, since a *Context* is a *Layout* with extra functions, *Regional*s will be used closely with it. You will read about why a *Regional* needs a name in the **Quick steps** section.
+A *Regional* is a *Marionette.xView* (*ItemView, Layout, CollectionView and CompositeView*) with name, it is to be shown on a region in template of your application or any *Marionette.Layout* instance. As you can see, since a *Context* is a *Layout* with extra functions, *Regional*s will be used closely with it. You can link a *Regional* with a *Context* by putting the *Regional*'s name in the *Context*'s template. Read more about *Regional* in the **Quick steps** section.
+
+alias: Area
 
 ####Remote data handling?
-Modern web application generates views according to user data dynamically. This is why we picked *Backbone/Marionette* as our implementation base -- to use data-centered views. Plus, there is no doubt about wiring in remote data into your application through *Ajax* now. However, the way we handle remote data in our framework is a bit different than the original design in *Backbone*.
+Modern web application generates views according to user data dynamically. This is why we picked *Backbone/Marionette* as our implementation base -- to use dynamic views rendered through data. Plus, there is no doubt about wiring in remote data into your application through *Ajax* now. However, the way we handle remote data in our framework is a bit different than the original design in *Backbone*.
 
-We introduce a unified *DATA API* for handling all the in/out of remote server data, skipping the *Model/Collection* centered way of data manipulation. *Model/Collection* are only used as dumb data snapshot object on the client side to support views. The goal is to make the data interfacing layer *as thin as possible* on the client side. You will find more details in the **Quick steps** section.
+**Important:** We introduce a unified *DATA API* for handling all the in/out of remote server data, skipping the *Model/Collection* centered way of data manipulation. *Model/Collection* are only used as dumb data snapshot object on the client side to support views. The goal is to make the data interfacing layer *as thin as possible* on the client side. You will find more details in the **Quick steps** section.
 
 ####Reuse view definitions?
 As *Design Patterns* dictates, we need to code in a way to:
 
 <img src="/static/resource/default/diagram/Diagram-4.png" alt="Design Pattern Goals" class="center-block"></img>
 
-For *Regional*s (or any *Marionette.View*) that you need to use again and again but with different configuration (e.g a Datagrid). Register it as a *Widget* or, in case of a basic input, an *Editor*. These reusable view definitions are call *Reusable*s in the framework. Think in terms of the **List and Container** technique as much as possible when creating them.
+For *Regional*s (or any *Marionette.xView*) that you need to use again and again but with different configuration (e.g a Datagrid). Register it as a *Widget* or, in case of a basic input, an *Editor*. These reusable view definitions are call *Reusable*s in the framework. Think in terms of the **List and Container** technique as much as possible when creating them.
 
 ####Glue through events
-We encourage event programming in this framework. We glue views into a functioning whole by using meta-events. Whenever an interaction or transiting happens (e.g navigation, context-swap, login, error, data-ready...), intead of calling the actual *doer*s, fire/trigger an event first, so that later the actual behavior triggered by this event can be changed without affecting the glue/interfacing logic. Read carefully through the **Meta-events** subsection below so you understand how to implement and extend application behaviors. 
+We encourage event programming in this framework. We glue views into a functioning whole by using meta-events. Whenever an interaction or transiting happens (e.g navigation, context-swap, login, error, data-ready...), intead of calling the actual *doer*s, fire/trigger an event first, so that later the actual behavior triggered by this event can be changed without affecting the glue/interfacing logic. Read carefully through the **Events** subsection in **Quick steps** below so you understand how to implement and extend application behaviors mainly through events. 
 
 ####Seems complicated...
-To focus, think of your application in terms of *Context*s and *Regional*s. Like drawing a series of pictures, each page is a *Context* and you lay things out by sketching out regions first on each page then refined the details (*Regional*) within each region. 
+To focus, think of your application in terms of *Context*s and *Regional*s (pages and areas). Like drawing a series of pictures, each page is a *Context* and you lay things out by sketching out regions (areas) first on each page then refined the details (*Regional*) within each region. 
 
-Use *Model*/*Collection* wisely, try not to involve them before relating to any *Marionette.View*. That is to say, fetch/persist data through a unified *Data API* (CRUD or Restful). Unless you want a dynamic view, do **NOT** use *Model*/*Collection* to store and operate on the data. Focus on UI/UX and make the data interfacing with server as thin as possible.
+Use *Model*/*Collection* wisely, try not to involve them before relating to any *Marionette.xView*. That is to say, fetch/persist data through the unified *Data API* (CRUD in RESTful format). Unless you want a dynamic view, do **NOT** use *Model*/*Collection* to store and operate on the data. Focus on UI/UX and make the data interfacing with server as thin as possible.
 
 
 Getting started
@@ -135,6 +140,8 @@ and this indicates:
 
 If you don't know what they are, go for a quick look at their websites. (links are provided under the *Included Libraries* area on the left sidebar)
 
+**Remember:** The goal of this framework is to assist you to make better use of *Marionette* (thus *Backbone*) by adding a conventional workflow (with tools) and application container around it. It is designed to keep you focused on building dynamic views without worrying about putting/linking/organizing them into a manageable whole. You can make a complete web application project with ease now by focusing only on what to offer the user within each of the regions/areas. Go read about *Marionette*, it is very important that you understand the 4 types of views (*ItemView, Layout, CollectionView and CompositeView*) offered by this pattern library. [We are still experimenting with *Behavior* in *Marionette*, nothing in the framework is implemented with it yet]
+
 ###What's in the package
 
 ####Project structure
@@ -156,13 +163,13 @@ You start developing by creating a `main.js` (you are free to choose whatever th
 and include it in `/implementation/index.html` below the `<!--main.js-->` comment line:
 
 ```
-<script src="js/all.min.js"></script>
+<script src="js/all.js"></script>
 ...  
 <!--main.js-->
 <script type="text/javascript" src="js/main.js"></script>
 ...
 ```
-**Note:** You can swap `all.min.js` with `all.js` in `/implementation/index.html` to have better debug information during development.
+**Note:** The `all.js` is relatively big and is just for development purpose. Do *NOT* forget to build your application during deployment.
 
 Minimum `main.js` script looks like this:
 ```
@@ -190,7 +197,7 @@ You will start real development by adding *region*s to your application template
 ###Quick steps
 Here is the recommended **workflow**. You should follow the steps each time you want to start a new project with *Pro.js*. We assume that you have downloaded the *Pro.js* client package now and extracted to your project folder of choice.
 
-Remember, creating a web application is like drawing a picture. Start by laying things out and gradually refine the details. In our case, always start by defining application template with regions and the *Context*s.
+Remember, creating a web application is like drawing a picture. Start by laying things out and gradually refine the details. In our case, always start by defining application template.
 
 ####Step 1. Initialize
 Go to your `main.js` and setup the application by using `Application.setup()`:
@@ -202,7 +209,7 @@ Application.setup({
     template: '#id' or ['<div>...</div>', '<div>...</div>'] or '<div>...</div>'
     contextRegion: 'your context region marked in template',
     defaultContext: 'your default context shown upon dom-ready',
-    baseAjaxURI: 'your base url for using app.remote()'
+    baseAjaxURI: 'your base url for using Application.remote()'
 }).run();
 ```
 Each setup configure variable has its own default value, you can safely skip configuring them here, however, there is one you might want to change now -- `template`.
@@ -221,18 +228,18 @@ Application.setup({
     ...
 }).run();
 ```
-By using `region=""` attribute in any html tag, we marked pre-defined regions in the template, **you can also do this with any *Marionette.Layout*** in our framework. They are already enhanced to pickup the attribute.
+By using `region=""` attribute in any html tag, we marked pre-defined regions in the template, **you can also do this with any *Marionette.Layout*** in our framework. They are already enhanced to pickup the attribute. Doing so is equivalent of using the `regions:{}` property in a *Marionette.Layout*.
 
-Note that **you can use an additional `view=""` attribute to load up a named *Regional* view in a given region**, only tags marked with `region=""` first will continue to verify if there is an assigned *Regional* view through the `view=""` attribute.
+Note that **you can use an additional `view=""` attribute to load up a named *Regional* view in a given region**, only tags marked with `region=""` first will continue to verify if there is an assigned *Regional* view (by name) through the `view=""` attribute.
 
-Now, given that you've changed the template, you need to also change `contextRegion` to point to the area that you use to swap between different *Context*s.
+Now, given that you've changed the template, you need to also change `contextRegion` to point to the area that you use to swap between different *Context*s. Recall that there can only be 1 active *Context* on the context region at any one time.
 
-If your application is a single-page application, you probably don't need more than one *Context*, in such a case, you don't need to change the application template. There will always be a region that wraps the whole application -- the *app* region. The **Default** *Context* will automatically show on region *app* with the default application setup.
+If your application is a single-page application, you probably don't need more than one *Context*, in such a case, you don't need to assign the application template. There will always be a region that wraps the whole application -- the *app* region. You can define your *Context* without a `name` property, this will register the *Context* to be the **Default** one. The **Default** *Context* will automatically show on region *app* if you did not specify `contextRegion` and `defaultContext`.
 
-Now we've marked our context region and some regional views to show, let's proceed to define them through our powerful *Unified APIs* `Application.create()` and `Application.remote()` in the following sections.
+Now we've marked our context region, let's proceed to define them through our powerful *Unified APIs* `Application.create()` in the following sections.
 
 ####Step 2. Define Contexts
-Create a new file named `myContextA.js`, remember a *Context* is just a *Marionette app module* wrapped around a *Marionette.Layout* definition. We've taken care of the wrapping process, all you need to do is give the definition a name and the ordinary *Marionette.Layout* options:
+Create a new file named `myContextA.js`, remember a *Context* is just a *Marionette module* wrapped around a *Marionette.Layout* definition. We've taken care of the wrapping process, all you need to do is giving the definition a name and the ordinary *Marionette.Layout* options:
 ```
 //myContextA.js
 (function(app) {
@@ -250,7 +257,7 @@ You can still use the `region=""` and `view=""` attributes in the template.
 
 Note that you should name your *Context* as if it is a *Class*. **The name is important as it links the *Context* with the global navigation mechanism**. 
 
-The `onNavigateTo` method denotes the `context:navigate-to` event listener. This event will get triggered if the application switched to `MyContextA` on the context region, so that you can do some *in-context* navigation followed by. (e.g if the navigation is at `#navigate/MyContextA/SubViewA...`)
+The `onNavigateTo` method is the `context:navigate-to` event listener. This event will get triggered if the application switched to `MyContextA` on the context region, so that you can do some *in-context* navigation followed by. (e.g if the navigation is at `#navigate/MyContextA/SubViewA...`, `SubViewA` will be the subpath argument)
 
 Now, with a *Context* defined, you will need *Regional*s to populate its regions.
 
@@ -277,7 +284,7 @@ By default, any *Regional* you define will be a *Marionette.Layout*, you can cha
 
 By default, `Application.create('Regional', {...})` returns the **definition** of the view, if you want to use the returned view **anonymously**, remove the `name` option. You will get a **instance** of the view definition to `show()` on a region right away. 
 
-Sometimes your *Regional* is comprised of other sub-regional views and that's fine, you can nest *Regional*s with the `region=""` and `view=""` attributes in the template (**only if it is of type:Layout**). There will also be time when you just need plain *Marionette.xView* definitions to be used as item views within *Regional*s. You can do it like this:
+Sometimes your *Regional* is comprised of other sub-regional views and that's fine, you can nest *Regional*s with the `region=""` and `view=""` attributes in the template (**only if it is of `type: Layout`**). There will also be time when you just need plain *Marionette.xView* definitions to be used as item views within *Regional*s. You can do it like this:
 ```
 Application.create({
     type: '...', //ItemView, Layout, CollectionView or CompositeView
@@ -289,7 +296,7 @@ Unlike the *anonymous* call to `Application.create('Regional', {...})`, the abov
 Now, we've sketched the layout of our application, you might want more contexts defined before continue but that's the easy part, just repeat Step 1-2 till you are ready to proceed to stream in remote data to light-up the views.
 
 ####Step 4. Handle data
-Though we do not agree with *Backbone*'s way of loading and persisting data through *Model/Collection*s. We do agree that **data** should be the central part of every computer program. In our case, the remote data from server are still used to power the dynamic views we've just defined. We use *Backbone.Model/Collection* only when there is a *View*. In other words, *data* and *View*s are centric in our framework paradigm, *Model/Collection*s are not. Try to think of them as a integrated part of *View*s. 
+Though we do not agree with *Backbone*'s way of loading and persisting data through *Model/Collection*s. We do agree that **data** should be the central part of every computer program. In our case, the remote data from server are still used to power the dynamic views we have defined. We use *Backbone.Model/Collection* only when there is a *View*. In other words, *data* and *View*s are centric in our framework paradigm, *Model/Collection*s are not. Try to think of them as a integrated part of *View*s. 
 
 Having said that, you can still create *Backbone.Model/Collection* through our *Unified API* `Application.create()` like this:
 ```
@@ -356,7 +363,7 @@ Application.remote(...)
     .fail(function(){...})
     .always(...);
 ```
-You can now render through remote data in a *Regional* like this:
+You can now render through remote data in a view without mentioning *Model/Collection* like this:
 ```
 //myRegionalA.js
 (function(app) {
@@ -373,18 +380,20 @@ You can now render through remote data in a *Regional* like this:
     });
 })(Application);
 ```
-Note that we've used a meta-event programming concept here through `view:render-data` to eliminate the need of handling data through *Model/Collection*. the next section will contain detailed explanation on this subject.
+By using an event `view:render-data`, we eliminate the need of handling data rendering through *Model/Collection* in a view. Note that we've used a meta-event programming concept here. The next section will contain detailed explanation on this topic in the **Events** subsection. You do *NOT* need to implement the listener for this event unless you want the data rendering process to be different.
+
+Data returned should be in the [JSON](http://json.org/) format and with `Content-Type: application/json` in its response headers. An JSON Array will be converted into a *Collection* before given to the view, Object into a *Model*. You can trigger `view:render-data` whenever you want to change the underlying model and collection in a view instance. The `reset`, `change`, `add` and `remove` events are listened by the view and it will re-render accordingly.
 
 
 ####Step 5. Adding UI/UX
-UI is a set of interface elements for the user to click/interact through to perform desired tasks. Without these click-ables, your web application will just be a static page. UX stands for user experience, it is not just about look'n'feel but also transitions/animations that links between interactions. UI/UX are hard to design, without a clear think-through over the purposes and targeted user tasks, it can be a total chaos... Make sure you have had your plan/sketch test-driven by targeted audience/friends or colleagues before implementation.
+UI is a set of interface elements for the user to click/interact through when performing desired tasks. Without these click-ables, your web application will just be a static page. UX stands for user experience, it is not just about look'n'feel but also transitions/animations that links between interactions and state change. UI/UX are hard to design, without a clear think-through over the purposes and targeted user tasks, it can be a total chaos... Make sure you have had your plan/sketch test-driven by targeted audience/friends or colleagues before implementation. Employ the *Goal-Directed Design* technique as much as you can.
 
 To implement your design is, however, very easy. We have enhanced *Marionette.View* thus its sub-classes (*ItemView, Layout, CollectionView and CompositeView*) with opt-in abilities, you can use them while adding user interactions and view transitions to the application.
 
-Though you can add any transition to any view, it is recommended to add interactions only to *Regional*s or *Marionette.Layout* in general so the event delegation can be efficient.
+Though you can add any transition to any view, it is recommended to add interaction listeners only to parent (or outer most) view in general so the event delegation can be efficient.
 
 #####Effect
-Any *Marionette.View* can have an `effect` configure to control the effect through which it will shown on a region:
+Any *Marionette.xView* can have an `effect` configure to control the effect through which it will be shown on a region:
 ```
 //myRegionalA.js or any Marionette.xView
 (function(app) {
@@ -401,12 +410,12 @@ Any *Marionette.View* can have an `effect` configure to control the effect throu
     });
 })(Application);
 ```
-Pass just an effect name as a string to the configure if you don't need more tweak on the effect. For more information regarding the effect options, please go to [jQuery.Effect](http://jqueryui.com/effect/).
+Pass just an effect name as a string to the configure if you don't need more tweak on the effect options. For more information regarding the effect options, please go to [jQuery.Effect](http://jqueryui.com/effect/).
 
 #####Actions
 Actions are click-ables marked by `action=""` attribute in your view template. The original way of registering events and listeners introduced by *Backbone.View* are flexible but tedious and repetitive. We offer you *Action Tags* instead to speed things up when implementing user interactions. 
 
-Any *Marionette.View* can have its actions configure block activated like this (3 easy steps):
+Any *Marionette.xView* can have its actions configure block activated like this (3 easy steps):
 ```
 //myRegionalA.js or any Marionette.xView
 (function(app) {
@@ -431,7 +440,7 @@ Any *Marionette.View* can have its actions configure block activated like this (
     });
 })(Application);
 ```
-Note that `enableActionTags()` is recommended to be called within the `initialize()` function introduced by *Marionette*.
+Note that `enableActionTags()` is recommended to be called within the `initialize()` function.
 
 Use `enableActionTags(true)` if you want the click event to **propagate** to the parent view/container. `e.preventDefault()` needs to be specified in the action listeners if you don't want a clicking on `<a href="#xyz" action="another"></a>` tag to affect the navigation.
 
@@ -452,7 +461,7 @@ Application.create({
                     value: 'default',
                     validate: { //validators are executed in sequence:
                         required: { //named validator
-                            msg: 'Hey input something!', //options
+                            msg: 'Hey input something!', //options for the validator function
                             ...,
                         },
                         fn: function(val, parentCt){ //anonymous validator
@@ -467,6 +476,8 @@ Application.create({
     }
 });
 ```
+The editors will be appended inside the calling view instance one by one by default, or, by the `editor="[fieldname]"` position attribute in the view's template. They can also be placed according to its own `appendTo` configuration.
+
 The `activateEditors()` method accepts:
 ```
 this.activateEditors({
@@ -477,9 +488,9 @@ this.activateEditors({
 ```
 
 A little bit more about the basic options: 
-* appendTo - in case you don't have `editor=""` in your template
-* parentCt - in case you want to delegate editor events to a parent container object (e.g a view object called form).
-* type - text, password, url, email, checkbox(s), radios, file, hidden, ro, textarea, select
+* appendTo - in case you don't have `editor="[fieldname]"` in your template and want to change where to put the editor other than the default position.
+* parentCt - in case you want to delegate editor events to a parent container object (e.g a form object).
+* type - text, password, url, email, checkbox(s), radios, file, hidden, ro (for read-only), textarea, select
 * label
 * help
 * tooltip
@@ -495,7 +506,7 @@ validate: function(val, parentCt){
 },
 ...
 ```
-**The validate function or validators should return undefined or 'error string' for passed and rejected respectively**
+**The validate function or validators should return undefined or the 'error string' to indicate passed and rejected situation respectively.**
 
 You can always register more named validators by:
 ```
@@ -505,7 +516,7 @@ Application.create('Validator', {
 });
 ```
 
-Additional advanced options
+Additional advanced per editor options:
 * layout 
  - label - css class (e.g col-sm-2)
  - field - css class (e.g col-sm-10)
@@ -531,7 +542,7 @@ template: [
     '<div editor="efg"></div>'
 ]
 ```
-Don't forget to call `this.enableEditors()` during `onShow()` or the attributes will not have any effect to the view. You will also get the following apis attached to the **view** instance object:
+Don't forget to call `this.enableEditors()` during `onShow()` or the attributes will not have any effect to the view. You will also get the following APIs attached to the **view** instance object once you have called the `enableEditors()` enhancement method:
 ```
 this.getVal(name);
 this.getValues();
@@ -571,7 +582,7 @@ Application.create({
     }
 });
 ```
-Don't worry about container resizing, it is automatically taken cared for you. 
+Don't worry about container/window resizing, it is automatically taken cared for you. 
 
 #####Events
 Some interactions demand **collaboration** between view objects, this is why we introduce the concept of meta-event programming. It is like coding through just interfaces in a object-oriented programming language but much more flexible. The goal is to let the developer code with events instead of APIs so the implementation can be delayed as much as possible. The underlying principle is very simple:
@@ -603,27 +614,51 @@ context:navigate-to (moduleName) - [empty stub] - triggered after app:navigate
 * Marionette.xView -- view:meta-event
 ```
 view:render-data (data) - onRenderData [pre-defined]
-//Do not use a collection in a ItemView/Layout with this event.
+//Do NOT use an Array as data in a ItemView/Layout with this event.
 ```
 
 Remember, you can always trigger a customized event `my-event-xyz` and implement it later on the object by creating `onMyEventXyz()`.
 
-Though you can not yet use meta-event on Marionette.Regions, there is one convenient event for you:
+Though you can not yet use meta-event on Marionette.Regions, there is a  convenient one for you:
 ```
 //region:load-view
-myregion.trigger('region:load-view', name[, options]);
+anyregion.trigger('region:load-view', name[, options]);
 ```
-The `region:load-view` event listener is implemented for you and can search through both the *Regional* and *Widget* registry to find the view by name and show it on the region. You can pass in addition factory options to the event trigger if they are for a *Widget*.
+The `region:load-view` event listener is implemented for you and can search through both the *Regional* and *Widget* registry to find the view by name and show it on the region. You can pass in addition factory options to the event trigger if they are for a *Widget*. 
+
+Recall that you can use `view=""` in a template to link a *Regional* to a region to show as well, but it will *NOT* search through the *Widget* registry for finding the view definition, due to the difficulties of putting widget options into the `view=""` marked tags.
 
 Don't know what a *Widget* registry is? Keep reading.
 
 ######Use parentCt?
-Before you move on, there is one more thing in this event section we want to clarify. If you use `region=""` in your template to define regions in a *Context*/*Marionette.Layout*, your sub-view instances within those regions will receive a `parentCt` property upon shown which should help you find its parent container view instance (which is the layout instance).
+Before you move on, there is one more thing in this event section we want to clarify. If you use `region=""` in your template to define regions in a *Context*/*Marionette.Layout*, your sub-view instances within those regions will receive a `parentCt` property upon showing which should help you find its parent container view instance (the layout instance).
 
-This is helpful when you want to achieve **collaborations** between sub-views of a layout by using event managed by the layout.
+This is helpful when you want to achieve **collaborations** between sub-views by using event managed by the layout.
+```
+//Good
+subViewA {
+	...
+	parentCt.trigger('co-op', data);
+	...
+}
+parentCt.onCoOp:
+	subViewB = new SubViewB(data);
+	regionB.show(subViewB);
+	//or
+	subViewB.trigger('co-op', data);
+
+//Bad
+subViewA.parentCt.regionB.show(subViewB);
+subViewA {
+	...
+	subViewB.doCoOp(data)
+	...
+}
+```
+**Remember:** Always prefer *Events* over *APIs* while implementing collaborations.
 
 ######Use parentContext?
-Additional `parentContext` property will be added to each view instances to help triggering collaboration events on the *Context* the view sits on.
+Additional `parentContext` property is also added to each view instances shown through regions to help triggering collaboration events on the *Context* the views sit on.
 
 
 ###Widgets/Editors
@@ -633,7 +668,9 @@ Application.create('Widget/Editor', {
 	name: '', //name can be used in region:load-view meta event trigger
 	factory: function(){
 		var View;
-		...
+		_.extend(View, {
+			...
+		});
 		return View;
 	}
 })
@@ -643,7 +680,7 @@ It is recommended to employ the **List'n'Container** technique when creating *Wi
 Note that you will need some sub-views to help compose the *Widget/Editor*, use the short-cut we provide to define them for better extensibility in the future:
 ```
 var MyItemView = Application.create({
-	type: 'ItemView', //default on ItemView, can also be Layout, CollectionView and CompositeView.
+	type: '', //default is ItemView, can also be Layout, CollectionView and CompositeView.
 	..., //normal Marionette.xView options.
 });
 ```
@@ -656,7 +693,7 @@ Application.create('Widget', {
 })
 ```
 
-To instantiate a *Editor*, use either `this.enableEditors()` within a view's `onShow()` or :
+To instantiate an *Editor*, use either `this.enableEditors()` within a view's `onShow()` or :
 ```
 Application.create('Editor', {
 	name: '',
@@ -664,7 +701,7 @@ Application.create('Editor', {
 })
 ```
 
-####List/Container technique
+####List'n'Container technique
 This is the golden technique to use when planning your reusable views or, say, any view on screen. Any widget on screen can be decoupled into lists and containers, like this:
 
 <img src="/static/resource/default/diagram/Diagram-5.png" alt="List'n'Containers" class="center-block"></img>
@@ -673,11 +710,13 @@ This is the golden technique to use when planning your reusable views or, say, a
 * Put lists into the container.
 * Figure out the view to show within each list item.
 
-You can always nest another layer of container-list-item into an item of parent layer to form even more complex views. Make sure you use the `Application.create(options)` API when defining the list item views. *DO NOT* use `Application.create('Regional', options)` unless its the outer most view definition for a region.
+You can always nest another layer of container-list-item into an item of parent layer to form even more complex views. Make sure you use the `Application.create(options)` API when defining the list item views.
+
+**Important**: *Do NOT* use `Application.create('Regional', options)` unless it is the outer most view for a region.
 
 
 ###i18n/l10n
-The internationalization is always a painful process, making substitution dynamically to the strings and labels appear in the application according to the user locale settings can interfere with the coding process if every string must be coded with a `getResource('actual string')` wrapped around.
+Internationalization/Localization is always a painful process, making substitution dynamically to the strings and labels appear in the application according to the user locale settings can interfere with the coding process if every string must be coded with a `getResource('actual string')` wrapped around.
 
 Luckily, Javascript is a prototypical language, we can extend the `String` class through its prototype and give every string a way of finding its own translation.
 
@@ -708,7 +747,7 @@ If you need to cast i18n on a block of text, we suggest that you use our $.md jQ
 $('span').i18n();
 $('div').i18n({search: true}); //if you want to use parent container to cast
 ```
-Remember to use the `data-i18n-key` attribute to identify the content of a tag for translation. If you want to use the entire content text as a *big* key of the translation, use `data-i18n-key="*"`. If you use `data-i18n-key="efg"` to identify a tag, its content will be translated as if you were using string `efg`.
+Remember to use the `data-i18n-key` attribute to identify the content of a tag for translation. If you want to use the entire content text as a *big* key for the translation, use `data-i18n-key="*"`. If you use `data-i18n-key="efg"` to identify a tag, its content will be translated as if you were using string `efg`.
 
 ####Translation file
 The translation files are needed to complete the i18n mechanism. We use a simple opt-in way of loading resource file for a given locale:
@@ -726,7 +765,7 @@ Your translation file should be in the [JSON](http://json.org/) format, like thi
         "string": "translation", 
         //or 
         "string": {
-           "_default": "", //the default translating if not specifying namespace
+           "_default": "", //the default translation if not specifying namespace
            "namespace-a": "",
            "namespace-b": "",
            "senario-x": "",
@@ -791,6 +830,8 @@ Open up the `/less/main.less` file and you will see the following:
 You should be focusing on changing the theme.less and variables.less files. Note that the *Bootstrap* .less files are *NOT* included in the framework package. Your LESS compiler might pop errors as it can not find the required `bootstrap.less` file. Go to `/implementation/js/libs/tracked/` and run `bower update` (you should have bower installed through [npm](https://www.npmjs.org/) first). It will fetch you the required *Bootstrap* package.
 
 ####LESS to CSS
+(What's [LESS](http://lesscss.org/)?)
+
 The `main.less` loads/glues all the above files and compiles into main.css, you do not need to compile the included .less files separately and put the compiled .css back into the `main.less`. The statically inlined css files are those that we want to copy into the compiled main.css without any change.
 
 In any .less file you can @include (to merge with, to have) other .less/.css files and you can define styles using LESS or css as well. That's why `bootstrap.less` loads other style definition files but doesn't have its own definition, it is used solely as a glue file. `variables.less` is another extreme, it only contains LESS vars to be reused in other style definition files so you can override the basic styles with ease later.
@@ -804,12 +845,12 @@ One perk of using LESS is that you can define each .less to do only one thing, e
 ####Icons
 If you can, always use bootstrap & font-awesome icon fonts included in the package.
 
-If you need to have customized icons, please ask your designer for 64x64 or even 128x128 sized icon files in png format. You can use the icon preparation tool to resize and combine them into a single CSS sprite package (.css + icons.png + demo.html). Note that background image can **NOT** be combined into the CSS sprite. 
+If you need to have customized icons, please ask your designer for 64x64 or even 128x128 sized icon files in the *PNG* format. You can use the icon preparation tool to resize and combine them into a single CSS sprite package (icon.css, icons.png and a demo.html to show you css-class to icon mappings). Note that background image and texture images should *NOT* be combined into the CSS sprite. 
 
 See `/implementation/themes/README.md` for more details.
 
 ####Preview page
-There is a bootstrap components preview page at `[your theme folder]/index.html`. Change it to include more static components and use it to demo your new theme. `URL://[your host]/themes/[your theme]/`
+There is a theme preview page at `[your theme folder]/index.html`. Change it to include more UI components and use it to demo your theme. `URL://[your host]/themes/[your theme]/`
 
 
 Include other js libs
@@ -817,29 +858,28 @@ Include other js libs
 The default `all.js` contains carefully (minimum) selected libs for your project, if you would like to introduce more, use [bower](http://bower.io/) and the `bower.json` file included.
 Go into `/implementation/js/libs/tracked` and run `bower install` to grab all the monitored 3rd-party libraries.
 
-Include your libs after `all.js` (or `all.min.js`) in `/implementation/index.html`.
+Include your libs after `all.js` in `/implementation/index.html`.
 
 **Tip:** 
-
-Alternatively, you can always use a *CDN* (Content Delivery Network) to load the js libraries into your index.html (e.g [jsDelivr](http://www.jsdelivr.com/)) However, this will affect the build process since these libs will not be combined if they are not from local.
+Alternatively, you can always use a *CDN* (Content Delivery Network) to load the Javascript libraries into your index.html (e.g [jsDelivr](http://www.jsdelivr.com/)) However, this will affect the build process since these libraries will not be combined if they are not from local.
 
 
 What should I put in `/static`?
 -----------------
-* `/resource` should contain static resources per locale. (xx_XX folder, `/default` for locale independent)
-* `/web+` now contains template 404/500 pages and robot.txt if you need them, they should be put under your web root once the development is done.
+* `/resource` should contain static resources per locale. (per xx_XX folder, `/default` for locale independent)
+* `/web+` now contains template 404/500 pages and robot.txt if you need them, they should be put under your web root during deployment.
 
 
 Build for production use
 ------------------------
-Before building your app for deployment, go into `/tools` and run `npm install` to grab all necessary 3rd-party Node.js modules.
-Use `/tools/build/node build.js dist` to build. (You might need to change the `config.dist.js` file if you want to include more files in deployment).
+Before building your app for deployment, go into `/tools` and run `npm install` to grab all necessary 3rd-party [Node.js](http://nodejs.org/) modules.
+Type in command-line `/tools/build/node build.js dist` to build. (You might need to change the `config.dist.js` file if you want to include more files in deployment).
 
 
 Upgrade/Update
 --------------
 Download and replace `/implementation/js/all.js` to update the infrastructure;
-Use `bower update` to update other monitored libs you need under `/implementation/js/libs/tracked/`;
+Use `bower update` to update other monitored libs you need under `/implementation/js/libs/tracked/` if you have included other 3rd-party libraries;
 
 
 Appendix
@@ -858,7 +898,7 @@ Start with user requirements/stories and focus on serving the customers' need. U
 * Concision - exact but nothing more
 * Expressive-ness - allow useful possibilities be deducted
 * Ease - low mnemonic load on commands, control sequence
-* Transparency - low mnemonic load on user's mind on states/layers of problem
+* Transparency - low mnemonic load in user's mind for keeping track of states/layers of task at hand
 * Scriptability - batch-able, automate-able
 
 
