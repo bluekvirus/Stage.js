@@ -23,7 +23,7 @@
                     '<hr/>',
                     '<div region="libinfo"></div>',
                 '</div>',
-                '<div class="col-sm-9" style="border-left:1px solid">',
+                '<div class="col-sm-9" style="padding-left:60px;">',
                     '<div region="breadcrumbs" view="Doc.Breadcrumbs" style="position: fixed; top: 0; right: 0; display:none"></div>',
                     '<div region="doc" md="HOWTO.md" action="refresh"></div>',
                 '</div>',
@@ -75,7 +75,8 @@
                 },
                 cb: function($el){
                     $el.toc({
-                        ignoreRoot: true
+                        ignoreRoot: true,
+                        headerHTML: '<div class="h4" style="margin-top:48px"><i class="fa fa-book"></i> Table of Content</div>'
                     });
                     that.toc.show(Application.create('Regional', {
                         //no name means to use it anonymously, which in turn creates it right away. 

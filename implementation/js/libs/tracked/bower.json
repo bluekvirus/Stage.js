@@ -50,8 +50,5 @@
     "raphael": "~2.x.x",
     "marked": "*",
     "nprogress": "*"
-  },
-  "resolutions": {
-    "jquery": "~2.x.x"
   }
 }
