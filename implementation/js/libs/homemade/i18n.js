@@ -19,7 +19,7 @@
  * 4. use $.i18n(options) to translate html tags with [data-i18n-key] [data-i18n-module] data attributes. 
  *
  * 
- * @author Yan Zhu (yanzhu@fortinet.com), Tim Liu (zhiyuanliu@fortinet.com)
+ * @author Yan Zhu, Tim Liu
  * @date 2013-08-26
  */
 var I18N = {};

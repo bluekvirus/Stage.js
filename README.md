@@ -6,13 +6,12 @@ This project produces **ProJS.Client** - an infrastructure for building modern w
 What's next?
 ------------
 1.0.0-rc3 might bring:
-* add pagination ability back to collections
-* add persist ability back to models
+* put pagination into Paginator widget
+* get a minimum Datagrid widget back
 * allow developers their own choices of template engine other than handlebars
 * provide a way to persist context status between context switches.
 
 1.0.0-release might bring:
-* Use more Promise/A+ patterns in async op sequence (animation, remote data, delays/ticks - jQuery & node[bluebird](https://github.com/petkaantonov/bluebird));
 * Editor+ : Spinner, Switches, DnD Listing, File Listing;
 * Widget+ : Break Widgets into List and Containers (e.g list[stacked(items and table rows), tabbed, nested(tree), queued(toolbar)]); Grid Local Column +-/Sort/Filter;
 

@@ -271,6 +271,17 @@
 
 		//meta-event programming ability
 		app.Util.addMetaEvent(this, 'view');
+		//auto detect and enable view enhancements: actions, [paper(SVG), editors - in item-view enhancement]
+		if(this.actions) this.enableActionTags(this.actions._bubble);
+		if(this.editors && this.activateEditors) this.listenTo(this, 'render', function(){
+			this.activateEditors(this.editors);
+		});
+		if(this.svg && this.enableSVG) {
+			this.listenTo(this, 'show', function(){
+				if(_.isFunction(this.svg)) this.enableSVG(this.svg);
+				else this.enableSVG();
+			});
+		}
 
 		return Backbone.Marionette.View.apply(this, arguments);
 	}

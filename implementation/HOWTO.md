@@ -1,7 +1,7 @@
 Pro.js <sub class="text-muted" style="font-size:36%">based on Marionette.js</sub>
 ======
 *An infrastructure for building modern web application with many contexts.*
-[@Tim (Zhiyuan) Liu](mailto:zhiyuanliu@fortinet.com)
+[@Tim (Zhiyuan) Liu](mailto:bluekvirus@gmail.com)
 
 
 Current version
@@ -55,9 +55,8 @@ Mental preparation
 > Technique means nothing if people have no purposes in their mind. To prepare mentally to adapt something is to synchronize the mind around the subject domain so that insights can be developed while applying the technique. The ultimate goal is always to understand the subject (in our case the problem) better.
 
 > Make sure to ask enough questions, so you can quickly locate the core problem that a given technique is trying to solve efficiently. Then go apply the technique and try making changes. Soon enough, you will start to see things like the solution creator, and concepts and ideas start to come out naturally. True understanding is almost always developed this way.
-> <footer>[Tim (Zhiyuan) Liu](mailto:zhiyuanliu@fortinet.com)</footer>
 
-If you can not agree with the author after reading this preparation chapter, do not bother with this framework.
+If you can not agree with the author after reading the following sections in this chapter, do not bother with this framework.
 
 ###Define the problem
 Before start, you need to understand what is a *GUI application*, here is a brief diagram (casted upon the web realm):
@@ -386,7 +385,7 @@ Data returned should be in the [JSON](http://json.org/) format and with `Content
 
 
 ####Step 5. Adding UI/UX
-UI is a set of interface elements for the user to click/interact through when performing desired tasks. Without these click-ables, your web application will just be a static page. UX stands for user experience, it is not just about look'n'feel but also transitions/animations that links between interactions and state change. UI/UX are hard to design, without a clear think-through over the purposes and targeted user tasks, it can be a total chaos... Make sure you have had your plan/sketch test-driven by targeted audience/friends or colleagues before implementation. Employ the *Goal-Directed Design* technique as much as you can.
+UI is a set of interface elements for the user to click/interact through when performing desired tasks. Without these click-ables, your web application will just be a static page. UX stands for user experience, it is not just about look'n'feel but also transitions/animations that links between interactions and state change. UI/UX are hard to design, without a clear think-through over the purposes and targeted user tasks, it can be a total chaos... Make sure you have had your plan/sketch reviewed by targeted audience/friends or colleagues before implementation. Employ the *Goal-Directed Design* technique as much as you can.
 
 To implement your design is, however, very easy. We have enhanced *Marionette.View* thus its sub-classes (*ItemView, Layout, CollectionView and CompositeView*) with opt-in abilities, you can use them while adding user interactions and view transitions to the application.
 
@@ -415,7 +414,7 @@ Pass just an effect name as a string to the configure if you don't need more twe
 #####Actions
 Actions are click-ables marked by `action=""` attribute in your view template. The original way of registering events and listeners introduced by *Backbone.View* are flexible but tedious and repetitive. We offer you *Action Tags* instead to speed things up when implementing user interactions. 
 
-Any *Marionette.xView* can have its actions configure block activated like this (3 easy steps):
+Any *Marionette.xView* can have its actions configure block activated like this (2 easy steps):
 ```
 //myRegionalA.js or any Marionette.xView
 (function(app) {
@@ -429,63 +428,50 @@ Any *Marionette.xView* can have its actions configure block activated like this 
             '</div>',
         ],
         ...,
-        initialize: function(){
-            this.enableActionTags(); //2. activate actions block.
-        },
-        ...,
-        actions: { //3. implement the action listeners.
+        actions: { //2. implement the action listeners.
+            _bubble: false | true, //if you want un-matched action tags' click event to bubble up to parent container. [optional]
             'opA': function($triggerTag, e){...},
             'opB': ...
         }
     });
 })(Application);
 ```
-Note that `enableActionTags()` is recommended to be called within the `initialize()` function.
+Note that only 'single-click' actions can be registered like this at the moment. 
 
-Use `enableActionTags(true)` if you want the click event to **propagate** to the parent view/container. `e.preventDefault()` needs to be specified in the action listeners if you don't want a clicking on `<a href="#xyz" action="another"></a>` tag to affect the navigation.
+Use `_bubble: true` if you want the click event to **propagate** to the parent view/container. `e.preventDefault()` needs to be specified in the action listeners if you don't want a clicking on `<a href="#xyz" action="another"></a>` tag to affect the navigation.
 
 #####Inputs
 We have already prepared the basic html editors for you in the framework. You don't have to code `<input>, <select> or <textarea>` in any of your view template. Instead, you can activate them in any *Marionette.xView* like this:
 ```
 Application.create({
-    //It is recommended to do it in the onShow() event listener
-    onShow: function(){
-        this.activateEditors({
-            editors: { //editors per fieldname
-                abc: {
-                    type: 'text', //other types are available as well.
-                    label: 'Abc',
-                    help: 'This is abc',
-                    tooltip: 'Hey Abc here!',
-                    placeholder: 'abc...',
-                    value: 'default',
-                    validate: { //validators are executed in sequence:
-                        required: { //named validator
-                            msg: 'Hey input something!', //options for the validator function
-                            ...,
-                        },
-                        fn: function(val, parentCt){ //anonymous validator
-                            if(!_.string.startsWith(val, 'A')) return 'You must start with an A';
-                        }
-                    }
+    ...,
+    editors: { //editors per fieldname
+        _global: {...}, //globally shared per editor configures
 
+        abc: {
+            type: 'text', //other types are available as well.
+            label: 'Abc',
+            help: 'This is abc',
+            tooltip: 'Hey Abc here!',
+            placeholder: 'abc...',
+            value: 'default',
+            validate: { //validators are executed in sequence:
+                required: { //named validator
+                    msg: 'Hey input something!', //options for the validator function
+                    ...,
                 },
-                ..., //other editor configures
+                fn: function(val, parentCt){ //anonymous validator
+                    if(!_.string.startsWith(val, 'A')) return 'You must start with an A';
+                }
             }
-        });
-    }
+
+        },
+        ..., //other editor configures
+    },
+    ...
 });
 ```
 The editors will be appended inside the calling view instance one by one by default, or, by the `editor="[fieldname]"` position attribute in the view's template. They can also be placed according to its own `appendTo` configuration.
-
-The `activateEditors()` method accepts:
-```
-this.activateEditors({
-    global: {...}, //globally shared editor configure (e.g layout, appendTo or parentCt...),
-    triggerOnShow: false | true, //whether to trigger 'show' on an editor after appending.
-    editors: {...} //individual editor configure by fieldname
-});
-```
 
 A little bit more about the basic options: 
 * appendTo - in case you don't have `editor="[fieldname]"` in your template and want to change where to put the editor other than the default position.
@@ -542,7 +528,7 @@ template: [
     '<div editor="efg"></div>'
 ]
 ```
-Don't forget to call `this.enableEditors()` during `onShow()` or the attributes will not have any effect to the view. You will also get the following APIs attached to the **view** instance object once you have called the `enableEditors()` enhancement method:
+You will also get the following APIs attached to the **view** instance object once you have configured the `editors:{}` block:
 ```
 this.getVal(name);
 this.getValues();
@@ -554,31 +540,24 @@ this.status(status, messages); //for highlighting status per editor. no argument
 There are also events emitted that you can use when dealing with these inputs (basic editors):
 ```
 editor:change
-editor:change:fieldname
 editor:keyup
-editor:keyup:fieldname
 editor:focusin // - focus
-editor:focusin:fieldname
 editor:focusout // - blur
-editor:focusout:fieldname
 ```
-If you use `options.parentCt` to pass in another view instance, the events will be fired on that view instance instead of on the editor itself. It is useful when you want every event to be fired on a parent container or, say, a form view.
+If you use `options.parentCt` to pass in another view instance, the events will be fired on that view instance **in addition to** firing on the editor itself. It is useful when you want every event to be fired on a parent container or, say, a form view.
 
 #####Graphs
 We support graphs through SVG. A basic SVG library is integrated with the framework (Raphaël.js). You can use it in any *Marionette.xView* through:
 ```
 Application.create({
-    onShow: function(){
-        this.enableSVG(function(){
-            this.paper... //do your svg drawing
-        });
-    }
+    svg: function(paper){...}
 });
 //or synced version:
 Application.create({
+    svg: true,
     onShow: function(){
-        this.enableSVG();
-        this.paper... //do your svg drawing
+        this.paper.draw();
+        ...
     }
 });
 ```
@@ -677,6 +656,8 @@ Application.create('Widget/Editor', {
 ```
 It is recommended to employ the **List'n'Container** technique when creating *Widget*s. Note that basic *Editors* are already provided for you. If you need more editors please register them while providing the `getVal`, `setVal`, `validate` and `status` methods.
 
+**Important:** Do *NOT* use `onShow()` in your editor definition. Use `onRender` instead so that your editor can support the `editor=""` template attributes for dynamic positioning.
+
 Note that you will need some sub-views to help compose the *Widget/Editor*, use the short-cut we provide to define them for better extensibility in the future:
 ```
 var MyItemView = Application.create({
@@ -693,7 +674,7 @@ Application.create('Widget', {
 })
 ```
 
-To instantiate an *Editor*, use either `this.enableEditors()` within a view's `onShow()` or :
+To instantiate an *Editor*, use either `editors:{}` within a view or :
 ```
 Application.create('Editor', {
 	name: '',

@@ -30,7 +30,6 @@
             '</div>',
         ],
         initialize: function(){
-            this.enableActionTags();
             this.listenTo(Application, 'app:scroll', function(offset, viewportH){
                 if(!this.$headers || offset < 150) {
                     this.breadcrumbs.$el.hide();
@@ -81,9 +80,6 @@
                     that.toc.show(Application.create('Regional', {
                         //no name means to use it anonymously, which in turn creates it right away. 
                         template: $el.data('toc').html,
-                        initialize: function(){
-                            this.enableActionTags();
-                        },
                         actions: {
                             goTo: function($btn, e){
                                 e.preventDefault();
@@ -165,9 +161,6 @@
                 '<li><a href="#" action="goTo" data-id="{{id}}">{{ title }}</a></li>',
             '{{/each}}',
         ],
-        initialize: function(){
-            this.enableActionTags();
-        },
         actions: {
             goTop: function(){
                 $window.scrollTop(0);
@@ -194,9 +187,11 @@
     //Demo - Regionals
     Application.create('Area', {
         name: 'Editors',
-        className: 'well container',
+        className: 'container',
         template: [
-            '<div editors="*" class="form form-horizontal"></div>', //the class form form-horizontal is required for the editor layout class config to work in bootstrap 3
+            '<div class="row">',
+                '<div class="form form-horizontal"></div>',
+            '</div>', //the class form form-horizontal is required for the editor layout class config to work in bootstrap 3
             '<div class="row">',
                 '<div class="col-sm-10 col-sm-offset-2">',
                     '<span class="btn btn-primary" action="submit">Submit</span> ',
@@ -207,9 +202,6 @@
                 '</div>',
             '</div>'
         ],
-        initialize: function(){
-            this.enableActionTags();
-        },
         actions: {
             validate: function($btn){
                 this.validate(true);
@@ -238,154 +230,150 @@
                 this.status();
             }
         },
-        onShow: function(){
-            this.activateEditors({
-                
-                global: {
-                    layout: {
-                        label: 'col-sm-2',
-                        field: 'col-sm-10'
-                    },
-                    appendTo: 'div[editors]',
+        editors: {
+
+            _global: {
+                layout: {
+                    label: 'col-sm-2',
+                    field: 'col-sm-10'
                 },
-                editors: {
-                    abc: {
-                        type: 'text',
-                        label: 'Abc',
-                        help: 'This is abc',
-                        tooltip: 'Hey Abc here!',
-                        fieldname: 'newfield',
-                        validate: {
-                            required: {
-                                msg: 'Hey input something!'
-                            },
-                            fn: function(val, parentCt){
-                                if(!_.string.startsWith(val, 'A')) return 'You must start with an A';
-                            }
-                        }
+                appendTo: 'div.form',
+            },
 
+            abc: {
+                type: 'text',
+                label: 'Abc',
+                help: 'This is abc',
+                tooltip: 'Hey Abc here!',
+                fieldname: 'newfield',
+                validate: {
+                    required: {
+                        msg: 'Hey input something!'
                     },
-                    ab: {
-                        label: 'Ab',
-                        help: 'This is ab',
-                        tooltip: 'Hey Ab here!',
-                        placeholder: 'abc...',
-                        value: 'default',
-                        validate: function(val, parentCt){
-                            console.log(val);
-                            if(val !== '123') return 'You must enter 123';
-                        }
-                    },
-                    efg: {
-                        label: 'Ha Ha',
-                        type: 'password',
-                        validate: {
-                            checkitout: true
-                        }
-                    },
-                    area: {
-                        label: 'Codes',
-                        type: 'textarea',
-                        validate: {
-                            required: true
-                        }
-                    },
-                    readonly: {
-                        label: 'RO',
-                        html: '<p class="text-success">Nothing...but HTML</p>'
-                    },
-
-                    readonly2: {
-                        label: 'RO 2',
-                        type: 'ro',
-                        value: 'Unchange-able'
-                    },
-
-                    xyz: {
-                        label: 'File',
-                        type: 'file',
-                        help: 'Please choose your image to upload.',
-                        upload: {
-                            url: function(){ return '/file/Blog2/';}
-                        }
-                    },
-                    radios: {
-                        label: 'Radios',
-                        type: 'radio',
-                        help: 'choose the one you like',
-                        tooltip: {
-                            title: 'hahahaha'
-                        },
-                        options: {
-                            inline: true,
-                            //data: ['a', 'b', 'c', 'd']
-                            data: [
-                                {label: 'Haha', value: 'a'},
-                                {label: 'Hb', value: 'b'},
-                                {label: 'Hc', value: 'c'},
-                                {label: 'Hd', value: 'd'}
-                            ]
-                        }
-                    },
-                    checkboxes: {
-                        label: 'Checkboxes',
-                        type: 'checkbox',
-                        help: 'choose more than you like',
-                        fieldname: 'haha',
-                        options: {
-                            //inline: true,
-                            //data: ['a', 'b', 'c', 'd']
-                            data: [
-                                {key: 'abc1', val: '1231', other: 'bbb1'},
-                                {key: 'abc2', val: '1232', other: 'bbb2'},
-                                {key: 'abc3', val: '1233', other: 'bbb3'},
-                                {key: 'abc4', val: '1234', other: 'bbb4'},
-                                {key: 'abc5', val: '1235', other: 'bbb5'},
-                            ],
-                            labelField: 'other',
-                            valueField: 'val'
-                        }
-                    },
-                    singlecheckbox: {
-                        label: 'Check?',
-                        type: 'checkbox',
-                        boxLabel: 'Select this one if you are smart...:D',
-                        checked: 'enabled',
-                        unchecked: 'disabled',
-                    },
-
-                    select: {
-                        label: 'Select',
-                        type: 'select',
-                        help: 'choose 1 you like',
-                        multiple: true,
-                        options: {
-                            //data: ['a', 'b', 'c', 'd']
-                            data: [
-                                {key: 'abc1', val: '1231', other: 'bbb1'},
-                                {key: 'abc2', val: '1232', other: 'bbb2'},
-                                {key: 'abc3', val: '1233', other: 'bbb3'},
-                                {key: 'abc4', val: '1234', other: 'bbb4'},
-                                {key: 'abc5', val: '1235', other: 'bbb5'},
-                            ],
-                            labelField: 'other',
-                            valueField: 'val'
-                        }
-                    },
-
-                    selectgroup: {
-                        label: 'Group',
-                        type: 'select',
-                        options: {
-                            data: {
-                                group1: [{label: 'abc', value: '123'}, {label: '4555', value: '1111'}],
-                                group2: [{label: 'abcx', value: '123x'}, {label: '4555x', value: '1111x'}],
-                            }
-                        }
-                    }  
-
+                    fn: function(val, parentCt){
+                        if(!_.string.startsWith(val, 'A')) return 'You must start with an A';
+                    }
                 }
-            });            
+
+            },
+            ab: {
+                label: 'Ab',
+                help: 'This is ab',
+                tooltip: 'Hey Ab here!',
+                placeholder: 'abc...',
+                value: 'default',
+                validate: function(val, parentCt){
+                    console.log(val);
+                    if(val !== '123') return 'You must enter 123';
+                }
+            },
+            efg: {
+                label: 'Ha Ha',
+                type: 'password',
+                validate: {
+                    checkitout: true
+                }
+            },
+            area: {
+                label: 'Codes',
+                type: 'textarea',
+                validate: {
+                    required: true
+                }
+            },
+            readonly: {
+                label: 'RO',
+                html: '<p class="text-success">Nothing...but HTML</p>'
+            },
+
+            readonly2: {
+                label: 'RO 2',
+                type: 'ro',
+                value: 'Unchange-able'
+            },
+
+            xyz: {
+                label: 'File',
+                type: 'file',
+                help: 'Please choose your image to upload.',
+                upload: {
+                    url: function(){ return '/file/Blog2/';}
+                }
+            },
+            radios: {
+                label: 'Radios',
+                type: 'radio',
+                help: 'choose the one you like',
+                tooltip: {
+                    title: 'hahahaha'
+                },
+                options: {
+                    inline: true,
+                    //data: ['a', 'b', 'c', 'd']
+                    data: [
+                        {label: 'Haha', value: 'a'},
+                        {label: 'Hb', value: 'b'},
+                        {label: 'Hc', value: 'c'},
+                        {label: 'Hd', value: 'd'}
+                    ]
+                }
+            },
+            checkboxes: {
+                label: 'Checkboxes',
+                type: 'checkbox',
+                help: 'choose more than you like',
+                fieldname: 'haha',
+                options: {
+                    //inline: true,
+                    //data: ['a', 'b', 'c', 'd']
+                    data: [
+                        {key: 'abc1', val: '1231', other: 'bbb1'},
+                        {key: 'abc2', val: '1232', other: 'bbb2'},
+                        {key: 'abc3', val: '1233', other: 'bbb3'},
+                        {key: 'abc4', val: '1234', other: 'bbb4'},
+                        {key: 'abc5', val: '1235', other: 'bbb5'},
+                    ],
+                    labelField: 'other',
+                    valueField: 'val'
+                }
+            },
+            singlecheckbox: {
+                label: 'Check?',
+                type: 'checkbox',
+                boxLabel: 'Select this one if you are smart...:D',
+                checked: 'enabled',
+                unchecked: 'disabled',
+            },
+
+            select: {
+                label: 'Select',
+                type: 'select',
+                help: 'choose 1 you like',
+                multiple: true,
+                options: {
+                    //data: ['a', 'b', 'c', 'd']
+                    data: [
+                        {key: 'abc1', val: '1231', other: 'bbb1'},
+                        {key: 'abc2', val: '1232', other: 'bbb2'},
+                        {key: 'abc3', val: '1233', other: 'bbb3'},
+                        {key: 'abc4', val: '1234', other: 'bbb4'},
+                        {key: 'abc5', val: '1235', other: 'bbb5'},
+                    ],
+                    labelField: 'other',
+                    valueField: 'val'
+                }
+            },
+
+            selectgroup: {
+                label: 'Group',
+                type: 'select',
+                options: {
+                    data: {
+                        group1: [{label: 'abc', value: '123'}, {label: '4555', value: '1111'}],
+                        group2: [{label: 'abcx', value: '123x'}, {label: '4555x', value: '1111x'}],
+                    }
+                }
+            }  
         }
     });             
 
@@ -397,7 +385,6 @@
             duration: 500
         },
         initialize: function(){
-            this.enableActionTags();
             this.listenTo(Application, 'app:context-switched', function(name){
                 this.$el.find('[context]').removeClass('active');
                 this.$el.find('[context="' + name + '"]').addClass('active');

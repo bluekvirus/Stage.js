@@ -110,7 +110,7 @@
 						_.each(this.regions, function(selector, region){
 							this[region].ensureEl();
 							this[region].$el.addClass('region region-' + _.string.slugify(region));
-							this[region].parentLayout = this;
+							this[region]._parentLayout = this;
 						},this);
 					});
 					//automatically show a registered View from a 'view=' marked region.

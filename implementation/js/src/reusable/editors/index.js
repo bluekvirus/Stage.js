@@ -50,10 +50,12 @@
  * Events
  * ======
  * editor:change
- * editor:change:fieldname
  * editor:keyup
- * editor:keyup:fieldname
- * editor:focusin/out(:fieldname)
+ * editor:focusin/out
+ *
+ * Constrain
+ * =========
+ * Do addon/transform stuff in onRender() *Do NOT* use onShow() it won't be invoked by enableEditors() enhancement in ItemView/Layout.
  * 
  *
  * @author Tim.Liu
@@ -296,13 +298,14 @@
 			//need to forward events if has this.parentCt
 			_triggerEvent: function(e){
 				var host = this;
+				host.trigger('editor:' + e.type, this.model.get('name'), this);
+				//host.trigger('editor:' + e.type + ':' + this.model.get('name'), this);
+
 				if(this.parentCt){
 					host = this.parentCt;
 				}
 				host.trigger('editor:' + e.type, this.model.get('name'), this);
-				host.trigger('editor:' + e.type + ':' + this.model.get('name'), this);
-
-				//this.trigger(e.type, this); - need to hook up with passed-in callbacks from init options
+				//host.trigger('editor:' + e.type + ':' + this.model.get('name'), this);
 		
 			}
 

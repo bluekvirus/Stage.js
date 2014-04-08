@@ -43,8 +43,7 @@
 	 *
 	 * options
 	 * -------
-	 * global: general config as a base for all editors, (overriden by individual editor config)
-	 * triggerOnShow: true|false[default],
+	 * _global: general config as a base for all editors, (overriden by individual editor config)
 	 * editors: {
 	 * 	name: {
 	 * 		type: ..., (*required)
@@ -66,9 +65,12 @@
 	 * This will add *this._editors* to the view object. Do NOT use a region name with region='editors'...
 	 * 
 	 * Add new: You can repeatedly invoke this method to add new editors to the view.
-	 * Remove current: You can find the editor by name and use editor.close to remove it.
+	 * Remove current: Close this view to automatically clean up all the editors used.
 	 *
 	 * optionally you can implement setValues()/getValues()/validate() in your view, and that will get invoked by the outter form view if there is one.
+	 *
+	 * Warning:
+	 * activateEditors will not call on editor's onShow method, so don't put anything in it! Use onRender if needs be instead!!
 	 * 
 	 */
 
@@ -78,8 +80,9 @@
 			this._editors = this._editors || {};
 			if(this._editors.attachView) throw new Error('DEV::ItemView::activateEditors enhancements will need this._editors object, it is now a Region!');
 
-			var global = options.global || {};
-			_.each(options.editors, function(config, name){
+			var global = options._global || {};
+			_.each(options, function(config, name){
+				if(name.match(/_./)) return; //skip _config items like _global
 				//0. apply global config
 				config = _.extend({}, global, config);
 				//1. instantiate
@@ -95,7 +98,6 @@
 				if($position.length === 0)
 					$position = this.$el;
 				$position.append(editor.el);
-				if(options.triggerOnShow) editor.trigger('show');
 			}, this);
 
 			this.listenTo(this, 'before:close', function(){
