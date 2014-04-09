@@ -297,16 +297,15 @@
 		onRenderData: function(data){
 			if(_.isArray(data)){
 				if(!this.collection){
-					this.collection = app.create('Collection');
+					this.collection = new Backbone.Collection;
 					this.listenTo(this.collection, 'add', this.addChildView);
 					this.listenTo(this.collection, 'remove', this.removeItemView);
 					this.listenTo(this.collection, 'reset', this.render);
 				}
-				//local pagination support? TBI
-				this.collection.set(data);
+				this.collection.reset(data);
 			}else{
 				if(!this.model){
-					this.model = app.create('Model');
+					this.model = new Backbone.Model;
 					this.listenTo(this.model, 'change', this.render);
 				}
 				this.model.set(data);

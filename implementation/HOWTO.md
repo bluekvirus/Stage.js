@@ -16,11 +16,12 @@ The framework is made on top of **Backbone.Marionette** and **Bootstrap**. To fl
 
 * Application.setup(options)
 * Application.run()
-* Application.create(type, options)
-* Application.create(options)
+* Application.context(name, options)
+* Application.regional(name, options)
+* Application.widget(name, options/factory)
+* Application.editor(name, options/factory)
+* Application.view(options, instant)
 * Application.remote(options)
-
-You will use `Application.create()` most of the time for creating application elements (*Context*s and *Regional*s or in a sense, pages and areas). It is designed so in order to let the developers feel more comfortable picking up the workflow while reusing their existing web development knowledge and experience with the base libraries.
 
 We also maintain a list of 3rd party libraries for the developers to choose from in addition to the base libraries (as utilities). The utility libs (e.g jquery-file-upload, store.js, uri.js, raphael.js, marked, moment.js, socket.io.js...) are carefully selected from the many open-source Javascript libs out there to help with specific but generally-will-appear problems that a developer will encounter during the web application development process. (see more in the *Include other js libs* chapter)
 
@@ -379,10 +380,11 @@ You can now render through remote data in a view without mentioning *Model/Colle
     });
 })(Application);
 ```
-By using an event `view:render-data`, we eliminate the need of handling data rendering through *Model/Collection* in a view. Note that we've used a meta-event programming concept here. The next section will contain detailed explanation on this topic in the **Events** subsection. You do *NOT* need to implement the listener for this event unless you want the data rendering process to be different.
+By using an event `view:render-data`, we eliminate the need of handling data rendering through *Model/Collection* in a view. Note that we've used a meta-event programming concept here. The next section will contain detailed explanation on this topic in the **Events** subsection. You do *NOT* need to implement the listener for this event unless you want the data rendering process to be different. 
 
 Data returned should be in the [JSON](http://json.org/) format and with `Content-Type: application/json` in its response headers. An JSON Array will be converted into a *Collection* before given to the view, Object into a *Model*. You can trigger `view:render-data` whenever you want to change the underlying model and collection in a view instance. The `reset`, `change`, `add` and `remove` events are listened by the view and it will re-render accordingly.
 
+**Note:** If you use `view:render-data` and pass in an `Array`, it will **reset** the collection of that view. 
 
 ####Step 5. Adding UI/UX
 UI is a set of interface elements for the user to click/interact through when performing desired tasks. Without these click-ables, your web application will just be a static page. UX stands for user experience, it is not just about look'n'feel but also transitions/animations that links between interactions and state change. UI/UX are hard to design, without a clear think-through over the purposes and targeted user tasks, it can be a total chaos... Make sure you have had your plan/sketch reviewed by targeted audience/friends or colleagues before implementation. Employ the *Goal-Directed Design* technique as much as you can.

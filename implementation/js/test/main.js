@@ -12,9 +12,7 @@
 
 ;(function(){
 
-    Application.create('Page', {
-        //don't name it, if want to define Default context.
-        name: 'Document',
+    Application.page('Document', {
         className: 'container',
         template: [
             '<div class="row">',
@@ -77,7 +75,7 @@
                         ignoreRoot: true,
                         headerHTML: '<div class="h4" style="margin-top:48px"><i class="fa fa-book"></i> Table of Content</div>'
                     });
-                    that.toc.show(Application.create('Regional', {
+                    that.toc.show(Application.regional({
                         //no name means to use it anonymously, which in turn creates it right away. 
                         template: $el.data('toc').html,
                         actions: {
@@ -99,7 +97,7 @@
         onShow: function(){
 
             this.trigger('view:reload-doc');
-            this.libinfo.show(Application.create('Regional', {
+            this.libinfo.show(Application.regional({
                 tagName: 'ul',
                 className: 'list-group',
                 template:[ 

@@ -358,8 +358,10 @@ _.each(['Core', 'Util'], function(coreModule){
 	/**
 	 * Universal app object creation api entry point
 	 * ----------------------------------------------------
+	 * @deprecated Use the detailed apis instead.
 	 */
 	Application.create = function(type, config){
+		console.warn('DEV::Application::create() method is deprecated, see Application._apis for alternatives');
 
 		//if omitting type, app.create will be a (fallback) short-cut for Backbone.Marionette.[ItemView/Layout/CollectionView/CompositeView...] definition creation
 		if(!_.isString(type)) {
@@ -405,6 +407,97 @@ _.each(['Core', 'Util'], function(coreModule){
 	}
 
 	/**
+	 * Detailed api entry point
+	 * ------------------------
+	 * If you don't want to use .create() there you go:
+	 */
+	_.extend(Application, {
+
+		// model: function(options, defOnly){
+		// 	if(_.isBoolean(options)){
+		// 		defOnly = options;
+		// 		options = {};
+		// 	}			
+		// 	var Def = Backbone.Model.extend(options);
+		// 	if(defOnly) return Def;
+		// 	return new Def();
+		// },
+
+		// collection: function(options, defOnly){
+		// 	if(_.isBoolean(options)){
+		// 		defOnly = options;
+		// 		options = {};
+		// 	}			
+		// 	var Def = Backbone.Collection.extend(options);
+		// 	if(defOnly) return Def;
+		// 	return new Def();
+		// },
+
+		view: function(options, instant){
+			if(_.isBoolean(options)){
+				instant = options;
+				options = {};
+			}
+			var Def = Backbone.Marionette[options.type || 'ItemView'].extend(options);
+			if(instant) return new Def;
+			return Def;
+		},
+
+		context: function(name, options){
+			if(!_.isString(name)) {
+				options = name;
+				name = '';
+			}
+			options = options || {};
+			_.extend(options, {name: name});
+			return Application.Core['Context'].create(options);
+		},
+
+		regional: function(name, options){
+			if(!_.isString(name)) {
+				options = name;
+				name = '';
+			}
+			options = options || {};
+			_.extend(options, {name: name});			
+			return Application.Core['Regional'].create(options);
+		},
+
+		widget: function(name, options){
+			if(!_.isString(name)) throw new Error('DEV::Application.widget::You must specify a widget name to use.');
+			if(_.isFunction(options)){
+				//register
+				Application.Core['Widget'].register(name, options);
+				return;
+			}
+			return Application.Core['Widget'].create(name, options);
+			//you can not get the definition returned.
+		},
+
+		editor: function(name, options){
+			if(!_.isString(name)) throw new Error('DEV::Application.editor::You must specify a editor name to use.');
+			if(_.isFunction(options)){
+				//register
+				Application.Core['Editor'].register(name, options);
+				return;
+			}
+			return Application.Core['Editor'].create(name, options);
+			//you can not get the definition returned.
+		}		
+
+	});
+
+	//editor rules
+	Application.editor.validator = Application.editor.rule = function(name, fn){
+		if(!_.isString(name)) throw new Error('DEV::Application.editor.validator::You must specify a validator/rule name to use.');
+		return Application.Core.Editor.addRule(name, fn);
+	};
+
+	//alias
+	Application.page = Application.context;
+	Application.area = Application.regional;
+
+	/**
 	 * Universal remote data interfacing api entry point
 	 * -------------------------------------------------
 	 * @returns jqXHR object (use promise pls)
@@ -415,6 +508,18 @@ _.each(['Core', 'Util'], function(coreModule){
 		else
 			return Application.Core.Remote.get(options);
 	}
+
+	/**
+	 * API summary
+	 */
+	Application._apis = [
+		//'model', 'collection',
+		'context - @alias:page', 'regional - @alias:area',
+		'view',
+		'widget', 'editor', 'editor.validator - @alias:editor.rule',
+		'remote',
+		'create - @deprecated'
+	];
 
 })();
 
