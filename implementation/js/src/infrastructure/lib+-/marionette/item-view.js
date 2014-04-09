@@ -31,6 +31,7 @@
 			//resize paper upon window resize event.
 			this.listenTo(app, 'app:resized', function(e){
 				this.paper.setSize(this.$el.width(), this.$el.height());
+				this.trigger('view:paper-resized');
 			});
 		}
 	});

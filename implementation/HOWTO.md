@@ -558,10 +558,17 @@ Application.create({
     onShow: function(){
         this.paper.draw();
         ...
+    },
+    onPaperResized: function(){
+        ... //upon window resizing event
     }
 });
 ```
-Don't worry about container/window resizing, it is automatically taken cared for you. 
+Don't worry about container/window resizing, it is automatically taken cared for you. The paper size will be set correctly to the container's and there is an additional meta event `view:paper-resized` triggered on the view so you can do something accordingly through `onPaperResized()`.
+
+If you require charts to be drawn, look through our monitored libraries under `js/libs/tracked/` there should be **d3.js** and **highcharts.js** for exactly that.
+
+**Note:** HTML5 *Canvas* libraries will be added in the future.
 
 #####Events
 Some interactions demand **collaboration** between view objects, this is why we introduce the concept of meta-event programming. It is like coding through just interfaces in a object-oriented programming language but much more flexible. The goal is to let the developer code with events instead of APIs so the implementation can be delayed as much as possible. The underlying principle is very simple:
