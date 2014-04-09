@@ -1,13 +1,14 @@
 Change Log
 ==========
-1.0.0-rc2 (2014-03-25)
+1.0.0-rc2 (2014-04-09)
 ----------------------
 1. updated framework documentation (draft version done)
 2. replaced the remote data interfacing core module.
 3. added/formalized object meta-event programming util.
 4. added 'Page' and 'Area' aliases for 'Context'/'Regional'
 5. added 'parentContext' and 'parentCt' for view objects shown through regions
-6. autodetect config for actions, svg/canvas paper, editors and enable them
+6. auto-detect config for actions, svg/canvas paper, editors and enable them
+7. deprecated the app.create() API in favor of detailed APIs
 
 
 1.0.0-rc1 (2014-03-12)

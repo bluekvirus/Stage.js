@@ -14,27 +14,24 @@ Introduction
 ------------
 The framework is made on top of **Backbone.Marionette** and **Bootstrap**. To flatten and lower the initial learning curve of adaptation, we restrict ourselves to only the following APIs:
 
-* Application.setup(options)
-* Application.run()
-* Application.context(name, options)
-* Application.regional(name, options)
-* Application.widget(name, options/factory)
-* Application.editor(name, options/factory)
-* Application.view(options, instant)
-* Application.remote(options)
+Initialize:
+* Application.setup (options)
+* Application.run ()
 
-We also maintain a list of 3rd party libraries for the developers to choose from in addition to the base libraries (as utilities). The utility libs (e.g jquery-file-upload, store.js, uri.js, raphael.js, marked, moment.js, socket.io.js...) are carefully selected from the many open-source Javascript libs out there to help with specific but generally-will-appear problems that a developer will encounter during the web application development process. (see more in the *Include other js libs* chapter)
+Structure:
+* Application.context (name, options) - alias: page()
+* Application.regional (name, options) - alias: area()
+* Application.view (options, instant)
 
-###Moving away from all-in-ones
-We have been developing in ExtJS4 for 2+ years, starting form the last version of 4.0.x which is the promising 4.0.7. As our knowledge base expands, we felt that it is time to form our own blueprint of a modern data heavy web application to shorten the development cycles. Here are some of the main reasons:
+Reuse:
+* Application.widget (name, options/factory)
+* Application.editor (name, options/factory)
+* Application.editor.validator (name, fn) - alias: editor.rule()
 
-1. Although it is relatively fast to develop prototypes using an all-in-one framework like ExtJS, it is hard to maintain the code while keeping up with the changes required by the users and those that come from Sencha. The widgets are bound too tightly with the framework.
-2. Loading, DOM interfacing, Widget and Application containers are all provided with a biased opinion, which always lead to fightings with the framework here and there or messing around with the life-cycles defined when trying to implement application specific user requirements. 
-3. Performance issues. There are often a massive amount of unnecessary DOM elements lurking in the client browser. We have very limited control over the life-cycles nor the HTML template structure of the components. Making widgets as Classes and loading like Java is really a bad idea for Javascript.
-4. Theming difficulties. It is hard to theme an ExtJS application correctly given the extensively nested component structure and the lack of SASS/Compass adaptation among developers.
-5. Payed solution. The commercial version of ExtJS and the tools (IDE) are expensive. This also makes the community size smaller than its full/free open source counterparts, making it difficult to find solutions from resources other than the documentation.
+Handle Data:
+* Application.remote (options)
 
-We choose to move away from this heavy framework to avoid its complexity (tightly bound all-in-one solution) and to have more control over the component lifecycles, interactions and application container separately. An equally powerful yet still lightweight solution combining the best practices in the field is thus made. 
+The goal is to maximize developer efficiency by introducing an intuitive workflow on top of a solid application structure. You will be focusing on user interaction building without distraction. Theming and deployment are also a breeze through our tools.
 
 ###Why not using...
 Why not using AngularJS/EmberJS/Meteor or YUI/ExtJS? Yes you can, but, if you can, **always favor libraries over frameworks**. Given that *Pro.js* is also a framework. The advise here should be extended to: 
@@ -140,6 +137,8 @@ and this indicates:
 
 If you don't know what they are, go for a quick look at their websites. (links are provided under the *Included Libraries* area on the left sidebar)
 
+We also maintain a list of 3rd party libraries for the developers to choose from in addition to the base libraries (as utilities). The utility libs (e.g jquery-file-upload, store.js, uri.js, raphael.js, marked, moment.js, socket.io.js...) are carefully selected from the many open-source Javascript libs out there to help with specific but generally-will-appear problems that a developer will encounter during the web application development process. (see more in the *Include other js libs* chapter)
+
 **Remember:** The goal of this framework is to assist you to make better use of *Marionette* (thus *Backbone*) by adding a conventional workflow (with tools) and application container around it. It is designed to keep you focused on building dynamic views without worrying about putting/linking/organizing them into a manageable whole. You can make a complete web application project with ease now by focusing only on what to offer the user within each of the regions/areas. Go read about *Marionette*, it is very important that you understand the 4 types of views (*ItemView, Layout, CollectionView and CompositeView*) offered by this pattern library. [We are still experimenting with *Behavior* in *Marionette*, nothing in the framework is implemented with it yet]
 
 ###What's in the package
@@ -236,15 +235,14 @@ Now, given that you've changed the template, you need to also change `contextReg
 
 If your application is a single-page application, you probably don't need more than one *Context*, in such a case, you don't need to assign the application template. There will always be a region that wraps the whole application -- the *app* region. You can define your *Context* without a `name` property, this will register the *Context* to be the **Default** one. The **Default** *Context* will automatically show on region *app* if you did not specify `contextRegion` and `defaultContext`.
 
-Now we've marked our context region, let's proceed to define them through our powerful *Unified APIs* `Application.create()` in the following sections.
+Now we've marked our context region, let's proceed to define them through our well organized APIs in the following sections.
 
 ####Step 2. Define Contexts
 Create a new file named `myContextA.js`, remember a *Context* is just a *Marionette module* wrapped around a *Marionette.Layout* definition. We've taken care of the wrapping process, all you need to do is giving the definition a name and the ordinary *Marionette.Layout* options:
 ```
 //myContextA.js
 (function(app) {
-    app.create('Context', {
-        name: 'MyContextA', //omitting the name indicates context:Default
+    app.context('MyContextA', { //omitting the name indicates context:Default
         template: '...',
         //..., normal Marionette.Layout options
         onNavigateTo: function(subpath) {
@@ -253,6 +251,7 @@ Create a new file named `myContextA.js`, remember a *Context* is just a *Marione
     });
 })(Application);
 ```
+alias: `Application.page()`. 
 You can still use the `region=""` and `view=""` attributes in the template. 
 
 Note that you should name your *Context* as if it is a *Class*. **The name is important as it links the *Context* with the global navigation mechanism**. 
@@ -268,41 +267,38 @@ Create `/context-a/myRegionalA.js` like this:
 ```
 //myRegionalA.js
 (function(app) {
-    app.create('Regional', {
-        name: 'MyRegionalA', //omitting the name gets you an instance of this definition.
+    app.regional('MyRegionalA', { //omitting the name gets you an instance of this definition.
         type: 'CollectionView', //omitting this indicates 'Layout'
         template: '...',
         //..., normal Marionette.xView options
     });
 })(Application);
 ```
+alias: `Application.area()`. 
 You can still use the `region=""` and `view=""` attributes in the template.
 
 Note that you should name your *Regional* as if it is a *Class*. **The name is important if you want to use the auto-regional-loading mechanism through the `view=""` attribute in any *Marionette.Layout***. 
 
 By default, any *Regional* you define will be a *Marionette.Layout*, you can change this through the `type` option.
 
-By default, `Application.create('Regional', {...})` returns the **definition** of the view, if you want to use the returned view **anonymously**, remove the `name` option. You will get a **instance** of the view definition to `show()` on a region right away. 
+By default, `Application.regional(['you regional view name',] {...})` returns the **definition** of the view, if you want to use the returned view **anonymously**, remove the `name` argument. You will get an **instance** of the view definition to `show()` on a region right away. 
 
 Sometimes your *Regional* is comprised of other sub-regional views and that's fine, you can nest *Regional*s with the `region=""` and `view=""` attributes in the template (**only if it is of `type: Layout`**). There will also be time when you just need plain *Marionette.xView* definitions to be used as item views within *Regional*s. You can do it like this:
 ```
-Application.create({
+Application.view({
     type: '...', //ItemView, Layout, CollectionView or CompositeView
     ..., //rest of normal Marionette.xView options
-});
+}); 
 ```
-Unlike the *anonymous* call to `Application.create('Regional', {...})`, the above call returns a **definition** of the view.
+The above call returns a **definition** of the view. If you want an **instance** to be returned, do it like this:
+```
+Application.view({...}, true);
+```
 
 Now, we've sketched the layout of our application, you might want more contexts defined before continue but that's the easy part, just repeat Step 1-2 till you are ready to proceed to stream in remote data to light-up the views.
 
 ####Step 4. Handle data
 Though we do not agree with *Backbone*'s way of loading and persisting data through *Model/Collection*s. We do agree that **data** should be the central part of every computer program. In our case, the remote data from server are still used to power the dynamic views we have defined. We use *Backbone.Model/Collection* only when there is a *View*. In other words, *data* and *View*s are centric in our framework paradigm, *Model/Collection*s are not. Try to think of them as a integrated part of *View*s. 
-
-Having said that, you can still create *Backbone.Model/Collection* through our *Unified API* `Application.create()` like this:
-```
-Application.create('Model/Collection', {options})
-```
-The options passed will be the normal *Backbone.Model/Collection* ones.
 
 Our recommended way of loading/persisting remote data is through:
 ```
@@ -367,8 +363,7 @@ You can now render through remote data in a view without mentioning *Model/Colle
 ```
 //myRegionalA.js
 (function(app) {
-    app.create('Regional', {
-        name: 'MyRegionalA',
+    app.regional('MyRegionalA', {
         template: '...',
         onShow: function(){
             //load data and render through it:
@@ -398,8 +393,7 @@ Any *Marionette.xView* can have an `effect` configure to control the effect thro
 ```
 //myRegionalA.js or any Marionette.xView
 (function(app) {
-    app.create('Regional', {
-        name: 'MyRegionalA',
+    app.regional('MyRegionalA', {
         ...,
         effect: 'string' or
         {
@@ -420,8 +414,7 @@ Any *Marionette.xView* can have its actions configure block activated like this 
 ```
 //myRegionalA.js or any Marionette.xView
 (function(app) {
-    app.create('Regional', {
-        name: 'MyRegionalA',
+    app.regional('MyRegionalA', {
         ...,
         template: [
             '<div>',
@@ -445,7 +438,7 @@ Use `_bubble: true` if you want the click event to **propagate** to the parent v
 #####Inputs
 We have already prepared the basic html editors for you in the framework. You don't have to code `<input>, <select> or <textarea>` in any of your view template. Instead, you can activate them in any *Marionette.xView* like this:
 ```
-Application.create({
+Application.view({
     ...,
     editors: { //editors per fieldname
         _global: {...}, //globally shared per editor configures
@@ -498,11 +491,11 @@ validate: function(val, parentCt){
 
 You can always register more named validators by:
 ```
-Application.create('Validator', {
-    name: '...',
+Application.editor.validator('my-validator-name', {
     fn: function(options, val, parentCt){...},
 });
 ```
+alias: `Application.editor.rule()`.
 
 Additional advanced per editor options:
 * layout 
@@ -551,11 +544,11 @@ If you use `options.parentCt` to pass in another view instance, the events will 
 #####Graphs
 We support graphs through SVG. A basic SVG library is integrated with the framework (Raphaël.js). You can use it in any *Marionette.xView* through:
 ```
-Application.create({
+Application.view({
     svg: function(paper){...}
 });
 //or synced version:
-Application.create({
+Application.view({
     svg: true,
     onShow: function(){
         this.paper.draw();
@@ -652,16 +645,16 @@ Additional `parentContext` property is also added to each view instances shown t
 ###Widgets/Editors
 To make your view definitions reusable, we offer a way of registering *Widget*s and *Editor*s:
 ```
-Application.create('Widget/Editor', {
-	name: '', //name can be used in region:load-view meta event trigger
-	factory: function(){
+//Widget name can be used in region:load-view meta event trigger
+Application.widget/editor('MyWidget/EditorName', 
+	function(){
 		var View;
 		_.extend(View, {
 			...
 		});
 		return View;
 	}
-})
+)
 ```
 It is recommended to employ the **List'n'Container** technique when creating *Widget*s. Note that basic *Editors* are already provided for you. If you need more editors please register them while providing the `getVal`, `setVal`, `validate` and `status` methods.
 
@@ -669,7 +662,7 @@ It is recommended to employ the **List'n'Container** technique when creating *Wi
 
 Note that you will need some sub-views to help compose the *Widget/Editor*, use the short-cut we provide to define them for better extensibility in the future:
 ```
-var MyItemView = Application.create({
+var MyItemView = Application.view({
 	type: '', //default is ItemView, can also be Layout, CollectionView and CompositeView.
 	..., //normal Marionette.xView options.
 });
@@ -677,16 +670,14 @@ var MyItemView = Application.create({
 
 To instantiate a *Widget*, use either `region.trigger('region:load-view', name, options)` or:
 ```
-Application.create('Widget', {
-	name: '',
+Application.widget('MyWidgetName', {
 	..., //rest of the init options, don't pass in a config named 'factory'. 
 })
 ```
 
 To instantiate an *Editor*, use either `editors:{}` within a view or :
 ```
-Application.create('Editor', {
-	name: '',
+Application.editor('MyEditorName', {
 	..., //rest of the init options, don't pass in a config named 'factory'.
 })
 ```
@@ -700,9 +691,9 @@ This is the golden technique to use when planning your reusable views or, say, a
 * Put lists into the container.
 * Figure out the view to show within each list item.
 
-You can always nest another layer of container-list-item into an item of parent layer to form even more complex views. Make sure you use the `Application.create(options)` API when defining the list item views.
+You can always nest another layer of container-list-item into an item of parent layer to form even more complex views. Make sure you use the `Application.view(options)` API when defining the list item views.
 
-**Important**: *Do NOT* use `Application.create('Regional', options)` unless it is the outer most view for a region.
+**Important**: *Do NOT* use `Application.regional()` unless it is the outer most view for a region. Use `Application.view()` if defining Widgets/Editors.
 
 
 ###i18n/l10n
@@ -874,7 +865,18 @@ Use `bower update` to update other monitored libs you need under `/implementatio
 
 Appendix
 --------
-###A. Rules of Thumb
+###A. Moving away from ExtJS
+We have been developing in ExtJS4 for 2+ years, starting form the last version of 4.0.x which is the promising 4.0.7. As our knowledge base expands, we felt that it is time to form our own blueprint of a modern data heavy web application to shorten the development cycles. Here are some of the main reasons:
+
+1. Although it is relatively fast to develop prototypes using an all-in-one framework like ExtJS, it is hard to maintain the code while keeping up with the changes required by the users and those that come from Sencha. The widgets are bound too tightly with the framework.
+2. Loading, DOM interfacing, Widget and Application containers are all provided with a biased opinion, which always lead to fightings with the framework here and there or messing around with the life-cycles defined when trying to implement application specific user requirements. 
+3. Performance issues. There are often a massive amount of unnecessary DOM elements lurking in the client browser. We have very limited control over the life-cycles nor the HTML template structure of the components. Making widgets as Classes and loading like Java is really a bad idea for Javascript.
+4. Theming difficulties. It is hard to theme an ExtJS application correctly given the extensively nested component structure and the lack of SASS/Compass adaptation among developers.
+5. Payed solution. The commercial version of ExtJS and the tools (IDE) are expensive. This also makes the community size smaller than its full/free open source counterparts, making it difficult to find solutions from resources other than the documentation.
+
+We choose to move away from this heavy framework to avoid its complexity (tightly bound all-in-one solution) and to have more control over the component lifecycles, interactions and application container separately. An equally powerful yet still lightweight solution combining the best practices in the field is thus made. 
+
+###B. Rules of Thumb
 ####General
 * Keep things simple, especially the simple ones.
 * Categorization before abstraction.
@@ -892,10 +894,10 @@ Start with user requirements/stories and focus on serving the customers' need. U
 * Scriptability - batch-able, automate-able
 
 
-###B. Change log
+###C. Change log
 see CHANGELOG.md
 
-###C. Useful sites
+###D. Useful sites
 ####MDN
 * [CORS](https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS) - crossdomain ajax support.
 * [Web API](https://developer.mozilla.org/en-US/docs/Web/API)

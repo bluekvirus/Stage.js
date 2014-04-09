@@ -40,8 +40,7 @@ module.exports = {
 				'default': 'themes/_dev'
 			},
 			'web+': 'static/web+',
-			'index.html': false,
-			'HOWTO.md': 'HOWTO.md'
+			'index.html': false
 		},
 		tools: {
 			build: {
@@ -51,7 +50,7 @@ module.exports = {
 			iconprep: '../tools/iconprep',
 			shared: '../tools/shared',
 			'package.json': '../tools/package.json'
-		}
-
+		},
+		'CHANGLOG.md': '../CHANGLOG.md'
 	}
 };

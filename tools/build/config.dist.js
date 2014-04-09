@@ -50,7 +50,8 @@ module.exports = {
 			}
 		},		
 		'index.html': true,
-		'HOWTO.md': 'HOWTO.md'
-
+		'HOWTO.md': 'HOWTO.md',
+		'CHANGLOG.md': '../CHANGLOG.md'
+		
 	}
 };
