@@ -85,11 +85,11 @@
 			_.each(options, function(config, name){
 				if(name.match(/_./)) return; //skip _config items like _global
 				//0. apply global config
-				config = _.extend({}, global, config);
+				config = _.extend({name: name, parentCt: this}, global, config);
 				//1. instantiate
 				config.type = config.type || 'text'; 
 				var Editor = app.Core.Editor.map[config.type] || app.Core.Editor.map['Basic'];
-				var editor = new Editor(_.extend(config, {name: name, parentCt: this}));
+				var editor = new Editor(config);
 				
 				this._editors[name] = editor.render();
 				//2. add it into view (specific, appendTo(editor cfg), appendTo(general cfg), append)
@@ -107,6 +107,11 @@
 				});
 			});
 
+			//0. getEditor(name)
+			this.getEditor = function(name){
+				return this._editors[name];
+			}
+
 			//1. getValues (O(n) - n is the total number of editors on this form)
 			this.getValues = function(){
 				var vals = {};
@@ -115,9 +120,6 @@
 				});
 				return vals;
 			};
-			this.getVal = function(name){
-				return this._editors[name] && this._editors[name].getVal();
-			};
 
 			//2. setValues (O(n) - n is the total number of editors on this form)
 			this.setValues = function(vals, loud){
@@ -125,9 +127,6 @@
 					if(vals[name])
 						editor.setVal(vals[name], loud);
 				});
-			};
-			this.setVal = function(name, value, loud){
-				this._editors[name] && this._editors[name].setVal(value, loud);
 			};
 
 			//3. validate

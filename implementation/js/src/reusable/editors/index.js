@@ -86,15 +86,25 @@
 				this.parentCt = options.parentCt;
 				
 				//prep the choices data for select/radios/checkboxes
-				if(options.options){
-					var choices = options.options;
-					choices.valueField = choices.valueField || 'value';
-					choices.labelField = choices.labelField || 'label';
-
-					if(options.type === 'select' && !_.isArray(choices.data)){
-						choices.grouped = true;
+				if(options.type in {'select': true, 'radios': true, 'checkboxes': true}){
+					switch(options.type){
+						case 'radios':
+						options.type = 'radio'; //fix the <input> type
+						break;
+						case 'checkboxes':
+						options.type = 'checkbox'; //fix the <input> type
+						default:
+						break;
 					}
 
+					options.options = options.options || {};
+					options.options = _.extend({
+						data: [],
+						valueField: 'value',
+						labelField: 'label'
+					}, options.options);
+
+					var choices = options.options; //for easy reference within extractChoices()
 					function extractChoices(data){
 						if(_.isObject(data[0])){
 							data = _.map(data, function(c){
@@ -108,14 +118,32 @@
 						return data;
 					};
 
-					if(choices.grouped){
-						//select (grouped)
-						_.each(choices.data, function(array, group){
-							choices.data[group] = extractChoices(array);
-						});
-					}else {
-						//select, radios, checkboxes
-						choices.data = extractChoices(choices.data);
+					function prepareChoices(choices){
+						if(!_.isArray(choices.data)){
+							choices.grouped = true;
+						}
+
+						if(choices.grouped){
+							//select (grouped)
+							_.each(choices.data, function(array, group){
+								choices.data[group] = extractChoices(array);
+							});
+						}else {
+							//select, radios, checkboxes
+							choices.data = extractChoices(choices.data);
+						}
+
+						return choices;
+					}
+
+					prepareChoices(options.options);
+
+					//give it a method for reconfigure the choices later
+					this.setChoices = function(data){
+						var choices = this.model.get('options');
+						choices.data = data;
+						this.model.set('options', prepareChoices(choices));
+						this.render();
 					}
 				}
 
@@ -151,6 +179,7 @@
 					});
 					//forge the validation method of this editor				
 					this.validate = function(show){
+						if(this._inactive) return; //skip the disabled ones.
 						if(_.isFunction(options.validate)) {
 							var error = options.validate(this.getVal(), this.parentCt); 
 							if(show) {
@@ -244,8 +273,35 @@
 
 			},
 
+			isEnabled: function(){
+				return !this._inactive;
+			},
+			
+			disable: function(flag){
+
+				if(flag === false){
+					this._inactive = false;
+				}else {
+					this._inactive = true;
+				}
+
+				if(_.isUndefined(flag)){
+					//disable but visible, will not participate in validation
+					this.ui.input.prop('disabled', true);
+					return;
+				}
+
+				if(flag){
+					//hide and will not participate in validation
+					this.$el.hide();
+				}else {
+					//shown and editable
+					this.ui.input.prop('disabled', false);
+					this.$el.show();
+				}
+			},
+
 			setVal: function(val, loud){
-				//throw new Error('DEV::Editor.Basic::Has not yet implemented setVal()!');
 				if(this.ui.inputs.length > 0){
 					//radios/checkboxes
 					this.ui.inputs.find('input').val(_.isArray(val)?val:[val]);
@@ -261,7 +317,6 @@
 			},
 
 			getVal: function(){
-				//throw new Error('DEV::Editor.Basic::Has not yet implemented getVal()!');
 				if(this.ui.inputs.length > 0){
 					//radios/checkboxes
 					var result = this.$('input:checked').map(function(el, index){
@@ -351,7 +406,7 @@
 							'{{#unless ../options.inline}}<div class="{{../../type}}">{{/unless}}',
 							'<label class="{{#if ../options.inline}}{{../../type}}-inline{{/if}}">',
 								//note that the {{if}} within a {{each}} will impose +1 level down in the content scope.  
-								'<input name="{{#if ../fieldname}}{{../../fieldname}}{{else}}{{../../name}}{{/if}}{{#is ../type "checkbox"}}[]{{/is}}" type="{{../type}}" value={{value}}> {{label}}',
+								'<input ui="input" name="{{#if ../fieldname}}{{../../fieldname}}{{else}}{{../../name}}{{/if}}{{#is ../type "checkbox"}}[]{{/is}}" type="{{../type}}" value={{value}}> {{label}}',
 							'</label>',
 							'{{#unless ../options.inline}}</div>{{/unless}}',
 						'{{/each}}',

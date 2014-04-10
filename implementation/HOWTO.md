@@ -471,7 +471,7 @@ The editors will be appended inside the calling view instance one by one by defa
 A little bit more about the basic options: 
 * appendTo - in case you don't have `editor="[fieldname]"` in your template and want to change where to put the editor other than the default position.
 * parentCt - in case you want to delegate editor events to a parent container object (e.g a form object).
-* type - text, password, url, email, checkbox(s), radios, file, hidden, ro (for read-only), textarea, select
+* type - text, password, url, email, checkbox(es), radios, file, hidden, ro (for read-only), textarea, select
 * label
 * help
 * tooltip
@@ -525,14 +525,13 @@ template: [
 ```
 You will also get the following APIs attached to the **view** instance object once you have configured the `editors:{}` block:
 ```
-this.getVal(name);
+this.getEditor(name);
 this.getValues();
-this.setVal(name, val, loud); //set loud to true if you want to fire change event on the editor.
 this.setValues(vals, loud);
 this.validate(true|false); //true for showing the validation errors.
 this.status(status, messages); //for highlighting status per editor. no arguments means to clear.
 ```
-There are also events emitted that you can use when dealing with these inputs (basic editors):
+There are also events emitted that you can use when dealing with each of these editors:
 ```
 editor:change
 editor:keyup
@@ -540,6 +539,18 @@ editor:focusin // - focus
 editor:focusout // - blur
 ```
 If you use `options.parentCt` to pass in another view instance, the events will be fired on that view instance **in addition to** firing on the editor itself. It is useful when you want every event to be fired on a parent container or, say, a form view.
+
+Each editor instance will have the following methods:
+```
+editor.getVal();
+editor.setVal(val, loud);
+editor.disable([flag]); //false to enable, default to disable, true to disable + hide.
+editor.isEnabled();
+editor.validate(showError); //if you have options.validator configured
+editor.status(status, message); //info, error, warning, success status, empty to reset status.
+```
+
+**Note:** The *select, radios and checkboxes* editors can be initialized without `options.data` configuration, these editors will get an additional `setChoices()` API that you can use to set the available choices later.
 
 #####Graphs
 We support graphs through SVG. A basic SVG library is integrated with the framework (Raphaël.js). You can use it in any *Marionette.xView* through:

@@ -195,11 +195,17 @@
                     '<span class="btn btn-primary" action="submit">Submit</span> ',
                     '<span class="btn btn-warning" action="validate">Validate</span> ',
                     '<span class="btn btn-default" action="test">Test</span> ',
+                    '<span class="btn btn-default" action="test2">Test(Disable/Enable)</span> ',
                     '<span class="btn btn-info" action="info">Inform</span> ',
                     '<span class="btn btn-info" action="clearinfo">Clear Info</span> ',
                 '</div>',
             '</div>'
         ],
+        onShow: function(){
+            this.getEditor('ab').disable();
+            this.getEditor('radios').disable();
+        }
+        ,
         actions: {
             validate: function($btn){
                 this.validate(true);
@@ -213,6 +219,15 @@
                     readonly2: 'Hello!',
                     singlecheckbox: 'enabled'
                 });
+            },
+            test2: function(){
+                var editor = this.getEditor('checkboxes');
+                if(editor.isEnabled()) editor.disable(true);
+                else {
+                    editor.disable(false);
+                    this.getEditor('ab').disable(false);
+                    this.getEditor('radios').disable(false);
+                }
             },
             info: function(){
                 this.status('success', {
@@ -300,7 +315,7 @@
             },
             radios: {
                 label: 'Radios',
-                type: 'radio',
+                type: 'radios',
                 help: 'choose the one you like',
                 tooltip: {
                     title: 'hahahaha'
@@ -318,7 +333,7 @@
             },
             checkboxes: {
                 label: 'Checkboxes',
-                type: 'checkbox',
+                type: 'checkboxes',
                 help: 'choose more than you like',
                 fieldname: 'haha',
                 options: {
