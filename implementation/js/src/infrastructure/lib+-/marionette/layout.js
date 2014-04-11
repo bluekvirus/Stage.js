@@ -117,7 +117,7 @@
 					//automatically show a registered View/Widget through event 'region:load-view' (name [,options])
 					this.listenTo(this, 'show', function(){
 						_.each(this.regions, function(selector, r){
-							this[r].$el.html('<p class="alert">Region <strong>' + r + '</strong></p>'); //give it a fake one.
+							if(this.debug) this[r].$el.html('<p class="alert alert-info">Region <strong>' + r + '</strong></p>'); //give it a fake one.
 							this[r].listenTo(this[r], 'region:load-view', function(name, options){ //can load both view and widget.
 								if(!name) return;
 								if(options) {

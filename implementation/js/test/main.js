@@ -173,6 +173,7 @@
 
     Application.create('Page', {
         name: 'Demo',
+        //debug: true,
         template: [
             '<div region="center"></div>',
         ],
