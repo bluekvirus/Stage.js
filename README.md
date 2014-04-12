@@ -1,6 +1,6 @@
 The Factory Project
 ===================
-This project produces **ProJS.Client** - an infrastructure for building modern web application client with many contexts (e.g a data-heavy administration app).
+This project produces **PM.js** - an infrastructure for building modern web application client with many contexts (e.g a data-heavy administration app).
 
 
 What's next?
@@ -29,7 +29,7 @@ A .zip and a .tar.gz will also be produced to facilitate framework download. **D
 
 Deploy-able
 -----------
-The `/implementation` folder is also servable as a product intro & download page of **ProJS.Client** releases.
+The `/implementation` folder is also servable as a product intro & download page of **PM.js** releases.
 
 
 The Framework

@@ -108,7 +108,7 @@
                 ],
                 onShow: function(){
                     var that = this;
-                    Application.remote('js/libs/tracked/dist/selected.json').done(function(data){
+                    Application.remote('js/libs/tracked/built/selected.json').done(function(data){
                         _.extend(data, {
                             created: moment(data.created).fromNow()
                         });
@@ -424,7 +424,7 @@
                     '<span class="icon-bar"></span>',
                     '<span class="icon-bar"></span>',
                   '</button>',
-                  '<a href="#navigate/Home" class="navbar-brand">Pro.js</a>',//2
+                  '<a href="#navigate/Home" class="navbar-brand">PM.js</a>',//2
                 '</div>',
 
                 '<div class="navbar-collapse collapse navbar-responsive-collapse">',//B
@@ -458,7 +458,8 @@
                         '<a data-toggle="dropdown" class="dropdown-toggle" href="#"><i class="fa fa-download"></i> Download <b class="caret"></b></a>',
                         '<ul class="dropdown-menu">',
                             '<li class="dropdown-header" >Client</li>',
-                            '<li><a href="#" action="download" target="projs.1.0.0-rc2.tar.gz"><i class="fa fa-arrow-circle-o-down"></i> pro.js</a></li>',
+                            '<li><a href="#" action="download" target="projs.1.0.0-rc2.tar.gz"><i class="fa fa-arrow-circle-o-down"></i> pm.js (starter-kit)</a></li>',
+                            '<li><a href="#" action="download" target="projs.1.0.0-rc2.tar.gz"><i class="fa fa-arrow-circle-o-down"></i> pm.js (js only)</a></li>',
                             '<li class="divider"></li>',
                             '<li class="dropdown-header">Server</li>',
                             '<li><a href="#" action="download" target="ajax-box.0.10.1.tar.gz"><i class="fa fa-arrow-circle-o-down"></i> ajax-box</a></li>',

@@ -1,4 +1,4 @@
-Pro.js <sub class="text-muted" style="font-size:36%">based on Marionette.js</sub>
+PM.js <sub class="text-muted" style="font-size:36%">based on Marionette.js</sub>
 ======
 *An infrastructure for building modern web application with many contexts.*
 [@Tim (Zhiyuan) Liu](mailto:bluekvirus@gmail.com)
@@ -885,19 +885,23 @@ We have been developing in ExtJS4 for 2+ years, starting form the last version o
 4. Theming difficulties. It is hard to theme an ExtJS application correctly given the extensively nested component structure and the lack of SASS/Compass adaptation among developers.
 5. Payed solution. The commercial version of ExtJS and the tools (IDE) are expensive. This also makes the community size smaller than its full/free open source counterparts, making it difficult to find solutions from resources other than the documentation.
 
-If the above listing can not convince you, try to compare the ExtJS solutions to the web application building process with ours:
+If the above listing can not convince you, try to compare the ExtJS solutions to the web application building process with ours: (Strict MVC vs View centric)
 
-1. Containers VS general regions and views;
-2. Layouts VS dynamic grid system;
-3. Thick data layer VS a single remote() API;
-4. Strict MVC VS View centric;
-5. Single Viewport VS switchable Contexts;
-6. Controllers VS generic events and view actions;
-7. XTemplate VS Handlebars;
+0. Classes vs 4 types of general view;
+1. Containers vs General in-template regions;
+2. Layouts vs Dynamic grid system;
+3. Thick data layer vs A single remote() API;
+4. Single Viewport vs Switchable Contexts;
+5. Controllers vs Generic events and view actions;
+6. XTemplate vs Handlebars;
 
-The one thing that ExtJS could not get right and still is getting wrong is that it tries to use Javascript like JAVA and dominating HTML/CSS manipulation. It casts the developers out to a changed problem domain where basic problems are taken cared of in the complicated/overkilled way. The *Class* system confuses developers with Javascript scope, the heavy *Layout* system kills what HTML/CSS is designed for and good at, the thick *Data* layer tries to isolate data snapshot from their in-separable views and the *Controllers* pulls developers out into another place to define routines just to have the listeners wired back again into the views. All of these ignores the fact that the core of a web application is at HTML(client-side) and the data(server side), not the glue and state snapshots. (Well, maybe in 5.0 they can fix it, we have high hope on this...)
+The one thing that ExtJS could not get right and still is getting wrong is that it tries to use Javascript like JAVA and dominating HTML/CSS manipulation. It casts the developers out to a changed problem domain where basic problems are taken cared of in a complicated/overkilled way so that the programs can be written like *piles of configure files*. 
 
-We choose to move away from this heavy framework to avoid its complexity (tightly bound all-in-one solution) and to have more control over the component lifecycles, interactions and application container separately. An equally powerful yet still lightweight solution combining the best practices in the field is thus made. 
+The *Class* system confuses developers coding in Javascript's function scope, the heavy *Layout* system kills what HTML/CSS is designed for and good at, the thick *Data* layer tries to isolate data snapshot from their in-separable views and the *Controllers* pulls developers out into another place to define routines just to have the listeners wired back again into the views. All of these ignores the fact that the core of a web application is at HTML(client-side) and the data(server side), not the glue and state snapshots. (Well, maybe in 5.0 they can fix it, we have high hope on this...)
+
+Whatever you do, *Do NOT* stack up abstraction layers over layers so further programs can be written like configuration files. It will be slow to run and even slower/harder to change...
+
+We choose to move away from this heavy framework to avoid its complexity and downside and to have more control over the component lifecycles, interactions and application container separately. An equally powerful yet still lightweight solution combining the best practices in the field is thus made. 
 
 ###B. Rules of Thumb
 ####General

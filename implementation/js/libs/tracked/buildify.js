@@ -159,8 +159,9 @@ function combine(list, name){
 	});
 	console.log('libs (selected/available):', (_.size(list) + '/' + String(_.size(libMap))).green, '[', ((_.size(list)/_.size(libMap)*100).toFixed(2) + '%').yellow, ']');
 	//+ version dump to selected.json
-	buildify().setContent(json.stringify(versions)).setDir('dist').save('selected.json');
-	target.setDir('dist').save(name + '.js')/*.uglify().save(name + '.min.js')*/;
+	var distFolder = 'built'; 
+	buildify().setContent(json.stringify(versions)).setDir(distFolder).save('selected.json');
+	target.setDir(distFolder).save(name + '.js')/*.uglify().save(name + '.min.js')*/;
 	
 };
 //-------------------------------------------

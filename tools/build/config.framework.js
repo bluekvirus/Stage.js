@@ -30,7 +30,7 @@ module.exports = {
 				libs: {
 					tracked: {
 						'bower.json': 'js/libs/tracked/bower.json',
-						'selected.json': 'js/libs/tracked/dist/selected.json'
+						'selected.json': 'js/libs/tracked/built/selected.json'
 					}
 				},				
 				//'all.min.js': true,

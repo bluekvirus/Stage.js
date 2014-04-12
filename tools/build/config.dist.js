@@ -26,8 +26,8 @@ module.exports = {
 			'all.min.js': true, //'all' is a hard coded name - see loadIndexHTML() in build.js
 			libs: {
 				tracked: {
-					dist: {
-						'selected.json': 'js/libs/tracked/dist/selected.json'
+					built: {
+						'selected.json': 'js/libs/tracked/built/selected.json'
 					}
 				}
 			}
