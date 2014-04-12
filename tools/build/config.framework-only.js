@@ -21,36 +21,10 @@ module.exports = {
 		index: 'index.html' //path relative to root
 	},
 	structure : { //path are relative to the distFolder and src.root above
-		design: {
-			assets: {},
-			docs: {}
-		},
-		implementation: {
-			js: {
-				libs: {
-					tracked: {
-						'bower.json': 'js/libs/tracked/bower.json',
-						'selected.json': 'js/libs/tracked/built/selected.json'
-					}
-				},				
-				//'all.min.js': true,
-				'all.js': false, //'all is hardcoded name, see shared/process-html.js'
-			},
-			themes: {
-				'default': 'themes/_dev'
-			},
-			'web+': 'static/web+',
-			'index.html': false
-		},
-		tools: {
-			build: {
-				'build.js': '../tools/build/build.js',
-				'config.dist.js': '../tools/build/config.sample.js'
-			},
-			iconprep: '../tools/iconprep',
-			shared: '../tools/shared',
-			'package.json': '../tools/package.json'
-		},
+			
+		'all.min.js': true,
+		'all.js': false, //'all is hardcoded name, see shared/process-html.js'
+		
 		'CHANGLOG.md': '../CHANGLOG.md'
 	}
 };

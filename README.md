@@ -21,10 +21,9 @@ Current Version
 1.0.0-rc2
 
 
-Build Release
+Build
 -------------
-Run `node /tools/build/build.js` and see dist for uncompressed minimum project package using the latest built version of this framework and tools.
-A .zip and a .tar.gz will also be produced to facilitate framework download. **DO NOT BUILD .zip on a MAC OS X**
+Run `tools/build/shortcut.sh` and see dist for details.
 
 
 Deploy-able
@@ -35,12 +34,7 @@ The `/implementation` folder is also servable as a product intro & download page
 The Framework
 =============
 
-Core Concepts
--------------
-See `design/docs/code/framework.md`
-
-
-Workflow
+Core Concepts & Workflow
 ----------------------
 See 'implementation/HOWTO.md'
 
@@ -79,7 +73,7 @@ Do **NOT** hang the build script, use `&` if needs be or avoid at all times.
 Notes
 =====
 
-Note on *Class.extend*
+*Class.extend*
 ----------------------
 Mind the prototypical (chain) inheritance, if B = A.extend({}) and then C = B.extend({}), changing B through B' = B.extend({+ properties}) will **NOT** affect C with newly added properties in B'.prototype, since this new B' is not the one used to create the C.prototype [coz C.prototype = new B() previously in C = B.extend({})]. Use _.extend(B.prototype) instead. _.extend(B'.prototype) will not affect previously/newly created C instances.
 
@@ -113,7 +107,7 @@ _.extend(X.prototype) will affect both already and newly created instances of X 
 Don't mess up the chain by just re-assigning X.prototype (since it will break the chain). Do 'X = Y(){...} and then X'.prototype = new X and lastly X'.prototype.constructor = X'. If you want to add more property to Z (Z = X.extend) through X', put altered construction code in Y(){} and add new property to Z through _.extend(X.prototype) instead of on X'. If you don't need to alter X itself, **in Backbone**, just do X.prototype.constructor = Y(){ ...; X.apply(this, arguments);}, this will only affect new instances of X's descendants.
 
 
-Note on *Ghost View*
+*Ghost View*
 --------------------
 This is caused by removing a view's html but leaving the event listeners 'on'... Thus make sure you remove a view's html together with the event listeners by invoking the `view.close()`(Marionette) method, which will in turn invoke the `view.undelegateEvents()`(Backbone) method which will further grab `$.off`(jQuery) to clean up the listeners.
 
@@ -126,7 +120,7 @@ Also, please use the `events:{...}` block to register listeners in a view defini
 If you have to use `$.on()` use it in a delegated form (on a parent dom object).
 
 
-Note on IE(6-9)
+IE(6-9)
 ---------------
 Before IE10, some efforts are still needed before the web app can work on an IE browser. We've prepared to add the following lib/tool to accommodate this in the future:
 

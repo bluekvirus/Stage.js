@@ -45,7 +45,7 @@ We choose what we choose when designing this framework simply because we want to
 
 In order to accomplish more with lesser code using Backbone, we picked Backbone.Marionette as our pattern library. It offers cleanup/boilerplate routines and very neat concepts for building large Javascript front-end projects. The resulting framework accomplishes all the big frameworks have promised but with **a thiner and flattener structure**. We believe scripting languages are always going to be the perfect thin glue layer between mechanisms and policies. The Javascript language were picked to glue HTML/CSS and UX but nothing more, it should not be overdosed and attempt to mimic Java. In other words, **only the burger is important**:
 
-<img src="/static/resource/default/diagram/Diagram-6.png" alt="HTML is the burger" class="center-block"></img>
+<img src="static/resource/default/diagram/Diagram-6.png" alt="HTML is the burger" class="center-block"></img>
 
 
 Mental preparation
@@ -59,14 +59,14 @@ If you can not agree with the author after reading the following sections in thi
 ###Define the problem
 Before start, you need to understand what is a *GUI application*, here is a brief diagram (casted upon the web realm):
 
-<img src="/static/resource/default/diagram/Diagram-1.png" alt="Web App Diagram" class="center-block"></img>
+<img src="static/resource/default/diagram/Diagram-1.png" alt="Web App Diagram" class="center-block"></img>
 
 The client and server sides are different in purpose fundamentally. Thus, they should be designed and implemented differently. **Do NOT mix them**. Shutting this door will preserve a significant amount of coding/maintenance energy for the application developer(s). The best software development practice encourages separation and delaying of implementation of related components so that each part can vary independently later. And to the author, abstraction should happen after categorization (or say, classification). This is why we are advising the developers *NOT* to make an overly encapsulated framework with tools that try to bridge the gaps. Trying to control everything using central planning is a human flaw, there is no silver-bullet for trying to solve web application building in 1 piece. It will always 3 parties in the software application world.
 
 As an engineer, the job is to find insights and solve problems between the 3 parties efficiently (profitably if you must insist...) so that the software/application serving the above system comes out correctly. This is hard. Specifically, You need to resolve 2 kinds of problem different in nature: *Interaction* and *Data Flow* in order to produce an application.
 A successful one requires both parts to employ careful design and feasible technique. We illustrate the *Interaction* problem's technical side here, since the framework is more about supporting a good design with cleaner implementation:
 
-<img src="/static/resource/default/diagram/Diagram-2.png" alt="UI/UX Problems" class="center-block"></img>
+<img src="static/resource/default/diagram/Diagram-2.png" alt="UI/UX Problems" class="center-block"></img>
 
 As you can see from the above diagram, there are 3 problems here to address when implementing a UI/UX side for an application:
 1. Data <i class="fa fa-arrows-h"></i> Model/Collection [snapshot]
@@ -80,7 +80,7 @@ So, how do we form our solution?
 ###Solution architecture
 As a full stack solution to the UI/UX side, we address those 3 problems with an intuitive architecture:
 
-<img src="/static/resource/default/diagram/Diagram-3.png" alt="Pro.js Architecture" class="center-block"></img>
+<img src="static/resource/default/diagram/Diagram-3.png" alt="Pro.js Architecture" class="center-block"></img>
 
 ####What's Navigation?
 
@@ -104,7 +104,7 @@ Modern web application generates views according to user data dynamically. This 
 ####Reuse view definitions?
 As *Design Patterns* dictates, we need to code in a way to:
 
-<img src="/static/resource/default/diagram/Diagram-4.png" alt="Design Pattern Goals" class="center-block"></img>
+<img src="static/resource/default/diagram/Diagram-4.png" alt="Design Pattern Goals" class="center-block"></img>
 
 For *Regional*s (or any *Marionette.xView*) that you need to use again and again but with different configuration (e.g a Datagrid). Register it as a *Widget* or, in case of a basic input, an *Editor*. These reusable view definitions are call *Reusable*s in the framework. Think in terms of the **List and Container** technique as much as possible when creating them.
 
@@ -696,7 +696,7 @@ Application.editor('MyEditorName', {
 ####List'n'Container technique
 This is the golden technique to use when planning your reusable views or, say, any view on screen. Any widget on screen can be decoupled into lists and containers, like this:
 
-<img src="/static/resource/default/diagram/Diagram-5.png" alt="List'n'Containers" class="center-block"></img>
+<img src="static/resource/default/diagram/Diagram-5.png" alt="List'n'Containers" class="center-block"></img>
 
 * Starts by choosing a proper container with desired layout, nest containers if needs be.
 * Put lists into the container.
@@ -899,9 +899,9 @@ The one thing that ExtJS could not get right and still is getting wrong is that 
 
 The *Class* system confuses developers coding in Javascript's function scope, the heavy *Layout* system kills what HTML/CSS is designed for and good at, the thick *Data* layer tries to isolate data snapshot from their in-separable views and the *Controllers* pulls developers out into another place to define routines just to have the listeners wired back again into the views. All of these ignores the fact that the core of a web application is at HTML(client-side) and the data(server side), not the glue and state snapshots. (Well, maybe in 5.0 they can fix it, we have high hope on this...)
 
-Whatever you do, *Do NOT* stack up abstraction layers over layers so further programs can be written like configuration files. It will be slow to run and even slower/harder to change...
+Whatever you do, *Do NOT* stack up abstraction layers over layers so further programs can be written like configuration files. It will be slow to run, even harder to change and incur a very steep learning curve for new comers...
 
-We choose to move away from this heavy framework to avoid its complexity and downside and to have more control over the component lifecycles, interactions and application container separately. An equally powerful yet still lightweight solution combining the best practices in the field is thus made. 
+We choose to move away from this heavy framework to avoid its complexity and downside and to have more control over the component life-cycles, interactions and application container separately. An equally powerful yet still lightweight solution combining the best practices in the field is thus made. 
 
 ###B. Rules of Thumb
 ####General
@@ -909,16 +909,16 @@ We choose to move away from this heavy framework to avoid its complexity and dow
 * Categorization before abstraction.
 * Separate, Reuse and Pipeline.
 * Cleaner method signature. Options as a single object parameter.
-* Events for collaborations instead of APIs. Promises for asynchronise operations instead of callbacks.
+* Events for collaborations instead of APIs. Promises for asynchronous operations instead of callbacks.
 
 Start with user requirements/stories and focus on serving the customers' need. Use the 80/20 rule to pick out important features/functionalities and implement them first. Gradually refine code and documentation later. Remember to write down **why** before **how** in the code comments. !FOCUS!
 
 ####GUI
 * Concision - exact but nothing more
-* Expressive-ness - allow useful possibilities be deducted
+* Expressiveness - allow useful possibilities be deducted
 * Ease - low mnemonic load on commands, control sequence
 * Transparency - low mnemonic load in user's mind for keeping track of states/layers of task at hand
-* Scriptability - batch-able, automate-able
+* Script-ability - batch-able, automate-able
 
 
 ###C. Change log
@@ -947,4 +947,4 @@ see CHANGELOG.md
 * [WrapBootstrap](https://wrapbootstrap.com/) - Advanced Bootstrap themes
 * [H5BP.showcase](http://h5bp.net/) - Site examples
 * [Subtlepatterns](http://subtlepatterns.com/) - web texture
-* [Google Fonts](http://www.google.com/fonts/)/[Font Squirrel](http://www.fontsquirrel.com/) - web fonts
+* [Google Fonts](http://www.google.com/fonts/)/[Font Squirrell](http://www.fontsquirrel.com/) - web fonts

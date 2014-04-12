@@ -2,7 +2,6 @@
 
     //You can override other production config vars if wanted.
     //fullScreen: true,
-    theme: '_dev',
     template: '<div region="banner" view="Banner"></div><div region="center"></div><div region="footer" view="Footer"></div>',
     contextRegion: 'center',
     defaultContext: 'Document'
@@ -458,14 +457,14 @@
                         '<a data-toggle="dropdown" class="dropdown-toggle" href="#"><i class="fa fa-download"></i> Download <b class="caret"></b></a>',
                         '<ul class="dropdown-menu">',
                             '<li class="dropdown-header" >Client</li>',
-                            '<li><a href="#" action="download" target="projs.1.0.0-rc2.tar.gz"><i class="fa fa-arrow-circle-o-down"></i> pm.js (starter-kit)</a></li>',
-                            '<li><a href="#" action="download" target="projs.1.0.0-rc2.tar.gz"><i class="fa fa-arrow-circle-o-down"></i> pm.js (js only)</a></li>',
+                            '<li><a href="#" action="download" target="projs.1.0.0-rc2.starter-kit.tar.gz"><i class="fa fa-arrow-circle-o-down"></i> pm.js (starter-kit)</a></li>',
+                            '<li><a href="#" action="download" target="projs.1.0.0-rc2.framework-only.tar.gz"><i class="fa fa-arrow-circle-o-down"></i> pm.js (js only)</a></li>',
                             '<li class="divider"></li>',
                             '<li class="dropdown-header">Server</li>',
                             '<li><a href="#" action="download" target="ajax-box.0.10.1.tar.gz"><i class="fa fa-arrow-circle-o-down"></i> ajax-box</a></li>',
                         '</ul>',
                     '</li>',
-                    '<li><a href="#"><i class="fa fa-github-alt"></i></a></li>',
+                    '<li><a href="https://github.com/bluekvirus/Client_"><i class="fa fa-github-alt"></i></a></li>',
                   '</ul>',
 
                 '</div>',//<!-- /.nav-collapse -->

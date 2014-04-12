@@ -18,39 +18,39 @@
 module.exports = {
 	src: {
 		root: '../../implementation', //path relative to this config.js
-		index: 'index.html', //path relative to root
+		index: 'index.html' //path relative to root
 	},
 	structure : { //path are relative to the distFolder and src.root above
-
-		js: {
-			'all.min.js': true, //'all' is a hard coded name - see loadIndexHTML() in build.js
-			libs: {
-				tracked: {
-					built: {
+		design: {
+			assets: {},
+			docs: {}
+		},
+		implementation: {
+			js: {
+				libs: {
+					tracked: {
+						'bower.json': 'js/libs/tracked/bower.json',
 						'selected.json': 'js/libs/tracked/built/selected.json'
 					}
-				}
-			}
+				},				
+				//'all.min.js': true,
+				'all.js': false, //'all is hardcoded name, see shared/process-html.js'
+			},
+			themes: {
+				'default': 'themes/default'
+			},
+			'web+': 'static/web+',
+			'index.html': false
 		},
-		themes: {
-			'default': {
-				css: {
-					'main.css':'themes/default/css/main.css'
-				},
-				fonts: 'themes/default/fonts',
-			}
+		tools: {
+			build: {
+				'build.js': '../tools/build/build.js',
+				'config.dist.js': '../tools/build/config.sample.js'
+			},
+			iconprep: '../tools/iconprep',
+			shared: '../tools/shared',
+			'package.json': '../tools/package.json'
 		},
-		static: {
-			resource: {
-				default: {
-					diagram: 'static/resource/default/diagram',
-					download: 'static/resource/default/download'
-				}
-			}
-		},		
-		'index.html': true,
-		'HOWTO.md': 'HOWTO.md',
 		'CHANGLOG.md': '../CHANGLOG.md'
-		
 	}
 };
