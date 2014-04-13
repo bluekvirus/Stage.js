@@ -11,6 +11,7 @@ Change Log
 7. deprecated the app.create() API in favor of detailed APIs
 8. added disable(), isEnabled() and setChoices() APIs to editors
 9. added getEditor() and removed get/setVal() APIs in views
+10. licensed under MIT
 
 
 1.0.0-rc1 (2014-03-12)

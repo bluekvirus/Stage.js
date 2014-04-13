@@ -162,13 +162,14 @@ You start developing by creating a `main.js` (you are free to choose whatever th
 and include it in `/implementation/index.html` below the `<!--main.js-->` comment line:
 
 ```
-<script src="js/all.js"></script>
+<script src="js/libs/tracked/built/dependencies.js"></script>
+<script src="js/pm.js"></script>
 ...  
 <!--main.js-->
 <script type="text/javascript" src="js/main.js"></script>
 ...
 ```
-**Note:** The `all.js` is relatively big and is just for development purpose. Do *NOT* forget to build your application during deployment.
+**Note:** You can use `pm.js` instead of `pm.min.js` to have better debugging info. Do *NOT* forget to build your application during deployment.
 
 Minimum `main.js` script looks like this:
 ```
@@ -847,10 +848,10 @@ There is a theme preview page at `[your theme folder]/index.html`. Change it to 
 
 Include other js libs
 ---------------------
-The default `all.js` contains carefully (minimum) selected libs for your project, if you would like to introduce more, use [bower](http://bower.io/) and the `bower.json` file included.
+The default `dependences.js` contains carefully (minimum) selected libs for your project, if you would like to introduce more, use [bower](http://bower.io/) and the `bower.json` file included.
 Go into `/implementation/js/libs/tracked` and run `bower install` to grab all the monitored 3rd-party libraries.
 
-Include your libs after `all.js` in `/implementation/index.html`.
+Include your libs after `dependences.js` in `/implementation/index.html`.
 
 **Tip:** 
 Alternatively, you can always use a *CDN* (Content Delivery Network) to load the Javascript libraries into your index.html (e.g [jsDelivr](http://www.jsdelivr.com/)) However, this will affect the build process since these libraries will not be combined if they are not from local.
@@ -870,7 +871,7 @@ Type in command-line `/tools/build/node build.js dist` to build. (You might need
 
 Upgrade/Update
 --------------
-Download and replace `/implementation/js/all.js` to update the infrastructure;
+Download and replace `/implementation/js/pm.js` to update the infrastructure;
 Use `bower update` to update other monitored libs you need under `/implementation/js/libs/tracked/` if you have included other 3rd-party libraries;
 
 
