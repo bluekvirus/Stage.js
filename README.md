@@ -33,22 +33,25 @@ Deploy-able
 The `/implementation` folder is also servable as a product intro & download page of **PM.js** releases.
 
 
-The Framework
-=============
-
 Core Concepts & Workflow
 ----------------------
 See 'implementation/HOWTO.md'
 
 
 Tooling
-=======
-
+-------
 Prepare icon css sprites or svg paths
--------------------------------------
 See `/implementation/themes/README.md`
 
 
+License
+-------
+Copyright 2013 - 2014 Tim (Zhiyuan) Liu. 
+Licensed under the [MIT](http://opensource.org/licenses/MIT) License.
+
+
+Notes
+=====
 Continuous Integration
 ----------------------
 ###gitlab_ci fix: trouble shooting
@@ -69,15 +72,6 @@ and then accept to add host to known hosts.
 `cmd1 && cmd2 && cmd3 && ... && cmd4 &`
 
 Do **NOT** hang the build script, use `&` if needs be or avoid at all times.
-
-License
-=======
-Copyright 2013 - 2014 Tim (Zhiyuan) Liu. 
-Licensed under the [MIT](http://opensource.org/licenses/MIT) License.
-
-
-Notes
-=====
 
 *Class.extend*
 ----------------------

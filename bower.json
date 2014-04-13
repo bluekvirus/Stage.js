@@ -1,0 +1,39 @@
+{
+  "name": "pm.js",
+  "version": "1.0.0-rc2",
+  "homepage": "https://github.com/bluekvirus/Client_",
+  "authors": [
+    "Tim Liu <bluekvirus@gmail.com>"
+  ],
+  "description": "An intuitive front-end framework for building modern web applications (based on Marionette.js)",
+  "main": "dist/pm.js",
+  "keywords": [
+    "backbone",
+    "marionette",
+    "pro",
+    "front",
+    "end",
+    "application",
+    "framework",
+    "client",
+    "context",
+    "page",
+    "regional",
+    "area",
+    "tool",
+    "build",
+    "modern",
+    "theme",
+    "less",
+    "css",
+    "sprites"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

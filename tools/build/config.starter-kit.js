@@ -35,6 +35,13 @@ module.exports = {
 			js: {
 				libs: {
 					tracked: {
+						'bower_components': {
+							bootstrap: {
+								fonts: 'js/libs/tracked/bower_components/bootstrap/fonts',
+								less: 'js/libs/tracked/bower_components/bootstrap/less',
+								LICENSE: 'js/libs/tracked/bower_components/bootstrap/LICENSE'
+							}
+						},
 						'bower.json': 'js/libs/tracked/bower.json',
 						built: {
 							'dependencies.js': 'js/libs/tracked/built/dependencies.js',
