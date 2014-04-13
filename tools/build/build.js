@@ -41,6 +41,7 @@ program.command('*').description('build your web front-end project using customi
 	var result = processor.combine({
 		root: config.src.root,
 		html: config.src.index,
+		js: config.js,
 		excludeAttr: program.config
 	});
 

@@ -9,6 +9,8 @@
  * {} - create folder
  * 'string' - copy file or folder
  * 'all.js', 'all.min.js' and 'index.html' are predefined file placeholder, use 'true'/'false' to choose whether to gzip them.
+ *
+ * Note: you can change all.js into your-name.js by using the js:{ name : 'you-name' } config block, this will also change the .min.js version.
  * 
  * @author Tim.Liu
  * @created 2013.09.25
@@ -20,11 +22,17 @@ module.exports = {
 		root: '../../implementation', //path relative to this config.js
 		index: 'index.html' //path relative to root
 	},
+	js: {
+		name: 'pm'
+	},
 	structure : { //path are relative to the distFolder and src.root above
-			
-		'all.min.js': true,
-		'all.js': false, //'all is hardcoded name, see shared/process-html.js'
-		
-		'CHANGLOG.md': '../CHANGLOG.md'
+
+		'dependencies.js': 'js/libs/tracked/built/dependencies.js',
+		'selected.json': 'js/libs/tracked/built/selected.json',	
+		'pm.js': false,
+		'pm.min.js': false,
+
+		'CHANGLOG.md': '../CHANGLOG.md',
+		'LICENSE': '../LICENSE'
 	}
 };

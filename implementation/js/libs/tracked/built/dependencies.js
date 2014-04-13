@@ -1,6 +1,4 @@
-/**
- * Empty Placeholder JS File - DO NOT Modify!
- */
+;
 /*!
  * Modernizr v2.7.1
  * www.modernizr.com

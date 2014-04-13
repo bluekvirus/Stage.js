@@ -2,6 +2,8 @@ The Factory Project
 ===================
 This project produces **PM.js** - an infrastructure for building modern web application client with many contexts (e.g a data-heavy administration app).
 
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/bluekvirus/client_/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
 
 What's next?
 ------------
@@ -68,6 +70,10 @@ and then accept to add host to known hosts.
 
 Do **NOT** hang the build script, use `&` if needs be or avoid at all times.
 
+License
+=======
+Copyright 2013 - 2014 Tim (Zhiyuan) Liu. 
+Licensed under the [MIT](http://opensource.org/licenses/MIT) License.
 
 
 Notes

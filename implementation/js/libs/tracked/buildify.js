@@ -3,7 +3,7 @@
  * It performs one of the following types of build:
  * 
  * 1. per lib customized build, since some of the libs comes in scattered src
- * 2. combined libs (with bower libs map prep: load-lib-map)
+ * 2. combined libs as dependencies.js (with bower libs map prep: load-lib-map)
  * 
  */
 
@@ -124,7 +124,7 @@ buildify.task({
 //----------------Workers--------------------
 var libMap = {};
 function combine(list, name){
-	var target = buildify().load('EMPTY.js');
+	var target = buildify().setContent(';');
 	var versions = {
 		created: new Date().toGMTString(),
 		list: []
@@ -244,7 +244,7 @@ buildify.task({
 			'nprogress' //or spin.js
 			
 		];
-		combine(list, 'libs');
+		combine(list, 'dependencies');
 	}
 });
 

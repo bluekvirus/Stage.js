@@ -38,6 +38,7 @@ module.exports = {
 					'main.css':'themes/default/css/main.css'
 				},
 				fonts: 'themes/default/fonts',
+				'index.html': 'themes/default/index.html'
 			}
 		},
 		static: {

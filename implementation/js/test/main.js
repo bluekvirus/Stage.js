@@ -406,12 +406,12 @@
         actions: {
             download: function($btn, e){
                 e.preventDefault();
-                var base = '/static/resource/default/download/';
+                var base = 'static/resource/default/download/';
                 Application.Util.download(base + $btn.attr('target'));  
             },
             themePreview: function($btn, e){
                 e.preventDefault();
-                location.href = '/themes/' + Application.currentTheme;
+                location.href = ['themes', Application.currentTheme, 'index.html'].join('/') ;
             }
         },
         template: [

@@ -19,6 +19,7 @@
 var buildify = require('buildify'),
 _ = require('underscore'),
 path = require('path'),
+fs = require('fs'),
 rimraf = require('rimraf'), //rm -rf;
 mkdirp = require('mkdirp'),
 ncp = require('ncp').ncp,
@@ -96,7 +97,11 @@ module.exports = {
 			else {
 				console.log('Output Dir Cleared:'.green, baseDir);
 				console.log('Creating Folders & Files...'.yellow);
-				iterator(done);
+				//create baseDir again
+				fs.mkdir(baseDir, function(err){
+					if(err) console.log('ERROR:'.red, err);
+					else iterator(done);
+				})
 			}
 		});
 		

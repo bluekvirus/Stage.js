@@ -4,7 +4,7 @@
  * options: {
  * 	root: * -- web root path of the html page
  * 	html: [index.html] -- the target html page relative to the above root path
- * 	excludeAttr: [dist] -- use '[excludeAttr] = false' attr to exclude a js out of all.js
+ * 	excludeAttr: [dist] -- use '[excludeAttr] = false' attr to exclude a js out of the final all.js
  * 
  * }
  *
@@ -26,8 +26,12 @@ module.exports = {
 		if(!options || !options.root) throw new Error('Processing HTML::Can NOT find web root!!');
 		options = _.extend({
 			html: 'index.html',
-			excludeAttr: 'dist'
+			excludeAttr: 'dist',
 		}, options);
+		options.js = _.extend({
+			name: 'all',
+			after: '#main'
+		}, options.js);
 
 		var htmlPath = path.join(options.root, options.html);
 		console.log('Processing HTML...'.yellow + path.resolve(htmlPath));
@@ -55,21 +59,24 @@ module.exports = {
 							return content + ';' + $script.html() + ';';
 						});
 					}
+					$script.remove();
 				}else {
 					console.log('[excluded] '.yellow + srcPath);
+					if(!$script.attr('persist')) $script.remove();
 				}
-				$script.remove();
+				
 			});
 
-			$('#main').after('\n\t\t<script src="js/all.min.js"></script>\n'); //Warning::Hard Coded Core Lib Path!
+			$(options.js.after).after('\n\t\t<script src="js/' + options.js.name + '.min.js"></script>\n'); //Warning::Hard Coded Core Lib Path!
 			content = $.html();
 
 			console.log('Minifying...'.yellow);
 			result = {
-				'all.js': coreJS.getContent(),
-				'all.min.js': coreJS.uglify().getContent() + ';',
 				'index.html': content.replace(/\n\s+\n/gm, '\n')
 			};
+			result[options.js.name + '.js'] = coreJS.getContent();
+			result[options.js.name + '.min.js'] = coreJS.uglify().getContent() + ';';
+
 		});		
 
 		return result	
