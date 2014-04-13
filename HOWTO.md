@@ -1,4 +1,4 @@
-Pro.js <sub class="text-muted" style="font-size:36%">based on Marionette.js</sub>
+PM.js <sub class="text-muted" style="font-size:36%">based on Marionette.js</sub>
 ======
 *An infrastructure for building modern web application with many contexts.*
 [@Tim (Zhiyuan) Liu](mailto:bluekvirus@gmail.com)
@@ -45,7 +45,7 @@ We choose what we choose when designing this framework simply because we want to
 
 In order to accomplish more with lesser code using Backbone, we picked Backbone.Marionette as our pattern library. It offers cleanup/boilerplate routines and very neat concepts for building large Javascript front-end projects. The resulting framework accomplishes all the big frameworks have promised but with **a thiner and flattener structure**. We believe scripting languages are always going to be the perfect thin glue layer between mechanisms and policies. The Javascript language were picked to glue HTML/CSS and UX but nothing more, it should not be overdosed and attempt to mimic Java. In other words, **only the burger is important**:
 
-<img src="/static/resource/default/diagram/Diagram-6.png" alt="HTML is the burger" class="center-block"></img>
+<img src="static/resource/default/diagram/Diagram-6.png" alt="HTML is the burger" class="center-block"></img>
 
 
 Mental preparation
@@ -59,14 +59,14 @@ If you can not agree with the author after reading the following sections in thi
 ###Define the problem
 Before start, you need to understand what is a *GUI application*, here is a brief diagram (casted upon the web realm):
 
-<img src="/static/resource/default/diagram/Diagram-1.png" alt="Web App Diagram" class="center-block"></img>
+<img src="static/resource/default/diagram/Diagram-1.png" alt="Web App Diagram" class="center-block"></img>
 
 The client and server sides are different in purpose fundamentally. Thus, they should be designed and implemented differently. **Do NOT mix them**. Shutting this door will preserve a significant amount of coding/maintenance energy for the application developer(s). The best software development practice encourages separation and delaying of implementation of related components so that each part can vary independently later. And to the author, abstraction should happen after categorization (or say, classification). This is why we are advising the developers *NOT* to make an overly encapsulated framework with tools that try to bridge the gaps. Trying to control everything using central planning is a human flaw, there is no silver-bullet for trying to solve web application building in 1 piece. It will always 3 parties in the software application world.
 
 As an engineer, the job is to find insights and solve problems between the 3 parties efficiently (profitably if you must insist...) so that the software/application serving the above system comes out correctly. This is hard. Specifically, You need to resolve 2 kinds of problem different in nature: *Interaction* and *Data Flow* in order to produce an application.
 A successful one requires both parts to employ careful design and feasible technique. We illustrate the *Interaction* problem's technical side here, since the framework is more about supporting a good design with cleaner implementation:
 
-<img src="/static/resource/default/diagram/Diagram-2.png" alt="UI/UX Problems" class="center-block"></img>
+<img src="static/resource/default/diagram/Diagram-2.png" alt="UI/UX Problems" class="center-block"></img>
 
 As you can see from the above diagram, there are 3 problems here to address when implementing a UI/UX side for an application:
 1. Data <i class="fa fa-arrows-h"></i> Model/Collection [snapshot]
@@ -80,7 +80,7 @@ So, how do we form our solution?
 ###Solution architecture
 As a full stack solution to the UI/UX side, we address those 3 problems with an intuitive architecture:
 
-<img src="/static/resource/default/diagram/Diagram-3.png" alt="Pro.js Architecture" class="center-block"></img>
+<img src="static/resource/default/diagram/Diagram-3.png" alt="Pro.js Architecture" class="center-block"></img>
 
 ####What's Navigation?
 
@@ -104,7 +104,7 @@ Modern web application generates views according to user data dynamically. This 
 ####Reuse view definitions?
 As *Design Patterns* dictates, we need to code in a way to:
 
-<img src="/static/resource/default/diagram/Diagram-4.png" alt="Design Pattern Goals" class="center-block"></img>
+<img src="static/resource/default/diagram/Diagram-4.png" alt="Design Pattern Goals" class="center-block"></img>
 
 For *Regional*s (or any *Marionette.xView*) that you need to use again and again but with different configuration (e.g a Datagrid). Register it as a *Widget* or, in case of a basic input, an *Editor*. These reusable view definitions are call *Reusable*s in the framework. Think in terms of the **List and Container** technique as much as possible when creating them.
 
@@ -281,7 +281,7 @@ Note that you should name your *Regional* as if it is a *Class*. **The name is i
 
 By default, any *Regional* you define will be a *Marionette.Layout*, you can change this through the `type` option.
 
-By default, `Application.regional(['you regional view name',] {...})` returns the **definition** of the view, if you want to use the returned view **anonymously**, remove the `name` argument. You will get a **instance** of the view definition to `show()` on a region right away. 
+By default, `Application.regional(['you regional view name',] {...})` returns the **definition** of the view, if you want to use the returned view **anonymously**, remove the `name` argument. You will get an **instance** of the view definition to `show()` on a region right away. 
 
 Sometimes your *Regional* is comprised of other sub-regional views and that's fine, you can nest *Regional*s with the `region=""` and `view=""` attributes in the template (**only if it is of `type: Layout`**). There will also be time when you just need plain *Marionette.xView* definitions to be used as item views within *Regional*s. You can do it like this:
 ```
@@ -290,7 +290,7 @@ Application.view({
     ..., //rest of normal Marionette.xView options
 }); 
 ```
-The above call returns a **definition** of the view. If you want a **instance** to be returned, do it like this:
+The above call returns a **definition** of the view. If you want an **instance** to be returned, do it like this:
 ```
 Application.view({...}, true);
 ```
@@ -471,7 +471,7 @@ The editors will be appended inside the calling view instance one by one by defa
 A little bit more about the basic options: 
 * appendTo - in case you don't have `editor="[fieldname]"` in your template and want to change where to put the editor other than the default position.
 * parentCt - in case you want to delegate editor events to a parent container object (e.g a form object).
-* type - text, password, url, email, checkbox(s), radios, file, hidden, ro (for read-only), textarea, select
+* type - text, password, url, email, checkbox(es), radios, file, hidden, ro (for read-only), textarea, select
 * label
 * help
 * tooltip
@@ -525,14 +525,13 @@ template: [
 ```
 You will also get the following APIs attached to the **view** instance object once you have configured the `editors:{}` block:
 ```
-this.getVal(name);
+this.getEditor(name);
 this.getValues();
-this.setVal(name, val, loud); //set loud to true if you want to fire change event on the editor.
 this.setValues(vals, loud);
 this.validate(true|false); //true for showing the validation errors.
 this.status(status, messages); //for highlighting status per editor. no arguments means to clear.
 ```
-There are also events emitted that you can use when dealing with these inputs (basic editors):
+There are also events emitted that you can use when dealing with each of these editors:
 ```
 editor:change
 editor:keyup
@@ -540,6 +539,18 @@ editor:focusin // - focus
 editor:focusout // - blur
 ```
 If you use `options.parentCt` to pass in another view instance, the events will be fired on that view instance **in addition to** firing on the editor itself. It is useful when you want every event to be fired on a parent container or, say, a form view.
+
+Each editor instance will have the following methods:
+```
+editor.getVal();
+editor.setVal(val, loud);
+editor.disable([flag]); //false to enable, default to disable, true to disable + hide.
+editor.isEnabled();
+editor.validate(showError); //if you have options.validator configured
+editor.status(status, message); //info, error, warning, success status, empty to reset status.
+```
+
+**Note:** The *select, radios and checkboxes* editors can be initialized without `options.data` configuration, these editors will get an additional `setChoices()` API that you can use to set the available choices later.
 
 #####Graphs
 We support graphs through SVG. A basic SVG library is integrated with the framework (Raphaël.js). You can use it in any *Marionette.xView* through:
@@ -685,7 +696,7 @@ Application.editor('MyEditorName', {
 ####List'n'Container technique
 This is the golden technique to use when planning your reusable views or, say, any view on screen. Any widget on screen can be decoupled into lists and containers, like this:
 
-<img src="/static/resource/default/diagram/Diagram-5.png" alt="List'n'Containers" class="center-block"></img>
+<img src="static/resource/default/diagram/Diagram-5.png" alt="List'n'Containers" class="center-block"></img>
 
 * Starts by choosing a proper container with desired layout, nest containers if needs be.
 * Put lists into the container.
@@ -869,12 +880,28 @@ Appendix
 We have been developing in ExtJS4 for 2+ years, starting form the last version of 4.0.x which is the promising 4.0.7. As our knowledge base expands, we felt that it is time to form our own blueprint of a modern data heavy web application to shorten the development cycles. Here are some of the main reasons:
 
 1. Although it is relatively fast to develop prototypes using an all-in-one framework like ExtJS, it is hard to maintain the code while keeping up with the changes required by the users and those that come from Sencha. The widgets are bound too tightly with the framework.
-2. Loading, DOM interfacing, Widget and Application containers are all provided with a biased opinion, which always lead to fightings with the framework here and there or messing around with the life-cycles defined when trying to implement application specific user requirements. 
+2. Loading, DOM interfacing, Widget and Application containers are all provided with a biased opinion, which always leads to fighting with the framework here and there or messing around with the life-cycles defined when trying to implement application specific user requirements. 
 3. Performance issues. There are often a massive amount of unnecessary DOM elements lurking in the client browser. We have very limited control over the life-cycles nor the HTML template structure of the components. Making widgets as Classes and loading like Java is really a bad idea for Javascript.
 4. Theming difficulties. It is hard to theme an ExtJS application correctly given the extensively nested component structure and the lack of SASS/Compass adaptation among developers.
 5. Payed solution. The commercial version of ExtJS and the tools (IDE) are expensive. This also makes the community size smaller than its full/free open source counterparts, making it difficult to find solutions from resources other than the documentation.
 
-We choose to move away from this heavy framework to avoid its complexity (tightly bound all-in-one solution) and to have more control over the component lifecycles, interactions and application container separately. An equally powerful yet still lightweight solution combining the best practices in the field is thus made. 
+If the above listing can not convince you, try to compare the ExtJS solutions to the web application building process with ours: (Strict MVC vs View centric)
+
+0. Classes vs 4 types of general view;
+1. Containers vs General in-template regions;
+2. Layouts vs Dynamic grid system;
+3. Thick data layer vs A single remote() API;
+4. Single Viewport vs Switchable Contexts;
+5. Controllers vs Generic events and view actions;
+6. XTemplate vs Handlebars;
+
+The one thing that ExtJS could not get right and still is getting wrong is that it tries to use Javascript like JAVA and dominating HTML/CSS manipulation. It casts the developers out to a changed problem domain where basic problems are taken cared of in a complicated/overkilled way so that the programs can be written like *piles of configure files*. 
+
+The *Class* system confuses developers coding in Javascript's function scope, the heavy *Layout* system kills what HTML/CSS is designed for and good at, the thick *Data* layer tries to isolate data snapshot from their in-separable views and the *Controllers* pulls developers out into another place to define routines just to have the listeners wired back again into the views. All of these ignores the fact that the core of a web application is at HTML(client-side) and the data(server side), not the glue and state snapshots. (Well, maybe in 5.0 they can fix it, we have high hope on this...)
+
+Whatever you do, *Do NOT* stack up abstraction layers over layers so further programs can be written like configuration files. It will be slow to run, even harder to change and incur a very steep learning curve for new comers...
+
+We choose to move away from this heavy framework to avoid its complexity and downside and to have more control over the component life-cycles, interactions and application container separately. An equally powerful yet still lightweight solution combining the best practices in the field is thus made. 
 
 ###B. Rules of Thumb
 ####General
@@ -882,16 +909,16 @@ We choose to move away from this heavy framework to avoid its complexity (tightl
 * Categorization before abstraction.
 * Separate, Reuse and Pipeline.
 * Cleaner method signature. Options as a single object parameter.
-* Events for collaborations instead of APIs. Promises for asynchronise operations instead of callbacks.
+* Events for collaborations instead of APIs. Promises for asynchronous operations instead of callbacks.
 
 Start with user requirements/stories and focus on serving the customers' need. Use the 80/20 rule to pick out important features/functionalities and implement them first. Gradually refine code and documentation later. Remember to write down **why** before **how** in the code comments. !FOCUS!
 
 ####GUI
 * Concision - exact but nothing more
-* Expressive-ness - allow useful possibilities be deducted
+* Expressiveness - allow useful possibilities be deducted
 * Ease - low mnemonic load on commands, control sequence
 * Transparency - low mnemonic load in user's mind for keeping track of states/layers of task at hand
-* Scriptability - batch-able, automate-able
+* Script-ability - batch-able, automate-able
 
 
 ###C. Change log
@@ -920,4 +947,4 @@ see CHANGELOG.md
 * [WrapBootstrap](https://wrapbootstrap.com/) - Advanced Bootstrap themes
 * [H5BP.showcase](http://h5bp.net/) - Site examples
 * [Subtlepatterns](http://subtlepatterns.com/) - web texture
-* [Google Fonts](http://www.google.com/fonts/)/[Font Squirrel](http://www.fontsquirrel.com/) - web fonts
+* [Google Fonts](http://www.google.com/fonts/)/[Font Squirrell](http://www.fontsquirrel.com/) - web fonts

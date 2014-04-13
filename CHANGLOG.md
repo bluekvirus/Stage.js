@@ -9,6 +9,8 @@ Change Log
 5. added 'parentContext' and 'parentCt' for view objects shown through regions
 6. auto-detect config for actions, svg/canvas paper, editors and enable them
 7. deprecated the app.create() API in favor of detailed APIs
+8. added disable(), isEnabled() and setChoices() APIs to editors
+9. added getEditor() and removed get/setVal() APIs in views
 
 
 1.0.0-rc1 (2014-03-12)
