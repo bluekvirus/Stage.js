@@ -14,12 +14,18 @@ ncp = require('ncp').ncp,
 colors = require('colors'),
 _ = require('underscore'),
 json = require('json3');
+_.str = require('underscore.string');
 
 ncp.limit = 16;
 
+/*!!!!!Change this if .bowerrc changes!!!!!*/
+var distFolder = '../../implementation/js/lib',
+libBase = '../../implementation/bower_components';
+
+
 buildify.task({
 	name: 'fix-libs',
-	depends: ['uri-js', /*'noty', */'spin-js', 'jquery-file-upload', 'jquery-ui', 'min'],
+	depends: ['uri-js', 'jquery-file-upload', 'jquery-ui', 'min'],
 	task: function(){}
 });
 
@@ -33,7 +39,7 @@ buildify.task({
 	name: 'uri-js',
 	task: function(){
 		buildify()
-			.setDir('bower_components/uri.js/src')
+			.setDir(libBase + '/uri.js/src')
 			.concat(['URI.js', 'IPv6.js', 'SecondLevelDomains.js', 'punycode.js', 'URITemplate.js', 'jquery.URI.js', 'URI.fragmentURI.js'])
 			.save('../dist/uri.js');
 			// .uglify()
@@ -42,43 +48,10 @@ buildify.task({
 });
 
 buildify.task({
-	name: 'noty',
-	task: function(){
-		var notyBase = 'bower_components/noty/';
-		var list = fs.readdirSync(notyBase + 'js/noty/layouts');
-		buildify()
-			.setDir(notyBase + 'js/noty')
-			.load('jquery.noty.js')
-			.setDir(notyBase + 'js/noty/layouts')
-			.concat(list)
-			.setDir(notyBase)
-			.save('dist/jquery.noty-with-layouts.js');
-			// .uglify()
-			// .save('dist/jquery.noty-with-layouts.min.js');
-
-		ncp(notyBase + 'js/noty/themes', notyBase + 'dist/themes', function(err){
-			if(err) console.log(err);
-		})
-	}
-});
-
-buildify.task({
-	name: 'spin-js',
-	task: function(){
-		buildify()
-			.setDir('bower_components/spin.js')
-			.concat(['spin.js', 'jquery.spin.js'])
-			.save('dist/spin-with-jqplugin.js');
-			// .uglify()
-			// .save('dist/spin-with-jqplugin.min.js');
-	}
-});
-
-buildify.task({
 	name: 'jquery-file-upload',
 	task: function(){
 		buildify()
-			.setDir('bower_components/jquery-file-upload/js')
+			.setDir(libBase + '/jquery-file-upload/js')
 			.concat(['jquery.iframe-transport.js', 'jquery.fileupload.js'])
 			.save('../dist/jquery-file-upload-with-iframe.js');
 			// .uglify()
@@ -90,10 +63,10 @@ buildify.task({
 	name: 'jquery-ui',
 	task: function(){
 		buildify()
-			.setDir('bower_components/jquery-ui/ui')
+			.setDir(libBase + '/jquery-ui/ui')
 			.concat(['jquery.ui.core.js', 'jquery.ui.widget.js', 'jquery.ui.mouse.js', 'jquery.ui.position.js', 'jquery.ui.draggable.js', 'jquery.ui.droppable.js', 'jquery.ui.resizable.js', 'jquery.ui.selectable.js', 'jquery.ui.sortable.js', 'jquery.ui.effect.js', 'jquery.ui.effect-blind.js', 'jquery.ui.effect-bounce.js', 'jquery.ui.effect-clip.js', 'jquery.ui.effect-drop.js', 'jquery.ui.effect-explode.js', 'jquery.ui.effect-fade.js', 'jquery.ui.effect-fold.js', 'jquery.ui.effect-highlight.js', 'jquery.ui.effect-pulsate.js', 'jquery.ui.effect-scale.js', 'jquery.ui.effect-shake.js', 'jquery.ui.effect-slide.js', 'jquery.ui.effect-transfer.js'])
 			.save('../dist/jquery-no-widget-ui.js')
-			.setDir('bower_components/jquery-ui/themes/base')
+			.setDir(libBase + '/jquery-ui/themes/base')
 			.setContent('')
 			.concat(['jquery.ui.core.css', 'jquery.ui.resizable.css', 'jquery.ui.selectable.css'])
 			.save('../../dist/jquery-no-widget-ui.css');
@@ -109,7 +82,7 @@ buildify.task({
 		};
 
 		_.each(config, function(js, pack){
-			buildify().setDir(['bower_components', pack].join('/')).load(js).uglify().save([path.basename(js, '.js'), 'min', 'js'].join('.'));
+			buildify().setDir([libBase, pack].join('/')).load(js).uglify().save([path.basename(js, '.js'), 'min', 'js'].join('.'));
 		})
 	}
 });
@@ -133,16 +106,16 @@ function combine(list, name){
 		if(libMap[lib]) {
 			var bowerInfo, packageInfo;
 			try {
-				bowerInfo = require('./bower_components/' + lib + '/.bower.json');
+				bowerInfo = require('./' + libBase + '/' + lib + '/.bower.json');
 			}catch (e){
 				try {
-					bowerInfo = require('./bower_components/' + lib + '/bower.json');
+					bowerInfo = require('./' + libBase + '/' + lib + '/bower.json');
 				}catch(e) {
 					bowerInfo = {version: 'N/A'};
 				}
 			}
 			try {
-				packageInfo = require('./bower_components/' + lib + '/package.json');
+				packageInfo = require('./' + libBase + '/' + lib + '/package.json');
 			}catch (e){
 				packageInfo = {};
 			}
@@ -158,10 +131,12 @@ function combine(list, name){
 		target.concat(libMap[lib]);
 	});
 	console.log('libs (selected/available):', (_.size(list) + '/' + String(_.size(libMap))).green, '[', ((_.size(list)/_.size(libMap)*100).toFixed(2) + '%').yellow, ']');
-	//+ version dump to selected.json
-	var distFolder = 'built'; 
+	//dump selected lib name, version to selected.json
 	buildify().setContent(json.stringify(versions)).setDir(distFolder).save('selected.json');
-	target.setDir(distFolder).save(name + '.js')/*.uglify().save(name + '.min.js')*/;
+	//dump un-selected libs into a bower.more.json
+	var unselected = require('./bower.json').dependencies;
+	buildify().setContent(json.stringify(_.extend(require('./bower.more.json'), { dependencies: unselected }))).setDir(distFolder).save('bower.more.json');
+	target.setDir(distFolder).save(name + '.js').uglify().save(name + '.min.js');
 	
 };
 //-------------------------------------------
@@ -190,7 +165,7 @@ buildify.task({
 			//now libMap[lib] may or may not be a single string path			
 			if(fix[lib])
 				//reset to lib's root folder
-				libMap[lib] = 'bower_components/' + lib + '/' + fix[lib];
+				libMap[lib] = [libBase, lib, fix[lib]].join('/');
 			else
 				//use map path
 				libMap[lib] = _.isArray(map[lib])? libMap[lib] : map[lib];
@@ -202,6 +177,8 @@ buildify.task({
 			//final fix on the lib js path
 			if(!check(libMap[lib])) libMap[lib] += '/' + lib;
 			if(!check(libMap[lib])) libMap[lib] += '.js';
+			if(!_.str.startsWith(libMap[lib], libBase))
+				libMap[lib] = libMap[lib].replace('bower_components', libBase);
 
 		});
 
@@ -224,7 +201,6 @@ buildify.task({
 			'detectizr',
 			'yepnope',
 			'jquery', //version 2+
-			'jquery.transit',
 			'jquery.cookie',
 			'jquery-ui',
 			'jquery-file-upload',
@@ -239,7 +215,6 @@ buildify.task({
 			'uri.js',
 			'momentjs',
 			'marked',
-			'highlight.js',
 			'raphael',			
 			'nprogress' //or spin.js
 			

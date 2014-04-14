@@ -8,16 +8,17 @@
 
 //Required
 //========
-@import (inline) "../css/include/highlight/monokai_sublime.css";
-@import (inline) "../css/include/nprogress.css";
-@import (inline) "../css/include/jquery-no-widget-ui.css";
-@import (inline) "../css/include/font-awesome.css";
+@import (inline) "../../../bower_components/nprogress/nprogress.css";
+@import (inline) "../../../bower_components/jquery-ui/themes/base/jquery.ui.core.css";
+@import (inline) "../../../bower_components/jquery-ui/themes/base/jquery.ui.resizable.css";
+@import (inline) "../../../bower_components/jquery-ui/themes/base/jquery.ui.selectable.css";
 
-@import "../../../js/libs/tracked/bower_components/bootstrap/less/bootstrap.less";
-@import "include/font.less"; // <- add new font css into this one
+@import "../../../bower_components/fontawesome/less/font-awesome.less";
+@import "../../../bower_components/bootstrap/less/bootstrap.less";
 
 //Remove/Change
 //=============
+@import "include/font.less"; // <- add new font css into this one
 //- swap these two or values in them if starting a new theme
 @import "include/cosmo/variables.less";
 //optionally you can include a custom made mixins.less

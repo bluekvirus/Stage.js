@@ -107,29 +107,10 @@
                 ],
                 onShow: function(){
                     var that = this;
-                    Application.remote('js/libs/built/selected.json').done(function(data){
+                    Application.remote('js/lib/selected.json').done(function(data){
                         _.extend(data, {
                             created: moment(data.created).fromNow()
                         });
-                        //push additional lib info
-                        var additionals = [
-                            {
-                                name: 'highlight.js',
-                                version: '8.0',
-                                url: 'http://highlightjs.org/'
-                            },
-                            {
-                                name: 'font-awesome',
-                                version: '4.0.3',
-                                url: 'http://fontawesome.io/'
-                            }
-                        ]
-                        _.each(additionals, function(add){
-                            var target = _.findWhere(data.list, {name: add.name});
-                            if(!target) data.list.push(add);
-                            else _.extend(target, add);
-                        });
-                        //------------------------
                         that.trigger('view:render-data', data);
                         that.$el.css({
                             padding: '0 6px'
@@ -423,7 +404,7 @@
                     '<span class="icon-bar"></span>',
                     '<span class="icon-bar"></span>',
                   '</button>',
-                  '<a href="#navigate/Home" class="navbar-brand">PM.js</a>',//2
+                  '<a href="#navigate/Home" class="navbar-brand">Stage.js</a>',//2
                 '</div>',
 
                 '<div class="navbar-collapse collapse navbar-responsive-collapse">',//B
@@ -457,8 +438,8 @@
                         '<a data-toggle="dropdown" class="dropdown-toggle" href="#"><i class="fa fa-download"></i> Download <b class="caret"></b></a>',
                         '<ul class="dropdown-menu">',
                             '<li class="dropdown-header" >Client</li>',
-                            '<li><a href="#" action="download" target="projs.1.0.0-rc2.starter-kit.tar.gz"><i class="fa fa-arrow-circle-o-down"></i> pm.js (starter-kit)</a></li>',
-                            '<li><a href="#" action="download" target="projs.1.0.0-rc2.framework-only.tar.gz"><i class="fa fa-arrow-circle-o-down"></i> pm.js (js only)</a></li>',
+                            '<li><a href="#" action="download" target="stagejs.1.0.0-rc2.starter-kit.tar.gz"><i class="fa fa-arrow-circle-o-down"></i> stage.js (starter-kit)</a></li>',
+                            '<li><a href="#" action="download" target="stagejs.1.0.0-rc2.framework-only.tar.gz"><i class="fa fa-arrow-circle-o-down"></i> stage.js (js only)</a></li>',
                             '<li class="divider"></li>',
                             '<li class="dropdown-header">Server</li>',
                             '<li><a href="#" action="download" target="ajax-box.0.10.1.tar.gz"><i class="fa fa-arrow-circle-o-down"></i> ajax-box</a></li>',

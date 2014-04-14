@@ -23,7 +23,7 @@ module.exports = {
 		index: 'index.html' //path relative to root
 	},
 	js: {
-		name: 'pm',
+		name: 'stage',
 		after: 'script[persist="true"]'
 	},
 	structure : { //path are relative to the distFolder and src.root above
@@ -33,31 +33,15 @@ module.exports = {
 		},
 		implementation: {
 			js: {
-				libs: {
-					tracked: {
-						'bower_components': {
-							bootstrap: {
-								fonts: 'js/libs/tracked/bower_components/bootstrap/fonts',
-								less: 'js/libs/tracked/bower_components/bootstrap/less',
-								LICENSE: 'js/libs/tracked/bower_components/bootstrap/LICENSE'
-							}
-						},
-						'bower.json': 'js/libs/tracked/bower.json',
-						built: {
-							'dependencies.js': 'js/libs/tracked/built/dependencies.js',
-							'selected.json': 'js/libs/tracked/built/selected.json'
-						}
-						
-					}
-				},				
-				'pm.min.js': false,
-				'pm.js': false,
+				lib: 'js/lib',			
+				'stage.min.js': false,
+				'stage.js': false,
 			},
 			themes: {
 				'default': 'themes/default'
 			},
-			'web+': 'static/web+',
-			'index.html': false
+			'index.html': false,
+			'bower.json': 'js/lib/bower.more.json'
 		},
 		tools: {
 			build: {

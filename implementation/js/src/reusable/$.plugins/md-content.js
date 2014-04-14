@@ -47,6 +47,7 @@
 	//support bootstrap theme + hilight.js theme.
 	function theme($el, options){
 		$el.find('h1 + p').addClass('text-info');
+		var hljs = window.hljs;
 		if(hljs){
 			hljs.configure(options && options.hljs);
 			$el.find('pre code').each(function(){

@@ -1,6 +1,6 @@
 The Factory Project
 ===================
-This project produces **PM.js** - an infrastructure for building modern web application client with many contexts (e.g a data-heavy administration app).
+This project produces **Stage.js** - an infrastructure for building modern web application client with many contexts (e.g a data-heavy administration app).
 
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/bluekvirus/client_/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 

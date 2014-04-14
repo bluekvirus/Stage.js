@@ -194,12 +194,14 @@ _.each(['Core', 'Util'], function(coreModule){
 		 * --------
 		 * Configure NProgress as global progress indicator.
 		 */
-		Application.onAjaxStart = function() {
-			NProgress.start();
-		};
-		Application.onAjaxStop = function() {
-			NProgress.done();
-		};
+		if(NProgress){
+			Application.onAjaxStart = function() {
+				NProgress.start();
+			};
+			Application.onAjaxStop = function() {
+				NProgress.done();
+			};	
+		}
 
 		/**
 		 *

@@ -1,6 +1,6 @@
-PM.js <sub class="text-muted" style="font-size:36%">based on Marionette.js</sub>
+Stage.js <sub class="text-muted" style="font-size:36%">based on Marionette.js</sub>
 ======
-*An infrastructure for building modern web application with many contexts.*
+*Building multi-context rich-client web applications in the modern way.*
 [@Tim (Zhiyuan) Liu](mailto:bluekvirus@gmail.com)
 
 
@@ -34,7 +34,7 @@ Handle Data:
 The goal is to maximize developer efficiency by introducing an intuitive workflow on top of a solid application structure. You will be focusing on user interaction building without distraction. Theming and deployment are also a breeze through our tools.
 
 ###Why not using...
-Why not using AngularJS/EmberJS/Meteor or YUI/ExtJS? Yes you can, but, if you can, **always favor libraries over frameworks**. Given that *Pro.js* is also a framework. The advise here should be extended to: 
+Why not using AngularJS/EmberJS/Meteor or YUI/ExtJS? Yes you can, but, if you can, **always favor libraries over frameworks**. Given that *Stage.js* is also a framework. The advise here should be extended to: 
 > If you can *NOT* agree with the workflow/abstraction, always favor libraries over frameworks.
 
 We choose what we choose when designing this framework simply because we want total control over our product. There are often 2 types of framework to choose from when developing a web application:
@@ -80,7 +80,7 @@ So, how do we form our solution?
 ###Solution architecture
 As a full stack solution to the UI/UX side, we address those 3 problems with an intuitive architecture:
 
-<img src="static/resource/default/diagram/Diagram-3.png" alt="Pro.js Architecture" class="center-block"></img>
+<img src="static/resource/default/diagram/Diagram-3.png" alt="Stage.js Architecture" class="center-block"></img>
 
 ####What's Navigation?
 
@@ -137,7 +137,7 @@ and this indicates:
 
 If you don't know what they are, go for a quick look at their websites. (links are provided under the *Included Libraries* area on the left sidebar)
 
-We also maintain a list of 3rd party libraries for the developers to choose from in addition to the base libraries (as utilities). The utility libs (e.g jquery-file-upload, store.js, uri.js, raphael.js, marked, moment.js, socket.io.js...) are carefully selected from the many open-source Javascript libs out there to help with specific but generally-will-appear problems that a developer will encounter during the web application development process. (see more in the *Include other js libs* chapter)
+We also maintain a list of 3rd party libraries for the developers to choose from in addition to the base libraries (as utilities). The utility libraries (e.g jquery-file-upload, store.js, uri.js, raphael.js, marked, moment.js, socket.io.js...) are carefully selected from the many open-source Javascript libraries out there to help with specific but generally-will-appear problems that a developer will encounter during the web application development process. (see more in the *Include other js libraries* chapter)
 
 **Remember:** The goal of this framework is to assist you to make better use of *Marionette* (thus *Backbone*) by adding a conventional workflow (with tools) and application container around it. It is designed to keep you focused on building dynamic views without worrying about putting/linking/organizing them into a manageable whole. You can make a complete web application project with ease now by focusing only on what to offer the user within each of the regions/areas. Go read about *Marionette*, it is very important that you understand the 4 types of views (*ItemView, Layout, CollectionView and CompositeView*) offered by this pattern library. [We are still experimenting with *Behavior* in *Marionette*, nothing in the framework is implemented with it yet]
 
@@ -162,14 +162,14 @@ You start developing by creating a `main.js` (you are free to choose whatever th
 and include it in `/implementation/index.html` below the `<!--main.js-->` comment line:
 
 ```
-<script src="js/libs/tracked/built/dependencies.js"></script>
-<script src="js/pm.js"></script>
+<script src="js/lib/dependencies.js"></script>
+<script src="js/stage.js"></script>
 ...  
 <!--main.js-->
 <script type="text/javascript" src="js/main.js"></script>
 ...
 ```
-**Note:** You can use `pm.js` instead of `pm.min.js` to have better debugging info. Do *NOT* forget to build your application during deployment.
+**Note:** You can use `stage.js` instead of `stage.min.js` to have better debugging info. Do *NOT* forget to build your application during deployment.
 
 Minimum `main.js` script looks like this:
 ```
@@ -195,7 +195,7 @@ You will start real development by adding *region*s to your application template
 
 
 ###Quick steps
-Here is the recommended **workflow**. You should follow the steps each time you want to start a new project with *Pro.js*. We assume that you have downloaded the *Pro.js* client package now and extracted to your project folder of choice.
+Here is the recommended **workflow**. You should follow the steps each time you want to start a new project with *Stage.js*. We assume that you have downloaded the *Stage.js* client package now and extracted to your project folder of choice.
 
 Remember, creating a web application is like drawing a picture. Start by laying things out and gradually refine the details. In our case, always start by defining application template.
 
@@ -573,7 +573,7 @@ Application.view({
 ```
 Don't worry about container/window resizing, it is automatically taken cared for you. The paper size will be set correctly to the container's and there is an additional meta event `view:paper-resized` triggered on the view so you can do something accordingly through `onPaperResized()`.
 
-If you require charts to be drawn, look through our monitored libraries under `js/libs/tracked/` there should be **d3.js** and **highcharts.js** for exactly that.
+If you require charts to be drawn, look through our monitored libraries under `js/lib/` there should be **d3.js** and **highcharts.js** for exactly that.
 
 **Note:** HTML5 *Canvas* libraries will be added in the future.
 
@@ -820,7 +820,7 @@ Open up the `/less/main.less` file and you will see the following:
 * font.less (optional) - extra web fonts
 * print.less (optional)
 
-You should be focusing on changing the theme.less and variables.less files. Note that the *Bootstrap* .less files are *NOT* included in the framework package. Your LESS compiler might pop errors as it can not find the required `bootstrap.less` file. Go to `/implementation/js/libs/tracked/` and run `bower update` (you should have bower installed through [npm](https://www.npmjs.org/) first). It will fetch you the required *Bootstrap* package.
+You should be focusing on changing the theme.less and variables.less files. Note that the *Bootstrap* .less files are *NOT* included in the framework package. Your LESS compiler might pop errors as it can not find the required `bootstrap.less` file. Go to `/implementation/js/lib/` and run `bower update` (you should have bower installed through [npm](https://www.npmjs.org/) first). It will fetch you the required *Bootstrap* package.
 
 ####LESS to CSS
 (What's [LESS](http://lesscss.org/)?)
@@ -846,12 +846,12 @@ See `/implementation/themes/README.md` for more details.
 There is a theme preview page at `[your theme folder]/index.html`. Change it to include more UI components and use it to demo your theme. `URL://[your host]/themes/[your theme]/`
 
 
-Include other js libs
+Include other js libraries
 ---------------------
-The default `dependences.js` contains carefully (minimum) selected libs for your project, if you would like to introduce more, use [bower](http://bower.io/) and the `bower.json` file included.
-Go into `/implementation/js/libs/tracked` and run `bower install` to grab all the monitored 3rd-party libraries.
+The default `dependences.js` contains carefully (minimum) selected libraries for your project, if you would like to introduce more, use [bower](http://bower.io/) and the `bower.json` file included.
+Go into `/implementation/js/lib/` and run `bower install` to grab all the monitored 3rd-party libraries.
 
-Include your libs after `dependences.js` in `/implementation/index.html`.
+Include your libraries after `dependences.js` in `/implementation/index.html`.
 
 **Tip:** 
 Alternatively, you can always use a *CDN* (Content Delivery Network) to load the Javascript libraries into your index.html (e.g [jsDelivr](http://www.jsdelivr.com/)) However, this will affect the build process since these libraries will not be combined if they are not from local.
@@ -860,7 +860,6 @@ Alternatively, you can always use a *CDN* (Content Delivery Network) to load the
 What should I put in `/static`?
 -----------------
 * `/resource` should contain static resources per locale. (per xx_XX folder, `/default` for locale independent)
-* `/web+` now contains template 404/500 pages and robot.txt if you need them, they should be put under your web root during deployment.
 
 
 Build for production use
@@ -871,8 +870,8 @@ Type in command-line `/tools/build/node build.js dist` to build. (You might need
 
 Upgrade/Update
 --------------
-Download and replace `/implementation/js/pm.js` to update the infrastructure;
-Use `bower update` to update other monitored libs you need under `/implementation/js/libs/tracked/` if you have included other 3rd-party libraries;
+Download and replace `/implementation/js/stage.js` to update the infrastructure;
+Use `bower update` to update other monitored libraries you need under `/implementation/js/lib/` if you have included other 3rd-party libraries;
 
 
 Appendix
