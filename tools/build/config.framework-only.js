@@ -32,6 +32,7 @@ module.exports = {
 		'pm.js': false,
 		'pm.min.js': false,
 
+		'bower.json': '../bower.json',
 		'CHANGLOG.md': '../CHANGLOG.md',
 		'LICENSE': '../LICENSE'
 	}

@@ -5,6 +5,6 @@ if [ -z $1 ]; then echo "You should at least follow the cmd with a version numbe
 output=$2
 if [ -z $output ]; then output="dist"; fi
 node build.js -C starter-kit -G ../../implementation/static/resource/default/download/projs.$1.starter-kit.tar.gz $output
-node build.js -C framework-only -G ../../implementation/static/resource/default/download/projs.$1.framework-only.tar.gz $output
+node build.js -C framework-only -G ../../implementation/static/resource/default/download/projs.$1.framework-only.tar.gz "release"
 node build.js $output
 exit 0

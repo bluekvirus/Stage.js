@@ -107,7 +107,7 @@
                 ],
                 onShow: function(){
                     var that = this;
-                    Application.remote('js/libs/tracked/built/selected.json').done(function(data){
+                    Application.remote('js/libs/built/selected.json').done(function(data){
                         _.extend(data, {
                             created: moment(data.created).fromNow()
                         });
