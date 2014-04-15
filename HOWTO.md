@@ -870,8 +870,10 @@ Type in command-line `/tools/build/node build.js dist` to build. (You might need
 
 Upgrade/Update
 --------------
-Download and replace `/implementation/js/stage.js` to update the infrastructure;
-Use `bower update` to update other monitored libraries you need under `/implementation/js/lib/` if you have included other 3rd-party libraries;
+Download and replace `stage.js` to update the infrastructure through `bower`:
+```
+bower update stage
+```
 
 
 Appendix
@@ -948,3 +950,8 @@ see CHANGELOG.md
 * [H5BP.showcase](http://h5bp.net/) - Site examples
 * [Subtlepatterns](http://subtlepatterns.com/) - web texture
 * [Google Fonts](http://www.google.com/fonts/)/[Font Squirrell](http://www.fontsquirrel.com/) - web fonts
+
+####Platform Options
+1. HTML5, JS, CSS3 - Ubuntu OS, Firefox OS or Titanium/Cordova(PhoneGap)
+2. C++ with Boost & Qt(+QML) - Ubuntu OS and General (Win, MacOS/iOS, Linux/Android)
+3. Object-C & Java - iOS and Android
