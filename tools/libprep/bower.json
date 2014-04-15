@@ -6,7 +6,7 @@
     "Tim Liu <bluekvirus@gmail.com>"
   ],
   "description": "Building multi-context rich-client web applications in the modern way.",
-  "main": "release/stage.js",
+  "main": "stage.js",
   "keywords": [
     "backbone",
     "marionette",
@@ -54,11 +54,13 @@
     "nprogress": "^0.1.3",
     "jquery-ui": "~1.x.x"    
   },
-  "dependencies": {
+  "themeDependencies": {
     "bootstrap": "~3.x.x",
     "fontawesome": "~4.x.x",
     "nprogress": "^0.1.3",
-    "jquery-ui": "~1.x.x",    
+    "jquery-ui": "~1.x.x"
+  },
+  "goodies": {    
     "spin.js": "*",
     "colorbox": "*",
     "flexslider": "*",

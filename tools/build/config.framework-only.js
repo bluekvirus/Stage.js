@@ -26,15 +26,13 @@ module.exports = {
 		name: 'stage'
 	},
 	structure : { //path are relative to the distFolder and src.root above
-
-		'dependencies.js': 'js/lib/dependencies.js',
-		'dependencies.min.js': 'js/lib/dependencies.min.js',
-		'selected.json': 'js/lib/selected.json',	
+		lib: 'js/lib',
 		'stage.js': false,
 		'stage.min.js': false,
-
-		//'bower.json': '../tools/libprep/bower.json', - need the this stage.js package bower.json
+		'sample.index.html': 'sample.index.html',
+		'bower.json': '../tools/libprep/bower.json',
 		'CHANGLOG.md': '../CHANGLOG.md',
+		'README.md': '../RELEASE.md',
 		'LICENSE': '../LICENSE'
 	}
 };

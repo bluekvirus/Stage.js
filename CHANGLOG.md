@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.0.0-rc2 (2014-04-09)
+1.0.0-rc2 (2014-04-15)
 ----------------------
 1. updated framework documentation (draft version done)
 2. replaced the remote data interfacing core module.
@@ -11,7 +11,8 @@ Change Log
 7. deprecated the app.create() API in favor of detailed APIs
 8. added disable(), isEnabled() and setChoices() APIs to editors
 9. added getEditor() and removed get/setVal() APIs in views
-10. licensed under MIT
+10. merged 3rd-party processing tool into tools 
+11. refined build targets, bower info and licensed under MIT
 
 
 1.0.0-rc1 (2014-03-12)

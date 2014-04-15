@@ -20,33 +20,9 @@
     "bower_components/bootstrap/dist/fonts/glyphicons-halflings-regular.ttf",
     "bower_components/bootstrap/dist/fonts/glyphicons-halflings-regular.woff"
   ],
-  "codemirror": [
-    "bower_components/codemirror/lib/codemirror.js",
-    "bower_components/codemirror/lib/codemirror.css"
-  ],
-  "colorbox": "bower_components/colorbox/jquery.colorbox.js",
-  "createjs-tweenjs": "bower_components/createjs-tweenjs/lib/tweenjs-0.5.1.combined.js",
-  "d3": "bower_components/d3/d3.js",
   "detectizr": "bower_components/detectizr/dist/detectizr.js",
-  "easeljs": "bower_components/easeljs/lib/easeljs-0.7.1.combined.js",
-  "flexslider": "bower_components/flexslider",
   "fontawesome": "bower_components/fontawesome",
   "handlebars": "bower_components/handlebars/handlebars.js",
-  "highcharts-release": [
-    "bower_components/highcharts-release/highcharts.js",
-    "bower_components/highcharts-release/highcharts-more.js",
-    "bower_components/highcharts-release/modules/exporting.src.js"
-  ],
-  "highlightjs": [
-    "bower_components/highlightjs/highlight.pack.js",
-    "bower_components/highlightjs/styles/default.css"
-  ],
-  "highstock-release": [
-    "bower_components/highstock-release/highstock.js",
-    "bower_components/highstock-release/highcharts-more.js",
-    "bower_components/highstock-release/modules/exporting.src.js"
-  ],
-  "html5-boilerplate": "bower_components/html5-boilerplate",
   "jquery-file-upload": [
     "bower_components/jquery-file-upload/css/jquery.fileupload.css",
     "bower_components/jquery-file-upload/css/jquery.fileupload-ui.css",
@@ -66,13 +42,9 @@
     "bower_components/jquery-file-upload/js/jquery.fileupload-angular.js",
     "bower_components/jquery-file-upload/js/jquery.iframe-transport.js"
   ],
-  "jquery-serializeForm": "bower_components/jquery-serializeForm",
   "jquery-ui": "bower_components/jquery-ui/ui/jquery-ui.js",
   "jquery.cookie": "bower_components/jquery.cookie/jquery.cookie.js",
-  "jquery.terminal": "bower_components/jquery.terminal",
-  "jquery.transit": "bower_components/jquery.transit",
   "jquery": "bower_components/jquery/dist/jquery.js",
-  "jvectormap": "bower_components/jvectormap",
   "marionette": [
     "bower_components/marionette/lib/backbone.marionette.js",
     "bower_components/marionette/lib/core/amd/backbone.marionette.js"
@@ -82,9 +54,6 @@
   "momentjs": "bower_components/momentjs/moment.js",
   "nprogress": "bower_components/nprogress/nprogress.js",
   "raphael": "bower_components/raphael/raphael.js",
-  "scroll-reveal": "bower_components/scroll-reveal/scrollReveal.js",
-  "socket.io-client": "bower_components/socket.io-client",
-  "spin.js": "bower_components/spin.js/spin.js",
   "store.js": "bower_components/store.js/store.js",
   "swag": "bower_components/swag/lib/swag.js",
   "underscore.string": "bower_components/underscore.string",

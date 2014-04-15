@@ -25,16 +25,16 @@ module.exports = {
 		js: {
 			'all.min.js': true, //'all' is a hard coded name - see loadIndexHTML() in build.js
 			lib: {
-				'selected.json': 'js/lib/selected.json'
+				'dependencies.json': 'js/lib/dependencies.json'
 			}
 		},
 		themes: {
 			'default': {
 				css: {
-					'main.css':'themes/default/css/main.css'
+					'main.css':'themes/site/css/main.css'
 				},
-				fonts: 'themes/default/fonts',
-				'index.html': 'themes/default/index.html'
+				fonts: 'themes/site/fonts',
+				'index.html': 'themes/site/index.html'
 			}
 		},
 		static: {

@@ -107,7 +107,7 @@
                 ],
                 onShow: function(){
                     var that = this;
-                    Application.remote('js/lib/selected.json').done(function(data){
+                    Application.remote('js/lib/dependencies.json').done(function(data){
                         _.extend(data, {
                             created: moment(data.created).fromNow()
                         });
@@ -374,10 +374,10 @@
     //Shared - Regionals
     Application.create('Regional', {
         name: 'Banner',
-        effect: {
-            name: 'fade',
-            duration: 500
-        },
+        // effect: {
+        //     name: 'fade',
+        //     duration: 500
+        // },
         initialize: function(){
             this.listenTo(Application, 'app:context-switched', function(name){
                 this.$el.find('[context]').removeClass('active');

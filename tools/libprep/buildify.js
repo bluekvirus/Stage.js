@@ -19,8 +19,9 @@ _.str = require('underscore.string');
 ncp.limit = 16;
 
 /*!!!!!Change this if .bowerrc changes!!!!!*/
-var distFolder = '../../implementation/js/lib',
-libBase = '../../implementation/bower_components';
+var implFolder = '../../implementation',
+distFolder = [implFolder, 'js/lib'].join('/'),
+libBase = [implFolder, 'bower_components'].join('/');
 
 
 buildify.task({
@@ -96,51 +97,6 @@ buildify.task({
  */
 //----------------Workers--------------------
 var libMap = {};
-function combine(list, name){
-	var target = buildify().setContent(';');
-	var versions = {
-		created: new Date().toGMTString(),
-		list: []
-	};
-	_.each(list, function(lib){
-		if(libMap[lib]) {
-			var bowerInfo, packageInfo;
-			try {
-				bowerInfo = require('./' + libBase + '/' + lib + '/.bower.json');
-			}catch (e){
-				try {
-					bowerInfo = require('./' + libBase + '/' + lib + '/bower.json');
-				}catch(e) {
-					bowerInfo = {version: 'N/A'};
-				}
-			}
-			try {
-				packageInfo = require('./' + libBase + '/' + lib + '/package.json');
-			}catch (e){
-				packageInfo = {};
-			}
-
-			versions.list.push({name: lib, version: bowerInfo.version, url: bowerInfo.homepage || packageInfo.homepage || (packageInfo.repository && packageInfo.repository.url)});
-			console.log(lib.yellow, bowerInfo.version.green, '[', libMap[lib].grey, ']');
-			
-		}
-		else {
-			console.log(lib, ('not found! ' + libMap[lib]).red);
-			return;
-		}
-		target.concat(libMap[lib]);
-	});
-	console.log('libs (selected/available):', (_.size(list) + '/' + String(_.size(libMap))).green, '[', ((_.size(list)/_.size(libMap)*100).toFixed(2) + '%').yellow, ']');
-	//dump selected lib name, version to selected.json
-	buildify().setContent(json.stringify(versions)).setDir(distFolder).save('selected.json');
-	//dump un-selected libs into a bower.more.json
-	var unselected = require('./bower.json').dependencies;
-	buildify().setContent(json.stringify(_.extend(require('./bower.more.json'), { dependencies: unselected }))).setDir(distFolder).save('bower.more.json');
-	target.setDir(distFolder).save(name + '.js').uglify().save(name + '.min.js');
-	
-};
-//-------------------------------------------
-
 buildify.task({
 	name: 'load-lib-map',
 	task: function(){
@@ -190,6 +146,53 @@ buildify.task({
 		//console.log('Total Libs Available:', String(_.size(libMap)).green);
 	}
 });
+
+function combine(list, name){
+	var target = buildify().setContent(';');
+	var versions = {
+		created: new Date().toGMTString(),
+		list: []
+	};
+	_.each(list, function(lib){
+		if(libMap[lib]) {
+			var bowerInfo, packageInfo;
+			try {
+				bowerInfo = require('./' + libBase + '/' + lib + '/.bower.json');
+			}catch (e){
+				try {
+					bowerInfo = require('./' + libBase + '/' + lib + '/bower.json');
+				}catch(e) {
+					bowerInfo = {version: 'N/A'};
+				}
+			}
+			try {
+				packageInfo = require('./' + libBase + '/' + lib + '/package.json');
+			}catch (e){
+				packageInfo = {};
+			}
+
+			versions.list.push({name: lib, version: bowerInfo.version, url: bowerInfo.homepage || packageInfo.homepage || (packageInfo.repository && packageInfo.repository.url)});
+			console.log(lib.yellow, bowerInfo.version.green, '[', libMap[lib].grey, ']');
+			
+		}
+		else {
+			console.log(lib, ('not found! ' + libMap[lib]).red);
+			return;
+		}
+		target.concat(libMap[lib]);
+	});
+	console.log('libs (selected/available):', (_.size(list) + '/' + String(_.size(libMap))).green, '[', ((_.size(list)/_.size(libMap)*100).toFixed(2) + '%').yellow, ']');
+	//dump selected lib name, version to dependencies.json
+	buildify().setContent(json.stringify(versions)).setDir(distFolder).save('dependencies.json');
+	//dump un-selected libs into a bower.more.json
+	var bowerInfo = require('./bower.json');
+	buildify().setContent(json.stringify(_.extend(require('./bower.more.json'), { dependencies: _.extend(bowerInfo.themeDependencies, bowerInfo.goodies) }))).setDir(implFolder).save('bower.more.json');
+	target.setDir(distFolder).save(name + '.js').uglify().save(name + '.min.js');
+	
+};
+//-------------------------------------------
+
+
 //-------------------------------------------
 
 buildify.task({

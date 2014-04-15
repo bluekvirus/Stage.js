@@ -41,7 +41,7 @@ module.exports = {
 				'default': 'themes/default'
 			},
 			'index.html': false,
-			'bower.json': 'js/lib/bower.more.json'
+			'bower.more.json': 'bower.more.json'
 		},
 		tools: {
 			build: {
