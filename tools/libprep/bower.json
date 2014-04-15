@@ -6,7 +6,7 @@
     "Tim Liu <bluekvirus@gmail.com>"
   ],
   "description": "Building multi-context rich-client web applications in the modern way.",
-  "main": "dist/stage.js",
+  "main": "dist/js/stage.js",
   "keywords": [
     "backbone",
     "marionette",

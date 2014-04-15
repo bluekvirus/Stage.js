@@ -23,10 +23,15 @@ module.exports = {
 		index: 'index.html' //path relative to root
 	},
 	js: {
-		name: 'stage'
+		name: 'stage',
+		after: '[persist=true]'
 	},
 	structure : { //path are relative to the distFolder and src.root above
-		lib: 'js/lib',
+		js: {
+			lib: 'js/lib',
+			'stage.js': false,
+			'stage.min.js': false			
+		},
 		themes: {
 			'default': {
 				css: {
@@ -35,9 +40,7 @@ module.exports = {
 				fonts: 'themes/default/fonts'
 			}
 		},					
-		'stage.js': false,
-		'stage.min.js': false,
-		'index.html': 'starter-kit.index.html',
+		'index.html': false,
 		'RELEASE.md': 'RELEASE.md',
 	}
 };

@@ -31,8 +31,24 @@
 
         <!--========Infrastructure Space: the engine======================================================-->
         <!--Deps-->
-        <script src="bower_components/stage/dist/lib/dependencies.min.js"></script>
-		<script src="bower_components/stage/dist/stage.min.js"></script>
+        <script type="text/javascript" src="js/lib/dependencies.min.js" framework-only="false" starter-kit="false" persist="true"></script>
+		<script src="js/stage.min.js"></script>
+
+        <!--APP-->
+        <!--APP Util-->
+        <!--APP Core-->
+        <!--Marionette.js Enhancement-/+-->      
+        <!--Predefined Goods(UI policy)-->
+        <!--Basic (provide in order):
+            [input] editors & form/fieldset;
+            optional:[display notification] event msg & user prompt;
+            md text chunk;
+        -->
+        <!--Advanced (provide in order):
+            [display data] table/list & paginator;
+            [query/control] filter/search & toolbar;
+            optional:[aggregation/transition/info-hiding(reduce distraction)] tree/accordion/slide/mini-maximum/tab
+        -->
         <!--==============End of the engine===============================================================-->
         <!--User/Programmer Space: the web application dev-->
 
@@ -42,9 +58,7 @@
         -->
         <!--Widgets/Editors-->
         <!--Contexts/Regionals-->            
-
         <!--main.js-->
-        
         <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. 
             <script>
                 var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
