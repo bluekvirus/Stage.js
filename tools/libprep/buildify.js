@@ -26,7 +26,7 @@ libBase = [implFolder, 'bower_components'].join('/');
 
 buildify.task({
 	name: 'fix-libs',
-	depends: ['uri-js', 'jquery-file-upload', 'jquery-ui', 'min'],
+	depends: ['uri-js', 'jquery-file-upload', 'jquery-ui', 'fake', 'min'],
 	task: function(){}
 });
 
@@ -74,6 +74,16 @@ buildify.task({
 	}
 
 });
+
+buildify.task({
+	name: 'fake',
+	task: function(){
+		var config = ['fontawesome'];
+		_.each(config, function(lib){
+			buildify().setDir([libBase, lib].join('/')).setContent(';').save(lib + '.js');
+		});
+	}
+})
 
 buildify.task({
 	name: 'min',
@@ -147,7 +157,8 @@ buildify.task({
 	}
 });
 
-function combine(list, name){
+function combine(bowerInfo, name){
+	var list = _.keys(bowerInfo.devDependencies);
 	var target = buildify().setContent(';');
 	var versions = {
 		created: new Date().toGMTString(),
@@ -155,24 +166,24 @@ function combine(list, name){
 	};
 	_.each(list, function(lib){
 		if(libMap[lib]) {
-			var bowerInfo, packageInfo;
+			var libBowerInfo, libPackageInfo;
 			try {
-				bowerInfo = require('./' + libBase + '/' + lib + '/.bower.json');
+				libBowerInfo = require('./' + libBase + '/' + lib + '/.bower.json');
 			}catch (e){
 				try {
-					bowerInfo = require('./' + libBase + '/' + lib + '/bower.json');
+					libBowerInfo = require('./' + libBase + '/' + lib + '/bower.json');
 				}catch(e) {
-					bowerInfo = {version: 'N/A'};
+					libBowerInfo = {version: 'N/A'};
 				}
 			}
 			try {
-				packageInfo = require('./' + libBase + '/' + lib + '/package.json');
+				libPackageInfo = require('./' + libBase + '/' + lib + '/package.json');
 			}catch (e){
-				packageInfo = {};
+				libPackageInfo = {};
 			}
 
-			versions.list.push({name: lib, version: bowerInfo.version, url: bowerInfo.homepage || packageInfo.homepage || (packageInfo.repository && packageInfo.repository.url)});
-			console.log(lib.yellow, bowerInfo.version.green, '[', libMap[lib].grey, ']');
+			versions.list.push({name: lib, version: libBowerInfo.version, url: libBowerInfo.homepage || libPackageInfo.homepage || (libPackageInfo.repository && libPackageInfo.repository.url)});
+			console.log(lib.yellow, libBowerInfo.version.green, '[', libMap[lib].grey, ']');
 			
 		}
 		else {
@@ -184,53 +195,26 @@ function combine(list, name){
 	console.log('libs (selected/available):', (_.size(list) + '/' + String(_.size(libMap))).green, '[', ((_.size(list)/_.size(libMap)*100).toFixed(2) + '%').yellow, ']');
 	//dump selected lib name, version to dependencies.json
 	buildify().setContent(json.stringify(versions)).setDir(distFolder).save('dependencies.json');
-	//dump un-selected libs into a bower.more.json
-	var bowerInfo = require('./bower.json');
-	buildify().setContent(json.stringify(_.extend(require('./bower.more.json'), { dependencies: _.extend(bowerInfo.themeDependencies, bowerInfo.goodies) }))).setDir(implFolder).save('bower.more.json');
+	//produce project bower.json
+	buildify().setContent(json.stringify(_.extend({}, bowerInfo, {dependencies: {}}, {monitored: bowerInfo.dependencies}))).setDir(implFolder + '/../').save('bower.json');
+	//produce starter-kit bower.json
+	buildify().setContent(json.stringify(_.extend({
+		private: true,
+		dependencies: _.extend({
+			stage: '~' + bowerInfo.version
+		}, bowerInfo.themeDependencies),
+		optionalDependencies: bowerInfo.dependencies
+	}))).setDir(implFolder).save('starter-kit.bower.json');
 	target.setDir(distFolder).save(name + '.js').uglify().save(name + '.min.js');
 	
 };
 //-------------------------------------------
 
-
-//-------------------------------------------
-
-buildify.task({
-	name: 'libs', //with jquery2 and bootstrap3 , ie9+
-	depends: ['load-lib-map'],
-	task: function(){
-		var list = [
-			'modernizr',
-			'detectizr',
-			'yepnope',
-			'jquery', //version 2+
-			'jquery.cookie',
-			'jquery-ui',
-			'jquery-file-upload',
-			'underscore',
-			'underscore.string',
-			'backbone', 
-			'marionette',
-			'handlebars',
-			'swag',
-			'bootstrap', //version 3+
-			'store.js', 
-			'uri.js',
-			'momentjs',
-			'marked',
-			'raphael',			
-			'nprogress' //or spin.js
-			
-		];
-		combine(list, 'dependencies');
-	}
-});
-
 buildify.task({
 	name: 'all',
-	depends: ['fix-libs', 'libs'],
+	depends: ['fix-libs', 'load-lib-map'],
 	task: function(){
-		
+		combine(require('./bower.json'), 'dependencies');
 	}
 });
 

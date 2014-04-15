@@ -26,13 +26,9 @@ module.exports = {
 		name: 'stage'
 	},
 	structure : { //path are relative to the distFolder and src.root above
-		lib: 'js/lib',
+		lib: 'js/lib',			
 		'stage.js': false,
 		'stage.min.js': false,
-		'sample.index.html': 'sample.index.html',
-		'bower.json': '../tools/libprep/bower.json',
-		'CHANGLOG.md': '../CHANGLOG.md',
-		'README.md': '../RELEASE.md',
-		'LICENSE': '../LICENSE'
+		'README.md': 'RELEASE.md',
 	}
 };

@@ -6,7 +6,7 @@
     "Tim Liu <bluekvirus@gmail.com>"
   ],
   "description": "Building multi-context rich-client web applications in the modern way.",
-  "main": "stage.js",
+  "main": "dist/stage.js",
   "keywords": [
     "backbone",
     "marionette",
@@ -29,39 +29,42 @@
     "node_modules",
     "bower_components",
     "test",
-    "tests"
+    "tests",
+    "guideline",
+    "implementation",
+    "tools",
+    "README.md"
   ],
   "devDependencies": {
     "modernizr": "~2.x.x",
     "detectizr": "~2.x.x",
     "yepnope": "~1.x.x",
     "jquery": "~2.x.x",
+    "jquery.cookie": "~1.x.x",
+    "jquery-ui": "~1.x.x",
+    "jquery-file-upload": "~9.x.x",
     "underscore": "~1.x.x",
     "underscore.string": "~2.x.x",
+    "backbone": "~1.x.x",
+    "marionette": "~1.x.x",    
     "handlebars": "~1.x.x",
     "swag": "*",
-    "backbone": "~1.x.x",
-    "marionette": "~1.x.x",
-    "jquery-file-upload": "~9.x.x",
-    "jquery.cookie": "~1.x.x",
+    "bootstrap": "~3.x.x",
     "uri.js": "~1.x.x",
     "store.js": "~1.x.x",
     "momentjs": "~2.x.x",
     "raphael": "~2.x.x",
     "marked": "~0.3.x",
-    "bootstrap": "~3.x.x",
-    "fontawesome": "~4.x.x",
-    "nprogress": "^0.1.3",
-    "jquery-ui": "~1.x.x"    
+    "fontawesome": "~4.x.x"
   },
   "themeDependencies": {
     "bootstrap": "~3.x.x",
     "fontawesome": "~4.x.x",
-    "nprogress": "^0.1.3",
     "jquery-ui": "~1.x.x"
   },
-  "goodies": {    
+  "dependencies": {
     "spin.js": "*",
+    "nprogress": "*",
     "colorbox": "*",
     "flexslider": "*",
     "jquery.terminal": "*",

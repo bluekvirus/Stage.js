@@ -38,12 +38,12 @@ program.command('*').description('build your web front-end project using customi
 	console.log('Start building using config ['.yellow, configName, '] >> ['.yellow, outputFolder, ']'.yellow);
 
 	//1. start processing index page
-	var result = processor.combine({
+	var result = config.src.index ? processor.combine({
 		root: config.src.root,
 		html: config.src.index,
 		js: config.js,
 		excludeAttr: program.config
-	});
+	}): {};
 
 	//2. hammer the output folder structure out
 	hammer.createFolderStructure(_.extend({cachedFiles: result, output: outputFolder}, config), function(){

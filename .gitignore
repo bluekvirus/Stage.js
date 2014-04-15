@@ -192,7 +192,6 @@ $RECYCLE.BIN/
 # Packages
 *.egg
 *.egg-info
-dist/
 
 eggs/
 #parts/
@@ -222,3 +221,6 @@ bower_components/
 
 #npm
 node_modules/
+
+#build
+tools/build/dist/

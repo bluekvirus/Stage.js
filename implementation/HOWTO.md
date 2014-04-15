@@ -950,3 +950,8 @@ see CHANGELOG.md
 * [H5BP.showcase](http://h5bp.net/) - Site examples
 * [Subtlepatterns](http://subtlepatterns.com/) - web texture
 * [Google Fonts](http://www.google.com/fonts/)/[Font Squirrell](http://www.fontsquirrel.com/) - web fonts
+
+####Platform Options
+1. HTML5, JS, CSS3 - Ubuntu OS, Firefox OS or Titanium/Cordova(PhoneGap)
+2. C++ with Boost & Qt(+QML) - Ubuntu OS and General (Win, MacOS/iOS, Linux/Android)
+3. Object-C & Java - iOS and Android

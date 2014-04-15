@@ -20,11 +20,6 @@
 module.exports = {
 	src: {
 		root: '../../implementation', //path relative to this config.js
-		index: 'index.html' //path relative to root
-	},
-	js: {
-		name: 'stage',
-		after: 'script[persist="true"]'
 	},
 	structure : { //path are relative to the distFolder and src.root above
 		design: {
@@ -32,16 +27,11 @@ module.exports = {
 			docs: {}
 		},
 		implementation: {
-			js: {
-				lib: 'js/lib',			
-				'stage.min.js': false,
-				'stage.js': false,
-			},
 			themes: {
 				'default': 'themes/default'
 			},
-			'index.html': false,
-			'bower.more.json': 'bower.more.json'
+			'index.html': 'starter-kit.index.html',
+			'bower.json': 'starter-kit.bower.json'
 		},
 		tools: {
 			build: {
@@ -52,7 +42,6 @@ module.exports = {
 			shared: '../tools/shared',
 			'package.json': '../tools/package.json'
 		},
-		'CHANGLOG.md': '../CHANGLOG.md',
 		'LICENSE': '../LICENSE'
 	}
 };
