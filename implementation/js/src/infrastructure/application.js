@@ -117,9 +117,9 @@ _.each(['document', 'window'], function(coreDomObj){
 	window['$' + coreDomObj] = $(window[coreDomObj]);
 });
 
-if(Swag)
+if(window.Swag)
 	Swag.registerHelpers();
-if(NProgress)
+if(window.NProgress)
 	NProgress.configure({
 	  showSpinner: false
 	});
@@ -194,7 +194,7 @@ _.each(['Core', 'Util'], function(coreModule){
 		 * --------
 		 * Configure NProgress as global progress indicator.
 		 */
-		if(NProgress){
+		if(window.NProgress){
 			Application.onAjaxStart = function() {
 				NProgress.start();
 			};

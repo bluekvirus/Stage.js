@@ -29,6 +29,6 @@ module.exports = {
 		lib: 'js/lib',			
 		'stage.js': false,
 		'stage.min.js': false,
-		'README.md': 'RELEASE.md',
+		'RELEASE.md': 'RELEASE.md',
 	}
 };
