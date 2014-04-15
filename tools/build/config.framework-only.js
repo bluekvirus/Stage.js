@@ -26,9 +26,18 @@ module.exports = {
 		name: 'stage'
 	},
 	structure : { //path are relative to the distFolder and src.root above
-		lib: 'js/lib',			
+		lib: 'js/lib',
+		themes: {
+			'default': {
+				css: {
+					'main.css' : 'themes/default/css/main.css'
+				},
+				fonts: 'themes/default/fonts'
+			}
+		},					
 		'stage.js': false,
 		'stage.min.js': false,
+		'index.html': 'starter-kit.index.html',
 		'RELEASE.md': 'RELEASE.md',
 	}
 };
