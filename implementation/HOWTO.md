@@ -870,8 +870,10 @@ Type in command-line `/tools/build/node build.js dist` to build. (You might need
 
 Upgrade/Update
 --------------
-Download and replace `/implementation/js/stage.js` to update the infrastructure;
-Use `bower update` to update other monitored libraries you need under `/implementation/js/lib/` if you have included other 3rd-party libraries;
+Download and replace `stage.js` to update the infrastructure through `bower`:
+```
+bower update stage
+```
 
 
 Appendix
