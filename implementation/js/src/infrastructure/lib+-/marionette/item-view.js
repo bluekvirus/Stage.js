@@ -175,7 +175,7 @@
 					} 
 				}, this);
 			}
-			
+			//auto setValues according to this.model?
 		}
 
 	});

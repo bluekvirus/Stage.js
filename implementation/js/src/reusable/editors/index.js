@@ -305,6 +305,9 @@
 				if(this.ui.inputs.length > 0){
 					//radios/checkboxes
 					this.ui.inputs.find('input').val(_.isArray(val)?val:[val]);
+				}else if(this.ui['input-ro'].length > 0){
+					val = _.escape(val);
+					this.ui['input-ro'].data('value', val).html(val);
 				}else {
 					if(this.model.get('type') === 'checkbox'){
 						if(val === this.model.get('checked')) this.ui.input.prop('checked', true);

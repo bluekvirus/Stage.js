@@ -32,7 +32,7 @@ Application.area('Editors', {
             this.setValues({
                 checkboxes: [1231, 1233],
                 readonly2: 'Hello!',
-                singlecheckbox: 'enabled'
+                singlecheckbox: 'enabled',
             });
         },
         test2: function(){

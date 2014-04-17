@@ -5,16 +5,32 @@
  * ---------
  * show: true|false show or close the overlay
  * options: {
+ * 		class: custom overlay class - for css overriden, note that you might need to change background and z-index in your stylesheet after you set this, since they will be removed.
  * 		effect: 'jquery ui effects string', or specifically:
  * 			openEffect: ...,
  * 			closeEffect: ...,
- * 		zIndex: 'css z-index number';
- * 		background: 'css background string';
+ * 		duration: 'jquery ui effects duration',
+ * 		zIndex: 'css z-index number' - disabled if you've set options.class;
+ * 		background: 'css background string', - disabled if you've set options.class;		
+ * 		containerStyle: 'jquery css style object for overlay content container', - disabled if you've set containerClass;
+ * 		titleStyle: 'jquery css style object for overlay content title', - disabled if you've set containerClass;
+ * 		containerClass: custom container class - for css overriden, note that you MUST style the padding, it is removed if you specify containerClass in option
  * 		content: 'text'/html or el or a function($el, $overlay) that returns one of the three.
+ * 		title: 'html' or 'string' for title bar above content.
+ * 		titleIcon: class name of the icon.
+ * 		titleAlign: title text-alignment in css term 'left, right, center'
+ * 		buttons: [ an array of bottons to show below or inline with the content.
+ * 			{title: ..., icon: ..., class: ..., fn($el, $overlay), context: ...},
+ * 			{...},
+ * 			...
+ * 		]
+ * 		buttonsAlign: 'left/right/center',
  * 		onShow($el, $overlay) - show callback;
  * 		onClose($el, $overlay) - close callback;
+ * 		closeX: true|false - whether or not to show the x on the overlay container.
  * 		move: true|false - whether or not to make the overlay-container draggable through jquery ui.
  * 		resize: true|false - whether or not to make the overlay-container resizable through jquery ui.
+ * 		hrCSS: '<hr/> tags css string' or false to disable - NOT jquery style object. - this is not disabled if you set containerClass; this options is rarely used.
  * }
  *
  * Custom Content
