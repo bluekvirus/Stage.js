@@ -39,6 +39,7 @@ module.exports = {
 				'config.dist.js': '../tools/build/config.sample.js'
 			},
 			iconprep: '../tools/iconprep',
+			devserver: '../tools/devserver',
 			shared: '../tools/shared',
 			'package.json': '../tools/package.json'
 		},
