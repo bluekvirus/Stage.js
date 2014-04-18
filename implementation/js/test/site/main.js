@@ -76,12 +76,10 @@
                     '<li class="dropdown">',
                         '<a data-toggle="dropdown" class="dropdown-toggle" href="#"><i class="fa fa-download"></i> Download <b class="caret"></b></a>',
                         '<ul class="dropdown-menu">',
-                            '<li class="dropdown-header" >Client</li>',
-                            '<li><a href="#" action="download" target="stagejs-starter-kit.tar.gz"><i class="fa fa-arrow-circle-o-down"></i> stage.js (project-kit)</a></li>',
-                            '<li><a href="#" action="download" target="stagejs-edge.tar.gz"><i class="fa fa-arrow-circle-o-down"></i> stage.js (edge build)</a></li>',
-                            '<li class="divider"></li>',
-                            '<li class="dropdown-header">Server</li>',
-                            '<li><a href="#" action="download" target="ajax-box.0.10.1.tar.gz"><i class="fa fa-arrow-circle-o-down"></i> ajax-box</a></li>',
+
+                            '<li><a href="#" action="download" target="stagejs-starter-kit.tar.gz"><i class="fa fa-arrow-circle-o-down"></i> Start New (project-kit)</a></li>',
+                            '<li><a href="#" action="download" target="stagejs-edge.tar.gz"><i class="fa fa-arrow-circle-o-down"></i> Update (edge build)</a></li>',
+
                         '</ul>',
                     '</li>',
                     '<li><a href="https://github.com/bluekvirus/Client_"><i class="fa fa-github-alt"></i></a></li>',

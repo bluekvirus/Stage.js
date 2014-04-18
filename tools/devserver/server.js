@@ -18,32 +18,56 @@ load = require('express-load'),
 path = require('path'),
 _ = require('underscore'),
 colors = require('colors'),
+info = require('./package.json')
 server = express();
 
 
 //dealing with different profiles 
-var args = process.argv.slice(2);
-server.set('profile', require(__dirname + '/profile/' + (args[0] || 'default')));
+var args = process.argv.slice(2),
+profile = args[0] || 'default';
+server.set('profile', require(__dirname + '/profile/' + profile));
+console.log('========================================');
+console.log(info.name.blue, '[', profile.yellow,']');
+console.log('@version'.grey, info.version.blue);
+console.log('@author'.grey, info.author.blue);
+console.log(new Date().toString().grey);
+console.log('========================================');
 
-
-var profile = server.get('profile');
+profile = server.get('profile');
+_.extend({
+	//profile default settings:
+	port: 4000,
+	clients: {},
+}, profile);
 //mount different clients
-profile.clients[''] = '../../implementation';
+if(!profile.clients['/']) profile.clients['/'] = '../../implementation';
 _.each(profile.clients, function(filePath, uriName){
-	server.use('/' + uriName, express.static(path.join(__dirname, filePath)));
-	console.log('[Web root]', uriName.yellow, '[', filePath, ']');
+	profile.clients[uriName] = path.resolve(path.join(__dirname, filePath));
+	server.use(uriName, express.static(profile.clients[uriName]));
+	console.log('[Web root]', uriName.yellow, '[', profile.clients[uriName], ']');
 });
 
-//monitor LESS themes
-//TBI
+//mount routers for each client
+server.mount = function(routerFile, uri){
+	var router = express.Router();
+	if(uri) server.use(uri, router);
+	else {
+		_.each(profile.clients, function(uri){
+			server.use([uri, routerFile.name].join('/'), router);
+		});
+	}
+	return router;
+}
 
+//activate bots(utils)
+var options = {verbose:true, cwd: __dirname};
+load('bots', options)
 //load routers
-load('routers').into(server);
-//mount them for each client
-//TBI
+.then('routers', options)
+.into(server);
 
 //start server
-server.listen(profile.port || 4000, function(){
+server.listen(profile.port, function(){
 	console.log('Server started on', profile.port.yellow);
 });
 

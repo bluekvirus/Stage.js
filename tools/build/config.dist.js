@@ -47,7 +47,7 @@ module.exports = {
 		},		
 		'index.html': true,
 		'HOWTO.md': 'HOWTO.md',
-		'CHANGLOG.md': '../CHANGLOG.md'
+		'CHANGELOG.md': '../CHANGELOG.md'
 		
 	}
 };

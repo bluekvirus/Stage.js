@@ -42,5 +42,7 @@ module.exports = {
 		},					
 		'index.html': false,
 		'RELEASE.md': 'RELEASE.md',
+		'CHANGELOG.md': '../CHANGELOG.md',
+		'LICENSE': '../LICENSE'
 	}
 };
