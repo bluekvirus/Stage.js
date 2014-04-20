@@ -11,6 +11,6 @@ module.exports = function(server){
 
 	router.get('/', function(req, res, next){
 		res.json('{hello: true}');
-	})
+	});
 
 }

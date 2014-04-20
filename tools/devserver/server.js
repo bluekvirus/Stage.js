@@ -25,46 +25,30 @@ server = express();
 //dealing with different profiles 
 var args = process.argv.slice(2),
 profile = args[0] || 'default';
-server.set('profile', require(__dirname + '/profile/' + profile));
 console.log('========================================');
 console.log(info.name.blue, '[', profile.yellow,']');
 console.log('@version'.grey, info.version.blue);
 console.log('@author'.grey, info.author.blue);
 console.log(new Date().toString().grey);
 console.log('========================================');
-
-profile = server.get('profile');
-_.extend({
+profile = server.set('profile', _.extend({
 	//profile default settings:
 	port: 4000,
 	clients: {},
-}, profile);
-//mount different clients
+}, require(__dirname + '/profile/' + profile))).get('profile');
+	//fix web root(s)' path(s)
 if(!profile.clients['/']) profile.clients['/'] = '../../implementation';
 _.each(profile.clients, function(filePath, uriName){
 	profile.clients[uriName] = path.resolve(path.join(__dirname, filePath));
-	server.use(uriName, express.static(profile.clients[uriName]));
-	console.log('[Web root]', uriName.yellow, '[', profile.clients[uriName], ']');
 });
 
-//mount routers for each client
-server.mount = function(routerFile, uri){
-	var router = express.Router();
-	if(uri) server.use(uri, router);
-	else {
-		_.each(profile.clients, function(uri){
-			server.use([uri, routerFile.name].join('/'), router);
-		});
-	}
-	return router;
-}
-
-//activate bots(utils)
+//loading...
 var options = {verbose:true, cwd: __dirname};
-load('bots', options)
-//load routers
+load('utils', options)
 .then('routers', options)
+.then('bots', options)
 .into(server);
+
 
 //start server
 server.listen(profile.port, function(){
