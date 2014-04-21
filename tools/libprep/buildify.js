@@ -199,6 +199,7 @@ function combine(bowerInfo, name){
 	buildify().setContent(json.stringify(_.extend({}, bowerInfo, {dependencies: {}}, {monitored: bowerInfo.dependencies}))).setDir(implFolder + '/../').save('bower.json');
 	//produce starter-kit bower.json
 	buildify().setContent(json.stringify(_.extend({
+		name: 'keep name here to use bower install, change if you prefer',
 		private: true,
 		dependencies: _.extend({
 			stage: '~' + bowerInfo.version
