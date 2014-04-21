@@ -23,6 +23,10 @@
  * You can pass in view.render().el if you have backbone based view as content. 
  * Note that in order to prevent *Ghost View* you need to close()/clean-up your view object in onClose callback.
  * 
+ *
+ * Dependencies
+ * ------------
+ * Handlebars, _, $window, $
  * 
  * @author Tim.Liu
  * @create 2013.12.26
@@ -66,6 +70,7 @@
 					effect: options.closeEffect || options.effect || 'clip',
 					complete: function(){
 						options.onClose && options.onClose($el, $overlay);
+						$window.off('resize', $overlay.data('onResize'));
 						$overlay.remove();//el, data, and events removed;						
 						$el.css({
 							overflowY: $el.data('overflow').y,
@@ -95,7 +100,15 @@
 					'overflow': 'hidden'
 				});
 				//fix the overlay height, this also affect the default 'clip' effect
-				if($overlay.height() > $window.height()) $overlay.height($window.height());
+				if($el[0].tagName === 'BODY') {
+					$overlay.offset({top: $window.scrollTop()});
+					$overlay.height($window.height());
+					$overlay.data('onResize', function(){
+						$overlay.height($window.height());
+						//console.log('test if listener still there...');
+					});
+					$window.on('resize', $overlay.data('onResize'));
+				}
 				$overlay.hide();
 
 				$el.data('overlay', $overlay);

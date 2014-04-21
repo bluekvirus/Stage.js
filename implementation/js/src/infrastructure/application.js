@@ -19,30 +19,7 @@
  * 3. Application.remote(options); see core/remote-data.js
  *
  * ###How to create app elements?
- * 4. Application.create(type, config);
- * 		1. Model/Collection: {
- * 			[normal Backbone.Model/Collection options]
- * 		};
- * 		2. Context/alias:Page: {
- * 			[name]: if you don't name the context, we will use 'Default' as its name,
- * 			template: '#id' or '<...>' or ['<...>', '<...>'],(auto functional attribute: region, view)
- * 			[onNavigateTo]: function(module path string)
-			[rest of normal Marionette.Layout options] - if you override initialize + onShow, the default region detect and view showing behavior will be removed.
- * 		};
- * 		3. Regional/alias:Area: { -- for automatically loading through layout template. 
- * 			name:, (id in static list:Marionette.Layout.Views -- see lib+-/marionette/view.js)
- * 			template: '#id' or '<...>' or ['<...>', '<...>'], (possible functional attribute: region, ui)
- * 			[type]: 'ItemView'(default)/ Layout/ CollectionView/ CompositeView (Marionette Views)
- * 			[rest of normal Marionette.(View type of your choice) options] 
- * 		};
- * 		4. Widget/Editor: parts (both define( has config.factory as function) and create)
- * 		as in infrastructure/core/part.js
- *
- * 		5. Validator: { -- basic editor validators
- * 			name: ...
- * 			fn(options, val, parentCt): function()
- * 			error: ... - error string
- * 		}
+ * 4. see Application apis down at the bottom
  * 	 	
  * ###Application Events to the aid?
  * 5. Use app:[your-event] format, and then register a global listener on app by using app.onYourEvent = function(e, your args);
@@ -54,7 +31,7 @@
  * 		[with context:navigate-to (moduleName) on context] - context.onNavigateTo [not-defined]
  * ...(see core/remote-data.js for more.)
  * region:load-view (view/widget name registered in app, [widget init options])
- * view:render-data (data, forceReRender)
+ * view:render-data (data)
  * 
  * Suggested events are: [not included, but you define, you fire to use]
  * app:prompt (options) - app.onPrompt [not-defined]
@@ -86,7 +63,7 @@
  * $window
  * $document
  * Application
- * + libs
+ * and the various libs global vars
  *
  * Global events
  * ------------
@@ -415,25 +392,13 @@ _.each(['Core', 'Util'], function(coreModule){
 	 */
 	_.extend(Application, {
 
-		// model: function(options, defOnly){
-		// 	if(_.isBoolean(options)){
-		// 		defOnly = options;
-		// 		options = {};
-		// 	}			
-		// 	var Def = Backbone.Model.extend(options);
-		// 	if(defOnly) return Def;
-		// 	return new Def();
-		// },
+		model: function(data){
+			return new Backbone.Model(data);
+		},
 
-		// collection: function(options, defOnly){
-		// 	if(_.isBoolean(options)){
-		// 		defOnly = options;
-		// 		options = {};
-		// 	}			
-		// 	var Def = Backbone.Collection.extend(options);
-		// 	if(defOnly) return Def;
-		// 	return new Def();
-		// },
+		collection: function(data){
+			return new Backbone.Collection(data);
+		},
 
 		view: function(options, instant){
 			if(_.isBoolean(options)){
@@ -515,7 +480,7 @@ _.each(['Core', 'Util'], function(coreModule){
 	 * API summary
 	 */
 	Application._apis = [
-		//'model', 'collection',
+		'model', 'collection',
 		'context - @alias:page', 'regional - @alias:area',
 		'view',
 		'widget', 'editor', 'editor.validator - @alias:editor.rule',

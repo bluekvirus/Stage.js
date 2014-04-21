@@ -22,8 +22,12 @@ module.exports = function(server){
 		if(uri) reg[uri] = router;
 		else {
 			_.each(profile.clients, function(webroot, uri){
-				var mountpath = path.normalize([uri, routerFile.name].join('/'));
-				reg[mountpath] = router;
+
+				var routerPath = routerFile.location.split(path.sep); //so the path -> uri won't get screwed by Windows...
+				routerPath.shift(); //push out 'routers' folder name;
+
+				var mountpath = _.compact(uri.split('/').concat(routerPath)).join('/');
+				reg['/' + mountpath] = router;
 			});
 		}
 		return router;
