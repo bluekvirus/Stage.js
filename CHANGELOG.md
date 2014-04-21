@@ -1,5 +1,14 @@
 Change Log
 ==========
+1.0.0-rc3 (2014-04-21)
+----------------------
+1. added dev-server (ajax-box-lite, with less monitor, no session or DB by default) in tools
+2. added app.model and app.collection back
+3. refined $.overlay and app.overlay(view) -- migrate in progress
+4. paginator widget -- migrate in progress
+5. simple datagrid widget -- migrate in progress
+
+
 1.0.0-rc2 (2014-04-15)
 ----------------------
 1. updated framework documentation (draft version done)

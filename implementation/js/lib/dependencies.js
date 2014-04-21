@@ -24833,7 +24833,7 @@ $.effects.effect.transfer = function( o, done ) {
 
 // MarionetteJS (Backbone.Marionette)
 // ----------------------------------
-// v1.8.1
+// v1.8.2
 //
 // Copyright (c)2014 Derick Bailey, Muted Solutions, LLC.
 // Distributed under MIT license
@@ -27189,6 +27189,11 @@ Marionette.Behavior = (function(_, Backbone){
   _.extend(Behavior.prototype, Backbone.Events, {
     initialize: function(){},
 
+    // stopListening to behavior `onListen` events.
+    close: function() {
+      this.stopListening();
+    },
+
     // Setup class level proxy for triggerMethod.
     triggerMethod: Marionette.triggerMethod
   });
@@ -27226,7 +27231,7 @@ Marionette.Behaviors = (function(Marionette, _) {
       'delegateEvents', 'undelegateEvents',
       'onShow', 'onClose',
       'behaviorEvents', 'triggerMethod',
-      'setElement'
+      'setElement', 'close'
     ]);
   }
 
@@ -27240,6 +27245,17 @@ Marionette.Behaviors = (function(Marionette, _) {
       _.each(behaviors, function(b) {
         b.$el = this.$el;
       }, this);
+    },
+
+    close: function(close, behaviors) {
+      var args = _.tail(arguments, 2);
+      close.apply(this, args);
+
+      // Call close on each behavior after
+      // closing down the view.
+      // This unbinds event listeners
+      // that behaviors have registerd for.
+      _.invoke(behaviors, 'close', args);
     },
 
     onShow: function(onShow, behaviors) {
@@ -27300,8 +27316,8 @@ Marionette.Behaviors = (function(Marionette, _) {
       undelegateEvents.apply(this, args);
 
       _.each(behaviors, function(b) {
-        Marionette.unbindEntityEvents(this, this.model, Marionette.getOption(b, "modelEvents"));
-        Marionette.unbindEntityEvents(this, this.collection, Marionette.getOption(b, "collectionEvents"));
+        Marionette.unbindEntityEvents(b, this.model, Marionette.getOption(b, "modelEvents"));
+        Marionette.unbindEntityEvents(b, this.collection, Marionette.getOption(b, "collectionEvents"));
       }, this);
     },
 

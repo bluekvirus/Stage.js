@@ -415,25 +415,25 @@ _.each(['Core', 'Util'], function(coreModule){
 	 */
 	_.extend(Application, {
 
-		// model: function(options, defOnly){
-		// 	if(_.isBoolean(options)){
-		// 		defOnly = options;
-		// 		options = {};
-		// 	}			
-		// 	var Def = Backbone.Model.extend(options);
-		// 	if(defOnly) return Def;
-		// 	return new Def();
-		// },
+		model: function(options, defOnly){
+			if(_.isBoolean(options)){
+				defOnly = options;
+				options = {};
+			}			
+			var Def = Backbone.Model.extend(options);
+			if(defOnly) return Def;
+			return new Def();
+		},
 
-		// collection: function(options, defOnly){
-		// 	if(_.isBoolean(options)){
-		// 		defOnly = options;
-		// 		options = {};
-		// 	}			
-		// 	var Def = Backbone.Collection.extend(options);
-		// 	if(defOnly) return Def;
-		// 	return new Def();
-		// },
+		collection: function(options, defOnly){
+			if(_.isBoolean(options)){
+				defOnly = options;
+				options = {};
+			}			
+			var Def = Backbone.Collection.extend(options);
+			if(defOnly) return Def;
+			return new Def();
+		},
 
 		view: function(options, instant){
 			if(_.isBoolean(options)){
