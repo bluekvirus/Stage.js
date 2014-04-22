@@ -5,21 +5,16 @@
  * -------
  * passed down by this.model.get('actions')
  * 
- * actions: [ (append to default row actions) - default on having [detials] [edit] [delete]
- * 		{
- * 			name: ...,
- * 			label: ...,
- * 			icon: ...,
- * 			tooltip: ...,
- * 			fn: impl function(record, row) - with row record model and row view object. (Note that row.meta has both record and table view object, the first 'record' param is just a short cut)
- * 		},...,
- * ] or { (replace the actions)
+ * actions: { (replace the actions)
  * 		'name': {
  * 			label: ...,
  * 			icon: ...,
  * 			tooltip: ...,
- * 			fn: impl function(record, row)
- * 		}
+ * 			fn: function(){
+ * 				this.model is the row record data model
+ * 			}
+ * 		},
+ * 		...
  * }
  *
  * @author Tim.Liu
@@ -31,10 +26,10 @@
 
 	app.widget('ActionCell', function(){
 
-		var UI = Backbone.Marionette.ItemView.extend({
+		var UI = app.view({
 			template: [
 				'{{#each actions}}',
-					'<span class="action-cell-item" action={{name}} data-toggle="tooltip" title="{{tooltip}}"><i class="{{icon}}"></i> {{label}}</span> ',
+					'<span class="action-cell-item" action="{{@key}}" data-toggle="tooltip" title="{{tooltip}}"><i class="{{icon}}"></i> {{label}}</span> ',
 				'{{/each}}'
 			],
 			className: 'action-cell',
@@ -70,12 +65,13 @@
 				_.each(actions, function(action, name){
 					if(action.fn){
 						this.actions[name] = function($action){
-							action.fn.apply(this.row, this.row.record);
+							action.fn.apply(this.row, arguments);
 							/*Warning:: If we use options.row here, it won't work, since the options object will change, hence this event listener will be refering to other record's row when triggered*/
 						}
 					}
 				}, this);
 				this.model.set('actions', actions);
+				this.enableActionTags(true);
 			},
 			tooltips: true
 

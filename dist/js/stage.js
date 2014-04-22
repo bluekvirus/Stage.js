@@ -1264,6 +1264,9 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 				else this.enableSVG();
 			});
 		}
+		if(this.tooltips) {
+			this.enableTooltips(this.tooltips);
+		}
 
 		return Backbone.Marionette.View.apply(this, arguments);
 	}
@@ -1579,9 +1582,9 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 				if(!this.regions && !options.regions){
 					this.regions = {};
 					var tpl = Backbone.Marionette.TemplateCache.prototype.loadTemplate(options.tempalte || this.template || ' ');
-					//figure out the regions, first
+					//figure out the regions, first - wrap the tpl in this.tagName
 					var that = this;
-					$('<div>' + tpl + '</div>').find('[region]').each(function(index, el){
+					$(['<', this.tagName, '>', tpl, '</', this.tagName, '>'].join('')).find('[region]').each(function(index, el){
 						var r = $(el).attr('region');
 						//that.regions[r] = '[region="' + r + '"]';
 						that.regions[r] = {
@@ -2680,5 +2683,263 @@ var I18N = {};
 
 		app.Core.Editor.rules[name] = fn;
 	}
+
+})(Application);
+/**
+ * This is the minimum Datagrid widget for data tables
+ *
+ * [table]
+ * 		[thead]
+ * 			<tr> th, ..., th </tr>
+ * 		[tbody]
+ * 			<tr> td, ..., td </tr>
+ * 			...
+ * 			<tr> ... </tr>
+ *
+ * options
+ * -------
+ * 1. data []: rows of data
+ * 2. columns [
+ * 		{
+ * 			name: datum key in data row
+ * 			cell: cell name
+ * 			header: header cell name
+ * 			label: name given to header cell (instead of _.titleize(name))
+ * 		}
+ * ]
+ * 3. details: false or datum name in data row or {
+ * 		key: ...,
+ * 		view: ... (definition)
+ * }
+ *
+ * note
+ * ----
+ * the details row appears under each normal data row;
+ * 
+ * 
+ * @author Tim.Liu
+ * @created 2014.04.22
+ */
+
+;(function(app){
+
+	app.widget('Datagrid', function(){
+
+		var UI = app.view({
+			type: 'Layout',
+			tagName: 'table',
+			template: [
+				'<thead region="header"></thead>',
+				'<tbody region="body"></tbody>'
+			],
+			initialize: function(options){
+				this._options = _.extend({
+					data: [],
+					details: false,
+					columns: []
+				}, options);
+			},
+			onShow: function(){
+				this.header.show(new HeaderRow());
+				this.body.show(new Body({
+					el: this.body.$el[0]
+				}));
+				this.trigger('view:reconfigure', this._options);
+			},
+			onReconfigure: function(options){
+				options = options || {};
+				//1. reconfigure data and columns into this._options
+				this._options.data = options.data || this._options.data;
+				_.each(options.columns, function(column){
+					//TBI column ['name' or {}, '-name']
+				}, this);
+
+				//2. rebuild header cells - let it rerender with new column array
+				_.each(this._options.columns, function(column){
+					column.header = column.header || 'string',
+					column.cell = column.cell || column.header || 'string',
+					column.label = column.label || _.string.titleize(column.name)
+				});				
+				this.header.currentView.trigger('view:render-data', this._options.columns);
+
+				//3. rebuild body rows - let it rerender with new data array
+				this.body.currentView._options = this._options;
+				this.body.currentView.trigger('view:render-data', this._options.data);
+			}
+		});
+
+		var HeaderRow = app.view({
+			type: 'CollectionView',
+			itemView: 'dynamic',
+			tagName: 'tr',
+			//buildItemView - select proper header cell
+			buildItemView: function(item, ItemViewType, itemViewOptions){
+				return app.widget(_.string.classify([item.get('header'), 'header', 'cell'].join('-')), {
+					model: item,
+					tagName: 'th'
+				});
+			}
+		});
+
+		var Row = app.view({
+			type: 'CollectionView',
+			itemView: 'dynamic',
+			tagName: 'tr',
+			initialize: function(options){
+				this.record = options.record;
+			},
+			//buildItemView - select proper cell
+			buildItemView: function(item, ItemViewType, itemViewOptions){
+				return app.widget(_.string.classify([item.get('cell'), 'cell'].join('-')), {
+					model: item,
+					tagName: 'td',
+					row: this //link each cell with the row. (use/link it in cell's init())
+				});
+			}			
+		})		
+
+		var Body = app.view({
+			type: 'CollectionView',
+			itemView: Row,
+			itemViewOptions: function(model, index){
+				return {
+					collection: app.collection(_.map(this._options.columns, function(column){
+						return _.extend({
+							value: model.get(column.name)
+						}, column)
+					}, this))
+				}
+			}
+		})
+
+		return UI;
+
+	});
+
+})(Application);
+/**
+ * The Default String Column Header Definition.
+ *
+ * @author Tim.Liu
+ * @created 2013.11.25
+ * @updated 2014.04.22
+ */
+
+
+;(function(app){
+
+	app.widget('StringHeaderCell', function(){
+
+		var View = app.view({
+			template: '<span><i class="{{icon}}"></i> {{{label}}}</span>',
+		});
+
+		return View;
+	});
+
+})(Application);
+/**
+ * The Default String Column Cell Definition.
+ *
+ * @author Tim.Liu
+ * @created 2013.11.25
+ * @updated 2014.04.22
+ */
+
+
+;(function(app){
+
+	app.widget('StringCell', function(){
+
+		var View = app.view({
+			template: '<span>{{{value}}}</span>',
+		});
+
+		return View;
+	});
+
+})(Application);
+/**
+ * This is the ActionCell definition 
+ *
+ * options
+ * -------
+ * passed down by this.model.get('actions')
+ * 
+ * actions: { (replace the actions)
+ * 		'name': {
+ * 			label: ...,
+ * 			icon: ...,
+ * 			tooltip: ...,
+ * 			fn: function(){
+ * 				this.model is the row record data model
+ * 			}
+ * 		},
+ * 		...
+ * }
+ *
+ * @author Tim.Liu
+ * @created 2013.11.27
+ * @updated 2014.04.22
+ */
+
+;(function(app){
+
+	app.widget('ActionCell', function(){
+
+		var UI = app.view({
+			template: [
+				'{{#each actions}}',
+					'<span class="action-cell-item" action="{{@key}}" data-toggle="tooltip" title="{{tooltip}}"><i class="{{icon}}"></i> {{label}}</span> ',
+				'{{/each}}'
+			],
+			className: 'action-cell',
+
+			initialize: function(options){
+				this.row = options.row;
+				var actions = this.model.get('actions') || [];
+
+					//default
+					_.each({
+						preview: {
+							icon: 'fa fa-eye',
+							tooltip: 'Preview'
+						},
+						edit: {
+							icon: 'fa fa-edit',
+							tooltip: 'Edit'
+						},
+						'delete': {
+							icon: 'fa fa-trash-o',
+							tooltip: 'Delete'
+						}
+					}, function(def, name){
+						if(actions[name]){
+							actions[name] = _.extend(def, actions[name]);
+						}else
+							actions[name] = def;
+					});
+
+
+				//allow action impl overriden by action config.fn
+				this.actions = this.actions || {};
+				_.each(actions, function(action, name){
+					if(action.fn){
+						this.actions[name] = function($action){
+							action.fn.apply(this.row, arguments);
+							/*Warning:: If we use options.row here, it won't work, since the options object will change, hence this event listener will be refering to other record's row when triggered*/
+						}
+					}
+				}, this);
+				this.model.set('actions', actions);
+				this.enableActionTags(true);
+			},
+			tooltips: true
+
+		});
+
+		return UI;
+
+	});	
 
 })(Application);

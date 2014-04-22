@@ -116,7 +116,6 @@
 			itemView: Row,
 			itemViewOptions: function(model, index){
 				return {
-					record: model, //link each row with corresponding data record
 					collection: app.collection(_.map(this._options.columns, function(column){
 						return _.extend({
 							value: model.get(column.name)

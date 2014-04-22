@@ -35,11 +35,11 @@
 	    			{
 	    				cell: 'action',
 	    				label: 'Ops',
-	    				icon: 'fa fa-cogs',
+	    				icon: 'fa fa-cog',
 	    				actions: {
 	    					edit: {
-	    						fn: function(record){
-	    							console.log(record);
+	    						fn: function(){
+	    							console.log(this.model);
 	    						}
 	    					}
 	    				}
