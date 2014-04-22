@@ -282,6 +282,9 @@
 				else this.enableSVG();
 			});
 		}
+		if(this.tooltips) {
+			this.enableTooltips(this.tooltips);
+		}
 
 		return Backbone.Marionette.View.apply(this, arguments);
 	}

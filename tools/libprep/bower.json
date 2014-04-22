@@ -46,7 +46,7 @@
     "underscore": "~1.x.x",
     "underscore.string": "~2.x.x",
     "backbone": "~1.x.x",
-    "marionette": "~1.x.x",    
+    "marionette": "~1.x.x",
     "handlebars": "~1.x.x",
     "swag": "*",
     "bootstrap": "~3.x.x",
@@ -80,6 +80,11 @@
     "createjs-tweenjs": "*",
     "jquery.transit": "*",
     "scroll-reveal": "*",
-    "html5-boilerplate": "*"    
+    "html5-boilerplate": "*",
+    "mockjs": "*",
+    "roughdraft.js": "*"
+  },
+  "resolutions": {
+    "jquery": "~2.x.x"
   }
 }

@@ -58,7 +58,7 @@
                         '<li class="divider"></li>',
                         '<li class="dropdown-header">Basics</li>',
                         '<li><a href="#navigate/Demo/Editors">Editors</a></li>',
-                        '<li><a href="#">Data Table</a></li>',
+                        '<li><a href="#navigate/Demo/Datatable">Data Table</a></li>',
                         '<li><a href="#">Tree</a></li>',
                         '<li class="divider"></li>',
                         '<li class="dropdown-header">Accessories</li>',
