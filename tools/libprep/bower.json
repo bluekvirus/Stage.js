@@ -45,6 +45,7 @@
     "jquery-file-upload": "~9.x.x",
     "underscore": "~1.x.x",
     "underscore.string": "~2.x.x",
+    "selectn": "~0.9.x",
     "backbone": "~1.x.x",
     "marionette": "~1.x.x",
     "handlebars": "~1.x.x",
@@ -82,7 +83,8 @@
     "scroll-reveal": "*",
     "html5-boilerplate": "*",
     "mockjs": "*",
-    "roughdraft.js": "*"
+    "roughdraft.js": "*",
+    "jquery-mockjax": "*"
   },
   "resolutions": {
     "jquery": "~2.x.x"

@@ -1,5 +1,21 @@
 ;(function(app){
 
+	var mockDataTpl = {
+		'data|50-50': [{
+			'_id': '_@GUID',
+			'title|1': ['Dr.', 'Mr.', 'Ms.', 'Mrs'],
+			'username': '@EMAIL',
+			'status|1': ['active', 'blocked', 'offline', 'guest'],
+			profile: {
+				'name|1': _.times(250, function(){return Random.name()}),
+				'age': '@INTEGER(20,90)',
+				'dob': '@DATE',
+				'major|1': ['CS', 'SE', 'Design', 'EE', 'Math'],
+			},
+			'link': '/profile/@_id'
+		}]
+	}
+
 	app.area('Datatable', {
 	    className: 'container',
 	    template: [
@@ -11,30 +27,32 @@
 	    onShow: function(){
 	    	this.table.trigger('region:load-view', 'Datagrid', {
 	    		className: 'table table-hover',
-	    		data: [
-	    			{_id: 1, title: 'Dr.', name: 'Andy', age: 24, status: 'active', profile: {dob: '2000/01/01', major: 'cs'}},
-	    			{_id: 2, title: 'Dr.', name: 'July', age: 24, status: 'blocked', profile: {dob: '2000/01/01', major: 'cs'}},
-	    			{_id: 3, title: 'Dr.', name: 'Jay', age: 24, status: 'active', profile: {dob: '2000/01/01', major: 'cs'}},
-	    			{_id: 4, title: 'Dr.', name: 'Bob', age: 24, status: 'offline', profile: {dob: '2000/01/01', major: 'cs'}},
-	    			{_id: 5, title: 'Dr.', name: 'Alice', age: 24, status: 'active', profile: {dob: '2000/01/01', major: 'cs'}},
-	    			{_id: 6, title: 'Dr.', name: 'Tom', age: 24, status: 'active', profile: {dob: '2000/01/01', major: 'cs'}},
-	    		],
 
+	    		data: Mock.mock(mockDataTpl).data,
 	    		columns: [
 	    			{
 	    				name: '_id',
-	    				label: '#'
+	    				label: '#',
+	    				cell: 'seq'
 	    			},
 	    			{
-	    				name: 'name',
-	    				icon: 'fa fa-credit-card'
+	    				name: 'username',
+	    				icon: 'fa fa-envelope'
 	    			},
 	    			{
-	    				name: 'age'
+	    				name: 'profile.name',
+	    				label: 'Name'
+	    			},
+	    			{
+	    				name: 'profile.age',
+	    				label: 'Age'
+	    			},
+	    			{
+	    				name: 'link'
 	    			},
 	    			{
 	    				cell: 'action',
-	    				label: 'Ops',
+	    				//label: 'Ops',
 	    				icon: 'fa fa-cog',
 	    				actions: {
 	    					edit: {

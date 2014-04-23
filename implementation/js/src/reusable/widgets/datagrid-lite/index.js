@@ -118,7 +118,8 @@
 				return {
 					collection: app.collection(_.map(this._options.columns, function(column){
 						return _.extend({
-							value: model.get(column.name)
+							value: selectn(column.name || '', model.attributes),
+							index: index
 						}, column)
 					}, this))
 				}

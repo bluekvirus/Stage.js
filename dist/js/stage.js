@@ -2805,7 +2805,8 @@ var I18N = {};
 				return {
 					collection: app.collection(_.map(this._options.columns, function(column){
 						return _.extend({
-							value: model.get(column.name)
+							value: selectn(column.name || '', model.attributes),
+							index: index
 						}, column)
 					}, this))
 				}
@@ -2830,11 +2831,11 @@ var I18N = {};
 
 	app.widget('StringHeaderCell', function(){
 
-		var View = app.view({
+		var UI = app.view({
 			template: '<span><i class="{{icon}}"></i> {{{label}}}</span>',
 		});
 
-		return View;
+		return UI;
 	});
 
 })(Application);
@@ -2851,11 +2852,29 @@ var I18N = {};
 
 	app.widget('StringCell', function(){
 
-		var View = app.view({
+		var UI = app.view({
 			template: '<span>{{{value}}}</span>',
 		});
 
-		return View;
+		return UI;
+	});
+
+})(Application);
+/**
+ * Cell that shows the seq number of record
+ *
+ * @author Tim.Liu
+ * @created 2014.04.23
+ */
+
+;(function(app){
+
+	app.widget('SeqCell', function(){
+		var UI = app.view({
+			template: '{{index}}'
+		});
+
+		return UI;
 	});
 
 })(Application);

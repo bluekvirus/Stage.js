@@ -11,11 +11,11 @@
 
 	app.widget('StringHeaderCell', function(){
 
-		var View = app.view({
+		var UI = app.view({
 			template: '<span><i class="{{icon}}"></i> {{{label}}}</span>',
 		});
 
-		return View;
+		return UI;
 	});
 
 })(Application);

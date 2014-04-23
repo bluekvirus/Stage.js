@@ -11,11 +11,11 @@
 
 	app.widget('StringCell', function(){
 
-		var View = app.view({
+		var UI = app.view({
 			template: '<span>{{{value}}}</span>',
 		});
 
-		return View;
+		return UI;
 	});
 
 })(Application);

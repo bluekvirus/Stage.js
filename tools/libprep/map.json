@@ -66,6 +66,7 @@
     "bower_components/jquery-file-upload/js/jquery.fileupload-angular.js",
     "bower_components/jquery-file-upload/js/jquery.iframe-transport.js"
   ],
+  "jquery-mockjax": "bower_components/jquery-mockjax/jquery.mockjax.js",
   "jquery-serializeForm": "bower_components/jquery-serializeForm",
   "jquery-ui": "bower_components/jquery-ui/ui/jquery-ui.js",
   "jquery.cookie": "bower_components/jquery.cookie/jquery.cookie.js",
@@ -78,11 +79,14 @@
     "bower_components/marionette/lib/core/amd/backbone.marionette.js"
   ],
   "marked": "bower_components/marked",
+  "mockjs": "bower_components/mockjs",
   "modernizr": "bower_components/modernizr",
   "momentjs": "bower_components/momentjs/moment.js",
   "nprogress": "bower_components/nprogress/nprogress.js",
   "raphael": "bower_components/raphael/raphael.js",
+  "roughdraft.js": "bower_components/roughdraft.js/jquery.roughdraft.0.1.3.min.js",
   "scroll-reveal": "bower_components/scroll-reveal/scrollReveal.js",
+  "selectn": "bower_components/selectn",
   "socket.io-client": "bower_components/socket.io-client",
   "spin.js": "bower_components/spin.js/spin.js",
   "store.js": "bower_components/store.js/store.js",
@@ -95,7 +99,9 @@
     "bower_components/uri.js/src/SecondLevelDomains.js",
     "bower_components/uri.js/src/punycode.js",
     "bower_components/uri.js/src/URITemplate.js",
-    "bower_components/uri.js/src/jquery.URI.js"
+    "bower_components/uri.js/src/jquery.URI.js",
+    "bower_components/uri.js/src/URI.fragmentQuery.js",
+    "bower_components/uri.js/src/URI.fragmentURI.js"
   ],
   "yepnope": "bower_components/yepnope"
 }
