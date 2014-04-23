@@ -259,7 +259,7 @@
 				var tpl = Backbone.Marionette.TemplateCache.prototype.loadTemplate(options.template || this.template || ' ');
 				this.ui = {};
 				var that = this;
-				$('<div>' + tpl + '</div>').find('[ui]').each(function(index, el){
+				$(['<', this.tagName, '>', tpl, '</', this.tagName, '>'].join('')).find('[ui]').each(function(index, el){
 					var ui = $(this).attr('ui');
 					that.ui[ui] = '[ui="' + ui + '"]';
 				});
