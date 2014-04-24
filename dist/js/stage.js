@@ -1235,20 +1235,19 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 		options = options || {};
 
 		if(!_.isFunction(options)){
+			//fix default tpl to be ' '.
+			this.template = options.template || this.template || ' ';
 			//auto ui pick-up
 			if(!this.ui && !options.ui){
 				//figure out ui tags
-				var tpl = Backbone.Marionette.TemplateCache.prototype.loadTemplate(options.template || this.template || ' ');
+				var tpl = Backbone.Marionette.TemplateCache.prototype.loadTemplate(this.template);
 				this.ui = {};
 				var that = this;
-				$('<div>' + tpl + '</div>').find('[ui]').each(function(index, el){
+				$(['<', this.tagName, '>', tpl, '</', this.tagName, '>'].join('')).find('[ui]').each(function(index, el){
 					var ui = $(this).attr('ui');
 					that.ui[ui] = '[ui="' + ui + '"]';
 				});
 			}
-
-			//fix default tpl to be ' '.
-			if(!options.template && !this.template) options.template = ' ';
 		}
 
 		//meta-event programming ability
@@ -1295,6 +1294,8 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 				}
 				this.model.set(data);
 			}
+
+			this.trigger('view:data-rendered');
 		}
 	})
 
@@ -1581,7 +1582,7 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 			if(!_.isFunction(options))
 				if(!this.regions && !options.regions){
 					this.regions = {};
-					var tpl = Backbone.Marionette.TemplateCache.prototype.loadTemplate(options.tempalte || this.template || ' ');
+					var tpl = Backbone.Marionette.TemplateCache.prototype.loadTemplate(options.template || this.template);
 					//figure out the regions, first - wrap the tpl in this.tagName
 					var that = this;
 					$(['<', this.tagName, '>', tpl, '</', this.tagName, '>'].join('')).find('[region]').each(function(index, el){
@@ -2712,6 +2713,8 @@ var I18N = {};
  * 		view: ... (definition)
  * }
  *
+ * details row is still in TBI status
+ *
  * note
  * ----
  * the details row appears under each normal data row;
@@ -2960,5 +2963,89 @@ var I18N = {};
 		return UI;
 
 	});	
+
+})(Application);
+
+/**
+ * This is the Tree widget.
+ *
+ * <ul>
+ * 	<li></li>
+ * 	<li></li>
+ * 	<li>
+ * 		<a></a> -- item val
+ * 		<ul>...</ul> -- nested children
+ * 	</li>
+ * 	...
+ * </ul>
+ *
+ * options
+ * -------
+ * 1. data - [{
+ * 		val: ...
+ * 		icon: ...
+ * 		children: []
+ * }]
+ * 2. node - default view definition config: see nodeViewConfig below
+ *
+ * override node view
+ * ------------------
+ * a. just template (e.g val attr used in template)
+ * use node: {template: [...]}; don't forget <ul></ul> at the end of tpl string.
+ * 
+ * b. children array attr
+ * use node: {
+ * 		initialize: function(){
+ * 			if(this.className() === 'node') this.collection = app.collection(this.model.get('[new children attr]'));
+ * 		}
+ * }
+ *
+ * @author Tim.Liu
+ * @created 2014.04.24
+ */
+
+;(function(app){
+
+	app.widget('Tree', function(){
+
+		var nodeViewConfig = {
+			type: 'CompositeView',
+			tagName: 'li',
+			itemViewContainer: 'ul',
+			className: function(){
+				if(_.size(this.model.get('children')) > 1){
+					return 'node';
+				}
+				return 'leaf';
+			},
+			initialize: function(){
+				if(this.className() === 'node') this.collection = app.collection(this.model.get('children'));
+			},
+			template: [
+				'<a href="#"><i class="{{icon}}"></i> {{{val}}}</a>',
+				'<ul></ul>'
+			]
+		};
+
+		var Root = app.view({
+			type: 'CollectionView',
+			className: 'tree tree-root',
+			tagName: 'ul',
+			initialize: function(options){
+				this._options = options;
+				this.itemView = this._options.itemView || app.view(_.extend({}, nodeViewConfig, _.omit(this._options.node, 'type', 'tagName', 'itemViewContainer')));
+			},
+			onShow: function(){
+				this.trigger('view:reconfigure', this._options);
+			},
+			onReconfigure: function(options){
+				_.extend(this._options, options);
+				this.trigger('view:render-data', this._options.data);
+			}
+		});
+
+		return Root;
+
+	});
 
 })(Application);

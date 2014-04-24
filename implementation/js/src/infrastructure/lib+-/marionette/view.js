@@ -253,10 +253,12 @@
 		options = options || {};
 
 		if(!_.isFunction(options)){
+			//fix default tpl to be ' '.
+			this.template = options.template || this.template || ' ';
 			//auto ui pick-up
 			if(!this.ui && !options.ui){
 				//figure out ui tags
-				var tpl = Backbone.Marionette.TemplateCache.prototype.loadTemplate(options.template || this.template || ' ');
+				var tpl = Backbone.Marionette.TemplateCache.prototype.loadTemplate(this.template);
 				this.ui = {};
 				var that = this;
 				$(['<', this.tagName, '>', tpl, '</', this.tagName, '>'].join('')).find('[ui]').each(function(index, el){
@@ -264,9 +266,6 @@
 					that.ui[ui] = '[ui="' + ui + '"]';
 				});
 			}
-
-			//fix default tpl to be ' '.
-			if(!options.template && !this.template) options.template = ' ';
 		}
 
 		//meta-event programming ability
@@ -313,6 +312,8 @@
 				}
 				this.model.set(data);
 			}
+
+			this.trigger('view:data-rendered');
 		}
 	})
 

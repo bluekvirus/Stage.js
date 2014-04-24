@@ -25,6 +25,8 @@
  * 		view: ... (definition)
  * }
  *
+ * details row is still in TBI status
+ *
  * note
  * ----
  * the details row appears under each normal data row;

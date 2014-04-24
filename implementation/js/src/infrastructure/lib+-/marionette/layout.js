@@ -95,7 +95,7 @@
 			if(!_.isFunction(options))
 				if(!this.regions && !options.regions){
 					this.regions = {};
-					var tpl = Backbone.Marionette.TemplateCache.prototype.loadTemplate(options.tempalte || this.template || ' ');
+					var tpl = Backbone.Marionette.TemplateCache.prototype.loadTemplate(options.template || this.template);
 					//figure out the regions, first - wrap the tpl in this.tagName
 					var that = this;
 					$(['<', this.tagName, '>', tpl, '</', this.tagName, '>'].join('')).find('[region]').each(function(index, el){
