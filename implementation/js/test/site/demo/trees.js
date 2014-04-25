@@ -38,6 +38,9 @@
 	    	//1. normal tree (minimum)
 	    	this.left.trigger('region:load-view', 'Tree', {
 	    		data: data,
+	    		onSelected: function(data, $el, e){
+	    			console.debug(data);
+	    		}
 	    	});
 
 	    	//2. used in dropdown
@@ -68,7 +71,7 @@
   				}
 	    	}));
 
-	    	//3. accordion
+	    	//3. accordion (with nodes collapsed first)
 	    	this.right.show(app.area({
 	    		type: 'CollectionView',
 	    		initialize: function(){
@@ -102,6 +105,11 @@
 									'<a href="#"><i class="{{icon}}"></i> {{{val}}}</a>',
 									'<ul class="hidden"></ul>'
 	    						]
+	    					},
+	    					onSelected: function(data, $el, e){
+								e.preventDefault();
+								console.debug(data.record, $el);
+								data.$children.toggleClass('hidden');
 	    					}
 	    				}).$el.hide();
 	    			},

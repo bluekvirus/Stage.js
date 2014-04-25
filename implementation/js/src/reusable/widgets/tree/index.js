@@ -20,6 +20,8 @@
  * }]
  * 2. node - default view definition config: see nodeViewConfig below
  *
+ * 3. onSelected: callback
+ *
  * override node view
  * ------------------
  * a. just template (e.g val attr used in template)
@@ -31,6 +33,10 @@
  * 			if(this.className() === 'node') this.collection = app.collection(this.model.get('[new children attr]'));
  * 		}
  * }
+ *
+ * note
+ * ---
+ * support search and expand a path (use $parent in node/leaf onSelected() data)
  *
  * @author Tim.Liu
  * @created 2014.04.24
@@ -44,19 +50,24 @@
 			type: 'CompositeView',
 			tagName: 'li',
 			itemViewContainer: 'ul',
+			itemViewOptions: function(){
+				return {parent: this};
+			},
 			className: function(){
 				if(_.size(this.model.get('children')) > 1){
 					return 'node';
 				}
 				return 'leaf';
 			},
-			initialize: function(){
+			initialize: function(options){
+				this.parent = options.parent;
 				if(this.className() === 'node') this.collection = app.collection(this.model.get('children'));
 			},
 			onRender: function(){
 				this.$el.addClass('clickable').data({
 					'record': this.model.attributes,
-					'$children': this.$el.find('> ul')
+					'$children': this.$el.find('> ul'),
+					'$parent': this.parent && this.parent.$el
 				});
 			},
 			template: [
@@ -72,6 +83,7 @@
 			initialize: function(options){
 				this._options = options;
 				this.itemView = this._options.itemView || app.view(_.extend({}, nodeViewConfig, _.omit(this._options.node, 'type', 'tagName', 'itemViewContainer')));
+				this.onSelected = options.onSelected || this.onSelected;
 			},
 			onShow: function(){
 				this.trigger('view:reconfigure', this._options);
@@ -83,15 +95,13 @@
 			events: {
 				'click .clickable': function(e){
 					e.stopPropagation();
-					e.preventDefault();
 					var $el = $(e.currentTarget);
-					this.trigger('view:selected', $el.data(), $el);
+					this.trigger('view:selected', $el.data(), $el, e);
 				}
 			},
 			//override this
-			onSelected: function(data, $el){
-				console.debug(data, $el);
-				data.$children.toggleClass('hidden');
+			onSelected: function(data, $el, e){
+				
 			}			
 		});
 

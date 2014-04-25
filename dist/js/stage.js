@@ -2708,16 +2708,17 @@ var I18N = {};
  * 			label: name given to header cell (instead of _.titleize(name))
  * 		}
  * ]
- * 3. details: false or datum name in data row or {
- * 		key: ...,
- * 		view: ... (definition)
- * }
- *
- * details row is still in TBI status
+ * 3. details: false or datum name in data row or a view definition (render with row.model)
+ * 
  *
  * note
  * ----
  * the details row appears under each normal data row;
+ *
+ * TBI
+ * ---
+ * select header/cell
+ * details row is still in TBI status (extra tr stub, view close clean up)
  * 
  * 
  * @author Tim.Liu
@@ -2788,9 +2789,6 @@ var I18N = {};
 			type: 'CollectionView',
 			itemView: 'dynamic',
 			tagName: 'tr',
-			initialize: function(options){
-				this.record = options.record;
-			},
 			//buildItemView - select proper cell
 			buildItemView: function(item, ItemViewType, itemViewOptions){
 				return app.widget(_.string.classify([item.get('cell'), 'cell'].join('-')), {
@@ -2988,6 +2986,8 @@ var I18N = {};
  * }]
  * 2. node - default view definition config: see nodeViewConfig below
  *
+ * 3. onSelected: callback
+ *
  * override node view
  * ------------------
  * a. just template (e.g val attr used in template)
@@ -2999,6 +2999,10 @@ var I18N = {};
  * 			if(this.className() === 'node') this.collection = app.collection(this.model.get('[new children attr]'));
  * 		}
  * }
+ *
+ * note
+ * ---
+ * support search and expand a path (use $parent in node/leaf onSelected() data)
  *
  * @author Tim.Liu
  * @created 2014.04.24
@@ -3012,19 +3016,24 @@ var I18N = {};
 			type: 'CompositeView',
 			tagName: 'li',
 			itemViewContainer: 'ul',
+			itemViewOptions: function(){
+				return {parent: this};
+			},
 			className: function(){
 				if(_.size(this.model.get('children')) > 1){
 					return 'node';
 				}
 				return 'leaf';
 			},
-			initialize: function(){
+			initialize: function(options){
+				this.parent = options.parent;
 				if(this.className() === 'node') this.collection = app.collection(this.model.get('children'));
 			},
 			onRender: function(){
 				this.$el.addClass('clickable').data({
 					'record': this.model.attributes,
-					'$children': this.$el.find('> ul')
+					'$children': this.$el.find('> ul'),
+					'$parent': this.parent && this.parent.$el
 				});
 			},
 			template: [
@@ -3040,6 +3049,7 @@ var I18N = {};
 			initialize: function(options){
 				this._options = options;
 				this.itemView = this._options.itemView || app.view(_.extend({}, nodeViewConfig, _.omit(this._options.node, 'type', 'tagName', 'itemViewContainer')));
+				this.onSelected = options.onSelected || this.onSelected;
 			},
 			onShow: function(){
 				this.trigger('view:reconfigure', this._options);
@@ -3051,15 +3061,13 @@ var I18N = {};
 			events: {
 				'click .clickable': function(e){
 					e.stopPropagation();
-					e.preventDefault();
 					var $el = $(e.currentTarget);
-					this.trigger('view:selected', $el.data(), $el);
+					this.trigger('view:selected', $el.data(), $el, e);
 				}
 			},
 			//override this
-			onSelected: function(data, $el){
-				console.debug(data, $el);
-				data.$children.toggleClass('hidden');
+			onSelected: function(data, $el, e){
+				
 			}			
 		});
 

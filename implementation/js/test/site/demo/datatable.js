@@ -57,7 +57,8 @@
 	    				actions: {
 	    					edit: {
 	    						fn: function(){
-	    							console.log(this.model);
+	    							//record, columns
+	    							console.log(this.model, this.collection);
 	    						}
 	    					}
 	    				}

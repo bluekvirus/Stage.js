@@ -20,16 +20,17 @@
  * 			label: name given to header cell (instead of _.titleize(name))
  * 		}
  * ]
- * 3. details: false or datum name in data row or {
- * 		key: ...,
- * 		view: ... (definition)
- * }
- *
- * details row is still in TBI status
+ * 3. details: false or datum name in data row or a view definition (render with row.model)
+ * 
  *
  * note
  * ----
  * the details row appears under each normal data row;
+ *
+ * TBI
+ * ---
+ * select header/cell
+ * details row is still in TBI status (extra tr stub, view close clean up)
  * 
  * 
  * @author Tim.Liu
@@ -100,9 +101,6 @@
 			type: 'CollectionView',
 			itemView: 'dynamic',
 			tagName: 'tr',
-			initialize: function(options){
-				this.record = options.record;
-			},
 			//buildItemView - select proper cell
 			buildItemView: function(item, ItemViewType, itemViewOptions){
 				return app.widget(_.string.classify([item.get('cell'), 'cell'].join('-')), {
