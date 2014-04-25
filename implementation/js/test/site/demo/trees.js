@@ -27,7 +27,10 @@
 	    	'<p class="alert alert-info"><strong>Note:</strong> Bootstrap 3 has removed multi-level dropdown-menu support...</p>',
 	    	'<div class="row">',
 		    	'<div region="left" class="col-md-4"></div>',
-		    	'<div region="mid" class="col-md-4"></div>',
+		    	'<div class="col-md-4">',
+		    		'<div region="mid"></div>',
+		    		//'<div region="mid2"></div>',
+		    	'</div>',
 		    	'<div region="right" class="col-md-4"></div>',
 	    	'</div>'
 	    ],
@@ -35,12 +38,6 @@
 	    	//1. normal tree (minimum)
 	    	this.left.trigger('region:load-view', 'Tree', {
 	    		data: data,
-	    // 		node: {
-	    // 			template: [
-					// 	'<a href="#"><i class="{{icon}}"></i> {{{otherAttr}}}</a>',
-					// 	'<ul></ul>'
-					// ]
-	    // 		}
 	    	});
 
 	    	//2. used in dropdown
@@ -99,7 +96,13 @@
 	    					'cursor': 'pointer'
 	    				});
 	    				this.body.trigger('region:load-view', 'Tree', {
-	    					data: this.model.get('children')
+	    					data: this.model.get('children'),
+	    					node: {
+	    						template: [
+									'<a href="#"><i class="{{icon}}"></i> {{{val}}}</a>',
+									'<ul class="hidden"></ul>'
+	    						]
+	    					}
 	    				}).$el.hide();
 	    			},
 	    			actions: {

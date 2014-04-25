@@ -3021,6 +3021,12 @@ var I18N = {};
 			initialize: function(){
 				if(this.className() === 'node') this.collection = app.collection(this.model.get('children'));
 			},
+			onRender: function(){
+				this.$el.addClass('clickable').data({
+					'record': this.model.attributes,
+					'$children': this.$el.find('> ul')
+				});
+			},
 			template: [
 				'<a href="#"><i class="{{icon}}"></i> {{{val}}}</a>',
 				'<ul></ul>'
@@ -3041,7 +3047,20 @@ var I18N = {};
 			onReconfigure: function(options){
 				_.extend(this._options, options);
 				this.trigger('view:render-data', this._options.data);
-			}
+			},
+			events: {
+				'click .clickable': function(e){
+					e.stopPropagation();
+					e.preventDefault();
+					var $el = $(e.currentTarget);
+					this.trigger('view:selected', $el.data(), $el);
+				}
+			},
+			//override this
+			onSelected: function(data, $el){
+				console.debug(data, $el);
+				data.$children.toggleClass('hidden');
+			}			
 		});
 
 		return Root;
