@@ -7,8 +7,7 @@ Change Log
 3. refined $.overlay
 4. simple tree (presentation) widget
 5. simple datagrid (presentation) widget
-6. paginator/filter/sorter (controller) widget -- in progress
-7. added data/html mocking library
+6. added data/html mocking library
 
 
 1.0.0-rc2 (2014-04-15)

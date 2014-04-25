@@ -5,20 +5,17 @@ This project produces **Stage.js** - an infrastructure for building modern web a
 
 What's next?
 ------------
-1.0.0-rc3 might bring:
-* put pagination into Paginator widget
-* get a minimum Datagrid widget back
+1.0.0-release might bring:
+* paginator/filter/sorter (controller) widget for used with list views;
+* Datagrid: select-all header/cell, details row;
+* Editor+ : Spinner, Switches, DnD Listing, File Listing;
 * allow developers their own choices of template engine other than handlebars
 * provide a way to persist context status between context switches.
-
-1.0.0-release might bring:
-* Editor+ : Spinner, Switches, DnD Listing, File Listing;
-* Widget+ : Break Widgets into List and Containers (e.g list[stacked(items and table rows), tabbed, nested(tree), queued(toolbar)]); Grid Local Column +-/Sort/Filter;
 
 
 Current Version
 ---------------
-1.0.0-rc2
+1.0.0-rc3
 
 
 Build
