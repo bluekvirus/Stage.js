@@ -17,22 +17,21 @@
 	 * Do this in onShow() instead of initialize.
 	 */
 	_.extend(Backbone.Marionette.ItemView.prototype, {
-		enableSVG: function(cb){
+		enableSVG: function(){
 			if(!Raphael) throw new Error('DEV::View::You did NOT have Raphael.js included in the libs.');
-			if(cb){
-				var that = this;
-				Raphael(this.el, this.$el.width(), this.$el.height(), function(){
-					that.paper = this;
-					cb.apply(this, arguments);
-				});
-			}else {
-				this.paper = Raphael(this.el, this.$el.width(), this.$el.height());
-			}
+			var that = this;
+
+			Raphael(this.el, this.$el.width(), this.$el.height(), function(){
+				that.paper = this;
+				that.trigger('view:paper-ready'); // - use this instead of onShow()
+			});
+
 			//resize paper upon window resize event.
-			this.listenTo(app, 'app:resized', function(e){
+			this.onFitPaper = function(){
+				if(!this.paper) return;
 				this.paper.setSize(this.$el.width(), this.$el.height());
 				this.trigger('view:paper-resized');
-			});
+			}
 		}
 	});
 

@@ -14,12 +14,13 @@
             '</div>',
         ],
         initialize: function(){
-            this.listenTo(Application, 'app:scroll', function(offset, viewportH){
+            this.listenTo(Application, 'app:scroll', function(offset){
                 if(!this.$headers || offset < 150) {
                     this.breadcrumbs.$el.hide();
                     return;
                 }
-                var stop = false, $result;
+                var stop = false, $result, viewportH = $window.height();
+
                 _.each(this.$headers, function($h, index){
                     if(stop) return;
                     if($h.offset().top > offset + viewportH * 0.35) {

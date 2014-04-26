@@ -4,7 +4,7 @@
     //fullScreen: true,
     template: '<div region="banner" view="Banner"></div><div region="center"></div><div region="footer" view="Footer"></div>',
     contextRegion: 'center',
-    defaultContext: 'Document'
+    defaultContext: 'Home'
 
 }).run();
 
@@ -19,8 +19,8 @@
         // },
         initialize: function(){
             this.listenTo(Application, 'app:context-switched', function(name){
-                this.$el.find('[context]').removeClass('active');
-                this.$el.find('[context="' + name + '"]').addClass('active');
+                if(name !== 'Home') this.$el.removeClass('hidden');
+                else this.$el.addClass('hidden');
             });
         },
         actions: {
@@ -34,7 +34,7 @@
                 location.href = ['themes', Application.currentTheme, 'index.html'].join('/') ;
             }
         },
-        className: 'navbar navbar-default',
+        className: 'navbar navbar-default hidden',
         template: [
             '<div class="navbar-header">',//A
               '<button data-target=".navbar-responsive-collapse" data-toggle="collapse" class="navbar-toggle" type="button">',//1

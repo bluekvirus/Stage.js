@@ -276,10 +276,7 @@
 			this.activateEditors(this.editors);
 		});
 		if(this.svg && this.enableSVG) {
-			this.listenTo(this, 'show', function(){
-				if(_.isFunction(this.svg)) this.enableSVG(this.svg);
-				else this.enableSVG();
-			});
+			this.listenTo(this, 'render', this.enableSVG);
 		}
 		if(this.tooltips) {
 			this.enableTooltips(this.tooltips);

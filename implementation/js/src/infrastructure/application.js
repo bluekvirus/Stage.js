@@ -245,9 +245,10 @@ _.each(['Core', 'Util'], function(coreModule){
 			var $body = $('body');
 
 			function trackAppSize(){
-				Application.trigger('app:resized', {h: window.innerHeight, w: window.innerWidth});
+				var screenSize = {h: $window.height(), w: $window.width()};
+				Application.trigger('app:resized', screenSize);
 				if(Application.config.fullScreen){
-					$body.height(window.innerHeight);
+					$body.height(screenSize.h);
 				}
 			};
 			trackAppSize();
@@ -255,7 +256,7 @@ _.each(['Core', 'Util'], function(coreModule){
 
 			function trackScroll(){
 				var top = $window.scrollTop();
-				Application.trigger('app:scroll', top, window.innerHeight);
+				Application.trigger('app:scroll', top);
 			}
 			$window.on('scroll', _.debounce(trackScroll, Application.config.rapidEventDebounce))
 			
