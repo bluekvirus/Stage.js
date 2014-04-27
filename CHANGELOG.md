@@ -1,12 +1,13 @@
 Change Log
 ==========
-1.0.0-rc3 (2014-04-21)
+1.0.0-rc3 (2014-04-25)
 ----------------------
 1. added dev-server (ajax-box-lite, with less monitor, easy routers, no session or DB by default) in tools
 2. added app.model({data}) and app.collection([data]) back 
 3. refined $.overlay
-4. paginator widget -- migrate in progress
-5. simple datagrid widget -- migrate in progress
+4. simple tree (presentation) widget
+5. simple datagrid (presentation) widget
+6. added data/html mocking library
 
 
 1.0.0-rc2 (2014-04-15)
