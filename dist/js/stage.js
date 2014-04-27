@@ -246,9 +246,10 @@ _.each(['Core', 'Util'], function(coreModule){
 			var $body = $('body');
 
 			function trackAppSize(){
-				Application.trigger('app:resized', {h: window.innerHeight, w: window.innerWidth});
+				var screenSize = {h: $window.height(), w: $window.width()};
+				Application.trigger('app:resized', screenSize);
 				if(Application.config.fullScreen){
-					$body.height(window.innerHeight);
+					$body.height(screenSize.h);
 				}
 			};
 			trackAppSize();
@@ -256,7 +257,7 @@ _.each(['Core', 'Util'], function(coreModule){
 
 			function trackScroll(){
 				var top = $window.scrollTop();
-				Application.trigger('app:scroll', top, window.innerHeight);
+				Application.trigger('app:scroll', top);
 			}
 			$window.on('scroll', _.debounce(trackScroll, Application.config.rapidEventDebounce))
 			
@@ -848,6 +849,7 @@ Application.Util.Tpl.build('_blank', ' ');
 
 		create: function(config){
 			config.name = config.name || 'Default';
+			config.className = 'context context-' + _.string.slugify(config.name) + ' ' + (config.className || '');
 			if(app.Core.Context[config.name]) console.warn('DEV::Core.Context::You have overriden context \'', config.name, '\'');
 
 			var ctx = app.module('Core.Context.' + config.name);
@@ -855,9 +857,7 @@ Application.Util.Tpl.build('_blank', ' ');
 				_config: config,
 				name: config.name,
 				//big layout
-				Layout: config.template ? Backbone.Marionette.Layout.extend(_.extend({
-					className: 'context context-' + _.string.slugify(config.name)
-				}, config)) : undefined,
+				Layout: config.template ? Backbone.Marionette.Layout.extend(config) : undefined,
 				display: function(){
 					this.layout = new this.Layout();
 					this.layout.parentContext = this;
@@ -1258,10 +1258,7 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 			this.activateEditors(this.editors);
 		});
 		if(this.svg && this.enableSVG) {
-			this.listenTo(this, 'show', function(){
-				if(_.isFunction(this.svg)) this.enableSVG(this.svg);
-				else this.enableSVG();
-			});
+			this.listenTo(this, 'render', this.enableSVG);
 		}
 		if(this.tooltips) {
 			this.enableTooltips(this.tooltips);
@@ -1320,22 +1317,29 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 	 * Do this in onShow() instead of initialize.
 	 */
 	_.extend(Backbone.Marionette.ItemView.prototype, {
-		enableSVG: function(cb){
+		enableSVG: function(){
 			if(!Raphael) throw new Error('DEV::View::You did NOT have Raphael.js included in the libs.');
-			if(cb){
-				var that = this;
-				Raphael(this.el, this.$el.width(), this.$el.height(), function(){
-					that.paper = this;
-					cb.apply(this, arguments);
-				});
-			}else {
-				this.paper = Raphael(this.el, this.$el.width(), this.$el.height());
-			}
+			var that = this;
+
+			Raphael(this.el, this.$el.width(), this.$el.height(), function(){
+				that.paper = this;
+				that.trigger('view:paper-ready'); // - use this instead of onShow() in the 1st time
+				/**
+				 * e.g 
+				 * onShow(){
+				 * 	if(this.paper) draw...;
+				 * 	else
+				 * 		this.onPaperReady(){ draw... };
+				 * }
+				 */
+			});
+
 			//resize paper upon window resize event.
-			this.listenTo(app, 'app:resized', function(e){
+			this.onFitPaper = function(){
+				if(!this.paper) return;
 				this.paper.setSize(this.$el.width(), this.$el.height());
 				this.trigger('view:paper-resized');
-			});
+			}
 		}
 	});
 

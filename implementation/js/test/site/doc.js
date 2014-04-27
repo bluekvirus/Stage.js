@@ -28,7 +28,7 @@
                         stop = true;
                     }
                 }, this);
-                if(!$result) throw new Error('document headers error!');
+                if(!$result) return;
 
                 //hilight this header and its parents in breadcrumbs
                 var path = [{title: $result.data('title'), id: $result.data('id')}];

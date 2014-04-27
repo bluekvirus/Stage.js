@@ -1,0 +1,71 @@
+/**
+ * theme ;;Site;;
+ */
+
+.context-document{
+	//for diagram images in docs
+	@media (max-width:@screen-md-max) {
+
+		.region-doc{
+			img {
+				width: 100%;
+			}
+		}
+
+	}	
+}
+
+
+.context-home {
+
+	.region-bg {
+		background-image: url('../img/texture/rockywall.png');
+	}
+
+	.region-title {
+		img {
+			padding-bottom: 40px;
+		}
+
+		line-height: 1.5;
+	}
+
+	.region-menu {
+
+		.home-navi-link {
+			color: @body-bg;
+			font-size: 15px;
+			line-height: 2.5;
+
+			&:hover {
+				color: @gray-darker;
+				text-decoration: none;
+			}
+		}
+	}
+
+	.region-footer {
+		//height: 75px;
+		p {
+			margin: 0;
+		}
+		font-size: 12px;
+		line-height: 1.5;
+		color: @gray-light;
+		background-color: rgba(34, 34, 34, .90);
+		padding: 20px 40px;
+
+		a {
+			color: @gray-light;
+		}
+		.github-link {
+			padding-top: 6px;
+			i {
+				font-size: 16px;
+				margin-right: 8px;
+			}	
+		}
+	}
+
+}
+

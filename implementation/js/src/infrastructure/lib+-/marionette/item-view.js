@@ -23,7 +23,15 @@
 
 			Raphael(this.el, this.$el.width(), this.$el.height(), function(){
 				that.paper = this;
-				that.trigger('view:paper-ready'); // - use this instead of onShow()
+				that.trigger('view:paper-ready'); // - use this instead of onShow() in the 1st time
+				/**
+				 * e.g 
+				 * onShow(){
+				 * 	if(this.paper) draw...;
+				 * 	else
+				 * 		this.onPaperReady(){ draw... };
+				 * }
+				 */
 			});
 
 			//resize paper upon window resize event.

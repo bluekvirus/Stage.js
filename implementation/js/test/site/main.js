@@ -24,11 +24,11 @@
             });
         },
         actions: {
-            download: function($btn, e){
-                e.preventDefault();
-                var base = 'static/resource/default/download/';
-                Application.Util.download(base + $btn.attr('target'));  
-            },
+            // download: function($btn, e){
+            //     e.preventDefault();
+            //     var base = 'static/resource/default/download/';
+            //     Application.Util.download(base + $btn.attr('target'));  
+            // },
             themePreview: function($btn, e){
                 e.preventDefault();
                 location.href = ['themes', Application.currentTheme, 'index.html'].join('/') ;
@@ -76,8 +76,8 @@
                     '<a data-toggle="dropdown" class="dropdown-toggle" href="#"><i class="fa fa-download"></i> Download <b class="caret"></b></a>',
                     '<ul class="dropdown-menu">',
 
-                        '<li><a href="#" action="download" target="stagejs-starter-kit.tar.gz"><i class="fa fa-arrow-circle-o-down"></i> Start New (project-kit)</a></li>',
-                        '<li><a href="#" action="download" target="stagejs-edge.tar.gz"><i class="fa fa-arrow-circle-o-down"></i> Update (edge build)</a></li>',
+                        '<li><a href="static/resource/default/download/stagejs-starter-kit.tar.gz"><i class="fa fa-arrow-circle-o-down"></i> Start New (project-kit)</a></li>',
+                        '<li><a href="static/resource/default/download/stagejs-edge.tar.gz"><i class="fa fa-arrow-circle-o-down"></i> Update (edge build)</a></li>',
 
                     '</ul>',
                 '</li>',

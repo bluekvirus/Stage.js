@@ -33,6 +33,7 @@ module.exports = {
 				css: {
 					'main.css':'themes/site/css/main.css'
 				},
+				img: 'themes/site/img',
 				fonts: 'themes/site/fonts',
 				'index.html': 'themes/site/index.html'
 			}

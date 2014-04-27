@@ -50,6 +50,7 @@
 
 		create: function(config){
 			config.name = config.name || 'Default';
+			config.className = 'context context-' + _.string.slugify(config.name) + ' ' + (config.className || '');
 			if(app.Core.Context[config.name]) console.warn('DEV::Core.Context::You have overriden context \'', config.name, '\'');
 
 			var ctx = app.module('Core.Context.' + config.name);
@@ -57,9 +58,7 @@
 				_config: config,
 				name: config.name,
 				//big layout
-				Layout: config.template ? Backbone.Marionette.Layout.extend(_.extend({
-					className: 'context context-' + _.string.slugify(config.name)
-				}, config)) : undefined,
+				Layout: config.template ? Backbone.Marionette.Layout.extend(config) : undefined,
 				display: function(){
 					this.layout = new this.Layout();
 					this.layout.parentContext = this;

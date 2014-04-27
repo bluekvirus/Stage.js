@@ -4,7 +4,7 @@ Application.page('Demo', {
         '<div region="center"></div>',
     ],
     onNavigateTo: function(subPath){
-        this.layout.center.trigger('region:load-view', subPath);
+        this.layout.center.trigger('region:load-view', subPath || 'Editors');
     }
 
 });

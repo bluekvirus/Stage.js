@@ -6,7 +6,7 @@ Stage.js <sub class="text-muted" style="font-size:36%">based on Marionette.js</s
 
 Current version
 ---------------
-**@1.0.0-rc2**
+**@1.0.0-rc3**
 ([Why is it version-ed like this?](http://semver.org/))
 
 
