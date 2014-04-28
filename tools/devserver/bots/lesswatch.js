@@ -30,10 +30,22 @@ module.exports = function(server){
 	var profile = server.get('profile');
 	if(!profile.lesswatch) return;
 
+	if(!_.isArray(profile.lesswatch)){
+		if(!_.isString(profile.lesswatch)){
+			//config object
+			var selectedClient = profile.lesswatch.client;
+			profile.lesswatch = profile.lesswatch.themes;
+		}
+		//single theme name string
+		if(_.isString(profile.lesswatch))
+			profile.lesswatch = [profile.lesswatch];
+	}
+
 	//convert name array into name map
 	var watchlist = _.object(profile.lesswatch, profile.lesswatch);
+
 	// watch the client themes folder
-	var themesFolder = path.join(profile.clients['/'], 'themes');
+	var themesFolder = path.join(profile.clients[selectedClient?selectedClient:'/'], 'themes');
 	fs.readdir(themesFolder, function(err, list){
 		if(err) throw err;
 		_.each(list, function(theme){

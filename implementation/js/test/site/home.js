@@ -28,7 +28,16 @@
 			this.title.show(app.area({
 				template: [
 					'<img src="themes/' + Application.currentTheme + '/img/logo/text-black" alt="Stage.js"></img>',
-					'<p>'+Random.paragraph(2)+'</p>'
+					marked.parse([
+						'Build your client-heavy web applications **faster** with intuitive workflow, thiner and flatter structure and advanced tooling.',
+						'\nFeatures:',
+						'* Production ready application architecture',
+						'* Layout with [region] attributes',
+						'* Navigation aware Contexts as pages',
+						'* Actions for easy interaction building',
+						'* Build-in SVG support in Views',
+						'* Theming and build tools provided'
+					].join('\n'))
 				],
 				initialize: function(){
 					this.listenTo(app, 'app:resized', function(){

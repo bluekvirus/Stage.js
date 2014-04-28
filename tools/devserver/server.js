@@ -39,7 +39,8 @@ profile = server.set('profile', _.extend({
 	//fix web root(s)' path(s)
 if(!profile.clients['/']) profile.clients['/'] = '../../implementation';
 _.each(profile.clients, function(filePath, uriName){
-	profile.clients[uriName] = path.resolve(path.join(__dirname, filePath));
+	var relative = filePath.match(/^\//) ? '/' : __dirname;
+	profile.clients[uriName] = path.resolve(path.join(relative, filePath));
 });
 
 //loading...

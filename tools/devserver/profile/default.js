@@ -1,21 +1,40 @@
-
-//all paths are relative to the devserver folder.
+/**
+ * All webroot paths are relative to the devserver folder. (except below)
+ * All webroot paths that start with '/' will be treated as is, otherwise they will be resolved with __dirname (as the above dictates)
+ *
+ * simplest setting:
+ * -----------------
+ * {
+ * 	lesswatch: 'default'
+ * }
+ * which will serve '../../implementation' on 'localhost:4000/' with theme 'default' monitored
+ *
+ * @author Tim.Liu
+ * @created 2014.4.18
+ */
 
 module.exports = {
 
 	port: '5000',
 
+	//mount the client webroot folders
 	clients: {
-
-		//you don't have to specify the 'implementation' folder as it will always be served under /
-		
-		'/deploy': '../build/dist/site' //this will be available under /deploy/...
-
+		//format - uri:webroot path
+		//normally if you don't put '/' path here, '/': '../../implementation' will be added for you.
+		'/': '../build/dist/site', 
+		'/dev': '../../implementation', //this will be available under uri /dev
 	},
 
-	//by default all of the themes under 'implementation' will be monitored
-	//use -name to exclude
-	//use false to turn off LESS monitor.
-	lesswatch: ['default', 'site']
+	//use lesswatch:false to turn off LESS monitor.
+	lesswatch: {
+		//default is client: '/'.
+		//use client: '[path]' set in the clients config section above to change the monitored webroot.
+		//only 1 webroot can be monitored with its theme changes, which will, most likely always, be your development one.
+		client: '/dev',
+
+		//multiple themes can be monitored under the watched webroot.
+		//use -name in themes array to exclude.
+		themes: ['default', 'site']
+	}
 
 }
