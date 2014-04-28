@@ -2,9 +2,9 @@
 
 	function minH(){
 		var h = $window.height();
-		if(h > 640) 
+		//if(h > 640) 
 			return h;
-		return 640;
+		//return 640;
 	}
 
 	app.page('Home', {
@@ -119,7 +119,7 @@
 			var g = this.paper.path(['M', 0, ',', 0, 'L', size.w, ',', size.h, 'V', start.y, 'z'].join('')).attr({stroke: 'none'});
 			var gMesh = g.clone();
 
-			g.attr({fill: '0-rgba(63,182,24)-rgba(27,87,31)'});
+			g.attr({fill: '0-rgba(63,182,24)-rgba(39,117,29):25-rgba(27,87,31)'});
 			$(g.node).css('fill-opacity', .6);
 
 			gMesh.attr({fill: '0-rgba(255,255,255,0)-rgba(189,187,176,.5):15-rgba(72,66,36)'});
