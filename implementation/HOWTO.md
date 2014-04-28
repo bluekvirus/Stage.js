@@ -557,23 +557,28 @@ editor.status(status, message); //info, error, warning, success status, empty to
 We support graphs through SVG. A basic SVG library is integrated with the framework (Raphaël.js). You can use it in any *Marionette.xView* through:
 ```
 Application.view({
-    svg: function(paper){...}
-});
-//or synced version:
-Application.view({
     svg: true,
     onShow: function(){
-        this.paper.draw();
-        ...
-    },
-    onPaperResized: function(){
-        ... //upon window resizing event
+        if(this.paper) 
+            //draw...
+        else 
+            this.onPaperReady = function(){
+                //draw...
+            }
     }
 });
 ```
-Don't worry about container/window resizing, it is automatically taken cared for you. The paper size will be set correctly to the container's and there is an additional meta event `view:paper-resized` triggered on the view so you can do something accordingly through `onPaperResized()`.
+Don't worry about the resizing routine, it is already prepared for you. The paper size will be set correctly to the container's through the use of `view:fit-paper` event on the container view object and there is an follow-up meta event `view:paper-resized` triggered on the view so you can do something accordingly after the SVG canvas is resized.
+```
+view.listenTo(app, 'app:resized', function(){
+    this.trigger('view:fit-paper')
+});
+view.onPaperResized(){
+    //draw...
+}
+```
 
-If you require charts to be drawn, look through our monitored libraries under `js/lib/` there should be **d3.js** and **highcharts.js** for exactly that.
+If you require charts to be drawn, look through our monitored libraries under `/bower_components` there should be **d3.js** and **highcharts.js** for exactly that.
 
 **Note:** HTML5 *Canvas* libraries will be added in the future.
 
@@ -820,7 +825,7 @@ Open up the `/less/main.less` file and you will see the following:
 * font.less (optional) - extra web fonts
 * print.less (optional)
 
-You should be focusing on changing the theme.less and variables.less files. Note that the *Bootstrap* .less files are *NOT* included in the framework package. Your LESS compiler might pop errors as it can not find the required `bootstrap.less` file. Go to `/implementation/js/lib/` and run `bower update` (you should have bower installed through [npm](https://www.npmjs.org/) first). It will fetch you the required *Bootstrap* package.
+You should be focusing on changing the theme.less and variables.less files. Note that the *Bootstrap* .less files are *NOT* included in the framework package. Your LESS compiler might pop errors as it can not find the required `bootstrap.less` file. Go to `/implementation` and run `bower update` (you should have bower installed through [npm](https://www.npmjs.org/) first). It will fetch you the required *Bootstrap* package.
 
 ####LESS to CSS
 (What's [LESS](http://lesscss.org/)?)
@@ -849,7 +854,7 @@ There is a theme preview page at `[your theme folder]/index.html`. Change it to 
 Include other js libraries
 ---------------------
 The default `dependences.js` contains carefully (minimum) selected libraries for your project, if you would like to introduce more, use [bower](http://bower.io/) and the `bower.json` file included.
-Go into `/implementation/js/lib/` and run `bower install` to grab all the monitored 3rd-party libraries.
+Go into `/implementation` and run `bower install` to grab all the monitored 3rd-party libraries.
 
 Include your libraries after `dependences.js` in `/implementation/index.html`.
 

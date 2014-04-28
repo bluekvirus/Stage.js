@@ -34,7 +34,7 @@
 				 */
 			});
 
-			//resize paper upon window resize event.
+			//resize paper (e.g upon window resize event).
 			this.onFitPaper = function(){
 				if(!this.paper) return;
 				this.paper.setSize(this.$el.width(), this.$el.height());

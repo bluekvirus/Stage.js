@@ -29,14 +29,11 @@
 				template: [
 					'<img src="themes/' + Application.currentTheme + '/img/logo/text-black" alt="Stage.js"></img>',
 					marked.parse([
-						'Build your client-heavy web applications **faster** with intuitive workflow, thiner and flatter structure and advanced tooling.',
-						'\nFeatures:',
-						'* Production ready application architecture',
-						'* Layout with [region] attributes',
-						'* Navigation aware Contexts as pages',
-						'* Actions for easy interaction building',
-						'* Build-in SVG support in Views',
-						'* Theming and build tools provided'
+						'Learned Backbone? Tried Marionette? Still searching for a complete solution? ',
+						'Look no further...\n',
+						'With an intuitive workflow, a thiner and flatter architecture and advanced tooling, you can now',
+						'direct your next web application like a play on stage with multiple scenes and elements.\n',
+						'Enjoy the show!',
 					].join('\n'))
 				],
 				initialize: function(){
