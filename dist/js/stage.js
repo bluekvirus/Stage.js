@@ -245,15 +245,16 @@ _.each(['Core', 'Util'], function(coreModule){
 
 			var $body = $('body');
 
-			function trackAppSize(){
+			function trackScreenSize(e, silent){
 				var screenSize = {h: $window.height(), w: $window.width()};
-				Application.trigger('app:resized', screenSize);
 				if(Application.config.fullScreen){
 					$body.height(screenSize.h);
 				}
+				if(!silent)
+					Application.trigger('app:resized', screenSize);
 			};
-			trackAppSize();
-			$window.on('resize', _.debounce(trackAppSize, Application.config.rapidEventDebounce));
+			trackScreenSize(null, true);
+			$window.on('resize', _.debounce(trackScreenSize, Application.config.rapidEventDebounce));
 
 			function trackScroll(){
 				var top = $window.scrollTop();

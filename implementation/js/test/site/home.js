@@ -2,14 +2,16 @@
 
 	function minH(){
 		var h = $window.height();
-		if(h > 640) return h;
+		if(h > 640) 
+			return h;
 		return 640;
 	}
 
 	app.page('Home', {
 
 		template: [
-			'<div style="position:absolute;width:100%;" region="bg" view="Home.BG"></div>',
+			//very very important to have overflow:hidden for svg powered background
+			'<div style="position:absolute;width:100%;overflow:hidden;" region="bg" view="Home.BG"></div>',
 			'<div class="container-fluid">',
 				'<div class="row">',
 					'<div class="col-sm-offset-6 col-sm-4" region="title"></div>',
@@ -18,7 +20,7 @@
 					'<div class="col-sm-5" region="menu"></div>',
 				'</div>',
 			'</div>',
-			'<div style="position:absolute;bottom:0;width:100%;" region="footer" view="Home.Footer"></div>'
+			'<div style="position:absolute;bottom:0;width:100%" region="footer" view="Home.Footer"></div>'
 		],
 
 		onShow: function(){
@@ -73,14 +75,16 @@
 		svg: true,
 
 		initialize: function(){
-			this.listenTo(app, 'app:resized', function(){
+			this.listenTo(app, 'app:resized', function(screenSize){
 				this.trigger('view:fit-and-draw');
 			});
 		},
 
 		onShow: function(){
 			if(this.paper){
-				this.trigger('view:fit-and-draw');
+				//delay 10ms for re-draw - for the scrollbars to recover(disappear)
+				var that = this;
+				setTimeout(function(){that.trigger('view:fit-and-draw')}, app.config.rapidEventDebounce/20);
 			}else {
 				this.onPaperReady = function(){
 					this.trigger('view:fit-and-draw');
@@ -91,6 +95,9 @@
 		onFitAndDraw: function(){
 			this.$el.height(minH());
 			this.trigger('view:fit-paper');
+
+		},
+		onPaperResized: function(){
 			this.drawBg();
 		},
 		drawBg: function(){
