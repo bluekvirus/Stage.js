@@ -227,7 +227,7 @@ _.each(['Core', 'Util'], function(coreModule){
 					Application.currentContext = targetContext;
 
 					if(!Application[Application.config.contextRegion]) throw new Error('DEV::Application::You don\'t have region \'' + Application.config.contextRegion + '\' defined');		
-					Application[Application.config.contextRegion].show(Application.currentContext.display());
+					Application[Application.config.contextRegion].show(Application.currentContext);
 					//fire a notification round to the sky.
 					Application.trigger('app:context-switched', Application.currentContext.name);
 				}			
@@ -507,14 +507,14 @@ _.each(['Core', 'Util'], function(coreModule){
 
 ;(function(app){
 
-	app.Util.addMetaEvent = function(target, namespace, registry){
-		if(!registry) registry = target;
+	app.Util.addMetaEvent = function(target, namespace, delegate){
+		if(!delegate) delegate = target;
 		target.listenTo(target, 'all', function(e){
 			var tmp = e.split(':');
 			if(tmp.length !== 2 || tmp[0] !== namespace) return;
 			var listener = _.string.camelize('on-' + tmp[1]);
-			if(registry[listener])
-				registry[listener].apply(target, _.toArray(arguments).slice(1));
+			if(delegate[listener])
+				delegate[listener].apply(target, _.toArray(arguments).slice(1));
 		});
 	}
 
@@ -832,9 +832,9 @@ Application.Util.Tpl.build('_blank', ' ');
  * app.create('Regional', {...});
  *
  * ###How to swap regional view on a region?
- * use this.layout.[region name].show()
+ * use this.[region name].show()
  * or
- * use this.layout.[region name].trigger('region:load-view', [view name])
+ * use this.[region name].trigger('region:load-view', [view name])
  *
  * **Note** that this refers to the context module not the layout view instance.
  * 
@@ -845,29 +845,17 @@ Application.Util.Tpl.build('_blank', ' ');
 
 ;(function(app, _){
 
-	var definition = app.module('Core.Context');
-	_.extend(definition, {
-
+	var def = app.module('Core.Context');
+	_.extend(def, {
 		create: function(config){
 			config.name = config.name || 'Default';
 			config.className = 'context context-' + _.string.slugify(config.name) + ' ' + (config.className || '');
-			if(app.Core.Context[config.name]) console.warn('DEV::Core.Context::You have overriden context \'', config.name, '\'');
+			if(def[config.name]) console.warn('DEV::Core.Context::You have overriden context \'', config.name, '\'');
 
-			var ctx = app.module('Core.Context.' + config.name);
-			_.extend(ctx, {
-				_config: config,
-				name: config.name,
-				//big layout
-				Layout: config.template ? Backbone.Marionette.Layout.extend(config) : undefined,
-				display: function(){
-					this.layout = new this.Layout();
-					this.layout.parentContext = this;
-					return this.layout;
-				}
-			});
-
-			app.Util.addMetaEvent(ctx, 'context', config);
-			return ctx;
+			def[config.name] = new (Backbone.Marionette.Layout.extend(config));
+			app.Util.addMetaEvent(def[config.name], 'context');
+			
+			return def[config.name];
 		}
 
 	});
@@ -974,7 +962,6 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 			//inject parent view container through region into the regional views
 			if(this._parentLayout){
 				view.parentCt = this._parentLayout;
-				if(view.parentCt.parentContext) view.parentContext = view.parentCt.parentContext;
 			}
 		}
 	});
@@ -1275,7 +1262,6 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 
 		//1. view:render-data - for hiding model/collection manipulation most of the time
 		//	data - can be [...] or {obj}
-		//	reRender - true | false flag
 		onRenderData: function(data){
 			if(_.isArray(data)){
 				if(!this.collection){
@@ -1391,7 +1377,7 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 
 			var global = options._global || {};
 			_.each(options, function(config, name){
-				if(name.match(/_./)) return; //skip _config items like _global
+				if(name.match(/^_./)) return; //skip _config items like _global
 				//0. apply global config
 				config = _.extend({name: name, parentCt: this}, global, config);
 				//1. instantiate

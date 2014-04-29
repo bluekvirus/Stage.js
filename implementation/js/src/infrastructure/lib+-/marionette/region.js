@@ -41,7 +41,6 @@
 			//inject parent view container through region into the regional views
 			if(this._parentLayout){
 				view.parentCt = this._parentLayout;
-				if(view.parentCt.parentContext) view.parentContext = view.parentCt.parentContext;
 			}
 		}
 	});

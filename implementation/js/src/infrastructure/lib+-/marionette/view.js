@@ -292,7 +292,6 @@
 
 		//1. view:render-data - for hiding model/collection manipulation most of the time
 		//	data - can be [...] or {obj}
-		//	reRender - true | false flag
 		onRenderData: function(data){
 			if(_.isArray(data)){
 				if(!this.collection){

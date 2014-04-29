@@ -226,7 +226,7 @@ _.each(['Core', 'Util'], function(coreModule){
 					Application.currentContext = targetContext;
 
 					if(!Application[Application.config.contextRegion]) throw new Error('DEV::Application::You don\'t have region \'' + Application.config.contextRegion + '\' defined');		
-					Application[Application.config.contextRegion].show(Application.currentContext.display());
+					Application[Application.config.contextRegion].show(Application.currentContext);
 					//fire a notification round to the sky.
 					Application.trigger('app:context-switched', Application.currentContext.name);
 				}			

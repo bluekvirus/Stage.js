@@ -90,7 +90,7 @@
 
 			var global = options._global || {};
 			_.each(options, function(config, name){
-				if(name.match(/_./)) return; //skip _config items like _global
+				if(name.match(/^_./)) return; //skip _config items like _global
 				//0. apply global config
 				config = _.extend({name: name, parentCt: this}, global, config);
 				//1. instantiate

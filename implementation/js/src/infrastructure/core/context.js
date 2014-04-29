@@ -32,9 +32,9 @@
  * app.create('Regional', {...});
  *
  * ###How to swap regional view on a region?
- * use this.layout.[region name].show()
+ * use this.[region name].show()
  * or
- * use this.layout.[region name].trigger('region:load-view', [view name])
+ * use this.[region name].trigger('region:load-view', [view name])
  *
  * **Note** that this refers to the context module not the layout view instance.
  * 
@@ -45,29 +45,17 @@
 
 ;(function(app, _){
 
-	var definition = app.module('Core.Context');
-	_.extend(definition, {
-
+	var def = app.module('Core.Context');
+	_.extend(def, {
 		create: function(config){
 			config.name = config.name || 'Default';
 			config.className = 'context context-' + _.string.slugify(config.name) + ' ' + (config.className || '');
-			if(app.Core.Context[config.name]) console.warn('DEV::Core.Context::You have overriden context \'', config.name, '\'');
+			if(def[config.name]) console.warn('DEV::Core.Context::You have overriden context \'', config.name, '\'');
 
-			var ctx = app.module('Core.Context.' + config.name);
-			_.extend(ctx, {
-				_config: config,
-				name: config.name,
-				//big layout
-				Layout: config.template ? Backbone.Marionette.Layout.extend(config) : undefined,
-				display: function(){
-					this.layout = new this.Layout();
-					this.layout.parentContext = this;
-					return this.layout;
-				}
-			});
-
-			app.Util.addMetaEvent(ctx, 'context', config);
-			return ctx;
+			def[config.name] = new (Backbone.Marionette.Layout.extend(config));
+			app.Util.addMetaEvent(def[config.name], 'context');
+			
+			return def[config.name];
 		}
 
 	});
