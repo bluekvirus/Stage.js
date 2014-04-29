@@ -52,8 +52,7 @@
 			config.className = 'context context-' + _.string.slugify(config.name) + ' ' + (config.className || '');
 			if(def[config.name]) console.warn('DEV::Core.Context::You have overriden context \'', config.name, '\'');
 
-			def[config.name] = new (Backbone.Marionette.Layout.extend(config));
-			app.Util.addMetaEvent(def[config.name], 'context');
+			def[config.name] = Backbone.Marionette.Layout.extend(config);
 			
 			return def[config.name];
 		}

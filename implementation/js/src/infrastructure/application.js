@@ -220,10 +220,11 @@ _.each(['Core', 'Util'], function(coreModule){
 			//Context switching utility
 			function navigate(context, module){
 				if(!context) return;
-				var targetContext = Application.Core.Context[context];
-				if(!targetContext) throw new Error('DEV::Application::You must have the requred context ' + context + ' defined...'); //see - special/registry/context.js			
-				if(Application.currentContext !== targetContext) {
-					Application.currentContext = targetContext;
+				var TargetContext = Application.Core.Context[context];
+				if(!TargetContext) throw new Error('DEV::Application::You must have the requred context ' + context + ' defined...'); //see - special/registry/context.js			
+				if(!Application.currentContext || Application.currentContext.name !== context) {
+					Application.currentContext = new TargetContext; //re-create each context upon switching (can give state-persist options later, TBI)
+					Application.Util.addMetaEvent(Application.currentContext, 'context');
 
 					if(!Application[Application.config.contextRegion]) throw new Error('DEV::Application::You don\'t have region \'' + Application.config.contextRegion + '\' defined');		
 					Application[Application.config.contextRegion].show(Application.currentContext);
