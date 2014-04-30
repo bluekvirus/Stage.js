@@ -1,3 +1,5 @@
+NProgress.configure({showSpinner: false});
+
 ;Application.setup({
 
     //You can override other production config vars if wanted.

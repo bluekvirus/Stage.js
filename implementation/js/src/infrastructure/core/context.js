@@ -62,10 +62,3 @@
 })(Application, _);
 
 
-/**
- * ====================
- * Pre-Defined Contexts
- * ====================
- */
-//Application.create('Context', {name: 'Shared'});
-

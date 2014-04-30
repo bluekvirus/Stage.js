@@ -70,17 +70,6 @@
  * app:resized
  * app:scroll
  * 
- * 
- * Optional
- * --------
- * You can also config NProgress through NProgress.configure({
-	minimum: 0.1
-	template: "<div class='....'>...</div>"
-	ease: 'ease', speed: 500
-	trickle: false
-	trickleRate: 0.02, trickleSpeed: 800
-	showSpinner: true/false
- * })
  *
  * @author Tim.Liu
  * @create 2014.02.17
@@ -90,16 +79,10 @@
  * Setup Global vars and Config Libs
  * ---------------------------------
  */
+Swag.registerHelpers();
 _.each(['document', 'window'], function(coreDomObj){
 	window['$' + coreDomObj] = $(window[coreDomObj]);
-});
-
-if(window.Swag)
-	Swag.registerHelpers();
-if(window.NProgress)
-	NProgress.configure({
-	  showSpinner: false
-	});
+});	
 
 /**
  * Define Application & Core Modules
@@ -219,7 +202,7 @@ _.each(['Core', 'Util'], function(coreModule){
 
 			//Context switching utility
 			function navigate(context, module){
-				if(!context) return;
+				if(!context) throw new Error('DEV::Application::Empty context name...');
 				var TargetContext = Application.Core.Context[context];
 				if(!TargetContext) throw new Error('DEV::Application::You must have the requred context ' + context + ' defined...'); //see - special/registry/context.js			
 				if(!Application.currentContext || Application.currentContext.name !== context) {
@@ -310,6 +293,7 @@ _.each(['Core', 'Util'], function(coreModule){
 	Application.run = function(){
 
 		$document.ready(function(){
+
 			//1. Put main template into position and scan for regions.
 			var regions = {};
 			var tpl = Application.Util.Tpl.build(Application.config.template);
@@ -343,49 +327,7 @@ _.each(['Core', 'Util'], function(coreModule){
 	 * @deprecated Use the detailed apis instead.
 	 */
 	Application.create = function(type, config){
-		console.warn('DEV::Application::create() method is deprecated, see Application._apis for alternatives');
-
-		//if omitting type, app.create will be a (fallback) short-cut for Backbone.Marionette.[ItemView/Layout/CollectionView/CompositeView...] definition creation
-		if(!_.isString(type)) {
-			config = type;
-			return Backbone.Marionette[config.type || 'ItemView'].extend(config);
-		}
-
-		//allow alias to free developers from mental stress.
-		var alias = {
-			'Page': 'Context',
-			'Area': 'Regional'
-		};
-		if(alias[type]) type = alias[type];
-			
-		switch(type){
-
-			case 'Model': case 'Collection':
-				var obj = new Backbone[type](config);
-				return obj;
-			break;
-
-			//basic component
-			case 'Context': case 'Regional':
-				return Application.Core[type].create(config); 
-			break;
-			case 'Validator':
-				return Application.Core.Editor.addRule(config.name, config.fn);
-			break;
-
-			//re-usable
-			//exception: need to register View definition before create...(use config.factory = function(){...} to register)
-			case 'Widget': case 'Editor':
-				if(config.factory && _.isFunction(config.factory))
-					return Application.Core[type].register(config.name, config.factory);
-				return Application.Core[type].create(config.name, config);
-			break;
-
-
-			default:
-				throw new Error('DEV::APP::create() - You can not create an object of type ' + type);
-			break;
-		}
+		console.warn('DEV::Application::create() method is deprecated, use methods listed in Application._apis for alternatives');
 	}
 
 	/**

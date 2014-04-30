@@ -71,17 +71,6 @@
  * app:resized
  * app:scroll
  * 
- * 
- * Optional
- * --------
- * You can also config NProgress through NProgress.configure({
-	minimum: 0.1
-	template: "<div class='....'>...</div>"
-	ease: 'ease', speed: 500
-	trickle: false
-	trickleRate: 0.02, trickleSpeed: 800
-	showSpinner: true/false
- * })
  *
  * @author Tim.Liu
  * @create 2014.02.17
@@ -91,16 +80,10 @@
  * Setup Global vars and Config Libs
  * ---------------------------------
  */
+Swag.registerHelpers();
 _.each(['document', 'window'], function(coreDomObj){
 	window['$' + coreDomObj] = $(window[coreDomObj]);
-});
-
-if(window.Swag)
-	Swag.registerHelpers();
-if(window.NProgress)
-	NProgress.configure({
-	  showSpinner: false
-	});
+});	
 
 /**
  * Define Application & Core Modules
@@ -220,11 +203,12 @@ _.each(['Core', 'Util'], function(coreModule){
 
 			//Context switching utility
 			function navigate(context, module){
-				if(!context) return;
-				var targetContext = Application.Core.Context[context];
-				if(!targetContext) throw new Error('DEV::Application::You must have the requred context ' + context + ' defined...'); //see - special/registry/context.js			
-				if(Application.currentContext !== targetContext) {
-					Application.currentContext = targetContext;
+				if(!context) throw new Error('DEV::Application::Empty context name...');
+				var TargetContext = Application.Core.Context[context];
+				if(!TargetContext) throw new Error('DEV::Application::You must have the requred context ' + context + ' defined...'); //see - special/registry/context.js			
+				if(!Application.currentContext || Application.currentContext.name !== context) {
+					Application.currentContext = new TargetContext; //re-create each context upon switching (can give state-persist options later, TBI)
+					Application.Util.addMetaEvent(Application.currentContext, 'context');
 
 					if(!Application[Application.config.contextRegion]) throw new Error('DEV::Application::You don\'t have region \'' + Application.config.contextRegion + '\' defined');		
 					Application[Application.config.contextRegion].show(Application.currentContext);
@@ -310,6 +294,7 @@ _.each(['Core', 'Util'], function(coreModule){
 	Application.run = function(){
 
 		$document.ready(function(){
+
 			//1. Put main template into position and scan for regions.
 			var regions = {};
 			var tpl = Application.Util.Tpl.build(Application.config.template);
@@ -343,49 +328,7 @@ _.each(['Core', 'Util'], function(coreModule){
 	 * @deprecated Use the detailed apis instead.
 	 */
 	Application.create = function(type, config){
-		console.warn('DEV::Application::create() method is deprecated, see Application._apis for alternatives');
-
-		//if omitting type, app.create will be a (fallback) short-cut for Backbone.Marionette.[ItemView/Layout/CollectionView/CompositeView...] definition creation
-		if(!_.isString(type)) {
-			config = type;
-			return Backbone.Marionette[config.type || 'ItemView'].extend(config);
-		}
-
-		//allow alias to free developers from mental stress.
-		var alias = {
-			'Page': 'Context',
-			'Area': 'Regional'
-		};
-		if(alias[type]) type = alias[type];
-			
-		switch(type){
-
-			case 'Model': case 'Collection':
-				var obj = new Backbone[type](config);
-				return obj;
-			break;
-
-			//basic component
-			case 'Context': case 'Regional':
-				return Application.Core[type].create(config); 
-			break;
-			case 'Validator':
-				return Application.Core.Editor.addRule(config.name, config.fn);
-			break;
-
-			//re-usable
-			//exception: need to register View definition before create...(use config.factory = function(){...} to register)
-			case 'Widget': case 'Editor':
-				if(config.factory && _.isFunction(config.factory))
-					return Application.Core[type].register(config.name, config.factory);
-				return Application.Core[type].create(config.name, config);
-			break;
-
-
-			default:
-				throw new Error('DEV::APP::create() - You can not create an object of type ' + type);
-			break;
-		}
+		console.warn('DEV::Application::create() method is deprecated, use methods listed in Application._apis for alternatives');
 	}
 
 	/**
@@ -852,8 +795,7 @@ Application.Util.Tpl.build('_blank', ' ');
 			config.className = 'context context-' + _.string.slugify(config.name) + ' ' + (config.className || '');
 			if(def[config.name]) console.warn('DEV::Core.Context::You have overriden context \'', config.name, '\'');
 
-			def[config.name] = new (Backbone.Marionette.Layout.extend(config));
-			app.Util.addMetaEvent(def[config.name], 'context');
+			def[config.name] = Backbone.Marionette.Layout.extend(config);
 			
 			return def[config.name];
 		}
@@ -862,13 +804,6 @@ Application.Util.Tpl.build('_blank', ' ');
 
 })(Application, _);
 
-
-/**
- * ====================
- * Pre-Defined Contexts
- * ====================
- */
-//Application.create('Context', {name: 'Shared'});
 
 
 /**
@@ -975,14 +910,7 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
  * Disable
  * -------
  * Pass in this.ui or options.ui or a function as options to return options to bypass the Fixed enhancement.
- *
- * Fixed
- * -----
- * auto ui tags detect and register.
- * +meta event programming
- * 	view:* (event-name) - on* (camelized)
  * 	
- * 
  * Optional
  * --------
  * 1. action tags auto listener hookup with mutex-locking on other action listeners. (this.un/lockUI(no param) and this.isUILocked(no param))
@@ -990,6 +918,13 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
  * 2. tooltip
  * 3. flyTo
  *
+ * Fixed
+ * -----
+ * auto ui tags detect and register.
+ * +meta event programming
+ * 	view:* (event-name) - on* (camelized)
+ *
+ * 
  * @author Tim.Liu
  * @create 2014.02.25 
  */
@@ -1255,43 +1190,14 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 		return Backbone.Marionette.View.apply(this, arguments);
 	}
 
-	//---------------------------------
-	//	Default meta-event responders
-	//---------------------------------
-	_.extend(Backbone.Marionette.View.prototype, {
-
-		//1. view:render-data - for hiding model/collection manipulation most of the time
-		//	data - can be [...] or {obj}
-		onRenderData: function(data){
-			if(_.isArray(data)){
-				if(!this.collection){
-					this.collection = new Backbone.Collection;
-					this.listenTo(this.collection, 'add', this.addChildView);
-					this.listenTo(this.collection, 'remove', this.removeItemView);
-					this.listenTo(this.collection, 'reset', this.render);
-				}
-				this.collection.reset(data);
-			}else{
-				if(!this.model){
-					this.model = new Backbone.Model;
-					this.listenTo(this.model, 'change', this.render);
-				}
-				this.model.set(data);
-			}
-
-			this.trigger('view:data-rendered');
-		}
-	})
-
 
 })(Application)
 /**
- * Marionette.ItemView Enhancements (can be used in Layout as well) - Note that you can NOT use these in a CompositeView yet.
+ * Marionette.ItemView Enhancements (can be used in Layout as well) - Note that you can NOT use these in a CompositeView.
  *
- * Optional
- * --------
- * 1. SVG
+ * 1. SVG (view:fit-paper, view:paper-ready)
  * 2. Basic Editors (view as form piece)
+ * 3. Render with data (view:render-data, view:data-rendered)
  *
  * @author Tim.Liu
  * @create 2014.02.26
@@ -1368,7 +1274,6 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 	 * activateEditors will not call on editor's onShow method, so don't put anything in it! Use onRender if needs be instead!!
 	 * 
 	 */
-
 	_.extend(Backbone.Marionette.ItemView.prototype, {
 
 		activateEditors: function(options){
@@ -1434,18 +1339,20 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 				return errors; 
 			};
 
-			//4. highlight status
-			//status(messages) - indicates that global status is 'error'
-			//or 
-			//status(status, messages) - allow individual editor status overriden
-			//	messages: {
-			//		editor1: 'string 1',
-			//		or
-			//		editor2: {
-			//			status: '...',
-			//			message: '...'
-			//		}
-			//	}
+			/**
+			 * 4. highlight status
+			 * status(messages) - indicates that global status is 'error'
+			 * or 
+			 * status(status, messages) - allow individual editor status overriden
+				messages: {
+					editor1: 'string 1',
+					or
+					editor2: {
+						status: '...',
+						message: '...'
+					}
+				}
+			 */
 			this.status = function(status, msgs){
 				if(!msgs){
 					msgs = status;
@@ -1474,6 +1381,22 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 
 	});
 
+	/**
+	 * Meta-event Listeners (pre-defined)
+	 * view:render-data
+	 */
+	_.extend(Backbone.Marionette.ItemView.prototype, {
+
+		onRenderData: function(data){
+			if(!this.model){
+				this.model = new Backbone.Model;
+				this.listenTo(this.model, 'change', this.render);
+			}
+			this.model.set(data);
+
+			this.trigger('view:data-rendered');
+		}
+	})
 
 })(Application);
 /**
@@ -1617,6 +1540,41 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 			return Old.prototype.constructor.call(this, options);
 		},	
 	});	
+
+})(Application);
+/**
+ * Marionette.CollectionView Enhancements (can be used in CompositeView as well)
+ *
+ * 1. Pagination, Filtering, Sorting support (TBI as Marionette.Controllers or built into default meta-event responder?)
+ * 2. Render with data (view:render-data, view:data-rendered)
+ *
+ * @author Tim.Liu
+ * @created 2014.04.30
+ */
+
+;(function(app){
+
+	/**
+	 * Meta-event Listeners (pre-defined)
+	 * view:render-data
+	 */
+	_.extend(Backbone.Marionette.View.prototype, {
+
+		onRenderData: function(data){
+
+			if(!_.isArray(data)) throw new Error('DEV::CollectionView+::You need to have an array passed in as data...');
+			
+			if(!this.collection){
+				this.collection = new Backbone.Collection;
+				this.listenTo(this.collection, 'add', this.addChildView);
+				this.listenTo(this.collection, 'remove', this.removeItemView);
+				this.listenTo(this.collection, 'reset', this.render);
+			}
+			this.collection.reset(data);
+
+			this.trigger('view:data-rendered');
+		}
+	})
 
 })(Application);
 /**

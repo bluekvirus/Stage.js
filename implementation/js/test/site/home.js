@@ -29,11 +29,13 @@
 				template: [
 					'<img src="themes/' + Application.currentTheme + '/img/logo/text-black" alt="Stage.js"></img>',
 					marked.parse([
+						/////////////////Intro/////////////////
 						'Learned Backbone? Tried Marionette? Still searching for a complete solution? ',
 						'Look no further...\n',
-						'With an intuitive workflow, a thiner and flatter architecture and advanced tooling, you can now',
-						'direct your next web application like a play on stage with multiple scenes and elements.\n',
+						'With our intuitive workflow, a thiner and flatter architecture and advanced tooling,',
+						'you can direct your next web application like a play on stage with multiple scenes and elements.\n',
 						'Enjoy the show!',
+						/////////////////Intro/////////////////
 					].join('\n'))
 				],
 				initialize: function(){
@@ -113,8 +115,6 @@
 				w: this.paper.width
 			};
 
-			//bg line top-down 45% width
-			//bg line top-right down 45% width
 			var start = {
 				x: size.w * .46,
 				y: size.h * .44

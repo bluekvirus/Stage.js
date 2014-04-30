@@ -1,10 +1,9 @@
 /**
- * Marionette.ItemView Enhancements (can be used in Layout as well) - Note that you can NOT use these in a CompositeView yet.
+ * Marionette.ItemView Enhancements (can be used in Layout as well) - Note that you can NOT use these in a CompositeView.
  *
- * Optional
- * --------
- * 1. SVG
+ * 1. SVG (view:fit-paper, view:paper-ready)
  * 2. Basic Editors (view as form piece)
+ * 3. Render with data (view:render-data, view:data-rendered)
  *
  * @author Tim.Liu
  * @create 2014.02.26
@@ -81,7 +80,6 @@
 	 * activateEditors will not call on editor's onShow method, so don't put anything in it! Use onRender if needs be instead!!
 	 * 
 	 */
-
 	_.extend(Backbone.Marionette.ItemView.prototype, {
 
 		activateEditors: function(options){
@@ -147,18 +145,20 @@
 				return errors; 
 			};
 
-			//4. highlight status
-			//status(messages) - indicates that global status is 'error'
-			//or 
-			//status(status, messages) - allow individual editor status overriden
-			//	messages: {
-			//		editor1: 'string 1',
-			//		or
-			//		editor2: {
-			//			status: '...',
-			//			message: '...'
-			//		}
-			//	}
+			/**
+			 * 4. highlight status
+			 * status(messages) - indicates that global status is 'error'
+			 * or 
+			 * status(status, messages) - allow individual editor status overriden
+				messages: {
+					editor1: 'string 1',
+					or
+					editor2: {
+						status: '...',
+						message: '...'
+					}
+				}
+			 */
 			this.status = function(status, msgs){
 				if(!msgs){
 					msgs = status;
@@ -187,5 +187,21 @@
 
 	});
 
+	/**
+	 * Meta-event Listeners (pre-defined)
+	 * view:render-data
+	 */
+	_.extend(Backbone.Marionette.ItemView.prototype, {
+
+		onRenderData: function(data){
+			if(!this.model){
+				this.model = new Backbone.Model;
+				this.listenTo(this.model, 'change', this.render);
+			}
+			this.model.set(data);
+
+			this.trigger('view:data-rendered');
+		}
+	})
 
 })(Application);

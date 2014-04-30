@@ -5,14 +5,7 @@
  * Disable
  * -------
  * Pass in this.ui or options.ui or a function as options to return options to bypass the Fixed enhancement.
- *
- * Fixed
- * -----
- * auto ui tags detect and register.
- * +meta event programming
- * 	view:* (event-name) - on* (camelized)
  * 	
- * 
  * Optional
  * --------
  * 1. action tags auto listener hookup with mutex-locking on other action listeners. (this.un/lockUI(no param) and this.isUILocked(no param))
@@ -20,6 +13,13 @@
  * 2. tooltip
  * 3. flyTo
  *
+ * Fixed
+ * -----
+ * auto ui tags detect and register.
+ * +meta event programming
+ * 	view:* (event-name) - on* (camelized)
+ *
+ * 
  * @author Tim.Liu
  * @create 2014.02.25 
  */
@@ -284,34 +284,6 @@
 
 		return Backbone.Marionette.View.apply(this, arguments);
 	}
-
-	//---------------------------------
-	//	Default meta-event responders
-	//---------------------------------
-	_.extend(Backbone.Marionette.View.prototype, {
-
-		//1. view:render-data - for hiding model/collection manipulation most of the time
-		//	data - can be [...] or {obj}
-		onRenderData: function(data){
-			if(_.isArray(data)){
-				if(!this.collection){
-					this.collection = new Backbone.Collection;
-					this.listenTo(this.collection, 'add', this.addChildView);
-					this.listenTo(this.collection, 'remove', this.removeItemView);
-					this.listenTo(this.collection, 'reset', this.render);
-				}
-				this.collection.reset(data);
-			}else{
-				if(!this.model){
-					this.model = new Backbone.Model;
-					this.listenTo(this.model, 'change', this.render);
-				}
-				this.model.set(data);
-			}
-
-			this.trigger('view:data-rendered');
-		}
-	})
 
 
 })(Application)
