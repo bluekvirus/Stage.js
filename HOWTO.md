@@ -41,7 +41,7 @@ We choose what we choose when designing this framework simply because we want to
 * Development Framework - AngularJS/EmberJS/Meteor (infrastructure only)
 * Application Framework (All-in-One) - YUI/ExtJS (infrastructure plus widgets and tools)
 
-**The Backbone library can implement them all** (Yes, any client side framework). (Not 100% for Meteor though, since Meteor combines its server into a full-stack solution. You need nodejs in the picture for that and we do have a package called **ajax-box** for just that based on the [express.js](http://expressjs.com/4x/) framework). And, if you need more evidence, YUI3 has the exact same concepts in Backbone implemented as its infrastructure. 
+**The Backbone library can implement them all** (Yes, any client side framework). (Not 100% for Meteor though, since Meteor combines its server into a full-stack solution. You need nodejs in the picture, and we do have a package called **ajax-box** for just that based on the [express.js](http://expressjs.com/4x/) framework). And, if you need more evidence, YUI3 has the exact same concepts in Backbone implemented as its infrastructure. 
 
 In order to accomplish more with lesser code using Backbone, we picked Backbone.Marionette as our pattern library. It offers cleanup/boilerplate routines and very neat concepts for building large Javascript front-end projects. The resulting framework accomplishes all the big frameworks have promised but with **a thiner and flatter structure**. We believe scripting languages are always going to be the perfect thin glue layer between mechanisms and policies. The Javascript language were picked to glue HTML/CSS and UX but nothing more, it should not be overdosed and attempt to mimic Java. In other words, **only the burger is important**:
 
@@ -87,7 +87,7 @@ As a full stack solution to the UI/UX side, we address those 3 problems with an 
 We achieve client-side multi-page-alike navigation through switching *Context*s on a pre-defined application region by responding to the URL fragment change event. (e.g #navigate/Context/...)
 
 ####What's a Context?
-A *Context* is a *Marionette.Layout* wrapped inside a *Marionette* module, you can just think of it as a *Layout*. *Context*s only appear on the application's context region (each application can have only 1 such region). If you have more than 1 *Context*s defined, they will automatically swap on the context region in response to the navigation event. You will not have more than 1 active *Context* at any given time.
+A *Context* is a special *Marionette.Layout* view object. *Context*s only appear on the application's context region (each application can have only 1 such region). If you have more than 1 *Context*s defined, they will automatically swap on the context region in response to the navigation event. You will not have more than 1 active *Context* at any given time.
 
 alias: Page
 
@@ -109,7 +109,7 @@ As *Design Patterns* dictates, we need to code in a way to:
 For *Regional*s (or any *Marionette.xView*) that you need to use again and again but with different configuration (e.g a Datagrid). Register it as a *Widget* or, in case of a basic input, an *Editor*. These reusable view definitions are call *Reusable*s in the framework. Think in terms of the **List and Container** technique as much as possible when creating them.
 
 ####Glue through events
-We encourage event programming in this framework. We glue views into a functioning whole by using meta-events. Whenever an interaction or transiting happens (e.g navigation, context-swap, login, error, data-ready...), intead of calling the actual *doer*s, fire/trigger an event first, so that later the actual behavior triggered by this event can be changed without affecting the glue/interfacing logic. Read carefully through the **Events** subsection in **Quick steps** below so you understand how to implement and extend application behaviors mainly through events. 
+We encourage event programming in this framework. We glue views into a functioning whole by using meta-events. Whenever an interaction or transition happens (e.g navigation, context-swap, login, error, data-ready...), intead of calling the actual *doer*s, fire/trigger an event first, so that later the actual behavior triggered by this event can be changed without affecting the glue/interfacing logic. Read carefully through the **Events** subsection in **Quick steps** below so you understand how to implement and extend application behaviors mainly through events. 
 
 ####Seems complicated...
 To focus, think of your application in terms of *Context*s and *Regional*s (pages and areas). Like drawing a series of pictures, each page is a *Context* and you lay things out by sketching out regions (areas) first on each page then refined the details (*Regional*) within each region. 
@@ -137,7 +137,7 @@ and this indicates:
 
 If you don't know what they are, go for a quick look at their websites. (links are provided under the *Included Libraries* area on the left sidebar)
 
-We also maintain a list of 3rd party libraries for the developers to choose from in addition to the base libraries (as utilities). The utility libraries (e.g jquery-file-upload, store.js, uri.js, raphael.js, marked, moment.js, socket.io.js...) are carefully selected from the many open-source Javascript libraries out there to help with specific but generally-will-appear problems that a developer will encounter during the web application development process. (see more in the *Include other js libraries* chapter)
+We also maintain a list of 3rd party libraries for the developers to choose from in addition to the base libraries (as utilities). The utility libraries (e.g jquery-file-upload, store.js, uri.js, raphael.js, marked, moment.js, socket.io.js...) are carefully selected from the many open-source Javascript libraries out there to help with specific but generally-will-appear problems that a developer will encounter during the web application development process. (see more in the **Include other js libraries** chapter)
 
 **Remember:** The goal of this framework is to assist you to make better use of *Marionette* (thus *Backbone*) by adding a conventional workflow (with tools) and application container around it. It is designed to keep you focused on building dynamic views without worrying about putting/linking/organizing them into a manageable whole. You can make a complete web application project with ease now by focusing only on what to offer the user within each of the regions/areas. Go read about *Marionette*, it is very important that you understand the 4 types of views (*ItemView, Layout, CollectionView and CompositeView*) offered by this pattern library. [We are still experimenting with *Behavior* in *Marionette*, nothing in the framework is implemented with it yet]
 
@@ -239,7 +239,7 @@ If your application is a single-page application, you probably don't need more t
 Now we've marked our context region, let's proceed to define them through our well organized APIs in the following sections.
 
 ####Step 2. Define Contexts
-Create a new file named `myContextA.js`, remember a *Context* is just a *Marionette module* wrapped around a *Marionette.Layout* definition. We've taken care of the wrapping process, all you need to do is giving the definition a name and the ordinary *Marionette.Layout* options:
+Create a new file named `myContextA.js`, remember a *Context* is just an special *Marionette.Layout* view object, all you need to do is adding a name to the ordinary *Marionette.Layout* options:
 ```
 //myContextA.js
 (function(app) {
@@ -654,9 +654,6 @@ subViewA {
 }
 ```
 **Remember:** Always prefer *Events* over *APIs* while implementing collaborations.
-
-######Use parentContext?
-Additional `parentContext` property is also added to each view instances shown through regions to help triggering collaboration events on the *Context* the views sit on.
 
 
 ###Widgets/Editors
