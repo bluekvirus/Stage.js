@@ -1,21 +1,5 @@
 ;(function(app){
 
-	var mockDataTpl = {
-		'data|50-50': [{
-			'_id': '_@GUID',
-			'title|1': ['Dr.', 'Mr.', 'Ms.', 'Mrs'],
-			'username': '@EMAIL',
-			'status|1': ['active', 'blocked', 'offline', 'guest'],
-			profile: {
-				'name|1': _.times(250, function(){return Random.name()}),
-				'age': '@INTEGER(20,90)',
-				'dob': '@DATE',
-				'major|1': ['CS', 'SE', 'Design', 'EE', 'Math'],
-			},
-			'link': '/profile/@_id'
-		}]
-	}
-
 	app.area('Datatable', {
 	    className: 'container',
 	    template: [
@@ -28,7 +12,7 @@
 	    	this.table.trigger('region:load-view', 'Datagrid', {
 	    		className: 'table table-hover',
 
-	    		data: Mock.mock(mockDataTpl).data,
+	    		//data: Mock.mock(mockDataTpl).data,
 	    		columns: [
 	    			{
 	    				name: '_id',
@@ -65,6 +49,12 @@
 	    			}
 	    		]
 
+	    	});
+
+	    	//load data grid page from server
+	    	var table = this.table.currentView;
+	    	table.trigger('view:load-page', {
+	    		url: '/sample1/user'
 	    	});
 	    }
 	});	

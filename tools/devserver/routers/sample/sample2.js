@@ -12,7 +12,7 @@ module.exports = function(server){
 	var router = server.mount(this);
 
 	router.get('/', function(req, res, next){
-		res.json('{world: true}');
+		res.json({world: true});
 	});
 
 }

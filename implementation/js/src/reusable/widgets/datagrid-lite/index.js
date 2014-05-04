@@ -58,7 +58,9 @@
 			onShow: function(){
 				this.header.show(new HeaderRow());
 				this.body.show(new Body({
-					el: this.body.$el[0]
+					//el can be css selector string, dom or $(dom)
+					el: this.body.$el 
+					//Note that a region's el !== $el[0], but a view's el === $el[0] in Marionette
 				}));
 				this.trigger('view:reconfigure', this._options);
 			},
@@ -81,6 +83,10 @@
 				//3. rebuild body rows - let it rerender with new data array
 				this.body.currentView._options = this._options;
 				this.body.currentView.trigger('view:render-data', this._options.data);
+			},
+			onRenderData: function(data){
+				//override the default data rendering meta-event responder
+				this.trigger('view:reconfigure', {data: data});
 			}
 		});
 

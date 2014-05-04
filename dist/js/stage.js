@@ -1545,7 +1545,7 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 /**
  * Marionette.CollectionView Enhancements (can be used in CompositeView as well)
  *
- * 1. Pagination, Filtering, Sorting support (TBI as Marionette.Controllers or built into default meta-event responder?)
+ * 1. Pagination, Filtering, Sorting support (view:load-page, TBI view:sort-by, view:filter-by)
  * 2. Render with data (view:render-data, view:data-rendered)
  *
  * @author Tim.Liu
@@ -1557,9 +1557,11 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 	/**
 	 * Meta-event Listeners (pre-defined)
 	 * view:render-data
+	 * view:load-page
 	 */
 	_.extend(Backbone.Marionette.View.prototype, {
 
+		/////////////////////////////
 		onRenderData: function(data){
 
 			if(!_.isArray(data)) throw new Error('DEV::CollectionView+::You need to have an array passed in as data...');
@@ -1573,6 +1575,31 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 			this.collection.reset(data);
 
 			this.trigger('view:data-rendered');
+		},
+
+
+		//////////////////////////////
+		onLoadPage: function(options){
+			options = _.extend({
+				page: 1,
+				pageSize: 15,
+				dataKey: 'payload',
+				totalKey: 'total',
+				//+ app.remote() options
+			}, options);
+			var that = this;
+			app.remote(_.omit(options, 'page', 'pageSize', 'dataKey', 'totalKey')).done(function(result){
+				//render this page:
+				that.trigger('view:render-data', result[options.dataKey]);
+				//signal other widget (e.g a paginator widget)
+				that.trigger('view:page-changed', {
+					page: options.page,
+					pageSize: options.pageSize,
+					total: result[options.totalKey]
+				});
+				//store pagination status for later access
+				that.pagination = _.pick(options, 'page', 'pageSize', 'dataKey', 'totalKey');
+			});
 		}
 	})
 
@@ -2695,7 +2722,9 @@ var I18N = {};
 			onShow: function(){
 				this.header.show(new HeaderRow());
 				this.body.show(new Body({
-					el: this.body.$el[0]
+					//el can be css selector string, dom or $(dom)
+					el: this.body.$el 
+					//Note that a region's el !== $el[0], but a view's el === $el[0] in Marionette
 				}));
 				this.trigger('view:reconfigure', this._options);
 			},
@@ -2718,6 +2747,10 @@ var I18N = {};
 				//3. rebuild body rows - let it rerender with new data array
 				this.body.currentView._options = this._options;
 				this.body.currentView.trigger('view:render-data', this._options.data);
+			},
+			onRenderData: function(data){
+				//override the default data rendering meta-event responder
+				this.trigger('view:reconfigure', {data: data});
 			}
 		});
 
