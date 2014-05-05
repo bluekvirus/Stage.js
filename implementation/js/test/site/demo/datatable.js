@@ -54,7 +54,11 @@
 	    	//load data grid page from server
 	    	var table = this.table.currentView;
 	    	table.trigger('view:load-page', {
-	    		url: '/sample1/user'
+	    		url: '/sample1/user',
+	    		page: 2,
+	    		querys: {
+	    			status: 'active'
+	    		}
 	    	});
 	    }
 	});	

@@ -41,17 +41,28 @@
 				pageSize: 15,
 				dataKey: 'payload',
 				totalKey: 'total',
+				params: {},
 				//+ app.remote() options
-			}, options);
+			}, this.pagination, options);
+
+			//merge pagination ?offset=...&size=... params/querys into app.remote options
+			_.each(['params', 'querys'], function(k){
+				if(!options[k]) return;
+
+				options[k] = _.extend({
+					offset: (options.page -1) * options.pageSize,
+					size: options.pageSize
+				}, options[k]);
+			});
+
 			var that = this;
 			app.remote(_.omit(options, 'page', 'pageSize', 'dataKey', 'totalKey')).done(function(result){
 				//render this page:
 				that.trigger('view:render-data', result[options.dataKey]);
 				//signal other widget (e.g a paginator widget)
 				that.trigger('view:page-changed', {
-					page: options.page,
-					pageSize: options.pageSize,
-					total: result[options.totalKey]
+					current: options.page,
+					total: Math.ceil(result[options.totalKey]/options.pageSize), //total page-count
 				});
 				//store pagination status for later access
 				that.pagination = _.pick(options, 'page', 'pageSize', 'dataKey', 'totalKey');
