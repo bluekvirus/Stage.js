@@ -23,31 +23,59 @@
 
 ;(function(app){
 
-	var UI = app.view({
+	app.widget('Paginator', function(){
+		var UI = app.view({
 
-		type: 'Layout',
-		template: [
-			'<ul>',
-				'<li {{#if atFirstPage}}class="disabled"{{/if}}><a href="#">&laquo;</a></li>',
-				'{{#each pages}}',
-					'<li {{#if isCurrent}}class="active"{{/if}}><a href="#" action="goToPage">{{number}} <span class="sr-only">(current)</span></a></li>',
-				'{{/each}}',
-				'<li {{#if atLastPage}}class="disabled"{{/if}}><a href="#">&raquo;</a></li>'
-			'</ul>',
-			//go to input box
-		],
-		initialize: function(options){
-			this._options = options;
-			//if options.target, link to its 'view:page-changed' event
-		},
-		onShow: function(){
-			this.trigger('view:reconfigure', this._options);
-		},
-		onReconfigure: function(options){
-			_.extend(this._options, options);
-			//config - atFirstPage, atLastPage, pages[{number:..., isCurrent:...}]
-		}
+			type: 'Layout',
+			template: [
+				'<ul class="pagination">',
+					'<li {{#if atFirstPage}}class="disabled"{{/if}}><a href="#" action="goToPage">&laquo;</a></li>',
+					'{{#each pages}}',
+						'<li {{#if isCurrent}}class="active"{{/if}}><a href="#" action="goToPage" data-page="{{number}}">{{number}} <span class="sr-only">(current)</span></a></li>',
+					'{{/each}}',
+					'<li {{#if atLastPage}}class="disabled"{{/if}}><a href="#" action="goToPage">&raquo;</a></li>',
+				'</ul>',
+				//go to input box
+			],
+			initialize: function(options){
+				this._options = options || {};
+				//if options.target, link to its 'view:page-changed' event
+				if(options.target) this.listenTo(options.target, 'view:page-changed', function(args){
+					this.trigger('view:reconfigure', {
+						currentPage: args.current,
+						totalPages: args.total
+					});
+				});
+			},
+			onShow: function(){
+				//this.trigger('view:reconfigure', this._options);
+			},
+			onReconfigure: function(options){
+				_.extend(this._options, options);
+				//use options.currentPage, totalPages to build config data - atFirstPage, atLastPage, pages[{number:..., isCurrent:...}]
+				var config = {
+					atFirstPage: this._options.currentPage === 1,
+					atLastPage: this._options.currentPage === this._options.totalPages,
+					pages: _.map(_.range(1, this._options.totalPages + 1), function(pNum){
+						return {
+							number: pNum,
+							isCurrent: pNum === this._options.currentPage
+						}
+					}, this)
+				}
 
+				this.trigger('view:render-data', config);
+			},
+			actions: {
+				goToPage: function($btn, e){
+					e.preventDefault();
+					console.log($btn.data('page'), this._options.currentPage);
+				}
+			}
+
+		});
+
+		return UI;
 	});
 
 })(Application);

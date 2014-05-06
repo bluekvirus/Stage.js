@@ -53,9 +53,12 @@
 
 	    	//load data grid page from server
 	    	var table = this.table.currentView;
+	    	this.footer.trigger('region:load-view', 'Paginator', {
+	    		target: table,
+	    	});
 	    	table.trigger('view:load-page', {
 	    		url: '/sample1/user',
-	    		page: 2,
+	    		page: 1,
 	    		querys: {
 	    			status: 'active'
 	    		}
