@@ -133,7 +133,7 @@ and this indicates:
 * Underscore.js or Lo-Dash 
 <small class="text-muted">(handy js functions)</small>
 * Backbone.js 
-<small class="text-muted">(Model/Collection, View, Event, Router)</small>
+<small class="text-muted">(Model/Collection, View, EventEmitter, Router)</small>
 
 If you don't know what they are, go for a quick look at their websites. (links are provided under the *Included Libraries* area on the left sidebar)
 
@@ -492,8 +492,8 @@ validate: function(val, parentCt){
 
 You can always register more named validators by:
 ```
-Application.editor.validator('my-validator-name', {
-    fn: function(options, val, parentCt){...},
+Application.editor.validator('my-validator-name', function(options, val, parentCt){
+    ...,
 });
 ```
 alias: `Application.editor.rule()`.

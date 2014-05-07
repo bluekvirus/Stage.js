@@ -1,5 +1,15 @@
 Change Log
 ==========
+1.0.0 release (2014-05-07)
+--------------------------
+1. added simple paginator (passive) widget
+2. added view:load-page, view:page-changed to CollectionView instances (remote data only)
+3. refined dev-server profile and router config
+4. removed module wrap on Context definitions
+5. fixed error in svg config for views
+6. added meta-event pairs and view:reconfigure concepts into widget building
+
+
 1.0.0-rc3 (2014-04-25)
 ----------------------
 1. added dev-server (ajax-box-lite, with less monitor, easy routers, no session or DB by default) in tools
