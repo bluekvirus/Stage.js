@@ -1545,8 +1545,14 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 /**
  * Marionette.CollectionView Enhancements (can be used in CompositeView as well)
  *
- * 1. Pagination, Filtering, Sorting support (view:load-page, TBI view:sort-by, view:filter-by)
- * 2. Render with data (view:render-data, view:data-rendered)
+ * 1. Render with data 
+ * 		view:render-data, view:data-rendered
+ * 		
+ * 2. Pagination, Filtering, Sorting support
+ * 		view:load-page, view:page-changed
+ * 		
+ * 		TBI: 
+ * 		view:sort-by, view:filter-by
  *
  * @author Tim.Liu
  * @created 2014.04.30
@@ -1578,7 +1584,14 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 		},
 
 
-		//////////////////////////////
+		///////////////////////////////////////////////////////////////////////////
+		/**
+		 * Note that view:load-page will have its options cached in this._remote
+		 *
+		 * To reset: (either)
+		 * 1. clear this._remote
+		 * 2. issue overriding options (including the options for app.remote())
+		 */
 		onLoadPage: function(options){
 			options = _.extend({
 				page: 1,
@@ -1587,16 +1600,16 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 				totalKey: 'total',
 				params: {},
 				//+ app.remote() options
-			}, this.pagination, options);
+			}, this._remote, options);
 
 			//merge pagination ?offset=...&size=... params/querys into app.remote options
 			_.each(['params', 'querys'], function(k){
 				if(!options[k]) return;
 
-				options[k] = _.extend({
+				_.extend(options[k], {
 					offset: (options.page -1) * options.pageSize,
 					size: options.pageSize
-				}, options[k]);
+				});
 			});
 
 			var that = this;
@@ -1609,7 +1622,7 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 					total: Math.ceil(result[options.totalKey]/options.pageSize), //total page-count
 				});
 				//store pagination status for later access
-				that.pagination = _.pick(options, 'page', 'pageSize', 'dataKey', 'totalKey');
+				that._remote = options;//_.pick(options, 'page', 'pageSize', 'dataKey', 'totalKey');
 			});
 		}
 	})
@@ -3070,7 +3083,7 @@ var I18N = {};
 
 })(Application);
 /**
- * Paginator widget used with lists (CollectionView instances)
+ * Passive Paginator widget used with lists (CollectionView instances)
  *
  * options
  * -------
@@ -3081,12 +3094,14 @@ var I18N = {};
  *
  * format
  * ------
- * << [1,2,...,last] >> Go to [ ]
+ * << [1,2,...,last] >> (TBI: Go to [ ] input)
  *
  * link with lists
  * ---------------
- * listenTo(list, 'view:page-changed', )
  * trigger('view:change-page', page number)
+ * 
+ * [listenTo(target, 'view:page-changed')] - if target is passed in through init options
+ * [listenTo(this, 'view:change-page')] - if target is passed in through init options
  * 
  * @author Tim.Liu
  * @create 2014.05.05
@@ -3097,17 +3112,17 @@ var I18N = {};
 	app.widget('Paginator', function(){
 		var UI = app.view({
 
-			type: 'Layout',
+			className: 'pagination',
+			tagName: 'ul',
+			
 			template: [
-				'<ul class="pagination">',
-					'<li {{#if atFirstPage}}class="disabled"{{/if}}><a href="#" action="goToPage">&laquo;</a></li>',
-					'{{#each pages}}',
-						'<li {{#if isCurrent}}class="active"{{/if}}><a href="#" action="goToPage" data-page="{{number}}">{{number}} <span class="sr-only">(current)</span></a></li>',
-					'{{/each}}',
-					'<li {{#if atLastPage}}class="disabled"{{/if}}><a href="#" action="goToPage">&raquo;</a></li>',
-				'</ul>',
-				//go to input box
+				'<li {{#if atFirstPage}}class="disabled"{{/if}}><a href="#" action="goToAdjacentPage" data-page="-">&laquo;</a></li>',
+				'{{#each pages}}',
+					'<li {{#if isCurrent}}class="active"{{/if}}><a href="#" action="goToPage" data-page="{{number}}">{{number}} <span class="sr-only">(current)</span></a></li>',
+				'{{/each}}',
+				'<li {{#if atLastPage}}class="disabled"{{/if}}><a href="#" action="goToAdjacentPage" data-page="+">&raquo;</a></li>',
 			],
+
 			initialize: function(options){
 				this._options = options || {};
 				//if options.target, link to its 'view:page-changed' event
@@ -3140,8 +3155,31 @@ var I18N = {};
 			actions: {
 				goToPage: function($btn, e){
 					e.preventDefault();
-					console.log($btn.data('page'), this._options.currentPage);
-				}
+					var page = $btn.data('page');
+					if(page === this._options.currentPage) return;
+
+					this.trigger('view:change-page', page);
+				},
+				goToAdjacentPage: function($btn, e){
+					e.preventDefault();
+					var pNum = this._options.currentPage;
+					var page = $btn.data('page');
+					if(page === '+')
+						pNum ++;
+					else
+						pNum --;
+
+					if(pNum < 1 || pNum > this._options.totalPages) return;
+					this.trigger('view:change-page', pNum);
+				},
+			},
+			//////can be overriden///////
+			onChangePage: function(pNum){
+				//just a default stub implementation
+				if(this._options.target) 
+					this._options.target.trigger('view:load-page', {
+						page: pNum
+					});
 			}
 
 		});

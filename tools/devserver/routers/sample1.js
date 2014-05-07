@@ -32,7 +32,7 @@ module.exports = function(server){
 			},
 			'link': '/profile/@_id'
 		}],
-		total: 50,
+		total: 150,
 	};
 	router.get('/user', function(req, res, next){
 		res.json(Mock.mock(mockDataTpl));

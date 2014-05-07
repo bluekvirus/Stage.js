@@ -1,5 +1,5 @@
 /**
- * Paginator widget used with lists (CollectionView instances)
+ * Passive Paginator widget used with lists (CollectionView instances)
  *
  * options
  * -------
@@ -10,12 +10,14 @@
  *
  * format
  * ------
- * << [1,2,...,last] >> Go to [ ]
+ * << [1,2,...,last] >> (TBI: Go to [ ] input)
  *
  * link with lists
  * ---------------
- * listenTo(list, 'view:page-changed', )
  * trigger('view:change-page', page number)
+ * 
+ * [listenTo(target, 'view:page-changed')] - if target is passed in through init options
+ * [listenTo(this, 'view:change-page')] - if target is passed in through init options
  * 
  * @author Tim.Liu
  * @create 2014.05.05
@@ -26,17 +28,17 @@
 	app.widget('Paginator', function(){
 		var UI = app.view({
 
-			type: 'Layout',
+			className: 'pagination',
+			tagName: 'ul',
+			
 			template: [
-				'<ul class="pagination">',
-					'<li {{#if atFirstPage}}class="disabled"{{/if}}><a href="#" action="goToPage">&laquo;</a></li>',
-					'{{#each pages}}',
-						'<li {{#if isCurrent}}class="active"{{/if}}><a href="#" action="goToPage" data-page="{{number}}">{{number}} <span class="sr-only">(current)</span></a></li>',
-					'{{/each}}',
-					'<li {{#if atLastPage}}class="disabled"{{/if}}><a href="#" action="goToPage">&raquo;</a></li>',
-				'</ul>',
-				//go to input box
+				'<li {{#if atFirstPage}}class="disabled"{{/if}}><a href="#" action="goToAdjacentPage" data-page="-">&laquo;</a></li>',
+				'{{#each pages}}',
+					'<li {{#if isCurrent}}class="active"{{/if}}><a href="#" action="goToPage" data-page="{{number}}">{{number}} <span class="sr-only">(current)</span></a></li>',
+				'{{/each}}',
+				'<li {{#if atLastPage}}class="disabled"{{/if}}><a href="#" action="goToAdjacentPage" data-page="+">&raquo;</a></li>',
 			],
+
 			initialize: function(options){
 				this._options = options || {};
 				//if options.target, link to its 'view:page-changed' event
@@ -69,8 +71,31 @@
 			actions: {
 				goToPage: function($btn, e){
 					e.preventDefault();
-					console.log($btn.data('page'), this._options.currentPage);
-				}
+					var page = $btn.data('page');
+					if(page === this._options.currentPage) return;
+
+					this.trigger('view:change-page', page);
+				},
+				goToAdjacentPage: function($btn, e){
+					e.preventDefault();
+					var pNum = this._options.currentPage;
+					var page = $btn.data('page');
+					if(page === '+')
+						pNum ++;
+					else
+						pNum --;
+
+					if(pNum < 1 || pNum > this._options.totalPages) return;
+					this.trigger('view:change-page', pNum);
+				},
+			},
+			//////can be overriden///////
+			onChangePage: function(pNum){
+				//just a default stub implementation
+				if(this._options.target) 
+					this._options.target.trigger('view:load-page', {
+						page: pNum
+					});
 			}
 
 		});

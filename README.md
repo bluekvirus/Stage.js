@@ -1,21 +1,22 @@
-The Factory Project
+Stage.js
 ===================
 This project produces **Stage.js** - an infrastructure for building modern web application client with many contexts (e.g a data-heavy administration app).
 
 
 What's next?
 ------------
-1.0.0-release might bring:
-* paginator/filter/sorter (controller) widget for used with list views;
-* Datagrid: select-all header/cell, details row;
+1.1.0 might bring:
+* local filter/sorter mech into list views;
+* Datagrid+ : select-all header/cell, details row;
 * Editor+ : Spinner, Switches, DnD Listing, File Listing;
-* allow developers their own choices of template engine other than handlebars
+* local pagination mech into list views; 
 * provide a way to persist context status between context switches.
+
 
 
 Current Version
 ---------------
-1.0.0-rc3
+1.0.0-release
 
 
 Build
@@ -25,7 +26,7 @@ Run `tools/build/shortcut.sh` and see dist for details.
 
 Deploy-able
 -----------
-The `/implementation` folder is also servable as a product intro & download page of **PM.js** releases.
+The `/implementation` folder is also servable as a product intro & download page of **Stage.js** releases.
 
 
 Core Concepts & Workflow
@@ -117,7 +118,7 @@ If you have to use `$.on()` use it in a delegated form (on a parent dom object).
 
 IE(6-9)
 ---------------
-Before IE10, some efforts are still needed before the web app can work on an IE browser. We've prepared to add the following lib/tool to accommodate this in the future:
+Before IE10, some efforts are still needed before the web app can work on an IE browser. We've prepared to add the following lib/tool to accommodate this in the future: (though we don't want to...)
 
 1. selectivizr.js - client libs (already added in bower.json, not in use) We need to disable our app theme-roller for IE after adding this into index.html.
 ```

@@ -55,6 +55,7 @@
 	    	var table = this.table.currentView;
 	    	this.footer.trigger('region:load-view', 'Paginator', {
 	    		target: table,
+	    		className: 'pagination pagination-sm pull-right'
 	    	});
 	    	table.trigger('view:load-page', {
 	    		url: '/sample1/user',

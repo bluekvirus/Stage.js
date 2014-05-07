@@ -1,8 +1,14 @@
 /**
  * Marionette.CollectionView Enhancements (can be used in CompositeView as well)
  *
- * 1. Pagination, Filtering, Sorting support (view:load-page, TBI view:sort-by, view:filter-by)
- * 2. Render with data (view:render-data, view:data-rendered)
+ * 1. Render with data 
+ * 		view:render-data, view:data-rendered
+ * 		
+ * 2. Pagination, Filtering, Sorting support
+ * 		view:load-page, view:page-changed
+ * 		
+ * 		TBI: 
+ * 		view:sort-by, view:filter-by
  *
  * @author Tim.Liu
  * @created 2014.04.30
@@ -34,7 +40,14 @@
 		},
 
 
-		//////////////////////////////
+		///////////////////////////////////////////////////////////////////////////
+		/**
+		 * Note that view:load-page will have its options cached in this._remote
+		 *
+		 * To reset: (either)
+		 * 1. clear this._remote
+		 * 2. issue overriding options (including the options for app.remote())
+		 */
 		onLoadPage: function(options){
 			options = _.extend({
 				page: 1,
@@ -43,16 +56,16 @@
 				totalKey: 'total',
 				params: {},
 				//+ app.remote() options
-			}, this.pagination, options);
+			}, this._remote, options);
 
 			//merge pagination ?offset=...&size=... params/querys into app.remote options
 			_.each(['params', 'querys'], function(k){
 				if(!options[k]) return;
 
-				options[k] = _.extend({
+				_.extend(options[k], {
 					offset: (options.page -1) * options.pageSize,
 					size: options.pageSize
-				}, options[k]);
+				});
 			});
 
 			var that = this;
@@ -65,7 +78,7 @@
 					total: Math.ceil(result[options.totalKey]/options.pageSize), //total page-count
 				});
 				//store pagination status for later access
-				that.pagination = _.pick(options, 'page', 'pageSize', 'dataKey', 'totalKey');
+				that._remote = options;//_.pick(options, 'page', 'pageSize', 'dataKey', 'totalKey');
 			});
 		}
 	})
