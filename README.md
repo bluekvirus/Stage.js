@@ -6,12 +6,12 @@ This project produces **Stage.js** - an infrastructure for building modern web a
 What's next?
 ------------
 1.1.0 might bring:
-* local filter/sorter mech into list views;
 * Datagrid+ : select-all header/cell, details row;
 * Editor+ : Spinner, Switches, DnD Listing, File Listing;
-* local pagination mech into list views; 
-* provide a way to persist context status between context switches.
-
+* local filter/sorter mech into list views; 
+* local pagination mech into list views (in addition to the remote one we already have); 
+* provide a way to persist context status between context switches?
+* provide context with a state-machine mech for css, layout and action/behavioral constrains? 
 
 
 Current Version

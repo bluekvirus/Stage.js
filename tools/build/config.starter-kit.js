@@ -27,6 +27,8 @@ module.exports = {
 			docs: {}
 		},
 		implementation: {
+			js: {},
+			static: {},
 			themes: {
 				'default': 'themes/default'
 			},
