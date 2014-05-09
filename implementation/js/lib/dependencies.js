@@ -24904,7 +24904,7 @@ function selectn(query) {
 
 // MarionetteJS (Backbone.Marionette)
 // ----------------------------------
-// v1.8.4
+// v1.8.5
 //
 // Copyright (c)2014 Derick Bailey, Muted Solutions, LLC.
 // Distributed under MIT license
@@ -24921,637 +24921,459 @@ function selectn(query) {
  */
 
 
-// Backbone.BabySitter
-// -------------------
-// v0.1.2
-//
-// Copyright (c)2014 Derick Bailey, Muted Solutions, LLC.
-// Distributed under MIT license
-//
-// http://github.com/marionettejs/backbone.babysitter
-
-(function(root, factory) {
-
-  if (typeof define === 'function' && define.amd) {
-    define(['exports', 'backbone', 'underscore'], function(exports, Backbone, _) {
-      return factory(Backbone, _);
-    });
-  } else if (typeof exports !== 'undefined') {
-    var Backbone = require('backbone');
-    var _ = require('underscore');
-    module.exports = factory(Backbone, _);
-  } else {
-    factory(root.Backbone, root._);
-  }
-
-}(this, function(Backbone, _) {
-  "use strict";
-
-  var previousChildViewContainer = Backbone.ChildViewContainer;
-
-  // BabySitter.ChildViewContainer
-  // -----------------------------
-  //
-  // Provide a container to store, retrieve and
-  // shut down child views.
-
-  Backbone.ChildViewContainer = (function (Backbone, _) {
-
-    // Container Constructor
-    // ---------------------
-
-    var Container = function(views){
-      this._views = {};
-      this._indexByModel = {};
-      this._indexByCustom = {};
-      this._updateLength();
-
-      _.each(views, this.add, this);
-    };
-
-    // Container Methods
-    // -----------------
-
-    _.extend(Container.prototype, {
-
-      // Add a view to this container. Stores the view
-      // by `cid` and makes it searchable by the model
-      // cid (and model itself). Optionally specify
-      // a custom key to store an retrieve the view.
-      add: function(view, customIndex){
-        var viewCid = view.cid;
-
-        // store the view
-        this._views[viewCid] = view;
-
-        // index it by model
-        if (view.model){
-          this._indexByModel[view.model.cid] = viewCid;
-        }
-
-        // index by custom
-        if (customIndex){
-          this._indexByCustom[customIndex] = viewCid;
-        }
-
-        this._updateLength();
-        return this;
-      },
-
-      // Find a view by the model that was attached to
-      // it. Uses the model's `cid` to find it.
-      findByModel: function(model){
-        return this.findByModelCid(model.cid);
-      },
-
-      // Find a view by the `cid` of the model that was attached to
-      // it. Uses the model's `cid` to find the view `cid` and
-      // retrieve the view using it.
-      findByModelCid: function(modelCid){
-        var viewCid = this._indexByModel[modelCid];
-        return this.findByCid(viewCid);
-      },
-
-      // Find a view by a custom indexer.
-      findByCustom: function(index){
-        var viewCid = this._indexByCustom[index];
-        return this.findByCid(viewCid);
-      },
-
-      // Find by index. This is not guaranteed to be a
-      // stable index.
-      findByIndex: function(index){
-        return _.values(this._views)[index];
-      },
-
-      // retrieve a view by its `cid` directly
-      findByCid: function(cid){
-        return this._views[cid];
-      },
-
-      // Remove a view
-      remove: function(view){
-        var viewCid = view.cid;
-
-        // delete model index
-        if (view.model){
-          delete this._indexByModel[view.model.cid];
-        }
-
-        // delete custom index
-        _.any(this._indexByCustom, function(cid, key) {
-          if (cid === viewCid) {
-            delete this._indexByCustom[key];
-            return true;
-          }
-        }, this);
-
-        // remove the view from the container
-        delete this._views[viewCid];
-
-        // update the length
-        this._updateLength();
-        return this;
-      },
-
-      // Call a method on every view in the container,
-      // passing parameters to the call method one at a
-      // time, like `function.call`.
-      call: function(method){
-        this.apply(method, _.tail(arguments));
-      },
-
-      // Apply a method on every view in the container,
-      // passing parameters to the call method one at a
-      // time, like `function.apply`.
-      apply: function(method, args){
-        _.each(this._views, function(view){
-          if (_.isFunction(view[method])){
-            view[method].apply(view, args || []);
-          }
-        });
-      },
-
-      // Update the `.length` attribute on this container
-      _updateLength: function(){
-        this.length = _.size(this._views);
-      }
-    });
-
-    // Borrowing this code from Backbone.Collection:
-    // http://backbonejs.org/docs/backbone.html#section-106
-    //
-    // Mix in methods from Underscore, for iteration, and other
-    // collection related features.
-    var methods = ['forEach', 'each', 'map', 'find', 'detect', 'filter',
-      'select', 'reject', 'every', 'all', 'some', 'any', 'include',
-      'contains', 'invoke', 'toArray', 'first', 'initial', 'rest',
-      'last', 'without', 'isEmpty', 'pluck'];
-
-    _.each(methods, function(method) {
-      Container.prototype[method] = function() {
-        var views = _.values(this._views);
-        var args = [views].concat(_.toArray(arguments));
-        return _[method].apply(_, args);
-      };
-    });
-
-    // return the public API
-    return Container;
-  })(Backbone, _);
-
-  Backbone.ChildViewContainer.VERSION = '0.1.2';
-
-  Backbone.ChildViewContainer.noConflict = function () {
-    Backbone.ChildViewContainer = previousChildViewContainer;
-    return this;
-  };
-
-  return Backbone.ChildViewContainer;
-
-}));
-
-// Backbone.Wreqr (Backbone.Marionette)
-// ----------------------------------
-// v1.3.0
-//
-// Copyright (c)2014 Derick Bailey, Muted Solutions, LLC.
-// Distributed under MIT license
-//
-// http://github.com/marionettejs/backbone.wreqr
-
-
-(function(root, factory) {
-
-  if (typeof define === 'function' && define.amd) {
-    define(['exports', 'backbone', 'underscore'], function(exports, Backbone, _) {
-      factory(exports, Backbone, _);
-    });
-  } else if (typeof exports !== 'undefined') {
-    var Backbone = require('backbone');
-    var _ = require('underscore');
-    factory(exports, Backbone, _);
-  } else {
-    factory({}, root.Backbone, root._);
-  }
-
-}(this, function(Wreqr, Backbone, _) {
-  "use strict";
-
-  var previousWreqr = Backbone.Wreqr;
-
-  Backbone.Wreqr = Wreqr;
-
-  Backbone.Wreqr.VERSION = '1.3.0';
-
-  Backbone.Wreqr.noConflict = function () {
-    Backbone.Wreqr = previousWreqr;
-    return this;
-  };
-
-  // Handlers
-// --------
-// A registry of functions to call, given a name
-
-Wreqr.Handlers = (function(Backbone, _){
-  "use strict";
-  
-  // Constructor
-  // -----------
-
-  var Handlers = function(options){
-    this.options = options;
-    this._wreqrHandlers = {};
-    
-    if (_.isFunction(this.initialize)){
-      this.initialize(options);
-    }
-  };
-
-  Handlers.extend = Backbone.Model.extend;
-
-  // Instance Members
-  // ----------------
-
-  _.extend(Handlers.prototype, Backbone.Events, {
-
-    // Add multiple handlers using an object literal configuration
-    setHandlers: function(handlers){
-      _.each(handlers, function(handler, name){
-        var context = null;
-
-        if (_.isObject(handler) && !_.isFunction(handler)){
-          context = handler.context;
-          handler = handler.callback;
-        }
-
-        this.setHandler(name, handler, context);
-      }, this);
-    },
-
-    // Add a handler for the given name, with an
-    // optional context to run the handler within
-    setHandler: function(name, handler, context){
-      var config = {
-        callback: handler,
-        context: context
-      };
-
-      this._wreqrHandlers[name] = config;
-
-      this.trigger("handler:add", name, handler, context);
-    },
-
-    // Determine whether or not a handler is registered
-    hasHandler: function(name){
-      return !! this._wreqrHandlers[name];
-    },
-
-    // Get the currently registered handler for
-    // the specified name. Throws an exception if
-    // no handler is found.
-    getHandler: function(name){
-      var config = this._wreqrHandlers[name];
-
-      if (!config){
-        return;
-      }
-
-      return function(){
-        var args = Array.prototype.slice.apply(arguments);
-        return config.callback.apply(config.context, args);
-      };
-    },
-
-    // Remove a handler for the specified name
-    removeHandler: function(name){
-      delete this._wreqrHandlers[name];
-    },
-
-    // Remove all handlers from this registry
-    removeAllHandlers: function(){
-      this._wreqrHandlers = {};
-    }
-  });
-
-  return Handlers;
-})(Backbone, _);
-
-  // Wreqr.CommandStorage
-// --------------------
-//
-// Store and retrieve commands for execution.
-Wreqr.CommandStorage = (function(){
-  "use strict";
-
-  // Constructor function
-  var CommandStorage = function(options){
-    this.options = options;
-    this._commands = {};
-
-    if (_.isFunction(this.initialize)){
-      this.initialize(options);
-    }
-  };
-
-  // Instance methods
-  _.extend(CommandStorage.prototype, Backbone.Events, {
-
-    // Get an object literal by command name, that contains
-    // the `commandName` and the `instances` of all commands
-    // represented as an array of arguments to process
-    getCommands: function(commandName){
-      var commands = this._commands[commandName];
-
-      // we don't have it, so add it
-      if (!commands){
-
-        // build the configuration
-        commands = {
-          command: commandName, 
-          instances: []
-        };
-
-        // store it
-        this._commands[commandName] = commands;
-      }
-
-      return commands;
-    },
-
-    // Add a command by name, to the storage and store the
-    // args for the command
-    addCommand: function(commandName, args){
-      var command = this.getCommands(commandName);
-      command.instances.push(args);
-    },
-
-    // Clear all commands for the given `commandName`
-    clearCommands: function(commandName){
-      var command = this.getCommands(commandName);
-      command.instances = [];
-    }
-  });
-
-  return CommandStorage;
-})();
-
-  // Wreqr.Commands
-// --------------
-//
-// A simple command pattern implementation. Register a command
-// handler and execute it.
-Wreqr.Commands = (function(Wreqr){
-  "use strict";
-
-  return Wreqr.Handlers.extend({
-    // default storage type
-    storageType: Wreqr.CommandStorage,
-
-    constructor: function(options){
-      this.options = options || {};
-
-      this._initializeStorage(this.options);
-      this.on("handler:add", this._executeCommands, this);
-
-      var args = Array.prototype.slice.call(arguments);
-      Wreqr.Handlers.prototype.constructor.apply(this, args);
-    },
-
-    // Execute a named command with the supplied args
-    execute: function(name, args){
-      name = arguments[0];
-      args = Array.prototype.slice.call(arguments, 1);
-
-      if (this.hasHandler(name)){
-        this.getHandler(name).apply(this, args);
-      } else {
-        this.storage.addCommand(name, args);
-      }
-
-    },
-
-    // Internal method to handle bulk execution of stored commands
-    _executeCommands: function(name, handler, context){
-      var command = this.storage.getCommands(name);
-
-      // loop through and execute all the stored command instances
-      _.each(command.instances, function(args){
-        handler.apply(context, args);
-      });
-
-      this.storage.clearCommands(name);
-    },
-
-    // Internal method to initialize storage either from the type's
-    // `storageType` or the instance `options.storageType`.
-    _initializeStorage: function(options){
-      var storage;
-
-      var StorageType = options.storageType || this.storageType;
-      if (_.isFunction(StorageType)){
-        storage = new StorageType();
-      } else {
-        storage = StorageType;
-      }
-
-      this.storage = storage;
-    }
-  });
-
-})(Wreqr);
-
-  // Wreqr.RequestResponse
-// ---------------------
-//
-// A simple request/response implementation. Register a
-// request handler, and return a response from it
-Wreqr.RequestResponse = (function(Wreqr){
-  "use strict";
-
-  return Wreqr.Handlers.extend({
-    request: function(){
-      var name = arguments[0];
-      var args = Array.prototype.slice.call(arguments, 1);
-      if (this.hasHandler(name)) {
-        return this.getHandler(name).apply(this, args);
-      }
-    }
-  });
-
-})(Wreqr);
-
-  // Event Aggregator
-// ----------------
-// A pub-sub object that can be used to decouple various parts
-// of an application through event-driven architecture.
-
-Wreqr.EventAggregator = (function(Backbone, _){
-  "use strict";
-  var EA = function(){};
-
-  // Copy the `extend` function used by Backbone's classes
-  EA.extend = Backbone.Model.extend;
-
-  // Copy the basic Backbone.Events on to the event aggregator
-  _.extend(EA.prototype, Backbone.Events);
-
-  return EA;
-})(Backbone, _);
-
-  // Wreqr.Channel
-// --------------
-//
-// An object that wraps the three messaging systems:
-// EventAggregator, RequestResponse, Commands
-Wreqr.Channel = (function(Wreqr){
-  "use strict";
-
-  var Channel = function(channelName) {
-    this.vent        = new Backbone.Wreqr.EventAggregator();
-    this.reqres      = new Backbone.Wreqr.RequestResponse();
-    this.commands    = new Backbone.Wreqr.Commands();
-    this.channelName = channelName;
-  };
-
-  _.extend(Channel.prototype, {
-
-    // Remove all handlers from the messaging systems of this channel
-    reset: function() {
-      this.vent.off();
-      this.vent.stopListening();
-      this.reqres.removeAllHandlers();
-      this.commands.removeAllHandlers();
-      return this;
-    },
-
-    // Connect a hash of events; one for each messaging system
-    connectEvents: function(hash, context) {
-      this._connect('vent', hash, context);
-      return this;
-    },
-
-    connectCommands: function(hash, context) {
-      this._connect('commands', hash, context);
-      return this;
-    },
-
-    connectRequests: function(hash, context) {
-      this._connect('reqres', hash, context);
-      return this;
-    },
-
-    // Attach the handlers to a given message system `type`
-    _connect: function(type, hash, context) {
-      if (!hash) {
-        return;
-      }
-
-      context = context || this;
-      var method = (type === 'vent') ? 'on' : 'setHandler';
-
-      _.each(hash, function(fn, eventName) {
-        this[type][method](eventName, _.bind(fn, context));
-      }, this);
-    }
-  });
-
-
-  return Channel;
-})(Wreqr);
-
-  // Wreqr.Radio
-// --------------
-//
-// An object that lets you communicate with many channels.
-Wreqr.radio = (function(Wreqr){
-  "use strict";
-
-  var Radio = function() {
-    this._channels = {};
-    this.vent = {};
-    this.commands = {};
-    this.reqres = {};
-    this._proxyMethods();
-  };
-
-  _.extend(Radio.prototype, {
-
-    channel: function(channelName) {
-      if (!channelName) {
-        throw new Error('Channel must receive a name');
-      }
-
-      return this._getChannel( channelName );
-    },
-
-    _getChannel: function(channelName) {
-      var channel = this._channels[channelName];
-
-      if(!channel) {
-        channel = new Wreqr.Channel(channelName);
-        this._channels[channelName] = channel;
-      }
-
-      return channel;
-    },
-
-    _proxyMethods: function() {
-      _.each(['vent', 'commands', 'reqres'], function(system) {
-        _.each( messageSystems[system], function(method) {
-          this[system][method] = proxyMethod(this, system, method);
-        }, this);
-      }, this);
-    }
-  });
-
-
-  var messageSystems = {
-    vent: [
-      'on',
-      'off',
-      'trigger',
-      'once',
-      'stopListening',
-      'listenTo',
-      'listenToOnce'
-    ],
-
-    commands: [
-      'execute',
-      'setHandler',
-      'setHandlers',
-      'removeHandler',
-      'removeAllHandlers'
-    ],
-
-    reqres: [
-      'request',
-      'setHandler',
-      'setHandlers',
-      'removeHandler',
-      'removeAllHandlers'
-    ]
-  };
-
-  var proxyMethod = function(radio, system, method) {
-    return function(channelName) {
-      var messageSystem = radio._getChannel(channelName)[system];
-      var args = Array.prototype.slice.call(arguments, 1);
-
-      return messageSystem[method].apply(messageSystem, args);
-    };
-  };
-
-  return new Radio();
-
-})(Wreqr);
-
-
-}));
-
 var Marionette = (function(global, Backbone, _){
   "use strict";
+
+  // Backbone.BabySitter
+  // -------------------
+  // v0.1.4
+  //
+  // Copyright (c)2014 Derick Bailey, Muted Solutions, LLC.
+  // Distributed under MIT license
+  //
+  // http://github.com/marionettejs/backbone.babysitter
+  (function(Backbone, _) {
+    "use strict";
+    var previousChildViewContainer = Backbone.ChildViewContainer;
+    // BabySitter.ChildViewContainer
+    // -----------------------------
+    //
+    // Provide a container to store, retrieve and
+    // shut down child views.
+    Backbone.ChildViewContainer = function(Backbone, _) {
+      // Container Constructor
+      // ---------------------
+      var Container = function(views) {
+        this._views = {};
+        this._indexByModel = {};
+        this._indexByCustom = {};
+        this._updateLength();
+        _.each(views, this.add, this);
+      };
+      // Container Methods
+      // -----------------
+      _.extend(Container.prototype, {
+        // Add a view to this container. Stores the view
+        // by `cid` and makes it searchable by the model
+        // cid (and model itself). Optionally specify
+        // a custom key to store an retrieve the view.
+        add: function(view, customIndex) {
+          var viewCid = view.cid;
+          // store the view
+          this._views[viewCid] = view;
+          // index it by model
+          if (view.model) {
+            this._indexByModel[view.model.cid] = viewCid;
+          }
+          // index by custom
+          if (customIndex) {
+            this._indexByCustom[customIndex] = viewCid;
+          }
+          this._updateLength();
+          return this;
+        },
+        // Find a view by the model that was attached to
+        // it. Uses the model's `cid` to find it.
+        findByModel: function(model) {
+          return this.findByModelCid(model.cid);
+        },
+        // Find a view by the `cid` of the model that was attached to
+        // it. Uses the model's `cid` to find the view `cid` and
+        // retrieve the view using it.
+        findByModelCid: function(modelCid) {
+          var viewCid = this._indexByModel[modelCid];
+          return this.findByCid(viewCid);
+        },
+        // Find a view by a custom indexer.
+        findByCustom: function(index) {
+          var viewCid = this._indexByCustom[index];
+          return this.findByCid(viewCid);
+        },
+        // Find by index. This is not guaranteed to be a
+        // stable index.
+        findByIndex: function(index) {
+          return _.values(this._views)[index];
+        },
+        // retrieve a view by its `cid` directly
+        findByCid: function(cid) {
+          return this._views[cid];
+        },
+        // Remove a view
+        remove: function(view) {
+          var viewCid = view.cid;
+          // delete model index
+          if (view.model) {
+            delete this._indexByModel[view.model.cid];
+          }
+          // delete custom index
+          _.any(this._indexByCustom, function(cid, key) {
+            if (cid === viewCid) {
+              delete this._indexByCustom[key];
+              return true;
+            }
+          }, this);
+          // remove the view from the container
+          delete this._views[viewCid];
+          // update the length
+          this._updateLength();
+          return this;
+        },
+        // Call a method on every view in the container,
+        // passing parameters to the call method one at a
+        // time, like `function.call`.
+        call: function(method) {
+          this.apply(method, _.tail(arguments));
+        },
+        // Apply a method on every view in the container,
+        // passing parameters to the call method one at a
+        // time, like `function.apply`.
+        apply: function(method, args) {
+          _.each(this._views, function(view) {
+            if (_.isFunction(view[method])) {
+              view[method].apply(view, args || []);
+            }
+          });
+        },
+        // Update the `.length` attribute on this container
+        _updateLength: function() {
+          this.length = _.size(this._views);
+        }
+      });
+      // Borrowing this code from Backbone.Collection:
+      // http://backbonejs.org/docs/backbone.html#section-106
+      //
+      // Mix in methods from Underscore, for iteration, and other
+      // collection related features.
+      var methods = [ "forEach", "each", "map", "find", "detect", "filter", "select", "reject", "every", "all", "some", "any", "include", "contains", "invoke", "toArray", "first", "initial", "rest", "last", "without", "isEmpty", "pluck" ];
+      _.each(methods, function(method) {
+        Container.prototype[method] = function() {
+          var views = _.values(this._views);
+          var args = [ views ].concat(_.toArray(arguments));
+          return _[method].apply(_, args);
+        };
+      });
+      // return the public API
+      return Container;
+    }(Backbone, _);
+    Backbone.ChildViewContainer.VERSION = "0.1.4";
+    Backbone.ChildViewContainer.noConflict = function() {
+      Backbone.ChildViewContainer = previousChildViewContainer;
+      return this;
+    };
+    return Backbone.ChildViewContainer;
+  })(Backbone, _);
+  // Backbone.Wreqr (Backbone.Marionette)
+  // ----------------------------------
+  // v1.3.1
+  //
+  // Copyright (c)2014 Derick Bailey, Muted Solutions, LLC.
+  // Distributed under MIT license
+  //
+  // http://github.com/marionettejs/backbone.wreqr
+  (function(Backbone, _) {
+    "use strict";
+    var previousWreqr = Backbone.Wreqr;
+    var Wreqr = Backbone.Wreqr = {};
+    Backbone.Wreqr.VERSION = "1.3.1";
+    Backbone.Wreqr.noConflict = function() {
+      Backbone.Wreqr = previousWreqr;
+      return this;
+    };
+    // Handlers
+    // --------
+    // A registry of functions to call, given a name
+    Wreqr.Handlers = function(Backbone, _) {
+      "use strict";
+      // Constructor
+      // -----------
+      var Handlers = function(options) {
+        this.options = options;
+        this._wreqrHandlers = {};
+        if (_.isFunction(this.initialize)) {
+          this.initialize(options);
+        }
+      };
+      Handlers.extend = Backbone.Model.extend;
+      // Instance Members
+      // ----------------
+      _.extend(Handlers.prototype, Backbone.Events, {
+        // Add multiple handlers using an object literal configuration
+        setHandlers: function(handlers) {
+          _.each(handlers, function(handler, name) {
+            var context = null;
+            if (_.isObject(handler) && !_.isFunction(handler)) {
+              context = handler.context;
+              handler = handler.callback;
+            }
+            this.setHandler(name, handler, context);
+          }, this);
+        },
+        // Add a handler for the given name, with an
+        // optional context to run the handler within
+        setHandler: function(name, handler, context) {
+          var config = {
+            callback: handler,
+            context: context
+          };
+          this._wreqrHandlers[name] = config;
+          this.trigger("handler:add", name, handler, context);
+        },
+        // Determine whether or not a handler is registered
+        hasHandler: function(name) {
+          return !!this._wreqrHandlers[name];
+        },
+        // Get the currently registered handler for
+        // the specified name. Throws an exception if
+        // no handler is found.
+        getHandler: function(name) {
+          var config = this._wreqrHandlers[name];
+          if (!config) {
+            return;
+          }
+          return function() {
+            var args = Array.prototype.slice.apply(arguments);
+            return config.callback.apply(config.context, args);
+          };
+        },
+        // Remove a handler for the specified name
+        removeHandler: function(name) {
+          delete this._wreqrHandlers[name];
+        },
+        // Remove all handlers from this registry
+        removeAllHandlers: function() {
+          this._wreqrHandlers = {};
+        }
+      });
+      return Handlers;
+    }(Backbone, _);
+    // Wreqr.CommandStorage
+    // --------------------
+    //
+    // Store and retrieve commands for execution.
+    Wreqr.CommandStorage = function() {
+      "use strict";
+      // Constructor function
+      var CommandStorage = function(options) {
+        this.options = options;
+        this._commands = {};
+        if (_.isFunction(this.initialize)) {
+          this.initialize(options);
+        }
+      };
+      // Instance methods
+      _.extend(CommandStorage.prototype, Backbone.Events, {
+        // Get an object literal by command name, that contains
+        // the `commandName` and the `instances` of all commands
+        // represented as an array of arguments to process
+        getCommands: function(commandName) {
+          var commands = this._commands[commandName];
+          // we don't have it, so add it
+          if (!commands) {
+            // build the configuration
+            commands = {
+              command: commandName,
+              instances: []
+            };
+            // store it
+            this._commands[commandName] = commands;
+          }
+          return commands;
+        },
+        // Add a command by name, to the storage and store the
+        // args for the command
+        addCommand: function(commandName, args) {
+          var command = this.getCommands(commandName);
+          command.instances.push(args);
+        },
+        // Clear all commands for the given `commandName`
+        clearCommands: function(commandName) {
+          var command = this.getCommands(commandName);
+          command.instances = [];
+        }
+      });
+      return CommandStorage;
+    }();
+    // Wreqr.Commands
+    // --------------
+    //
+    // A simple command pattern implementation. Register a command
+    // handler and execute it.
+    Wreqr.Commands = function(Wreqr) {
+      "use strict";
+      return Wreqr.Handlers.extend({
+        // default storage type
+        storageType: Wreqr.CommandStorage,
+        constructor: function(options) {
+          this.options = options || {};
+          this._initializeStorage(this.options);
+          this.on("handler:add", this._executeCommands, this);
+          var args = Array.prototype.slice.call(arguments);
+          Wreqr.Handlers.prototype.constructor.apply(this, args);
+        },
+        // Execute a named command with the supplied args
+        execute: function(name, args) {
+          name = arguments[0];
+          args = Array.prototype.slice.call(arguments, 1);
+          if (this.hasHandler(name)) {
+            this.getHandler(name).apply(this, args);
+          } else {
+            this.storage.addCommand(name, args);
+          }
+        },
+        // Internal method to handle bulk execution of stored commands
+        _executeCommands: function(name, handler, context) {
+          var command = this.storage.getCommands(name);
+          // loop through and execute all the stored command instances
+          _.each(command.instances, function(args) {
+            handler.apply(context, args);
+          });
+          this.storage.clearCommands(name);
+        },
+        // Internal method to initialize storage either from the type's
+        // `storageType` or the instance `options.storageType`.
+        _initializeStorage: function(options) {
+          var storage;
+          var StorageType = options.storageType || this.storageType;
+          if (_.isFunction(StorageType)) {
+            storage = new StorageType();
+          } else {
+            storage = StorageType;
+          }
+          this.storage = storage;
+        }
+      });
+    }(Wreqr);
+    // Wreqr.RequestResponse
+    // ---------------------
+    //
+    // A simple request/response implementation. Register a
+    // request handler, and return a response from it
+    Wreqr.RequestResponse = function(Wreqr) {
+      "use strict";
+      return Wreqr.Handlers.extend({
+        request: function() {
+          var name = arguments[0];
+          var args = Array.prototype.slice.call(arguments, 1);
+          if (this.hasHandler(name)) {
+            return this.getHandler(name).apply(this, args);
+          }
+        }
+      });
+    }(Wreqr);
+    // Event Aggregator
+    // ----------------
+    // A pub-sub object that can be used to decouple various parts
+    // of an application through event-driven architecture.
+    Wreqr.EventAggregator = function(Backbone, _) {
+      "use strict";
+      var EA = function() {};
+      // Copy the `extend` function used by Backbone's classes
+      EA.extend = Backbone.Model.extend;
+      // Copy the basic Backbone.Events on to the event aggregator
+      _.extend(EA.prototype, Backbone.Events);
+      return EA;
+    }(Backbone, _);
+    // Wreqr.Channel
+    // --------------
+    //
+    // An object that wraps the three messaging systems:
+    // EventAggregator, RequestResponse, Commands
+    Wreqr.Channel = function(Wreqr) {
+      "use strict";
+      var Channel = function(channelName) {
+        this.vent = new Backbone.Wreqr.EventAggregator();
+        this.reqres = new Backbone.Wreqr.RequestResponse();
+        this.commands = new Backbone.Wreqr.Commands();
+        this.channelName = channelName;
+      };
+      _.extend(Channel.prototype, {
+        // Remove all handlers from the messaging systems of this channel
+        reset: function() {
+          this.vent.off();
+          this.vent.stopListening();
+          this.reqres.removeAllHandlers();
+          this.commands.removeAllHandlers();
+          return this;
+        },
+        // Connect a hash of events; one for each messaging system
+        connectEvents: function(hash, context) {
+          this._connect("vent", hash, context);
+          return this;
+        },
+        connectCommands: function(hash, context) {
+          this._connect("commands", hash, context);
+          return this;
+        },
+        connectRequests: function(hash, context) {
+          this._connect("reqres", hash, context);
+          return this;
+        },
+        // Attach the handlers to a given message system `type`
+        _connect: function(type, hash, context) {
+          if (!hash) {
+            return;
+          }
+          context = context || this;
+          var method = type === "vent" ? "on" : "setHandler";
+          _.each(hash, function(fn, eventName) {
+            this[type][method](eventName, _.bind(fn, context));
+          }, this);
+        }
+      });
+      return Channel;
+    }(Wreqr);
+    // Wreqr.Radio
+    // --------------
+    //
+    // An object that lets you communicate with many channels.
+    Wreqr.radio = function(Wreqr) {
+      "use strict";
+      var Radio = function() {
+        this._channels = {};
+        this.vent = {};
+        this.commands = {};
+        this.reqres = {};
+        this._proxyMethods();
+      };
+      _.extend(Radio.prototype, {
+        channel: function(channelName) {
+          if (!channelName) {
+            throw new Error("Channel must receive a name");
+          }
+          return this._getChannel(channelName);
+        },
+        _getChannel: function(channelName) {
+          var channel = this._channels[channelName];
+          if (!channel) {
+            channel = new Wreqr.Channel(channelName);
+            this._channels[channelName] = channel;
+          }
+          return channel;
+        },
+        _proxyMethods: function() {
+          _.each([ "vent", "commands", "reqres" ], function(system) {
+            _.each(messageSystems[system], function(method) {
+              this[system][method] = proxyMethod(this, system, method);
+            }, this);
+          }, this);
+        }
+      });
+      var messageSystems = {
+        vent: [ "on", "off", "trigger", "once", "stopListening", "listenTo", "listenToOnce" ],
+        commands: [ "execute", "setHandler", "setHandlers", "removeHandler", "removeAllHandlers" ],
+        reqres: [ "request", "setHandler", "setHandlers", "removeHandler", "removeAllHandlers" ]
+      };
+      var proxyMethod = function(radio, system, method) {
+        return function(channelName) {
+          var messageSystem = radio._getChannel(channelName)[system];
+          var args = Array.prototype.slice.call(arguments, 1);
+          return messageSystem[method].apply(messageSystem, args);
+        };
+      };
+      return new Radio();
+    }(Wreqr);
+    return Backbone.Wreqr;
+  })(Backbone, _);
 
   // Define and export the Marionette namespace
   var Marionette = {};
@@ -30743,7 +30565,7 @@ var __module0__ = (function(__dependency1__, __dependency2__, __dependency3__, _
 })();
 
 /*
-    Swag v0.6.1 <http://elving.github.com/swag/>
+    Swag v0.7.0 <http://elving.github.com/swag/>
     Copyright 2012 Elving Rodriguez <http://elving.me/>
     Available under MIT license <https://raw.github.com/elving/swag/master/LICENSE>
 */
@@ -30761,8 +30583,27 @@ var __module0__ = (function(__dependency1__, __dependency2__, __dependency3__, _
 
   Swag.helpers = {};
 
-  Swag.addHelper = function(name, helper) {
-    return Swag.helpers[name] = helper;
+  Swag.addHelper = function(name, helper, argTypes) {
+    if (argTypes == null) {
+      argTypes = [];
+    }
+    if (!(argTypes instanceof Array)) {
+      argTypes = [argTypes];
+    }
+    return Swag.helpers[name] = function() {
+      var arg, args, resultArgs, _i, _len;
+      Utils.verify(name, arguments, argTypes);
+      args = Array.prototype.slice.apply(arguments);
+      resultArgs = [];
+      for (_i = 0, _len = args.length; _i < _len; _i++) {
+        arg = args[_i];
+        if (!Utils.isHandlebarsSpecific(arg)) {
+          arg = Utils.result(arg);
+        }
+        resultArgs.push(arg);
+      }
+      return helper.apply(this, resultArgs);
+    };
   };
 
   Swag.registerHelpers = function(localHandlebars) {
@@ -30841,671 +30682,445 @@ var __module0__ = (function(__dependency1__, __dependency2__, __dependency3__, _
     throw new Error(msg);
   };
 
-  Swag.addHelper('lowercase', function(str) {
-    if (!Utils.isUndefined(str)) {
-      str = Utils.result(str);
-      return str.toLowerCase();
-    } else {
-      return Utils.err('{{lowercase}} takes one argument (string).');
+  Utils.verify = function(name, fnArg, argTypes) {
+    var arg, i, msg, _i, _len, _results;
+    if (argTypes == null) {
+      argTypes = [];
     }
-  });
+    fnArg = Array.prototype.slice.apply(fnArg).slice(0, argTypes.length);
+    _results = [];
+    for (i = _i = 0, _len = fnArg.length; _i < _len; i = ++_i) {
+      arg = fnArg[i];
+      msg = '{{' + name + '}} requires ' + argTypes.length + ' arguments ' + argTypes.join(', ') + '.';
+      if (argTypes[i].indexOf('safe:') > -1) {
+        if (Utils.isHandlebarsSpecific(arg)) {
+          _results.push(Utils.err(msg));
+        } else {
+          _results.push(void 0);
+        }
+      } else {
+        if (Utils.isUndefined(arg)) {
+          _results.push(Utils.err(msg));
+        } else {
+          _results.push(void 0);
+        }
+      }
+    }
+    return _results;
+  };
+
+  Swag.addHelper('lowercase', function(str) {
+    return str.toLowerCase();
+  }, 'string');
 
   Swag.addHelper('uppercase', function(str) {
-    if (!Utils.isUndefined(str)) {
-      str = Utils.result(str);
-      return str.toUpperCase();
-    } else {
-      return Utils.err('{{uppercase}} takes one argument (string).');
-    }
-  });
+    return str.toUpperCase();
+  }, 'string');
 
   Swag.addHelper('capitalizeFirst', function(str) {
-    if (!Utils.isUndefined(str)) {
-      str = Utils.result(str);
-      return str.charAt(0).toUpperCase() + str.slice(1);
-    } else {
-      return Utils.err('{{capitalizeFirst}} takes one argument (string).');
-    }
-  });
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }, 'string');
 
   Swag.addHelper('capitalizeEach', function(str) {
-    if (!Utils.isUndefined(str)) {
-      str = Utils.result(str);
-      return str.replace(/\w\S*/g, function(txt) {
-        return txt.charAt(0).toUpperCase() + txt.substr(1);
-      });
-    } else {
-      return Utils.err('{{capitalizeEach}} takes one argument (string).');
-    }
-  });
+    return str.replace(/\w\S*/g, function(txt) {
+      return txt.charAt(0).toUpperCase() + txt.substr(1);
+    });
+  }, 'string');
 
   Swag.addHelper('titleize', function(str) {
     var capitalize, title, word, words;
-    if (!Utils.isUndefined(str)) {
-      str = Utils.result(str);
-      title = str.replace(/[ \-_]+/g, ' ');
-      words = title.match(/\w+/g);
-      capitalize = function(word) {
-        return word.charAt(0).toUpperCase() + word.slice(1);
-      };
-      return ((function() {
-        var _i, _len, _results;
-        _results = [];
-        for (_i = 0, _len = words.length; _i < _len; _i++) {
-          word = words[_i];
-          _results.push(capitalize(word));
-        }
-        return _results;
-      })()).join(' ');
-    } else {
-      return Utils.err('{{titleize}} takes one argument (string).');
-    }
-  });
+    title = str.replace(/[ \-_]+/g, ' ');
+    words = title.match(/\w+/g) || [];
+    capitalize = function(word) {
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    };
+    return ((function() {
+      var _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = words.length; _i < _len; _i++) {
+        word = words[_i];
+        _results.push(capitalize(word));
+      }
+      return _results;
+    })()).join(' ');
+  }, 'string');
 
   Swag.addHelper('sentence', function(str) {
-    if (!Utils.isUndefined(str)) {
-      str = Utils.result(str);
-      return str.replace(/((?:\S[^\.\?\!]*)[\.\?\!]*)/g, function(txt) {
-        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-      });
-    } else {
-      return Utils.err('{{sentence}} takes one argument (string).');
-    }
-  });
+    return str.replace(/((?:\S[^\.\?\!]*)[\.\?\!]*)/g, function(txt) {
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+  }, 'string');
 
   Swag.addHelper('reverse', function(str) {
-    if (!Utils.isUndefined(str)) {
-      str = Utils.result(str);
-      return str.split('').reverse().join('');
-    } else {
-      return Utils.err('{{reverse}} takes one argument (string).');
-    }
-  });
+    return str.split('').reverse().join('');
+  }, 'string');
 
   Swag.addHelper('truncate', function(str, length, omission) {
-    if (!Utils.isUndefined(str)) {
-      str = Utils.result(str);
-      if (Utils.isUndefined(omission)) {
-        omission = '';
-      }
-      if (str.length > length) {
-        return str.substring(0, length - omission.length) + omission;
-      } else {
-        return str;
-      }
-    } else {
-      return Utils.err('{{truncate}} takes one argument (string).');
+    if (Utils.isUndefined(omission)) {
+      omission = '';
     }
-  });
+    if (str.length > length) {
+      return str.substring(0, length - omission.length) + omission;
+    } else {
+      return str;
+    }
+  }, ['string', 'number']);
 
   Swag.addHelper('center', function(str, spaces) {
     var i, space;
-    if (!((Utils.isUndefined(str)) && (Utils.isUndefined(spaces)))) {
-      str = Utils.result(str);
-      spaces = Utils.result(spaces);
-      space = '';
-      i = 0;
-      while (i < spaces) {
-        space += '&nbsp;';
-        i++;
-      }
-      return "" + space + str + space;
-    } else {
-      return Utils.err('{{center}} takes two arguments (string, number).');
+    spaces = Utils.result(spaces);
+    space = '';
+    i = 0;
+    while (i < spaces) {
+      space += '&nbsp;';
+      i++;
     }
-  });
+    return "" + space + str + space;
+  }, 'string');
 
   Swag.addHelper('newLineToBr', function(str) {
-    if (!Utils.isUndefined(str)) {
-      str = Utils.result(str);
-      return str.replace(/\r?\n|\r/g, '<br>');
-    } else {
-      return Utils.err('{{newLineToBr}} takes one argument (string).');
-    }
-  });
+    return str.replace(/\r?\n|\r/g, '<br>');
+  }, 'string');
 
   Swag.addHelper('sanitize', function(str, replaceWith) {
-    if (!Utils.isUndefined(str)) {
-      str = Utils.result(str);
-      if (Utils.isUndefined(replaceWith)) {
-        replaceWith = '-';
-      }
-      return str.replace(/[^a-z0-9]/gi, replaceWith);
-    } else {
-      return Utils.err('{{sanitize}} takes one argument (string).');
+    if (Utils.isUndefined(replaceWith)) {
+      replaceWith = '-';
     }
-  });
+    return str.replace(/[^a-z0-9]/gi, replaceWith);
+  }, 'string');
 
   Swag.addHelper('first', function(array, count) {
-    if (!Utils.isUndefined(array)) {
-      array = Utils.result(array);
-      if (!Utils.isUndefined(count)) {
-        count = parseFloat(Utils.result(count));
-      }
-      if (Utils.isUndefined(count)) {
-        return array[0];
-      } else {
-        return array.slice(0, count);
-      }
-    } else {
-      return Utils.err('{{first}} takes at least one argument (array).');
+    if (!Utils.isUndefined(count)) {
+      count = parseFloat(count);
     }
-  });
+    if (Utils.isUndefined(count)) {
+      return array[0];
+    } else {
+      return array.slice(0, count);
+    }
+  }, 'array');
 
   Swag.addHelper('withFirst', function(array, count, options) {
     var item, result;
-    if (!Utils.isUndefined(array)) {
-      array = Utils.result(array);
-      if (!Utils.isUndefined(count)) {
-        count = parseFloat(Utils.result(count));
-      }
-      if (Utils.isUndefined(count)) {
-        options = count;
-        return options.fn(array[0]);
-      } else {
-        array = array.slice(0, count);
-        result = '';
-        for (item in array) {
-          result += options.fn(array[item]);
-        }
-        return result;
-      }
-    } else {
-      return Utils.err('{{withFirst}} takes at least one argument (array).');
+    if (!Utils.isUndefined(count)) {
+      count = parseFloat(count);
     }
-  });
+    if (Utils.isUndefined(count)) {
+      options = count;
+      return options.fn(array[0]);
+    } else {
+      array = array.slice(0, count);
+      result = '';
+      for (item in array) {
+        result += options.fn(array[item]);
+      }
+      return result;
+    }
+  }, 'array');
 
   Swag.addHelper('last', function(array, count) {
-    if (!Utils.isUndefined(array)) {
-      array = Utils.result(array);
-      if (!Utils.isUndefined(count)) {
-        count = parseFloat(Utils.result(count));
-      }
-      if (Utils.isUndefined(count)) {
-        return array[array.length - 1];
-      } else {
-        return array.slice(-count);
-      }
-    } else {
-      return Utils.err('{{last}} takes at least one argument (array).');
+    if (!Utils.isUndefined(count)) {
+      count = parseFloat(count);
     }
-  });
+    if (Utils.isUndefined(count)) {
+      return array[array.length - 1];
+    } else {
+      return array.slice(-count);
+    }
+  }, 'array');
 
   Swag.addHelper('withLast', function(array, count, options) {
     var item, result;
-    if (!Utils.isUndefined(array)) {
-      array = Utils.result(array);
-      if (!Utils.isUndefined(count)) {
-        count = parseFloat(Utils.result(count));
-      }
-      if (Utils.isUndefined(count)) {
-        options = count;
-        return options.fn(array[array.length - 1]);
-      } else {
-        array = array.slice(-count);
-        result = '';
-        for (item in array) {
-          result += options.fn(array[item]);
-        }
-        return result;
-      }
-    } else {
-      return Utils.err('{{withLast}} takes at least one argument (array).');
+    if (!Utils.isUndefined(count)) {
+      count = parseFloat(count);
     }
-  });
+    if (Utils.isUndefined(count)) {
+      options = count;
+      return options.fn(array[array.length - 1]);
+    } else {
+      array = array.slice(-count);
+      result = '';
+      for (item in array) {
+        result += options.fn(array[item]);
+      }
+      return result;
+    }
+  }, 'array');
 
   Swag.addHelper('after', function(array, count) {
-    if (!((Utils.isUndefined(array)) && (Utils.isUndefined(count)))) {
-      array = Utils.result(array);
-      if (!Utils.isUndefined(count)) {
-        count = parseFloat(Utils.result(count));
-      }
-      return array.slice(count);
-    } else {
-      return Utils.err('{{after}} takes two arguments (array, number).');
+    if (!Utils.isUndefined(count)) {
+      count = parseFloat(count);
     }
-  });
+    return array.slice(count);
+  }, ['array', 'number']);
 
   Swag.addHelper('withAfter', function(array, count, options) {
     var item, result;
-    if (!((Utils.isUndefined(array)) && (Utils.isUndefined(count)))) {
-      array = Utils.result(array);
-      if (!Utils.isUndefined(count)) {
-        count = parseFloat(Utils.result(count));
-      }
-      array = array.slice(count);
-      result = '';
-      for (item in array) {
-        result += options.fn(array[item]);
-      }
-      return result;
-    } else {
-      return Utils.err('{{withAfter}} takes two arguments (array, number).');
+    if (!Utils.isUndefined(count)) {
+      count = parseFloat(count);
     }
-  });
+    array = array.slice(count);
+    result = '';
+    for (item in array) {
+      result += options.fn(array[item]);
+    }
+    return result;
+  }, ['array', 'number']);
 
   Swag.addHelper('before', function(array, count) {
-    if (!((Utils.isUndefined(array)) && (Utils.isUndefined(count)))) {
-      array = Utils.result(array);
-      if (!Utils.isUndefined(count)) {
-        count = parseFloat(Utils.result(count));
-      }
-      return array.slice(0, -count);
-    } else {
-      return Utils.err('{{before}} takes two arguments (array, number).');
+    if (!Utils.isUndefined(count)) {
+      count = parseFloat(count);
     }
-  });
+    return array.slice(0, -count);
+  }, ['array', 'number']);
 
   Swag.addHelper('withBefore', function(array, count, options) {
     var item, result;
-    if (!((Utils.isUndefined(array)) && (Utils.isUndefined(count)))) {
-      array = Utils.result(array);
-      if (!Utils.isUndefined(count)) {
-        count = parseFloat(Utils.result(count));
-      }
-      array = array.slice(0, -count);
-      result = '';
-      for (item in array) {
-        result += options.fn(array[item]);
-      }
-      return result;
-    } else {
-      return Utils.err('{{withBefore}} takes two arguments (array, number).');
+    if (!Utils.isUndefined(count)) {
+      count = parseFloat(count);
     }
-  });
+    array = array.slice(0, -count);
+    result = '';
+    for (item in array) {
+      result += options.fn(array[item]);
+    }
+    return result;
+  }, ['array', 'number']);
 
   Swag.addHelper('join', function(array, separator) {
-    if (!Utils.isUndefined(array)) {
-      array = Utils.result(array);
-      if (!Utils.isUndefined(separator)) {
-        separator = Utils.result(separator);
-      }
-      return array.join(Utils.isUndefined(separator) ? ' ' : separator);
-    } else {
-      return Utils.err('{{join}} takes at least one argument (array).');
-    }
-  });
+    return array.join(Utils.isUndefined(separator) ? ' ' : separator);
+  }, 'array');
 
   Swag.addHelper('sort', function(array, field) {
-    if (!Utils.isUndefined(array)) {
-      array = Utils.result(array);
-      if (Utils.isUndefined(field)) {
-        return array.sort();
-      } else {
-        field = Utils.result(field);
-        return array.sort(function(a, b) {
-          return a[field] > b[field];
-        });
-      }
+    if (Utils.isUndefined(field)) {
+      return array.sort();
     } else {
-      return Utils.err('{{sort}} takes at least one argument (array).');
+      return array.sort(function(a, b) {
+        return a[field] > b[field];
+      });
     }
-  });
+  }, 'array');
 
   Swag.addHelper('withSort', function(array, field, options) {
     var item, result, _i, _len;
-    if (!Utils.isUndefined(array)) {
-      array = Utils.result(array);
-      result = '';
-      if (Utils.isUndefined(field)) {
-        options = field;
-        array = array.sort();
-        for (_i = 0, _len = array.length; _i < _len; _i++) {
-          item = array[_i];
-          result += options.fn(item);
-        }
-      } else {
-        field = Utils.result(field);
-        array = array.sort(function(a, b) {
-          return a[field] > b[field];
-        });
-        for (item in array) {
-          result += options.fn(array[item]);
-        }
+    result = '';
+    if (Utils.isUndefined(field)) {
+      options = field;
+      array = array.sort();
+      for (_i = 0, _len = array.length; _i < _len; _i++) {
+        item = array[_i];
+        result += options.fn(item);
       }
-      return result;
     } else {
-      return Utils.err('{{withSort}} takes at least one argument (array).');
+      array = array.sort(function(a, b) {
+        return a[field] > b[field];
+      });
+      for (item in array) {
+        result += options.fn(array[item]);
+      }
     }
-  });
+    return result;
+  }, 'array');
 
   Swag.addHelper('length', function(array) {
-    if (!Utils.isUndefined(array)) {
-      array = Utils.result(array);
-      return array.length;
-    } else {
-      return Utils.err('{{length}} takes one argument (array).');
-    }
-  });
+    return array.length;
+  }, 'array');
 
   Swag.addHelper('lengthEqual', function(array, length, options) {
-    if (!Utils.isUndefined(array)) {
-      array = Utils.result(array);
-      if (!Utils.isUndefined(length)) {
-        length = parseFloat(Utils.result(length));
-      }
-      if (array.length === length) {
-        return options.fn(this);
-      } else {
-        return options.inverse(this);
-      }
-    } else {
-      return Utils.err('{{lengthEqual}} takes two arguments (array, number).');
+    if (!Utils.isUndefined(length)) {
+      length = parseFloat(length);
     }
-  });
+    if (array.length === length) {
+      return options.fn(this);
+    } else {
+      return options.inverse(this);
+    }
+  }, ['array', 'number']);
 
   Swag.addHelper('empty', function(array, options) {
-    if (!Utils.isHandlebarsSpecific(array)) {
-      array = Utils.result(array);
-      if (!array || array.length <= 0) {
-        return options.fn(this);
-      } else {
-        return options.inverse(this);
-      }
+    if (!array || array.length <= 0) {
+      return options.fn(this);
     } else {
-      return Utils.err('{{empty}} takes one argument (array).');
+      return options.inverse(this);
     }
-  });
+  }, 'safe:array');
 
   Swag.addHelper('any', function(array, options) {
-    if (!Utils.isHandlebarsSpecific(array)) {
-      array = Utils.result(array);
-      if (array && array.length > 0) {
-        return options.fn(this);
-      } else {
-        return options.inverse(this);
-      }
+    if (array && array.length > 0) {
+      return options.fn(this);
     } else {
-      return Utils.err('{{any}} takes one argument (array).');
+      return options.inverse(this);
     }
-  });
+  }, 'safe:array');
 
   Swag.addHelper('inArray', function(array, value, options) {
-    if (!((Utils.isUndefined(array)) && (Utils.isUndefined(value)))) {
-      array = Utils.result(array);
-      value = Utils.result(value);
-      if (__indexOf.call(array, value) >= 0) {
-        return options.fn(this);
-      } else {
-        return options.inverse(this);
-      }
+    if (__indexOf.call(array, value) >= 0) {
+      return options.fn(this);
     } else {
-      return Utils.err('{{inArray}} takes two arguments (array, string|number).');
+      return options.inverse(this);
     }
-  });
+  }, ['array', 'string|number']);
 
   Swag.addHelper('eachIndex', function(array, options) {
     var index, result, value, _i, _len;
-    if (!Utils.isUndefined(array)) {
-      array = Utils.result(array);
-      result = '';
-      for (index = _i = 0, _len = array.length; _i < _len; index = ++_i) {
-        value = array[index];
-        result += options.fn({
-          item: value,
-          index: index
-        });
-      }
-      return result;
-    } else {
-      return Utils.err('{{eachIndex}} takes one argument (array).');
+    result = '';
+    for (index = _i = 0, _len = array.length; _i < _len; index = ++_i) {
+      value = array[index];
+      result += options.fn({
+        item: value,
+        index: index
+      });
     }
-  });
+    return result;
+  }, 'array');
 
   Swag.addHelper('eachProperty', function(obj, options) {
     var key, result, value;
-    if (!Utils.isUndefined(obj)) {
-      obj = Utils.result(obj);
-      result = '';
-      for (key in obj) {
-        value = obj[key];
-        result += options.fn({
-          key: key,
-          value: value
-        });
-      }
-      return result;
-    } else {
-      return Utils.err('{{eachProperty}} takes one argument (object).');
+    result = '';
+    for (key in obj) {
+      value = obj[key];
+      result += options.fn({
+        key: key,
+        value: value
+      });
     }
-  });
+    return result;
+  }, 'object');
 
   Swag.addHelper('add', function(value, addition) {
-    if (!((Utils.isUndefined(value)) && (Utils.isUndefined(addition)))) {
-      value = parseFloat(Utils.result(value));
-      addition = parseFloat(Utils.result(addition));
-      return value + addition;
-    } else {
-      return Utils.err('{{add}} takes two arguments (number, number).');
-    }
-  });
+    value = parseFloat(value);
+    addition = parseFloat(addition);
+    return value + addition;
+  }, ['number', 'number']);
 
   Swag.addHelper('subtract', function(value, substraction) {
-    if (!((Utils.isUndefined(value)) && (Utils.isUndefined(substraction)))) {
-      value = parseFloat(Utils.result(value));
-      substraction = parseFloat(Utils.result(substraction));
-      return value - substraction;
-    } else {
-      return Utils.err('{{subtract}} takes two arguments (number, number).');
-    }
-  });
+    value = parseFloat(value);
+    substraction = parseFloat(substraction);
+    return value - substraction;
+  }, ['number', 'number']);
 
   Swag.addHelper('divide', function(value, divisor) {
-    if (!((Utils.isUndefined(value)) && (Utils.isUndefined(divisor)))) {
-      value = parseFloat(Utils.result(value));
-      divisor = parseFloat(Utils.result(divisor));
-      return value / divisor;
-    } else {
-      return Utils.err('{{divide}} takes two arguments (number, number).');
-    }
-  });
+    value = parseFloat(value);
+    divisor = parseFloat(divisor);
+    return value / divisor;
+  }, ['number', 'number']);
 
   Swag.addHelper('multiply', function(value, multiplier) {
-    if (!((Utils.isUndefined(value)) && (Utils.isUndefined(multiplier)))) {
-      value = parseFloat(Utils.result(value));
-      multiplier = parseFloat(Utils.result(multiplier));
-      return value * multiplier;
-    } else {
-      return Utils.err('{{multiply}} takes two arguments (number, number).');
-    }
-  });
+    value = parseFloat(value);
+    multiplier = parseFloat(multiplier);
+    return value * multiplier;
+  }, ['number', 'number']);
 
   Swag.addHelper('floor', function(value) {
-    if (!(Utils.isUndefined(value))) {
-      value = parseFloat(Utils.result(value));
-      return Math.floor(value);
-    } else {
-      return Utils.err('{{floor}} takes one argument (number).');
-    }
-  });
+    value = parseFloat(value);
+    return Math.floor(value);
+  }, 'number');
 
   Swag.addHelper('ceil', function(value) {
-    if (!(Utils.isUndefined(value))) {
-      value = parseFloat(Utils.result(value));
-      return Math.ceil(value);
-    } else {
-      return Utils.err('{{ceil}} takes one argument (number).');
-    }
-  });
+    value = parseFloat(value);
+    return Math.ceil(value);
+  }, 'number');
 
   Swag.addHelper('round', function(value) {
-    if (!(Utils.isUndefined(value))) {
-      value = parseFloat(Utils.result(value));
-      return Math.round(value);
-    } else {
-      return Utils.err('{{round}} takes one argument (number).');
-    }
-  });
+    value = parseFloat(value);
+    return Math.round(value);
+  }, 'number');
 
   Swag.addHelper('toFixed', function(number, digits) {
-    if (!Utils.isUndefined(number)) {
-      number = parseFloat(Utils.result(number));
-      digits = Utils.isUndefined(digits) ? 0 : Utils.result(digits);
-      return number.toFixed(digits);
-    } else {
-      return Utils.err('{{toFixed}} takes at least one argument (number).');
-    }
-  });
+    number = parseFloat(number);
+    digits = Utils.isUndefined(digits) ? 0 : digits;
+    return number.toFixed(digits);
+  }, 'number');
 
   Swag.addHelper('toPrecision', function(number, precision) {
-    if (!Utils.isUndefined(number)) {
-      number = parseFloat(Utils.result(number));
-      precision = Utils.isUndefined(precision) ? 1 : Utils.result(precision);
-      return number.toPrecision(precision);
-    } else {
-      return Utils.err('{{toPrecision}} takes at least one argument (number).');
-    }
-  });
+    number = parseFloat(number);
+    precision = Utils.isUndefined(precision) ? 1 : precision;
+    return number.toPrecision(precision);
+  }, 'number');
 
   Swag.addHelper('toExponential', function(number, fractions) {
-    if (!Utils.isUndefined(number)) {
-      number = parseFloat(Utils.result(number));
-      fractions = Utils.isUndefined(fractions) ? 0 : Utils.result(fractions);
-      return number.toExponential(fractions);
-    } else {
-      return Utils.err('{{toExponential}} takes at least one argument (number).');
-    }
-  });
+    number = parseFloat(number);
+    fractions = Utils.isUndefined(fractions) ? 0 : fractions;
+    return number.toExponential(fractions);
+  }, 'number');
 
   Swag.addHelper('toInt', function(number) {
-    if (!Utils.isUndefined(number)) {
-      number = Utils.result(number);
-      return parseInt(number, 10);
-    } else {
-      return Utils.err('{{toInt}} takes one argument (number).');
-    }
-  });
+    return parseInt(number, 10);
+  }, 'number');
 
   Swag.addHelper('toFloat', function(number) {
-    if (!Utils.isUndefined(number)) {
-      number = Utils.result(number);
-      return parseFloat(number);
-    } else {
-      return Utils.err('{{toFloat}} takes one argument (number).');
-    }
-  });
+    return parseFloat(number);
+  }, 'number');
 
   Swag.addHelper('digitGrouping', function(number, separator) {
-    if (!Utils.isUndefined(number)) {
-      number = parseFloat(Utils.result(number));
-      separator = Utils.isUndefined(separator) ? ',' : Utils.result(separator);
-      return number.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1" + separator);
-    } else {
-      return Utils.err('{{digitGrouping}} takes at least one argument (number).');
-    }
-  });
+    number = parseFloat(number);
+    separator = Utils.isUndefined(separator) ? ',' : separator;
+    return number.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1" + separator);
+  }, 'number');
 
   Swag.addHelper('is', function(value, test, options) {
-    if (!((Utils.isHandlebarsSpecific(value)) && (Utils.isHandlebarsSpecific(value)))) {
-      value = Utils.result(value);
-      test = Utils.result(test);
-      if (value && value === test) {
-        return options.fn(this);
-      } else {
-        return options.inverse(this);
-      }
+    if (value && value === test) {
+      return options.fn(this);
     } else {
-      return Utils.err('{{is}} takes two arguments (string|number, string|number).');
+      return options.inverse(this);
     }
-  });
+  }, ['safe:string|number', 'safe:string|number']);
 
   Swag.addHelper('isnt', function(value, test, options) {
-    if (!((Utils.isHandlebarsSpecific(value)) && (Utils.isHandlebarsSpecific(test)))) {
-      value = Utils.result(value);
-      test = Utils.result(test);
-      if (!value || value !== test) {
-        return options.fn(this);
-      } else {
-        return options.inverse(this);
-      }
+    if (!value || value !== test) {
+      return options.fn(this);
     } else {
-      return Utils.err('{{isnt}} takes two arguments (string|number, string|number).');
+      return options.inverse(this);
     }
-  });
+  }, ['safe:string|number', 'safe:string|number']);
 
   Swag.addHelper('gt', function(value, test, options) {
-    if (!((Utils.isHandlebarsSpecific(value)) && (Utils.isHandlebarsSpecific(test)))) {
-      value = Utils.result(value);
-      test = Utils.result(test);
-      if (value > test) {
-        return options.fn(this);
-      } else {
-        return options.inverse(this);
-      }
+    if (value > test) {
+      return options.fn(this);
     } else {
-      return Utils.err('{{gt}} takes two arguments (string|number, string|number).');
+      return options.inverse(this);
     }
-  });
+  }, ['safe:string|number', 'safe:string|number']);
 
   Swag.addHelper('gte', function(value, test, options) {
-    if (!((Utils.isHandlebarsSpecific(value)) && (Utils.isHandlebarsSpecific(test)))) {
-      value = Utils.result(value);
-      test = Utils.result(test);
-      if (value >= test) {
-        return options.fn(this);
-      } else {
-        return options.inverse(this);
-      }
+    if (value >= test) {
+      return options.fn(this);
     } else {
-      return Utils.err('{{gte}} takes two arguments (string|number, string|number).');
+      return options.inverse(this);
     }
-  });
+  }, ['safe:string|number', 'safe:string|number']);
 
   Swag.addHelper('lt', function(value, test, options) {
-    if (!((Utils.isHandlebarsSpecific(value)) && (Utils.isHandlebarsSpecific(test)))) {
-      value = Utils.result(value);
-      test = Utils.result(test);
-      if (value < test) {
-        return options.fn(this);
-      } else {
-        return options.inverse(this);
-      }
+    if (value < test) {
+      return options.fn(this);
     } else {
-      return Utils.err('{{lt}} takes two arguments (string|number, string|number).');
+      return options.inverse(this);
     }
-  });
+  }, ['safe:string|number', 'safe:string|number']);
 
   Swag.addHelper('lte', function(value, test, options) {
-    if (!((Utils.isHandlebarsSpecific(value)) && (Utils.isHandlebarsSpecific(test)))) {
-      value = Utils.result(value);
-      test = Utils.result(test);
-      if (value <= test) {
-        return options.fn(this);
-      } else {
-        return options.inverse(this);
-      }
+    if (value <= test) {
+      return options.fn(this);
     } else {
-      return Utils.err('{{lte}} takes two arguments (string|number, string|number).');
+      return options.inverse(this);
     }
-  });
+  }, ['safe:string|number', 'safe:string|number']);
 
   Swag.addHelper('or', function(testA, testB, options) {
-    if (!((Utils.isHandlebarsSpecific(testA)) && (Utils.isHandlebarsSpecific(testB)))) {
-      testA = Utils.result(testA);
-      testB = Utils.result(testB);
-      if (testA || testB) {
-        return options.fn(this);
-      } else {
-        return options.inverse(this);
-      }
+    if (testA || testB) {
+      return options.fn(this);
     } else {
-      return Utils.err('{{or}} takes two arguments (string|number, string|number).');
+      return options.inverse(this);
     }
-  });
+  }, ['safe:string|number', 'safe:string|number']);
 
   Swag.addHelper('and', function(testA, testB, options) {
-    if (!((Utils.isHandlebarsSpecific(testA)) && (Utils.isHandlebarsSpecific(testB)))) {
-      testA = Utils.result(testA);
-      testB = Utils.result(testB);
-      if (testA && testB) {
-        return options.fn(this);
-      } else {
-        return options.inverse(this);
-      }
+    if (testA && testB) {
+      return options.fn(this);
     } else {
-      return Utils.err('{{and}} takes two arguments (string|number, string|number).');
+      return options.inverse(this);
     }
-  });
+  }, ['safe:string|number', 'safe:string|number']);
 
   Dates = {};
 
@@ -31667,21 +31282,12 @@ var __module0__ = (function(__dependency1__, __dependency2__, __dependency3__, _
   Dates.fullMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
   Swag.addHelper('formatDate', function(date, format) {
-    if (!Utils.isUndefined(date)) {
-      date = Utils.result(date);
-      format = Utils.result(format);
-      date = new Date(date);
-      return Dates.format(date, format);
-    } else {
-      return Utils.err('{{formatDate}} takes two arguments (string|number|date, string).');
-    }
-  });
+    date = new Date(date);
+    return Dates.format(date, format);
+  }, ['string|number|date', 'string']);
 
   Swag.addHelper('now', function(format) {
     var date;
-    if (!Utils.isUndefined(format)) {
-      format = Utils.result(format);
-    }
     date = new Date();
     if (Utils.isUndefined(format)) {
       return date;
@@ -31692,80 +31298,65 @@ var __module0__ = (function(__dependency1__, __dependency2__, __dependency3__, _
 
   Swag.addHelper('timeago', function(date) {
     var interval, seconds;
-    if (!Utils.isUndefined(date)) {
-      date = Utils.result(date);
-      date = new Date(date);
-      seconds = Math.floor((new Date() - date) / 1000);
-      interval = Math.floor(seconds / 31536000);
-      if (interval > 1) {
-        return "" + interval + " years ago";
-      }
-      interval = Math.floor(seconds / 2592000);
-      if (interval > 1) {
-        return "" + interval + " months ago";
-      }
-      interval = Math.floor(seconds / 86400);
-      if (interval > 1) {
-        return "" + interval + " days ago";
-      }
-      interval = Math.floor(seconds / 3600);
-      if (interval > 1) {
-        return "" + interval + " hours ago";
-      }
-      interval = Math.floor(seconds / 60);
-      if (interval > 1) {
-        return "" + interval + " minutes ago";
-      }
-      if (Math.floor(seconds) === 0) {
-        return 'Just now';
-      } else {
-        return Math.floor(seconds) + ' seconds ago';
-      }
-    } else {
-      return Utils.err('{{timeago}} takes one argument (string|number|date).');
+    date = new Date(date);
+    seconds = Math.floor((new Date() - date) / 1000);
+    interval = Math.floor(seconds / 31536000);
+    if (interval > 1) {
+      return "" + interval + " years ago";
     }
-  });
+    interval = Math.floor(seconds / 2592000);
+    if (interval > 1) {
+      return "" + interval + " months ago";
+    }
+    interval = Math.floor(seconds / 86400);
+    if (interval > 1) {
+      return "" + interval + " days ago";
+    }
+    interval = Math.floor(seconds / 3600);
+    if (interval > 1) {
+      return "" + interval + " hours ago";
+    }
+    interval = Math.floor(seconds / 60);
+    if (interval > 1) {
+      return "" + interval + " minutes ago";
+    }
+    if (Math.floor(seconds) === 0) {
+      return 'Just now';
+    } else {
+      return Math.floor(seconds) + ' seconds ago';
+    }
+  }, 'string|number|date');
 
   Swag.addHelper('inflect', function(count, singular, plural, include) {
     var word;
-    if (!((Utils.isUndefined(count)) && (Utils.isUndefined(singular)) && (Utils.isUndefined(plural)))) {
-      count = parseFloat(Utils.result(count));
-      singular = Utils.result(singular);
-      plural = Utils.result(plural);
-      word = count > 1 || count === 0 ? plural : singular;
-      if (Utils.isUndefined(include) || include === false) {
-        return word;
-      } else {
-        return "" + count + " " + word;
-      }
+    count = parseFloat(count);
+    word = count > 1 || count === 0 ? plural : singular;
+    if (Utils.isUndefined(include) || include === false) {
+      return word;
     } else {
-      return Utils.err('{{inflect}} takes at least three arguments (number, string, string).');
+      return "" + count + " " + word;
     }
-  });
+  }, ['number', 'string', 'string']);
 
   Swag.addHelper('ordinalize', function(value) {
     var normal, _ref;
-    if (!Utils.isUndefined(value)) {
-      value = parseFloat(Utils.result(value));
-      normal = Math.abs(Math.round(value));
-      if (_ref = normal % 100, __indexOf.call([11, 12, 13], _ref) >= 0) {
-        return "" + value + "th";
-      } else {
-        switch (normal % 10) {
-          case 1:
-            return "" + value + "st";
-          case 2:
-            return "" + value + "nd";
-          case 3:
-            return "" + value + "rd";
-          default:
-            return "" + value + "th";
-        }
-      }
+    value = parseFloat(value);
+    normal = Math.abs(Math.round(value));
+    if (_ref = normal % 100, __indexOf.call([11, 12, 13], _ref) >= 0) {
+      return "" + value + "th";
     } else {
-      return Utils.err('{{ordinalize}} takes one arguments (number).');
+      switch (normal % 10) {
+        case 1:
+          return "" + value + "st";
+        case 2:
+          return "" + value + "nd";
+        case 3:
+          return "" + value + "rd";
+        default:
+          return "" + value + "th";
+      }
     }
-  });
+  }, 'number');
 
   HTML = {};
 
@@ -31792,7 +31383,6 @@ var __module0__ = (function(__dependency1__, __dependency2__, __dependency3__, _
     br = '<br>';
     if (!Utils.isUndefined(count)) {
       i = 0;
-      count = Utils.result(count);
       while (i < (parseFloat(count)) - 1) {
         br += '<br>';
         i++;
@@ -31802,18 +31392,10 @@ var __module0__ = (function(__dependency1__, __dependency2__, __dependency3__, _
   });
 
   Swag.addHelper('log', function(value) {
-    if (!Utils.isUndefined(value)) {
-      value = Utils.result(value);
-      return console.log(value);
-    } else {
-      return Utils.err('{{log}} takes one arguments (string|number|boolean|array|object).');
-    }
-  });
+    return console.log(value);
+  }, 'string|number|boolean|array|object');
 
   Swag.addHelper('debug', function(value) {
-    if (!Utils.isUndefined(value)) {
-      value = Utils.result(value);
-    }
     console.log('Context: ', this);
     if (!Utils.isUndefined(value)) {
       console.log('Value: ', value);
@@ -31822,56 +31404,41 @@ var __module0__ = (function(__dependency1__, __dependency2__, __dependency3__, _
   });
 
   Swag.addHelper('default', function(value, defaultValue) {
-    if (!((Utils.isHandlebarsSpecific(value)) && (Utils.isUndefined(defaultValue)))) {
-      value = Utils.result(value);
-      defaultValue = Utils.result(defaultValue);
-      return value || defaultValue;
-    } else {
-      return Utils.err('{{default}} takes two arguments (string|number, string|number).');
-    }
-  });
+    return value || defaultValue;
+  }, 'safe:string|number', 'string|number');
 
   if (typeof Ember === "undefined" || Ember === null) {
     Swag.addHelper('partial', function(name, data, template) {
       var path;
-      if (!(Utils.isUndefined(name))) {
-        name = Utils.result(name);
-        data = Utils.result(data);
-        path = Swag.Config.partialsPath + name;
+      path = Swag.Config.partialsPath + name;
+      if (Swag.Handlebars.partials[name] == null) {
         if (!Utils.isUndefined(template)) {
-          template = Utils.result(template);
-        }
-        if (Swag.Handlebars.partials[name] == null) {
-          if (!Utils.isUndefined(template)) {
-            if (Utils.isString(template)) {
-              template = Swag.Handlebars.compile(template);
-            }
-            Swag.Handlebars.registerPartial(name, template);
-          } else if ((typeof define !== "undefined" && define !== null) && (Utils.isFunc(define)) && define.amd) {
-            if (!Swag.Config.precompiledTemplates) {
-              path = "!text" + path;
-            }
-            require([path], function(template) {
-              if (Utils.isString(template)) {
-                template = Swag.Handlebars.compile(template);
-              }
-              return Swag.Handlebars.registerPartial(name, template);
-            });
-          } else if (typeof require !== "undefined" && require !== null) {
-            template = require(path);
-            if (Utils.isString(template)) {
-              template = Swag.Handlebars.compile(template);
-            }
-            Swag.Handlebars.registerPartial(name, template);
-          } else {
-            Utils.err('{{partial}} no amd or commonjs module support found.');
+          if (Utils.isString(template)) {
+            template = Swag.Handlebars.compile(template);
           }
+          Swag.Handlebars.registerPartial(name, template);
+        } else if ((typeof define !== "undefined" && define !== null) && (Utils.isFunc(define)) && define.amd) {
+          if (!Swag.Config.precompiledTemplates) {
+            path = "!text" + path;
+          }
+          require([path], function(template) {
+            if (Utils.isString(template)) {
+              template = Swag.Handlebars.compile(template);
+            }
+            return Swag.Handlebars.registerPartial(name, template);
+          });
+        } else if (typeof require !== "undefined" && require !== null) {
+          template = require(path);
+          if (Utils.isString(template)) {
+            template = Swag.Handlebars.compile(template);
+          }
+          Swag.Handlebars.registerPartial(name, template);
+        } else {
+          Utils.err('{{partial}} no amd or commonjs module support found.');
         }
-        return Utils.safeString(Swag.Handlebars.partials[name](data));
-      } else {
-        return Utils.err('{{partial}} takes at least one argument (string).');
       }
-    });
+      return Utils.safeString(Swag.Handlebars.partials[name](data));
+    }, 'string');
   }
 
 }).call(this);

@@ -202,7 +202,7 @@ function combine(bowerInfo, name){
 		name: 'keep name here to use bower install, change if you prefer',
 		private: true,
 		dependencies: _.extend({
-			stage: '~' + bowerInfo.version
+			stage: '^' + bowerInfo.version
 		}, bowerInfo.themeDependencies),
 		optionalDependencies: bowerInfo.dependencies
 	}))).setDir(implFolder).save('starter-kit.bower.json');
