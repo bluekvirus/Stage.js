@@ -1,12 +1,11 @@
-Mental preparation
-------------------
+###Mental preparation
 > Technique means nothing if people have no purposes in their mind. To prepare mentally to adapt something is to synchronize the mind around the subject domain so that insights can be developed while applying the technique. The ultimate goal is always to understand the subject (in our case the problem) better.
 
 > Make sure to ask enough questions, so you can quickly locate the core problem that a given technique is trying to solve efficiently. Then go apply the technique and try making changes. Soon enough, you will start to see things like the solution creator, and concepts and ideas start to come out naturally. True understanding is almost always developed this way.
 
-If you can not agree with the author after reading the following sections in this chapter, do not bother with this framework.
+Frameworks are ways of doing things, they are biased. If you don't feel like doing things *their* way, identify the core problems and solve them in a sequence that fits you, and that process will eventually turn into *your* own framework.
 
-###Define the problem
+###The Web app problem
 Before start, you need to understand what is a *GUI application*, here is a brief diagram (casted upon the web realm):
 
 <img src="static/resource/default/diagram/Diagram-1.png" alt="Web App Diagram" class="center-block"></img>
@@ -27,41 +26,54 @@ Failing to address any of the 3 parts above will cost the project a significant 
 
 So, how do we form our solution?
 
-###Solution architecture
-As a full stack solution to the UI/UX side, we address those 3 problems with an intuitive architecture:
+###Moving away from ExtJS
+We have been developing in ExtJS4 for 2+ years, starting form the last version of 4.0.x which is the promising 4.0.7. As our knowledge base expands, we felt that it is time to form our own blueprint of a modern data heavy web application to shorten the development cycles. Here are some of the main reasons:
 
-<img src="static/resource/default/diagram/Diagram-3.png" alt="Stage.js Architecture" class="center-block"></img>
+1. Although it is relatively fast to develop prototypes using an all-in-one framework like ExtJS, it is hard to maintain the code while keeping up with the changes required by the users and those that come from Sencha. The widgets are bound too tightly with the framework.
+2. Loading, DOM interfacing, Widget and Application containers are all provided with a biased opinion, which always leads to fighting with the framework here and there or messing around with the life-cycles defined when trying to implement application specific user requirements. 
+3. Performance issues. There are often a massive amount of unnecessary DOM elements lurking in the client browser. We have very limited control over the life-cycles nor the HTML template structure of the components. Making widgets as Classes and loading like Java is really a bad idea for Javascript.
+4. Theming difficulties. It is hard to theme an ExtJS application correctly given the extensively nested component structure and the lack of SASS/Compass adaptation among developers.
+5. Payed solution. The commercial version of ExtJS and the tools (IDE) are expensive. This also makes the community size smaller than its full/free open source counterparts, making it difficult to find solutions from resources other than the documentation.
 
-####What's Navigation?
+If the above listing can not convince you, try to compare the ExtJS solutions to the web application building process with ours: (Strict MVC vs View centric)
 
-We achieve client-side multi-page-alike navigation through switching *Context*s on a pre-defined application region by responding to the URL fragment change event. (e.g #navigate/Context/...)
+0. Classes vs 4 types of general view;
+1. Containers vs General in-template regions;
+2. Layouts vs Dynamic grid system;
+3. Thick data layer vs A single remote() API;
+4. Single Viewport vs Switchable Contexts;
+5. Controllers vs Generic events and view actions;
+6. XTemplate vs Handlebars;
 
-####What's a Context?
-A *Context* is a special *Marionette.Layout* view object. *Context*s only appear on the application's context region (each application can have only 1 such region). If you have more than 1 *Context*s defined, they will automatically swap on the context region in response to the navigation event. You will not have more than 1 active *Context* at any given time.
+The one thing that ExtJS could not get right and still is getting wrong is that it tries to use Javascript like JAVA and dominating HTML/CSS manipulation. It casts the developers out to a changed problem domain where basic problems are taken cared of in a complicated/overkilled way so that the programs can be written like *piles of configure files*. 
 
-alias: Page
+The *Class* system confuses developers coding in Javascript's function scope, the heavy *Layout* system kills what HTML/CSS is designed for and good at, the thick *Data* layer tries to isolate data snapshot from their in-separable views and the *Controllers* pulls developers out into another place to define routines just to have the listeners wired back again into the views. All of these ignores the fact that the core of a web application is at HTML(client-side) and the data(server side), not the glue and state snapshots. (Well, maybe in 5.0 they can fix it, we have high hope on this...)
 
-####What's a Regional?
-A *Regional* is a *Marionette.xView* (*ItemView, Layout, CollectionView and CompositeView*) with name, it is to be shown on a region in template of your application or any *Marionette.Layout* instance. As you can see, since a *Context* is a *Layout* with extra functions, *Regional*s will be used closely with it. You can link a *Regional* with a *Context* by putting the *Regional*'s name in the *Context*'s template. Read more about *Regional* in the **Quick steps** section.
+Whatever you do, *Do NOT* stack up abstraction layers over layers so further programs can be written like configuration files. It will be slow to run, even harder to change and incur a very steep learning curve for new comers...
 
-alias: Area
+We choose to move away from this heavy framework to avoid its complexity and downside and to have more control over the component life-cycles, interactions and application container separately. An equally powerful yet still lightweight solution combining the best practices in the field is thus made. 
 
-####Remote data handling?
-Modern web application generates views according to user data dynamically. This is why we picked *Backbone/Marionette* as our implementation base -- to use dynamic views rendered through data. Plus, there is no doubt about wiring in remote data into your application through *Ajax* now. However, the way we handle remote data in our framework is a bit different than the original design in *Backbone*.
-
-**Important:** We introduce a unified *DATA API* for handling all the in/out of remote server data, skipping the *Model/Collection* centered way of data manipulation. *Model/Collection* are only used as dumb data snapshot object on the client side to support views. The goal is to make the data interfacing layer *as thin as possible* on the client side. You will find more details in the **Quick steps** section.
-
-####Reuse view definitions?
+###Essence of Design Patterns
 As *Design Patterns* dictates, we need to code in a way to:
 
 <img src="static/resource/default/diagram/Diagram-4.png" alt="Design Pattern Goals" class="center-block"></img>
 
-For *Regional*s (or any *Marionette.xView*) that you need to use again and again but with different configuration (e.g a Datagrid). Register it as a *Widget* or, in case of a basic input, an *Editor*. These reusable view definitions are call *Reusable*s in the framework. Think in terms of the **List and Container** technique as much as possible when creating them.
+###Rules of Thumb
+####General
+* Keep things simple, especially the simple ones.
+* Categorization before abstraction.
+* Separate, Reuse and Pipeline.
+* Cleaner method signature. Options as a single object parameter.
+* Events for collaborations and process control instead of APIs. Promises for asynchronous operations instead of callbacks.
 
-####Glue through events
-We encourage event programming in this framework. We glue views into a functioning whole by using meta-events. Whenever an interaction or transition happens (e.g navigation, context-swap, login, error, data-ready...), intead of calling the actual *doer*s, fire/trigger an event first, so that later the actual behavior triggered by this event can be changed without affecting the glue/interfacing logic. Read carefully through the **Events** subsection in **Quick steps** below so you understand how to implement and extend application behaviors mainly through events. 
+Start with user requirements/stories and focus on serving the customers' need. Use the 80/20 rule to pick out important features/functionalities and implement them first. Gradually refine code and documentation later. Remember to write down **why** before **how** in the code comments. !FOCUS!
 
-####Seems complicated...
-To focus, think of your application in terms of *Context*s and *Regional*s (pages and areas). Like drawing a series of pictures, each page is a *Context* and you lay things out by sketching out regions (areas) first on each page then refined the details (*Regional*) within each region. 
+####GUI
+* Concision - exact but nothing more
+* Expressiveness - allow useful possibilities be deducted
+* Ease - low mnemonic load on commands, control sequence
+* Transparency - low mnemonic load in user's mind for keeping track of states/layers of task at hand
+* Script-ability - batch-able, automate-able
 
-Use *Model*/*Collection* wisely, try not to involve them before relating to any *Marionette.xView*. That is to say, fetch/persist data through the unified *Data API* (CRUD in RESTful format). Unless you want a dynamic view, do **NOT** use *Model*/*Collection* to store and operate on the data. Focus on UI/UX and make the data interfacing with server as thin as possible.
+####Product design
+(Goal-Driven)...

@@ -24,7 +24,7 @@ module.exports = {
 	},
 	js: {
 		name: 'app'
-	}
+	},
 	structure : { //path are relative to the distFolder and src.root above
 
 		js: {

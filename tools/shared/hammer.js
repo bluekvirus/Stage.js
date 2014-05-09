@@ -98,7 +98,7 @@ module.exports = {
 				console.log('Output Dir Cleared:'.green, baseDir);
 				console.log('Creating Folders & Files...'.yellow);
 				//create baseDir again
-				fs.mkdir(baseDir, function(err){
+				mkdirp(baseDir, function(err){
 					if(err) console.log('ERROR:'.red, err);
 					else iterator(done);
 				})

@@ -13,7 +13,6 @@
 var program = require('commander'), 
 _ = require('underscore'),
 path = require('path'),
-mkdirp = require('mkdirp'),
 colors = require('colors'),
 moment = require('moment'),
 hammer = require('../shared/hammer'),

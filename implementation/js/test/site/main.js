@@ -21,6 +21,13 @@ NProgress.configure({showSpinner: false});
         // },
         initialize: function(){
             this.listenTo(Application, 'app:context-switched', function(name){
+                this.$el.find('[context]').each(function(index, el){
+                    var $this = $(this);
+                    if($this.attr('context') === name)
+                        $this.addClass('active');
+                    else
+                        $this.removeClass('active');
+                });
                 if(name !== 'Home') this.$el.removeClass('hidden');
                 else this.$el.addClass('hidden');
             });

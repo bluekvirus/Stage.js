@@ -21,18 +21,18 @@
 		_.extend(manager, {
 
 			map: {},
-			_isDefined: function(name){
+			has: function(name){
 				if(manager.map[name]) return true;
 				return false;
 			},
 			register: function(name, factory){
-				if(manager._isDefined(name))
+				if(manager.has(name))
 					console.warn('DEV::Overriden::' + regName + '.' + name);
 				manager.map[name] = factory();
 			},
 
 			create: function(name, options){
-				if(manager._isDefined(name))
+				if(manager.has(name))
 					return new (manager.map[name])(options);
 				throw new Error('DEV::' + regName + '.Registry:: required definition [' + name + '] not found...');
 			}

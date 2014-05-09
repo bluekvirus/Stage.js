@@ -120,13 +120,13 @@
 							if(this.debug) this[r].$el.html('<p class="alert alert-info">Region <strong>' + r + '</strong></p>'); //give it a fake one.
 							this[r].listenTo(this[r], 'region:load-view', function(name, options){ //can load both view and widget.
 								if(!name) return;
-								if(options) {
+								if(app.Core.Widget.has(name)) {
 									this.show(app.Core.Widget.create(name, options));
 									return;
 								}
 								var View = app.Core.Regional.get(name);
 								if(View)
-									this.show(new View());
+									this.show(new View(options));
 								else
 									throw new Error('DEV::Layout::View required ' + name + ' can NOT be found...use app.create(\'Regional\', {name: ..., ...}).');
 							});

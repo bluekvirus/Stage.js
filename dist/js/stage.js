@@ -717,18 +717,18 @@ Application.Util.Tpl.build('_blank', ' ');
 		_.extend(manager, {
 
 			map: {},
-			_isDefined: function(name){
+			has: function(name){
 				if(manager.map[name]) return true;
 				return false;
 			},
 			register: function(name, factory){
-				if(manager._isDefined(name))
+				if(manager.has(name))
 					console.warn('DEV::Overriden::' + regName + '.' + name);
 				manager.map[name] = factory();
 			},
 
 			create: function(name, options){
-				if(manager._isDefined(name))
+				if(manager.has(name))
 					return new (manager.map[name])(options);
 				throw new Error('DEV::' + regName + '.Registry:: required definition [' + name + '] not found...');
 			}
@@ -1523,13 +1523,13 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 							if(this.debug) this[r].$el.html('<p class="alert alert-info">Region <strong>' + r + '</strong></p>'); //give it a fake one.
 							this[r].listenTo(this[r], 'region:load-view', function(name, options){ //can load both view and widget.
 								if(!name) return;
-								if(options) {
+								if(app.Core.Widget.has(name)) {
 									this.show(app.Core.Widget.create(name, options));
 									return;
 								}
 								var View = app.Core.Regional.get(name);
 								if(View)
-									this.show(new View());
+									this.show(new View(options));
 								else
 									throw new Error('DEV::Layout::View required ' + name + ' can NOT be found...use app.create(\'Regional\', {name: ..., ...}).');
 							});
