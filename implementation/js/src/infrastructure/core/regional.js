@@ -27,8 +27,10 @@
 			
 		},
 
-		get: function(name){
-			return map[name];
+		get: function(name, options){
+			var Def = map[name];
+			if(options) return new Def(options);
+			return Def;
 		}
 
 	});

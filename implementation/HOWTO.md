@@ -12,7 +12,7 @@ Current version
 
 Introduction
 ------------
-The framework is made on top of **Backbone.Marionette** and **Bootstrap**. The goal is to maximize developer efficiency by introducing an intuitive workflow on top of a solid application structure. You will be focusing on user interaction building without distraction. Theming and deployment are also a breeze through our tools.
+This lightweight framework is made on top of **Backbone.Marionette** and **Bootstrap**. The goal is to maximize developer efficiency by introducing an intuitive workflow on top of a solid application structure. You will be focusing on user interaction building without distraction. Theming and deployment are also a breeze through our tools.
 
 To flatten and lower the initial learning curve of adaptation, we restrict ourselves to only the following APIs:
 
@@ -49,9 +49,9 @@ We choose what we choose when designing this framework simply because we want to
 * Development Framework - AngularJS/EmberJS/Meteor (infrastructure only)
 * Application Framework (All-in-One) - YUI/ExtJS (infrastructure plus widgets and tools)
 
-**The Backbone library can implement them all** (Yes, any client side framework). (Not 100% for Meteor though, since Meteor combines its server into a full-stack solution. You need nodejs in the picture, and we do have a package called **ajax-box** for just that based on the [express.js](http://expressjs.com/4x/) framework). And, if you need more evidence, YUI3 has the exact same concepts in Backbone implemented as its infrastructure. 
+**The Backbone library can implement them all** (Yes, any client side framework). (Not 100% for Meteor though, since Meteor combines its server into a full-stack solution. You need nodejs in the picture, and we do have a dev-server package called **ajax-box-lite** in the toolset for just that based on the [express.js](http://expressjs.com/4x/) framework). And, if you need more evidence, YUI3 has the exact same concepts from Backbone implemented as its infrastructure. (Why did we mention YUI here? Because of Yahoo!'s Javascript [Architect](http://www.crockford.com/))
 
-In order to accomplish more with lesser code using Backbone, we picked Backbone.Marionette as our pattern library. It offers cleanup/boilerplate routines and very neat concepts for building large Javascript front-end projects. The resulting framework accomplishes all the big frameworks have promised but with **a thiner and flatter structure**. We believe scripting languages are always going to be the perfect thin glue layer between mechanisms and policies. The Javascript language were picked to glue HTML/CSS and UX but nothing more, it should not be overdosed and attempt to mimic Java. In other words, **only the burger is important**:
+In order to accomplish more with less code using Backbone, we picked Backbone.Marionette as our pattern library. It offers cleanup/boilerplate routines and very neat concepts for building large Javascript front-end projects. The resulting framework accomplishes all the big frameworks have promised but with **a thiner and flatter structure**. We believe scripting languages are always going to be the perfect thin glue layer between mechanisms and policies. The Javascript language were picked to glue HTML/CSS and UX but nothing more, it should not be overdosed and attempt to mimic Java. In other words, **only the burger is important**:
 
 <img src="static/resource/default/diagram/Diagram-6.png" alt="HTML is the burger" class="center-block"></img>
 
@@ -401,7 +401,7 @@ Note that only 'single-click' actions can be registered like this at the moment.
 
 Use `_bubble: true` if you want the click event to **propagate** to the parent view/container. `e.preventDefault()` needs to be specified in the action listeners if you don't want a clicking on `<a href="#xyz" action="another"></a>` tag to affect the navigation.
 
-#####Inputs
+#####Inputs/Editors
 We have already prepared the basic html editors for you in the framework. You don't have to code `<input>, <select> or <textarea>` in any of your view template. Instead, you can activate them in any *Marionette.xView* like this:
 ```
 Application.view({
@@ -625,8 +625,8 @@ subViewA {
 Under your project root, type in command-line `/tools/build/node build.js dist` to build. (You might need to change the `config.dist.js` file if you want to include more files in deployment).
 
 
-###Widgets/Editors
-To make your view definitions reusable, we offer a way of registering *Widget*s and *Editor*s:
+###Widgets
+To make your view definitions reusable, we offer a way of registering *Widget*s (and *Editor*s):
 ```
 //Widget name can be used in region:load-view meta event trigger
 Application.widget/editor('MyWidget/EditorName', 
