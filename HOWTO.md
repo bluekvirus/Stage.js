@@ -6,13 +6,15 @@ Stage.js <sub class="text-muted" style="font-size:36%">based on Marionette.js</s
 
 Current version
 ---------------
-**@1.0.0-rc3**
+**@1.0.1**
 ([Why is it version-ed like this?](http://semver.org/))
 
 
 Introduction
 ------------
-The framework is made on top of **Backbone.Marionette** and **Bootstrap**. To flatten and lower the initial learning curve of adaptation, we restrict ourselves to only the following APIs:
+This lightweight framework is made on top of **Backbone.Marionette** and **Bootstrap**. The goal is to maximize developer efficiency by introducing an intuitive workflow on top of a solid application structure. You will be focusing on user interaction building without distraction. We even give you a web server for starting the development right away! Theming and making deployment are also a breeze through our tools.
+
+To flatten and lower the initial learning curve of adaptation, there is only a handful of APIs to remember:
 
 Initialize:
 * Application.setup (options)
@@ -28,10 +30,26 @@ Reuse:
 * Application.editor (name, options/factory)
 * Application.editor.validator (name, fn) - alias: editor.rule()
 
-Handle Data:
+Handling Data:
 * Application.remote (options)
+* Application.model({data}) - shortcut for new Backbone.Model(data)
+* Application.collection([data]) - shortcut for new Backbone.Collection(data)
+-----------------------------------------------------------------------------
 
-The goal is to maximize developer efficiency by introducing an intuitive workflow on top of a solid application structure. You will be focusing on user interaction building without distraction. Theming and deployment are also a breeze through our tools.
+**Remember:** Your goal is to
+* Create view objects with HTML template and actions. 
+* Put them into pre-defined layout regions. 
+* Make them talk to each other through events.
+* Group them into purposeful(topic related) swap-able contexts.
+
+**Don't:**
+* Create Model and Collection instances unless it is to generate views.
+* Wrap/Organize your view definitions into Class hierarchies.
+* Put more than 2 non-object params in any function signature.
+* Use direct method invocations for view-view, view-context, view-application collaborations.
+
+**Keep your Javascript codes flat and HTML dynamic, style through CSS class.**
+
 
 ###Why not using...
 Why not using AngularJS/EmberJS/Meteor or YUI/ExtJS? Yes you can, but, if you can, **always favor libraries over frameworks**. Given that *Stage.js* is also a framework. The advise here should be extended to: 
@@ -41,50 +59,18 @@ We choose what we choose when designing this framework simply because we want to
 * Development Framework - AngularJS/EmberJS/Meteor (infrastructure only)
 * Application Framework (All-in-One) - YUI/ExtJS (infrastructure plus widgets and tools)
 
-**The Backbone library can implement them all** (Yes, any client side framework). (Not 100% for Meteor though, since Meteor combines its server into a full-stack solution. You need nodejs in the picture, and we do have a package called **ajax-box** for just that based on the [express.js](http://expressjs.com/4x/) framework). And, if you need more evidence, YUI3 has the exact same concepts in Backbone implemented as its infrastructure. 
+**The Backbone library can implement them all** (Yes, any client side framework). (Not 100% for Meteor though, since Meteor combines its server into a full-stack solution. You need nodejs in the picture, and we do have a dev-server package called **ajax-box-lite** in the toolset for just that based on the [express.js](http://expressjs.com/4x/) framework). And, if you need more evidence, YUI3 has the exact same concepts from Backbone implemented as its infrastructure. (Why did we mention YUI here? Because of Yahoo!'s Javascript [Architect](http://www.crockford.com/))
 
-In order to accomplish more with lesser code using Backbone, we picked Backbone.Marionette as our pattern library. It offers cleanup/boilerplate routines and very neat concepts for building large Javascript front-end projects. The resulting framework accomplishes all the big frameworks have promised but with **a thiner and flatter structure**. We believe scripting languages are always going to be the perfect thin glue layer between mechanisms and policies. The Javascript language were picked to glue HTML/CSS and UX but nothing more, it should not be overdosed and attempt to mimic Java. In other words, **only the burger is important**:
+In order to accomplish more with less code using Backbone, we picked Backbone.Marionette as our pattern library. It offers cleanup/boilerplate routines and very neat concepts for building large Javascript front-end projects. The resulting framework accomplishes all the big frameworks have promised but with **a thiner and flatter structure**. We believe scripting languages are always going to be the perfect thin glue layer between mechanisms and policies. The Javascript language were picked to glue HTML/CSS and UX but nothing more, it should not be overdosed and attempt to mimic Java. In other words, **only the burger is important**:
 
 <img src="static/resource/default/diagram/Diagram-6.png" alt="HTML is the burger" class="center-block"></img>
 
-
-Mental preparation
-------------------
-> Technique means nothing if people have no purposes in their mind. To prepare mentally to adapt something is to synchronize the mind around the subject domain so that insights can be developed while applying the technique. The ultimate goal is always to understand the subject (in our case the problem) better.
-
-> Make sure to ask enough questions, so you can quickly locate the core problem that a given technique is trying to solve efficiently. Then go apply the technique and try making changes. Soon enough, you will start to see things like the solution creator, and concepts and ideas start to come out naturally. True understanding is almost always developed this way.
-
-If you can not agree with the author after reading the following sections in this chapter, do not bother with this framework.
-
-###Define the problem
-Before start, you need to understand what is a *GUI application*, here is a brief diagram (casted upon the web realm):
-
-<img src="static/resource/default/diagram/Diagram-1.png" alt="Web App Diagram" class="center-block"></img>
-
-The client and server sides are different in purpose fundamentally. Thus, they should be designed and implemented differently. **Do NOT mix them**. Shutting this door will preserve a significant amount of coding/maintenance energy for the application developer(s). The best software development practice encourages separation and delaying of implementation of related components so that each part can vary independently later. And to the author, abstraction should happen after categorization (or say, classification). This is why we are advising the developers *NOT* to make an overly encapsulated framework with tools that try to bridge the gaps. Trying to control everything using central planning is a human flaw, there is no silver-bullet for trying to solve web application building in 1 piece. It will always 3 parties in the software application world.
-
-As an engineer, the job is to find insights and solve problems between the 3 parties efficiently (profitably if you must insist...) so that the software/application serving the above system comes out correctly. This is hard. Specifically, You need to resolve 2 kinds of problem different in nature: *Interaction* and *Data Flow* in order to produce an application.
-A successful one requires both parts to employ careful design and feasible technique. We illustrate the *Interaction* problem's technical side here, since the framework is more about supporting a good design with cleaner implementation:
-
-<img src="static/resource/default/diagram/Diagram-2.png" alt="UI/UX Problems" class="center-block"></img>
-
-As you can see from the above diagram, there are 3 problems here to address when implementing a UI/UX side for an application:
-1. Data <i class="fa fa-arrows-h"></i> Model/Collection [snapshot]
-2. Model/Collection [snapshot] <i class="fa fa-arrows-h"></i> View (UI)
-3. View <i class="fa fa-arrows-h"></i> Layout/Page + Transitions (UX)
-
-Failing to address any of the 3 parts above will cost the project a significant amount of refractory time. Do *NOT* skip or trying to merge them into one big abstraction. Conquer each one with a consistent API style (like parameters and naming conventions) then combine the result. A complete system is never a destination, it is only a state of being or appearance. In other words, anytime you want your solution appear to be *a complete one*, focus on identifying the key problems and then solve them. Do *NOT* set your goal to be *a complete system* when start.
-
-So, how do we form our solution?
-
-###Solution architecture
-As a full stack solution to the UI/UX side, we address those 3 problems with an intuitive architecture:
-
+###Core concepts
 <img src="static/resource/default/diagram/Diagram-3.png" alt="Stage.js Architecture" class="center-block"></img>
 
 ####What's Navigation?
 
-We achieve client-side multi-page-alike navigation through switching *Context*s on a pre-defined application region by responding to the URL fragment change event. (e.g #navigate/Context/...)
+We achieve client-side multi-page-alike navigation through switching *Context*s on a pre-defined application region in respond to the URL fragment change event. You can also use the *sub-path* parameter received by the *Context* object upon context switching to further control its presentation accordingly (e.g #navigate/Context/sub-path or status).
 
 ####What's a Context?
 A *Context* is a special *Marionette.Layout* view object. *Context*s only appear on the application's context region (each application can have only 1 such region). If you have more than 1 *Context*s defined, they will automatically swap on the context region in response to the navigation event. You will not have more than 1 active *Context* at any given time.
@@ -97,25 +83,20 @@ A *Regional* is a *Marionette.xView* (*ItemView, Layout, CollectionView and Comp
 alias: Area
 
 ####Remote data handling?
-Modern web application generates views according to user data dynamically. This is why we picked *Backbone/Marionette* as our implementation base -- to use dynamic views rendered through data. Plus, there is no doubt about wiring in remote data into your application through *Ajax* now. However, the way we handle remote data in our framework is a bit different than the original design in *Backbone*.
+Modern web application generates views according to user data dynamically. This is why we picked *Backbone/Marionette* as our implementation base -- to use dynamic views rendered through data. However, the way we handle remote data in our framework is a bit different than the original design in *Backbone*.
 
-**Important:** We introduce a unified *DATA API* for handling all the in/out of remote server data, skipping the *Model/Collection* centered way of data manipulation. *Model/Collection* are only used as dumb data snapshot object on the client side to support views. The goal is to make the data interfacing layer *as thin as possible* on the client side. You will find more details in the **Quick steps** section.
+**Important:** We introduce a unified *DATA API* for handling all the in/out of remote server data, skipping the *Model/Collection* centered way of data manipulation. *Model/Collection* are only used as dumb data snapshot object on the client side to support views. The goal is to make the data interfacing layer *as thin as possible*. You will find more details in the **Quick steps** section.
 
 ####Reuse view definitions?
-As *Design Patterns* dictates, we need to code in a way to:
-
-<img src="static/resource/default/diagram/Diagram-4.png" alt="Design Pattern Goals" class="center-block"></img>
-
 For *Regional*s (or any *Marionette.xView*) that you need to use again and again but with different configuration (e.g a Datagrid). Register it as a *Widget* or, in case of a basic input, an *Editor*. These reusable view definitions are call *Reusable*s in the framework. Think in terms of the **List and Container** technique as much as possible when creating them.
 
 ####Glue through events
-We encourage event programming in this framework. We glue views into a functioning whole by using meta-events. Whenever an interaction or transition happens (e.g navigation, context-swap, login, error, data-ready...), intead of calling the actual *doer*s, fire/trigger an event first, so that later the actual behavior triggered by this event can be changed without affecting the glue/interfacing logic. Read carefully through the **Events** subsection in **Quick steps** below so you understand how to implement and extend application behaviors mainly through events. 
+We encourage event programming in this framework. We glue views into a functioning whole by using meta-events. Whenever an interaction or transition happens (e.g navigation, context-swap, login, error, data-ready...), intead of calling the actual *doer*s, **fire/trigger an event first and provide a default listener**, so that later the actual behavior triggered by this event can be changed without affecting the glue/interfacing logic. Read carefully through the **Events** subsection in **Quick steps** below so you understand how to implement and extend application behaviors mainly through events. 
 
 ####Seems complicated...
-To focus, think of your application in terms of *Context*s and *Regional*s (pages and areas). Like drawing a series of pictures, each page is a *Context* and you lay things out by sketching out regions (areas) first on each page then refined the details (*Regional*) within each region. 
+To focus, think of your application in terms of *Context*s and *Regional*s (pages and areas). Like drawing a series of pictures, each page is a *Context* and you lay things out by sketching out regions (areas) first on each page then refined the details (*Regionals*). Each *Context* can also be made state-aware through the same navigation mechanism that powers *Context* switching in the application container.
 
-Use *Model*/*Collection* wisely, try not to involve them before relating to any *Marionette.xView*. That is to say, fetch/persist data through the unified *Data API* (CRUD in RESTful format). Unless you want a dynamic view, do **NOT** use *Model*/*Collection* to store and operate on the data. Focus on UI/UX and make the data interfacing with server as thin as possible.
-
+Use *Model*/*Collection* wisely, try not to involve them before relating to any *Marionette.xView*. In other words, unless you want a dynamic view, do **NOT** use *Model*/*Collection*. Fetch/persist data through a unified *Data API* (CRUD in RESTful format). Focus on UI/UX and make the data interfacing/manipulation layer as thin as possible. Operate on plain data object/array only. Bind pagination, sorting and filtering operations with views instead.
 
 Getting started
 -----------
@@ -137,67 +118,99 @@ and this indicates:
 
 If you don't know what they are, go for a quick look at their websites. (links are provided under the *Included Libraries* area on the left sidebar)
 
-We also maintain a list of 3rd party libraries for the developers to choose from in addition to the base libraries (as utilities). The utility libraries (e.g jquery-file-upload, store.js, uri.js, raphael.js, marked, moment.js, socket.io.js...) are carefully selected from the many open-source Javascript libraries out there to help with specific but generally-will-appear problems that a developer will encounter during the web application development process. (see more in the **Include other js libraries** chapter)
+We also maintain a list of 3rd party libraries for the developers to choose from in addition to the base libraries. These utility libraries (e.g jquery-file-upload, store.js, uri.js, raphael.js, marked, moment.js, socket.io.js...) are carefully selected from the many open-source Javascript libraries out there to help with specific but generally-will-appear problems that a developer will encounter during the web application development process. (see more in the **Include other js libraries** section)
 
-**Remember:** The goal of this framework is to assist you to make better use of *Marionette* (thus *Backbone*) by adding a conventional workflow (with tools) and application container around it. It is designed to keep you focused on building dynamic views without worrying about putting/linking/organizing them into a manageable whole. You can make a complete web application project with ease now by focusing only on what to offer the user within each of the regions/areas. Go read about *Marionette*, it is very important that you understand the 4 types of views (*ItemView, Layout, CollectionView and CompositeView*) offered by this pattern library. [We are still experimenting with *Behavior* in *Marionette*, nothing in the framework is implemented with it yet]
+**Remember:** The goal of this framework is to assist you making better use of *Marionette* (thus *Backbone*). It is designed to keep you focused on building dynamic views without worrying about putting/linking/organizing them into a manageable whole. It is very important that you understand the 4 types of views (*ItemView, Layout, CollectionView and CompositeView*) offered by the *Marionette* pattern library. So that you can maximize the efficiency offered by our unique workflow, intuitive toolset and prepared application container.
 
-###What's in the package
+###Choose the right distribution
 
-####Project structure
+####Project kit
 > * /design
->   * /assets
->   * /docs
+>   * /assets (-)
+>   * /docs (-)
 > * /implementation -- your web root
->   * /js
+>   * /js (-)
+>   * /static (-)
 >   * /themes
->   * /static
 >   * index.html
+>   * bower.json
 > * /tools
 >   * /build -- minify and concatenate your js files by scanning index.html
 >   * /iconprep -- build icons into big css sprite
+>   * /devserver -- development web server with less file monitor
+>   * /shared -- shared scripts used by the tools
+>   * package.json
 
+**(-)**: This folder is empty initially, it is created as a suggestion.
 
-####Let's start
-You start developing by creating a `main.js` (you are free to choose whatever the name you like) 
-and include it in `/implementation/index.html` below the `<!--main.js-->` comment line:
+Use the project-kit distribution whenever you want to start a production level web application project.
 
+####Release pack
+> * /js
+> * /themes
+> * index.html
+
+This distribution is designed to be simple and doesn't have tools and theme packages for production level development. The release-pack folder is serve-able out of the box.
+
+Use the release-pack distribution for prototyping your next product concept, or to keep your project core up-to-date.
+
+**Note**: The release-pack distribution is also what you will get from the bower package manager when using command:
 ```
-<script src="js/lib/dependencies.js"></script>
-<script src="js/stage.js"></script>
+bower install/update stage
+```
+
+
+###Quick steps
+Here is the recommended **workflow**. You should follow the steps each time you want to start a new project with *Stage.js*.
+
+
+####Preparation
+Download the *Stage.js* [project-kit](static/resource/default/download/stagejs-starter-kit.tar.gz) and extract its content to your project folder of choice.
+
+Under your project folder, open up a console/terminal on your OS and do the following:
+* Under the `/tools` folder run
+```
+npm install
+npm start //this will start the development server on http://localhost:5000/dev/
+```
+* Under the `/implementation` folder run
+```
+bower install
+```
+* Create a `main.js` (you are free to choose whatever the name you like) 
+and include it in `index.html` below the `<!--main.js-->` comment line:
+```
+<script src="bower_components/stage/dist/js/lib/dependencies.min.js"></script>
+<script src="bower_components/stage/dist/js/stage.min.js"></script>
 ...  
 <!--main.js-->
 <script type="text/javascript" src="js/main.js"></script>
 ...
 ```
-**Note:** You can use `stage.js` instead of `stage.min.js` to have better debugging info. Do *NOT* forget to build your application during deployment.
-
+**Note:** You can use `stage.js` instead of `stage.min.js` to have better debugging info.
 Minimum `main.js` script looks like this:
 ```
 //main.js
 Application.setup().run();
 ```
-You should now see a *blank* page without Javascript error.
+You should now see a *blank* page without Javascript error on http://localhost:5000/dev/.
 
-If you are really in a hurry to see some stuff on the page, setup your application in `main.js` like this:
+If you are really in a hurry to see some stuff on page, give your application a template:
 ```
 //main.js
 Application.setup({
-	template: [
-		'<div>',
-			'<h1>Hello World</h1>',
-			//put some html here as strings
-		'</div>'
-	]
+    template: [
+        '<div>',
+            '<h1>Hello World</h1>',
+            //put some html here as strings
+        '</div>'
+    ]
 }).run();
 ```
 
-You will start real development by adding *region*s to your application template and define *Context*s and *Regional*s. Let's examine a standard list of development steps in the following section.
+Remember, creating a web application is like drawing a picture. Start by laying things out and gradually refine the details. In our case, always start by defining the application template.
 
-
-###Quick steps
-Here is the recommended **workflow**. You should follow the steps each time you want to start a new project with *Stage.js*. We assume that you have downloaded the *Stage.js* client package now and extracted to your project folder of choice.
-
-Remember, creating a web application is like drawing a picture. Start by laying things out and gradually refine the details. In our case, always start by defining application template.
+Now, let's start building a real web application.
 
 ####Step 1. Initialize
 Go to your `main.js` and setup the application by using `Application.setup()`:
@@ -436,7 +449,7 @@ Note that only 'single-click' actions can be registered like this at the moment.
 
 Use `_bubble: true` if you want the click event to **propagate** to the parent view/container. `e.preventDefault()` needs to be specified in the action listeners if you don't want a clicking on `<a href="#xyz" action="another"></a>` tag to affect the navigation.
 
-#####Inputs
+#####Inputs/Editors
 We have already prepared the basic html editors for you in the framework. You don't have to code `<input>, <select> or <textarea>` in any of your view template. Instead, you can activate them in any *Marionette.xView* like this:
 ```
 Application.view({
@@ -656,8 +669,12 @@ subViewA {
 **Remember:** Always prefer *Events* over *APIs* while implementing collaborations.
 
 
-###Widgets/Editors
-To make your view definitions reusable, we offer a way of registering *Widget*s and *Editor*s:
+####Build & Deploy
+Under your project root, type in command-line `/tools/build/node build.js dist` to build. (You might need to change the `config.dist.js` file if you want to include more files in deployment).
+
+
+###Widgets
+To make your view definitions reusable, we offer a way of registering *Widget*s (and *Editor*s):
 ```
 //Widget name can be used in region:load-view meta event trigger
 Application.widget/editor('MyWidget/EditorName', 
@@ -708,6 +725,18 @@ This is the golden technique to use when planning your reusable views or, say, a
 You can always nest another layer of container-list-item into an item of parent layer to form even more complex views. Make sure you use the `Application.view(options)` API when defining the list item views.
 
 **Important**: *Do NOT* use `Application.regional()` unless it is the outer most view for a region. Use `Application.view()` if defining Widgets/Editors.
+
+####Datagrid
+...
+
+####Tree
+...
+
+####Paginator
+...
+
+####Overlay
+...
 
 
 ###i18n/l10n
@@ -848,8 +877,11 @@ See `/implementation/themes/README.md` for more details.
 There is a theme preview page at `[your theme folder]/index.html`. Change it to include more UI components and use it to demo your theme. `URL://[your host]/themes/[your theme]/`
 
 
-Include other js libraries
----------------------
+FAQs
+----
+
+###Include other js libraries
+
 The default `dependences.js` contains carefully (minimum) selected libraries for your project, if you would like to introduce more, use [bower](http://bower.io/) and the `bower.json` file included.
 Go into `/implementation` and run `bower install` to grab all the monitored 3rd-party libraries.
 
@@ -859,19 +891,13 @@ Include your libraries after `dependences.js` in `/implementation/index.html`.
 Alternatively, you can always use a *CDN* (Content Delivery Network) to load the Javascript libraries into your index.html (e.g [jsDelivr](http://www.jsdelivr.com/)) However, this will affect the build process since these libraries will not be combined if they are not from local.
 
 
-What should I put in `/static`?
------------------
+###What should I put in `/static`?
+
 * `/resource` should contain static resources per locale. (per xx_XX folder, `/default` for locale independent)
 
 
-Build for production use
-------------------------
-Before building your app for deployment, go into `/tools` and run `npm install` to grab all necessary 3rd-party [Node.js](http://nodejs.org/) modules.
-Type in command-line `/tools/build/node build.js dist` to build. (You might need to change the `config.dist.js` file if you want to include more files in deployment).
+###Upgrade/Update
 
-
-Upgrade/Update
---------------
 Download and replace `stage.js` to update the infrastructure through `bower`:
 ```
 bower update stage
@@ -880,61 +906,16 @@ bower update stage
 
 Appendix
 --------
-###A. Moving away from ExtJS
-We have been developing in ExtJS4 for 2+ years, starting form the last version of 4.0.x which is the promising 4.0.7. As our knowledge base expands, we felt that it is time to form our own blueprint of a modern data heavy web application to shorten the development cycles. Here are some of the main reasons:
+###A. Change log
+see [CHANGELOG.md](https://github.com/bluekvirus/Stage.js/blob/master/CHANGELOG.md)
 
-1. Although it is relatively fast to develop prototypes using an all-in-one framework like ExtJS, it is hard to maintain the code while keeping up with the changes required by the users and those that come from Sencha. The widgets are bound too tightly with the framework.
-2. Loading, DOM interfacing, Widget and Application containers are all provided with a biased opinion, which always leads to fighting with the framework here and there or messing around with the life-cycles defined when trying to implement application specific user requirements. 
-3. Performance issues. There are often a massive amount of unnecessary DOM elements lurking in the client browser. We have very limited control over the life-cycles nor the HTML template structure of the components. Making widgets as Classes and loading like Java is really a bad idea for Javascript.
-4. Theming difficulties. It is hard to theme an ExtJS application correctly given the extensively nested component structure and the lack of SASS/Compass adaptation among developers.
-5. Payed solution. The commercial version of ExtJS and the tools (IDE) are expensive. This also makes the community size smaller than its full/free open source counterparts, making it difficult to find solutions from resources other than the documentation.
+###B. Useful sites
+####CDN
+* [jsDelivr](http://www.jsdelivr.com/)
 
-If the above listing can not convince you, try to compare the ExtJS solutions to the web application building process with ours: (Strict MVC vs View centric)
-
-0. Classes vs 4 types of general view;
-1. Containers vs General in-template regions;
-2. Layouts vs Dynamic grid system;
-3. Thick data layer vs A single remote() API;
-4. Single Viewport vs Switchable Contexts;
-5. Controllers vs Generic events and view actions;
-6. XTemplate vs Handlebars;
-
-The one thing that ExtJS could not get right and still is getting wrong is that it tries to use Javascript like JAVA and dominating HTML/CSS manipulation. It casts the developers out to a changed problem domain where basic problems are taken cared of in a complicated/overkilled way so that the programs can be written like *piles of configure files*. 
-
-The *Class* system confuses developers coding in Javascript's function scope, the heavy *Layout* system kills what HTML/CSS is designed for and good at, the thick *Data* layer tries to isolate data snapshot from their in-separable views and the *Controllers* pulls developers out into another place to define routines just to have the listeners wired back again into the views. All of these ignores the fact that the core of a web application is at HTML(client-side) and the data(server side), not the glue and state snapshots. (Well, maybe in 5.0 they can fix it, we have high hope on this...)
-
-Whatever you do, *Do NOT* stack up abstraction layers over layers so further programs can be written like configuration files. It will be slow to run, even harder to change and incur a very steep learning curve for new comers...
-
-We choose to move away from this heavy framework to avoid its complexity and downside and to have more control over the component life-cycles, interactions and application container separately. An equally powerful yet still lightweight solution combining the best practices in the field is thus made. 
-
-###B. Rules of Thumb
-####General
-* Keep things simple, especially the simple ones.
-* Categorization before abstraction.
-* Separate, Reuse and Pipeline.
-* Cleaner method signature. Options as a single object parameter.
-* Events for collaborations instead of APIs. Promises for asynchronous operations instead of callbacks.
-
-Start with user requirements/stories and focus on serving the customers' need. Use the 80/20 rule to pick out important features/functionalities and implement them first. Gradually refine code and documentation later. Remember to write down **why** before **how** in the code comments. !FOCUS!
-
-####GUI
-* Concision - exact but nothing more
-* Expressiveness - allow useful possibilities be deducted
-* Ease - low mnemonic load on commands, control sequence
-* Transparency - low mnemonic load in user's mind for keeping track of states/layers of task at hand
-* Script-ability - batch-able, automate-able
-
-
-###C. Change log
-see CHANGELOG.md
-
-###D. Useful sites
 ####MDN
 * [CORS](https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS) - crossdomain ajax support.
 * [Web API](https://developer.mozilla.org/en-US/docs/Web/API)
-
-####CDN
-* [jsDelivr](http://www.jsdelivr.com/)
 
 ####Javascript
 * [Douglas Crockford on js](http://www.crockford.com/javascript/)
