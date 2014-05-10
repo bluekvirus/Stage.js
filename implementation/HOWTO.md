@@ -14,7 +14,7 @@ Introduction
 ------------
 This lightweight framework is made on top of **Backbone.Marionette** and **Bootstrap**. The goal is to maximize developer efficiency by introducing an intuitive workflow on top of a solid application structure. You will be focusing on user interaction building without distraction. We even give you a web server for starting the development right away! Theming and making deployment are also a breeze through our tools.
 
-To flatten and lower the initial learning curve of adaptation, we restrict ourselves to only the following APIs:
+To flatten and lower the initial learning curve of adaptation, there is only a handful of APIs to remember:
 
 Initialize:
 * Application.setup (options)
@@ -30,16 +30,26 @@ Reuse:
 * Application.editor (name, options/factory)
 * Application.editor.validator (name, fn) - alias: editor.rule()
 
-Handle Data:
+Handling Data:
 * Application.remote (options)
+* Application.model({data}) - shortcut for new Backbone.Model(data)
+* Application.collection([data]) - shortcut for new Backbone.Collection(data)
+-----------------------------------------------------------------------------
 
 **Remember:** Your goal is to
-* Create view objects. 
+* Create view objects with HTML template and actions. 
 * Put them into pre-defined layout regions. 
 * Make them talk to each other through events.
 * Group them into purposeful(topic related) swap-able contexts.
 
-Please use **events** as much as possible in place of direct method invocations (possible situations: in-view, view-view, view-context, view-application) for maximum extensibility. 
+**Don't:**
+* Create Model and Collection instances unless it is to generate views.
+* Wrap/Organize your view definitions into Class hierarchies.
+* Put more than 2 non-object params in any function signature.
+* Use direct method invocations for view-view, view-context, view-application collaborations.
+
+**Keep your Javascript codes flat and HTML dynamic, style through CSS class.**
+
 
 ###Why not using...
 Why not using AngularJS/EmberJS/Meteor or YUI/ExtJS? Yes you can, but, if you can, **always favor libraries over frameworks**. Given that *Stage.js* is also a framework. The advise here should be extended to: 
@@ -60,7 +70,7 @@ In order to accomplish more with less code using Backbone, we picked Backbone.Ma
 
 ####What's Navigation?
 
-We achieve client-side multi-page-alike navigation through switching *Context*s on a pre-defined application region by responding to the URL fragment change event. You can also use the *sub-path* parameter received by the *Context* object upon context switching to further control the its presentation accordingly (e.g #navigate/Context/sub-path or status).
+We achieve client-side multi-page-alike navigation through switching *Context*s on a pre-defined application region in respond to the URL fragment change event. You can also use the *sub-path* parameter received by the *Context* object upon context switching to further control its presentation accordingly (e.g #navigate/Context/sub-path or status).
 
 ####What's a Context?
 A *Context* is a special *Marionette.Layout* view object. *Context*s only appear on the application's context region (each application can have only 1 such region). If you have more than 1 *Context*s defined, they will automatically swap on the context region in response to the navigation event. You will not have more than 1 active *Context* at any given time.
@@ -75,18 +85,18 @@ alias: Area
 ####Remote data handling?
 Modern web application generates views according to user data dynamically. This is why we picked *Backbone/Marionette* as our implementation base -- to use dynamic views rendered through data. However, the way we handle remote data in our framework is a bit different than the original design in *Backbone*.
 
-**Important:** We introduce a unified *DATA API* for handling all the in/out of remote server data, skipping the *Model/Collection* centered way of data manipulation. *Model/Collection* are only used as dumb data snapshot object on the client side to support views. The goal is to make the data interfacing layer *as thin as possible* on the client side. You will find more details in the **Quick steps** section.
+**Important:** We introduce a unified *DATA API* for handling all the in/out of remote server data, skipping the *Model/Collection* centered way of data manipulation. *Model/Collection* are only used as dumb data snapshot object on the client side to support views. The goal is to make the data interfacing layer *as thin as possible*. You will find more details in the **Quick steps** section.
 
 ####Reuse view definitions?
 For *Regional*s (or any *Marionette.xView*) that you need to use again and again but with different configuration (e.g a Datagrid). Register it as a *Widget* or, in case of a basic input, an *Editor*. These reusable view definitions are call *Reusable*s in the framework. Think in terms of the **List and Container** technique as much as possible when creating them.
 
 ####Glue through events
-We encourage event programming in this framework. We glue views into a functioning whole by using meta-events. Whenever an interaction or transition happens (e.g navigation, context-swap, login, error, data-ready...), intead of calling the actual *doer*s, fire/trigger an event first, so that later the actual behavior triggered by this event can be changed without affecting the glue/interfacing logic. Read carefully through the **Events** subsection in **Quick steps** below so you understand how to implement and extend application behaviors mainly through events. 
+We encourage event programming in this framework. We glue views into a functioning whole by using meta-events. Whenever an interaction or transition happens (e.g navigation, context-swap, login, error, data-ready...), intead of calling the actual *doer*s, **fire/trigger an event first and provide a default listener**, so that later the actual behavior triggered by this event can be changed without affecting the glue/interfacing logic. Read carefully through the **Events** subsection in **Quick steps** below so you understand how to implement and extend application behaviors mainly through events. 
 
 ####Seems complicated...
-To focus, think of your application in terms of *Context*s and *Regional*s (pages and areas). Like drawing a series of pictures, each page is a *Context* and you lay things out by sketching out regions (areas) first on each page then refined the details (*Regional*) within each region. 
+To focus, think of your application in terms of *Context*s and *Regional*s (pages and areas). Like drawing a series of pictures, each page is a *Context* and you lay things out by sketching out regions (areas) first on each page then refined the details (*Regionals*). Each *Context* can also be made state-aware through the same navigation mechanism that powers *Context* switching in the application container.
 
-Use *Model*/*Collection* wisely, try not to involve them before relating to any *Marionette.xView*. That is to say, fetch/persist data through the unified *Data API* (CRUD in RESTful format). Unless you want a dynamic view, do **NOT** use *Model*/*Collection* to store and operate on the data. Focus on UI/UX and make the data interfacing with server as thin as possible.
+Use *Model*/*Collection* wisely, try not to involve them before relating to any *Marionette.xView*. In other words, unless you want a dynamic view, do **NOT** use *Model*/*Collection*. Fetch/persist data through a unified *Data API* (CRUD in RESTful format). Focus on UI/UX and make the data interfacing/manipulation layer as thin as possible. Operate on plain data object/array only. Bind pagination, sorting and filtering operations with views instead.
 
 Getting started
 -----------
@@ -108,9 +118,9 @@ and this indicates:
 
 If you don't know what they are, go for a quick look at their websites. (links are provided under the *Included Libraries* area on the left sidebar)
 
-We also maintain a list of 3rd party libraries for the developers to choose from in addition to the base libraries (as utilities). The utility libraries (e.g jquery-file-upload, store.js, uri.js, raphael.js, marked, moment.js, socket.io.js...) are carefully selected from the many open-source Javascript libraries out there to help with specific but generally-will-appear problems that a developer will encounter during the web application development process. (see more in the **Include other js libraries** chapter)
+We also maintain a list of 3rd party libraries for the developers to choose from in addition to the base libraries. These utility libraries (e.g jquery-file-upload, store.js, uri.js, raphael.js, marked, moment.js, socket.io.js...) are carefully selected from the many open-source Javascript libraries out there to help with specific but generally-will-appear problems that a developer will encounter during the web application development process. (see more in the **Include other js libraries** section)
 
-**Remember:** The goal of this framework is to assist you to make better use of *Marionette* (thus *Backbone*) by adding a conventional workflow, a toolset and an useful application container around. It is designed to keep you focused on building dynamic views without worrying about putting/linking/organizing them into a manageable whole. It is very important that you understand the 4 types of views (*ItemView, Layout, CollectionView and CompositeView*) offered by the *Marionette* pattern library.
+**Remember:** The goal of this framework is to assist you making better use of *Marionette* (thus *Backbone*). It is designed to keep you focused on building dynamic views without worrying about putting/linking/organizing them into a manageable whole. It is very important that you understand the 4 types of views (*ItemView, Layout, CollectionView and CompositeView*) offered by the *Marionette* pattern library. So that you can maximize the efficiency offered by our unique workflow, intuitive toolset and prepared application container.
 
 ###Choose the right distribution
 
@@ -131,7 +141,7 @@ We also maintain a list of 3rd party libraries for the developers to choose from
 >   * /shared -- shared scripts used by the tools
 >   * package.json
 
-**(-)**: means the folder is empty initially, it is created as a suggestion.
+**(-)**: This folder is empty initially, it is created as a suggestion.
 
 Use the project-kit distribution whenever you want to start a production level web application project.
 
@@ -140,21 +150,24 @@ Use the project-kit distribution whenever you want to start a production level w
 > * /themes
 > * index.html
 
-The release-pack distribution. It is designed to be lightweight and doesn't have tools and theme packages for production level development. The release-pack folder is serve-able out of the box.
+This distribution is designed to be simple and doesn't have tools and theme packages for production level development. The release-pack folder is serve-able out of the box.
 
-You can always use this distribution for prototyping your next product concept, or to keep your project core up-to-date.
+Use the release-pack distribution for prototyping your next product concept, or to keep your project core up-to-date.
 
-**Note**: The release-pack distribution is what you will get from the bower package manager when using the `bower install/update stage` command.
+**Note**: The release-pack distribution is also what you will get from the bower package manager when using command:
+```
+bower install/update stage
+```
 
 
 ###Quick steps
 Here is the recommended **workflow**. You should follow the steps each time you want to start a new project with *Stage.js*.
 
 
-####Let's start (preparation)
+####Preparation
 Download the *Stage.js* [project-kit](static/resource/default/download/stagejs-starter-kit.tar.gz) and extract its content to your project folder of choice.
 
-Under your project folder, open up console/terminal on your OS and do the following:
+Under your project folder, open up a console/terminal on your OS and do the following:
 * Under the `/tools` folder run
 ```
 npm install
@@ -165,7 +178,7 @@ npm start //this will start the development server on http://localhost:5000/dev/
 bower install
 ```
 * Create a `main.js` (you are free to choose whatever the name you like) 
-and include it in `/implementation/index.html` below the `<!--main.js-->` comment line:
+and include it in `index.html` below the `<!--main.js-->` comment line:
 ```
 <script src="bower_components/stage/dist/js/lib/dependencies.min.js"></script>
 <script src="bower_components/stage/dist/js/stage.min.js"></script>
