@@ -7,7 +7,7 @@ What's next?
 ------------
 1.1.0 might bring:
 * Datagrid+ : select-all header/cell, details row;
-* Editor+ : Spinner, Switches, DnD Listing, File Listing;
+* Editor+ : Spinner/Range, Switches, DnD Listing, File Listing;
 * local filter/sorter mech into list views; 
 * local pagination mech into list views (in addition to the remote one we already have); 
 * provide a way to persist context status between context switches?
@@ -16,7 +16,7 @@ What's next?
 
 Current Version
 ---------------
-1.0.0-release
+1.0.1
 
 
 Build
@@ -36,14 +36,13 @@ See 'implementation/HOWTO.md'
 
 Tooling
 -------
-Prepare icon css sprites or svg paths
-See `/implementation/themes/README.md`
+See `/tools`
 
 
 License
 -------
 Copyright 2013 - 2014 Tim (Zhiyuan) Liu. 
-Licensed under the [MIT](http://opensource.org/licenses/MIT) License.
+Under the [MIT](http://opensource.org/licenses/MIT) License.
 
 
 Notes

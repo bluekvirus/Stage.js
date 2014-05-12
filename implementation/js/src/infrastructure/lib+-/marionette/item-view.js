@@ -1,7 +1,7 @@
 /**
  * Marionette.ItemView Enhancements (can be used in Layout as well) - Note that you can NOT use these in a CompositeView.
  *
- * 1. SVG (view:fit-paper, view:paper-ready)
+ * 1. SVG (view:fit-paper, view:paper-resized, view:paper-ready)
  * 2. Basic Editors (view as form piece)
  * 3. Render with data (view:render-data, view:data-rendered)
  *
@@ -22,7 +22,7 @@
 
 			Raphael(this.el, this.$el.width(), this.$el.height(), function(){
 				that.paper = this;
-				that.trigger('view:paper-ready'); // - use this instead of onShow() in the 1st time
+				that.trigger('view:paper-ready', this); // - use this instead of onShow() in the 1st time
 				/**
 				 * e.g 
 				 * onShow(){
