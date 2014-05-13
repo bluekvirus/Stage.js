@@ -62,13 +62,13 @@
 			initialize: function(options){
 				this.parent = options.parent;
 				if(this.className() === 'node') this.collection = app.collection(this.model.get('children'));
-			},
-			onRender: function(){
-				this.$el.addClass('clickable').data({
-					'record': this.model.attributes,
-					'$children': this.$el.find('> ul'),
-					'$parent': this.parent && this.parent.$el
-				});
+				this.listenTo(this, 'render', function(){
+					this.$el.addClass('clickable').data({
+						'record': this.model.attributes,
+						'$children': this.$el.find('> ul'),
+						'$parent': this.parent && this.parent.$el
+					});
+				})
 			},
 			template: [
 				'<a href="#"><i class="{{icon}}"></i> {{{val}}}</a>',
@@ -82,7 +82,7 @@
 			tagName: 'ul',
 			initialize: function(options){
 				this._options = options;
-				this.itemView = this._options.itemView || app.view(_.extend({}, nodeViewConfig, _.omit(this._options.node, 'type', 'tagName', 'itemViewContainer')));
+				this.itemView = this._options.itemView || app.view(_.extend({}, nodeViewConfig, _.omit(this._options.node, 'type', 'tagName', 'itemViewContainer', 'itemViewOptions', 'className', 'initialize')));
 				this.onSelected = options.onSelected || this.onSelected;
 			},
 			onShow: function(){
@@ -90,7 +90,7 @@
 			},
 			onReconfigure: function(options){
 				_.extend(this._options, options);
-				this.trigger('view:render-data', this._options.data);
+				this.trigger('view:render-data', this._options.data); //the default onRenderData() should be suffice.
 			},
 			events: {
 				'click .clickable': function(e){
@@ -100,7 +100,7 @@
 				}
 			},
 			//override this
-			onSelected: function(data, $el, e){
+			onSelected: function(nodeData, $el, e){
 				
 			}			
 		});

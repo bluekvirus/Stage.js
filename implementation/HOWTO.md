@@ -663,7 +663,7 @@ view:data-rendered
 view:fit-paper
 view:paper-resized
 view:paper-ready
-//CollectionView only (Pagination)
+//CollectionView only (Remote Data Pagination)
 view:load-page
 view:page-changed
 ```
@@ -756,8 +756,8 @@ You can always nest another layer of container-list-item into an item of parent 
 **Important**: *Do NOT* use `Application.regional()` in widget building.
 
 **Suggestions**: 
-* Always implement `view:render-data` and `view:reconfigure` meta event listeners in a widget for swapping data and configuration after the widget is shown. 
-* Keep them reconfigurable in display and dumb in functionality, don't put *policy* code as logic into them. 
+* Always implement the `view:reconfigure` meta event listeners in a widget for swapping data and configuration after the widget is shown. Make sure the `view:render-data` event is working as expected as well. 
+* Keep widgets reconfigurable in display and dumb in functionality, don't put *policy* code as logic into them. 
 * Leave space to accommodate real case usages by keeping options minimum. Don't turn into an *all-in-one* thing and force other developers to *configure* the widget.
 * Fire event whenever an action is triggered, provide a default listener so that later it can be rewired.
 * Test your widget in designed scenarios thoroughly with mock-up data.
@@ -767,16 +767,17 @@ You can always nest another layer of container-list-item into an item of parent 
 To assist you further in the development process, we have several pre-implemented lightweight widgets bundled into the release as well, let's examine them. 
 
 ####Datagrid
-**Purpose**: Gives you a dynamic `<table>` with columns and customizable cells.
+**Purpose**: Give you a dynamic `<table>` with columns and customizable cells.
 
 **Options**:
 ```
-data - [{key: val, key2: val2, ...}, {}] array of data objects
-columns [
+data: [{key: val, key2: val2, ...}, {}] - array of data objects
+columns: 
+[
     {
         name: a key string in the data object
-        cell: cell name string, default: string (e.g 'string' maps to 'StringCell')
-        header: header cell name string, default: string (e.g 'string' maps to 'StringHeaderCell')
+        header: default: 'string' (e.g 'string' maps to 'StringHeaderCell')
+        cell: default: same as header (e.g 'string' maps to 'StringCell')
         label: name given to header cell, default: _.titleize(name)
     },
     ...
@@ -818,6 +819,7 @@ this.table.trigger('region:load-view', 'Datagrid', {
             icon: 'fa fa-cog',
             actions: {
                 edit: {
+                    //action listeners are bound to the row
                     fn: function(){
                         //record, columns
                         console.log(this.model, this.collection);
@@ -865,19 +867,171 @@ datagrid.trigger('view:reconfigure', {...new config options...});
 ```
 **Note**: Don't forget to name your cells according to the naming convention. You don't have to give `tagName:td` or `tagName:th` to the cell definitions. Define them like normal views.
 
+**Built-in Cells**
+* action
+* seq
+* string
+
+**Built-in Headers**
+* string
+
 ####Tree
+**Purpose**: Give you a nested tree list with customizable node template and selection events:
+```
+<ul>
+    <li></li>
+    <li></li>
+    <li> -- node
+        <a></a> -- item data
+        <ul>...</ul> -- children
+    </li>
+    ...
+</ul>
+```
+
+**Options**:
+```
+data: [{
+            attr1: ...,
+            attr3: ...,
+            attrX: ...,
+            children: [{
+                attr1: ...,
+                attr3: ...,
+                children: [...]
+            }, ..., {...}]
+        }, ..., {
+            attr1: ...,
+            attr2: ...,
+            attr3: ...
+        }],
+node: {...}, - node options (standard Marionette.CompositeView config)
+onSelected: callback(nodeData, $el, e){
+    nodeData - see Traverse blow
+    $el - node view's $el
+    e - the click event
+}
+```
+**Note**: You can *NOT* change sub-node array key to be other than 'children' at the moment. Other than the 'children' field, any named field can appear in the data as node properties. Add the names into the node template to display them.
+
+The default node template is like this:
+```
+template: [
+    '<a href="#"><i class="{{icon}}"></i> {{{val}}}</a>',
+    '<ul></ul>'
+]
+```
+So your data should have 'icon' and 'val' in each node's property.
+
+**Usage**:
+```
 ...
+this.body.trigger('region:load-view', 'Tree', {
+    data: [...],
+    node: { //change template to hide children upon shown
+        template: [
+            '<a href="#"><i class="{{icon}}"></i> {{{val}}}</a>', 
+            '<ul class="hidden"></ul>'
+        ]
+    },
+    onSelected: function(data, $el, e){
+        e.preventDefault();
+        console.debug(data.record, $el);
+        data.$children.toggleClass('hidden');
+    }
+});
+...
+```
+
+**Extend**:
+Use options.node to alter the node views:
+```
+...
+node: {
+    template: ..., 
+    onRender: ...,
+    onShow: ...,
+}
+...
+```
+Basically it is a *CompositeView* configure but without `type`, `tagName`, `itemViewContainer`, `itemViewOptions`, `className` and `initialize`.
+
+**Traverse**:
+Each node will have the following data hooked into its $el
+* record - data of this node from options.data
+* $children
+* $parent
+
+You can use these to traverse the tree and extract needed information:
+```
+//back-track to parent's parent
+nodeView.$el.data('$parent').data('$parent');
+...
+```
 
 ####Paginator
+**Purpose**: To be used with any CollectionView for jumping between pages.
+
+**Options**:
+```
+target: the view object it binds to [optional]
+currentPage: number
+totalPages: number
+```
+
+**Usage**:
+```
 ...
+var table = this.table.currentView;
+this.footer.trigger('region:load-view', 'Paginator', {
+    target: table,
+    className: 'pagination pagination-sm pull-right'
+});
+...
+```
+Activate pagination through the `view:load-page` meta-event in a *CollectionView*:
+```
+//continue
+table.trigger('view:load-page', {
+    url: '/sample1/user',
+    page: 1,
+    querys: {
+        status: 'active'
+    }
+});
+```
+The `view:page-changed` event emitted by the table will bring `currentPage` and `totalPages` into the paginator widget.
+
+**view:load-page**
+
+This event can start a pagination enabled data loading process in any *CollectionView* instance.
+```
+collectionView.trigger('view:load-data', {
+    page: 1,
+    pageSize: 15,
+    dataKey: 'payload',
+    totalKey: 'total',
+    ..., - rest of app.remote() options
+})
+```
 
 ####Overlay
-...
+**Purpose**: 
+
+**Options**:
+
+**Usage**:
+
 
 ####Markdown
 We recommend that you use the [Github flavored version.](https://help.github.com/articles/github-flavored-markdown) ([What's Markdown?](http://daringfireball.net/projects/markdown/))
 
-...
+**Purpose**: 
+
+**Options**:
+
+**Usage**:
+
 
 ###i18n/l10n
 Internationalization/Localization is always a painful process, making substitution dynamically to the strings and labels appear in the application according to the user locale settings can interfere with the coding process if every string must be coded with a `getResource('actual string')` wrapped around.

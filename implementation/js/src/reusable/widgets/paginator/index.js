@@ -6,11 +6,11 @@
  * 0. target [opt] - target list view instance
  * 1. currentPage
  * 2. totalPages
- * 3. visibleIndices [opt] - 3 means [1,2,3,...,last page] or [...,4,5,6,..., last page]
+ * 3. visibleIndices [TBI] - 3 means [1,2,3,...,last page] or [...,4,5,6,..., last page]
  *
  * format
  * ------
- * << [1,2,...,last] >> (TBI: Go to [ ] input)
+ * << [1,2,...,last] >>
  *
  * link with lists
  * ---------------

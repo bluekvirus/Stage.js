@@ -2710,7 +2710,7 @@ var I18N = {};
  * 			label: name given to header cell (instead of _.titleize(name))
  * 		}
  * ]
- * 3. details: false or datum name in data row or a view definition (render with row.model)
+ * 3. details: false or datum name in data row or a view definition (render with row.model) - TBI
  * 
  *
  * note
@@ -3036,13 +3036,13 @@ var I18N = {};
 			initialize: function(options){
 				this.parent = options.parent;
 				if(this.className() === 'node') this.collection = app.collection(this.model.get('children'));
-			},
-			onRender: function(){
-				this.$el.addClass('clickable').data({
-					'record': this.model.attributes,
-					'$children': this.$el.find('> ul'),
-					'$parent': this.parent && this.parent.$el
-				});
+				this.listenTo(this, 'render', function(){
+					this.$el.addClass('clickable').data({
+						'record': this.model.attributes,
+						'$children': this.$el.find('> ul'),
+						'$parent': this.parent && this.parent.$el
+					});
+				})
 			},
 			template: [
 				'<a href="#"><i class="{{icon}}"></i> {{{val}}}</a>',
@@ -3056,7 +3056,7 @@ var I18N = {};
 			tagName: 'ul',
 			initialize: function(options){
 				this._options = options;
-				this.itemView = this._options.itemView || app.view(_.extend({}, nodeViewConfig, _.omit(this._options.node, 'type', 'tagName', 'itemViewContainer')));
+				this.itemView = this._options.itemView || app.view(_.extend({}, nodeViewConfig, _.omit(this._options.node, 'type', 'tagName', 'itemViewContainer', 'itemViewOptions', 'className', 'initialize')));
 				this.onSelected = options.onSelected || this.onSelected;
 			},
 			onShow: function(){
@@ -3064,7 +3064,7 @@ var I18N = {};
 			},
 			onReconfigure: function(options){
 				_.extend(this._options, options);
-				this.trigger('view:render-data', this._options.data);
+				this.trigger('view:render-data', this._options.data); //the default onRenderData() should be suffice.
 			},
 			events: {
 				'click .clickable': function(e){
@@ -3074,7 +3074,7 @@ var I18N = {};
 				}
 			},
 			//override this
-			onSelected: function(data, $el, e){
+			onSelected: function(nodeData, $el, e){
 				
 			}			
 		});
@@ -3092,11 +3092,11 @@ var I18N = {};
  * 0. target [opt] - target list view instance
  * 1. currentPage
  * 2. totalPages
- * 3. visibleIndices [opt] - 3 means [1,2,3,...,last page] or [...,4,5,6,..., last page]
+ * 3. visibleIndices [TBI] - 3 means [1,2,3,...,last page] or [...,4,5,6,..., last page]
  *
  * format
  * ------
- * << [1,2,...,last] >> (TBI: Go to [ ] input)
+ * << [1,2,...,last] >>
  *
  * link with lists
  * ---------------

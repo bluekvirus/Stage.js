@@ -39,6 +39,7 @@
 	    	this.left.trigger('region:load-view', 'Tree', {
 	    		data: data,
 	    		onSelected: function(data, $el, e){
+	    			e.preventDefault();
 	    			console.debug(data);
 	    		}
 	    	});
