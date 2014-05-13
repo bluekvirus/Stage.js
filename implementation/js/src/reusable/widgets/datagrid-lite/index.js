@@ -20,7 +20,7 @@
  * 			label: name given to header cell (instead of _.titleize(name))
  * 		}
  * ]
- * 3. details: false or datum name in data row or a view definition (render with row.model)
+ * 3. details: false or datum name in data row or a view definition (render with row.model) - TBI
  * 
  *
  * note

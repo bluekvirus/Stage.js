@@ -753,10 +753,117 @@ This is the golden technique to use when planning your reusable views or, say, a
 
 You can always nest another layer of container-list-item into an item of parent layer to form even more complex views. Make sure you use the `Application.view(options)` API when defining the list item views.
 
-**Important**: *Do NOT* use `Application.regional()` unless it is the outer most view for a region.
+**Important**: *Do NOT* use `Application.regional()` in widget building.
+
+**Suggestions**: 
+* Always implement `view:render-data` and `view:reconfigure` meta event listeners in a widget for swapping data and configuration after the widget is shown. 
+* Keep them reconfigurable in display and dumb in functionality, don't put *policy* code as logic into them. 
+* Leave space to accommodate real case usages by keeping options minimum. Don't turn into an *all-in-one* thing and force other developers to *configure* the widget.
+* Fire event whenever an action is triggered, provide a default listener so that later it can be rewired.
+* Test your widget in designed scenarios thoroughly with mock-up data.
+
+<hr/>
+
+To assist you further in the development process, we have several pre-implemented lightweight widgets bundled into the release as well, let's examine them. 
 
 ####Datagrid
+**Purpose**: Gives you a dynamic `<table>` with columns and customizable cells.
+
+**Options**:
+```
+data - [{key: val, key2: val2, ...}, {}] array of data objects
+columns [
+    {
+        name: a key string in the data object
+        cell: cell name string, default: string (e.g 'string' maps to 'StringCell')
+        header: header cell name string, default: string (e.g 'string' maps to 'StringHeaderCell')
+        label: name given to header cell, default: _.titleize(name)
+    },
+    ...
+]
+```
+
+**Usage**: 3 possible scenarios
+```
 ...
+//Scenario 1. configured
+this.table.trigger('region:load-view', 'Datagrid', {
+    className: 'table table-hover',
+
+    data: Mock.mock(mockDataTpl).data, //optional, you can put data into the grid later.
+    columns: [
+        {
+            name: '_id',
+            label: '#',
+            cell: 'seq'
+        },
+        {
+            name: 'username',
+            icon: 'fa fa-envelope'
+        },
+        {
+            name: 'profile.name',
+            label: 'Name'
+        },
+        {
+            name: 'profile.age',
+            label: 'Age'
+        },
+        {
+            name: 'link'
+        },
+        {
+            cell: 'action',
+            //label: 'Ops',
+            icon: 'fa fa-cog',
+            actions: {
+                edit: {
+                    fn: function(){
+                        //record, columns
+                        console.log(this.model, this.collection);
+                    }
+                }
+            }
+        }
+    ]
+...
+
+//Scenario 2. feed data into the grid after it is shown:
+var datagrid = this.table.currentView;
+datagrid.trigger('view:render-data', [...data...]);
+
+//Scenario 3. re-configure the columns and cells:
+datagrid.trigger('view:reconfigure', {...new config options...});
+});
+```
+
+**Extend**:
+```
+;(function(app){
+
+//make a new cell: -- cell: string,
+    app.widget('StringCell', function(){
+
+        var UI = app.view({
+            template: '<span>{{{value}}}</span>',
+        });
+
+        return UI;
+    });
+
+//make a new header cell: -- header: string,
+    app.widget('StringHeaderCell', function(){
+
+        var UI = app.view({
+            template: '<span><i class="{{icon}}"></i> {{{label}}}</span>',
+        });
+
+        return UI;
+    });
+
+})(Application);
+```
+**Note**: Don't forget to name your cells according to the naming convention. You don't have to give `tagName:td` or `tagName:th` to the cell definitions. Define them like normal views.
 
 ####Tree
 ...
@@ -767,6 +874,10 @@ You can always nest another layer of container-list-item into an item of parent 
 ####Overlay
 ...
 
+####Markdown
+We recommend that you use the [Github flavored version.](https://help.github.com/articles/github-flavored-markdown) ([What's Markdown?](http://daringfireball.net/projects/markdown/))
+
+...
 
 ###i18n/l10n
 Internationalization/Localization is always a painful process, making substitution dynamically to the strings and labels appear in the application according to the user locale settings can interfere with the coding process if every string must be coded with a `getResource('actual string')` wrapped around.
@@ -858,6 +969,7 @@ You can have multiple themes for an application and switch between them. The def
 ```
 http(s)://your host'n'app/?theme=xyz
 ```
+
 
 ####Theme structure
 Themes are located at `/implementation/themes/[your theme name]/` with the following structure:
