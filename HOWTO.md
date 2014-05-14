@@ -222,12 +222,13 @@ Application.setup({
     template: '#id' or ['<div>...</div>', '<div>...</div>'] or '<div>...</div>'
     contextRegion: 'your context region marked in template',
     defaultContext: 'your default context shown upon dom-ready',
-    baseAjaxURI: 'your base url for using Application.remote()'
+    baseAjaxURI: 'your base url for using Application.remote()',
+    crossdomain: {...} //the crossdomain ajax call configure
 }).run();
 ```
-Each setup configure variable has its own default value, you can safely skip configuring them here, however, there is one you might want to change now -- `template`.
+The configure variables have sensible defaults, you can safely skip configuring them here, however, there is one you might want to change now -- `template`.
 
-Since your goal is to build a *multi-context* application, you need more *regions* in the application template:
+Since your goal is to build a *multi-context* application, you will need some *regions* in the application template and a *Context Region*:
 ```javascript
 //main.js
 Application.setup({
@@ -237,19 +238,27 @@ Application.setup({
         '<div region="body"></div>',
         '<div region="footer"></div>'
     ],
-    contextRegion: 'body',
+    contextRegion: 'body', //use region 'body' as the context region
     ...
 }).run();
 ```
-By using `region=""` attribute in any html tag, we marked pre-defined regions in the template, **you can also do this with any *Marionette.Layout*** in our framework. They are already enhanced to pickup the attribute. Doing so is equivalent of using the `regions:{}` property in a *Marionette.Layout*.
+A `region=""` attribute on any html tag marks a pre-defined region in the template, **you can also do this with any *Marionette.Layout*** in our framework. Doing so is equivalent of using the `regions:{}` property.
 
-Note that **you can use an additional `view=""` attribute to load up a named *Regional* view in a given region**, only tags marked with `region=""` first will continue to verify if there is an assigned *Regional* view (by name) through the `view=""` attribute.
+Tag marked with `region=""` can use an additional `view=""` attribute to load up a *Regional* view by name:
+```
+'<div region="banner" view="Banner"></div>'
+//is equivalent to
+onShow: function(){
+    this.getRegion('banner').trigger('region:load-view', 'Banner');
+    //or
+    this.getRegion('banner').show(new Application.Core.Regional.get('Banner'));
+}
+```
+**Note:** *Regional* views loaded by the `view=""` attribute should have no init options. If you do need to specify init options when showing a *Regional* view, use the alternatives.
 
-Now, given that you've changed the template, you need to also change `contextRegion` to point to the area that you use to swap between different *Context*s. Recall that there can only be 1 active *Context* on the context region at any one time.
+If your application is a single-context application, you don't need to assign the application template. There will always be a region that wraps the whole application -- the *app* region. The **Default** *Context* will automatically show on region *app* if you did not specify `contextRegion` and `defaultContext`.
 
-If your application is a single-page application, you probably don't need more than one *Context*, in such a case, you don't need to assign the application template. There will always be a region that wraps the whole application -- the *app* region. You can define your *Context* without a `name` property, this will register the *Context* to be the **Default** one. The **Default** *Context* will automatically show on region *app* if you did not specify `contextRegion` and `defaultContext`.
-
-Now we've marked our context region, let's proceed to define them through our well organized APIs in the following sections.
+Now we've marked the context region, let's proceed to define them.
 
 ####Step 2. Define Contexts
 Create a new file named `myContextA.js`, remember a *Context* is just an special *Marionette.Layout* view object, all you need to do is adding a name to the ordinary *Marionette.Layout* options:
@@ -266,16 +275,13 @@ Create a new file named `myContextA.js`, remember a *Context* is just an special
 })(Application);
 ```
 alias: `Application.page()`. 
-You can still use the `region=""` and `view=""` attributes in the template. 
 
-Note that you should name your *Context* as if it is a *Class*. **The name is important as it links the *Context* with the global navigation mechanism**. 
+The `onNavigateTo` method handles the `context:navigate-to` event. This event will get triggered if the application switched to `MyContextA` on the context region, so that you can do some *in-context* navigation followed by. (e.g if the navigation is at `#navigate/MyContextA/SubViewA...`, `SubViewA` will be the subpath argument)
 
-The `onNavigateTo` method is the `context:navigate-to` event listener. This event will get triggered if the application switched to `MyContextA` on the context region, so that you can do some *in-context* navigation followed by. (e.g if the navigation is at `#navigate/MyContextA/SubViewA...`, `SubViewA` will be the subpath argument)
-
-Now, with a *Context* defined, you will need *Regional*s to populate its regions.
+Now, with a *Context* defined, you can define *Regional*s to populate its regions.
 
 ####Step 3. Define Regionals
-Before creating a *Regional*, change your `myContextA.js` into `/context-a/index.js` so you can start adding regional definitions into the context folder as separate code files. Always maintain a clear code hierarchy through file structures. (You don't need to if you can be sure that the `myContextA.js` file will not exceed 400 lines with all the *Regional* code added.)
+Before creating a *Regional*, change your `myContextA.js` into `/context-a/index.js` so you can start adding regional definitions into the context folder as separate code files. Always maintain a clear code hierarchy through file structures. (Try to limit each code file to be **under 300-400 lines** including comments)
 
 Create `/context-a/myRegionalA.js` like this:
 ```
@@ -289,40 +295,51 @@ Create `/context-a/myRegionalA.js` like this:
 })(Application);
 ```
 alias: `Application.area()`. 
-You can still use the `region=""` and `view=""` attributes in the template.
-
-Note that you should name your *Regional* as if it is a *Class*. **The name is important if you want to use the auto-regional-loading mechanism through the `view=""` attribute in any *Marionette.Layout***. 
-
-By default, any *Regional* you define will be a *Marionette.Layout*, you can change this through the `type` option.
 
 By default, `Application.regional(['you regional view name',] {...})` returns the **definition** of the view, if you want to use the returned view **anonymously**, remove the `name` argument. You will get an **instance** of the view definition to `show()` on a region right away. 
 
-Sometimes your *Regional* is comprised of other sub-regional views and that's fine, you can nest *Regional*s with the `region=""` and `view=""` attributes in the template (**only if it is of `type: Layout`**). There will also be time when you just need plain *Marionette.xView* definitions to be used as item views within *Regional*s. You can do it like this:
+Sometimes your *Regional* is comprised of other sub-regional views and that's fine, you can nest *Regional*s with the `region=""` and `view=""` attributes in the template (only if it is of `type: Layout`). 
+
+<hr/>
+
+There will also be time when you just need plain *Marionette.xView* definitions to be used as item views within *Regional*s. Define them through the `Application.view()` API:
 ```
-Application.view({
-    type: '...', //ItemView, Layout, CollectionView or CompositeView
-    ..., //rest of normal Marionette.xView options
-}); 
+//myRegionalA.js
+(function(app) {
+    app.regional('MyRegionalA', { //omitting the name gets you an instance of this definition.
+        type: 'CollectionView', //omitting this indicates 'Layout'
+        template: '...',
+        itemView: CustomView,
+        //..., normal Marionette.xView options
+    });
+
+    var CustomView = app.view({
+        type: '...', //ItemView, Layout, CollectionView or CompositeView
+        ..., //rest of normal Marionette.xView options
+    });     
+})(Application);
 ```
-The above call returns a **definition** of the view. If you want an **instance** to be returned, do it like this:
+The above call to `app.view()` returns a **definition**. If you want an **instance** to be returned, do it like this:
 ```
-Application.view({...}, true);
+...
+var view = app.view({...}, true);
+...
 ```
 
-Now, we've sketched the layout of our application, you might want more contexts defined before continue but that's the easy part, just repeat Step 1-2 till you are ready to proceed to stream in remote data to light-up the views.
+Now, we've sketched the layout of our application, you might want more contexts defined before continue but that's the easy part, just repeat Step 1-2 till you are ready to proceed to light-up the views dynamically with remote data.
 
 ####Step 4. Handle data
-Though we do not agree with *Backbone*'s way of loading and persisting data through *Model/Collection*s. We do agree that **data** should be the central part of every computer program. In our case, the remote data from server are still used to power the dynamic views we have defined. We use *Backbone.Model/Collection* only when there is a *View*. In other words, *data* and *View*s are centric in our framework paradigm, *Model/Collection*s are not. Try to think of them as a integrated part of *View*s. 
+Though we do not agree with *Backbone*'s way of loading and persisting data through *Model/Collection*s. We do agree that **data** should be the central part of every computer program. In our case, the remote data from server are still used to power the dynamic views. We use *Backbone.Model/Collection* only when there is a *View*. In other words, *data* and *View*s are centric in our framework paradigm, *Model/Collection*s are not. Try to think of them as a integrated part of *View*s. 
 
 Our recommended way of loading/persisting remote data is through:
 ```
 //returns the $.ajax() object - jqXHR for using promises.
 Application.remote('...' or {
     entity: '',//entity name of resource
-    params/querys: {...},
+    params/querys: {...}, //converts to request parameters in header e.g ?a=1&b=2
     _id: '',
     _method: '',
-    payload: {...},
+    payload: {...}, //data to send to the server
     ..., //normal $.ajax options without (type, data, processData, contentType)
 });
 ```
@@ -373,7 +390,7 @@ Application.remote(...)
     .fail(function(){...})
     .always(...);
 ```
-You can now render through remote data in a view without mentioning *Model/Collection* like this:
+Render remote data in a view without mentioning *Model/Collection* like this:
 ```
 //myRegionalA.js
 (function(app) {
@@ -389,18 +406,19 @@ You can now render through remote data in a view without mentioning *Model/Colle
     });
 })(Application);
 ```
-By using an event `view:render-data`, we eliminate the need of handling data rendering through *Model/Collection* in a view. Note that we've used a meta-event programming concept here. The next section will contain detailed explanation on this topic in the **Events** subsection. You do *NOT* need to implement the listener for this event unless you want the data rendering process to be different. 
+By using an event `view:render-data`, we eliminate the need of handling data rendering through *Model/Collection* in a view. Override `onRenderData()` if you want the data rendering process to be different. 
 
-Data returned should be in the [JSON](http://json.org/) format and with `Content-Type: application/json` in its response headers. An JSON Array will be converted into a *Collection* before given to the view, Object into a *Model*. You can trigger `view:render-data` whenever you want to change the underlying model and collection in a view instance. The `reset`, `change`, `add` and `remove` events are listened by the view and it will re-render accordingly.
+Data returned should be in the [JSON](http://json.org/) format and with `Content-Type: application/json` in its response headers. An JSON Array will be converted into a *Collection* (Object into a *Model*) before given to the view. You can trigger `view:render-data` whenever you want to change the underlying model and collection in a view instance. The `reset`, `change`, `add` and `remove` events are listened by the view and it will re-render accordingly.
 
 **Note:** If you use `view:render-data` and pass in an `Array`, it will **reset** the collection of that view. 
 
+<hr/>
+Modify (paginate/filter/sort) the data before passing to the `view:render-data` event. *Do NOT* bind pagination/filtering/sorting operations with model/collection instances.
+
 ####Step 5. Adding UI/UX
-UI is a set of interface elements for the user to click/interact through when performing desired tasks. Without these click-ables, your web application will just be a static page. UX stands for user experience, it is not just about look'n'feel but also transitions/animations that links between interactions and state change. UI/UX are hard to design, without a clear think-through over the purposes and targeted user tasks, it can be a total chaos... Make sure you have had your plan/sketch reviewed by targeted audience/friends or colleagues before implementation. Employ the *Goal-Directed Design* technique as much as you can.
+UI is a set of interface elements for the user to click/interact through when performing desired tasks. UX stands for user experience, it is not just about look'n'feel but also transitions/animations that links between interactions and state change. UI/UX are hard to design, without a clear think-through over the purposes and targeted user tasks, it can be a total chaos... Make sure you have had your plan/sketch reviewed by targeted audience/friends or colleagues before implementation. Employ the *Goal-Directed Design* technique as much as you can.
 
 To implement your design is, however, very easy. We have enhanced *Marionette.View* thus its sub-classes (*ItemView, Layout, CollectionView and CompositeView*) with opt-in abilities, you can use them while adding user interactions and view transitions to the application.
-
-Though you can add any transition to any view, it is recommended to add interaction listeners only to parent (or outer most) view in general so the event delegation can be efficient.
 
 #####Effect
 Any *Marionette.xView* can have an `effect` configure to control the effect through which it will be shown on a region:
@@ -422,7 +440,7 @@ Any *Marionette.xView* can have an `effect` configure to control the effect thro
 Pass just an effect name as a string to the configure if you don't need more tweak on the effect options. For more information regarding the effect options, please go to [jQuery.Effect](http://jqueryui.com/effect/).
 
 #####Actions
-Actions are click-ables marked by `action=""` attribute in your view template. The original way of registering events and listeners introduced by *Backbone.View* are flexible but tedious and repetitive. We offer you *Action Tags* instead to speed things up when implementing user interactions. 
+Actions are click-ables marked by `action=""` attribute in your view template. The original way of registering events and listeners introduced by *Backbone.View* are flexible but tedious and repetitive. We offer you the *Action Tags for speeding things up.
 
 Any *Marionette.xView* can have its actions configure block activated like this (2 easy steps):
 ```
@@ -438,7 +456,7 @@ Any *Marionette.xView* can have its actions configure block activated like this 
         ],
         ...,
         actions: { //2. implement the action listeners.
-            _bubble: false | true, //if you want un-matched action tags' click event to bubble up to parent container. [optional]
+            _bubble: false | true, //bubble un-matched click event up. [default: false]
             'opA': function($triggerTag, e){...},
             'opB': ...
         }
@@ -566,6 +584,19 @@ editor.status(status, message); //info, error, warning, success status, empty to
 
 **Note:** The *select, radios and checkboxes* editors can be initialized without `options.data` configuration, these editors will get an additional `setChoices()` API that you can use to set the available choices later.
 
+<hr/>
+If you need more editors please register them through
+```
+Application.editor('[your editor name]', function(){
+    var Editor = Application.view({...});
+    ...;
+    return Editor;
+});
+```
+You need to provide the `getVal`, `setVal`, `validate`, `status` and `disable` methods.
+
+**Important:** Do *NOT* use `onShow()` in your editor definition. Use `onRender` instead so that your editor can support the `editor=""` template attributes for dynamic positioning.
+
 #####Graphs
 We support graphs through SVG. A basic SVG library is integrated with the framework (Raphaël.js). You can use it in any *Marionette.xView* through:
 ```
@@ -575,7 +606,7 @@ Application.view({
         if(this.paper) 
             //draw...
         else 
-            this.onPaperReady = function(){
+            this.onPaperReady = function(paper){
                 //draw...
             }
     }
@@ -610,13 +641,14 @@ app:navigate (contextName, moduleName) - Application.onNavigate [pre-defined]
 app:context-switched (contextName)  - [empty stub] - triggered after app:navigate
 //the followings are triggered by Application.remote():
 app:ajax - Application.onAjax [pre-defined]
-app:success - [empty stub]
-app:error - [empty stub]
 app:ajax-start - Application.onAjaxStart [pre-defined]
 app:ajax-stop - Application.onAjaxStop [pre-defined]
 //triggered by window
 app:resized - [empty stub]
 app:scroll - [empty stub]
+//global - for alerts and prompts
+app:success - [empty stub]
+app:error - [empty stub]
 ```
 * Context -- context:meta-event
 ```
@@ -624,22 +656,29 @@ context:navigate-to (moduleName) - [empty stub] - triggered after app:navigate
 ```
 * Marionette.xView -- view:meta-event
 ```
+//General
 view:render-data (data) - onRenderData [pre-defined]
-//Do NOT use an Array as data in a ItemView/Layout with this event.
+view:data-rendered
+//ItemView only (SVG)
+view:fit-paper
+view:paper-resized
+view:paper-ready
+//CollectionView only (Remote Data Pagination)
+view:load-page
+view:page-changed
 ```
 
 Remember, you can always trigger a customized event `my-event-xyz` and implement it later on the object by creating `onMyEventXyz()`.
 
-Though you can not yet use meta-event on Marionette.Regions, there is a  convenient one for you:
+Though you can not yet use customized meta-event on Marionette.Regions, there is a  convenient one for you:
 ```
 //region:load-view
 anyregion.trigger('region:load-view', name[, options]);
 ```
-The `region:load-view` event listener is implemented for you and can search through both the *Regional* and *Widget* registry to find the view by name and show it on the region. You can pass in addition factory options to the event trigger if they are for a *Widget*. 
+The `region:load-view` event listener is implemented for you and can search through both the *Regional* and *Widget* registry to find the view by name and show it on the region. You can pass in addition factory options to the event trigger. 
 
 Recall that you can use `view=""` in a template to link a *Regional* to a region to show as well, but it will *NOT* search through the *Widget* registry for finding the view definition, due to the difficulties of putting widget options into the `view=""` marked tags.
 
-Don't know what a *Widget* registry is? Keep reading.
 
 ######Use parentCt?
 Before you move on, there is one more thing in this event section we want to clarify. If you use `region=""` in your template to define regions in a *Context*/*Marionette.Layout*, your sub-view instances within those regions will receive a `parentCt` property upon showing which should help you find its parent container view instance (the layout instance).
@@ -674,24 +713,20 @@ Under your project root, type in command-line `/tools/build/node build.js dist` 
 
 
 ###Widgets
-To make your view definitions reusable, we offer a way of registering *Widget*s (and *Editor*s):
+To make your view definitions reusable, we offer a way of registering *Widget*s:
 ```
 //Widget name can be used in region:load-view meta event trigger
-Application.widget/editor('MyWidget/EditorName', 
+Application.widget('MyWidgetName', 
 	function(){
-		var View;
-		_.extend(View, {
-			...
-		});
-		return View;
+		var UI = Application.view({...});
+        ...;
+		return UI;
 	}
 )
 ```
-It is recommended to employ the **List'n'Container** technique when creating *Widget*s. Note that basic *Editors* are already provided for you. If you need more editors please register them while providing the `getVal`, `setVal`, `validate` and `status` methods.
+It is recommended to employ the **List'n'Container** technique when creating *Widget*s.
 
-**Important:** Do *NOT* use `onShow()` in your editor definition. Use `onRender` instead so that your editor can support the `editor=""` template attributes for dynamic positioning.
-
-Note that you will need some sub-views to help compose the *Widget/Editor*, use the short-cut we provide to define them for better extensibility in the future:
+Note that you will need some sub-views to help compose the *Widget*, use the short-cut we provide to define them for better extensibility in the future:
 ```
 var MyItemView = Application.view({
 	type: '', //default is ItemView, can also be Layout, CollectionView and CompositeView.
@@ -706,12 +741,6 @@ Application.widget('MyWidgetName', {
 })
 ```
 
-To instantiate an *Editor*, use either `editors:{}` within a view or :
-```
-Application.editor('MyEditorName', {
-	..., //rest of the init options, don't pass in a config named 'factory'.
-})
-```
 
 ####List'n'Container technique
 This is the golden technique to use when planning your reusable views or, say, any view on screen. Any widget on screen can be decoupled into lists and containers, like this:
@@ -724,20 +753,373 @@ This is the golden technique to use when planning your reusable views or, say, a
 
 You can always nest another layer of container-list-item into an item of parent layer to form even more complex views. Make sure you use the `Application.view(options)` API when defining the list item views.
 
-**Important**: *Do NOT* use `Application.regional()` unless it is the outer most view for a region. Use `Application.view()` if defining Widgets/Editors.
+**Important**: *Do NOT* use `Application.regional()` in widget building.
+
+**Suggestions**: 
+* Always implement the `view:reconfigure` meta event listeners in a widget for swapping data and configuration after the widget is shown. Make sure the `view:render-data` event is working as expected as well. 
+* Keep widgets reconfigurable in display and dumb in functionality, don't put *policy* code as logic into them. 
+* Leave space to accommodate real case usages by keeping options minimum. Don't turn into an *all-in-one* thing and force other developers to *configure* the widget.
+* Fire event whenever an action is triggered, provide a default listener so that later it can be rewired.
+* Test your widget in designed scenarios thoroughly with mock-up data.
+
+<hr/>
+
+To assist you further in the development process, we have several pre-implemented lightweight widgets bundled into the release as well, let's examine them. 
 
 ####Datagrid
+**Purpose**: Give you a dynamic `<table>` with columns and customizable cells.
+
+**Options**:
+```
+data: [{key: val, key2: val2, ...}, {}] - //array of data objects
+columns: 
+[
+    {
+        name: //a key string in the data object
+        header: //default: 'string' (e.g 'string' maps to 'StringHeaderCell')
+        cell: //default: same as header (e.g 'string' maps to 'StringCell')
+        label: //name given to header cell, default: _.titleize(name)
+    },
+    ...
+]
+```
+
+**Usage**: 3 possible scenarios
+```
 ...
+//Scenario 1. configured
+this.table.trigger('region:load-view', 'Datagrid', {
+    className: 'table table-hover',
+
+    data: Mock.mock(mockDataTpl).data, //optional, you can put data into the grid later.
+    columns: [
+        {
+            name: '_id',
+            label: '#',
+            cell: 'seq'
+        },
+        {
+            name: 'username',
+            icon: 'fa fa-envelope'
+        },
+        {
+            name: 'profile.name',
+            label: 'Name'
+        },
+        {
+            name: 'profile.age',
+            label: 'Age'
+        },
+        {
+            name: 'link'
+        },
+        {
+            cell: 'action',
+            //label: 'Ops',
+            icon: 'fa fa-cog',
+            actions: {
+                edit: {
+                    //action listeners are bound to the row
+                    fn: function(){
+                        //record, columns
+                        console.log(this.model, this.collection);
+                    }
+                }
+            }
+        }
+    ]
+...
+
+//Scenario 2. feed data into the grid after it is shown:
+var datagrid = this.table.currentView;
+datagrid.trigger('view:render-data', [...data...]);
+
+//Scenario 3. re-configure the columns and cells:
+datagrid.trigger('view:reconfigure', {...new config options...});
+});
+```
+
+**Extend**:
+```
+;(function(app){
+
+//make a new cell: -- cell: string,
+    app.widget('StringCell', function(){
+
+        var UI = app.view({
+            template: '<span>{{{value}}}</span>',
+        });
+
+        return UI;
+    });
+
+//make a new header cell: -- header: string,
+    app.widget('StringHeaderCell', function(){
+
+        var UI = app.view({
+            template: '<span><i class="{{icon}}"></i> {{{label}}}</span>',
+        });
+
+        return UI;
+    });
+
+})(Application);
+```
+**Note**: Don't forget to name your cells according to the naming convention. You don't have to give `tagName:td` or `tagName:th` to the cell definitions. Define them like normal views.
+
+**Built-in Cells**
+* action
+* seq
+* string
+
+**Built-in Headers**
+* string
 
 ####Tree
+**Purpose**: Give you a nested tree list with customizable node template and selection events:
+```
+<ul>
+    <li></li>
+    <li></li>
+    <li> -- node
+        <a></a> -- item data
+        <ul>...</ul> -- children
+    </li>
+    ...
+</ul>
+```
+
+**Options**:
+```
+data: [{
+            attr1: ...,
+            attr3: ...,
+            attrX: ...,
+            children: [{
+                attr1: ...,
+                attr3: ...,
+                children: [...]
+            }, ..., {...}]
+        }, ..., {
+            attr1: ...,
+            attr2: ...,
+            attr3: ...
+        }],
+node: {...}, - //node options (standard Marionette.CompositeView config)
+onSelected: callback(nodeData, $el, e){
+    nodeData - //see Traverse blow
+    $el - //node view's $el
+    e - //the click event
+}
+```
+**Note**: You can *NOT* change sub-node array key to be other than 'children' at the moment. Other than the 'children' field, any named field can appear in the data as node properties. Add the names into the node template to display them.
+
+The default node template is like this:
+```
+template: [
+    '<a href="#"><i class="{{icon}}"></i> {{{val}}}</a>',
+    '<ul></ul>'
+]
+```
+So your data should have 'icon' and 'val' in each node's property.
+
+**Usage**:
+```
 ...
+this.body.trigger('region:load-view', 'Tree', {
+    data: [...],
+    node: { //change template to hide children upon shown
+        template: [
+            '<a href="#"><i class="{{icon}}"></i> {{{val}}}</a>', 
+            '<ul class="hidden"></ul>'
+        ]
+    },
+    onSelected: function(data, $el, e){
+        e.preventDefault();
+        console.debug(data.record, $el);
+        data.$children.toggleClass('hidden');
+    }
+});
+...
+```
+
+**Extend**:
+Use options.node to alter the node views:
+```
+...
+node: {
+    template: ..., 
+    onRender: ...,
+    onShow: ...,
+}
+...
+```
+Basically it is a *CompositeView* configure but without `type`, `tagName`, `itemViewContainer`, `itemViewOptions`, `className` and `initialize`.
+
+**Traverse**:
+Each node will have the following data hooked into its $el
+* record - data of this node from options.data
+* $children
+* $parent
+
+You can use these to traverse the tree and extract needed information:
+```
+//back-track to parent's parent
+nodeView.$el.data('$parent').data('$parent');
+...
+```
 
 ####Paginator
+**Purpose**: To be used with any CollectionView for jumping between pages.
+
+**Options**:
+```
+target: //the view object it binds to [optional]
+currentPage: //current page number
+totalPages: //total pages in number
+```
+
+**Usage**:
+```
 ...
+var table = this.table.currentView;
+this.footer.trigger('region:load-view', 'Paginator', {
+    target: table,
+    className: 'pagination pagination-sm pull-right'
+});
+...
+```
+Activate pagination through the `view:load-page` meta-event in a *CollectionView*:
+```
+//continue
+table.trigger('view:load-page', {
+    url: '/sample1/user',
+    page: 1,
+    querys: {
+        status: 'active'
+    }
+});
+```
+The `view:page-changed` event emitted by the table will bring `currentPage` and `totalPages` into the paginator widget.
+
+**view:load-page**
+
+This event can start a pagination enabled data loading process in any *CollectionView* instance.
+```
+collectionView.trigger('view:load-data', {
+    page: 1,
+    pageSize: 15,
+    dataKey: 'payload',
+    totalKey: 'total',
+    ..., - rest of app.remote() options
+})
+```
 
 ####Overlay
-...
+<span class="label label-info">jQuery plugin</span>
 
+**Purpose**: Provide you a way of overlaying custom views on screen.
+
+**Options**:
+```
+effect: //'jquery ui effects string', or specifically:
+    openEffect: ...,
+    closeEffect: ...,
+content: //'text'/html or el or a function($el, $overlay) that returns one of the three.
+onShow: //function($el, $overlay) - show callback;
+onClose: //function($el, $overlay) - close callback;
+class: //'class name strings for styling purposes';
+move: true|false - //whether or not to make the overlay-container draggable through jquery ui.
+resize: true|false - //whether or not to make the overlay-container resizable through jquery ui.
+```
+
+**Usage**:
+```
+//show overlay
+$('body').overlay({
+    content: app.view({...}, true).render()
+});
+
+//close it
+$('body').overlay();
+$('body').overlay(false, {
+    effect: {...}
+})
+```
+**Note**: Repeatedly open overlays on the same $(el) will have no effect. Close the previous one first. There are also 3rd-party libraries available for creating simple overlays over `<a>` and `<img>` tags (e.g [colorbox](http://www.jacklmoore.com/colorbox/)).
+
+####Markdown
+<span class="label label-info">jQuery plugin</span>
+
+**Purpose**: Offering a convenient way of loading .md content into the application. (through [marked](https://github.com/chjj/marked))
+
+**Options**:
+```
+url: //url path to the hosted .md file
+marked: //marked options see [https://github.com/chjj/marked]
+hljs: //highlight js configure (e.g languages, classPrefix...)
+cb: //function($el) - callback function once the contend has been added
+```
+**Plus**: The tag you used to call `$.md()` can have `md="..."` or `data-md="..."` attribute to indicate the .md file url.
+
+**Usage**:
+```
+...
+'<div region="doc" md="HOWTO.md"></div>'
+...
+this.doc.$el.md({
+    hljs: {
+        languages: ['js', 'html']
+    },
+    cb: function($el){
+        ...
+    }
+});
+...
+```
+
+We recommend that you use the [Github flavored version.](https://help.github.com/articles/github-flavored-markdown) ([What's Markdown?](http://daringfireball.net/projects/markdown/))
+
+####ToC (Table-of-Content)
+<span class="label label-info">jQuery plugin</span>
+
+**Purpose**: Produce a table-of-content tree list in both html and json format for a given document (through `<h1>`-`<h6>` title relationship scanning)
+
+**Options**:
+```
+ignoreRoot: false | true - //whether to ignore h1
+headerHTML: //html before ul (sibling) - experimental
+
+ * Document h-tag classes
+ * ----------------------
+ * h1 -- book title
+ * h2 -- chapters
+ * h3 -- sections
+ * ...
+```
+
+**Usage**:
+```
+$el.toc({
+    ignoreRoot: true,
+    headerHTML: '<div class="h4" style="margin-top:48px"><i class="fa fa-book"></i> Table of Content</div>'
+});
+```
+This will produce the html version into `$el.data('toc').html`
+
+**Display**:
+```
+that.toc.show(Application.regional({
+    //use the generated html as another view's template
+    template: $el.data('toc').html,
+    actions: {
+        goTo: function($btn, e){
+            e.preventDefault();
+            that.trigger('view:go-to-topic', $btn.data('id'));
+        }
+    }
+}));
+```
 
 ###i18n/l10n
 Internationalization/Localization is always a painful process, making substitution dynamically to the strings and labels appear in the application according to the user locale settings can interfere with the coding process if every string must be coded with a `getResource('actual string')` wrapped around.
@@ -829,6 +1211,7 @@ You can have multiple themes for an application and switch between them. The def
 ```
 http(s)://your host'n'app/?theme=xyz
 ```
+
 
 ####Theme structure
 Themes are located at `/implementation/themes/[your theme name]/` with the following structure:
