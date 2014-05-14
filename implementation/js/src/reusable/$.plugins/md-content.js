@@ -12,13 +12,8 @@
  *  cb: function($el)...
  * })
  *
- * $.toc({
- * 	ignoreRoot: false | true - whether to ignore h1
- *  headerHTML: html before ul (sibling) - experimental
- * })
- * ```
- *
  * the $(tag) you used to call .md() can have md="..." or data-md="..." attribute to indicate md file url.
+ * ```
  *
  * Note
  * ====
@@ -26,14 +21,8 @@
  *
  * Dependency
  * ----------
- * jQuery, Underscore, Underscore.String [, Highlight.js]
+ * jQuery, Underscore [, Highlight.js]
  *
- * Document format
- * ---------------
- * h1 -- book title
- * h2 -- chapters
- * h3 -- sections
- * ...
  *
  * @author Tim.Liu
  * @created 2013.11.05
@@ -59,87 +48,6 @@
 		}
 	}
 
-	//build ul/li table-of-content listing
-	var order = {};
-	for (var i = 1; i <= 6; i++) {
-		order['h' + i] = order['H' + i] = i;
-	};
-	function toc($el, options){
-		//default options
-		options = _.extend({
-
-			ignoreRoot: false,
-			headerHTML: '', //'<h3><i class="fa fa-book"></i> Table of Content</h3>'
-
-		}, options);
-
-		//statistical registry
-		var $headers = [];
-
-		//traverse the document tree
-		var $root = $('<div></div>').append(options.headerHTML).append('<ul></ul>');
-		$root.$children = $root.find('> ul');
-		var $index = $root;
-		var level = options.ignoreRoot ? 1 : 0;
-		$el.find((options.ignoreRoot?'':'h1,') + 'h2,h3,h4,h5,h6').each(function(){
-
-			var $this = $(this);
-			var tag = $this.context.localName; //or tagName which will be uppercased
-			var title = $this.html();
-			var id = $this.attr('id');
-			$this.data({
-				title: title,
-				id: id,
-			});
-			$headers.push($this);
-
-			var $node = $('<li><a href="#" data-id="' + id + '" action="goTo">' + title + '</a><ul></ul></li>'); //like <li> <a>me</a> <ul>children[]</ul> </li>
-			$node.data({
-				title: title,
-				id: id
-			});
-			switch(tag){
-				case 'h2': case 'H2':
-				$node.addClass('chapter');
-				break;
-				case 'h3': case 'H3':
-				$node.addClass('section');
-				break;
-				default:
-				break;
-			}
-			$node.$children = $node.find('> ul');
-
-			var gap = order[tag] - level;
-
-			if(gap > 0) { //drilling in (always 1 lvl down)
-				$node.$parent = $index;
-				$index.$children.append($node);
-				level ++;
-			}else if (gap === 0) {
-				//back to same level ul (parent li's ul)
-				$node.$parent = $index.$parent;
-				$index.$parent.$children.append($node);
-			}else {
-				while (gap < 0){
-					gap ++;
-					$index = $index.$parent; //back to parent li one lvl up
-					level --;
-				}
-				//now $index points to the targeting level node
-				$node.$parent = $index.$parent;
-				$index.$parent.$children.append($node); //insert a same level node besides the found targeting level node
-			}
-			$index = $node; //point $index to this new node
-			//link the document $header elements.
-			$this.data('parent', $node.$parent && $node.$parent.data());
-			
-		});
-		$el.data('toc', {
-			html: '<div class="md-toc">' + $root.html() + '</div>',
-			$headers: $headers, //actual document $(header) node refs
-		});
-	}
 
 	/*===============the plugin================*/
 	$.fn.md = function(options){
@@ -158,12 +66,6 @@
 		});
 	}
 
-	//store table-of-content listing in data-toc
-	$.fn.toc = function(options){
-		return this.each(function(index, el){
-			var $el = $(el);
-			toc($el, options);
-		});
-	}
+
 
 })(jQuery);

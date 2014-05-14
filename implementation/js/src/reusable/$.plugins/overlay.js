@@ -55,7 +55,7 @@
 			options = show;
 			show = true;
 		}
-		if(_.isUndefined(show)) show = true;
+		if(_.isUndefined(show)) show = false; //$.overlay() closes previous overlay on the element.
 		options = options || {};
 
 		return this.each(function(index, el){

@@ -771,14 +771,14 @@ To assist you further in the development process, we have several pre-implemente
 
 **Options**:
 ```
-data: [{key: val, key2: val2, ...}, {}] - array of data objects
+data: [{key: val, key2: val2, ...}, {}] - //array of data objects
 columns: 
 [
     {
-        name: a key string in the data object
-        header: default: 'string' (e.g 'string' maps to 'StringHeaderCell')
-        cell: default: same as header (e.g 'string' maps to 'StringCell')
-        label: name given to header cell, default: _.titleize(name)
+        name: //a key string in the data object
+        header: //default: 'string' (e.g 'string' maps to 'StringHeaderCell')
+        cell: //default: same as header (e.g 'string' maps to 'StringCell')
+        label: //name given to header cell, default: _.titleize(name)
     },
     ...
 ]
@@ -905,11 +905,11 @@ data: [{
             attr2: ...,
             attr3: ...
         }],
-node: {...}, - node options (standard Marionette.CompositeView config)
+node: {...}, - //node options (standard Marionette.CompositeView config)
 onSelected: callback(nodeData, $el, e){
-    nodeData - see Traverse blow
-    $el - node view's $el
-    e - the click event
+    nodeData - //see Traverse blow
+    $el - //node view's $el
+    e - //the click event
 }
 ```
 **Note**: You can *NOT* change sub-node array key to be other than 'children' at the moment. Other than the 'children' field, any named field can appear in the data as node properties. Add the names into the node template to display them.
@@ -974,9 +974,9 @@ nodeView.$el.data('$parent').data('$parent');
 
 **Options**:
 ```
-target: the view object it binds to [optional]
-currentPage: number
-totalPages: number
+target: //the view object it binds to [optional]
+currentPage: //current page number
+totalPages: //total pages in number
 ```
 
 **Usage**:
@@ -1016,22 +1016,110 @@ collectionView.trigger('view:load-data', {
 ```
 
 ####Overlay
-**Purpose**: 
+<span class="label label-info">jQuery plugin</span>
+
+**Purpose**: Provide you a way of overlaying custom views on screen.
 
 **Options**:
+```
+effect: //'jquery ui effects string', or specifically:
+    openEffect: ...,
+    closeEffect: ...,
+content: //'text'/html or el or a function($el, $overlay) that returns one of the three.
+onShow: //function($el, $overlay) - show callback;
+onClose: //function($el, $overlay) - close callback;
+class: //'class name strings for styling purposes';
+move: true|false - //whether or not to make the overlay-container draggable through jquery ui.
+resize: true|false - //whether or not to make the overlay-container resizable through jquery ui.
+```
 
 **Usage**:
+```
+//show overlay
+$('body').overlay({
+    content: app.view({...}, true).render()
+});
 
+//close it
+$('body').overlay();
+$('body').overlay(false, {
+    effect: {...}
+})
+```
+**Note**: Repeatedly open overlays on the same $(el) will have no effect. Close the previous one first. There are also 3rd-party libraries available for creating simple overlays over `<a>` and `<img>` tags (e.g [colorbox](http://www.jacklmoore.com/colorbox/)).
 
 ####Markdown
-We recommend that you use the [Github flavored version.](https://help.github.com/articles/github-flavored-markdown) ([What's Markdown?](http://daringfireball.net/projects/markdown/))
+<span class="label label-info">jQuery plugin</span>
 
-**Purpose**: 
+**Purpose**: Offering a convenient way of loading .md content into the application. (through [marked](https://github.com/chjj/marked))
 
 **Options**:
+```
+url: //url path to the hosted .md file
+marked: //marked options see [https://github.com/chjj/marked]
+hljs: //highlight js configure (e.g languages, classPrefix...)
+cb: //function($el) - callback function once the contend has been added
+```
+**Plus**: The tag you used to call `$.md()` can have `md="..."` or `data-md="..."` attribute to indicate the .md file url.
 
 **Usage**:
+```
+...
+'<div region="doc" md="HOWTO.md"></div>'
+...
+this.doc.$el.md({
+    hljs: {
+        languages: ['js', 'html']
+    },
+    cb: function($el){
+        ...
+    }
+});
+...
+```
 
+We recommend that you use the [Github flavored version.](https://help.github.com/articles/github-flavored-markdown) ([What's Markdown?](http://daringfireball.net/projects/markdown/))
+
+####ToC (Table-of-Content)
+<span class="label label-info">jQuery plugin</span>
+
+**Purpose**: Produce a table-of-content tree list in both html and json format for a given document (through `<h1>`-`<h6>` title relationship scanning)
+
+**Options**:
+```
+ignoreRoot: false | true - //whether to ignore h1
+headerHTML: //html before ul (sibling) - experimental
+
+ * Document h-tag classes
+ * ----------------------
+ * h1 -- book title
+ * h2 -- chapters
+ * h3 -- sections
+ * ...
+```
+
+**Usage**:
+```
+$el.toc({
+    ignoreRoot: true,
+    headerHTML: '<div class="h4" style="margin-top:48px"><i class="fa fa-book"></i> Table of Content</div>'
+});
+```
+This will produce the html version into `$el.data('toc').html`
+
+**Display**:
+```
+that.toc.show(Application.regional({
+    //use the generated html as another view's template
+    template: $el.data('toc').html,
+    actions: {
+        goTo: function($btn, e){
+            e.preventDefault();
+            that.trigger('view:go-to-topic', $btn.data('id'));
+        }
+    }
+}));
+```
 
 ###i18n/l10n
 Internationalization/Localization is always a painful process, making substitution dynamically to the strings and labels appear in the application according to the user locale settings can interfere with the coding process if every string must be coded with a `getResource('actual string')` wrapped around.

@@ -1889,13 +1889,8 @@ var I18N = {};
  *  cb: function($el)...
  * })
  *
- * $.toc({
- * 	ignoreRoot: false | true - whether to ignore h1
- *  headerHTML: html before ul (sibling) - experimental
- * })
- * ```
- *
  * the $(tag) you used to call .md() can have md="..." or data-md="..." attribute to indicate md file url.
+ * ```
  *
  * Note
  * ====
@@ -1903,14 +1898,8 @@ var I18N = {};
  *
  * Dependency
  * ----------
- * jQuery, Underscore, Underscore.String [, Highlight.js]
+ * jQuery, Underscore [, Highlight.js]
  *
- * Document format
- * ---------------
- * h1 -- book title
- * h2 -- chapters
- * h3 -- sections
- * ...
  *
  * @author Tim.Liu
  * @created 2013.11.05
@@ -1936,6 +1925,56 @@ var I18N = {};
 		}
 	}
 
+
+	/*===============the plugin================*/
+	$.fn.md = function(options){
+		var that = this;
+		if(_.isString(options)) options = { url: options };
+		options = options || {};
+
+		return this.each(function(index, el){
+			var $el = $(el);
+			var url = options.url || $el.attr('md') || $el.data('md');
+			$.get(url).done(function(res){
+				$el.html(marked(res, options.marked)).addClass('md-content');
+				theme($el, options);
+				options.cb && options.cb($el);
+			});
+		});
+	}
+
+
+
+})(jQuery);
+/**
+ * The Table-Of-Content plugin used with document html pages.
+ *
+ * Usage
+ * -----
+ * $.toc({
+ * 	ignoreRoot: false | true - whether to ignore h1
+ *  headerHTML: html before ul (sibling) - experimental
+ * })
+ *
+ * Document format
+ * ---------------
+ * h1 -- book title
+ * h2 -- chapters
+ * h3 -- sections
+ * ...
+ *
+ * Dependency
+ * ----------
+ * jQuery, Underscore
+ *
+ * 
+ * @author Tim.Liu
+ * @created 2014.03.02
+ */
+
+(function($){
+
+	/*===============the util functions================*/
 	//build ul/li table-of-content listing
 	var order = {};
 	for (var i = 1; i <= 6; i++) {
@@ -2019,21 +2058,6 @@ var I18N = {};
 	}
 
 	/*===============the plugin================*/
-	$.fn.md = function(options){
-		var that = this;
-		if(_.isString(options)) options = { url: options };
-		options = options || {};
-
-		return this.each(function(index, el){
-			var $el = $(el);
-			var url = options.url || $el.attr('md') || $el.data('md');
-			$.get(url).done(function(res){
-				$el.html(marked(res, options.marked)).addClass('md-content');
-				theme($el, options);
-				options.cb && options.cb($el);
-			});
-		});
-	}
 
 	//store table-of-content listing in data-toc
 	$.fn.toc = function(options){
@@ -2101,7 +2125,7 @@ var I18N = {};
 			options = show;
 			show = true;
 		}
-		if(_.isUndefined(show)) show = true;
+		if(_.isUndefined(show)) show = false; //$.overlay() closes previous overlay on the element.
 		options = options || {};
 
 		return this.each(function(index, el){
