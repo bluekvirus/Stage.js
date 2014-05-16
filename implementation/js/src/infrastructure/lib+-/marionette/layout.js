@@ -26,8 +26,8 @@
 
 	/**
 	 * Static Mixin of a Layout in case it is used as a Form container.
-	 * 1. getValues() * - collects values from each region;
-	 * 2. setValues(vals) * - sets values to regions;
+	 * 1. getValues() * - collects values from each region; grouped by fieldset name used by the regional form view piece;
+	 * 2. setValues(vals) * - sets values to regions; fieldset aware;
 	 * 3. validate(show) * - validate all the regions;
 	 * Note that after validation(show:true) got errors, those editors will become eagerly validated, it will turn off as soon as the user has input-ed the correct value.
 	 * 
@@ -50,7 +50,11 @@
 			var vals = {};
 			this.regionManager.each(function(region){
 				if(region.currentView && region.currentView.getValues){
-					_.extend(vals, region.currentView.getValues());
+					var fieldsetVals = region.currentView.getValues();
+					if(region.currentView.fieldset)
+						vals[region.currentView.fieldset] = fieldsetVals;
+					else
+						_.extend(vals, fieldsetVals);
 				}
 			});
 			return vals;
@@ -60,7 +64,11 @@
 		setValues: function(vals, loud){
 			this.regionManager.each(function(region){
 				if(region.currentView && region.currentView.setValues){
-					region.currentView.setValues(vals, loud);
+					if(region.currentView.fieldset){
+						region.currentView.setValues(vals[region.currentView.fieldset], loud);
+					}
+					else
+						region.currentView.setValues(vals, loud);
 				}
 			});
 		},

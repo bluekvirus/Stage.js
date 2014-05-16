@@ -128,6 +128,7 @@
 
 			//2. setValues (O(n) - n is the total number of editors on this form)
 			this.setValues = function(vals, loud){
+				if(!vals) return;
 				_.each(this._editors, function(editor, name){
 					if(vals[name])
 						editor.setVal(vals[name], loud);

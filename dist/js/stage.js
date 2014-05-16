@@ -1324,6 +1324,7 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 
 			//2. setValues (O(n) - n is the total number of editors on this form)
 			this.setValues = function(vals, loud){
+				if(!vals) return;
 				_.each(this._editors, function(editor, name){
 					if(vals[name])
 						editor.setVal(vals[name], loud);
@@ -1429,8 +1430,8 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 
 	/**
 	 * Static Mixin of a Layout in case it is used as a Form container.
-	 * 1. getValues() * - collects values from each region;
-	 * 2. setValues(vals) * - sets values to regions;
+	 * 1. getValues() * - collects values from each region; grouped by fieldset name used by the regional form view piece;
+	 * 2. setValues(vals) * - sets values to regions; fieldset aware;
 	 * 3. validate(show) * - validate all the regions;
 	 * Note that after validation(show:true) got errors, those editors will become eagerly validated, it will turn off as soon as the user has input-ed the correct value.
 	 * 
@@ -1453,7 +1454,11 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 			var vals = {};
 			this.regionManager.each(function(region){
 				if(region.currentView && region.currentView.getValues){
-					_.extend(vals, region.currentView.getValues());
+					var fieldsetVals = region.currentView.getValues();
+					if(region.currentView.fieldset)
+						vals[region.currentView.fieldset] = fieldsetVals;
+					else
+						_.extend(vals, fieldsetVals);
 				}
 			});
 			return vals;
@@ -1463,7 +1468,11 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 		setValues: function(vals, loud){
 			this.regionManager.each(function(region){
 				if(region.currentView && region.currentView.setValues){
-					region.currentView.setValues(vals, loud);
+					if(region.currentView.fieldset){
+						region.currentView.setValues(vals[region.currentView.fieldset], loud);
+					}
+					else
+						region.currentView.setValues(vals, loud);
 				}
 			});
 		},
@@ -2220,9 +2229,6 @@ var I18N = {};
  * tooltip
  * placeholder
  * value: default value (this is just for single input field, which don't have options.data config-ed)
- *
- * //special
- * html: - indicating read-only text field (setting this will cause 'type' config to be 'ro')
  * 
  * //radios/selects/checkboxes only
  * options: { 
@@ -2230,6 +2236,7 @@ var I18N = {};
  * 	data: [] or {group:[], group2:[]} - (groups are for select only)
  * 	labelField
  * 	valueField
+ * 	remote: app.remote() options for fetching the options.data
  * }
  *
  * //select only
@@ -2324,6 +2331,7 @@ var I18N = {};
 					};
 
 					function prepareChoices(choices){
+
 						if(!_.isArray(choices.data)){
 							choices.grouped = true;
 						}
@@ -2341,7 +2349,17 @@ var I18N = {};
 						return choices;
 					}
 
-					prepareChoices(options.options);
+					if(!choices.remote)
+						prepareChoices(options.options);
+					else
+						this.listenToOnce(this, 'render', function(){
+							var that = this;
+							app.remote(choices.remote).done(function(data){
+								
+								//Warning: to leave less config overhead, developers have no way to pre-process the choice data returned atm.
+								that.setChoices(data);
+							});
+						});
 
 					//give it a method for reconfigure the choices later
 					this.setChoices = function(data){
@@ -2356,14 +2374,14 @@ var I18N = {};
 				this.model = new Backbone.Model({
 					uiId: _.uniqueId('basic-editor-'),
 					layout: options.layout || '',
-					name: options.name, //*
-					type: options.html? 'ro': options.type, //*
+					name: options.name, //*required
+					type: options.type, //default: text
 					multiple: options.multiple || false, //optional
 					rows: options.rows || 3, //optional
 					fieldname: options.fieldname || undefined, //optional - not recommended, require jquery.serializeForm plugin to collect value
 					label: options.label || '', //optional
 					placeholder: options.placeholder || '', //optional
-					html: options.html || '', //optional
+
 					help: options.help || '', //optional
 					tooltip: (_.isString(options.tooltip) && options.tooltip) || '', //optional
 					options: options.options || undefined, //optional {inline: true|false, data:[{label:'l', val:'v', ...}, {label:'ll', val:'vx', ...}] or ['v', 'v1', ...], labelField:..., valueField:...}
@@ -2631,7 +2649,7 @@ var I18N = {};
 						'{{else}}',
 							//normal field
 							'{{#is type "ro"}}',//read-only
-								'<div ui="input-ro" data-value="{{{value}}}" class="form-control-static">{{#if html}}{{{html}}}{{else}}{{{value}}}{{/if}}</div>',
+								'<div ui="input-ro" data-value="{{{value}}}" class="form-control-static">{{{value}}}</div>',
 							'{{else}}',
 								'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" {{#isnt type "file"}}class="form-control"{{else}} style="display:inline;" {{/isnt}} type="{{type}}" id="{{uiId}}" placeholder="{{placeholder}}" value="{{value}}"> <!--1 space-->',
 								'{{#is type "file"}}',

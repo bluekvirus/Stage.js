@@ -539,6 +539,7 @@ Additional advanced per editor options:
     * data: [] or {group:[], group2:[]} - (groups are for select only)
     * labelField
     * valueField
+    * remote: app.remote() config for loading options.data remotely
 * multiple - true|false (select only)
 * rows - number (textarea only) 
 * boxLabel: (single checkbox label other than field label.)
@@ -558,8 +559,8 @@ template: [
 You will also get the following APIs attached to the **view** instance object once you have configured the `editors:{}` block:
 ```
 this.getEditor(name);
-this.getValues();
-this.setValues(vals, loud);
+this.getValues(); //regional fieldset aware.
+this.setValues(vals, loud); //regional fieldset aware.
 this.validate(true|false); //true for showing the validation errors.
 this.status(status, messages); //for highlighting status per editor. no arguments means to clear.
 ```

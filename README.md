@@ -6,8 +6,8 @@ This project produces **Stage.js** - an infrastructure for building modern web a
 What's next?
 ------------
 1.1.0 might bring:
-* Basic Editor: +type: custom (a view with isolated editors config)
 * Basic Editor: +options.remote (fetch options with app.remote)
+* Layout: +regional fieldset to support form views
 * Datagrid+ : select-all header/cell, details row;
 * Editor+ : Spinner/Range, Switches, DnD Listing, File Listing;
 * local filter/sorter mech into list views; 

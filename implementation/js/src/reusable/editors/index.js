@@ -15,9 +15,6 @@
  * tooltip
  * placeholder
  * value: default value (this is just for single input field, which don't have options.data config-ed)
- *
- * //special
- * html: - indicating read-only text field (setting this will cause 'type' config to be 'ro')
  * 
  * //radios/selects/checkboxes only
  * options: { 
@@ -25,6 +22,7 @@
  * 	data: [] or {group:[], group2:[]} - (groups are for select only)
  * 	labelField
  * 	valueField
+ * 	remote: app.remote() options for fetching the options.data
  * }
  *
  * //select only
@@ -119,6 +117,7 @@
 					};
 
 					function prepareChoices(choices){
+
 						if(!_.isArray(choices.data)){
 							choices.grouped = true;
 						}
@@ -136,7 +135,17 @@
 						return choices;
 					}
 
-					prepareChoices(options.options);
+					if(!choices.remote)
+						prepareChoices(options.options);
+					else
+						this.listenToOnce(this, 'render', function(){
+							var that = this;
+							app.remote(choices.remote).done(function(data){
+								
+								//Warning: to leave less config overhead, developers have no way to pre-process the choice data returned atm.
+								that.setChoices(data);
+							});
+						});
 
 					//give it a method for reconfigure the choices later
 					this.setChoices = function(data){
@@ -151,14 +160,14 @@
 				this.model = new Backbone.Model({
 					uiId: _.uniqueId('basic-editor-'),
 					layout: options.layout || '',
-					name: options.name, //*
-					type: options.html? 'ro': options.type, //*
+					name: options.name, //*required
+					type: options.type, //default: text
 					multiple: options.multiple || false, //optional
 					rows: options.rows || 3, //optional
 					fieldname: options.fieldname || undefined, //optional - not recommended, require jquery.serializeForm plugin to collect value
 					label: options.label || '', //optional
 					placeholder: options.placeholder || '', //optional
-					html: options.html || '', //optional
+
 					help: options.help || '', //optional
 					tooltip: (_.isString(options.tooltip) && options.tooltip) || '', //optional
 					options: options.options || undefined, //optional {inline: true|false, data:[{label:'l', val:'v', ...}, {label:'ll', val:'vx', ...}] or ['v', 'v1', ...], labelField:..., valueField:...}
@@ -426,7 +435,7 @@
 						'{{else}}',
 							//normal field
 							'{{#is type "ro"}}',//read-only
-								'<div ui="input-ro" data-value="{{{value}}}" class="form-control-static">{{#if html}}{{{html}}}{{else}}{{{value}}}{{/if}}</div>',
+								'<div ui="input-ro" data-value="{{{value}}}" class="form-control-static">{{{value}}}</div>',
 							'{{else}}',
 								'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" {{#isnt type "file"}}class="form-control"{{else}} style="display:inline;" {{/isnt}} type="{{type}}" id="{{uiId}}" placeholder="{{placeholder}}" value="{{value}}"> <!--1 space-->',
 								'{{#is type "file"}}',
