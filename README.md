@@ -16,7 +16,7 @@ What's next?
 
 Current Version
 ---------------
-1.0.1
+1.1.0
 
 
 Build
