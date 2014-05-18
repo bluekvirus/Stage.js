@@ -861,7 +861,9 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
  *
  * 1. open()+
  * --------------
- * consult view.effect config block when showing a view;
+ * a. consult view.effect config block when showing a view;
+ * b. inject parent view as parentCt to sub-regional view;
+ * c. store sub view as parent view's _fieldsets[member];
  * 
  *
  * @author Tim.Liu
@@ -899,6 +901,12 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 			//inject parent view container through region into the regional views
 			if(this._parentLayout){
 				view.parentCt = this._parentLayout;
+			}
+
+			//store sub region form view by fieldset
+			if(view.fieldset) {
+				this._parentLayout._fieldsets = this._parentLayout._fieldsets || {};
+				this._parentLayout._fieldsets[view.fieldset] = view;
 			}
 		}
 	});
@@ -1308,14 +1316,16 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 				});
 			});
 
+			//If layout enables editors as well, we need to save the layout version of the form fns and invoke them as well.
+			var savedLayoutFns = _.pick(this, 'getEditor', 'getValues', 'setValues', 'validate'/*, 'status'*/);
 			//0. getEditor(name)
 			this.getEditor = function(name){
-				return this._editors[name];
+				return this._editors[name] || (savedLayoutFns.getEditor && savedLayoutFns.getEditor.call(this, name));
 			}
 
 			//1. getValues (O(n) - n is the total number of editors on this form)
 			this.getValues = function(){
-				var vals = {};
+				var vals = (savedLayoutFns.getValues && savedLayoutFns.getValues.call(this)) || {};
 				_.each(this._editors, function(editor, name){
 					vals[name] = editor.getVal();
 				});
@@ -1329,11 +1339,12 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 					if(vals[name])
 						editor.setVal(vals[name], loud);
 				});
+				if(savedLayoutFns.setValues) savedLayoutFns.setValues.call(this, vals, loud);
 			};
 
 			//3. validate
 			this.validate = function(show){
-				var errors = {};
+				var errors = (savedLayoutFns.validate && savedLayoutFns.validate.call(this, show)) || {};
 				_.each(this._editors, function(editor, name){
 					var e = editor.validate(show);
 					if(e) errors[name] = e;
@@ -1454,11 +1465,10 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 			var vals = {};
 			this.regionManager.each(function(region){
 				if(region.currentView && region.currentView.getValues){
-					var fieldsetVals = region.currentView.getValues();
 					if(region.currentView.fieldset)
-						vals[region.currentView.fieldset] = fieldsetVals;
+						vals[region.currentView.fieldset] = region.currentView.getValues();
 					else
-						_.extend(vals, fieldsetVals);
+						_.extend(vals, region.currentView.getValues());
 				}
 			});
 			return vals;
@@ -1482,12 +1492,30 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 			var errors = {};
 			this.regionManager.each(function(region){
 				if(region.currentView && region.currentView.validate){
-					_.extend(errors, region.currentView.validate(show));
+					if(region.currentView.fieldset){
+						errors[region.currentView.fieldset] = region.currentView.validate(show);
+					}
+					else
+						_.extend(errors, region.currentView.validate(show));
 				}
 			});
 			if(_.size(errors) === 0) return;
 			return errors; 
-		}
+		},
+
+		// 4. getEditor - with dotted pathname
+		getEditor: function(pathname){
+			if(!pathname || _.isEmpty(pathname)) return;
+			if(!_.isArray(pathname))
+				pathname = pathname.split('.');
+			var fieldset = pathname.shift();
+			if(this._fieldsets && this._fieldsets[fieldset])
+				return this._fieldsets[fieldset].getEditor(pathname.join('.'));
+			return;
+		},
+		
+
+		// 5. status ? use this._fieldsets
 
 	});
 

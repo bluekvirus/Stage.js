@@ -9,8 +9,7 @@
                 layout: {
                     label: 'col-sm-2',
                     field: 'col-sm-10'
-                },
-                appendTo: 'div.form',
+                }
             },
 
             abc: {
@@ -59,8 +58,7 @@
                 layout: {
                     label: 'col-sm-2',
                     field: 'col-sm-10'
-                },
-                appendTo: 'div.form',
+                }
             },
 
 
@@ -162,18 +160,7 @@
                         url: 'sample1/choices'
                     }
                 }
-            },        
-
-            selectgroup: {
-                label: 'Group',
-                type: 'select',
-                options: {
-                    data: {
-                        group1: [{label: 'abc', value: '123'}, {label: '4555', value: '1111'}],
-                        group2: [{label: 'abcx', value: '123x'}, {label: '4555x', value: '1111x'}],
-                    }
-                }
-            }  
+            } 
         }
     });
 
@@ -198,13 +185,32 @@
                 '</div>',
             '</div>'
         ],
+        editors: {
+            _global: {
+                layout: {
+                    label: 'col-sm-2',
+                    field: 'col-sm-10'
+                },
+                appendTo: 'div.form',
+            },            
+            selectgroup: {
+                label: 'Group',
+                type: 'select',
+                options: {
+                    data: {
+                        group1: [{label: 'abc', value: '123'}, {label: '4555', value: '1111'}],
+                        group2: [{label: 'abcx', value: '123x'}, {label: '4555x', value: '1111x'}],
+                    }
+                }
+            } 
+        },
         onShow: function(){
             this.getRegion('fieldset-a').show(new FieldsetA);
             this.getRegion('fieldset-b').show(new FieldsetB);
         },
         actions: {
             validate: function($btn){
-                this.validate(true);
+                console.log('error', this.validate(true));
             },
             submit: function(){
                 console.log(this.getValues());
@@ -218,15 +224,20 @@
                     }
                 });
             },
-            // test2: function(){
-            //     var editor = this.getEditor('checkboxes');
-            //     if(editor.isEnabled()) editor.disable(true);
-            //     else {
-            //         editor.disable(false);
-            //         this.getEditor('ab').disable(false);
-            //         this.getEditor('radios').disable(false);
-            //     }
-            // },
+            test2: function(){
+                var editor = this.getEditor('fieldset-b.checkboxes');
+                if(editor.isEnabled()) {
+                    editor.disable(true);
+                    this.getEditor('fieldset-a.ab').disable();
+                    this.getEditor('fieldset-b.radios').disable();                    
+                }
+                else {
+                    editor.disable(false);
+                    this.getEditor('fieldset-a.ab').disable(false);
+                    this.getEditor('fieldset-b.radios').disable(false);
+                }
+            },
+
             // info: function(){
             //     this.status('success', {
             //         singlecheckbox: 'passed!',
@@ -236,7 +247,6 @@
             //         }
             //     });
             // },
-
             // clearinfo: function(){
             //     this.status();
             // }

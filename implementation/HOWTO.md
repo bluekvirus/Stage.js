@@ -6,7 +6,7 @@ Stage.js <sub class="text-muted" style="font-size:36%">based on Marionette.js</s
 
 Current version
 ---------------
-**@1.0.1**
+**@1.1.0**
 ([Why is it version-ed like this?](http://semver.org/))
 
 
@@ -558,10 +558,10 @@ template: [
 ```
 You will also get the following APIs attached to the **view** instance object once you have configured the `editors:{}` block:
 ```
-this.getEditor(name);
+this.getEditor(name); //regional fieldset aware. (with dotted pathname)
 this.getValues(); //regional fieldset aware.
 this.setValues(vals, loud); //regional fieldset aware.
-this.validate(true|false); //true for showing the validation errors.
+this.validate(true|false); //true for showing the validation errors. regional fieldset aware.
 this.status(status, messages); //for highlighting status per editor. no arguments means to clear.
 ```
 There are also events emitted that you can use when dealing with each of these editors:
@@ -597,6 +597,19 @@ Application.editor('[your editor name]', function(){
 You need to provide the `getVal`, `setVal`, `validate`, `status` and `disable` methods.
 
 **Important:** Do *NOT* use `onShow()` in your editor definition. Use `onRender` instead so that your editor can support the `editor=""` template attributes for dynamic positioning.
+
+<hr/>
+There is also another way of activating your editors without fixing the configurations in the view definition:
+```
+Application.view({
+...
+    onShow: function(){
+        this.activateEditors(options);
+    },
+...
+});
+```
+**Warning:** Although this is no difference than defining a view dynamically with editors configuration, it is not the *recommended* way of adding editors to a view.
 
 #####Graphs
 We support graphs through SVG. A basic SVG library is integrated with the framework (Raphaël.js). You can use it in any *Marionette.xView* through:

@@ -3,7 +3,9 @@
  *
  * 1. open()+
  * --------------
- * consult view.effect config block when showing a view;
+ * a. consult view.effect config block when showing a view;
+ * b. inject parent view as parentCt to sub-regional view;
+ * c. store sub view as parent view's _fieldsets[member];
  * 
  *
  * @author Tim.Liu
@@ -41,6 +43,12 @@
 			//inject parent view container through region into the regional views
 			if(this._parentLayout){
 				view.parentCt = this._parentLayout;
+			}
+
+			//store sub region form view by fieldset
+			if(view.fieldset) {
+				this._parentLayout._fieldsets = this._parentLayout._fieldsets || {};
+				this._parentLayout._fieldsets[view.fieldset] = view;
 			}
 		}
 	});

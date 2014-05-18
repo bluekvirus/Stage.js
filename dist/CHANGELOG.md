@@ -1,13 +1,24 @@
 Change Log
 ==========
+1.1.0 (2014-05-18)
+------------------
+1. Basic Editor: +options.remote (fetch options with app.remote);
+2. Layout+: +regional fieldset to support form view pieces (get/setValues, validate, getEditor and this._fieldsets); [without the status method atm]
+3. Give app.Core.Regional.get an options param to return instance;
+4. region:load-view can now instanciate both Widget and Regional with options;
+5. Renamed _isDefined() to has() in app.Core.Widget;
+6. Fixed error in the default build config for project-kit distributions;
+7. Fixed error in tools/shared/hammer.js to correctly creating output folders;
+
+
 1.0.1 (2014-05-09)
 ------------------
-Give app.Core.Regional.get an options param to return instance;
-region:load-view can now instanciate both Widget and Regional with options;
-Renamed _isDefined() to has() in app.Core.Widget;
-Fixed error in tools/shared/hammer.js to correctly creating output folders;
-Fixed error in the default build config for project-kit distributions;
-Fixed stage.js version error in bower.json for project-kit distributions;
+1. Give app.Core.Regional.get an options param to return instance;
+2. region:load-view can now instanciate both Widget and Regional with options;
+3. Renamed _isDefined() to has() in app.Core.Widget;
+4. Fixed error in tools/shared/hammer.js to correctly creating output folders;
+5. Fixed error in the default build config for project-kit distributions;
+6. Fixed stage.js version error in bower.json for project-kit distributions;
 
 
 1.0.0 release (2014-05-07)

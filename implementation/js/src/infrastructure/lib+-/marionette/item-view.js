@@ -112,14 +112,16 @@
 				});
 			});
 
+			//If layout enables editors as well, we need to save the layout version of the form fns and invoke them as well.
+			var savedLayoutFns = _.pick(this, 'getEditor', 'getValues', 'setValues', 'validate'/*, 'status'*/);
 			//0. getEditor(name)
 			this.getEditor = function(name){
-				return this._editors[name];
+				return this._editors[name] || (savedLayoutFns.getEditor && savedLayoutFns.getEditor.call(this, name));
 			}
 
 			//1. getValues (O(n) - n is the total number of editors on this form)
 			this.getValues = function(){
-				var vals = {};
+				var vals = (savedLayoutFns.getValues && savedLayoutFns.getValues.call(this)) || {};
 				_.each(this._editors, function(editor, name){
 					vals[name] = editor.getVal();
 				});
@@ -133,11 +135,12 @@
 					if(vals[name])
 						editor.setVal(vals[name], loud);
 				});
+				if(savedLayoutFns.setValues) savedLayoutFns.setValues.call(this, vals, loud);
 			};
 
 			//3. validate
 			this.validate = function(show){
-				var errors = {};
+				var errors = (savedLayoutFns.validate && savedLayoutFns.validate.call(this, show)) || {};
 				_.each(this._editors, function(editor, name){
 					var e = editor.validate(show);
 					if(e) errors[name] = e;

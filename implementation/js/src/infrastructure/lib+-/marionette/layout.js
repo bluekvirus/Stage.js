@@ -50,11 +50,10 @@
 			var vals = {};
 			this.regionManager.each(function(region){
 				if(region.currentView && region.currentView.getValues){
-					var fieldsetVals = region.currentView.getValues();
 					if(region.currentView.fieldset)
-						vals[region.currentView.fieldset] = fieldsetVals;
+						vals[region.currentView.fieldset] = region.currentView.getValues();
 					else
-						_.extend(vals, fieldsetVals);
+						_.extend(vals, region.currentView.getValues());
 				}
 			});
 			return vals;
@@ -78,12 +77,30 @@
 			var errors = {};
 			this.regionManager.each(function(region){
 				if(region.currentView && region.currentView.validate){
-					_.extend(errors, region.currentView.validate(show));
+					if(region.currentView.fieldset){
+						errors[region.currentView.fieldset] = region.currentView.validate(show);
+					}
+					else
+						_.extend(errors, region.currentView.validate(show));
 				}
 			});
 			if(_.size(errors) === 0) return;
 			return errors; 
-		}
+		},
+
+		// 4. getEditor - with dotted pathname
+		getEditor: function(pathname){
+			if(!pathname || _.isEmpty(pathname)) return;
+			if(!_.isArray(pathname))
+				pathname = pathname.split('.');
+			var fieldset = pathname.shift();
+			if(this._fieldsets && this._fieldsets[fieldset])
+				return this._fieldsets[fieldset].getEditor(pathname.join('.'));
+			return;
+		},
+		
+
+		// 5. status ? use this._fieldsets
 
 	});
 
