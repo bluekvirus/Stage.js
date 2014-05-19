@@ -777,7 +777,7 @@ Application.view({
 
     type: 'Layout',
     template: [
-        '<div region='fieldset-a'></div>',
+        '<div region="fieldset-a"></div>',
         '<div></div>'
     ],
     editors: {
