@@ -6,7 +6,7 @@ Stage.js <sub class="text-muted" style="font-size:36%">based on Marionette.js</s
 
 Current version
 ---------------
-**@1.1.0**
+**@1.1.1**
 ([Why is it version-ed like this?](http://semver.org/))
 
 
@@ -415,8 +415,8 @@ Data returned should be in the [JSON](http://json.org/) format and with `Content
 <hr/>
 Modify (paginate/filter/sort) the data before passing to the `view:render-data` event. *Do NOT* bind pagination/filtering/sorting operations with model/collection instances.
 
-####Step 5. Adding UI/UX
-UI is a set of interface elements for the user to click/interact through when performing desired tasks. UX stands for user experience, it is not just about look'n'feel but also transitions/animations that links between interactions and state change. UI/UX are hard to design, without a clear think-through over the purposes and targeted user tasks, it can be a total chaos... Make sure you have had your plan/sketch reviewed by targeted audience/friends or colleagues before implementation. Employ the *Goal-Directed Design* technique as much as you can.
+####Step 5. Adding UX
+UX stands for user experience, it is not just about look'n'feel and clickings but also transitions/animations that links between interactions and state change. UX is hard to design, without a clear think-through over the purposes and targeted user tasks, it can be a total chaos... Make sure you have had your plan/sketch reviewed by targeted audience/friends or colleagues before implementation. Employ the *Goal-Directed Design* technique as much as you can.
 
 To implement your design is, however, very easy. We have enhanced *Marionette.View* thus its sub-classes (*ItemView, Layout, CollectionView and CompositeView*) with opt-in abilities, you can use them while adding user interactions and view transitions to the application.
 
@@ -467,149 +467,6 @@ Note that only 'single-click' actions can be registered like this at the moment.
 
 Use `_bubble: true` if you want the click event to **propagate** to the parent view/container. `e.preventDefault()` needs to be specified in the action listeners if you don't want a clicking on `<a href="#xyz" action="another"></a>` tag to affect the navigation.
 
-#####Inputs/Editors
-We have already prepared the basic html editors for you in the framework. You don't have to code `<input>, <select> or <textarea>` in any of your view template. Instead, you can activate them in any *Marionette.xView* like this:
-```
-Application.view({
-    ...,
-    editors: { //editors per fieldname
-        _global: {...}, //globally shared per editor configures
-
-        abc: {
-            type: 'text', //other types are available as well.
-            label: 'Abc',
-            help: 'This is abc',
-            tooltip: 'Hey Abc here!',
-            placeholder: 'abc...',
-            value: 'default',
-            validate: { //validators are executed in sequence:
-                required: { //named validator
-                    msg: 'Hey input something!', //options for the validator function
-                    ...,
-                },
-                fn: function(val, parentCt){ //anonymous validator
-                    if(!_.string.startsWith(val, 'A')) return 'You must start with an A';
-                }
-            }
-
-        },
-        ..., //other editor configures
-    },
-    ...
-});
-```
-The editors will be appended inside the calling view instance one by one by default, or, by the `editor="[fieldname]"` position attribute in the view's template. They can also be placed according to its own `appendTo` configuration.
-
-A little bit more about the basic options: 
-* appendTo - in case you don't have `editor="[fieldname]"` in your template and want to change where to put the editor other than the default position.
-* parentCt - in case you want to delegate editor events to a parent container object (e.g a form object).
-* type - text, password, url, email, checkbox(es), radios, file, hidden, ro (for read-only), textarea, select
-* label
-* help
-* tooltip
-* placeholder
-* value
-* validate - (custom function or list of validators and rules)
-
-A custom validate function can be configured like this:
-```
-...
-validate: function(val, parentCt){
-    if(val !== '123') return 'You must enter 123';
-},
-...
-```
-**The validate function or validators should return undefined or the 'error string' to indicate passed and rejected situation respectively.**
-
-You can always register more named validators by:
-```
-Application.editor.validator('my-validator-name', function(options, val, parentCt){
-    ...,
-});
-```
-alias: `Application.editor.rule()`.
-
-Additional advanced per editor options:
-* layout 
- - label - css class (e.g col-sm-2)
- - field - css class (e.g col-sm-10)
-* html: - indicating read-only text field (setting this will cause 'type' to be 'ro')
-* options: (radios/selects/checkboxes only)
-    * inline: true|false 
-    * data: [] or {group:[], group2:[]} - (groups are for select only)
-    * labelField
-    * valueField
-    * remote: app.remote() config for loading options.data remotely
-* multiple - true|false (select only)
-* rows - number (textarea only) 
-* boxLabel: (single checkbox label other than field label.)
-* checked: '...' - (checked value, single checkbox only)
-* unchecked: '...' - (unchecked value, single checkbox only)
-* upload: (file only)
-    * url - a string or function that gives a url string as where to upload the file to.
-    * cb (this, result, textStatus, jqXHR) - the upload callback if successful.
-
-Remember, you can always layout your editors in a *Marionette.xView* through the `editor=""` attribute in the template: 
-```
-template: [
-    '<div editor="abc"></div>', //use fieldname to identify editor
-    '<div editor="efg"></div>'
-]
-```
-You will also get the following APIs attached to the **view** instance object once you have configured the `editors:{}` block:
-```
-this.getEditor(name); //regional fieldset aware. (with dotted pathname)
-this.getValues(); //regional fieldset aware.
-this.setValues(vals, loud); //regional fieldset aware.
-this.validate(true|false); //true for showing the validation errors. regional fieldset aware.
-this.status(status, messages); //for highlighting status per editor. no arguments means to clear.
-```
-There are also events emitted that you can use when dealing with each of these editors:
-```
-editor:change
-editor:keyup
-editor:focusin // - focus
-editor:focusout // - blur
-```
-If you use `options.parentCt` to pass in another view instance, the events will be fired on that view instance **in addition to** firing on the editor itself. It is useful when you want every event to be fired on a parent container or, say, a form view.
-
-Each editor instance will have the following methods:
-```
-editor.getVal();
-editor.setVal(val, loud);
-editor.disable([flag]); //false to enable, default to disable, true to disable + hide.
-editor.isEnabled();
-editor.validate(showError); //if you have options.validator configured
-editor.status(status, message); //info, error, warning, success status, empty to reset status.
-```
-
-**Note:** The *select, radios and checkboxes* editors can be initialized without `options.data` configuration, these editors will get an additional `setChoices()` API that you can use to set the available choices later.
-
-<hr/>
-If you need more editors please register them through
-```
-Application.editor('[your editor name]', function(){
-    var Editor = Application.view({...});
-    ...;
-    return Editor;
-});
-```
-You need to provide the `getVal`, `setVal`, `validate`, `status` and `disable` methods.
-
-**Important:** Do *NOT* use `onShow()` in your editor definition. Use `onRender` instead so that your editor can support the `editor=""` template attributes for dynamic positioning.
-
-<hr/>
-There is also another way of activating your editors without fixing the configurations in the view definition:
-```
-Application.view({
-...
-    onShow: function(){
-        this.activateEditors(options);
-    },
-...
-});
-```
-**Warning:** Although this is no difference than defining a view dynamically with editors configuration, it is not the *recommended* way of adding editors to a view.
 
 #####Graphs
 We support graphs through SVG. A basic SVG library is integrated with the framework (Raphaël.js). You can use it in any *Marionette.xView* through:
@@ -725,6 +582,237 @@ subViewA {
 ####Build & Deploy
 Under your project root, type in command-line `/tools/build/node build.js dist` to build. (You might need to change the `config.dist.js` file if you want to include more files in deployment).
 
+
+###Inputs/Editors
+We have already prepared the basic html editors for you in the framework. You don't have to code `<input>`, `<select>` or `<textarea>` in any of your view template. It is now very easy to build views to function as forms or to just add inputs to views. 
+
+You can also easily compose compound editors and fieldsets with the basic editors. This way you can reduce/combine values produced by the editors and collect them with a hierarchy/structure.
+
+####Basic
+You can activate basic editors in any *Marionette.xView* like this:
+```
+Application.view({
+    ...,
+    editors: { //editors per fieldname
+        _global: {...}, //globally shared per editor configures
+
+        abc: {
+            type: 'text', //other types are available as well.
+            label: 'Abc',
+            help: 'This is abc',
+            tooltip: 'Hey Abc here!',
+            placeholder: 'abc...',
+            value: 'default',
+            validate: { //validators are executed in sequence:
+                required: { //named validator
+                    msg: 'Hey input something!', //options for the validator function
+                    ...,
+                },
+                fn: function(val, parentCt){ //anonymous validator
+                    if(!_.string.startsWith(val, 'A')) return 'You must start with an A';
+                }
+            }
+
+        },
+        ..., //other editor configures
+    },
+    ...
+});
+```
+The editors will be appended inside the calling view instance one by one by default, or, by the `editor="[fieldname]"` position attribute in the view's template. They can also be placed according to its own `appendTo` configuration.
+
+A little bit more about the basic options: 
+* appendTo - in case you don't have `editor="[fieldname]"` in your template and want to change where to put the editor other than the default position.
+* parentCt - in case you want to delegate editor events to a parent container object (e.g a form object).
+* type - text, password, url, email, checkbox(es), radios, file, hidden, ro (for read-only), textarea, select
+* label
+* help
+* tooltip
+* placeholder
+* value
+* validate - (custom function or list of validators and rules)
+
+A custom validate function can be configured like this:
+```
+...
+validate: function(val, parentCt){
+    if(val !== '123') return 'You must enter 123';
+},
+...
+```
+**The validate function or validators should return undefined or the 'error string' to indicate passed and rejected situation respectively.**
+
+You can always register more named validators by:
+```
+Application.editor.validator('my-validator-name', function(options, val, parentCt){
+    ...,
+});
+```
+alias: `Application.editor.rule()`.
+
+Additional advanced per editor options:
+* layout 
+ - label - css class (e.g col-sm-2)
+ - field - css class (e.g col-sm-10)
+* html: - indicating read-only text field (setting this will cause 'type' to be 'ro')
+* options: (radios/selects/checkboxes only)
+    * inline: true|false 
+    * data: [] or {group:[], group2:[]} - (groups are for select only)
+    * labelField
+    * valueField
+    * remote: app.remote() config for loading options.data remotely
+* multiple - true|false (select only)
+* rows - number (textarea only) 
+* boxLabel: (single checkbox label other than field label.)
+* checked: '...' - (checked value, single checkbox only)
+* unchecked: '...' - (unchecked value, single checkbox only)
+* upload: (file only)
+    * url - a string or function that gives a url string as where to upload the file to.
+    * cb (this, result, textStatus, jqXHR) - the upload callback if successful.
+
+Remember, you can always layout your editors in a *Marionette.xView* through the `editor=""` attribute in the template: 
+```
+template: [
+    '<div editor="abc"></div>', //use fieldname to identify editor
+    '<div editor="efg"></div>'
+]
+```
+You will also get the following APIs attached to the **view** instance object once you have configured the `editors:{}` block:
+```
+this.getEditor(name); 
+this.getValues(); 
+this.setValues(vals, loud); 
+this.validate(true|false); //true for showing the validation errors.
+this.status(status, messages); //for highlighting status per editor. no arguments means to clear.
+```
+
+There are also events emitted that you can use when dealing with each of these editors:
+```
+editor:change
+editor:keyup
+editor:focusin // - focus
+editor:focusout // - blur
+```
+If you use `options.parentCt` to pass in another view instance, the events will be fired on that view instance **in addition to** firing on the editor itself. It is useful when you want every event to be fired on a parent container or, say, a form view.
+
+Each editor instance will have the following methods:
+```
+editor.getVal();
+editor.setVal(val, loud);
+editor.disable([flag]); //false to enable, default to disable, true to disable + hide.
+editor.isEnabled();
+editor.validate(showError); //if you have options.validator configured
+editor.status(status, message); //info, error, warning, success status, empty to reset status.
+```
+
+**Note:** The *select, radios and checkboxes* editors can be initialized without `options.data` configuration, these editors will get an additional `setChoices()` API that you can use to set the available choices later.
+
+<hr/>
+If you need more editors please register them through
+```
+Application.editor('[your editor name]', function(){
+    var Editor = Application.view({...});
+    ...;
+    return Editor;
+});
+```
+You need to provide the `getVal`, `setVal`, `validate`, `status` and `disable` (+`isEnabled`) methods.
+
+**Important:** Do *NOT* use `onShow()` in your editor definition. Use `onRender` instead so that your editor can support the `editor=""` template attributes for dynamic positioning.
+
+<hr/>
+There is also another way of activating your editors without fixing the configurations in the view definition:
+```
+Application.view({
+...
+    onShow: function(){
+        this.activateEditors(options);
+    },
+...
+});
+```
+**Warning:** Although this is no difference than defining a view dynamically with editors configuration, it is not the *recommended* way of adding editors to a view.
+
+####Compound
+Sometimes you need to build a compound editor with more basic editors than the number of values collected. You can do this by assigning a view **definition** to the editor configure:
+```
+Application.view({
+
+    editors: {
+        a: ...,
+        b: ...,
+
+        c: Application.view({
+            template: ...,
+            editors: ..., //*required
+            getVal: ..., //*required
+            setVal: ..., //*required
+            disable: ...,
+            isEnabled: ...,
+            status: ... //*required if you want customized error message display.
+        })
+    }
+
+});
+```
+This has some disadvantages compare to registering an new editor via `app.editor()`, but is more intuitive when defining a compound form editor.
+
+If you still want `_global` (e.g appendTo) configure and `parentCt` (for editor events) to be passed to the compound editor, use `app.editor()` to register the view.
+
+####Fieldset
+With view instance easily turned into form now, you might want to nest form pieces with *Marionette.Layout* and *Marionette.ItemView* and collect the values with similar hierarchy, this could be done by adding a `fieldset` property to your view definition besides the `editors` configuration:
+```
+var FieldsetX = Application.view({
+
+    fieldset: 'sub-fieldset-x',
+    editors: {
+        ...
+    }
+
+});
+```
+Then, you can use the view as normal regional views in a layout:
+```
+Application.view({
+
+    type: 'Layout',
+    template: [
+        '<div region='fieldset-a'></div>',
+        '<div></div>'
+    ],
+    editors: {
+        ..., //the layout can itself contain editors!
+    },
+    onShow: function(){
+        this.getRegion('fieldset-a').show(new FieldsetX);
+    }
+
+})
+```
+Now, the values you collect from the layout through `getValues()` will contain a field `sub-fieldset-x` with all the values collected from that fieldset view.
+
+You can also control the nested editors through a dotted name path:
+```
+layout.getEditor('sub-fieldset-x.abc'); //will get you editor `abc` in targeted fieldset.
+```
+
+**Note**: Normally, if you don't need to collect values per group, you can omit the `fieldset` property in the view's definition. Values will be merged with those from the parent layout view.
+
+####Build a form
+As you can see from the above sections, you can build 2 types of forms through views:
+* Basic/Piece
+    * Just use the `editors:{}` configure block in a view definition.
+* Nested
+    * Use a layout view together with nested views into regions.
+    * Name nested views with fieldset names to form a hierarchy if needs be.
+
+In a nested form view, may there be fieldsets or not, you can always use these APIs in the outer-most layout:
+```
+this.getValues(); 
+this.setValues(vals, loud); 
+this.validate(true|false); //true for showing the validation errors.
+```
+The above APIs will automatically go through the regional views as well, if they too have the same functions attached. This enables a way to progressively build a form view through layout and regions and then still be used as a whole. 
 
 ###Widgets
 To make your view definitions reusable, we offer a way of registering *Widget*s:

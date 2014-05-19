@@ -1,20 +1,17 @@
 Change Log
 ==========
-1.1.0 (2014-05-18)
+1.1.1 (2014-05-19)
 ------------------
 1. Basic Editor: +options.remote (fetch options with app.remote);
 2. Layout+: +regional fieldset to support form view pieces (get/setValues, validate, getEditor and this._fieldsets); [without the status method atm]
-3. Give app.Core.Regional.get an options param to return instance;
-4. region:load-view can now instanciate both Widget and Regional with options;
-5. Renamed _isDefined() to has() in app.Core.Widget;
-6. Fixed error in the default build config for project-kit distributions;
-7. Fixed error in tools/shared/hammer.js to correctly creating output folders;
+3. Activate Editors: +compound editor support;
+4. Disabled editors now correctly get omitted during getValues();
 
 
 1.0.1 (2014-05-09)
 ------------------
 1. Give app.Core.Regional.get an options param to return instance;
-2. region:load-view can now instanciate both Widget and Regional with options;
+2. region:load-view can now instantiate both Widget and Regional with options;
 3. Renamed _isDefined() to has() in app.Core.Widget;
 4. Fixed error in tools/shared/hammer.js to correctly creating output folders;
 5. Fixed error in the default build config for project-kit distributions;
