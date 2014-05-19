@@ -1256,8 +1256,9 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 	 * -------
 	 * _global: general config as a base for all editors, (overriden by individual editor config)
 	 * editors: {
+	 *  //simple 
 	 * 	name: {
-	 * 		type: ..., (*required)
+	 * 		type: ..., (*required) - basic or registered customized ones
 	 * 		label: ...,
 	 * 		help: ...,
 	 * 		tooltip: ...,
@@ -1271,6 +1272,17 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 	 * 		appendTo: ... - per editor appendTo cfg
 	 * 	},
 	 * 	...,
+	 * 	//compound (use another view as wrapper)
+	 * 	name: app.view({
+	 * 		template: ...,
+	 * 		editors: ...,
+	 * 		getVal: ...,
+	 * 		setVal: ...,
+	 * 		disable: ...,
+	 * 		isEnabled: ...,
+	 * 		status: ...
+	 * 		//you don't need to implement validate() though.
+	 * 	}),
 	 * }
 	 *
 	 * This will add *this._editors* to the view object. Do NOT use a region name with region='editors'...
@@ -1293,12 +1305,21 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 			var global = options._global || {};
 			_.each(options, function(config, name){
 				if(name.match(/^_./)) return; //skip _config items like _global
-				//0. apply global config
-				config = _.extend({name: name, parentCt: this}, global, config);
-				//1. instantiate
-				config.type = config.type || 'text'; 
-				var Editor = app.Core.Editor.map[config.type] || app.Core.Editor.map['Basic'];
-				var editor = new Editor(config);
+
+				if(!_.isFunction(config)){
+					//0. apply global config
+					config = _.extend({name: name, parentCt: this}, global, config);
+					//1. instantiate
+					config.type = config.type || 'text'; 
+					var Editor = app.Core.Editor.map[config.type] || app.Core.Editor.map['Basic'];
+					var editor = new Editor(config);					
+				}else {
+					//if config is a view definition use it directly 
+					//(compound editor, e.g: app.view({template: ..., editors: ..., getVal: ..., setVal: ...}))
+					var Editor = config;
+					config = _.extend({}, global);
+					var editor = new Editor();
+				}
 				
 				this._editors[name] = editor.render();
 				//2. add it into view (specific, appendTo(editor cfg), appendTo(general cfg), append)
@@ -1327,7 +1348,8 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 			this.getValues = function(){
 				var vals = (savedLayoutFns.getValues && savedLayoutFns.getValues.call(this)) || {};
 				_.each(this._editors, function(editor, name){
-					vals[name] = editor.getVal();
+					var v = editor.getVal();
+					if(v !== undefined && v !== null) vals[name] = v;
 				});
 				return vals;
 			};
@@ -2315,10 +2337,11 @@ var I18N = {};
 			className: 'form-group',
 
 			events: {
-				'change': '_triggerEvent', //editor:change:[name]
-				'keyup input, textarea': '_triggerEvent', //editor:keyup:[name]
-				'focusout': '_triggerEvent', //editor:focusout:[name]
-				'focusin': '_triggerEvent' //editor:focusin:[name]
+				//fired on both parentCt and this editor
+				'change': '_triggerEvent', 
+				'keyup input, textarea': '_triggerEvent', 
+				'focusout': '_triggerEvent', 
+				'focusin': '_triggerEvent' 
 			},
 
 			initialize: function(options){
@@ -2430,7 +2453,8 @@ var I18N = {};
 					});
 					//forge the validation method of this editor				
 					this.validate = function(show){
-						if(this._inactive) return; //skip the disabled ones.
+						if(!this.isEnabled()) return; //skip the disabled ones.
+						
 						if(_.isFunction(options.validate)) {
 							var error = options.validate(this.getVal(), this.parentCt); 
 							if(show) {
@@ -2571,6 +2595,8 @@ var I18N = {};
 			},
 
 			getVal: function(){
+				if(!this.isEnabled()) return; //skip the disabled ones.
+
 				if(this.ui.inputs.length > 0){
 					//radios/checkboxes
 					var result = this.$('input:checked').map(function(el, index){

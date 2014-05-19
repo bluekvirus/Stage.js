@@ -73,10 +73,11 @@
 			className: 'form-group',
 
 			events: {
-				'change': '_triggerEvent', //editor:change:[name]
-				'keyup input, textarea': '_triggerEvent', //editor:keyup:[name]
-				'focusout': '_triggerEvent', //editor:focusout:[name]
-				'focusin': '_triggerEvent' //editor:focusin:[name]
+				//fired on both parentCt and this editor
+				'change': '_triggerEvent', 
+				'keyup input, textarea': '_triggerEvent', 
+				'focusout': '_triggerEvent', 
+				'focusin': '_triggerEvent' 
 			},
 
 			initialize: function(options){
@@ -188,7 +189,8 @@
 					});
 					//forge the validation method of this editor				
 					this.validate = function(show){
-						if(this._inactive) return; //skip the disabled ones.
+						if(!this.isEnabled()) return; //skip the disabled ones.
+						
 						if(_.isFunction(options.validate)) {
 							var error = options.validate(this.getVal(), this.parentCt); 
 							if(show) {
@@ -329,6 +331,8 @@
 			},
 
 			getVal: function(){
+				if(!this.isEnabled()) return; //skip the disabled ones.
+
 				if(this.ui.inputs.length > 0){
 					//radios/checkboxes
 					var result = this.$('input:checked').map(function(el, index){

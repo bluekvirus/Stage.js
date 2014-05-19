@@ -7,7 +7,7 @@ What's next?
 ------------
 1.2.0 might bring:
 * Datagrid+ : select-all header/cell, details row;
-* Editor+ : Spinner/Range, Switches, DnD Listing, File Listing;
+* Editor+ : Spinner/Range, Switches, DnD Listing;
 * local filter/sorter mech into list views; 
 * local pagination mech into list views (in addition to the remote one we already have); 
 * provide a way to persist context status between context switches?
@@ -16,7 +16,7 @@ What's next?
 
 Current Version
 ---------------
-1.1.0
+1.1.1
 
 
 Build
