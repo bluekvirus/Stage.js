@@ -1,6 +1,6 @@
-Stage.js <sub class="text-muted" style="font-size:36%">based on Marionette.js</sub>
-======
-*Building multi-context rich-client web applications in the modern way.*
+<img class="project-title"></img>
+<hr/>
+Building multi-context rich-client web applications in the modern way.
 [@Tim (Zhiyuan) Liu](mailto:bluekvirus@gmail.com)
 
 
@@ -300,8 +300,6 @@ By default, `Application.regional(['you regional view name',] {...})` returns th
 
 Sometimes your *Regional* is comprised of other sub-regional views and that's fine, you can nest *Regional*s with the `region=""` and `view=""` attributes in the template (only if it is of `type: Layout`). 
 
-<hr/>
-
 There will also be time when you just need plain *Marionette.xView* definitions to be used as item views within *Regional*s. Define them through the `Application.view()` API:
 ```
 //myRegionalA.js
@@ -412,7 +410,6 @@ Data returned should be in the [JSON](http://json.org/) format and with `Content
 
 **Note:** If you use `view:render-data` and pass in an `Array`, it will **reset** the collection of that view. 
 
-<hr/>
 Modify (paginate/filter/sort) the data before passing to the `view:render-data` event. *Do NOT* bind pagination/filtering/sorting operations with model/collection instances.
 
 ####Step 5. Adding UX
@@ -704,7 +701,6 @@ editor.status(status, message); //info, error, warning, success status, empty to
 
 **Note:** The *select, radios and checkboxes* editors can be initialized without `options.data` configuration, these editors will get an additional `setChoices()` API that you can use to set the available choices later.
 
-<hr/>
 If you need more editors please register them through
 ```
 Application.editor('[your editor name]', function(){
@@ -717,7 +713,6 @@ You need to provide the `getVal`, `setVal`, `validate`, `status` and `disable` (
 
 **Important:** Do *NOT* use `onShow()` in your editor definition. Use `onRender` instead so that your editor can support the `editor=""` template attributes for dynamic positioning.
 
-<hr/>
 There is also another way of activating your editors without fixing the configurations in the view definition:
 ```
 Application.view({
@@ -862,8 +857,6 @@ You can always nest another layer of container-list-item into an item of parent 
 * Leave space to accommodate real case usages by keeping options minimum. Don't turn into an *all-in-one* thing and force other developers to *configure* the widget.
 * Fire event whenever an action is triggered, provide a default listener so that later it can be rewired.
 * Test your widget in designed scenarios thoroughly with mock-up data.
-
-<hr/>
 
 To assist you further in the development process, we have several pre-implemented lightweight widgets bundled into the release as well, let's examine them. 
 

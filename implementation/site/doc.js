@@ -1,17 +1,16 @@
     Application.page('Document', {
-        className: 'container',
+        className: 'container-fluid',
         template: [
             '<div class="row">',
-                '<div class="col-sm-3">',
-                    '<div region="toc" ></div>',
-                    '<hr/>',
+                '<div class="col-sm-offset-1 col-sm-2">',
+                    '<div region="toc"></div>',
                     '<div region="libinfo"></div>',
                 '</div>',
-                '<div class="col-sm-9" style="padding-left:60px;">',
+                '<div class="col-sm-offset-1 col-sm-8">',
                     '<div region="breadcrumbs" view="Doc.Breadcrumbs" style="position: fixed; top: 0; right: 0; display:none"></div>',
                     '<div region="doc" md="HOWTO.md" action="refresh"></div>',
                 '</div>',
-            '</div>',
+            '</div>'
         ],
         initialize: function(){
             this.listenTo(Application, 'app:scroll', function(offset){
@@ -60,7 +59,7 @@
                 cb: function($el){
                     $el.toc({
                         ignoreRoot: true,
-                        headerHTML: '<div class="h4" style="margin-top:48px"><i class="fa fa-book"></i> Table of Content</div>'
+                        headerHTML: '<div class="text-muted">Table of Content</div><hr/>'
                     });
                     that.toc.show(Application.regional({
                         //no name means to use it anonymously, which in turn creates it right away. 
@@ -88,10 +87,16 @@
                 tagName: 'ul',
                 className: 'list-group',
                 template:[ 
-                    '<h4 class="text-center panel-heading"><i class="fa fa-cogs"></i> Included Libraries</h4>',    
-                    '{{#each list}}<li class="list-group-item" ui="libitem">{{#if url}}<a href="{{url}}">{{name}}</a>{{else}}{{name}}{{/if}}<span class="badge">{{version}}</span></li>{{/each}}',
+                    '<div class="text-muted">Included Libraries</div><hr/>',    
+                    '{{#each list}}',
+                        '<li class="list-group-item" ui="libitem">',
+                            '{{#if url}}<a href="{{url}}">{{name}}</a>',
+                            '{{else}}{{name}}',
+                            '{{/if}}',
+                            '<span class="badge">{{version}}</span></li>',
+                    '{{/each}}',
                     '<li class="list-group-item text-center panel-footer"><small>{{created}}</small></li>',
-                    '<h5 class="text-center"><small>Learn more about <a href="http://bower.io/">bower</a> js package manager</small></h5>',
+                    '<h5 class="text-center"><small>Package manager: <a href="http://bower.io/">bower</a></small></h5>',
                 ],
                 onShow: function(){
                     var that = this;

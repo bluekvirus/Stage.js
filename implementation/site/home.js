@@ -27,7 +27,7 @@
 			//title + short desc
 			this.title.show(app.area({
 				template: [
-					'<img src="themes/' + Application.currentTheme + '/img/logo/text-black" alt="Stage.js"></img>',
+					'<img class="project-title"></img>',
 					marked.parse([
 						/////////////////Intro/////////////////
 						'Learned Backbone? Tried Marionette? Still searching for a complete solution? ',
