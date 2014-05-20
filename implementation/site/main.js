@@ -1,26 +1,25 @@
 NProgress.configure({showSpinner: false});
 
-;Application.setup({
+;(function(app){
 
-    //You can override other production config vars if wanted.
-    //fullScreen: true,
-    template: '<div region="banner" view="Banner"></div><div region="center"></div><div region="footer" view="Footer"></div>',
-    contextRegion: 'center',
-    defaultContext: 'Home'
+    app.setup({
 
-}).run();
+        //You can override other production config vars if wanted.
+        //fullScreen: true,
+        template: '<div region="banner" view="Banner"></div><div region="center"></div><div region="footer" view="Footer"></div>',
+        contextRegion: 'center',
+        defaultContext: 'Home'
 
-
-;(function(){
+    }).run();
 
     //Shared - Regionals
-    Application.area('Banner', {
+    app.area('Banner', {
         // effect: {
         //     name: 'fade',
         //     duration: 500
         // },
         initialize: function(){
-            this.listenTo(Application, 'app:context-switched', function(name){
+            this.listenTo(app, 'app:context-switched', function(name){
                 this.$el.find('[context]').each(function(index, el){
                     var $this = $(this);
                     if($this.attr('context') === name)
@@ -36,11 +35,11 @@ NProgress.configure({showSpinner: false});
             // download: function($btn, e){
             //     e.preventDefault();
             //     var base = 'static/resource/default/download/';
-            //     Application.Util.download(base + $btn.attr('target'));  
+            //     app.Util.download(base + $btn.attr('target'));  
             // },
             themePreview: function($btn, e){
                 e.preventDefault();
-                location.href = ['themes', Application.currentTheme, 'index.html'].join('/') ;
+                location.href = ['themes', app.currentTheme, 'index.html'].join('/') ;
             }
         },
         className: 'navbar navbar-default hidden',
@@ -51,7 +50,7 @@ NProgress.configure({showSpinner: false});
                 '<span class="icon-bar"></span>',
                 '<span class="icon-bar"></span>',
               '</button>',
-              '<a href="#navigate/Home" class="navbar-brand">Stage.js</a>',//2
+              // '<a href="#navigate/Home" class="navbar-brand">Stage.js</a>',//2
             '</div>',
 
             '<div class="navbar-collapse collapse navbar-responsive-collapse">',//B
@@ -71,14 +70,14 @@ NProgress.configure({showSpinner: false});
                     '<li class="divider"></li>',
                     '<li class="dropdown-header">Accessories</li>',
                     '<li><a href="#">Notifications</a></li>',
-                    '<li><a href="#">Terminal</a></li>',
+                    // '<li><a href="#">Terminal</a></li>',
                   '</ul>',
                 '</li>',
               '</ul>',
 
-              '<form class="navbar-form navbar-left">', //2
-                '<input type="text" placeholder="Search" class="form-control col-lg-8">',
-              '</form>',
+              // '<form class="navbar-form navbar-left">', //2
+              //   '<input type="text" placeholder="Search" class="form-control col-lg-8">',
+              // '</form>',
 
               '<ul class="nav navbar-nav navbar-right">', //3
                 '<li class="dropdown">',
@@ -98,4 +97,4 @@ NProgress.configure({showSpinner: false});
     });
 
 
-})();
+})(Application);

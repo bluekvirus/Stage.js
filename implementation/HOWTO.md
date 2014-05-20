@@ -1369,23 +1369,84 @@ If you can, always use bootstrap & font-awesome icon fonts included in the packa
 
 If you need to have customized icons, please ask your designer for 64x64 or even 128x128 sized icon files in the *PNG* format. You can use the icon preparation tool to resize and combine them into a single CSS sprite package (icon.css, icons.png and a demo.html to show you css-class to icon mappings). Note that background image and texture images should *NOT* be combined into the CSS sprite. 
 
-See `/implementation/themes/README.md` for more details.
+See the **Icon Prep** section below for more details.
 
 
 ###Preview page
-There is a theme preview page at `[your theme folder]/index.html`. Change it to include more UI components and use it to demo your theme. `URL://[your host]/themes/[your theme]/`
+There is a theme preview page at `[your theme folder]/index.html`. Change it to include more UI components and use it to demo your theme. `http(s)://[your host]/themes/[your theme]/`
 
 
 Tools
 -----
 ###Build & Deploy
-Under your project root, type in command-line `/tools/build/node build.js dist` to build. (You might need to change the `config.dist.js` file if you want to include more files in deployment).
+Under `/tools/build/`, type in this command in console/terminal to build:
+```
+node build.js dist //find your built deployment under /tools/build/dist
+```
+You might need to change the `config.dist.js` file if you want to include more files in deployment.
+
+By default, the `node build.js abc` command will look for `config.dist.js` and construct your deployment folder `abc` with folders and files accordingly.
+
+Also by default, the build tool will grab the targeted index.html indicated by `config.dist.js` and scan through all the `<script>` tags to collect and combine the js codes.
+
+Type this command to get more from the build tool:
+```
+node build.js -h
+```
+
 
 ###Development Server
-...
+Under `/tools/devserver`, we provide you with a development web server that could help you serve both the `/implementation` folder and your built deployments. It can also monitor your theme folders and automatically compile `main.less` into `main.css`.
 
-###Icon Prep
-...
+**Start** (under `/tools`)
+```
+npm start
+```
+
+**Configure**
+
+Please see `/tools/devserver/profile/default.js`
+
+**Extend**
+
+You can add more bots, profiles and most importantly routers into the server. Just add them into the folders respectively, they will be automatically loaded. Routers added will be mounted and available for all web roots.
+
+**Note**: By design, we only introduced *bots*(worker routine/processes), *profiles*(configures) and *routers* into the development server stack, you can also add *middlewares*, *dbs* and other stuff into the server.
+
+Read more about [express.js](http://expressjs.com/) and [express-load](https://github.com/jarradseers/express-load) so you can make full use of this development server.
+
+
+###Icon/Image Prep
+Use `/tools/iconprep` to resize the icon files down to various sizes from 128x128 or 256x256 obtained from your designer. You can also record svg paths exported from their design tools.
+
+Assume that you have put all the icons into `/implementation/themes/default/img/icons`:
+```
+//under /tools/iconprep type
+node resize.js -S 16,32,48 ../../implementation/themes/default/img/icons
+```
+**Note**: You will need [ImageMagick](http://www.imagemagick.org/) to be installed on your machine.
+
+Use `-h` to get more from `resize.js`
+```
+node resize.js -h
+```
+
+After resizing, use [glue](https://github.com/jorgebastida/glue) to combine them into a CSS sprites.
+
+Option 1:
+```
+glue ../../implementation/themes/default/img/icons ../../implementation/themes/default/img/iconsprites --recursive --html (--less) 
+```
+
+Options 2: (recommended)
+```
+glue ../../implementation/themes/default/img/icons  --recursive --less --html --css=../../implementation/themes/default/less/ --img=../../implementation/themes/default/img/
+```
+Produces 1 big sprite with test page and less file in place.
+
+Go read about [glue](https://github.com/jorgebastida/glue), it's an excellent tool to make CSS sprites.
+
+**Note**: If you can, always use icon fonts (e.g Font-Awsome) instead of images for icons.
 
 FAQs
 ----

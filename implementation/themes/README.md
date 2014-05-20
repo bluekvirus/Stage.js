@@ -59,8 +59,8 @@ You should also put 3rd-party css files in here.
 WARNING
 =======
 
-A. Web page to PDF using PhantomJS
------------------------------------
+A. Web page to PDF using Phantomjs or wkhtmltopdf
+-------------------------------------------------
 
 You need to remove 
 ```

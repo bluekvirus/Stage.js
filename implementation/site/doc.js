@@ -123,7 +123,12 @@
         template: [
             '<li><i class="btn btn-primary btn-xs fa fa-arrow-up" action="goTop"></i></li>',
             '{{#each path}}',
-                '<li><a href="#" action="goTo" data-id="{{id}}">{{ title }}</a></li>',
+                '<li>',
+                    '<a href="#" action="goTo" data-id="{{id}}">{{ title }}</a>',
+
+                    //put sibling topics under this level here in a <ul>
+                    
+                '</li>',
             '{{/each}}',
         ],
         actions: {
