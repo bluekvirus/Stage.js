@@ -1,6 +1,6 @@
-Stage.js <sub class="text-muted" style="font-size:36%">based on Marionette.js</sub>
-======
-*Building multi-context rich-client web applications in the modern way.*
+<img class="project-title"></img>
+<hr/>
+Building multi-context rich-client web applications in the modern way.
 [@Tim (Zhiyuan) Liu](mailto:bluekvirus@gmail.com)
 
 
@@ -300,8 +300,6 @@ By default, `Application.regional(['you regional view name',] {...})` returns th
 
 Sometimes your *Regional* is comprised of other sub-regional views and that's fine, you can nest *Regional*s with the `region=""` and `view=""` attributes in the template (only if it is of `type: Layout`). 
 
-<hr/>
-
 There will also be time when you just need plain *Marionette.xView* definitions to be used as item views within *Regional*s. Define them through the `Application.view()` API:
 ```
 //myRegionalA.js
@@ -412,7 +410,6 @@ Data returned should be in the [JSON](http://json.org/) format and with `Content
 
 **Note:** If you use `view:render-data` and pass in an `Array`, it will **reset** the collection of that view. 
 
-<hr/>
 Modify (paginate/filter/sort) the data before passing to the `view:render-data` event. *Do NOT* bind pagination/filtering/sorting operations with model/collection instances.
 
 ####Step 5. Adding UX
@@ -579,16 +576,13 @@ subViewA {
 **Remember:** Always prefer *Events* over *APIs* while implementing collaborations.
 
 
-####Build & Deploy
-Under your project root, type in command-line `/tools/build/node build.js dist` to build. (You might need to change the `config.dist.js` file if you want to include more files in deployment).
-
-
-###Inputs/Editors
+Inputs/Editors
+--------------
 We have already prepared the basic html editors for you in the framework. You don't have to code `<input>`, `<select>` or `<textarea>` in any of your view template. It is now very easy to build views to function as forms or to just add inputs to views. 
 
 You can also easily compose compound editors and fieldsets with the basic editors. This way you can reduce/combine values produced by the editors and collect them with a hierarchy/structure.
 
-####Basic
+###Basic
 You can activate basic editors in any *Marionette.xView* like this:
 ```
 Application.view({
@@ -707,7 +701,6 @@ editor.status(status, message); //info, error, warning, success status, empty to
 
 **Note:** The *select, radios and checkboxes* editors can be initialized without `options.data` configuration, these editors will get an additional `setChoices()` API that you can use to set the available choices later.
 
-<hr/>
 If you need more editors please register them through
 ```
 Application.editor('[your editor name]', function(){
@@ -720,7 +713,6 @@ You need to provide the `getVal`, `setVal`, `validate`, `status` and `disable` (
 
 **Important:** Do *NOT* use `onShow()` in your editor definition. Use `onRender` instead so that your editor can support the `editor=""` template attributes for dynamic positioning.
 
-<hr/>
 There is also another way of activating your editors without fixing the configurations in the view definition:
 ```
 Application.view({
@@ -733,7 +725,7 @@ Application.view({
 ```
 **Warning:** Although this is no difference than defining a view dynamically with editors configuration, it is not the *recommended* way of adding editors to a view.
 
-####Compound
+###Compound
 Sometimes you need to build a compound editor with more basic editors than the number of values collected. You can do this by assigning a view **definition** to the editor configure:
 ```
 Application.view({
@@ -759,7 +751,7 @@ This has some disadvantages compare to registering an new editor via `app.editor
 
 If you still want `_global` (e.g appendTo) configure and `parentCt` (for editor events) to be passed to the compound editor, use `app.editor()` to register the view.
 
-####Fieldset
+###Fieldset
 With view instance easily turned into form now, you might want to nest form pieces with *Marionette.Layout* and *Marionette.ItemView* and collect the values with similar hierarchy, this could be done by adding a `fieldset` property to your view definition besides the `editors` configuration:
 ```
 var FieldsetX = Application.view({
@@ -777,7 +769,7 @@ Application.view({
 
     type: 'Layout',
     template: [
-        '<div region='fieldset-a'></div>',
+        '<div region="fieldset-a"></div>',
         '<div></div>'
     ],
     editors: {
@@ -798,7 +790,7 @@ layout.getEditor('sub-fieldset-x.abc'); //will get you editor `abc` in targeted 
 
 **Note**: Normally, if you don't need to collect values per group, you can omit the `fieldset` property in the view's definition. Values will be merged with those from the parent layout view.
 
-####Build a form
+###Build a form
 As you can see from the above sections, you can build 2 types of forms through views:
 * Basic/Piece
     * Just use the `editors:{}` configure block in a view definition.
@@ -814,7 +806,9 @@ this.validate(true|false); //true for showing the validation errors.
 ```
 The above APIs will automatically go through the regional views as well, if they too have the same functions attached. This enables a way to progressively build a form view through layout and regions and then still be used as a whole. 
 
-###Widgets
+
+Widgets
+-------
 To make your view definitions reusable, we offer a way of registering *Widget*s:
 ```
 //Widget name can be used in region:load-view meta event trigger
@@ -844,7 +838,7 @@ Application.widget('MyWidgetName', {
 ```
 
 
-####List'n'Container technique
+###List'n'Container technique
 This is the golden technique to use when planning your reusable views or, say, any view on screen. Any widget on screen can be decoupled into lists and containers, like this:
 
 <img src="static/resource/default/diagram/Diagram-5.png" alt="List'n'Containers" class="center-block"></img>
@@ -864,11 +858,10 @@ You can always nest another layer of container-list-item into an item of parent 
 * Fire event whenever an action is triggered, provide a default listener so that later it can be rewired.
 * Test your widget in designed scenarios thoroughly with mock-up data.
 
-<hr/>
-
 To assist you further in the development process, we have several pre-implemented lightweight widgets bundled into the release as well, let's examine them. 
 
-####Datagrid
+
+###Datagrid
 **Purpose**: Give you a dynamic `<table>` with columns and customizable cells.
 
 **Options**:
@@ -977,7 +970,8 @@ datagrid.trigger('view:reconfigure', {...new config options...});
 **Built-in Headers**
 * string
 
-####Tree
+
+###Tree
 **Purpose**: Give you a nested tree list with customizable node template and selection events:
 ```
 <ul>
@@ -1071,7 +1065,8 @@ nodeView.$el.data('$parent').data('$parent');
 ...
 ```
 
-####Paginator
+
+###Paginator
 **Purpose**: To be used with any CollectionView for jumping between pages.
 
 **Options**:
@@ -1117,7 +1112,8 @@ collectionView.trigger('view:load-data', {
 })
 ```
 
-####Overlay
+
+###Overlay
 <span class="label label-info">jQuery plugin</span>
 
 **Purpose**: Provide you a way of overlaying custom views on screen.
@@ -1150,7 +1146,8 @@ $('body').overlay(false, {
 ```
 **Note**: Repeatedly open overlays on the same $(el) will have no effect. Close the previous one first. There are also 3rd-party libraries available for creating simple overlays over `<a>` and `<img>` tags (e.g [colorbox](http://www.jacklmoore.com/colorbox/)).
 
-####Markdown
+
+###Markdown
 <span class="label label-info">jQuery plugin</span>
 
 **Purpose**: Offering a convenient way of loading .md content into the application. (through [marked](https://github.com/chjj/marked))
@@ -1182,7 +1179,8 @@ this.doc.$el.md({
 
 We recommend that you use the [Github flavored version.](https://help.github.com/articles/github-flavored-markdown) ([What's Markdown?](http://daringfireball.net/projects/markdown/))
 
-####ToC (Table-of-Content)
+
+###ToC (Table-of-Content)
 <span class="label label-info">jQuery plugin</span>
 
 **Purpose**: Produce a table-of-content tree list in both html and json format for a given document (through `<h1>`-`<h6>` title relationship scanning)
@@ -1223,12 +1221,15 @@ that.toc.show(Application.regional({
 }));
 ```
 
-###i18n/l10n
+
+i18n/l10n
+---------
 Internationalization/Localization is always a painful process, making substitution dynamically to the strings and labels appear in the application according to the user locale settings can interfere with the coding process if every string must be coded with a `getResource('actual string')` wrapped around.
 
 Luckily, Javascript is a prototypical language, we can extend the `String` class through its prototype and give every string a way of finding its own translation.
 
-####Cast i18n on strings
+
+###Cast i18n on strings
 To use the i18n mechanism in your application, simply add `.i18n()` to the tail of your string:
 ```
 //directly
@@ -1257,14 +1258,16 @@ $('div').i18n({search: true}); //if you want to use parent container to cast
 ```
 Remember to use the `data-i18n-key` attribute to identify the content of a tag for translation. If you want to use the entire content text as a *big* key for the translation, use `data-i18n-key="*"`. If you use `data-i18n-key="efg"` to identify a tag, its content will be translated as if you were using string `efg`.
 
-####Translation file
+
+###Translation file
 The translation files are needed to complete the i18n mechanism. We use a simple opt-in way of loading resource file for a given locale:
 ```
 http(s)://your host'n'app/?locale=xx_XX
 ```
 The query param **locale** in the url will tell the i18n mechanism to load a specific resource file.
 
-#####Format
+
+####Format
 Your translation file should be in the [JSON](http://json.org/) format, like this:
 ```
 {
@@ -1297,7 +1300,7 @@ $('span').i18n();
 ```
 
 
-####Configuration
+###Configuration
 You can configure where and what the i18n mechanism need to look for its required translation files through the I18N global variable:
 ```
 I18N.configure({
@@ -1308,14 +1311,15 @@ I18N.configure({
 The default settings will always look for `http://your host'n'app/static/resource/xx_XX/i18n.json`.
 
 
-###Create a new theme
+Themes
+------
 You can have multiple themes for an application and switch between them. The default theme will be the one that you set during `Application.setup()`. However, you can force the application to pickup other themes by:
 ```
 http(s)://your host'n'app/?theme=xyz
 ```
 
 
-####Theme structure
+###Theme structure
 Themes are located at `/implementation/themes/[your theme name]/` with the following structure:
 > * /css
 >     - /include
@@ -1338,7 +1342,8 @@ Open up the `/less/main.less` file and you will see the following:
 
 You should be focusing on changing the theme.less and variables.less files. Note that the *Bootstrap* .less files are *NOT* included in the framework package. Your LESS compiler might pop errors as it can not find the required `bootstrap.less` file. Go to `/implementation` and run `bower update` (you should have bower installed through [npm](https://www.npmjs.org/) first). It will fetch you the required *Bootstrap* package.
 
-####LESS to CSS
+
+###LESS to CSS
 (What's [LESS](http://lesscss.org/)?)
 
 The `main.less` loads/glues all the above files and compiles into main.css, you do not need to compile the included .less files separately and put the compiled .css back into the `main.less`. The statically inlined css files are those that we want to copy into the compiled main.css without any change.
@@ -1351,22 +1356,94 @@ One perk of using LESS is that you can define each .less to do only one thing, e
 * component.less - use styles loaded/defined in static.less/vars.less to define new css styles in a nested class format;
 * main.less - glue(@include) the above .less files and let the compiler compile into main.css;
 
-####Icons
+
+###Icons
 If you can, always use bootstrap & font-awesome icon fonts included in the package.
 
 If you need to have customized icons, please ask your designer for 64x64 or even 128x128 sized icon files in the *PNG* format. You can use the icon preparation tool to resize and combine them into a single CSS sprite package (icon.css, icons.png and a demo.html to show you css-class to icon mappings). Note that background image and texture images should *NOT* be combined into the CSS sprite. 
 
-See `/implementation/themes/README.md` for more details.
+See the **Icon Prep** section below for more details.
 
-####Preview page
-There is a theme preview page at `[your theme folder]/index.html`. Change it to include more UI components and use it to demo your theme. `URL://[your host]/themes/[your theme]/`
 
+###Preview page
+There is a theme preview page at `[your theme folder]/index.html`. Change it to include more UI components and use it to demo your theme. `http(s)://[your host]/themes/[your theme]/`
+
+
+Tools
+-----
+###Build & Deploy
+Under `/tools/build/`, type in this command in console/terminal to build:
+```
+node build.js dist //find your built deployment under /tools/build/dist
+```
+You might need to change the `config.dist.js` file if you want to include more files in deployment.
+
+By default, the `node build.js abc` command will look for `config.dist.js` and construct your deployment folder `abc` with folders and files accordingly.
+
+Also by default, the build tool will grab the targeted index.html indicated by `config.dist.js` and scan through all the `<script>` tags to collect and combine the js codes.
+
+Type this command to get more from the build tool:
+```
+node build.js -h
+```
+
+
+###Development Server
+Under `/tools/devserver`, we provide you with a development web server that could help you serve both the `/implementation` folder and your built deployments. It can also monitor your theme folders and automatically compile `main.less` into `main.css`.
+
+**Start** (under `/tools`)
+```
+npm start
+```
+
+**Configure**
+
+Please see `/tools/devserver/profile/default.js`
+
+**Extend**
+
+You can add more bots, profiles and most importantly routers into the server. Just add them into the folders respectively, they will be automatically loaded. Routers added will be mounted and available for all web roots.
+
+**Note**: By design, we only introduced *bots*(worker routine/processes), *profiles*(configures) and *routers* into the development server stack, you can also add *middlewares*, *dbs* and other stuff into the server.
+
+Read more about [express.js](http://expressjs.com/) and [express-load](https://github.com/jarradseers/express-load) so you can make full use of this development server.
+
+
+###Icon/Image Prep
+Use `/tools/iconprep` to resize the icon files down to various sizes from 128x128 or 256x256 obtained from your designer. You can also record svg paths exported from their design tools.
+
+Assume that you have put all the icons into `/implementation/themes/default/img/icons`:
+```
+//under /tools/iconprep type
+node resize.js -S 16,32,48 ../../implementation/themes/default/img/icons
+```
+**Note**: You will need [ImageMagick](http://www.imagemagick.org/) to be installed on your machine.
+
+Use `-h` to get more from `resize.js`
+```
+node resize.js -h
+```
+
+After resizing, use [glue](https://github.com/jorgebastida/glue) to combine them into a CSS sprites.
+
+Option 1:
+```
+glue ../../implementation/themes/default/img/icons ../../implementation/themes/default/img/iconsprites --recursive --html (--less) 
+```
+
+Options 2: (recommended)
+```
+glue ../../implementation/themes/default/img/icons  --recursive --less --html --css=../../implementation/themes/default/less/ --img=../../implementation/themes/default/img/
+```
+Produces 1 big sprite with test page and less file in place.
+
+Go read about [glue](https://github.com/jorgebastida/glue), it's an excellent tool to make CSS sprites.
+
+**Note**: If you can, always use icon fonts (e.g Font-Awsome) instead of images for icons.
 
 FAQs
 ----
-
 ###Include other js libraries
-
 The default `dependences.js` contains carefully (minimum) selected libraries for your project, if you would like to introduce more, use [bower](http://bower.io/) and the `bower.json` file included.
 Go into `/implementation` and run `bower install` to grab all the monitored 3rd-party libraries.
 
@@ -1377,12 +1454,10 @@ Alternatively, you can always use a *CDN* (Content Delivery Network) to load the
 
 
 ###What should I put in `/static`?
-
-* `/resource` should contain static resources per locale. (per xx_XX folder, `/default` for locale independent)
+`/resource` should contain static resources per locale. (per xx_XX folder, `/default` for locale independent)
 
 
 ###Upgrade/Update
-
 Download and replace `stage.js` to update the infrastructure through `bower`:
 ```
 bower update stage
@@ -1393,6 +1468,7 @@ Appendix
 --------
 ###A. Change log
 see [CHANGELOG.md](https://github.com/bluekvirus/Stage.js/blob/master/CHANGELOG.md)
+
 
 ###B. Useful sites
 ####CDN
