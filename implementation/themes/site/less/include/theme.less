@@ -28,6 +28,21 @@
 .context-document{
 	padding-top: 60px;
 
+	.breadcrumb {
+		margin: 0;
+
+		.dropdown-menu {
+			margin: 0;
+			left: auto;
+		}
+
+		> li:last-child {
+			.dropdown-menu {
+				right: 0;
+			}
+		}
+	}
+
 	hr {
 		border-style: solid;
 		margin: @font-size-base * 0.9 0;

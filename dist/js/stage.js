@@ -2053,7 +2053,7 @@ var I18N = {};
 
 		//traverse the document tree
 		var $root = $('<div></div>').append(options.headerHTML).append('<ul></ul>');
-		$root.$children = $root.find('> ul');
+		$root.$children = $root.find('> ul').data('children', []);
 		var $index = $root;
 		var level = options.ignoreRoot ? 1 : 0;
 		$el.find((options.ignoreRoot?'':'h1,') + 'h2,h3,h4,h5,h6').each(function(){
@@ -2062,12 +2062,11 @@ var I18N = {};
 			var tag = $this.context.localName; //or tagName which will be uppercased
 			var title = $this.html();
 			var id = $this.attr('id');
-			$this.data({
-				title: title,
-				id: id,
-			});
+
+			//header in document
 			$headers.push($this);
 
+			//node that represent the header in toc html
 			var $node = $('<li><a href="#" data-id="' + id + '" action="goTo">' + title + '</a><ul></ul></li>'); //like <li> <a>me</a> <ul>children[]</ul> </li>
 			$node.data({
 				title: title,
@@ -2083,18 +2082,18 @@ var I18N = {};
 				default:
 				break;
 			}
-			$node.$children = $node.find('> ul');
+			$node.$children = $node.find('> ul').data('children', []);
 
 			var gap = order[tag] - level;
 
 			if(gap > 0) { //drilling in (always 1 lvl down)
 				$node.$parent = $index;
-				$index.$children.append($node);
+				$index.$children.append($node).data('children').push($node);
 				level ++;
 			}else if (gap === 0) {
 				//back to same level ul (parent li's ul)
 				$node.$parent = $index.$parent;
-				$index.$parent.$children.append($node);
+				$index.$parent.$children.append($node).data('children').push($node);
 			}else {
 				while (gap < 0){
 					gap ++;
@@ -2103,11 +2102,12 @@ var I18N = {};
 				}
 				//now $index points to the targeting level node
 				$node.$parent = $index.$parent;
-				$index.$parent.$children.append($node); //insert a same level node besides the found targeting level node
+				$index.$parent.$children.append($node).data('children').push($node); //insert a same level node besides the found targeting level node
 			}
 			$index = $node; //point $index to this new node
-			//link the document $header elements.
-			$this.data('parent', $node.$parent && $node.$parent.data());
+
+			//link the document $header element with toc node
+			$this.data('toc-node', $node);
 			
 		});
 		$el.data('toc', {

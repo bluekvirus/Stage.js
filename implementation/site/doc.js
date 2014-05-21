@@ -2,11 +2,11 @@
         className: 'container-fluid',
         template: [
             '<div class="row">',
-                '<div class="col-sm-offset-1 col-sm-2">',
+                '<div class="col-sm-offset-1 col-sm-3">',
                     '<div region="toc"></div>',
                     '<div region="libinfo"></div>',
                 '</div>',
-                '<div class="col-sm-offset-1 col-sm-8">',
+                '<div class="col-sm-7">',
                     '<div region="breadcrumbs" view="Doc.Breadcrumbs" style="position: fixed; top: 0; right: 0; display:none"></div>',
                     '<div region="doc" md="HOWTO.md" action="refresh"></div>',
                 '</div>',
@@ -23,25 +23,35 @@
                 _.each(this.$headers, function($h, index){
                     if(stop) return;
                     if($h.offset().top > offset + viewportH * 0.35) {
-                        $result = this.$headers[index-1];
+                        $result = this.$headers[index-1].data('toc-node');
                         stop = true;
                     }
                 }, this);
                 if(!$result) return;
 
                 //hilight this header and its parents in breadcrumbs
-                var path = [{title: $result.data('title'), id: $result.data('id')}];
-                $parent = $('#' + $result.data('parent').id);
-                while($parent.length){
-                    var info = $parent.data();
+                var path = [];
+                while($result){
+                    var info = $result.data();
+                    if(_.isEmpty(info)) break; //root
+
                     path.unshift({
                         title: info.title,
-                        id: info.id
+                        id: info.id,
+                        sibling: _.map($result.$parent.$children.data('children'), function($topic){
+                            var i = $topic.data();
+                            if(i.title !== info.title) return {
+                                title: i.title,
+                                id: i.id
+                            }
+                        })
                     });
-                    $parent = $('#' + info.parent.id);
+
+                    $result = $result.$parent;
                 }
                 this.breadcrumbs.$el.show();
                 this.breadcrumbs.currentView.trigger('view:render-data', {path: path});
+                //console.log(path);
             })
         },
         actions: {
@@ -128,10 +138,17 @@
         template: [
             '<li><i class="btn btn-primary btn-xs fa fa-arrow-up" action="goTop"></i></li>',
             '{{#each path}}',
-                '<li>',
+                '<li class="breadcrumb-item" ui="breadcrumb-item">',
                     '<a href="#" action="goTo" data-id="{{id}}">{{ title }}</a>',
 
                     //put sibling topics under this level here in a <ul>
+                    '<ul class="dropdown-menu">',
+                        '{{#each sibling}}',
+                            '{{#if this}}',
+                            '<li><a href="#" action="goTo" data-id="{{id}}">{{title}}</a></li>',
+                            '{{/if}}',
+                        '{{/each}}',
+                    '</ul>',
                     
                 '</li>',
             '{{/each}}',
@@ -143,6 +160,17 @@
             goTo: function($btn, e){
                 e.preventDefault();
                 this.parentCt.trigger('view:go-to-topic', $btn.data('id'));
+            }
+        },
+        events: {
+            'mouseenter .breadcrumb-item' : function(e){
+                var $this = $(e.currentTarget);
+                this.ui['breadcrumb-item'].removeClass('open');
+                $this.addClass('open');
+            },
+
+            'mouseleave .breadcrumb-item .dropdown-menu' : function(e){
+                this.ui['breadcrumb-item'].removeClass('open');
             }
         }
 

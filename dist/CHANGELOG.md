@@ -1,5 +1,12 @@
 Change Log
 ==========
+1.1.2 (on going)
+----------------
+1. Fixed off-by-1 bug in Tree widget;
+2. Make $.overlay to support view: view object - on going; 
+3. Dynamic Themes (currently racing with onShow() measuring...) - on going;
+
+
 1.1.1 (2014-05-19)
 ------------------
 1. Basic Editor: +options.remote (fetch options with app.remote);
