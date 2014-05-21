@@ -3105,7 +3105,7 @@ var I18N = {};
  * }
  *
  * note
- * ---
+ * ----
  * support search and expand a path (use $parent in node/leaf onSelected() data)
  *
  * @author Tim.Liu
@@ -3124,7 +3124,7 @@ var I18N = {};
 				return {parent: this};
 			},
 			className: function(){
-				if(_.size(this.model.get('children')) > 1){
+				if(_.size(this.model.get('children')) >= 1){
 					return 'node';
 				}
 				return 'leaf';

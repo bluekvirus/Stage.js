@@ -4,10 +4,10 @@
 		'data|5-5': [{
 			'val': 'item@INCREMENT(1)',
 			'otherAttr': '@INTEGER(20,50)',
-			'children|2-4': [{
+			'children|1-4': [{
 				'val': 'sub-1-item@INCREMENT(1)',
 				'otherAttr': '@INTEGER(20,50)',
-				'children|2-3': [{
+				'children|1-3': [{
 					'val': 'sub-2-item@INCREMENT(1)',
 					'otherAttr': '@INTEGER(20,50)',
 					//  'children|2-6': [{
