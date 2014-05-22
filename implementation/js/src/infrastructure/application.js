@@ -26,7 +26,7 @@
  * You are in charge of event args as well.
  *
  * Pre-defined events are:
- * app:navigate (contextName, moduleName) - app.onNavigate [pre-defined]
+ * app:navigate (string) or ({context:..., module:...}) - app.onNavigate [pre-defined]
  * app:context-switched (contextName)  - app.onContextSwitched [not-defined]
  * 		[with context:navigate-to (moduleName) on context] - context.onNavigateTo [not-defined]
  * ...(see core/remote-data.js for more.)
@@ -192,7 +192,7 @@ _.each(['Core', 'Util'], function(coreModule){
 		 * @update 2013.09.11
 		 * @update 2014.01.28 
 		 * - refined/simplified the router handler and context-switch navigation support
-		 * - use app:navigate (contextName, moduleName) at all times.
+		 * - use app:navigate (string) or ({context:..., module:...}) at all times when switching contexts.
 		 */
 
 		//Application init: Global listeners
@@ -217,8 +217,11 @@ _.each(['Core', 'Util'], function(coreModule){
 				Application.currentContext.trigger('context:navigate-to', module);
 			};		
 			
-			Application.onNavigate = function(context, module){
-				navigate(context, module);
+			Application.onNavigate = function(options){
+				if(_.isString(options))
+					window.location.hash = 'navigate/' + options;
+				else
+					navigate(options.context, options.module);
 			};
 
 		});	
@@ -271,7 +274,10 @@ _.each(['Core', 'Util'], function(coreModule){
 				},
 				controller: {
 					navigateTo: function(context, module){
-						Application.trigger('app:navigate', context, module);
+						Application.trigger('app:navigate', {
+							context: context, 
+							module: module
+						});
 					},
 				}
 			});

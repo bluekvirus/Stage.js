@@ -6,10 +6,8 @@
  * 
  * Design
  * ------
- * A context is an Application sub-module that has a name and a layout template defined.
- * Since it is a module itself it also serves as a registry for the sub-modules of that context of the Application.
  * Context switch can be triggered by 
- * 	a. use app:navigate (contextName, subPath) event;
+ * 	a. use app:navigate (path) or ({context:..., module:...}) event;
  *  b. click <a href="#/navigate/[contextName][/subPath]"/> tag;
  *
  * 

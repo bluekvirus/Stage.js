@@ -23,12 +23,13 @@
                 _.each(this.$headers, function($h, index){
                     if(stop) return;
                     if($h.offset().top > offset + viewportH * 0.35) {
-                        $result = this.$headers[index-1].data('toc-node');
+                        $result = this.$headers[index-1];
                         stop = true;
                     }
                 }, this);
                 if(!$result) return;
 
+                $result = $result.data('toc-node');
                 //hilight this header and its parents in breadcrumbs
                 var path = [];
                 while($result){
@@ -92,7 +93,6 @@
         },
         onShow: function(){
 
-            this.trigger('view:reload-doc');
             this.libinfo.show(Application.regional({
                 tagName: 'ul',
                 className: 'list-group',
@@ -128,6 +128,13 @@
                     });
                 }
             }));
+        },
+
+        onNavigateTo: function(){
+            var that = this;
+            setTimeout(function(){
+                that.trigger('view:reload-doc');
+            }, 100);
         }
     });
 

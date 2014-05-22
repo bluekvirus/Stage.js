@@ -276,9 +276,35 @@ Create a new file named `myContextA.js`, remember a *Context* is just an special
 ```
 alias: `Application.page()`. 
 
-The `onNavigateTo` method handles the `context:navigate-to` event. This event will get triggered if the application switched to `MyContextA` on the context region, so that you can do some *in-context* navigation followed by. (e.g if the navigation is at `#navigate/MyContextA/SubViewA...`, `SubViewA` will be the subpath argument)
-
 Now, with a *Context* defined, you can define *Regional*s to populate its regions.
+
+
+#####Navigate within a context
+In the above code example, the `onNavigateTo` method handles the `context:navigate-to` event. This event will get triggered on the context if the application switched to `MyContextA`, so that you can do some *in-context* navigation followed by. (e.g if the navigation is at `#navigate/MyContextA/SubViewA...`, `SubViewA` will be the subpath argument)
+
+You can also treat the subpath/module part as a status and render your context accordingly.
+
+#####Navigate between contexts
+Use the `app:navigate` event on `Application` to actively switch between contexts.
+```
+//full path mode
+Application.trigger('app:navigate', 'ABC/EFG...');
+
+//context, module mode
+Application.trigger({
+    context: 'ABC',
+    module: 'EFG...', //alias: subpath
+});
+```
+You can also use the clicking event on an `<a>` anchor tag to switch context without any code involved:
+```
+<a href="#navigate/ABC/EFG..."></a>
+```
+Or, brutally using the actual `window.location` object:
+```
+window.location.hash = '#navigate/ABC/EFG...';
+```
+
 
 ####Step 3. Define Regionals
 Before creating a *Regional*, change your `myContextA.js` into `/context-a/index.js` so you can start adding regional definitions into the context folder as separate code files. Always maintain a clear code hierarchy through file structures. (Try to limit each code file to be **under 300-400 lines** including comments)
@@ -505,7 +531,7 @@ object.onMetaEvent(arguments);
 We have `Application (app:)`, `Context (context:)` and all the `Marionette.xView (view:)` enhanced to accept meta-event triggers. Some of the events are already listened/triggered for you:
 * Application -- app:meta-event
 ```
-app:navigate (contextName, moduleName) - Application.onNavigate [pre-defined]
+app:navigate (string) or ({context:..., module:...}) - Application.onNavigate [pre-defined]
 app:context-switched (contextName)  - [empty stub] - triggered after app:navigate
 //the followings are triggered by Application.remote():
 app:ajax - Application.onAjax [pre-defined]

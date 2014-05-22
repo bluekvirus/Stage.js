@@ -3,8 +3,9 @@ Change Log
 1.1.2 (on going)
 ----------------
 1. Fixed off-by-1 bug in Tree widget;
-2. Make $.overlay to support view: view object - on going; 
-3. Dynamic Themes (currently racing with onShow() measuring...) - on going;
+2. Allow app:navigate event listener to change window.location.hash path;
+3. Make $.overlay to support view: view object - on going; 
+4. Dynamic Themes (currently racing with onShow() measuring...) - pending;
 
 
 1.1.1 (2014-05-19)
