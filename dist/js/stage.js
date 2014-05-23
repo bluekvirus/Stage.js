@@ -36,7 +36,7 @@
  * 
  * Suggested events are: [not included, but you define, you fire to use]
  * app:prompt (options) - app.onPrompt [not-defined]
- * app:error/info/success/warning (options) - app.onError [not-defined]
+ * app:error/info/success/warning (options) - app.onError [not-defined] //window.onerror is now rewired into this event as well.
  * app:login (options) - app.onLogin [not-defined]
  * app:logout (options) - app.onLogout [not-defined]
  * app:server-push (options) - app.onServerPush [not-defined]
@@ -148,13 +148,23 @@ _.each(['Core', 'Util'], function(coreModule){
 		Application.Util.rollTheme(theme);			
 
 		//3. Setup Application
+
+		//3.0 General error rewire
+		window.onerror = function(errorMsg, target, lineNum){
+			Application.trigger('app:error', {
+				errorMsg: errorMsg,
+				target: target,
+				lineNum: lineNum
+			});
+		};
+		
 		//3.1 Ajax Global
 
-		/**
-		 * Progress
-		 * --------
-		 * Configure NProgress as global progress indicator.
-		 */
+			/**
+			 * Progress
+			 * --------
+			 * Configure NProgress as global progress indicator.
+			 */
 		if(window.NProgress){
 			Application.onAjaxStart = function() {
 				NProgress.start();
@@ -164,11 +174,11 @@ _.each(['Core', 'Util'], function(coreModule){
 			};	
 		}
 
-		/**
-		 *
-		 * Crossdomain Support
-		 * ----------------------
-		 */
+			/**
+			 *
+			 * Crossdomain Support
+			 * ----------------------
+			 */
 		Application.onAjax = function(options){
 			//crossdomain:
 			var crossdomain = Application.config.crossdomain;
@@ -647,13 +657,21 @@ Application.Util.Tpl.build('_blank', ' ');
 		return options;
 	}
 
-	function notify(jqXHR, options){
+	function notify(jqXHR){
 		jqXHR
 		.done(function(data, textStatus, jqXHR){
-			app.trigger('app:success', data, options);
+			app.trigger('app:success', {
+				data: data, 
+				textStatus: textStatus,
+				jqXHR: jqXHR,
+			});
 		})
 		.fail(function(jqXHR, textStatus, errorThrown){
-			app.trigger('app:error', errorThrown, options);
+			app.trigger('app:error', {
+				errorThrown: errorThrown,
+				textStatus: textStatus,
+				jqXHR: jqXHR
+			});
 		});
 		return jqXHR;
 	}
@@ -930,7 +948,8 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
  * 1. action tags auto listener hookup with mutex-locking on other action listeners. (this.un/lockUI(no param) and this.isUILocked(no param))
  * 	  	[do not use param in this.un/lockUI() and this.isUILocked() with the current impl since they will be simplified further]
  * 2. tooltip
- * 3. flyTo
+ * 3. overlay - use this view as an overlay
+ * 
  *
  * Fixed
  * -----
@@ -1114,50 +1133,6 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 
 	});
 
-	/**
-	 * Enable FlyTo (do it in initialize())
-	 *
-	 * Options
-	 * -------
-	 * anchor - where to hide this view initially, this will affect the view's position when the anchor scrolls (up-down), the default anchor is 'body'
-	 * 
-	 */
-
-	_.extend(Backbone.Marionette.View.prototype, {
-
-		enableFlyTo: function(anchor){
-			if(!anchor) anchor = 'body';
-			if(_.isString(anchor)) $anchor = $(anchor);
-			this.id = _.uniqueId('free-flow-');
-
-			this.flyTo = function(options){
-				// console.log($('#' + this.id));
-				if(!$('#' + this.id).length) {
-					this.render().$el.attr('id', this.id).css('position', 'absolute');
-					$anchor.append(this.el);
-					if(this.onShow) this.onShow();
-				}
-				this.$el.show();
-				this.shown = true;
-				this.adjust = function(){
-					if(this.shown)
-						this.$el.position(options);//remember the last $.position config
-				}
-				this.adjust();
-				
-			};
-
-			this.adjust = $.noop;
-
-			this.hide = function(){
-				this.$el.hide();
-				this.shown = false;
-			};
-
-			return this;
-		}
-
-	});
 
 	/**
 	 * Fixed enhancement
@@ -1199,6 +1174,31 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 		}
 		if(this.tooltips) {
 			this.enableTooltips(this.tooltips);
+		}
+		if(this.overlay){ //give this view the overlaying ability
+			this.overlay = function(options){
+				/**
+				 * options:
+				 * 1. anchor - css selector of parent html el
+				 * 2. rest of the $.overlay plugin options without content, onShow and onClose
+				 */
+				if(options !== false){
+					var $anchor = $(options.anchor || 'body');
+					var that = this;
+					$anchor.overlay(_.extend(options, {
+						content: this.render().el,
+						onShow: function(){
+							that.trigger('show');
+						},
+						onClose: function(){
+							that.close(); //closed by overlay x
+						}
+					}));
+				}else {
+					//closed by view itself
+					//TBI...
+				}
+			};
 		}
 
 		return Backbone.Marionette.View.apply(this, arguments);

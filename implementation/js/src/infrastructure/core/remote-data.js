@@ -66,13 +66,21 @@
 		return options;
 	}
 
-	function notify(jqXHR, options){
+	function notify(jqXHR){
 		jqXHR
 		.done(function(data, textStatus, jqXHR){
-			app.trigger('app:success', data, options);
+			app.trigger('app:success', {
+				data: data, 
+				textStatus: textStatus,
+				jqXHR: jqXHR,
+			});
 		})
 		.fail(function(jqXHR, textStatus, errorThrown){
-			app.trigger('app:error', errorThrown, options);
+			app.trigger('app:error', {
+				errorThrown: errorThrown,
+				textStatus: textStatus,
+				jqXHR: jqXHR
+			});
 		});
 		return jqXHR;
 	}

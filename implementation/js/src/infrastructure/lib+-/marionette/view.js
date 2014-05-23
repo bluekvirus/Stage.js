@@ -11,7 +11,8 @@
  * 1. action tags auto listener hookup with mutex-locking on other action listeners. (this.un/lockUI(no param) and this.isUILocked(no param))
  * 	  	[do not use param in this.un/lockUI() and this.isUILocked() with the current impl since they will be simplified further]
  * 2. tooltip
- * 3. flyTo
+ * 3. overlay - use this view as an overlay
+ * 
  *
  * Fixed
  * -----
@@ -195,50 +196,6 @@
 
 	});
 
-	/**
-	 * Enable FlyTo (do it in initialize())
-	 *
-	 * Options
-	 * -------
-	 * anchor - where to hide this view initially, this will affect the view's position when the anchor scrolls (up-down), the default anchor is 'body'
-	 * 
-	 */
-
-	_.extend(Backbone.Marionette.View.prototype, {
-
-		enableFlyTo: function(anchor){
-			if(!anchor) anchor = 'body';
-			if(_.isString(anchor)) $anchor = $(anchor);
-			this.id = _.uniqueId('free-flow-');
-
-			this.flyTo = function(options){
-				// console.log($('#' + this.id));
-				if(!$('#' + this.id).length) {
-					this.render().$el.attr('id', this.id).css('position', 'absolute');
-					$anchor.append(this.el);
-					if(this.onShow) this.onShow();
-				}
-				this.$el.show();
-				this.shown = true;
-				this.adjust = function(){
-					if(this.shown)
-						this.$el.position(options);//remember the last $.position config
-				}
-				this.adjust();
-				
-			};
-
-			this.adjust = $.noop;
-
-			this.hide = function(){
-				this.$el.hide();
-				this.shown = false;
-			};
-
-			return this;
-		}
-
-	});
 
 	/**
 	 * Fixed enhancement
@@ -280,6 +237,31 @@
 		}
 		if(this.tooltips) {
 			this.enableTooltips(this.tooltips);
+		}
+		if(this.overlay){ //give this view the overlaying ability
+			this.overlay = function(options){
+				/**
+				 * options:
+				 * 1. anchor - css selector of parent html el
+				 * 2. rest of the $.overlay plugin options without content, onShow and onClose
+				 */
+				if(options !== false){
+					var $anchor = $(options.anchor || 'body');
+					var that = this;
+					$anchor.overlay(_.extend(options, {
+						content: this.render().el,
+						onShow: function(){
+							that.trigger('show');
+						},
+						onClose: function(){
+							that.close(); //closed by overlay x
+						}
+					}));
+				}else {
+					//closed by view itself
+					//TBI...
+				}
+			};
 		}
 
 		return Backbone.Marionette.View.apply(this, arguments);

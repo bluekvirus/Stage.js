@@ -35,7 +35,7 @@
  * 
  * Suggested events are: [not included, but you define, you fire to use]
  * app:prompt (options) - app.onPrompt [not-defined]
- * app:error/info/success/warning (options) - app.onError [not-defined]
+ * app:error/info/success/warning (options) - app.onError [not-defined] //window.onerror is now rewired into this event as well.
  * app:login (options) - app.onLogin [not-defined]
  * app:logout (options) - app.onLogout [not-defined]
  * app:server-push (options) - app.onServerPush [not-defined]
@@ -147,13 +147,23 @@ _.each(['Core', 'Util'], function(coreModule){
 		Application.Util.rollTheme(theme);			
 
 		//3. Setup Application
+
+		//3.0 General error rewire
+		window.onerror = function(errorMsg, target, lineNum){
+			Application.trigger('app:error', {
+				errorMsg: errorMsg,
+				target: target,
+				lineNum: lineNum
+			});
+		};
+		
 		//3.1 Ajax Global
 
-		/**
-		 * Progress
-		 * --------
-		 * Configure NProgress as global progress indicator.
-		 */
+			/**
+			 * Progress
+			 * --------
+			 * Configure NProgress as global progress indicator.
+			 */
 		if(window.NProgress){
 			Application.onAjaxStart = function() {
 				NProgress.start();
@@ -163,11 +173,11 @@ _.each(['Core', 'Util'], function(coreModule){
 			};	
 		}
 
-		/**
-		 *
-		 * Crossdomain Support
-		 * ----------------------
-		 */
+			/**
+			 *
+			 * Crossdomain Support
+			 * ----------------------
+			 */
 		Application.onAjax = function(options){
 			//crossdomain:
 			var crossdomain = Application.config.crossdomain;

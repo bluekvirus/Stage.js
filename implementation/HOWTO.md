@@ -48,7 +48,7 @@ Handling Data:
 * Put more than 2 non-object params in any function signature.
 * Use direct method invocations for view-view, view-context, view-application collaborations.
 
-**Keep your Javascript codes flat and HTML dynamic, style through CSS class.**
+**Keep your JavaScript codes flat and HTML dynamic, style through CSS class.**
 
 
 ###Why not using...
@@ -59,9 +59,9 @@ We choose what we choose when designing this framework simply because we want to
 * Development Framework - AngularJS/EmberJS/Meteor (infrastructure only)
 * Application Framework (All-in-One) - YUI/ExtJS (infrastructure plus widgets and tools)
 
-**The Backbone library can implement them all** (Yes, any client side framework). (Not 100% for Meteor though, since Meteor combines its server into a full-stack solution. You need nodejs in the picture, and we do have a dev-server package called **ajax-box-lite** in the toolset for just that based on the [express.js](http://expressjs.com/4x/) framework). And, if you need more evidence, YUI3 has the exact same concepts from Backbone implemented as its infrastructure. (Why did we mention YUI here? Because of Yahoo!'s Javascript [Architect](http://www.crockford.com/))
+**The Backbone library can implement them all** (Yes, any client side framework). (Not 100% for Meteor though, since Meteor combines its server into a full-stack solution. You need nodejs in the picture, and we do have a dev-server package called **ajax-box-lite** in the toolset for just that based on the [express.js](http://expressjs.com/4x/) framework). And, if you need more evidence, YUI3 has the exact same concepts from Backbone implemented as its infrastructure. (Why did we mention YUI here? Because of Yahoo!'s JavaScript [Architect](http://www.crockford.com/))
 
-In order to accomplish more with less code using Backbone, we picked Backbone.Marionette as our pattern library. It offers cleanup/boilerplate routines and very neat concepts for building large Javascript front-end projects. The resulting framework accomplishes all the big frameworks have promised but with **a thiner and flatter structure**. We believe scripting languages are always going to be the perfect thin glue layer between mechanisms and policies. The Javascript language were picked to glue HTML/CSS and UX but nothing more, it should not be overdosed and attempt to mimic Java. In other words, **only the burger is important**:
+In order to accomplish more with less code using Backbone, we picked Backbone.Marionette as our pattern library. It offers cleanup/boilerplate routines and very neat concepts for building large JavaScript front-end projects. The resulting framework accomplishes all the big frameworks have promised but with **a thiner and flatter structure**. We believe scripting languages are always going to be the perfect thin glue layer between mechanisms and policies. The JavaScript language were picked to glue HTML/CSS and UX but nothing more, it should not be overdosed and attempt to mimic Java. In other words, **only the burger is important**:
 
 <img src="static/resource/default/diagram/Diagram-6.png" alt="HTML is the burger" class="center-block"></img>
 
@@ -118,7 +118,7 @@ and this indicates:
 
 If you don't know what they are, go for a quick look at their websites. (links are provided under the *Included Libraries* area on the left sidebar)
 
-We also maintain a list of 3rd party libraries for the developers to choose from in addition to the base libraries. These utility libraries (e.g jquery-file-upload, store.js, uri.js, raphael.js, marked, moment.js, socket.io.js...) are carefully selected from the many open-source Javascript libraries out there to help with specific but generally-will-appear problems that a developer will encounter during the web application development process. (see more in the **Include other js libraries** section)
+We also maintain a list of 3rd party libraries for the developers to choose from in addition to the base libraries. These utility libraries (e.g jquery-file-upload, store.js, uri.js, raphael.js, marked, moment.js, socket.io.js...) are carefully selected from the many open-source JavaScript libraries out there to help with specific but generally-will-appear problems that a developer will encounter during the web application development process. (see more in the **Include other js libraries** section)
 
 **Remember:** The goal of this framework is to assist you making better use of *Marionette* (thus *Backbone*). It is designed to keep you focused on building dynamic views without worrying about putting/linking/organizing them into a manageable whole. It is very important that you understand the 4 types of views (*ItemView, Layout, CollectionView and CompositeView*) offered by the *Marionette* pattern library. So that you can maximize the efficiency offered by our unique workflow, intuitive toolset and prepared application container.
 
@@ -193,7 +193,7 @@ Minimum `main.js` script looks like this:
 //main.js
 Application.setup().run();
 ```
-You should now see a *blank* page without Javascript error on http://localhost:5000/dev/.
+You should now see a *blank* page without JavaScript error on http://localhost:5000/dev/.
 
 If you are really in a hurry to see some stuff on page, give your application a template:
 ```
@@ -217,13 +217,20 @@ Go to your `main.js` and setup the application by using `Application.setup()`:
 ``` 
 //main.js
 Application.setup({
-    theme: 'your theme name',
-    fullScreen: false | true,
-    template: '#id' or ['<div>...</div>', '<div>...</div>'] or '<div>...</div>'
-    contextRegion: 'your context region marked in template',
-    defaultContext: 'your default context shown upon dom-ready',
-    baseAjaxURI: 'your base url for using Application.remote()',
-    crossdomain: {...} //the crossdomain ajax call configure
+    theme: //'your theme name',
+    fullScreen: //false | true,
+    template: //'#id' or ['<div>...</div>', '<div>...</div>'] or '<div>...</div>'
+    contextRegion: //'your context region name marked in template',
+    defaultContext: //'your default context name to show upon dom-ready',
+    baseAjaxURI: //'your base url for using with Application.remote()',
+    crossdomain: {
+        enabled: //false | true
+        protocol: '', //https or not? default: '' -> http
+        host: '10.128.6.100', 
+        port: '8080',
+        username: 'admin',
+        password: ''
+    } //the crossdomain ajax call configure
 }).run();
 ```
 The configure variables have sensible defaults, you can safely skip configuring them here, however, there is one you might want to change now -- `template`.
@@ -1252,7 +1259,7 @@ i18n/l10n
 ---------
 Internationalization/Localization is always a painful process, making substitution dynamically to the strings and labels appear in the application according to the user locale settings can interfere with the coding process if every string must be coded with a `getResource('actual string')` wrapped around.
 
-Luckily, Javascript is a prototypical language, we can extend the `String` class through its prototype and give every string a way of finding its own translation.
+Luckily, JavaScript is a prototypical language, we can extend the `String` class through its prototype and give every string a way of finding its own translation.
 
 
 ###Cast i18n on strings
@@ -1476,18 +1483,31 @@ Go into `/implementation` and run `bower install` to grab all the monitored 3rd-
 Include your libraries after `dependences.js` in `/implementation/index.html`.
 
 **Tip:** 
-Alternatively, you can always use a *CDN* (Content Delivery Network) to load the Javascript libraries into your index.html (e.g [jsDelivr](http://www.jsdelivr.com/)) However, this will affect the build process since these libraries will not be combined if they are not from local.
-
-
-###What should I put in `/static`?
-`/resource` should contain static resources per locale. (per xx_XX folder, `/default` for locale independent)
-
+Alternatively, you can always use a *CDN* (Content Delivery Network) to load the JavaScript libraries into your index.html (e.g [jsDelivr](http://www.jsdelivr.com/)) However, this will affect the build process since these libraries will not be combined if they are not from local.
 
 ###Upgrade/Update
 Download and replace `stage.js` to update the infrastructure through `bower`:
 ```
 bower update stage
 ```
+
+###What should I put in `/static`?
+`/resource` should contain static resources per locale. (per xx_XX folder, `/default` for locale independent)
+
+###View size measurement error?
+Our dynamic theme loading mechanism is currently racing with el size measuring in views' `onShow()` functions. This is mainly caused by modern browser's ability to multi-threading CSS rendering and JavaScript execution. Here is a quick & dirty solution:
+```
+//index.html
+
+//replace
+<link rel="stylesheet" id="theme-roller">
+//with
+<link rel="stylesheet" type="text/css" href="themes/[your theme]/main.css">
+```
+You will be giving up the dynamic theme loading ability.
+
+###Supporting crossdomain ajax?
+Besides configuring your `Application` with crossdomain setups, your web services must support crossdomain in the first place by replying the ajax calls with additional access control headers. Read more in **Appendix.B.MDN - CORS**.
 
 
 Appendix
@@ -1504,7 +1524,7 @@ see [CHANGELOG.md](https://github.com/bluekvirus/Stage.js/blob/master/CHANGELOG.
 * [CORS](https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS) - crossdomain ajax support.
 * [Web API](https://developer.mozilla.org/en-US/docs/Web/API)
 
-####Javascript
+####JavaScript
 * [Douglas Crockford on js](http://www.crockford.com/javascript/)
 * [Superherojs](http://superherojs.com)
 
