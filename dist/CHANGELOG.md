@@ -5,7 +5,8 @@ Change Log
 1. Fixed off-by-1 bug in Tree widget;
 2. Allow app:navigate event listener to change window.location.hash path;
 3. Rewired window.onerror to fire app:error event;
-4. Removed view.flyTo and added view.overlay method use use views as overlays;
+4. Removed view.flyTo and added view.overlay method to use views as overlays;
+5. Re-run app.setup will override the app.config settings only;
 
 
 1.1.1 (2014-05-19)

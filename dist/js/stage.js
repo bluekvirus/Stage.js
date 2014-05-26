@@ -102,6 +102,13 @@ _.each(['Core', 'Util'], function(coreModule){
 ;(function(){
 
 	Application.setup = function(config){
+		
+		//0. Re-run app.setup will only affect app.config variable.
+		if(Application.config) {
+			_.extend(Application.config, config);
+			return;
+		}
+
 		//1. Configure.
 		Application.config = _.extend({
 
@@ -1182,22 +1189,21 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 				 * 1. anchor - css selector of parent html el
 				 * 2. rest of the $.overlay plugin options without content, onShow and onClose
 				 */
-				if(options !== false){
-					var $anchor = $(options.anchor || 'body');
-					var that = this;
-					$anchor.overlay(_.extend(options, {
-						content: this.render().el,
-						onShow: function(){
-							that.trigger('show');
-						},
-						onClose: function(){
-							that.close(); //closed by overlay x
-						}
-					}));
-				}else {
-					//closed by view itself
-					//TBI...
-				}
+				options = options || {};
+				var $anchor = $(options.anchor || 'body');
+				var that = this;
+				this.listenTo(this, 'close', function(){
+					$anchor.overlay();//close the overlay if this.close() is called.
+				});
+				$anchor.overlay(_.extend(options, {
+					content: this.render().el,
+					onShow: function(){
+						that.trigger('view:show'); //trigger onShow(), might be a bit delayed on screen.
+					},
+					onClose: function(){
+						that.close(); //closed by overlay x
+					}
+				}));
 			};
 		}
 

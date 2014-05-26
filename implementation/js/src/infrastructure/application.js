@@ -101,6 +101,13 @@ _.each(['Core', 'Util'], function(coreModule){
 ;(function(){
 
 	Application.setup = function(config){
+		
+		//0. Re-run app.setup will only affect app.config variable.
+		if(Application.config) {
+			_.extend(Application.config, config);
+			return;
+		}
+
 		//1. Configure.
 		Application.config = _.extend({
 

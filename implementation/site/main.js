@@ -69,7 +69,7 @@ NProgress.configure({showSpinner: false});
                     '<li><a href="#navigate/Demo/Trees"">Tree</a></li>',
                     '<li class="divider"></li>',
                     '<li class="dropdown-header">Accessories</li>',
-                    '<li><a href="#">Notifications</a></li>',
+                    '<li><a href="#navigate/Demo/Notify">Notifications</a></li>',
                     // '<li><a href="#">Terminal</a></li>',
                   '</ul>',
                 '</li>',
