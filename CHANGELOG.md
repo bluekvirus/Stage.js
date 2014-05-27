@@ -1,5 +1,17 @@
 Change Log
 ==========
+1.1.2 (on going)
+----------------
+1. Fixed off-by-1 bug in Tree widget;
+2. Allow app:navigate event listener to change window.location.hash path;
+3. Rewired window.onerror to fire app:error event;
+4. Removed view.flyTo and added view.overlay method to use views as overlays;
+5. Re-run app.setup will override the app.config settings only;
+6. Added context:navigate-away event for saving context state;
+7. Added auto-caching to $.md plugin using $el.data();
+8. Fixed bug in $.overlay() css recovery upon closing;
+
+
 1.1.1 (2014-05-19)
 ------------------
 1. Basic Editor: +options.remote (fetch options with app.remote);

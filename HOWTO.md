@@ -1,4 +1,4 @@
-<img class="project-title"></img>
+<i class="project-title"></i>
 <hr/>
 Building multi-context rich-client web applications in the modern way.
 [@Tim (Zhiyuan) Liu](mailto:bluekvirus@gmail.com)
@@ -48,7 +48,7 @@ Handling Data:
 * Put more than 2 non-object params in any function signature.
 * Use direct method invocations for view-view, view-context, view-application collaborations.
 
-**Keep your Javascript codes flat and HTML dynamic, style through CSS class.**
+**Keep your JavaScript codes flat and HTML dynamic, style through CSS class.**
 
 
 ###Why not using...
@@ -59,9 +59,9 @@ We choose what we choose when designing this framework simply because we want to
 * Development Framework - AngularJS/EmberJS/Meteor (infrastructure only)
 * Application Framework (All-in-One) - YUI/ExtJS (infrastructure plus widgets and tools)
 
-**The Backbone library can implement them all** (Yes, any client side framework). (Not 100% for Meteor though, since Meteor combines its server into a full-stack solution. You need nodejs in the picture, and we do have a dev-server package called **ajax-box-lite** in the toolset for just that based on the [express.js](http://expressjs.com/4x/) framework). And, if you need more evidence, YUI3 has the exact same concepts from Backbone implemented as its infrastructure. (Why did we mention YUI here? Because of Yahoo!'s Javascript [Architect](http://www.crockford.com/))
+**The Backbone library can implement them all** (Yes, any client side framework). (Not 100% for Meteor though, since Meteor combines its server into a full-stack solution. You need nodejs in the picture, and we do have a dev-server package called **ajax-box-lite** in the toolset for just that based on the [express.js](http://expressjs.com/4x/) framework). And, if you need more evidence, YUI3 has the exact same concepts from Backbone implemented as its infrastructure. (Why did we mention YUI here? Because of Yahoo!'s JavaScript [Architect](http://www.crockford.com/))
 
-In order to accomplish more with less code using Backbone, we picked Backbone.Marionette as our pattern library. It offers cleanup/boilerplate routines and very neat concepts for building large Javascript front-end projects. The resulting framework accomplishes all the big frameworks have promised but with **a thiner and flatter structure**. We believe scripting languages are always going to be the perfect thin glue layer between mechanisms and policies. The Javascript language were picked to glue HTML/CSS and UX but nothing more, it should not be overdosed and attempt to mimic Java. In other words, **only the burger is important**:
+In order to accomplish more with less code using Backbone, we picked Backbone.Marionette as our pattern library. It offers cleanup/boilerplate routines and very neat concepts for building large JavaScript front-end projects. The resulting framework accomplishes all the big frameworks have promised but with **a thiner and flatter structure**. We believe scripting languages are always going to be the perfect thin glue layer between mechanisms and policies. The JavaScript language were picked to glue HTML/CSS and UX but nothing more, it should not be overdosed and attempt to mimic Java. In other words, **only the burger is important**:
 
 <img src="static/resource/default/diagram/Diagram-6.png" alt="HTML is the burger" class="center-block"></img>
 
@@ -118,7 +118,7 @@ and this indicates:
 
 If you don't know what they are, go for a quick look at their websites. (links are provided under the *Included Libraries* area on the left sidebar)
 
-We also maintain a list of 3rd party libraries for the developers to choose from in addition to the base libraries. These utility libraries (e.g jquery-file-upload, store.js, uri.js, raphael.js, marked, moment.js, socket.io.js...) are carefully selected from the many open-source Javascript libraries out there to help with specific but generally-will-appear problems that a developer will encounter during the web application development process. (see more in the **Include other js libraries** section)
+We also maintain a list of 3rd party libraries for the developers to choose from in addition to the base libraries. These utility libraries (e.g jquery-file-upload, store.js, uri.js, raphael.js, marked, moment.js, socket.io.js...) are carefully selected from the many open-source JavaScript libraries out there to help with specific but generally-will-appear problems that a developer will encounter during the web application development process. (see more in the **Include other js libraries** section)
 
 **Remember:** The goal of this framework is to assist you making better use of *Marionette* (thus *Backbone*). It is designed to keep you focused on building dynamic views without worrying about putting/linking/organizing them into a manageable whole. It is very important that you understand the 4 types of views (*ItemView, Layout, CollectionView and CompositeView*) offered by the *Marionette* pattern library. So that you can maximize the efficiency offered by our unique workflow, intuitive toolset and prepared application container.
 
@@ -193,7 +193,7 @@ Minimum `main.js` script looks like this:
 //main.js
 Application.setup().run();
 ```
-You should now see a *blank* page without Javascript error on http://localhost:5000/dev/.
+You should now see a *blank* page without JavaScript error on http://localhost:5000/dev/.
 
 If you are really in a hurry to see some stuff on page, give your application a template:
 ```
@@ -217,16 +217,41 @@ Go to your `main.js` and setup the application by using `Application.setup()`:
 ``` 
 //main.js
 Application.setup({
-    theme: 'your theme name',
-    fullScreen: false | true,
-    template: '#id' or ['<div>...</div>', '<div>...</div>'] or '<div>...</div>'
-    contextRegion: 'your context region marked in template',
-    defaultContext: 'your default context shown upon dom-ready',
-    baseAjaxURI: 'your base url for using Application.remote()',
-    crossdomain: {...} //the crossdomain ajax call configure
+    theme: //'your theme name',
+    fullScreen: //false | true,
+    template: //'#id' or ['<div>...</div>', '<div>...</div>'] or '<div>...</div>'
+    contextRegion: //'your context region name marked in template',
+    defaultContext: //'your default context name to show upon dom-ready',
+    baseAjaxURI: //'your base url for using with Application.remote()',
+    crossdomain: {
+        enabled: //false | true
+        protocol: '', //https or not? default: '' -> http
+        host: '10.128.6.100', 
+        port: '8080',
+        username: 'admin',
+        password: ''
+    } //the crossdomain ajax call configure
 }).run();
 ```
 The configure variables have sensible defaults, you can safely skip configuring them here, however, there is one you might want to change now -- `template`.
+
+**Tip:** You can always change the application configure by using `Application.setup()` again. For example, you can configure your application in a two-step way:
+```
+//main.js
+Application.setup({
+    crossdomain: false
+}).run();
+
+//crossdomain.js
+Application.setup({
+    crossdomain: {
+        enabled: true,
+        ...
+        ...
+    }
+});
+```
+Exclude the `crossdomain.js` from your index.html to stop ajax calls from using crossdomain setups.
 
 Since your goal is to build a *multi-context* application, you will need some *regions* in the application template and a *Context Region*:
 ```javascript
@@ -268,17 +293,50 @@ Create a new file named `myContextA.js`, remember a *Context* is just an special
     app.context('MyContextA', { //omitting the name indicates context:Default
         template: '...',
         //..., normal Marionette.Layout options
-        onNavigateTo: function(subpath) {
+        onNavigateTo: function(subpath){
             //...
+        },
+        onNavigateAway: function(){
+            //... 
+            //if you want to save context status (through localStorage maybe)
         }
     });
 })(Application);
 ```
 alias: `Application.page()`. 
 
-The `onNavigateTo` method handles the `context:navigate-to` event. This event will get triggered if the application switched to `MyContextA` on the context region, so that you can do some *in-context* navigation followed by. (e.g if the navigation is at `#navigate/MyContextA/SubViewA...`, `SubViewA` will be the subpath argument)
-
 Now, with a *Context* defined, you can define *Regional*s to populate its regions.
+
+
+#####Navigate within a context
+In the above code example, the `onNavigateTo` method handles the `context:navigate-to` event. This event will get triggered on the context if the application switched to `MyContextA`, so that you can do some *in-context* navigation followed by. (e.g if the navigation is at `#navigate/MyContextA/SubViewA...`, `SubViewA` will be the subpath argument)
+
+You can also treat the subpath/module part as a status and render your context accordingly.
+
+
+#####Navigate between contexts
+Use the `app:navigate` event on `Application` to actively switch between contexts.
+```
+//full path mode
+Application.trigger('app:navigate', 'ABC/EFG...');
+
+//context, module mode
+Application.trigger({
+    context: 'ABC',
+    module: 'EFG...', //alias: subpath
+});
+```
+You can also use the clicking event on an `<a>` anchor tag to switch context without any code involved:
+```
+<a href="#navigate/ABC/EFG..."></a>
+```
+Or, brutally using the actual `window.location` object:
+```
+window.location.hash = '#navigate/ABC/EFG...';
+```
+
+As you can see there is also an `context:navigate-away` event triggered to call `onNavigateAway` method on a context when the application is switching away from one. Use this listener if you want to store some of the context state and recover in `onNavigateTo`. We recommend that you use the localStorage feature of HTML5 and we have already include a library for you in the framework distribution. (see [store.js](https://github.com/marcuswestin/store.js) for more)
+
 
 ####Step 3. Define Regionals
 Before creating a *Regional*, change your `myContextA.js` into `/context-a/index.js` so you can start adding regional definitions into the context folder as separate code files. Always maintain a clear code hierarchy through file structures. (Try to limit each code file to be **under 300-400 lines** including comments)
@@ -505,7 +563,7 @@ object.onMetaEvent(arguments);
 We have `Application (app:)`, `Context (context:)` and all the `Marionette.xView (view:)` enhanced to accept meta-event triggers. Some of the events are already listened/triggered for you:
 * Application -- app:meta-event
 ```
-app:navigate (contextName, moduleName) - Application.onNavigate [pre-defined]
+app:navigate (string) or ({context:..., module:...}) - Application.onNavigate [pre-defined]
 app:context-switched (contextName)  - [empty stub] - triggered after app:navigate
 //the followings are triggered by Application.remote():
 app:ajax - Application.onAjax [pre-defined]
@@ -1116,7 +1174,7 @@ collectionView.trigger('view:load-data', {
 ###Overlay
 <span class="label label-info">jQuery plugin</span>
 
-**Purpose**: Provide you a way of overlaying custom views on screen.
+**Purpose**: Provide you a way of overlaying custom content/views on screen.
 
 **Options**:
 ```
@@ -1146,6 +1204,26 @@ $('body').overlay(false, {
 ```
 **Note**: Repeatedly open overlays on the same $(el) will have no effect. Close the previous one first. There are also 3rd-party libraries available for creating simple overlays over `<a>` and `<img>` tags (e.g [colorbox](http://www.jacklmoore.com/colorbox/)).
 
+**Short-cut**: Use with custom views
+```
+var view = Application.view({
+    ...,
+    overlay: true or {
+        ... //normal $.overlay configure without (content, onClose)
+    },
+    ...
+}, true);
+
+view.overlay({
+    anchor: '...', //default 'body' - css selector
+});
+
+view.close(); //this will close the overlay as well;
+```
+This is the recommended way of using custom views as overlays.
+
+**Note**: After closing the overlayed view, remember to re-new it before showing as overlay again.
+
 
 ###Markdown
 <span class="label label-info">jQuery plugin</span>
@@ -1159,7 +1237,7 @@ marked: //marked options see [https://github.com/chjj/marked]
 hljs: //highlight js configure (e.g languages, classPrefix...)
 cb: //function($el) - callback function once the contend has been added
 ```
-**Plus**: The tag you used to call `$.md()` can have `md="..."` or `data-md="..."` attribute to indicate the .md file url.
+**Plus**: The tag you used to call `$.md()` can have `data-url="..."` attribute to indicate the .md file url.
 
 **Usage**:
 ```
@@ -1176,6 +1254,21 @@ this.doc.$el.md({
 });
 ...
 ```
+
+**Cached Result**:
+```
+//after applying $.md() to an element you can get the cached result by
+this.doc.$el.data('md');
+
+/*
+The above call returns:
+{
+    data: ..., //the data returned by ajax loading;
+    content: ..., //the generated md content in html
+}
+ */
+```
+The `data` cached by `$.md` will be used to compare with the result returned by the next call to `$.md` on the same DOM element. If they happen to be the same, there won't be any calculation performed through the `markd` library. `$el.data('md').content` will be reused.
 
 We recommend that you use the [Github flavored version.](https://help.github.com/articles/github-flavored-markdown) ([What's Markdown?](http://daringfireball.net/projects/markdown/))
 
@@ -1226,7 +1319,7 @@ i18n/l10n
 ---------
 Internationalization/Localization is always a painful process, making substitution dynamically to the strings and labels appear in the application according to the user locale settings can interfere with the coding process if every string must be coded with a `getResource('actual string')` wrapped around.
 
-Luckily, Javascript is a prototypical language, we can extend the `String` class through its prototype and give every string a way of finding its own translation.
+Luckily, JavaScript is a prototypical language, we can extend the `String` class through its prototype and give every string a way of finding its own translation.
 
 
 ###Cast i18n on strings
@@ -1450,18 +1543,37 @@ Go into `/implementation` and run `bower install` to grab all the monitored 3rd-
 Include your libraries after `dependences.js` in `/implementation/index.html`.
 
 **Tip:** 
-Alternatively, you can always use a *CDN* (Content Delivery Network) to load the Javascript libraries into your index.html (e.g [jsDelivr](http://www.jsdelivr.com/)) However, this will affect the build process since these libraries will not be combined if they are not from local.
-
-
-###What should I put in `/static`?
-`/resource` should contain static resources per locale. (per xx_XX folder, `/default` for locale independent)
-
+Alternatively, you can always use a *CDN* (Content Delivery Network) to load the JavaScript libraries into your index.html (e.g [jsDelivr](http://www.jsdelivr.com/)) However, this will affect the build process since these libraries will not be combined if they are not from local.
 
 ###Upgrade/Update
 Download and replace `stage.js` to update the infrastructure through `bower`:
 ```
 bower update stage
 ```
+
+###What should I put in `/static`?
+`/resource` should contain static resources per locale. (per xx_XX folder, `/default` for locale independent)
+
+###View size measurement error?
+Our dynamic theme loading mechanism is currently racing with el size measuring in views' `onShow()` functions. This is mainly caused by modern browser's ability to multi-threading CSS rendering and JavaScript execution. Here is a quick & dirty solution:
+```
+//index.html
+
+//replace
+<link rel="stylesheet" id="theme-roller">
+//with
+<link rel="stylesheet" type="text/css" href="themes/[your theme]/main.css">
+```
+You will be giving up the dynamic theme loading ability.
+
+###Need tabs in the UI?
+Tabs are not widgets, they may contain widget(s). This is why we didn't include them in the base widget collection. You can always start a new view with proper templating to enable tabs (see [Bootstarp.Tabs](http://getbootstrap.com/javascript/#tabs))
+
+Remember, use tabs as last resort and only in a layout template.
+
+
+###Supporting crossdomain ajax?
+Besides configuring your `Application` with crossdomain setups, your web services must support crossdomain in the first place by replying the ajax calls with additional access control headers. Read more in **Appendix.B.MDN - CORS**.
 
 
 Appendix
@@ -1478,7 +1590,7 @@ see [CHANGELOG.md](https://github.com/bluekvirus/Stage.js/blob/master/CHANGELOG.
 * [CORS](https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS) - crossdomain ajax support.
 * [Web API](https://developer.mozilla.org/en-US/docs/Web/API)
 
-####Javascript
+####JavaScript
 * [Douglas Crockford on js](http://www.crockford.com/javascript/)
 * [Superherojs](http://superherojs.com)
 
