@@ -25,13 +25,20 @@
  * 5. Use app:[your-event] format, and then register a global listener on app by using app.onYourEvent = function(e, your args);
  * You are in charge of event args as well.
  *
- * Pre-defined events are:
+ * Pre-defined events
+ * -navigation:
  * app:navigate (string) or ({context:..., module:...}) - app.onNavigate [pre-defined]
+ * context:navigate-away - context.onNavigateAway [not-defined]
  * app:context-switched (contextName)  - app.onContextSwitched [not-defined]
- * 		[with context:navigate-to (moduleName) on context] - context.onNavigateTo [not-defined]
+ * context:navigate-to (moduleName) on context] - context.onNavigateTo [not-defined]
+ *
+ * -ajax 
  * ...(see core/remote-data.js for more.)
+ *
+ * -view and regions
  * region:load-view (view/widget name registered in app, [widget init options])
  * view:render-data (data)
+ * ...(see more in documentations)
  * 
  * Suggested events are: [not included, but you define, you fire to use]
  * app:prompt (options) - app.onPrompt [not-defined]
@@ -223,7 +230,8 @@ _.each(['Core', 'Util'], function(coreModule){
 				var TargetContext = Application.Core.Context[context];
 				if(!TargetContext) throw new Error('DEV::Application::You must have the requred context ' + context + ' defined...'); //see - special/registry/context.js			
 				if(!Application.currentContext || Application.currentContext.name !== context) {
-					Application.currentContext = new TargetContext; //re-create each context upon switching (can give state-persist options later, TBI)
+					if(Application.currentContext) Application.currentContext.trigger('context:navigate-away'); //save your context state within onNavigateAway()
+					Application.currentContext = new TargetContext; //re-create each context upon switching
 					Application.Util.addMetaEvent(Application.currentContext, 'context');
 
 					if(!Application[Application.config.contextRegion]) throw new Error('DEV::Application::You don\'t have region \'' + Application.config.contextRegion + '\' defined');		
@@ -231,7 +239,7 @@ _.each(['Core', 'Util'], function(coreModule){
 					//fire a notification round to the sky.
 					Application.trigger('app:context-switched', Application.currentContext.name);
 				}			
-				Application.currentContext.trigger('context:navigate-to', module);
+				Application.currentContext.trigger('context:navigate-to', module); //recover your context state within onNavigateTo()
 			};		
 			
 			Application.onNavigate = function(options){

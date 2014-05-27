@@ -7,6 +7,8 @@ Change Log
 3. Rewired window.onerror to fire app:error event;
 4. Removed view.flyTo and added view.overlay method to use views as overlays;
 5. Re-run app.setup will override the app.config settings only;
+6. Added context:navigate-away event for saving context state;
+7. Added auto-caching to $.md plugin using $el.data();
 
 
 1.1.1 (2014-05-19)

@@ -239,19 +239,19 @@
 			this.enableTooltips(this.tooltips);
 		}
 		if(this.overlay){ //give this view the overlaying ability
+			this._overlayConfig = _.isBoolean(this.overlay)? {}: this.overlay;
 			this.overlay = function(options){
 				/**
 				 * options:
 				 * 1. anchor - css selector of parent html el
 				 * 2. rest of the $.overlay plugin options without content, onShow and onClose
 				 */
-				options = options || {};
 				var $anchor = $(options.anchor || 'body');
 				var that = this;
 				this.listenTo(this, 'close', function(){
 					$anchor.overlay();//close the overlay if this.close() is called.
 				});
-				$anchor.overlay(_.extend(options, {
+				$anchor.overlay(_.extend(this._overlayConfig, options, {
 					content: this.render().el,
 					onShow: function(){
 						that.trigger('view:show'); //trigger onShow(), might be a bit delayed on screen.

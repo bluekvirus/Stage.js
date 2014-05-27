@@ -26,13 +26,20 @@
  * 5. Use app:[your-event] format, and then register a global listener on app by using app.onYourEvent = function(e, your args);
  * You are in charge of event args as well.
  *
- * Pre-defined events are:
+ * Pre-defined events
+ * -navigation:
  * app:navigate (string) or ({context:..., module:...}) - app.onNavigate [pre-defined]
+ * context:navigate-away - context.onNavigateAway [not-defined]
  * app:context-switched (contextName)  - app.onContextSwitched [not-defined]
- * 		[with context:navigate-to (moduleName) on context] - context.onNavigateTo [not-defined]
+ * context:navigate-to (moduleName) on context] - context.onNavigateTo [not-defined]
+ *
+ * -ajax 
  * ...(see core/remote-data.js for more.)
+ *
+ * -view and regions
  * region:load-view (view/widget name registered in app, [widget init options])
  * view:render-data (data)
+ * ...(see more in documentations)
  * 
  * Suggested events are: [not included, but you define, you fire to use]
  * app:prompt (options) - app.onPrompt [not-defined]
@@ -224,7 +231,8 @@ _.each(['Core', 'Util'], function(coreModule){
 				var TargetContext = Application.Core.Context[context];
 				if(!TargetContext) throw new Error('DEV::Application::You must have the requred context ' + context + ' defined...'); //see - special/registry/context.js			
 				if(!Application.currentContext || Application.currentContext.name !== context) {
-					Application.currentContext = new TargetContext; //re-create each context upon switching (can give state-persist options later, TBI)
+					if(Application.currentContext) Application.currentContext.trigger('context:navigate-away'); //save your context state within onNavigateAway()
+					Application.currentContext = new TargetContext; //re-create each context upon switching
 					Application.Util.addMetaEvent(Application.currentContext, 'context');
 
 					if(!Application[Application.config.contextRegion]) throw new Error('DEV::Application::You don\'t have region \'' + Application.config.contextRegion + '\' defined');		
@@ -232,7 +240,7 @@ _.each(['Core', 'Util'], function(coreModule){
 					//fire a notification round to the sky.
 					Application.trigger('app:context-switched', Application.currentContext.name);
 				}			
-				Application.currentContext.trigger('context:navigate-to', module);
+				Application.currentContext.trigger('context:navigate-to', module); //recover your context state within onNavigateTo()
 			};		
 			
 			Application.onNavigate = function(options){
@@ -1183,19 +1191,19 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 			this.enableTooltips(this.tooltips);
 		}
 		if(this.overlay){ //give this view the overlaying ability
+			this._overlayConfig = _.isBoolean(this.overlay)? {}: this.overlay;
 			this.overlay = function(options){
 				/**
 				 * options:
 				 * 1. anchor - css selector of parent html el
 				 * 2. rest of the $.overlay plugin options without content, onShow and onClose
 				 */
-				options = options || {};
 				var $anchor = $(options.anchor || 'body');
 				var that = this;
 				this.listenTo(this, 'close', function(){
 					$anchor.overlay();//close the overlay if this.close() is called.
 				});
-				$anchor.overlay(_.extend(options, {
+				$anchor.overlay(_.extend(this._overlayConfig, options, {
 					content: this.render().el,
 					onShow: function(){
 						that.trigger('view:show'); //trigger onShow(), might be a bit delayed on screen.
@@ -1973,6 +1981,7 @@ var I18N = {};
  * @author Tim.Liu
  * @created 2013.11.05
  * @updated 2014.03.02
+ * @updated 2014.05.27 (added md data caching)
  */
 
 (function($){
@@ -2003,9 +2012,20 @@ var I18N = {};
 
 		return this.each(function(index, el){
 			var $el = $(el);
-			var url = options.url || $el.attr('md') || $el.data('md');
+			var config = $el.data();
+			var url = options.url || config.url;
 			$.get(url).done(function(res){
-				$el.html(marked(res, options.marked)).addClass('md-content');
+				if(config.md && config.md.data === res) {
+					var content = config.md.content;
+				}else {
+					var content = marked(res, options.marked);
+					//cache the md data and calculation
+					$el.data('md', {
+						data: res,
+						content: content
+					});
+				}
+				$el.html(content).addClass('md-content');
 				theme($el, options);
 				options.cb && options.cb($el);
 			});

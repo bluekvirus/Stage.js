@@ -27,6 +27,7 @@
  * @author Tim.Liu
  * @created 2013.11.05
  * @updated 2014.03.02
+ * @updated 2014.05.27 (added md data caching)
  */
 
 (function($){
@@ -57,9 +58,20 @@
 
 		return this.each(function(index, el){
 			var $el = $(el);
-			var url = options.url || $el.attr('md') || $el.data('md');
+			var config = $el.data();
+			var url = options.url || config.url;
 			$.get(url).done(function(res){
-				$el.html(marked(res, options.marked)).addClass('md-content');
+				if(config.md && config.md.data === res) {
+					var content = config.md.content;
+				}else {
+					var content = marked(res, options.marked);
+					//cache the md data and calculation
+					$el.data('md', {
+						data: res,
+						content: content
+					});
+				}
+				$el.html(content).addClass('md-content');
 				theme($el, options);
 				options.cb && options.cb($el);
 			});

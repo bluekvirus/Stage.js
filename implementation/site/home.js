@@ -27,7 +27,7 @@
 			//title + short desc
 			this.title.show(app.area({
 				template: [
-					'<img class="project-title"></img>',
+					'<i class="project-title" style="margin-bottom:20px;"></i>',
 					marked.parse([
 						/////////////////Intro/////////////////
 						'Learned Backbone? Tried Marionette? Still searching for a complete solution? ',
@@ -74,7 +74,7 @@
 	app.area('Home.Footer', {
 		template: [
 			'<span class="pull-right github-link"><a href="https://github.com/bluekvirus/Stage.js/"><i class="fa fa-github"></i>View on Github</a></span>',
-			'<p>Super-powered by Stage.js ©2013-2014</p>',
+			'<p>Super-powered by Stage.js © 2013-2014</p>',
 			'<p>Code licensed under The <a href="http://opensource.org/licenses/MIT">MIT</a> License. Documentation licensed under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>',
 		]
 	});

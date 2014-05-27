@@ -1,4 +1,4 @@
-<img class="project-title"></img>
+<i class="project-title"></i>
 <hr/>
 Building multi-context rich-client web applications in the modern way.
 [@Tim (Zhiyuan) Liu](mailto:bluekvirus@gmail.com)
@@ -235,6 +235,24 @@ Application.setup({
 ```
 The configure variables have sensible defaults, you can safely skip configuring them here, however, there is one you might want to change now -- `template`.
 
+**Tip:** You can always change the application configure by using `Application.setup()` again. For example, you can configure your application in a two-step way:
+```
+//main.js
+Application.setup({
+    crossdomain: false
+}).run();
+
+//crossdomain.js
+Application.setup({
+    crossdomain: {
+        enabled: true,
+        ...
+        ...
+    }
+});
+```
+Exclude the `crossdomain.js` from your index.html to stop ajax calls from using crossdomain setups.
+
 Since your goal is to build a *multi-context* application, you will need some *regions* in the application template and a *Context Region*:
 ```javascript
 //main.js
@@ -275,8 +293,12 @@ Create a new file named `myContextA.js`, remember a *Context* is just an special
     app.context('MyContextA', { //omitting the name indicates context:Default
         template: '...',
         //..., normal Marionette.Layout options
-        onNavigateTo: function(subpath) {
+        onNavigateTo: function(subpath){
             //...
+        },
+        onNavigateAway: function(){
+            //... 
+            //if you want to save context status (through localStorage maybe)
         }
     });
 })(Application);
@@ -290,6 +312,7 @@ Now, with a *Context* defined, you can define *Regional*s to populate its region
 In the above code example, the `onNavigateTo` method handles the `context:navigate-to` event. This event will get triggered on the context if the application switched to `MyContextA`, so that you can do some *in-context* navigation followed by. (e.g if the navigation is at `#navigate/MyContextA/SubViewA...`, `SubViewA` will be the subpath argument)
 
 You can also treat the subpath/module part as a status and render your context accordingly.
+
 
 #####Navigate between contexts
 Use the `app:navigate` event on `Application` to actively switch between contexts.
@@ -311,6 +334,8 @@ Or, brutally using the actual `window.location` object:
 ```
 window.location.hash = '#navigate/ABC/EFG...';
 ```
+
+As you can see there is also an `context:navigate-away` event triggered to call `onNavigateAway` method on a context when the application is switching away from one. Use this listener if you want to store some of the context state and recover in `onNavigateTo`. We recommend that you use the localStorage feature of HTML5 and we have already include a library for you in the framework distribution. (see [store.js](https://github.com/marcuswestin/store.js) for more)
 
 
 ####Step 3. Define Regionals
@@ -1179,6 +1204,24 @@ $('body').overlay(false, {
 ```
 **Note**: Repeatedly open overlays on the same $(el) will have no effect. Close the previous one first. There are also 3rd-party libraries available for creating simple overlays over `<a>` and `<img>` tags (e.g [colorbox](http://www.jacklmoore.com/colorbox/)).
 
+**Short-cut**:
+```
+var view = Application.view({
+    ...,
+    overlay: true or {
+        ... //normal $.overlay configure without (content, onShow, onClose)
+    },
+    ...
+}, true);
+
+view.overlay({
+    anchor: '...', //default 'body' - css selector
+});
+
+view.close(); //this will close the overlay as well;
+```
+This is the recommended way of using custom views as overlays.
+
 
 ###Markdown
 <span class="label label-info">jQuery plugin</span>
@@ -1192,7 +1235,7 @@ marked: //marked options see [https://github.com/chjj/marked]
 hljs: //highlight js configure (e.g languages, classPrefix...)
 cb: //function($el) - callback function once the contend has been added
 ```
-**Plus**: The tag you used to call `$.md()` can have `md="..."` or `data-md="..."` attribute to indicate the .md file url.
+**Plus**: The tag you used to call `$.md()` can have `data-url="..."` attribute to indicate the .md file url.
 
 **Usage**:
 ```
@@ -1209,6 +1252,21 @@ this.doc.$el.md({
 });
 ...
 ```
+
+**Cached Result**:
+```
+//after applying $.md() to an element you can get the cached result by
+this.doc.$el.data('md');
+
+/*
+The above call returns:
+{
+    data: ..., //the data returned by ajax loading;
+    content: ..., //the generated md content in html
+}
+ */
+```
+The `data` cached by `$.md` will be used to compare with the result returned by the next call to `$.md` on the same DOM element. If they happen to be the same, there won't be any calculation performed through the `markd` library. `$el.data('md').content` will be reused.
 
 We recommend that you use the [Github flavored version.](https://help.github.com/articles/github-flavored-markdown) ([What's Markdown?](http://daringfireball.net/projects/markdown/))
 

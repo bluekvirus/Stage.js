@@ -1,4 +1,6 @@
-    Application.page('Document', {
+;(function(app){
+
+    app.page('Document', {
         className: 'container-fluid',
         template: [
             '<div class="row">',
@@ -8,12 +10,12 @@
                 '</div>',
                 '<div class="col-sm-7">',
                     '<div region="breadcrumbs" view="Doc.Breadcrumbs" style="position: fixed; top: 0; right: 0; display:none"></div>',
-                    '<div region="doc" md="HOWTO.md" action="refresh"></div>',
+                    '<div region="doc" data-url="HOWTO.md"></div>',
                 '</div>',
             '</div>'
         ],
         initialize: function(){
-            this.listenTo(Application, 'app:scroll', function(offset){
+            this.listenTo(app, 'app:scroll', function(offset){
                 if(!this.$headers || offset < 150) {
                     this.breadcrumbs.$el.hide();
                     return;
@@ -57,7 +59,7 @@
         },
         actions: {
             refresh: function($region, e){
-                if(e.altKey !== true) return; //both Unix and Windows
+                //if(e.altKey !== true) return; //both Unix and Windows
                 this.trigger('view:reload-doc');
             }
         },
@@ -72,7 +74,7 @@
                         ignoreRoot: true,
                         headerHTML: '<div class="text-muted">Table of Content</div><hr/>'
                     });
-                    that.toc.show(Application.regional({
+                    that.toc.show(app.regional({
                         //no name means to use it anonymously, which in turn creates it right away. 
                         template: $el.data('toc').html,
                         actions: {
@@ -93,7 +95,7 @@
         },
         onShow: function(){
 
-            this.libinfo.show(Application.regional({
+            this.libinfo.show(app.regional({
                 tagName: 'ul',
                 className: 'list-group',
                 template:[ 
@@ -110,7 +112,7 @@
                 ],
                 onShow: function(){
                     var that = this;
-                    Application.remote('js/lib/dependencies.json').done(function(data){
+                    app.remote('js/lib/dependencies.json').done(function(data){
                         _.extend(data, {
                             created: moment(data.created).fromNow()
                         });
@@ -130,20 +132,22 @@
             }));
         },
 
+        onNavigateAway: function(){
+            store.set('doc', this.doc.$el.data('md')); //use localStorage to cache the context state;
+        },
+
         onNavigateTo: function(){
-            var that = this;
-            setTimeout(function(){
-                that.trigger('view:reload-doc');
-            }, 100);
+            this.doc.$el.data('md', store.get('doc'));
+            this.trigger('view:reload-doc');
         }
     });
 
     //Document - Regionals
-    Application.area('Doc.Breadcrumbs', {
+    app.area('Doc.Breadcrumbs', {
         tagName: 'ol',
         className: 'breadcrumb',
         template: [
-            '<li><i class="btn btn-primary btn-xs fa fa-arrow-up" action="goTop"></i></li>',
+            '<li><i class="btn btn-primary btn-xs fa fa-arrow-up" action="goTop"></i> <i class="btn btn-warning btn-xs fa fa-refresh" action="refresh"></i></li>',
             '{{#each path}}',
                 '<li class="breadcrumb-item" ui="breadcrumb-item">',
                     '<a href="#" action="goTo" data-id="{{id}}">{{ title }}</a>',
@@ -161,6 +165,8 @@
             '{{/each}}',
         ],
         actions: {
+            _bubble: true,
+
             goTop: function(){
                 $window.scrollTop(0);
             },
@@ -168,6 +174,7 @@
                 e.preventDefault();
                 this.parentCt.trigger('view:go-to-topic', $btn.data('id'));
             }
+
         },
         events: {
             'mouseenter .breadcrumb-item' : function(e){
@@ -182,3 +189,5 @@
         }
 
     });
+
+})(Application);
