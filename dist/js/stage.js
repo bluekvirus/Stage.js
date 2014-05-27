@@ -1196,22 +1196,22 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 				/**
 				 * options:
 				 * 1. anchor - css selector of parent html el
-				 * 2. rest of the $.overlay plugin options without content, onShow and onClose
+				 * 2. rest of the $.overlay plugin options without content and onClose
 				 */
+				options = options || {};
 				var $anchor = $(options.anchor || 'body');
 				var that = this;
 				this.listenTo(this, 'close', function(){
 					$anchor.overlay();//close the overlay if this.close() is called.
 				});
+				this.render().trigger('view:show');
 				$anchor.overlay(_.extend(this._overlayConfig, options, {
-					content: this.render().el,
-					onShow: function(){
-						that.trigger('view:show'); //trigger onShow(), might be a bit delayed on screen.
-					},
+					content: this.el,
 					onClose: function(){
 						that.close(); //closed by overlay x
 					}
 				}));
+				return this;
 			};
 		}
 
@@ -2230,12 +2230,14 @@ var I18N = {};
 					complete: function(){
 						options.onClose && options.onClose($el, $overlay);
 						$window.off('resize', $overlay.data('onResize'));
-						$overlay.remove();//el, data, and events removed;						
+						$overlay.remove();//el, data, and events removed;
+						var recoverCSS = $el.data('recover-css');						
 						$el.css({
-							overflowY: $el.data('overflow').y,
-							overflowX: $el.data('overflow').x
+							overflowY: recoverCSS.overflow.y,
+							overflowX: recoverCSS.overflow.x,
+							position: recoverCSS.position
 						});
-						$el.removeData('overlay', 'overflow');
+						$el.removeData('overlay', 'recover-css');
 					}
 				});
 			}else {
@@ -2250,9 +2252,12 @@ var I18N = {};
 				}, options);
 
 				$overlay = $(template(options));
-				$el.data('overflow', {
-					x: $el.css('overflowX'),
-					y: $el.css('overflowY')
+				$el.data('recover-css', {
+					overflow: {
+						x: $el.css('overflowX'),
+						y: $el.css('overflowY')
+					},
+					position: $el.css('position')
 				});				
 				$el.append($overlay).css({
 					'position': 'relative',

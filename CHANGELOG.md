@@ -9,6 +9,7 @@ Change Log
 5. Re-run app.setup will override the app.config settings only;
 6. Added context:navigate-away event for saving context state;
 7. Added auto-caching to $.md plugin using $el.data();
+8. Fixed bug in $.overlay() css recovery upon closing;
 
 
 1.1.1 (2014-05-19)

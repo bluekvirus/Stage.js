@@ -71,12 +71,14 @@
 					complete: function(){
 						options.onClose && options.onClose($el, $overlay);
 						$window.off('resize', $overlay.data('onResize'));
-						$overlay.remove();//el, data, and events removed;						
+						$overlay.remove();//el, data, and events removed;
+						var recoverCSS = $el.data('recover-css');						
 						$el.css({
-							overflowY: $el.data('overflow').y,
-							overflowX: $el.data('overflow').x
+							overflowY: recoverCSS.overflow.y,
+							overflowX: recoverCSS.overflow.x,
+							position: recoverCSS.position
 						});
-						$el.removeData('overlay', 'overflow');
+						$el.removeData('overlay', 'recover-css');
 					}
 				});
 			}else {
@@ -91,9 +93,12 @@
 				}, options);
 
 				$overlay = $(template(options));
-				$el.data('overflow', {
-					x: $el.css('overflowX'),
-					y: $el.css('overflowY')
+				$el.data('recover-css', {
+					overflow: {
+						x: $el.css('overflowX'),
+						y: $el.css('overflowY')
+					},
+					position: $el.css('position')
 				});				
 				$el.append($overlay).css({
 					'position': 'relative',

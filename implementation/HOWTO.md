@@ -1174,7 +1174,7 @@ collectionView.trigger('view:load-data', {
 ###Overlay
 <span class="label label-info">jQuery plugin</span>
 
-**Purpose**: Provide you a way of overlaying custom views on screen.
+**Purpose**: Provide you a way of overlaying custom content/views on screen.
 
 **Options**:
 ```
@@ -1204,12 +1204,12 @@ $('body').overlay(false, {
 ```
 **Note**: Repeatedly open overlays on the same $(el) will have no effect. Close the previous one first. There are also 3rd-party libraries available for creating simple overlays over `<a>` and `<img>` tags (e.g [colorbox](http://www.jacklmoore.com/colorbox/)).
 
-**Short-cut**:
+**Short-cut**: Use with custom views
 ```
 var view = Application.view({
     ...,
     overlay: true or {
-        ... //normal $.overlay configure without (content, onShow, onClose)
+        ... //normal $.overlay configure without (content, onClose)
     },
     ...
 }, true);
@@ -1221,6 +1221,8 @@ view.overlay({
 view.close(); //this will close the overlay as well;
 ```
 This is the recommended way of using custom views as overlays.
+
+**Note**: After closing the overlayed view, remember to re-new it before showing as overlay again.
 
 
 ###Markdown
@@ -1563,6 +1565,12 @@ Our dynamic theme loading mechanism is currently racing with el size measuring i
 <link rel="stylesheet" type="text/css" href="themes/[your theme]/main.css">
 ```
 You will be giving up the dynamic theme loading ability.
+
+###Need tabs in the UI?
+Tabs are not widgets, they may contain widget(s). This is why we didn't include them in the base widget collection. You can always start a new view with proper templating to enable tabs (see [Bootstarp.Tabs](http://getbootstrap.com/javascript/#tabs))
+
+Remember, use tabs as last resort and only in a layout template.
+
 
 ###Supporting crossdomain ajax?
 Besides configuring your `Application` with crossdomain setups, your web services must support crossdomain in the first place by replying the ajax calls with additional access control headers. Read more in **Appendix.B.MDN - CORS**.

@@ -244,22 +244,22 @@
 				/**
 				 * options:
 				 * 1. anchor - css selector of parent html el
-				 * 2. rest of the $.overlay plugin options without content, onShow and onClose
+				 * 2. rest of the $.overlay plugin options without content and onClose
 				 */
+				options = options || {};
 				var $anchor = $(options.anchor || 'body');
 				var that = this;
 				this.listenTo(this, 'close', function(){
 					$anchor.overlay();//close the overlay if this.close() is called.
 				});
+				this.render().trigger('view:show');
 				$anchor.overlay(_.extend(this._overlayConfig, options, {
-					content: this.render().el,
-					onShow: function(){
-						that.trigger('view:show'); //trigger onShow(), might be a bit delayed on screen.
-					},
+					content: this.el,
 					onClose: function(){
 						that.close(); //closed by overlay x
 					}
 				}));
+				return this;
 			};
 		}
 
