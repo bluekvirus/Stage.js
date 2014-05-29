@@ -117,49 +117,45 @@
 		constructor: function(options){
 			options = options || {};
 
-			if(!_.isFunction(options))
-				if(!this.regions && !options.regions){
-					this.regions = {};
-					var tpl = Backbone.Marionette.TemplateCache.prototype.loadTemplate(options.template || this.template);
-					//figure out the regions, first - wrap the tpl in this.tagName
-					var that = this;
-					$(['<', this.tagName, '>', tpl, '</', this.tagName, '>'].join('')).find('[region]').each(function(index, el){
-						var r = $(el).attr('region');
-						//that.regions[r] = '[region="' + r + '"]';
-						that.regions[r] = {
-							selector: '[region="' + r + '"]'
-						};
+			this.regions = _.extend({}, this.regions, options.regions);
+			//find region marks after rendering and ensure region.$el (to support dynamic template)
+			this.listenTo(this, 'render', function(){
+				var that = this;
+				$(this.el.outerHTML).find('[region]').each(function(index, el){
+					var r = $(el).attr('region');
+					//that.regions[r] = '[region="' + r + '"]';
+					that.regions[r] = {
+						selector: '[region="' + r + '"]'
+					};
+				});
+				this.addRegions(this.regions);     						
+				_.each(this.regions, function(selector, region){
+					this[region].ensureEl();
+					this[region].$el.addClass('region region-' + _.string.slugify(region));
+					this[region]._parentLayout = this;
+				},this);
+			});
+			//automatically show a registered View from a 'view=' marked region.
+			//automatically show a registered View/Widget through event 'region:load-view' (name [,options])
+			this.listenTo(this, 'show', function(){
+				_.each(this.regions, function(selector, r){
+					if(this.debug) this[r].$el.html('<p class="alert alert-info">Region <strong>' + r + '</strong></p>'); //give it a fake one.
+					this[r].listenTo(this[r], 'region:load-view', function(name, options){ //can load both view and widget.
+						if(!name) return;
+						if(app.Core.Widget.has(name)) {
+							this.show(app.Core.Widget.create(name, options));
+							return;
+						}
+						var View = app.Core.Regional.get(name);
+						if(View)
+							this.show(new View(options));
+						else
+							throw new Error('DEV::Layout::View required ' + name + ' can NOT be found...use app.create(\'Regional\', {name: ..., ...}).');
 					});
-					//ensure region.$el
-					this.listenTo(this, 'render', function(){
-						_.each(this.regions, function(selector, region){
-							this[region].ensureEl();
-							this[region].$el.addClass('region region-' + _.string.slugify(region));
-							this[region]._parentLayout = this;
-						},this);
-					});
-					//automatically show a registered View from a 'view=' marked region.
-					//automatically show a registered View/Widget through event 'region:load-view' (name [,options])
-					this.listenTo(this, 'show', function(){
-						_.each(this.regions, function(selector, r){
-							if(this.debug) this[r].$el.html('<p class="alert alert-info">Region <strong>' + r + '</strong></p>'); //give it a fake one.
-							this[r].listenTo(this[r], 'region:load-view', function(name, options){ //can load both view and widget.
-								if(!name) return;
-								if(app.Core.Widget.has(name)) {
-									this.show(app.Core.Widget.create(name, options));
-									return;
-								}
-								var View = app.Core.Regional.get(name);
-								if(View)
-									this.show(new View(options));
-								else
-									throw new Error('DEV::Layout::View required ' + name + ' can NOT be found...use app.create(\'Regional\', {name: ..., ...}).');
-							});
-							this[r].trigger('region:load-view', this[r].$el.attr('view')); //found corresponding View def.
+					this[r].trigger('region:load-view', this[r].$el.attr('view')); //found corresponding View def.
 
-						},this);
-					});								
-				}
+				},this);
+			});								
 
 			return Old.prototype.constructor.call(this, options);
 		},	

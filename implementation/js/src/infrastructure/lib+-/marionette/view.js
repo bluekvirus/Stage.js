@@ -209,21 +209,21 @@
 	Backbone.Marionette.View.prototype.constructor = function(options){
 		options = options || {};
 
-		if(!_.isFunction(options)){
-			//fix default tpl to be ' '.
-			this.template = options.template || this.template || ' ';
-			//auto ui pick-up
-			if(!this.ui && !options.ui){
-				//figure out ui tags
-				var tpl = Backbone.Marionette.TemplateCache.prototype.loadTemplate(this.template);
-				this.ui = {};
-				var that = this;
-				$(['<', this.tagName, '>', tpl, '</', this.tagName, '>'].join('')).find('[ui]').each(function(index, el){
-					var ui = $(this).attr('ui');
-					that.ui[ui] = '[ui="' + ui + '"]';
-				});
-			}
-		}
+		//fix default tpl to be ' '.
+		this.template = options.template || this.template || ' ';
+
+		//auto ui pick-up after render (to support dynamic template)
+		this._ui = _.extend({}, this.ui, options.ui);
+		this.listenTo(this, 'render', function(){
+			var that = this;
+			this.unbindUIElements();
+			this.ui = this._ui;
+			$(this.el.outerHTML).find('[ui]').each(function(index, el){
+				var ui = $(this).attr('ui');
+				that.ui[ui] = '[ui="' + ui + '"]';
+			});
+			this.bindUIElements();
+		});
 
 		//meta-event programming ability
 		app.Util.addMetaEvent(this, 'view');

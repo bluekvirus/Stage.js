@@ -10,6 +10,7 @@ Change Log
 6. Added context:navigate-away event for saving context state;
 7. Added auto-caching to $.md plugin using $el.data();
 8. Fixed bug in $.overlay() css recovery upon closing;
+9. Delayed [ui] and [region] mark scanning to fit dynamic view template;
 
 
 1.1.1 (2014-05-19)

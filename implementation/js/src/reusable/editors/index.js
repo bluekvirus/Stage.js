@@ -313,10 +313,10 @@
 			},
 
 			setVal: function(val, loud){
-				if(this.ui.inputs.length > 0){
+				if(this.ui.inputs){
 					//radios/checkboxes
 					this.ui.inputs.find('input').val(_.isArray(val)?val:[val]);
-				}else if(this.ui['input-ro'].length > 0){
+				}else if(this.ui['input-ro']){
 					val = _.escape(val);
 					this.ui['input-ro'].data('value', val).html(val);
 				}else {
@@ -333,7 +333,7 @@
 			getVal: function(){
 				if(!this.isEnabled()) return; //skip the disabled ones.
 
-				if(this.ui.inputs.length > 0){
+				if(this.ui.inputs){
 					//radios/checkboxes
 					var result = this.$('input:checked').map(function(el, index){
 						return $(this).val();
@@ -344,7 +344,10 @@
 					if(this.model.get('type') === 'checkbox'){
 						return this.ui.input.prop('checked')? (this.model.get('checked') || true) : (this.model.get('unchecked') || false);
 					}
-					return this.ui.input.val();
+					if(this.ui.input)
+						return this.ui.input.val();
+					
+					//skipping input-ro field val...
 				}
 			},
 
