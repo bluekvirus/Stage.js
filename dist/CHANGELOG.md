@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.1.2 (on going)
+1.1.2 (2014-05-29)
 ----------------
 1. Fixed off-by-1 bug in Tree widget;
 2. Allow app:navigate event listener to change window.location.hash path;

@@ -10,13 +10,6 @@ What's next?
 * Editor+ : Spinner/Range, Switches, DnD Listing;
 * local filter/sorter mech into list views; 
 * local pagination mech into list views (in addition to the remote one we already have); 
-* provide a way to persist context status between context switches?
-* provide context with a state-machine mech for css, layout and action/behavioral constrains? 
-
-
-Current Version
----------------
-1.1.1
 
 
 Build
