@@ -45,9 +45,10 @@ _.each(profile.clients, function(filePath, uriName){
 
 //loading...
 var options = {verbose:true, cwd: __dirname};
-load('utils', options)
+load('util', options)
+.then('middleware', options)
 .then('routers', options)
-.then('bots', options)
+.then('bot', options)
 .into(server);
 
 
