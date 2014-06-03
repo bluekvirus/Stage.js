@@ -201,10 +201,10 @@ function combine(bowerInfo, name){
 	buildify().setContent(json.stringify(_.extend({
 		name: 'keep name here to use bower install, change if you prefer',
 		private: true,
-		dependencies: _.extend({
+		devDependencies: _.extend({
 			stage: '^' + bowerInfo.version
 		}, bowerInfo.themeDependencies),
-		optionalDependencies: bowerInfo.dependencies
+		dependencies: bowerInfo.dependencies
 	}))).setDir(implFolder).save('starter-kit.bower.json');
 	target.setDir(distFolder).save(name + '.js').uglify().save(name + '.min.js');
 	
