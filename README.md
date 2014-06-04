@@ -6,6 +6,7 @@ This project produces **Stage.js** - an infrastructure for building modern web a
 What's next?
 ------------
 1.2.0 might bring:
+* form-piece-id in view to avoid radios/checkboxes collision;
 * Datagrid+ : select-all header/cell, details row;
 * Editor+ : Spinner/Range, Switches, DnD Listing;
 * local filter/sorter mech into list views; 
@@ -14,7 +15,17 @@ What's next?
 
 Build
 -------------
-Run `tools/build/shortcut.sh` and see dist for details.
+```
+//1. update libs through tools/libprep/
+bower update
+node buildify.js all
+
+//2. copy updated fonts from bootstrap and fontawesome into themes
+
+//3. build both distributions through tools/build
+./shortcut.sh
+```
+See in `tools/build/dist` and `dist` for details. The shortcut command also builds the project site github page.
 
 
 Deploy-able
