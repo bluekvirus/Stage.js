@@ -1451,7 +1451,9 @@ One perk of using LESS is that you can define each .less to do only one thing, e
 
 
 ###Icons
-If you can, always use bootstrap & font-awesome icon fonts included in the package.
+If you can, always use the icon fonts from bootstrap & font-awesome as icons in you application. Locate them in your `/implementation/bower_components` folder and copy both `/fonts` folders from `bootstrap` and `fontawesome` then merge into your theme's `/fonts` folder. The related CSS/LESS referencing the font files should already be compiled in your main.css by our theme monitor.
+
+**Note**: Usually this is already done for you in the framework distributions. In case `bower update` updates bootstrap and font-awesome, you need to manually copy the font files into your themes to replace the old ones. Again, don't worry about the CSS/LESS files.
 
 If you need to have customized icons, please ask your designer for 64x64 or even 128x128 sized icon files in the *PNG* format. You can use the icon preparation tool to resize and combine them into a single CSS sprite package (icon.css, icons.png and a demo.html to show you css-class to icon mappings). Note that background image and texture images should *NOT* be combined into the CSS sprite. 
 
