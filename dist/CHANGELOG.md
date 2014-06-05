@@ -1,5 +1,10 @@
 Change Log
 ==========
+1.1.3 (2014-06-on going)
+------------------------
+1. Fixed 'app:navigation' event arguments
+
+
 1.1.2 (2014-05-29)
 ----------------
 1. Fixed off-by-1 bug in Tree widget;

@@ -305,13 +305,29 @@ Create a new file named `myContextA.js`, remember a *Context* is just an special
 ```
 alias: `Application.page()`. 
 
-Now, with a *Context* defined, you can define *Regional*s to populate its regions.
-
 
 #####Navigate within a context
-In the above code example, the `onNavigateTo` method handles the `context:navigate-to` event. This event will get triggered on the context if the application switched to `MyContextA`, so that you can do some *in-context* navigation followed by. (e.g if the navigation is at `#navigate/MyContextA/SubViewA...`, `SubViewA` will be the subpath argument)
+In the above code example, the `onNavigateTo` method handles the `context:navigate-to` event. This event will get triggered on the context if the application switched to `MyContextA`. 
 
-You can also treat the subpath/module part as a status and render your context accordingly.
+It also gets triggered when the navigation is at `#navigate/MyContextA/SubViewA...`  so that you can do some *in-context* navigation. `SubViewA` will be the subpath/module argument. You can treat the subpath/module part as a status and render your context accordingly.
+
+API for triggering an *in-context* navigation:
+```
+Application.trigger('app:navigate', {module: 'Editors'});
+```
+Note that `onNavigateTo` will get triggered with or without a subpath/module, please avoid running your code twice in this listener. Especially when it is used as a *in-context* state switcher like this:
+```
+//myContextA.js
+...
+    onNavigateTo: function(subPath){
+        if(!subPath)
+            Application.trigger('app:navigate', {module: 'Editors'});
+        else
+            this.center.trigger('region:load-view', subPath);
+            //load specific regional view on region:center;
+    }
+...
+```
 
 
 #####Navigate between contexts
@@ -337,6 +353,14 @@ window.location.hash = '#navigate/ABC/EFG...';
 
 As you can see there is also an `context:navigate-away` event triggered to call `onNavigateAway` method on a context when the application is switching away from one. Use this listener if you want to store some of the context state and recover in `onNavigateTo`. We recommend that you use the localStorage feature of HTML5 and we have already include a library for you in the framework distribution. (see [store.js](https://github.com/marcuswestin/store.js) for more)
 
+**Note**: You can pass an additional *silent* argument with the `app:navigate` event to avoid changing the url hash path during the navigation:
+```
+Application.trigger('app:navigate', {
+    context: context, //optional
+    module: module
+}, true);
+```
+Keep in mind that `Application.trigger('app:navigate', 'string...')` will always update the url hash.
 
 ####Step 3. Define Regionals
 Before creating a *Regional*, change your `myContextA.js` into `/context-a/index.js` so you can start adding regional definitions into the context folder as separate code files. Always maintain a clear code hierarchy through file structures. (Try to limit each code file to be **under 300-400 lines** including comments)
@@ -563,7 +587,7 @@ object.onMetaEvent(arguments);
 We have `Application (app:)`, `Context (context:)` and all the `Marionette.xView (view:)` enhanced to accept meta-event triggers. Some of the events are already listened/triggered for you:
 * Application -- app:meta-event
 ```
-app:navigate (string) or ({context:..., module:...}) - Application.onNavigate [pre-defined]
+app:navigate (string) or ({context:..., module:...}, silent) - Application.onNavigate [pre-defined]
 app:context-switched (contextName)  - [empty stub] - triggered after app:navigate
 //the followings are triggered by Application.remote():
 app:ajax - Application.onAjax [pre-defined]
@@ -718,7 +742,6 @@ Application.view({
 ```
 The value you collect through `getValues()` will still be under `abc` for this editor.
 
-
 ####Advanced configure
 * layout 
  - label - css class (e.g col-sm-2)
@@ -746,6 +769,8 @@ template: [
     '<div editor="efg"></div>'
 ]
 ```
+
+####API and events
 You will also get the following APIs attached to the **view** instance object once you have configured the `editors:{}` block:
 ```
 this.getEditor(name); 
@@ -776,6 +801,7 @@ editor.status(status, message); //info, error, warning, success status, empty to
 
 **Note:** The *select, radios and checkboxes* editors can be initialized without `options.data` configuration, these editors have an additional `setChoices()` API that you can use to set the available choices later. However it is recommended that you use the `options.remote` configure if the options data is from a remote data source.
 
+####Add your own
 If you need more editors please register them through
 ```
 Application.editor('[your editor name]', function(){
@@ -799,6 +825,7 @@ Application.view({
 });
 ```
 **Warning:** Although this is no difference than defining a view dynamically with editors configuration, it is not the *recommended* way of adding editors to a view.
+
 
 ###Compound
 Sometimes you need to build a compound editor with more basic editors than the number of values collected. You can do this by assigning a view **definition** to the editor configure:
@@ -913,8 +940,8 @@ Application.widget('MyWidgetName', {
 ```
 
 
-###List'n'Container technique
-This is the golden technique to use when planning your reusable views or, say, any view on screen. Any widget on screen can be decoupled into lists and containers, like this:
+###Build your own
+The *List'n'Container* technique is the golden technique to use when planning your reusable views or, say, any view on screen. Any widget on screen can be decoupled into lists and containers, like this:
 
 <img src="static/resource/default/diagram/Diagram-5.png" alt="List'n'Containers" class="center-block"></img>
 

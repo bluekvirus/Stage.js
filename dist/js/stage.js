@@ -243,11 +243,15 @@ _.each(['Core', 'Util'], function(coreModule){
 				Application.currentContext.trigger('context:navigate-to', module); //recover your context state within onNavigateTo()
 			};		
 			
-			Application.onNavigate = function(options){
+			Application.onNavigate = function(options, silent){
 				if(_.isString(options))
-					window.location.hash = 'navigate/' + options;
-				else
-					navigate(options.context, options.module);
+					window.location.hash = _.string.rtrim('navigate/' + options, '/');
+				else {
+					if(silent === true) //swap contents but don't update #hash accordingly
+						navigate(options.context || Application.currentContext.name, options.module);
+					else
+						window.location.hash = _.string.rtrim(['navigate', options.context || Application.currentContext.name, options.module].join('/'), '/');
+				}
 			};
 
 		});	
@@ -296,14 +300,14 @@ _.each(['Core', 'Util'], function(coreModule){
 			//init client page router and history:
 			var Router = Backbone.Marionette.AppRouter.extend({
 				appRoutes: {
-					'(navigate)(/:context)(/:module)' : 'navigateTo', //navigate to a context and signal it about :module (can be a path for further navigation within)
+					'(navigate)(\/:context)(\/:module)' : 'navigateTo', //navigate to a context and signal it about :module (can be a path for further navigation within)
 				},
 				controller: {
 					navigateTo: function(context, module){
 						Application.trigger('app:navigate', {
 							context: context, 
 							module: module
-						});
+						}, true); //will skip updating #hash since the router is triggered by #hash change.
 					},
 				}
 			});

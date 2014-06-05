@@ -4,7 +4,10 @@ Application.page('Demo', {
         '<div region="center"></div>',
     ],
     onNavigateTo: function(subPath){
-        this.center.trigger('region:load-view', subPath || 'Editors');
+    	if(!subPath)
+    		Application.trigger('app:navigate', {module: 'Editors'});
+    	else
+        	this.center.trigger('region:load-view', subPath);
     }
 
 });
