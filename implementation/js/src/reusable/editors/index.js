@@ -165,7 +165,7 @@
 					type: options.type, //default: text
 					multiple: options.multiple || false, //optional
 					rows: options.rows || 3, //optional
-					fieldname: options.fieldname || undefined, //optional - not recommended, require jquery.serializeForm plugin to collect value
+					fieldname: options.fieldname || undefined, //optional - not recommended, 1. with jquery.serializeForm plugin, 2. prevent same-def form radios collision
 					label: options.label || '', //optional
 					placeholder: options.placeholder || '', //optional
 

@@ -673,7 +673,8 @@ Application.view({
 ```
 The editors will be appended inside the calling view instance one by one by default, or, by the `editor="[fieldname]"` position attribute in the view's template. They can also be placed according to its own `appendTo` configuration.
 
-A little bit more about the basic options: 
+
+####Configure 
 * appendTo - in case you don't have `editor="[fieldname]"` in your template and want to change where to put the editor other than the default position.
 * parentCt - in case you want to delegate editor events to a parent container object (e.g a form object).
 * type - text, password, url, email, checkbox(es), radios, file, hidden, ro (for read-only), textarea, select
@@ -702,7 +703,23 @@ Application.editor.validator('my-validator-name', function(options, val, parentC
 ```
 alias: `Application.editor.rule()`.
 
-Additional advanced per editor options:
+**Important**: If you have multiple same-definition-form views on screen, and there are radio inputs on them, displayed or not, they are likely to collide with their editor name, so you end up controlling multiple radios with one click. To avoid this, use the `fieldname` configure in a radios editor:
+```
+Application.view({
+    editors: {
+        abc: {
+            ...,
+            type: 'radios',
+            fieldname: 'new-name', //this will not affect the value collected
+        },
+        ...
+    }
+});
+```
+The value you collect through `getValues()` will still be under `abc` for this editor.
+
+
+####Advanced configure
 * layout 
  - label - css class (e.g col-sm-2)
  - field - css class (e.g col-sm-10)
@@ -757,7 +774,7 @@ editor.validate(showError); //if you have options.validator configured
 editor.status(status, message); //info, error, warning, success status, empty to reset status.
 ```
 
-**Note:** The *select, radios and checkboxes* editors can be initialized without `options.data` configuration, these editors will get an additional `setChoices()` API that you can use to set the available choices later.
+**Note:** The *select, radios and checkboxes* editors can be initialized without `options.data` configuration, these editors have an additional `setChoices()` API that you can use to set the available choices later. However it is recommended that you use the `options.remote` configure if the options data is from a remote data source.
 
 If you need more editors please register them through
 ```

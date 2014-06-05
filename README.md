@@ -6,7 +6,6 @@ This project produces **Stage.js** - an infrastructure for building modern web a
 What's next?
 ------------
 1.2.0 might bring:
-* form-piece-id in view to avoid radios/checkboxes collision;
 * Datagrid+ : select-all header/cell, details row;
 * Editor+ : Spinner/Range, Switches, DnD Listing;
 * local filter/sorter mech into list views; 
