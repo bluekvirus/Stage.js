@@ -25,12 +25,12 @@
 ;(function(app){
 
 	/**
-	 * Static Mixin of a Layout in case it is used as a Form container.
+	 * Instrument this Layout in case it is used as a Form container.
 	 * 1. getValues() * - collects values from each region; grouped by fieldset name used by the regional form view piece;
 	 * 2. setValues(vals) * - sets values to regions; fieldset aware;
 	 * 3. validate(show) * - validate all the regions;
 	 * 4. getEditor(pathname) * - dotted path name to find your editor;
-	 * 5. status(status, msgs) - set status messages to the fieldsets and editors;
+	 * 5. status(options) - set status messages to the fieldsets and regions;
 	 * Note that after validation(show:true) got errors, those editors will become eagerly validated, it will turn off as soon as the user has input-ed the correct value.
 	 * 
 	 * Not implemented: button action implementations, you still have to code your button's html into the template.
@@ -102,15 +102,14 @@
 		},
 		
 
-		// 5. status 
-		status: function(status, msgs){
+		// 5. status (options will be undefined/false or {..:.., ..:..})
+		status: function(options){
 			this.regionManager.each(function(region){
 				if(region.currentView && region.currentView.status){
-					if(region.currentView.fieldset && !_.isString(msgs) && msgs[region.currentView.fieldset]){
-						region.currentView.status(status, msgs[region.currentView.fieldset]);
-					}
+					if(!options || !region.currentView.fieldset)
+						region.currentView.status(options);
 					else
-						region.currentView.status(status, msgs);
+						region.currentView.status(options[region.currentView.fieldset]);
 				}
 			});
 		}

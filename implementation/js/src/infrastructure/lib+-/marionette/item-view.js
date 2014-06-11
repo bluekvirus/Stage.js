@@ -119,7 +119,6 @@
 					config = _.extend({}, global);
 					var editor = new Editor();
 					editor.name = name;
-					editor.isCompound = true;
 				}
 				
 				this._editors[name] = editor.render();
@@ -130,6 +129,11 @@
 				if($position.length === 0)
 					$position = this.$el;
 				$position.append(editor.el);
+				
+				//3. patch in default value
+				if(config.value)
+					editor.setVal(config.value);
+
 			}, this);
 
 			this.listenTo(this, 'before:close', function(){
@@ -168,61 +172,32 @@
 
 			//3. validate
 			this.validate = function(show){
-				var errors = (savedLayoutFns.validate && savedLayoutFns.validate.call(this)) || {};
+				var errors = (savedLayoutFns.validate && savedLayoutFns.validate.call(this, show)) || {};
 				_.each(this._editors, function(editor, name){
-					var e = editor.validate();
+					var e = editor.validate(show);
 					if(e) errors[name] = e;
 				});
 				if(_.size(errors) === 0) return;
-				if(show) this.status(errors);
 				return errors; 
 			};
 
-			/**
-			 * 4. highlight status
-			 * status(messages) - indicates that global status is 'error'
-			 * or 
-			 * status(status, messages) - allow individual editor status overriden
-				messages: {
-					editor1: 'string 1',
-					or
-					editor2: {
-						status: '...',
-						message: '...'
-					}
+			//4. highlight status msg - linking to individual editor's status method
+			this.status = function(options){
+				if(_.isString(options)) {
+					throw new Error('DEV::ItemView::activateEditors - You need to pass in messages object instead of ' + options);
 				}
-			 */
-			this.status = function(status, msgs){
-				if(!msgs){
-					msgs = status;
-					status = 'error';
-				}
-				savedLayoutFns.status && savedLayoutFns.status.call(this, status, msgs);
-				
-				if(msgs === ' ') {
-					//clear status
+
+				savedLayoutFns.status && savedLayoutFns.status.call(this, options);
+				//clear status
+				if(!options) {
 					_.each(this._editors, function(editor, name){
-						editor.status(' ');
+						editor.status();
 					});
 					return;
 				}
-				if(_.isString(msgs)) {
-					throw new Error('DEV::ItemView::activateEditors - You need to pass in messages object');
-				}
-				_.each(msgs, function(msg, name){
-
-					if(this._editors[name]) {
-						if(_.isString(msg)) this._editors[name].status(status, msg);
-						else {
-							//single editor message object
-							if(!this._editors[name].isCompound)
-								this._editors[name].status(msg.status || status, msg.message);
-							else
-							//compund editor message object
-								this._editors[name].status(status, msg);
-								
-						}
-					} 
+				//set status to each editor
+				_.each(options, function(opt, name){
+					if(this._editors[name]) this._editors[name].status(opt);
 				}, this);
 			}
 			//auto setValues according to this.model?

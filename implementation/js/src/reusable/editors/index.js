@@ -14,7 +14,7 @@
  * help
  * tooltip
  * placeholder
- * value: default value (this is just for single input field, which don't have options.data config-ed)
+ * value: default value
  * 
  * //radios/selects/checkboxes only
  * options: { 
@@ -208,6 +208,7 @@
 							}
 						}
 						if(show) {
+							//this._followup(error); eager validation disabled atm
 							this.status(error);
 						}
 						return error;//return error msg or nothing						
@@ -351,19 +352,38 @@
 
 			validate: $.noop,
 
-			status: function(status, msg){
-				//set or get status of this editor UI
-				if(status){
-					//set warning, error, info, success... status, no checking atm.
-					var className = 'has-' + status;
+			status: function(options){
+			//options: 
+			//		- false/undefined: clear status
+			//		- object: {
+			//			type:
+			//			msg:
+			//		}
+			//		- string: error msg
+
+				//set or clear status of this editor UI
+				if(options){
+
+					var type = 'error', msg = options;
+					if(!_.isString(options)){
+						type = options.type || type;
+						msg = options.msg || type;
+					}
+
+					//set warning, error, info, success... msg type, no checking atm.
+					var className = 'has-' + type;
 					this.$el
-						.removeClass(this.$el.data('status'))
+						.removeClass(this.$el.data('type-class'))
 						.addClass(className)
-						.data('status', className);
-					this.ui.msg.html(msg || '');
+						.data('type-class', className);
+					this.ui.msg.html(msg);
+
 				}else {
-					//get
-					return this.$el.data('status');
+					//clear
+					this.$el
+						.removeClass(this.$el.data('type-class'))
+						.removeData('type-class');
+					this.ui.msg.empty();
 				}
 			},
 

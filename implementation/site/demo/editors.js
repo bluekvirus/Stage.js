@@ -111,6 +111,7 @@
                 type: 'checkboxes',
                 help: 'choose more than you like',
                 fieldname: 'haha',
+                value: [1231, 1234],
                 options: {
                     //inline: true,
                     //data: ['a', 'b', 'c', 'd']
@@ -297,9 +298,9 @@
             //         }
             //     });
             // },
-            // clearinfo: function(){
-            //     this.status();
-            // }
+            clearinfo: function(){
+                this.status();
+            }
         }
     });
 
