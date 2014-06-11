@@ -4,7 +4,7 @@
  *
  * **Warning**
  * -----------
- * You can also use middleware per router, so DON'T put router specific ones here!
+ * Since express.js 4.0+ you can also use middleware per router, so DON'T put router specific ones here!
  *
  *
  * Possible shared middlewares

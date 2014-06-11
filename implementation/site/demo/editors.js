@@ -202,7 +202,57 @@
                         group2: [{label: 'abcx', value: '123x'}, {label: '4555x', value: '1111x'}],
                     }
                 }
-            } 
+            },
+            //compond editor
+            duration: Application.view({
+                className: 'form-group',
+                template: [
+                    '<label class="control-label col-sm-2">Duration (compond)</label>',
+                    '<div class="col-sm-10">',
+                        '<div class="row">',
+                            '<div class="col-sm-6" editor="time"></div>',
+                            '<div class="col-sm-6" editor="unit"></div>',
+                        '</div>',
+                    '</div>',
+                ],
+                editors: {
+                    time: {
+                        type: 'text',
+                        name: 'time',
+                        validate: {
+                            required: true
+                        }
+                    },
+                    unit: {
+                        type: 'radios',
+                        name: 'unit',
+                        value: 'h',
+                        options: {
+                            inline: true,
+                            data: [{
+                                label: 'Hours',
+                                value: 'h'
+                            }, {
+                                label: 'Minutes',
+                                value: 'm'
+                            }, {
+                                label: 'Seconds',
+                                value: 's'
+                            }]
+                        },
+                        validate: {
+                            required: true
+                        }
+                    }
+                },
+                getVal: function() {
+                    var vals = this.getValues();
+                    return vals.time + vals.unit;
+                },
+                setVal: function(val, loud) {
+
+                }
+            })
         },
         onShow: function(){
             this.getRegion('fieldset-a').show(new FieldsetA);

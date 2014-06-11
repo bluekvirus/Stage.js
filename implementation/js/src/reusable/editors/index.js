@@ -70,7 +70,7 @@
 		var UI = Backbone.Marionette.ItemView.extend({
 
 			template: '#editor-basic-tpl',
-			className: 'form-group',
+			className: 'form-group', //this class is suggested to be removed if there is no label in this editor options.
 
 			events: {
 				//fired on both parentCt and this editor
@@ -193,10 +193,7 @@
 						
 						if(_.isFunction(options.validate)) {
 							var error = options.validate(this.getVal(), this.parentCt); 
-							if(show) {
-								this._followup(error);
-							}
-							return error;//return error msg or nothing
+
 						}
 						else {
 							var error, validators = _.clone(this.validators);
@@ -209,27 +206,28 @@
 								}
 								if(!_.isEmpty(error)) break;
 							}
-							if(show) {
-								this._followup(error);
-							}
-							return error;
 						}
+						if(show) {
+							this.status(error);
+						}
+						return error;//return error msg or nothing						
 					};
+
 					//internal helper function to group identical process (error -> eagerly validated)
-					this._followup = function(error){
-						if(!_.isEmpty(error)){
-							this.status('error', error);
-							//become eagerly validated
-							this.eagerValidation = true;
-						}else {
-							this.status(' ');
-							this.eagerValidation = false;
-						}
-					};
-					this.listenTo(this, 'editor:change editor:keyup', function(){
-						if(this.eagerValidation)
-							this.validate(true);
-					});
+					// this._followup = function(error){
+					// 	if(!_.isEmpty(error)){
+					// 		this.status('error', error);
+					// 		//become eagerly validated
+					// 		this.eagerValidation = true;
+					// 	}else {
+					// 		this.status(' ');
+					// 		this.eagerValidation = false;
+					// 	}
+					// };
+					// this.listenTo(this, 'editor:change editor:keyup', function(){
+					// 	if(this.eagerValidation)
+					// 		this.validate(true);
+					// });
 
 				}
 
@@ -392,7 +390,9 @@
 
 
 	app.Util.Tpl.build('editor-basic-tpl', [
-		'<label class="control-label {{#if layout}}{{layout.label}}{{/if}}" for="{{uiId}}">{{label}}</label>',
+		'{{#if label}}',
+			'<label class="control-label {{#if layout}}{{layout.label}}{{/if}}" for="{{uiId}}">{{label}}</label>',
+		'{{/if}}',
 		'<div class="{{#if layout}}{{layout.field}}{{/if}}" data-toggle="tooltip" title="{{tooltip}}">', //for positioning with the label.
 
 			//1. select

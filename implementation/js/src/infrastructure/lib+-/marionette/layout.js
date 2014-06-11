@@ -29,17 +29,19 @@
 	 * 1. getValues() * - collects values from each region; grouped by fieldset name used by the regional form view piece;
 	 * 2. setValues(vals) * - sets values to regions; fieldset aware;
 	 * 3. validate(show) * - validate all the regions;
+	 * 4. getEditor(pathname) * - dotted path name to find your editor;
+	 * 5. status(status, msgs) - set status messages to the fieldsets and editors;
 	 * Note that after validation(show:true) got errors, those editors will become eagerly validated, it will turn off as soon as the user has input-ed the correct value.
 	 * 
 	 * Not implemented: button action implementations, you still have to code your button's html into the template.
-	 * 4. submit
-	 * 5. reset
-	 * 6. refresh
-	 * 7. cancel
+	 * submit
+	 * reset
+	 * refresh
+	 * cancel
 	 *
 	 * No setVal getVal
 	 * ----------------
-	 * This is because we don't permit co-op between form parts, so there is no short-cut for getting/setting single editor/field value.
+	 * Use getEditor(a.b.c).set/getVal()
 	 *
 	 */
 
@@ -100,7 +102,18 @@
 		},
 		
 
-		// 5. status ? use this._fieldsets
+		// 5. status 
+		status: function(status, msgs){
+			this.regionManager.each(function(region){
+				if(region.currentView && region.currentView.status){
+					if(region.currentView.fieldset && !_.isString(msgs) && msgs[region.currentView.fieldset]){
+						region.currentView.status(status, msgs[region.currentView.fieldset]);
+					}
+					else
+						region.currentView.status(status, msgs);
+				}
+			});
+		}
 
 	});
 

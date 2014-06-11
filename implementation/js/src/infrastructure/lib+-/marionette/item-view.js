@@ -105,6 +105,9 @@
 				if(!_.isFunction(config)){
 					//0. apply global config
 					config = _.extend({name: name, parentCt: this}, global, config);
+					//if no label, we remove the standard (twt-bootstrap) 'form-group' class from editor template for easier css styling.
+					if(!config.label) config.className = config.className || ' ';
+
 					//1. instantiate
 					config.type = config.type || 'text'; 
 					var Editor = app.Core.Editor.map[config.type] || app.Core.Editor.map['Basic'];
@@ -115,6 +118,8 @@
 					var Editor = config;
 					config = _.extend({}, global);
 					var editor = new Editor();
+					editor.name = name;
+					editor.isCompound = true;
 				}
 				
 				this._editors[name] = editor.render();
@@ -133,8 +138,9 @@
 				});
 			});
 
-			//If layout enables editors as well, we need to save the layout version of the form fns and invoke them as well.
-			var savedLayoutFns = _.pick(this, 'getEditor', 'getValues', 'setValues', 'validate'/*, 'status'*/);
+			//If this view (as a Layout instance) enables editors as well, we need to save the layout version of the form fns and invoke them as well.
+			//so that fieldsets nested in this Layout works properly.
+			var savedLayoutFns = _.pick(this, 'getEditor', 'getValues', 'setValues', 'validate', 'status');
 			//0. getEditor(name)
 			this.getEditor = function(name){
 				return this._editors[name] || (savedLayoutFns.getEditor && savedLayoutFns.getEditor.call(this, name));
@@ -157,17 +163,18 @@
 					if(vals[name])
 						editor.setVal(vals[name], loud);
 				});
-				if(savedLayoutFns.setValues) savedLayoutFns.setValues.call(this, vals, loud);
+				savedLayoutFns.setValues && savedLayoutFns.setValues.call(this, vals, loud);
 			};
 
 			//3. validate
 			this.validate = function(show){
-				var errors = (savedLayoutFns.validate && savedLayoutFns.validate.call(this, show)) || {};
+				var errors = (savedLayoutFns.validate && savedLayoutFns.validate.call(this)) || {};
 				_.each(this._editors, function(editor, name){
-					var e = editor.validate(show);
+					var e = editor.validate();
 					if(e) errors[name] = e;
 				});
 				if(_.size(errors) === 0) return;
+				if(show) this.status(errors);
 				return errors; 
 			};
 
@@ -190,20 +197,30 @@
 					msgs = status;
 					status = 'error';
 				}
-				if(!msgs) {
+				savedLayoutFns.status && savedLayoutFns.status.call(this, status, msgs);
+				
+				if(msgs === ' ') {
 					//clear status
 					_.each(this._editors, function(editor, name){
 						editor.status(' ');
 					});
 					return;
 				}
-				if(_.isString(msgs)) throw new Error('DEV::ItemView::activateEditors - You need to pass in messages object');
+				if(_.isString(msgs)) {
+					throw new Error('DEV::ItemView::activateEditors - You need to pass in messages object');
+				}
 				_.each(msgs, function(msg, name){
 
 					if(this._editors[name]) {
 						if(_.isString(msg)) this._editors[name].status(status, msg);
 						else {
-							this._editors[name].status(msg.status || status, msg.message);
+							//single editor message object
+							if(!this._editors[name].isCompound)
+								this._editors[name].status(msg.status || status, msg.message);
+							else
+							//compund editor message object
+								this._editors[name].status(status, msg);
+								
 						}
 					} 
 				}, this);

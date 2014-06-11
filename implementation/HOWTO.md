@@ -851,7 +851,8 @@ Application.view({
 ```
 This has some disadvantages compare to registering an new editor via `app.editor()`, but is more intuitive when defining a compound form editor.
 
-If you still want `_global` (e.g appendTo) configure and `parentCt` (for editor events) to be passed to the compound editor, use `app.editor()` to register the view.
+If you still want `_global` (e.g appendTo) configure and `parentCt` (for editor events) to be passed to the editor, use `app.editor()` to register the view as a formal editor.
+
 
 ###Fieldset
 With view instance easily turned into form now, you might want to nest form pieces with *Marionette.Layout* and *Marionette.ItemView* and collect the values with similar hierarchy, this could be done by adding a `fieldset` property to your view definition besides the `editors` configuration:
