@@ -56,9 +56,11 @@ module.exports = function(server){
 					ignoreDotFiles: true
 				}, function(monitor){
 					// monitor.on("created", function (f, stat) {
+						//monitor .less file creation
 					// });
 					monitor.on("changed", function (f, curr, prev) {
-					  recompileTheme(f, root);
+						//monitor .less file change and icons/resized folder change
+						recompileTheme(f, root);
 					});
 					// monitor.on("removed", function (f, stat) {
 					// });

@@ -13,24 +13,24 @@ module.exports = function(server){
 	var profile = server.get('profile');
 
 	//compression, logger
-	//not used in this simple version of ajax-box
+	//not used in this simple version of api-box
 
 
 	//mount different clients (static web.roots)
 	_.each(profile.clients, function(filePath, uriName){
 		server.use(uriName, express.static(profile.clients[uriName]));
-		console.log('[Web root]', uriName.yellow, '[', profile.clients[uriName], ']');
+		console.log('[static/public]', uriName.yellow, '[', profile.clients[uriName], ']');
 	});
 
 
-	//mount shared middlewares (cookie, session, csrf, body-parser[urlencoded, json], method-override, multiparty...)
-	server.middleware.shared(server);
-	
+	//mount shared middlewares, see /middlewares/inject.js
+	server.middlewares.inject(server);
+	console.log('[middlewares]', 'injected');
 
 	//mount routers
 	_.each(server.get('routers'), function(router, mountpath){
-		//console.log(mountpath);
 		server.use(mountpath, router);
+		console.log('[router]', mountpath.yellow);
 	});
 
 }

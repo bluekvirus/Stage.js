@@ -1,11 +1,11 @@
 /**
- * Local development server per client. (ajax-box-lite based on Expressjs4)
+ * Local development server per client. (api-box-lite based on Expressjs4)
  *
  * 1. Serving the implementation/test/deploy folder (multi-profile, multiple root folders per profile supported)
  * 2. Monitoring all the LESS theme folders
- * 3. Registering mock Restful APIs through express.router()
+ * 3. Registering Restful APIs through express.router()
  *
- * [Exclusive to the ajax-box (local dev cloud), use the platform version if want the following features]
+ * [Exclusive to the api-box (local dev api engine), use the full/platform version if want the following features]
  * 5. DB support
  * 6. Users/Session/Roles
  *
@@ -26,7 +26,7 @@ server = express();
 var args = process.argv.slice(2),
 profile = args[0] || 'default';
 console.log('========================================');
-console.log(info.name.blue, '[', profile.yellow,']');
+console.log(info.name.blue, '[', 'profile:'.grey, profile.yellow,']');
 console.log('@version'.grey, info.version.blue);
 console.log('@author'.grey, info.author.blue);
 console.log(new Date().toString().grey);
@@ -46,9 +46,9 @@ _.each(profile.clients, function(filePath, uriName){
 //loading...
 var options = {verbose:true, cwd: __dirname};
 load('util', options)
-.then('middleware', options)
-.then('routers', options)
-.then('bot', options)
+.then('middlewares', options) //not yet injected
+.then('routers', options) //not yet injected
+.then('bot', options) //inject middlewares and routers into server
 .into(server);
 
 

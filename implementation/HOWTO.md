@@ -1563,22 +1563,9 @@ Use `-h` to get more from `resize.js`
 node resize.js -h
 ```
 
-After resizing, use [glue](https://github.com/jorgebastida/glue) to combine them into a CSS sprites.
+After resizing our theme monitor in the devserver will detect the file changes in the `img/icon` folders and automatically combine the icons into a big css-sprite with ready to use .css/.less file and a demo page for looking up the icon css classes.
 
-Option 1:
-```
-glue ../../implementation/themes/default/img/icons ../../implementation/themes/default/img/iconsprites --recursive --html (--less) 
-```
-
-Options 2: (recommended)
-```
-glue ../../implementation/themes/default/img/icons  --recursive --less --html --css=../../implementation/themes/default/less/ --img=../../implementation/themes/default/img/
-```
-Produces 1 big sprite with test page and less file in place.
-
-Go read about [glue](https://github.com/jorgebastida/glue), it's an excellent tool to make CSS sprites.
-
-**Note**: If you can, always use icon fonts (e.g Font-Awsome) instead of images for icons.
+**Note**: However, if you can, always use icon fonts (e.g Font-Awsome) instead of images for icons.
 
 FAQs
 ----

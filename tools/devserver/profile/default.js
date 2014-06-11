@@ -27,7 +27,7 @@ module.exports = {
 
 	//use lesswatch:false to turn off LESS monitor.
 	lesswatch: {
-		//default is client: '/'.
+		//default client: '/'.
 		//use client: '[path]' set in the clients config section above to change the monitored webroot.
 		//only 1 webroot can be monitored with its theme changes, which will, most likely always, be your development one.
 		client: '/dev',

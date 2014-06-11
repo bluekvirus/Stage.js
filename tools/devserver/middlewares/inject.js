@@ -9,7 +9,7 @@
  *
  * Possible shared middlewares
  * ---------------------------
- * cookie, session, csrf, body-parser[urlencoded, json], method-override, multiparty...
+ * gzip, favicon, logger, cookie, session, csrf, body-parser[urlencoded, json], method-override, multiparty...
  * 
  *
  * @author Tim.Liu
