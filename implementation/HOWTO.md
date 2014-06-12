@@ -841,8 +841,6 @@ Application.view({
             editors: ..., //*required
             getVal: ..., //*required
             setVal: ..., //*required
-            disable: ...,
-            isEnabled: ...,
             status: ... //*required if you want customized error message display.
         })
     }
@@ -852,6 +850,10 @@ Application.view({
 This has some disadvantages compare to registering an new editor via `app.editor()`, but is more intuitive when defining a compound form editor.
 
 If you still want `_global` (e.g appendTo) configure and `parentCt` (for editor events) to be passed to the editor, use `app.editor()` to register the view as a formal editor.
+
+**Note**: Compound editor has its child editors' eager validation feature disabled.
+
+**Tip**: Configure your child editor without the `label` config option.
 
 
 ###Fieldset

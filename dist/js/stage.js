@@ -1331,6 +1331,9 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 				if(!_.isFunction(config)){
 					//0. apply global config
 					config = _.extend({name: name, parentCt: this}, global, config);
+					//if no label, we remove the standard (twt-bootstrap) 'form-group' class from editor template for easier css styling.
+					if(!config.label) config.className = config.className || ' ';
+
 					//1. instantiate
 					config.type = config.type || 'text'; 
 					var Editor = app.Core.Editor.map[config.type] || app.Core.Editor.map['Basic'];
@@ -1341,6 +1344,8 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 					var Editor = config;
 					config = _.extend({}, global);
 					var editor = new Editor();
+					editor.name = name;
+					editor.isCompound = true;
 				}
 				
 				this._editors[name] = editor.render();
@@ -1351,6 +1356,11 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 				if($position.length === 0)
 					$position = this.$el;
 				$position.append(editor.el);
+				
+				//3. patch in default value
+				if(config.value)
+					editor.setVal(config.value);
+
 			}, this);
 
 			this.listenTo(this, 'before:close', function(){
@@ -1359,8 +1369,9 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 				});
 			});
 
-			//If layout enables editors as well, we need to save the layout version of the form fns and invoke them as well.
-			var savedLayoutFns = _.pick(this, 'getEditor', 'getValues', 'setValues', 'validate'/*, 'status'*/);
+			//If this view (as a Layout instance) enables editors as well, we need to save the layout version of the form fns and invoke them as well.
+			//so that fieldsets nested in this Layout works properly.
+			var savedLayoutFns = _.pick(this, 'getEditor', 'getValues', 'setValues', 'validate', 'status');
 			//0. getEditor(name)
 			this.getEditor = function(name){
 				return this._editors[name] || (savedLayoutFns.getEditor && savedLayoutFns.getEditor.call(this, name));
@@ -1383,55 +1394,45 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 					if(vals[name])
 						editor.setVal(vals[name], loud);
 				});
-				if(savedLayoutFns.setValues) savedLayoutFns.setValues.call(this, vals, loud);
+				savedLayoutFns.setValues && savedLayoutFns.setValues.call(this, vals, loud);
 			};
 
 			//3. validate
 			this.validate = function(show){
 				var errors = (savedLayoutFns.validate && savedLayoutFns.validate.call(this, show)) || {};
+
 				_.each(this._editors, function(editor, name){
-					var e = editor.validate(show);
+					if(!this.isCompound)
+						var e = editor.validate(show);
+					else
+						var e = editor.validate(); //just collect errors
 					if(e) errors[name] = e;
-				});
+				}, this);
+
+				if(this.isCompound && show) this.status(errors); //let the compound editor view decide where to show the errors
 				if(_.size(errors) === 0) return;
+
 				return errors; 
 			};
 
-			/**
-			 * 4. highlight status
-			 * status(messages) - indicates that global status is 'error'
-			 * or 
-			 * status(status, messages) - allow individual editor status overriden
-				messages: {
-					editor1: 'string 1',
-					or
-					editor2: {
-						status: '...',
-						message: '...'
-					}
+			//4. highlight status msg - linking to individual editor's status method
+			this.status = function(options){
+				if(_.isString(options)) {
+					throw new Error('DEV::ItemView::activateEditors - You need to pass in messages object instead of ' + options);
 				}
-			 */
-			this.status = function(status, msgs){
-				if(!msgs){
-					msgs = status;
-					status = 'error';
-				}
-				if(!msgs) {
-					//clear status
+
+				savedLayoutFns.status && savedLayoutFns.status.call(this, options);
+
+				//clear status
+				if(!options) {
 					_.each(this._editors, function(editor, name){
-						editor.status(' ');
+						editor.status();
 					});
 					return;
 				}
-				if(_.isString(msgs)) throw new Error('DEV::ItemView::activateEditors - You need to pass in messages object');
-				_.each(msgs, function(msg, name){
-
-					if(this._editors[name]) {
-						if(_.isString(msg)) this._editors[name].status(status, msg);
-						else {
-							this._editors[name].status(msg.status || status, msg.message);
-						}
-					} 
+				//set status to each editor
+				_.each(options, function(opt, name){
+					if(this._editors[name]) this._editors[name].status(opt);
 				}, this);
 			}
 			//auto setValues according to this.model?
@@ -1484,21 +1485,23 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 ;(function(app){
 
 	/**
-	 * Static Mixin of a Layout in case it is used as a Form container.
+	 * Instrument this Layout in case it is used as a Form container.
 	 * 1. getValues() * - collects values from each region; grouped by fieldset name used by the regional form view piece;
 	 * 2. setValues(vals) * - sets values to regions; fieldset aware;
 	 * 3. validate(show) * - validate all the regions;
+	 * 4. getEditor(pathname) * - dotted path name to find your editor;
+	 * 5. status(options) - set status messages to the fieldsets and regions;
 	 * Note that after validation(show:true) got errors, those editors will become eagerly validated, it will turn off as soon as the user has input-ed the correct value.
 	 * 
 	 * Not implemented: button action implementations, you still have to code your button's html into the template.
-	 * 4. submit
-	 * 5. reset
-	 * 6. refresh
-	 * 7. cancel
+	 * submit
+	 * reset
+	 * refresh
+	 * cancel
 	 *
 	 * No setVal getVal
 	 * ----------------
-	 * This is because we don't permit co-op between form parts, so there is no short-cut for getting/setting single editor/field value.
+	 * Use getEditor(a.b.c).set/getVal()
 	 *
 	 */
 
@@ -1559,7 +1562,17 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 		},
 		
 
-		// 5. status ? use this._fieldsets
+		// 5. status (options will be undefined/false or {..:.., ..:..})
+		status: function(options){
+			this.regionManager.each(function(region){
+				if(region.currentView && region.currentView.status){
+					if(!options || !region.currentView.fieldset)
+						region.currentView.status(options);
+					else
+						region.currentView.status(options[region.currentView.fieldset]);
+				}
+			});
+		}
 
 	});
 
@@ -2313,7 +2326,7 @@ var I18N = {};
  * help
  * tooltip
  * placeholder
- * value: default value (this is just for single input field, which don't have options.data config-ed)
+ * value: default value
  * 
  * //radios/selects/checkboxes only
  * options: { 
@@ -2369,7 +2382,7 @@ var I18N = {};
 		var UI = Backbone.Marionette.ItemView.extend({
 
 			template: '#editor-basic-tpl',
-			className: 'form-group',
+			className: 'form-group', //this class is suggested to be removed if there is no label in this editor options.
 
 			events: {
 				//fired on both parentCt and this editor
@@ -2492,10 +2505,7 @@ var I18N = {};
 						
 						if(_.isFunction(options.validate)) {
 							var error = options.validate(this.getVal(), this.parentCt); 
-							if(show) {
-								this._followup(error);
-							}
-							return error;//return error msg or nothing
+
 						}
 						else {
 							var error, validators = _.clone(this.validators);
@@ -2508,20 +2518,22 @@ var I18N = {};
 								}
 								if(!_.isEmpty(error)) break;
 							}
-							if(show) {
-								this._followup(error);
-							}
-							return error;
 						}
+						if(show) {
+							this._followup(error); //eager validation, will be disabled if used in Compound editor 
+							//this.status(error);
+						}
+						return error;//return error msg or nothing						
 					};
+
 					//internal helper function to group identical process (error -> eagerly validated)
 					this._followup = function(error){
 						if(!_.isEmpty(error)){
-							this.status('error', error);
+							this.status(error);
 							//become eagerly validated
 							this.eagerValidation = true;
 						}else {
-							this.status(' ');
+							this.status();
 							this.eagerValidation = false;
 						}
 					};
@@ -2652,19 +2664,38 @@ var I18N = {};
 
 			validate: $.noop,
 
-			status: function(status, msg){
-				//set or get status of this editor UI
-				if(status){
-					//set warning, error, info, success... status, no checking atm.
-					var className = 'has-' + status;
+			status: function(options){
+			//options: 
+			//		- false/undefined: clear status
+			//		- object: {
+			//			type:
+			//			msg:
+			//		}
+			//		- string: error msg
+
+				//set or clear status of this editor UI
+				if(options){
+
+					var type = 'error', msg = options;
+					if(!_.isString(options)){
+						type = options.type || type;
+						msg = options.msg || type;
+					}
+
+					//set warning, error, info, success... msg type, no checking atm.
+					var className = 'has-' + type;
 					this.$el
-						.removeClass(this.$el.data('status'))
+						.removeClass(this.$el.data('type-class'))
 						.addClass(className)
-						.data('status', className);
-					this.ui.msg.html(msg || '');
+						.data('type-class', className);
+					this.ui.msg.html(msg);
+
 				}else {
-					//get
-					return this.$el.data('status');
+					//clear
+					this.$el
+						.removeClass(this.$el.data('type-class'))
+						.removeData('type-class');
+					this.ui.msg.empty();
 				}
 			},
 
@@ -2691,7 +2722,9 @@ var I18N = {};
 
 
 	app.Util.Tpl.build('editor-basic-tpl', [
-		'<label class="control-label {{#if layout}}{{layout.label}}{{/if}}" for="{{uiId}}">{{label}}</label>',
+		'{{#if label}}',
+			'<label class="control-label {{#if layout}}{{layout.label}}{{/if}}" for="{{uiId}}">{{label}}</label>',
+		'{{/if}}',
 		'<div class="{{#if layout}}{{layout.field}}{{/if}}" data-toggle="tooltip" title="{{tooltip}}">', //for positioning with the label.
 
 			//1. select

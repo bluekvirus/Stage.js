@@ -119,6 +119,7 @@
 					config = _.extend({}, global);
 					var editor = new Editor();
 					editor.name = name;
+					editor.isCompound = true;
 				}
 				
 				this._editors[name] = editor.render();
@@ -173,11 +174,18 @@
 			//3. validate
 			this.validate = function(show){
 				var errors = (savedLayoutFns.validate && savedLayoutFns.validate.call(this, show)) || {};
+
 				_.each(this._editors, function(editor, name){
-					var e = editor.validate(show);
+					if(!this.isCompound)
+						var e = editor.validate(show);
+					else
+						var e = editor.validate(); //just collect errors
 					if(e) errors[name] = e;
-				});
+				}, this);
+
+				if(this.isCompound && show) this.status(errors); //let the compound editor view decide where to show the errors
 				if(_.size(errors) === 0) return;
+
 				return errors; 
 			};
 
@@ -188,6 +196,7 @@
 				}
 
 				savedLayoutFns.status && savedLayoutFns.status.call(this, options);
+
 				//clear status
 				if(!options) {
 					_.each(this._editors, function(editor, name){

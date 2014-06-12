@@ -208,27 +208,27 @@
 							}
 						}
 						if(show) {
-							//this._followup(error); eager validation disabled atm
-							this.status(error);
+							this._followup(error); //eager validation, will be disabled if used in Compound editor 
+							//this.status(error);
 						}
 						return error;//return error msg or nothing						
 					};
 
 					//internal helper function to group identical process (error -> eagerly validated)
-					// this._followup = function(error){
-					// 	if(!_.isEmpty(error)){
-					// 		this.status('error', error);
-					// 		//become eagerly validated
-					// 		this.eagerValidation = true;
-					// 	}else {
-					// 		this.status(' ');
-					// 		this.eagerValidation = false;
-					// 	}
-					// };
-					// this.listenTo(this, 'editor:change editor:keyup', function(){
-					// 	if(this.eagerValidation)
-					// 		this.validate(true);
-					// });
+					this._followup = function(error){
+						if(!_.isEmpty(error)){
+							this.status(error);
+							//become eagerly validated
+							this.eagerValidation = true;
+						}else {
+							this.status();
+							this.eagerValidation = false;
+						}
+					};
+					this.listenTo(this, 'editor:change editor:keyup', function(){
+						if(this.eagerValidation)
+							this.validate(true);
+					});
 
 				}
 
