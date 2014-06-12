@@ -1557,18 +1557,18 @@ Use `/tools/iconprep` to resize the icon files down to various sizes from 128x12
 Assume that you have put all the icons into `/implementation/themes/default/img/icons`:
 ```
 //under /tools/iconprep type
-node resize.js -S 16,32,48 ../../implementation/themes/default/img/icons
+node resize -S 16,32,48 ../../implementation/themes/default/img/icons
 ```
 **Note**: You will need [ImageMagick](http://www.imagemagick.org/) to be installed on your machine.
 
 Use `-h` to get more from `resize.js`
 ```
-node resize.js -h
+node resize -h
 ```
 
-After resizing our theme monitor in the devserver will detect the file changes in the `img/icon` folders and automatically combine the icons into a big css-sprite with ready to use .css/.less file and a demo page for looking up the icon css classes.
+After resizing ...use `cssprite`
+...
 
-**Note**: However, if you can, always use icon fonts (e.g Font-Awsome) instead of images for icons.
 
 FAQs
 ----

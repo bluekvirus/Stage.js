@@ -198,7 +198,7 @@
 				savedLayoutFns.status && savedLayoutFns.status.call(this, options);
 
 				//clear status
-				if(!options) {
+				if(!options || _.isEmpty(options)) {
 					_.each(this._editors, function(editor, name){
 						editor.status();
 					});
