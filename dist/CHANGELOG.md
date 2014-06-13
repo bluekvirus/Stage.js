@@ -6,9 +6,9 @@ Change Log
 2. Added headless(label-less) mode style to basic editors;
 3. Fixed default value assignment to basic editors;
 4. Refined status method in basic editor/item-view/layout;
-(In progress...)
 5. Refined Compound editor (with eager validation disabled atm);
-6. Adding icons prep + css-sprite monitor to dev server (TBI);
+6. Refined icons prep + css-sprite tools (changed to use gm);
+(In progress...)
 7. Refining dev server config/monitor/stack structure (TBI); 
 
 

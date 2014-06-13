@@ -1552,22 +1552,32 @@ Read more about [express.js](http://expressjs.com/) and [express-load](https://g
 
 
 ###Icon/Image Prep
-Use `/tools/iconprep` to resize the icon files down to various sizes from 128x128 or 256x256 obtained from your designer. You can also record svg paths exported from their design tools.
+Use `/tools/iconprep` to resize the icon blueprints down to various sizes from 128x128 or 256x256 obtained from your designer and make css-sprite to use them conveniently. You can also record svg paths exported from their design tools.
 
-Assume that you have put all the icons into `/implementation/themes/default/img/icons`:
+**Note**: You will need [GraphicsMagick](http://www.graphicsmagick.org/) to be installed on your machine.
+
+Assume that you have put all the icon blueprints into `/implementation/themes/default/img/icons`:
 ```
 //under /tools/iconprep type
 node resize -S 16,32,48 ../../implementation/themes/default/img/icons
 ```
-**Note**: You will need [ImageMagick](http://www.imagemagick.org/) to be installed on your machine.
 
 Use `-h` to get more from `resize.js`
 ```
 node resize -h
 ```
 
-After resizing ...use `cssprite`
-...
+After resizing you can continue to use `cssprite.js` to produce a big css-sprite file from the resized icons folder:
+```
+//under /tools/iconprep type
+node cssprite ../../implementation/themes/site/img/icons/resized
+```
+Check the program output and there should be a `index.html` demo page with all the icons made available by the `iconsprite.png` and `iconsprite.css` files produced.
+
+Use `-h` to get more from `cssprite.js`
+```
+node cssprite -h
+```
 
 
 FAQs

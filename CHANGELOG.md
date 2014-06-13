@@ -7,8 +7,8 @@ Change Log
 3. Fixed default value assignment to basic editors;
 4. Refined status method in basic editor/item-view/layout;
 5. Refined Compound editor (with eager validation disabled atm);
+6. Refined icons prep + css-sprite tools (changed to use gm);
 (In progress...)
-6. Refining icons prep + css-sprite tools (TBI);
 7. Refining dev server config/monitor/stack structure (TBI); 
 
 
