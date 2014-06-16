@@ -5,7 +5,7 @@ This project produces **Stage.js** - an infrastructure for building modern web a
 
 What's next?
 ------------
-1.2.0 might bring:
+1.3.0 might bring:
 * Datagrid+ : select-all header/cell, details row;
 * Editor+ : Spinner/Range, Switches, DnD Listing;
 * local filter/sorter mech into list views; 

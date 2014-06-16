@@ -6,7 +6,7 @@ Building multi-context rich-client web applications in the modern way.
 
 Current version
 ---------------
-**@1.1.2**
+**@1.2.0**
 ([Why is it version-ed like this?](http://semver.org/))
 
 
@@ -1572,12 +1572,14 @@ After resizing you can continue to use `cssprite.js` to produce a big css-sprite
 //under /tools/iconprep type
 node cssprite ../../implementation/themes/site/img/icons/resized
 ```
-Check the program output and there should be a `index.html` demo page with all the icons made available by the `iconsprite.png` and `iconsprite.css` files produced.
+Check the program output and there should be a `iconsprite.html` demo page with all the icons made available by the `iconsprite.png` and `iconsprite.css` files produced.
 
 Use `-h` to get more from `cssprite.js`
 ```
 node cssprite -h
 ```
+
+**Tip:** switch on the `-r` or `--retina` option when invoking the `cssprite.js` will turn on the retina display support on the produced icon sprite.
 
 
 FAQs

@@ -26,8 +26,9 @@ _.string = require('underscore.string');
 program
 	.version('0.1.0')
 	.usage('[options] <icon folder>')
+	.option('-N --name <string>', 'default to iconsprite, in case you want to name the produced .css under a different name')	
 	.option('-D --dist <path>', 'default to <icon folder>/../cssprite')
-	.option('-S --sprite-path <path>', 'default to ../img/iconsprite.png, always relative to <dist>/css/ folder')
+	.option('-S --sprite-path <path>', 'default to ../img/<name>.png, always relative to <dist>/css/ folder')
 	.option('-r --retina', 'add support for retina display, pixel ratio x2')
 	.parse(process.argv);
 
@@ -38,15 +39,27 @@ if(!iconFolder) {
 	return;
 }
 
+//check retina switch
+if(program.retina){
+	var pixelRatio = 2;
+	program.retina = '-x' + pixelRatio;
+}else {
+	var pixelRatio = 1;
+	program.retina = '';
+}
 //check dist folder
 program.dist = program.dist || path.join(iconFolder, '../cssprite');
+//check name (in case user produce both normal and retina version of css sprite on the same group of icons)
+program.name = (program.name || 'iconsprite') + program.retina;
 //check sprite path
-program.spritePath = program.spritePath || '../img/iconsprite.png';
+program.spritePath = program.spritePath || '../img/' + program.name + '.png';
+
 
 //normal css sprite
-csspath = path.join(program.dist, 'css', 'iconsprite.css');
+csspath = path.join(program.dist, 'css', program.name + '.css');
 spritepath = path.join(path.dirname(csspath), program.spritePath);
 
+//make sure the output dirs exist
 mkdirp.sync(path.dirname(spritepath));
 mkdirp.sync(path.dirname(csspath));
 
@@ -55,6 +68,7 @@ console.log('css:', '[', csspath.yellow, ']');
 console.log('sprite:', '[', spritepath.yellow, ']');
 
 var iconClassPrefix = 'custom-icon-',
+iconClassPostfix = program.retina,
 registry = []; //remember the icons and 
 
 nsg({
@@ -73,12 +87,12 @@ nsg({
         prefix: iconClassPrefix,
         spritePath: program.spritePath,
         nameMapping: function(fpath){
-        	name = path.basename(fpath, path.extname(fpath));
+        	name = path.basename(fpath, path.extname(fpath)) + iconClassPostfix;
         	registry.push(iconClassPrefix + name);
         	console.log('found:', '[', name.grey, ']');
         	return name;
         },
-        pixelRatio: program.retina? 2: 1
+        pixelRatio: pixelRatio
     }
 }, function(err){
 	if (err) throw err;
@@ -86,7 +100,7 @@ nsg({
 	console.log('done!'.green, 'working on demo page...');
 	//build a demo page with icon names sorted in ascending order.
 	registry = _.sortBy(registry, function(name){ return name; });
-	var demo = filed(path.join(program.dist, 'index.html'));
+	var demo = filed(path.join(program.dist, program.name + '.html'));
 	var page = [
 		'<!doctype html>',
 		'<head>',

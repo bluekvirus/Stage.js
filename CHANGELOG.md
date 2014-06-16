@@ -1,15 +1,13 @@
 Change Log
 ==========
-1.1.3 (2014-06-on going)
+1.2.0 (2014-06-16)
 ------------------------
-1. Fixed 'app:navigation' event arguments;
+1. Refined 'app:navigation' event arguments;
 2. Added headless(label-less) mode style to basic editors;
-3. Fixed default value assignment to basic editors;
+3. Added default value assignment to basic editors;
 4. Refined status method in basic editor/item-view/layout;
 5. Refined Compound editor (with eager validation disabled atm);
-6. Refined icons prep + css-sprite tools (changed to use gm);
-(In progress...)
-7. Refining dev server config/monitor/stack structure (TBI); 
+6. Refined icons prep + css-sprite tools (changed to use gm); 
 
 
 1.1.2 (2014-05-29)
