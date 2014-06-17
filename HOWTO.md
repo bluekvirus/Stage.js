@@ -6,7 +6,7 @@ Building multi-context rich-client web applications in the modern way.
 
 Current version
 ---------------
-**@1.1.2**
+**@1.2.0**
 ([Why is it version-ed like this?](http://semver.org/))
 
 
@@ -305,13 +305,29 @@ Create a new file named `myContextA.js`, remember a *Context* is just an special
 ```
 alias: `Application.page()`. 
 
-Now, with a *Context* defined, you can define *Regional*s to populate its regions.
-
 
 #####Navigate within a context
-In the above code example, the `onNavigateTo` method handles the `context:navigate-to` event. This event will get triggered on the context if the application switched to `MyContextA`, so that you can do some *in-context* navigation followed by. (e.g if the navigation is at `#navigate/MyContextA/SubViewA...`, `SubViewA` will be the subpath argument)
+In the above code example, the `onNavigateTo` method handles the `context:navigate-to` event. This event will get triggered on the context if the application switched to `MyContextA`. 
 
-You can also treat the subpath/module part as a status and render your context accordingly.
+It also gets triggered when the navigation is at `#navigate/MyContextA/SubViewA...`  so that you can do some *in-context* navigation. `SubViewA` will be the subpath/module argument. You can treat the subpath/module part as a status and render your context accordingly.
+
+API for triggering an *in-context* navigation:
+```
+Application.trigger('app:navigate', {module: 'Editors'});
+```
+Note that `onNavigateTo` will get triggered with or without a subpath/module, please avoid running your code twice in this listener. Especially when it is used as a *in-context* state switcher like this:
+```
+//myContextA.js
+...
+    onNavigateTo: function(subPath){
+        if(!subPath)
+            Application.trigger('app:navigate', {module: 'Editors'});
+        else
+            this.center.trigger('region:load-view', subPath);
+            //load specific regional view on region:center;
+    }
+...
+```
 
 
 #####Navigate between contexts
@@ -337,6 +353,14 @@ window.location.hash = '#navigate/ABC/EFG...';
 
 As you can see there is also an `context:navigate-away` event triggered to call `onNavigateAway` method on a context when the application is switching away from one. Use this listener if you want to store some of the context state and recover in `onNavigateTo`. We recommend that you use the localStorage feature of HTML5 and we have already include a library for you in the framework distribution. (see [store.js](https://github.com/marcuswestin/store.js) for more)
 
+**Note**: You can pass an additional *silent* argument with the `app:navigate` event to avoid changing the url hash path during the navigation:
+```
+Application.trigger('app:navigate', {
+    context: context, //optional
+    module: module
+}, true);
+```
+Keep in mind that `Application.trigger('app:navigate', 'string...')` will always update the url hash.
 
 ####Step 3. Define Regionals
 Before creating a *Regional*, change your `myContextA.js` into `/context-a/index.js` so you can start adding regional definitions into the context folder as separate code files. Always maintain a clear code hierarchy through file structures. (Try to limit each code file to be **under 300-400 lines** including comments)
@@ -563,7 +587,7 @@ object.onMetaEvent(arguments);
 We have `Application (app:)`, `Context (context:)` and all the `Marionette.xView (view:)` enhanced to accept meta-event triggers. Some of the events are already listened/triggered for you:
 * Application -- app:meta-event
 ```
-app:navigate (string) or ({context:..., module:...}) - Application.onNavigate [pre-defined]
+app:navigate (string) or ({context:..., module:...}, silent) - Application.onNavigate [pre-defined]
 app:context-switched (contextName)  - [empty stub] - triggered after app:navigate
 //the followings are triggered by Application.remote():
 app:ajax - Application.onAjax [pre-defined]
@@ -673,7 +697,8 @@ Application.view({
 ```
 The editors will be appended inside the calling view instance one by one by default, or, by the `editor="[fieldname]"` position attribute in the view's template. They can also be placed according to its own `appendTo` configuration.
 
-A little bit more about the basic options: 
+
+####Configure 
 * appendTo - in case you don't have `editor="[fieldname]"` in your template and want to change where to put the editor other than the default position.
 * parentCt - in case you want to delegate editor events to a parent container object (e.g a form object).
 * type - text, password, url, email, checkbox(es), radios, file, hidden, ro (for read-only), textarea, select
@@ -702,7 +727,22 @@ Application.editor.validator('my-validator-name', function(options, val, parentC
 ```
 alias: `Application.editor.rule()`.
 
-Additional advanced per editor options:
+**Important**: If you have multiple same-definition-form views on screen, and there are radio inputs on them, displayed or not, they are likely to collide with their editor name, so you end up controlling multiple radios with one click. To avoid this, use the `fieldname` configure in a radios editor:
+```
+Application.view({
+    editors: {
+        abc: {
+            ...,
+            type: 'radios',
+            fieldname: 'new-name', //this will not affect the value collected
+        },
+        ...
+    }
+});
+```
+The value you collect through `getValues()` will still be under `abc` for this editor.
+
+####Advanced configure
 * layout 
  - label - css class (e.g col-sm-2)
  - field - css class (e.g col-sm-10)
@@ -729,6 +769,8 @@ template: [
     '<div editor="efg"></div>'
 ]
 ```
+
+####API and events
 You will also get the following APIs attached to the **view** instance object once you have configured the `editors:{}` block:
 ```
 this.getEditor(name); 
@@ -757,8 +799,9 @@ editor.validate(showError); //if you have options.validator configured
 editor.status(status, message); //info, error, warning, success status, empty to reset status.
 ```
 
-**Note:** The *select, radios and checkboxes* editors can be initialized without `options.data` configuration, these editors will get an additional `setChoices()` API that you can use to set the available choices later.
+**Note:** The *select, radios and checkboxes* editors can be initialized without `options.data` configuration, these editors have an additional `setChoices()` API that you can use to set the available choices later. However it is recommended that you use the `options.remote` configure if the options data is from a remote data source.
 
+####Add your own
 If you need more editors please register them through
 ```
 Application.editor('[your editor name]', function(){
@@ -783,6 +826,7 @@ Application.view({
 ```
 **Warning:** Although this is no difference than defining a view dynamically with editors configuration, it is not the *recommended* way of adding editors to a view.
 
+
 ###Compound
 Sometimes you need to build a compound editor with more basic editors than the number of values collected. You can do this by assigning a view **definition** to the editor configure:
 ```
@@ -797,8 +841,6 @@ Application.view({
             editors: ..., //*required
             getVal: ..., //*required
             setVal: ..., //*required
-            disable: ...,
-            isEnabled: ...,
             status: ... //*required if you want customized error message display.
         })
     }
@@ -807,7 +849,12 @@ Application.view({
 ```
 This has some disadvantages compare to registering an new editor via `app.editor()`, but is more intuitive when defining a compound form editor.
 
-If you still want `_global` (e.g appendTo) configure and `parentCt` (for editor events) to be passed to the compound editor, use `app.editor()` to register the view.
+If you still want `_global` (e.g appendTo) configure and `parentCt` (for editor events) to be passed to the editor, use `app.editor()` to register the view as a formal editor.
+
+**Note**: Compound editor has its child editors' eager validation feature disabled.
+
+**Tip**: Configure your child editor without the `label` config option.
+
 
 ###Fieldset
 With view instance easily turned into form now, you might want to nest form pieces with *Marionette.Layout* and *Marionette.ItemView* and collect the values with similar hierarchy, this could be done by adding a `fieldset` property to your view definition besides the `editors` configuration:
@@ -896,8 +943,8 @@ Application.widget('MyWidgetName', {
 ```
 
 
-###List'n'Container technique
-This is the golden technique to use when planning your reusable views or, say, any view on screen. Any widget on screen can be decoupled into lists and containers, like this:
+###Build your own
+The *List'n'Container* technique is the golden technique to use when planning your reusable views or, say, any view on screen. Any widget on screen can be decoupled into lists and containers, like this:
 
 <img src="static/resource/default/diagram/Diagram-5.png" alt="List'n'Containers" class="center-block"></img>
 
@@ -1451,7 +1498,9 @@ One perk of using LESS is that you can define each .less to do only one thing, e
 
 
 ###Icons
-If you can, always use bootstrap & font-awesome icon fonts included in the package.
+If you can, always use the icon fonts from bootstrap & font-awesome as icons in you application. Locate them in your `/implementation/bower_components` folder and copy both `/fonts` folders from `bootstrap` and `fontawesome` then merge into your theme's `/fonts` folder. The related CSS/LESS referencing the font files should already be compiled in your main.css by our theme monitor.
+
+**Note**: Usually this is already done for you in the framework distributions. In case `bower update` updates bootstrap and font-awesome, you need to manually copy the font files into your themes to replace the old ones. Again, don't worry about the CSS/LESS files.
 
 If you need to have customized icons, please ask your designer for 64x64 or even 128x128 sized icon files in the *PNG* format. You can use the icon preparation tool to resize and combine them into a single CSS sprite package (icon.css, icons.png and a demo.html to show you css-class to icon mappings). Note that background image and texture images should *NOT* be combined into the CSS sprite. 
 
@@ -1503,36 +1552,35 @@ Read more about [express.js](http://expressjs.com/) and [express-load](https://g
 
 
 ###Icon/Image Prep
-Use `/tools/iconprep` to resize the icon files down to various sizes from 128x128 or 256x256 obtained from your designer. You can also record svg paths exported from their design tools.
+Use `/tools/iconprep` to resize the icon blueprints down to various sizes from 128x128 or 256x256 obtained from your designer and make css-sprite to use them conveniently. You can also record svg paths exported from their design tools.
 
-Assume that you have put all the icons into `/implementation/themes/default/img/icons`:
+**Note**: You will need [GraphicsMagick](http://www.graphicsmagick.org/) to be installed on your machine.
+
+Assume that you have put all the icon blueprints into `/implementation/themes/default/img/icons`:
 ```
 //under /tools/iconprep type
-node resize.js -S 16,32,48 ../../implementation/themes/default/img/icons
+node resize -S 16,32,48 ../../implementation/themes/default/img/icons
 ```
-**Note**: You will need [ImageMagick](http://www.imagemagick.org/) to be installed on your machine.
 
 Use `-h` to get more from `resize.js`
 ```
-node resize.js -h
+node resize -h
 ```
 
-After resizing, use [glue](https://github.com/jorgebastida/glue) to combine them into a CSS sprites.
-
-Option 1:
+After resizing you can continue to use `cssprite.js` to produce a big css-sprite file from the resized icons folder:
 ```
-glue ../../implementation/themes/default/img/icons ../../implementation/themes/default/img/iconsprites --recursive --html (--less) 
+//under /tools/iconprep type
+node cssprite ../../implementation/themes/site/img/icons/resized
+```
+Check the program output and there should be a `iconsprite.html` demo page with all the icons made available by the `iconsprite.png` and `iconsprite.css` files produced.
+
+Use `-h` to get more from `cssprite.js`
+```
+node cssprite -h
 ```
 
-Options 2: (recommended)
-```
-glue ../../implementation/themes/default/img/icons  --recursive --less --html --css=../../implementation/themes/default/less/ --img=../../implementation/themes/default/img/
-```
-Produces 1 big sprite with test page and less file in place.
+**Tip:** switch on the `-r` or `--retina` option when invoking the `cssprite.js` will turn on the retina display support on the produced icon sprite.
 
-Go read about [glue](https://github.com/jorgebastida/glue), it's an excellent tool to make CSS sprites.
-
-**Note**: If you can, always use icon fonts (e.g Font-Awsome) instead of images for icons.
 
 FAQs
 ----

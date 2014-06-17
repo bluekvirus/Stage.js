@@ -1,5 +1,15 @@
 Change Log
 ==========
+1.2.0 (2014-06-16)
+------------------------
+1. Refined 'app:navigation' event arguments;
+2. Added headless(label-less) mode style to basic editors;
+3. Added default value assignment to basic editors;
+4. Refined status method in basic editor/item-view/layout;
+5. Refined Compound editor (with eager validation disabled atm);
+6. Refined icons prep + css-sprite tools (changed to use gm); 
+
+
 1.1.2 (2014-05-29)
 ----------------
 1. Fixed off-by-1 bug in Tree widget;
@@ -10,6 +20,7 @@ Change Log
 6. Added context:navigate-away event for saving context state;
 7. Added auto-caching to $.md plugin using $el.data();
 8. Fixed bug in $.overlay() css recovery upon closing;
+9. Delayed [ui] and [region] mark scanning to fit dynamic view template;
 
 
 1.1.1 (2014-05-19)
