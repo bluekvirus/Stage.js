@@ -706,41 +706,8 @@ The editors will be appended inside the calling view instance one by one by defa
 * help
 * tooltip
 * placeholder
-* value
-* validate - (custom function or list of validators and rules)
-
-A custom validate function can be configured like this:
-```
-...
-validate: function(val, parentCt){
-    if(val !== '123') return 'You must enter 123';
-},
-...
-```
-**The validate function or validators should return undefined or the 'error string' to indicate passed and rejected situation respectively.**
-
-You can always register more named validators by:
-```
-Application.editor.validator('my-validator-name', function(options, val, parentCt){
-    ...,
-});
-```
-alias: `Application.editor.rule()`.
-
-**Important**: If you have multiple same-definition-form views on screen, and there are radio inputs on them, displayed or not, they are likely to collide with their editor name, so you end up controlling multiple radios with one click. To avoid this, use the `fieldname` configure in a radios editor:
-```
-Application.view({
-    editors: {
-        abc: {
-            ...,
-            type: 'radios',
-            fieldname: 'new-name', //this will not affect the value collected
-        },
-        ...
-    }
-});
-```
-The value you collect through `getValues()` will still be under `abc` for this editor.
+* value - (default value)
+* validate - (custom function or list of validators/rules)
 
 ####Advanced configure
 * layout 
@@ -826,6 +793,71 @@ Application.view({
 ```
 **Warning:** Although this is no difference than defining a view dynamically with editors configuration, it is not the *recommended* way of adding editors to a view.
 
+####Validation
+A custom validate function for an editor can be directly configured like this:
+```
+var Demo = app.view({
+
+    editors: {
+        ...,
+        xyz: {
+            type: '...',
+            help: '...',
+            validate: function(val, parentCt){ //parentCt points to this view
+                if(val !== '123') return 'You must enter 123';
+            }
+        },
+        ...
+    }
+
+});
+```
+
+You can also specify multiple validators and rules to use on the same editor:
+```
+var Demo = app.view({
+
+    editors: {
+        ...,
+        xyz: {
+            type: '...',
+            help: '...',
+            validate: {
+                ruleA: {
+                    //options to predefined rule A
+                },
+
+                ruleB: {
+                    //...
+                },
+
+                fn1: function(val, parentCt){ //anonymous validator
+                    //...
+                },
+
+                fn2: function(val, parentCt) {
+                    //...
+                },
+                
+                ...// more validators
+
+            }
+        },
+        ...
+    }
+
+});
+```
+
+The validate function or validators should return **undefined or the 'error string'** to indicate passed and rejected situation respectively.
+
+You can always register more named validators as rules by:
+```
+Application.editor.validator('my-validator-name', function(options, val, parentCt){
+    ...,
+});
+```
+alias: `Application.editor.rule()`.
 
 ###Compound
 Sometimes you need to build a compound editor with more basic editors than the number of values collected. You can do this by assigning a view **definition** to the editor configure:

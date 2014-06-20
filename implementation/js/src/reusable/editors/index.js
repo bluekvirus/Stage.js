@@ -158,14 +158,15 @@
 				}
 
 				//prep basic editor display
+				var uuiid = _.uniqueId('basic-editor-'); //unique UI id
 				this.model = new Backbone.Model({
-					uiId: _.uniqueId('basic-editor-'),
+					uiId: uuiid, 
 					layout: options.layout || '',
 					name: options.name, //*required
 					type: options.type, //default: text
 					multiple: options.multiple || false, //optional
 					rows: options.rows || 3, //optional
-					fieldname: options.fieldname || undefined, //optional - not recommended, 1. with jquery.serializeForm plugin, 2. prevent same-def form radios collision
+					fieldname: options.fieldname || uuiid, //optional - not recommended, 1. with jquery.serializeForm plugin, 2. prevent same-def form radios collision
 					label: options.label || '', //optional
 					placeholder: options.placeholder || '', //optional
 
@@ -478,8 +479,8 @@
 			'{{/is}}',
 
 			//msg & help
-			'{{#if help}}<span class="help-block" style="margin-bottom:0"><small>{{help}}</small></span>{{/if}}',
-			'<span class="help-block input-error" ui="msg">{{msg}}</span>',
+			'{{#if help}}<span class="help-block editor-help-text" style="margin-bottom:0"><small>{{help}}</small></span>{{/if}}',
+			'<span class="help-block editor-status-text input-error" ui="msg">{{msg}}</span>',
 		'</div>'
 	]);
 
