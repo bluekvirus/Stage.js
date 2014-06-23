@@ -33,7 +33,7 @@
 						'Learned Backbone? Tried Marionette? Still searching for a complete solution? ',
 						'Look no further...\n',
 						'With our intuitive workflow, a thiner and flatter architecture and advanced tooling,',
-						'you can direct your next web application like a play on stage with multiple scenes and elements right away.\n',
+						'you can direct your next web application front-end like a play on stage with multiple scenes and elements right away.\n',
 						'Enjoy!',
 						/////////////////Intro/////////////////
 					].join('\n'))

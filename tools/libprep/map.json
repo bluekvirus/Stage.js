@@ -72,7 +72,7 @@
   "jquery-ui": "../../implementation/bower_components/jquery-ui/ui/jquery-ui.js",
   "jquery.cookie": "../../implementation/bower_components/jquery.cookie/jquery.cookie.js",
   "jquery.terminal": "../../implementation/bower_components/jquery.terminal",
-  "jquery.transit": "../../implementation/bower_components/jquery.transit",
+  "jquery.transit": "../../implementation/bower_components/jquery.transit/jquery.transit.js",
   "jquery": "../../implementation/bower_components/jquery/dist/jquery.js",
   "jvectormap": "../../implementation/bower_components/jvectormap",
   "marionette": [
@@ -101,6 +101,8 @@
     "../../implementation/bower_components/uri.js/src/punycode.js",
     "../../implementation/bower_components/uri.js/src/URITemplate.js",
     "../../implementation/bower_components/uri.js/src/jquery.URI.js",
+    "../../implementation/bower_components/uri.js/src/URI.min.js",
+    "../../implementation/bower_components/uri.js/src/jquery.URI.min.js",
     "../../implementation/bower_components/uri.js/src/URI.fragmentQuery.js",
     "../../implementation/bower_components/uri.js/src/URI.fragmentURI.js"
   ],

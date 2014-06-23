@@ -1,14 +1,13 @@
 Change Log
 ==========
-1.2.1 (2014-06-20*)
+1.2.1 (2014-06-23)
 -------------------
 1. added additional css class for editor help and status texts;
 2. added auto fieldname generation for all basic editors;
 3. refined doc about adding editor validations;
-4. added .context (parentCtx) back to views...
-5. added node/leaf class default css to tree nodes...
-6. adding conditional enable/disable to editors by tagging event...
-6. improving doc wordingz...
+4. added parentCtx back to views;
+5. added node/leaf class default css to tree nodes;
+6. improved doc wordingz;
 
 
 1.2.0 (2014-06-16)

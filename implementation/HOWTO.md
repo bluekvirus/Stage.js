@@ -1,18 +1,18 @@
 <i class="project-title"></i>
 <hr/>
-Building multi-context rich-client web applications in the modern way.
+Building multi-context rich-client web application front-end in the modern way.
 [@Tim (Zhiyuan) Liu](mailto:bluekvirus@gmail.com)
 
 
 Current version
 ---------------
-**@1.2.0**
+**@1.2.1**
 ([Why is it version-ed like this?](http://semver.org/))
 
 
 Introduction
 ------------
-This lightweight framework is made on top of **Backbone.Marionette** and **Bootstrap**. The goal is to maximize developer efficiency by introducing an intuitive workflow on top of a solid application structure. You will be focusing on user interaction building without distraction. We even give you a web server for starting the development right away! Theming and packaging deployments are also a breeze through our tools.
+This lightweight framework is made on top of **Backbone.Marionette** and **Bootstrap**. The goal is to maximize developer efficiency by introducing an intuitive workflow on top of a solid front-end architecture. You will be focusing on user interaction building without distraction. We even give you a web server for starting the development right away! Theming and packaging deployments are also a breeze through our tools.
 
 To flatten and lower the initial learning curve of adaptation, there is only a handful of APIs to remember:
 
@@ -602,6 +602,7 @@ app:error - [empty stub]
 ```
 * Context -- context:meta-event
 ```
+context:navigate-away - [empty stub] - triggered before app:navigate
 context:navigate-to (moduleName) - [empty stub] - triggered after app:navigate
 ```
 * Marionette.xView -- view:meta-event
