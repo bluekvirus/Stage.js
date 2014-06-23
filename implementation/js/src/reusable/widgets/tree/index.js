@@ -36,7 +36,7 @@
  *
  * note
  * ----
- * support search and expand a path (use $parent in node/leaf onSelected() data)
+ * support search and expand a path (use $parent in node/leaf onSelected()'s first argument)
  *
  * @author Tim.Liu
  * @created 2014.04.24
@@ -64,15 +64,16 @@
 				if(this.className() === 'node') this.collection = app.collection(this.model.get('children'));
 				this.listenTo(this, 'render', function(){
 					this.$el.addClass('clickable').data({
-						'record': this.model.attributes,
+						//register the meta-data of this node/leaf view
+						view: this,
 						'$children': this.$el.find('> ul'),
 						'$parent': this.parent && this.parent.$el
 					});
 				})
 			},
 			template: [
-				'<a href="#"><i class="{{icon}}"></i> {{{val}}}</a>',
-				'<ul></ul>'
+				'<a class="item" href="#"><i class="type-indicator"></i> <i class="{{icon}}"></i> {{{val}}}</a>',
+				'<ul class="children hidden"></ul>' //1--tree nodes default on collapsed
 			]
 		};
 
@@ -96,13 +97,22 @@
 				'click .clickable': function(e){
 					e.stopPropagation();
 					var $el = $(e.currentTarget);
+					var meta = $el.data();
+					if($el.hasClass('node')) this.trigger('view:toggleChildren', meta);
 					this.trigger('view:selected', $el.data(), $el, e);
 				}
 			},
+			onToggleChildren: function(meta){
+				//2--click to become expanded
+				meta.$children.toggleClass('hidden');
+				meta.view.$el.toggleClass('expanded');	
+			},
+
 			//override this
-			onSelected: function(nodeData, $el, e){
-				
-			}			
+			onSelected: function(meta, $el, e){
+			
+			}
+
 		});
 
 		return Root;

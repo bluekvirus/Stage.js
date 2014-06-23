@@ -43,6 +43,9 @@
 			//inject parent view container through region into the regional views
 			if(this._parentLayout){
 				view.parentCt = this._parentLayout;
+				//also passing down the name of the outter-most context container.
+				if(this._parentLayout.isContext) view.parentCtx = this._parentLayout;
+				else if (this._parentLayout.parentCtx) view.parentCtx = this._parentLayout.parentCtx;
 			}
 
 			//store sub region form view by fieldset

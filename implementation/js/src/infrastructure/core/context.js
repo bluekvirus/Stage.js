@@ -48,10 +48,10 @@
 		create: function(config){
 			config.name = config.name || 'Default';
 			config.className = 'context context-' + _.string.slugify(config.name) + ' ' + (config.className || '');
+			config.isContext = true;
 			if(def[config.name]) console.warn('DEV::Core.Context::You have overriden context \'', config.name, '\'');
 
 			def[config.name] = Backbone.Marionette.Layout.extend(config);
-			
 			return def[config.name];
 		}
 

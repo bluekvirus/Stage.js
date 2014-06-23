@@ -834,10 +834,10 @@ Application.Util.Tpl.build('_blank', ' ');
 		create: function(config){
 			config.name = config.name || 'Default';
 			config.className = 'context context-' + _.string.slugify(config.name) + ' ' + (config.className || '');
+			config.isContext = true;
 			if(def[config.name]) console.warn('DEV::Core.Context::You have overriden context \'', config.name, '\'');
 
 			def[config.name] = Backbone.Marionette.Layout.extend(config);
-			
 			return def[config.name];
 		}
 
@@ -942,6 +942,9 @@ Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTempla
 			//inject parent view container through region into the regional views
 			if(this._parentLayout){
 				view.parentCt = this._parentLayout;
+				//also passing down the name of the outter-most context container.
+				if(this._parentLayout.isContext) view.parentCtx = this._parentLayout;
+				else if (this._parentLayout.parentCtx) view.parentCtx = this._parentLayout.parentCtx;
 			}
 
 			//store sub region form view by fieldset
@@ -3178,7 +3181,7 @@ var I18N = {};
  *
  * note
  * ----
- * support search and expand a path (use $parent in node/leaf onSelected() data)
+ * support search and expand a path (use $parent in node/leaf onSelected()'s first argument)
  *
  * @author Tim.Liu
  * @created 2014.04.24
@@ -3206,15 +3209,16 @@ var I18N = {};
 				if(this.className() === 'node') this.collection = app.collection(this.model.get('children'));
 				this.listenTo(this, 'render', function(){
 					this.$el.addClass('clickable').data({
-						'record': this.model.attributes,
+						//register the meta-data of this node/leaf view
+						view: this,
 						'$children': this.$el.find('> ul'),
 						'$parent': this.parent && this.parent.$el
 					});
 				})
 			},
 			template: [
-				'<a href="#"><i class="{{icon}}"></i> {{{val}}}</a>',
-				'<ul></ul>'
+				'<a class="item" href="#"><i class="type-indicator"></i> <i class="{{icon}}"></i> {{{val}}}</a>',
+				'<ul class="children hidden"></ul>' //1--tree nodes default on collapsed
 			]
 		};
 
@@ -3238,13 +3242,22 @@ var I18N = {};
 				'click .clickable': function(e){
 					e.stopPropagation();
 					var $el = $(e.currentTarget);
+					var meta = $el.data();
+					if($el.hasClass('node')) this.trigger('view:toggleChildren', meta);
 					this.trigger('view:selected', $el.data(), $el, e);
 				}
 			},
+			onToggleChildren: function(meta){
+				//2--click to become expanded
+				meta.$children.toggleClass('hidden');
+				meta.view.$el.toggleClass('expanded');	
+			},
+
 			//override this
-			onSelected: function(nodeData, $el, e){
-				
-			}			
+			onSelected: function(meta, $el, e){
+			
+			}
+
 		});
 
 		return Root;

@@ -12,7 +12,7 @@ Current version
 
 Introduction
 ------------
-This lightweight framework is made on top of **Backbone.Marionette** and **Bootstrap**. The goal is to maximize developer efficiency by introducing an intuitive workflow on top of a solid application structure. You will be focusing on user interaction building without distraction. We even give you a web server for starting the development right away! Theming and making deployment are also a breeze through our tools.
+This lightweight framework is made on top of **Backbone.Marionette** and **Bootstrap**. The goal is to maximize developer efficiency by introducing an intuitive workflow on top of a solid application structure. You will be focusing on user interaction building without distraction. We even give you a web server for starting the development right away! Theming and packaging deployments are also a breeze through our tools.
 
 To flatten and lower the initial learning curve of adaptation, there is only a handful of APIs to remember:
 
@@ -838,7 +838,7 @@ var Demo = app.view({
                 fn2: function(val, parentCt) {
                     //...
                 },
-                
+
                 ...// more validators
 
             }
@@ -1139,8 +1139,8 @@ data: [{
             attr3: ...
         }],
 node: {...}, - //node options (standard Marionette.CompositeView config)
-onSelected: callback(nodeData, $el, e){
-    nodeData - //see Traverse blow
+onSelected: callback(meta, $el, e){
+    meta - //meta data about the selected node
     $el - //node view's $el
     e - //the click event
 }
@@ -1150,8 +1150,10 @@ onSelected: callback(nodeData, $el, e){
 The default node template is like this:
 ```
 template: [
-    '<a href="#"><i class="{{icon}}"></i> {{{val}}}</a>',
-    '<ul></ul>'
+    '<a class="item" href="#">',
+        '<i class="type-indicator"></i> <i class="{{icon}}"></i> {{{val}}}',
+    '</a>',
+    '<ul class="children hidden"></ul>' //tree nodes default on collapsed
 ]
 ```
 So your data should have 'icon' and 'val' in each node's property.
@@ -1161,20 +1163,14 @@ So your data should have 'icon' and 'val' in each node's property.
 ...
 this.body.trigger('region:load-view', 'Tree', {
     data: [...],
-    node: { //change template to hide children upon shown
-        template: [
-            '<a href="#"><i class="{{icon}}"></i> {{{val}}}</a>', 
-            '<ul class="hidden"></ul>'
-        ]
-    },
-    onSelected: function(data, $el, e){
+    onSelected: function(meta, $el, e){
         e.preventDefault();
-        console.debug(data.record, $el);
-        data.$children.toggleClass('hidden');
+        console.debug(meta.view.model, $el);
     }
 });
 ...
 ```
+Note that, the default implementation supports automatically expand/collapse on tree nodes upon clicking.
 
 **Extend**:
 Use options.node to alter the node views:
@@ -1191,7 +1187,7 @@ Basically it is a *CompositeView* configure but without `type`, `tagName`, `item
 
 **Traverse**:
 Each node will have the following data hooked into its $el
-* record - data of this node from options.data
+* view - view object of this $el
 * $children
 * $parent
 

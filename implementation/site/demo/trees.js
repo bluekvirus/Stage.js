@@ -38,9 +38,9 @@
 	    	//1. normal tree (minimum)
 	    	this.left.trigger('region:load-view', 'Tree', {
 	    		data: data,
-	    		onSelected: function(data, $el, e){
+	    		onSelected: function(meta, $el, e){
 	    			e.preventDefault();
-	    			console.debug(data);
+	    			console.debug(meta);
 	    		}
 	    	});
 
@@ -101,16 +101,9 @@
 	    				});
 	    				this.body.trigger('region:load-view', 'Tree', {
 	    					data: this.model.get('children'),
-	    					node: {
-	    						template: [
-									'<a href="#"><i class="{{icon}}"></i> {{{val}}}</a>',
-									'<ul class="hidden"></ul>'
-	    						]
-	    					},
-	    					onSelected: function(data, $el, e){
+	    					onSelected: function(meta, $el, e){
 								e.preventDefault();
-								console.debug(data.record, $el);
-								data.$children.toggleClass('hidden');
+								console.debug(meta.view.model, $el);
 	    					}
 	    				}).$el.hide();
 	    			},

@@ -4,6 +4,32 @@
 
 //@import url("//fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700");
 
+// Tree related ===============================================================
+.tree {
+  list-style: none;
+
+  .node {
+    list-style: none;
+    .type-indicator {
+      &:extend(.fa, .fa-plus-square-o all); //[+]
+    }
+
+    &.expanded {
+      & > .item .type-indicator {
+        &:extend(.fa-minus-square-o all); //[-]
+      }
+    }
+
+  }
+
+  .leaf {
+    list-style: none;
+    .type-indicator {
+      .hidden
+    }
+  }
+}
+
 // MD related =================================================================
 .md-content {
   
