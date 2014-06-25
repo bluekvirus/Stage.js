@@ -1,18 +1,18 @@
 <i class="project-title"></i>
 <hr/>
-Building multi-context rich-client web applications in the modern way.
+Building multi-context rich-client web application front-end in the modern way.
 [@Tim (Zhiyuan) Liu](mailto:bluekvirus@gmail.com)
 
 
 Current version
 ---------------
-**@1.2.0**
+**@1.2.1**
 ([Why is it version-ed like this?](http://semver.org/))
 
 
 Introduction
 ------------
-This lightweight framework is made on top of **Backbone.Marionette** and **Bootstrap**. The goal is to maximize developer efficiency by introducing an intuitive workflow on top of a solid application structure. You will be focusing on user interaction building without distraction. We even give you a web server for starting the development right away! Theming and making deployment are also a breeze through our tools.
+This lightweight framework is made on top of **Backbone.Marionette** and **Bootstrap**. The goal is to maximize developer efficiency by introducing an intuitive workflow on top of a solid front-end architecture. You will be focusing on user interaction building without distraction. We even give you a web server for starting the development right away! Theming and packaging deployments are also a breeze through our tools.
 
 To flatten and lower the initial learning curve of adaptation, there is only a handful of APIs to remember:
 
@@ -602,6 +602,7 @@ app:error - [empty stub]
 ```
 * Context -- context:meta-event
 ```
+context:navigate-away - [empty stub] - triggered before app:navigate
 context:navigate-to (moduleName) - [empty stub] - triggered after app:navigate
 ```
 * Marionette.xView -- view:meta-event
@@ -706,41 +707,8 @@ The editors will be appended inside the calling view instance one by one by defa
 * help
 * tooltip
 * placeholder
-* value
-* validate - (custom function or list of validators and rules)
-
-A custom validate function can be configured like this:
-```
-...
-validate: function(val, parentCt){
-    if(val !== '123') return 'You must enter 123';
-},
-...
-```
-**The validate function or validators should return undefined or the 'error string' to indicate passed and rejected situation respectively.**
-
-You can always register more named validators by:
-```
-Application.editor.validator('my-validator-name', function(options, val, parentCt){
-    ...,
-});
-```
-alias: `Application.editor.rule()`.
-
-**Important**: If you have multiple same-definition-form views on screen, and there are radio inputs on them, displayed or not, they are likely to collide with their editor name, so you end up controlling multiple radios with one click. To avoid this, use the `fieldname` configure in a radios editor:
-```
-Application.view({
-    editors: {
-        abc: {
-            ...,
-            type: 'radios',
-            fieldname: 'new-name', //this will not affect the value collected
-        },
-        ...
-    }
-});
-```
-The value you collect through `getValues()` will still be under `abc` for this editor.
+* value - (default value)
+* validate - (custom function or list of validators/rules)
 
 ####Advanced configure
 * layout 
@@ -826,6 +794,71 @@ Application.view({
 ```
 **Warning:** Although this is no difference than defining a view dynamically with editors configuration, it is not the *recommended* way of adding editors to a view.
 
+####Validation
+A custom validate function for an editor can be directly configured like this:
+```
+var Demo = app.view({
+
+    editors: {
+        ...,
+        xyz: {
+            type: '...',
+            help: '...',
+            validate: function(val, parentCt){ //parentCt points to this view
+                if(val !== '123') return 'You must enter 123';
+            }
+        },
+        ...
+    }
+
+});
+```
+
+You can also specify multiple validators and rules to use on the same editor:
+```
+var Demo = app.view({
+
+    editors: {
+        ...,
+        xyz: {
+            type: '...',
+            help: '...',
+            validate: {
+                ruleA: {
+                    //options to predefined rule A
+                },
+
+                ruleB: {
+                    //...
+                },
+
+                fn1: function(val, parentCt){ //anonymous validator
+                    //...
+                },
+
+                fn2: function(val, parentCt) {
+                    //...
+                },
+
+                ...// more validators
+
+            }
+        },
+        ...
+    }
+
+});
+```
+
+The validate function or validators should return **undefined or the 'error string'** to indicate passed and rejected situation respectively.
+
+You can always register more named validators as rules by:
+```
+Application.editor.validator('my-validator-name', function(options, val, parentCt){
+    ...,
+});
+```
+alias: `Application.editor.rule()`.
 
 ###Compound
 Sometimes you need to build a compound editor with more basic editors than the number of values collected. You can do this by assigning a view **definition** to the editor configure:
@@ -1107,8 +1140,8 @@ data: [{
             attr3: ...
         }],
 node: {...}, - //node options (standard Marionette.CompositeView config)
-onSelected: callback(nodeData, $el, e){
-    nodeData - //see Traverse blow
+onSelected: callback(meta, $el, e){
+    meta - //meta data about the selected node
     $el - //node view's $el
     e - //the click event
 }
@@ -1118,8 +1151,10 @@ onSelected: callback(nodeData, $el, e){
 The default node template is like this:
 ```
 template: [
-    '<a href="#"><i class="{{icon}}"></i> {{{val}}}</a>',
-    '<ul></ul>'
+    '<a class="item" href="#">',
+        '<i class="type-indicator"></i> <i class="{{icon}}"></i> {{{val}}}',
+    '</a>',
+    '<ul class="children hidden"></ul>' //tree nodes default on collapsed
 ]
 ```
 So your data should have 'icon' and 'val' in each node's property.
@@ -1129,20 +1164,14 @@ So your data should have 'icon' and 'val' in each node's property.
 ...
 this.body.trigger('region:load-view', 'Tree', {
     data: [...],
-    node: { //change template to hide children upon shown
-        template: [
-            '<a href="#"><i class="{{icon}}"></i> {{{val}}}</a>', 
-            '<ul class="hidden"></ul>'
-        ]
-    },
-    onSelected: function(data, $el, e){
+    onSelected: function(meta, $el, e){
         e.preventDefault();
-        console.debug(data.record, $el);
-        data.$children.toggleClass('hidden');
+        console.debug(meta.view.model, $el);
     }
 });
 ...
 ```
+Note that, the default implementation supports automatically expand/collapse on tree nodes upon clicking.
 
 **Extend**:
 Use options.node to alter the node views:
@@ -1159,7 +1188,7 @@ Basically it is a *CompositeView* configure but without `type`, `tagName`, `item
 
 **Traverse**:
 Each node will have the following data hooked into its $el
-* record - data of this node from options.data
+* view - view object of this $el
 * $children
 * $parent
 
