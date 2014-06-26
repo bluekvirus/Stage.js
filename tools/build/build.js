@@ -29,7 +29,9 @@ program.version('1.0.0')
 
 program.command('*').description('build your web front-end project using customized configure').action(function(outputFolder){
 	var startTime = new Date().getTime();
-	program.config = program.config || 'dist';
+	program.config = program.config || path.basename(outputFolder);
+
+	if(!program.config) throw new Error('You must choose a config.[profile].js for this build...');
 
 	//0. load build config according to --config
 	var configName = './config.' + program.config + '.js';

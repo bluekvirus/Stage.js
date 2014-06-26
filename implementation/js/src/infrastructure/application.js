@@ -119,7 +119,7 @@ _.each(['Core', 'Util'], function(coreModule){
 		Application.config = _.extend({
 
 			//Defaults:
-			theme: 'default',
+			theme: 'default', //to disable theme rolling use false or '' and add your css in the index.html
 			template: '',
 			//e.g:: have a unified layout template.
 			/**

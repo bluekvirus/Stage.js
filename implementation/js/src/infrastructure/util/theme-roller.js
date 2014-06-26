@@ -11,6 +11,8 @@
 ;(function(app){
 
 	var _themeRoller = function(theme){
+		if(!theme) return;
+		
 	    $('#theme-roller').attr('href', 'themes/'+theme+'/css/main.css');
 	    app.currentTheme = theme;
 	};	

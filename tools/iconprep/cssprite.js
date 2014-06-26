@@ -11,6 +11,7 @@
  *
  * @author Tim.Liu
  * @created 2014.06.13
+ * @updated 2014.06.26
  */
 
 var program = require('commander'),
@@ -29,7 +30,8 @@ program
 	.option('-N --name <string>', 'default to iconsprite, in case you want to name the produced .css under a different name')	
 	.option('-D --dist <path>', 'default to <icon folder>/../cssprite')
 	.option('-S --sprite-path <path>', 'default to ../img/<name>.png, always relative to <dist>/css/ folder')
-	.option('-r --retina', 'add support for retina display, pixel ratio x2')
+//	.option('-r --retina', 'add support for retina display, pixel ratio x2')
+//	removed so this can be done in resize.js to support more mobile platform
 	.parse(process.argv);
 
 //check icon folder
@@ -39,18 +41,10 @@ if(!iconFolder) {
 	return;
 }
 
-//check retina switch
-if(program.retina){
-	var pixelRatio = 2;
-	program.retina = '-x' + pixelRatio;
-}else {
-	var pixelRatio = 1;
-	program.retina = '';
-}
 //check dist folder
 program.dist = program.dist || path.join(iconFolder, '../cssprite');
-//check name (in case user produce both normal and retina version of css sprite on the same group of icons)
-program.name = (program.name || 'iconsprite') + program.retina;
+//check name 
+program.name = (program.name || 'iconsprite');
 //check sprite path
 program.spritePath = program.spritePath || '../img/' + program.name + '.png';
 
@@ -68,7 +62,7 @@ console.log('css:', '[', csspath.yellow, ']');
 console.log('sprite:', '[', spritepath.yellow, ']');
 
 var iconClassPrefix = 'custom-icon-',
-iconClassPostfix = program.retina,
+iconClassPostfix = '',
 registry = []; //remember the icons and 
 
 nsg({
@@ -92,7 +86,7 @@ nsg({
         	console.log('found:', '[', name.grey, ']');
         	return name;
         },
-        pixelRatio: pixelRatio
+        //pixelRatio: 1
     }
 }, function(err){
 	if (err) throw err;

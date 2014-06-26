@@ -11,11 +11,15 @@
  * CSS Sprite
  * ==========
  * You can use csssprite.js or other tools to combine prepared icons into a big css sprite for faster brower UI exp.
- * 
+ *
+ *
+ * [Todo:]
+ * Need to include func like mobile-icon-resizer to resize for mobile devices according to a config file.
+ * (see https://github.com/muzzley/mobile-icon-resizer)
  *
  * @author Tim.Liu
  * @created 2013.10.23
- * @updated 2014.06.13
+ * @updated 2014.06.26
  */
 
 var program = require('commander'),
