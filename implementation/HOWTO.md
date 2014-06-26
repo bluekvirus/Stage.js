@@ -207,6 +207,7 @@ Application.setup({
     ]
 }).run();
 ```
+**Tip:** Instead of configure a template in the `Application`, you can put your application's main template under a HTML tag with `id="main"` in your `index.html`.
 
 Remember, creating a web application is like drawing a picture. Start by laying things out and gradually refine the details. In our case, always start by defining the application template.
 

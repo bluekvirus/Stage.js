@@ -331,13 +331,16 @@ _.each(['Core', 'Util'], function(coreModule){
 
 			//1. Put main template into position and scan for regions.
 			var regions = {};
-			var tpl = Application.Util.Tpl.build(Application.config.template);
-			$('#main').html(tpl.string).find('[region]').each(function(index, el){
+			if (Application.config.template)
+				var tpl = Application.Util.Tpl.build(Application.config.template);
+			else var tpl = undefined;
+			$maintpl = $('#main'); if(tpl) $maintpl.html(tpl.string);
+			$maintpl.find('[region]').each(function(index, el){
 				var name = $(el).attr('region');
-				regions[name] = '#main div[region="' + name + '"]';
+				regions[name] = '#main [region="' + name + '"]';
 			});
 			Application.addRegions(_.extend(regions, {
-				app: 'div[region="app"]'
+				app: '[region="app"]'
 			}));
 
 			//2. Show Regional Views defined by region.$el.attr('view');
