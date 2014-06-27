@@ -85,9 +85,13 @@
     "mockjs": "*",
     "roughdraft.js": "*",
     "jquery-mockjax": "*",
-    "crossfilter": "*"
+    "crossfilter": "*",
+    "ratchet": "*",
+    "pure": "*",
+    "foundation": "*"
   },
   "resolutions": {
-    "jquery": "~2.x.x"
+    "jquery": "~2.x.x",
+    "modernizr": "~2.x.x"
   }
 }

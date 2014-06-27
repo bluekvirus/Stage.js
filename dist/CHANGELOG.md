@@ -1,5 +1,12 @@
 Change Log
 ==========
+1.2.2 (2014-06-27*)
+-------------------
+1. fixed bug on region scanning in application's main template (#main);
+2. fixed application kickstart seq to hook to correct ready event (normal/hybrid);
+3. Allow multiple folder merge in build tool;
+
+
 1.2.1 (2014-06-23)
 -------------------
 1. added additional css class for editor help and status texts;

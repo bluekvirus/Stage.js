@@ -27,11 +27,29 @@ module.exports = {
 	},
 	structure : { //path are relative to the distFolder and src.root above
 
-		js: {
-			'app.min.js': false, //'app' is the name you set using js:{name: 'app'} above.
+		www: {
+			js: {
+				'app.min.js': false, //'app' is the name you set using js:{name: 'app'} above.
+			},
+			themes: {
+				'default': {
+					css: {},
+					fonts: ['themes/default/fonts', 'bower_components/ratchet/dist/fonts'],
+					img: {},
+					icons: {},
+					less: 'themes/mobile/less'
+				}
+			},
+			'bower.json': 'starter-kit.bower.json'
+
 		},
-		//js only distribution
-		'index.html': false
+		devtools: {
+			iconprep: '../tools/iconprep',
+			devserver: '../tools/devserver',
+			shared: '../tools/shared',
+			'package.json': '../tools/package.json'
+		}
+
 
 	}
 };

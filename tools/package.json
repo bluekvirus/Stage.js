@@ -29,7 +29,8 @@
     "watch": "~0.10.0",
     "mockjs": "~0.1.1",
     "node-sprite-generator": "^0.5.0",
-    "gm": "^1.16.0"
+    "gm": "^1.16.0",
+    "merge-dirs": "0.0.2"
   },
   "devDependencies": {},
   "scripts": {

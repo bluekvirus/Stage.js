@@ -323,22 +323,28 @@ _.each(['Core', 'Util'], function(coreModule){
 
 	/**
 	 * Define app starting point function
-	 * ----------------------------------
+	 * -----------------------------------------
+	 * We support using stage.js in a hybrid app
 	 * 
 	 */
-	Application.run = function(){
+	Application.run = function(hybridEvent){
 
-		$document.ready(function(){
+		hybridEvent = (hybridEvent === true) ? 'deviceready' : hybridEvent;
+
+		function kickstart(){
 
 			//1. Put main template into position and scan for regions.
 			var regions = {};
-			var tpl = Application.Util.Tpl.build(Application.config.template);
-			$('#main').html(tpl.string).find('[region]').each(function(index, el){
+			if (Application.config.template)
+				var tpl = Application.Util.Tpl.build(Application.config.template);
+			else var tpl = undefined;
+			$maintpl = $('#main'); if(tpl) $maintpl.html(tpl.string);
+			$maintpl.find('[region]').each(function(index, el){
 				var name = $(el).attr('region');
-				regions[name] = '#main div[region="' + name + '"]';
+				regions[name] = '#main [region="' + name + '"]';
 			});
 			Application.addRegions(_.extend(regions, {
-				app: 'div[region="app"]'
+				app: '[region="app"]'
 			}));
 
 			//2. Show Regional Views defined by region.$el.attr('view');
@@ -351,7 +357,14 @@ _.each(['Core', 'Util'], function(coreModule){
 			//3. Start the app
 			Application.start();
 
-		});
+		}
+
+		if(hybridEvent){
+			$document.once(hybridEvent, function(){
+				$document.ready(kickstart);
+			});
+		}else
+			$document.ready(kickstart);
 
 		return Application;
 

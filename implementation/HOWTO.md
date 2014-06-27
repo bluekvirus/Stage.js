@@ -284,6 +284,16 @@ onShow: function(){
 
 If your application is a single-context application, you don't need to assign the application template. There will always be a region that wraps the whole application -- the *app* region. The **Default** *Context* will automatically show on region *app* if you did not specify `contextRegion` and `defaultContext`.
 
+**Tip:** If you are using Stage.js in a hybrid app (cordova/phonegap), use this to kickstart the app:
+```
+Application.setup({...}).run(true);
+
+//or
+
+Application.setup({...}).run('deviceready'); //hook on specified ready event
+```
+Note that the ready event may vary in under different hybrid app development package.
+
 Now we've marked the context region, let's proceed to define them.
 
 ####Step 2. Define Contexts

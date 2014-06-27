@@ -23,6 +23,7 @@ fs = require('fs'),
 rimraf = require('rimraf'), //rm -rf;
 mkdirp = require('mkdirp'),
 ncp = require('ncp').ncp,
+merge = require('merge-dirs'),
 gzip = require('../shared/gzip'),
 colors = require('colors');
 
@@ -53,15 +54,7 @@ module.exports = {
 		function iterator(done){
 			if(targets.length > 0) {
 				var currentTarget = targets.shift();
-				if(_.isString(currentTarget.content)){
-					//path string - copy
-					var srcPath = path.join(options.src.root, currentTarget.content);
-					ncp(srcPath, currentTarget.path, function(error){
-						if(!error) console.log(srcPath, '==>'.grey, currentTarget.path, '[OK]'.green);
-						else console.log(srcPath, '==>'.grey, currentTarget.path, '[ERROR:'.red, error, ']'.red);
-						iterator(done);
-					});
-				}else if(_.isBoolean(currentTarget.content)){
+				if(_.isBoolean(currentTarget.content)){
 					//true/false - dump from cached files
 					if(options.cachedFiles[currentTarget.key]){
 						buildify().setContent(options.cachedFiles[currentTarget.key]).save(currentTarget.path);
@@ -71,22 +64,51 @@ module.exports = {
 						console.log(currentTarget.key, 'not found in cache'.red);
 					}
 					iterator(done);
-				}else if(_.isObject(currentTarget.content)){
-					//{} and {...} create folder and keep the bfs going
-					mkdirp(currentTarget.path, function(error){
-						if(!error) {
-							console.log(currentTarget.path, '{+}'.grey, '[OK]'.green);
-							_.each(currentTarget.content, function(subContent, subKey){
-								targets.push({
-									path: path.join(currentTarget.path, subKey),
-									content: subContent,
-									key: subKey
-								});
-							});						
-						}
-						else console.log(currentTarget.path, '{+}'.grey, '[ERROR:'.red, error,']'.red);
-						iterator(done);
-					});
+				}else {
+
+					function copy(p, cb){
+						var srcPath = path.join(options.src.root, p);
+						ncp(srcPath, currentTarget.path, function(error){
+							if(!error) console.log(srcPath, '==>'.grey, currentTarget.path, '[OK]'.green);
+							else console.log(srcPath, '==>'.grey, currentTarget.path, '[ERROR:'.red, error, ']'.red);
+							if(cb)
+								cb(currentTarget.path);
+						});
+					}
+					if(_.isString(currentTarget.content)){
+						//path string - copy
+						copy(currentTarget.content, function(){
+							iterator(done);
+						});
+
+					}else if(_.isArray(currentTarget.content)){
+						//multiple string - merge
+						copy(currentTarget.content.shift(), function(distPath){
+							_.each(currentTarget.content, function(p, index){
+								merge(path.join(options.src.root, p), distPath);
+								console.log(p, '+=>'.grey, distPath, '[OK]'.green);
+							});
+							iterator(done);
+						})
+
+						
+					}else if(_.isObject(currentTarget.content)){
+						//{} and {...} create folder and keep the bfs going
+						mkdirp(currentTarget.path, function(error){
+							if(!error) {
+								console.log(currentTarget.path, '{+}'.grey, '[OK]'.green);
+								_.each(currentTarget.content, function(subContent, subKey){
+									targets.push({
+										path: path.join(currentTarget.path, subKey),
+										content: subContent,
+										key: subKey
+									});
+								});						
+							}
+							else console.log(currentTarget.path, '{+}'.grey, '[ERROR:'.red, error,']'.red);
+							iterator(done);
+						});
+					}					
 				}
 			}else 
 				done();

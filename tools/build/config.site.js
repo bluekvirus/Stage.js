@@ -34,7 +34,7 @@ module.exports = {
 					'main.css':'themes/site/css/main.css'
 				},
 				img: 'themes/site/img',
-				fonts: 'themes/site/fonts',
+				fonts: ['themes/default/fonts','themes/site/fonts'], //merge multiple folders
 				'index.html': 'themes/site/index.html'
 			}
 		},

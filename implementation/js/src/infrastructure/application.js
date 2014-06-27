@@ -322,12 +322,15 @@ _.each(['Core', 'Util'], function(coreModule){
 
 	/**
 	 * Define app starting point function
-	 * ----------------------------------
+	 * -----------------------------------------
+	 * We support using stage.js in a hybrid app
 	 * 
 	 */
-	Application.run = function(){
+	Application.run = function(hybridEvent){
 
-		$document.ready(function(){
+		hybridEvent = (hybridEvent === true) ? 'deviceready' : hybridEvent;
+
+		function kickstart(){
 
 			//1. Put main template into position and scan for regions.
 			var regions = {};
@@ -353,7 +356,14 @@ _.each(['Core', 'Util'], function(coreModule){
 			//3. Start the app
 			Application.start();
 
-		});
+		}
+
+		if(hybridEvent){
+			$document.once(hybridEvent, function(){
+				$document.ready(kickstart);
+			});
+		}else
+			$document.ready(kickstart);
 
 		return Application;
 
