@@ -29,6 +29,7 @@ module.exports = {
 
 		www: {
 			js: {
+				'app.js': false, //for debugging purposes
 				'app.min.js': false, //'app' is the name you set using js:{name: 'app'} above.
 			},
 			themes: {
