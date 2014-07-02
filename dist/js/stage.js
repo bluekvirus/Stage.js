@@ -363,7 +363,7 @@ _.each(['Core', 'Util'], function(coreModule){
 		    Application.onError = function(err){
 		    	//assign default remote debugging assistant
 		        console.error(err, err.target);
-		    }			
+		    }
 			document.addEventListener(hybridEvent, function(){
 				$document.ready(kickstart);
 			}, false);
