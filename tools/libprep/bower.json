@@ -61,7 +61,7 @@
   "themeDependencies": {
     "bootstrap": "~3.x.x",
     "fontawesome": "~4.x.x",
-    "jquery-ui": "~1.x.x"
+    "jquery-ui": "1.10.4"
   },
   "dependencies": {
     "spin.js": "*",
@@ -90,7 +90,8 @@
     "crossfilter": "*",
     "ratchet": "*",
     "pure": "*",
-    "foundation": "*"
+    "foundation": "*",
+    "animate.css": "*"
   },
   "resolutions": {
     "jquery": "~2.x.x",
