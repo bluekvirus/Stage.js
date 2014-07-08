@@ -19,7 +19,9 @@ hammer = require('../shared/hammer'),
 processor = require('../shared/process-html'),
 rimraf = require('rimraf'),
 AdmZip = require('adm-zip'),
-targz = new (require('tar.gz'))(9, 9);
+targz = new (require('tar.gz'))(9, 9),
+fs = require('fs-extra'),
+wrench = require('wrench');
 
 program.version('1.0.0')
 		.usage('[options] <output folder>')
@@ -46,7 +48,30 @@ program.command('*').description('build your web front-end project using customi
 		excludeAttr: program.config
 	}): {};
 
-	//2. hammer the output folder structure out
+	//2. combine view templates into all.json
+	if(config.src.templates){
+		var tplBase = path.join(__dirname, config.src.root, config.src.templates);
+		if(fs.existsSync(tplBase)){
+			var tpls = wrench.readdirSyncRecursive(tplBase);
+			tpls = _.reject(tpls, function(name){
+				return !name.match(/\.html$/);
+			});
+			var all = {};
+			_.each(tpls, function(name){
+				var tpl = fs.readFileSync(path.join(tplBase, name), {encoding: 'utf8'});
+				console.log('[template]'.green, name, '+'.green);
+				all[name] = tpl.replace(/[\n\t]/g, '');
+			});
+			var allJSON = path.join(tplBase, 'all.json');
+			fs.outputJSONSync(allJSON, all);
+			console.log(tplBase, '=>', allJSON);	
+		}
+		else console.log('Templates not found...'.grey, tplBase);
+
+
+	}
+
+	//3. hammer the output folder structure out
 	hammer.createFolderStructure(_.extend({cachedFiles: result, output: outputFolder}, config), function(){
 		//check if --G
 		if(program.targz) {

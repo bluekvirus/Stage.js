@@ -5,7 +5,7 @@
 		template: '@test-ct.html',
 		onShow: function(){
 			this.getRegion('left').show(app.view({
-				template: '@test.html'
+				template: '@test/test2.html' //nested template path, != @test2.html
 			}, true));
 
 			this.getRegion('right').show(app.view({

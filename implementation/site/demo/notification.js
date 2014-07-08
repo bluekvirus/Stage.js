@@ -14,7 +14,7 @@
 
 			view.onClose = function(){
 				//remove msg from bus? TBI
-			}
+			};
 			// return it
 			return view;
 		},
@@ -25,7 +25,7 @@
 				app['on' + _.string.classify(type)] = function(msg){
 					that.trigger('view:msg', {type: type, msg: msg});
 					console.log(msg);
-				}
+				};
 			});
 		},
 		onMsg: function(msg){
@@ -76,7 +76,7 @@
 				'</div>',
 			]
 		})
-	}
+	};
 
 	//custom view as overlay
 	var Overlay = app.view({
@@ -121,11 +121,11 @@
 			'</div>'
 		],
 		onShow: function(){
-			this.getRegion('msg-bus').show(new MsgBus);
+			this.getRegion('msg-bus').show(new MsgBus());
 		},
 		actions: {
 			overlay: function(){
-				(new Overlay).overlay();
+				(new Overlay()).overlay();
 			},
 
 			msg: function($btn, e){

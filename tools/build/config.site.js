@@ -19,6 +19,7 @@ module.exports = {
 	src: {
 		root: '../../implementation', //path relative to this config.js
 		index: 'index.html', //path relative to root
+		templates: 'static/templates', //path relative to root
 	},
 	structure : { //path are relative to the distFolder and src.root above
 
@@ -39,6 +40,7 @@ module.exports = {
 			}
 		},
 		static: {
+			templates: { 'all.json': 'static/templates/all.json' },
 			resource: {
 				default: {
 					diagram: 'static/resource/default/diagram',
