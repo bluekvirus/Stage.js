@@ -61,7 +61,10 @@
   "themeDependencies": {
     "bootstrap": "~3.x.x",
     "fontawesome": "~4.x.x",
-    "jquery-ui": "1.10.4"
+    "jquery-ui": "1.10.4",
+    "open-sans-fontface": "*",
+    "roboto-fontface": "*",
+    "ubuntu-fontface": "*"
   },
   "dependencies": {
     "spin.js": "*",

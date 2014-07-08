@@ -1,10 +1,11 @@
 Change Log
 ==========
-1.2.2 (2014-06-27*)
+1.2.2 (2014-07-08)
 -------------------
 1. fixed bug on region scanning in application's main template (#main);
 2. fixed application kickstart seq to hook to correct ready event (normal/hybrid);
 3. Allow multiple folder merge in build tool;
+4. Added ready-to-use @fontface kits in bower.json;
 
 
 1.2.1 (2014-06-23)

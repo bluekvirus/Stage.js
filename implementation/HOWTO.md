@@ -294,6 +294,16 @@ Application.setup({...}).run('deviceready'); //hook on specified ready event
 ```
 Note that the ready event may vary in under different hybrid app development package.
 
+**Tip:** The application bootstrapping sequence can be modified but this is only limited to adding `initializer` functions to the `Application` object.
+```
+//your own prep code.
+Application.addInitializer(function(options){...});
+
+//kick-start
+Application.setup({...}).run();
+```
+**Note:** The first event that indicates the application is running is the `app:navigate` event, and followed by the `app:context-switched` event. Most of the time, you can make good use of these events and the `initialize()` or `onShow()` functions in specific context to hook up your custom preparation code.
+
 Now we've marked the context region, let's proceed to define them.
 
 ####Step 2. Define Contexts
