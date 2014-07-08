@@ -8,7 +8,8 @@ NProgress.configure({showSpinner: false});
         //fullScreen: true,
         template: '<div region="banner" view="Banner"></div><div region="center"></div><div region="footer" view="Footer"></div>',
         contextRegion: 'center',
-        defaultContext: 'Home'
+        defaultContext: 'Home',
+        viewTemplates: 'static/templates'
 
     }).run();
 

@@ -143,6 +143,7 @@ _.each(['Core', 'Util'], function(coreModule){
 			fullScreen: false, //This will put <body> to be full screen sized (window.innerHeight).
 	        rapidEventDebounce: 200, //in ms this is the rapid event debounce value shared within the application (e.g window resize).
 	        baseAjaxURI: '/api', //Modify this to fit your own backend apis. e.g index.php?q= or '/api',
+	        viewTemplates: '', //this is assisted by the build tool, combining all the *.html handlebars templates into one big json.
 			/*CROSSDOMAIN Settings*/
 			//see MDN - https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS
 			//If you ever need crossdomain development, we recommend that you TURN OFF local server's auth layer/middleware. 
@@ -157,9 +158,12 @@ _.each(['Core', 'Util'], function(coreModule){
 
 		}, config);
 
-		//2 Detect Theme
+		//2 Detect Theme & View Templates
 		var theme = URI(window.location.toString()).search(true).theme || Application.config.theme;
-		Application.Util.rollTheme(theme);			
+		Application.Util.rollTheme(theme);
+
+		if(Application.config.viewTemplates)
+			Application.Util.Tpl.load(Application.config.viewTemplates + '/all.json');		
 
 		//3. Setup Application
 
@@ -207,7 +211,7 @@ _.each(['Core', 'Util'], function(coreModule){
 			//cache:[disable it for IE only]
 			if(Modernizr.ie)
 				options.cache = false;			
-		}
+		};
 
 		//3.2 Initializers (Layout, Navigation)
 		/**
@@ -232,7 +236,7 @@ _.each(['Core', 'Util'], function(coreModule){
 				if(!TargetContext) throw new Error('DEV::Application::You must have the requred context ' + context + ' defined...'); //see - special/registry/context.js			
 				if(!Application.currentContext || Application.currentContext.name !== context) {
 					if(Application.currentContext) Application.currentContext.trigger('context:navigate-away'); //save your context state within onNavigateAway()
-					Application.currentContext = new TargetContext; //re-create each context upon switching
+					Application.currentContext = new TargetContext(); //re-create each context upon switching
 					Application.Util.addMetaEvent(Application.currentContext, 'context');
 
 					if(!Application[Application.config.contextRegion]) throw new Error('DEV::Application::You don\'t have region \'' + Application.config.contextRegion + '\' defined');		
@@ -241,7 +245,7 @@ _.each(['Core', 'Util'], function(coreModule){
 					Application.trigger('app:context-switched', Application.currentContext.name);
 				}			
 				Application.currentContext.trigger('context:navigate-to', module); //recover your context state within onNavigateTo()
-			};		
+			}
 			
 			Application.onNavigate = function(options, silent){
 				if(_.isString(options))
@@ -268,7 +272,7 @@ _.each(['Core', 'Util'], function(coreModule){
 				}
 				if(!silent)
 					Application.trigger('app:resized', screenSize);
-			};
+			}
 			trackScreenSize(null, true);
 			$window.on('resize', _.debounce(trackScreenSize, Application.config.rapidEventDebounce));
 
@@ -276,7 +280,7 @@ _.each(['Core', 'Util'], function(coreModule){
 				var top = $window.scrollTop();
 				Application.trigger('app:scroll', top);
 			}
-			$window.on('scroll', _.debounce(trackScroll, Application.config.rapidEventDebounce))
+			$window.on('scroll', _.debounce(trackScroll, Application.config.rapidEventDebounce));
 			
 			if(Application.config.fullScreen){
 				$body.css({
@@ -289,7 +293,7 @@ _.each(['Core', 'Util'], function(coreModule){
 			//2.Auto-detect and init context (view that replaces the body region)
 			if(!window.location.hash){
 				if(!Application.Core.Context[Application.config.defaultContext])
-					console.warn('DEV::Application::You might want to define a Default context using app.create(\'Context\', {...})');
+					console.warn('DEV::Application::You might want to define a Default context using app.create(\'Context Name\', {...})');
 				else
 					window.location.hash = ['#navigate', Application.config.defaultContext].join('/');
 			}
@@ -335,10 +339,8 @@ _.each(['Core', 'Util'], function(coreModule){
 
 			//1. Put main template into position and scan for regions.
 			var regions = {};
-			if (Application.config.template)
-				var tpl = Application.Util.Tpl.build(Application.config.template);
-			else var tpl = undefined;
-			$maintpl = $('#main'); if(tpl) $maintpl.html(tpl.string);
+
+			$maintpl = $('#main'); if(Application.config.template) $maintpl.html(Application.config.template);
 			$maintpl.find('[region]').each(function(index, el){
 				var name = $(el).attr('region');
 				regions[name] = '#main [region="' + name + '"]';
@@ -363,7 +365,7 @@ _.each(['Core', 'Util'], function(coreModule){
 		    Application.onError = function(err){
 		    	//assign default remote debugging assistant
 		        console.error(err, err.target);
-		    }
+		    };
 			document.addEventListener(hybridEvent, function(){
 				$document.ready(kickstart);
 			}, false);
@@ -381,7 +383,7 @@ _.each(['Core', 'Util'], function(coreModule){
 	 */
 	Application.create = function(type, config){
 		console.warn('DEV::Application::create() method is deprecated, use methods listed in Application._apis for alternatives');
-	}
+	};
 
 	/**
 	 * Detailed api entry point
@@ -404,7 +406,7 @@ _.each(['Core', 'Util'], function(coreModule){
 				options = {};
 			}
 			var Def = Backbone.Marionette[options.type || 'ItemView'].extend(options);
-			if(instant) return new Def;
+			if(instant) return new Def();
 			return Def;
 		},
 
@@ -415,7 +417,7 @@ _.each(['Core', 'Util'], function(coreModule){
 			}
 			options = options || {};
 			_.extend(options, {name: name});
-			return Application.Core['Context'].create(options);
+			return Application.Core.Context.create(options);
 		},
 
 		regional: function(name, options){
@@ -425,17 +427,17 @@ _.each(['Core', 'Util'], function(coreModule){
 			}
 			options = options || {};
 			_.extend(options, {name: name});			
-			return Application.Core['Regional'].create(options);
+			return Application.Core.Regional.create(options);
 		},
 
 		widget: function(name, options){
 			if(!_.isString(name)) throw new Error('DEV::Application.widget::You must specify a widget name to use.');
 			if(_.isFunction(options)){
 				//register
-				Application.Core['Widget'].register(name, options);
+				Application.Core.Widget.register(name, options);
 				return;
 			}
-			return Application.Core['Widget'].create(name, options);
+			return Application.Core.Widget.create(name, options);
 			//you can not get the definition returned.
 		},
 
@@ -443,10 +445,10 @@ _.each(['Core', 'Util'], function(coreModule){
 			if(!_.isString(name)) throw new Error('DEV::Application.editor::You must specify a editor name to use.');
 			if(_.isFunction(options)){
 				//register
-				Application.Core['Editor'].register(name, options);
+				Application.Core.Editor.register(name, options);
 				return;
 			}
-			return Application.Core['Editor'].create(name, options);
+			return Application.Core.Editor.create(name, options);
 			//you can not get the definition returned.
 		}		
 
@@ -472,7 +474,7 @@ _.each(['Core', 'Util'], function(coreModule){
 			return Application.Core.Remote.change(options);
 		else
 			return Application.Core.Remote.get(options);
-	}
+	};
 
 	/**
 	 * API summary
@@ -600,6 +602,9 @@ _.each(['Core', 'Util'], function(coreModule){
 				if(!_.isArray(tplString))	tplString = [tplString];
 			}
 
+			//process name to be valid id string
+			name = name.split('.').join('-');
+
 			if(map[name]) throw new Error('DEV::APP.Util.Template::Conflict! You have already named a template with id:' + name);
 
 			var tpl = _.isArray(tplString)?tplString.join(''):tplString;
@@ -612,6 +617,10 @@ _.each(['Core', 'Util'], function(coreModule){
 		},
 
 		get: function(name){
+			if(!name) return false;
+			//process name to be valid id string
+			name = name.split('.').join('-');
+			
 			if(map[name]) return $('head').find('#'+name).html();
 			return false;
 		},
@@ -620,13 +629,24 @@ _.each(['Core', 'Util'], function(coreModule){
 			return _.keys(map);
 		},
 
-	}
+		//load the prepared/combined templates package from server
+		load: function(url){
+			app.remote({
+				url: url,
+				async: false
+			}).done(function(tpls){
+				_.each(tpls, function(tpl, name){
+					app.Util.Tpl.build(name, tpl);
+				});
+			});
+		}
+
+	};
 
 	app.Util.Tpl = Template;
 
 })(Application);
 
-Application.Util.Tpl.build('_blank', ' ');
 /**
  * This is the Remote data interfacing core module of this application framework.
  * (Replacing the old Data API module)
@@ -904,18 +924,41 @@ Application.Util.Tpl.build('_blank', ' ');
 	});
 
 })(Application, _, Marionette);
-//1 Override the default raw-template retrieving method
-//We allow both #id and template html string(or string array) as parameter.
-Backbone.Marionette.TemplateCache.prototype.loadTemplate = function(idOrTplString){
-	if(_.string.startsWith(idOrTplString, '#')) return $(idOrTplString).html();
-	if(_.isArray(idOrTplString)) return idOrTplString.join('');
-	return idOrTplString; //is can NOT be null or empty since Marionette.Render guards it so don't need to use idOrTplString || ' ';
-};
+;(function(app){
 
-//2 Override to use Handlebars templating engine with Backbone.Marionette
-Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTemplate) {
-  return Handlebars.compile(rawTemplate);
-};
+	//1 Override the default raw-template retrieving method
+	//We allow both #id or @*.html(remote) and template html string(or string array) as parameter.
+	Backbone.Marionette.TemplateCache.prototype.loadTemplate = function(idOrTplString){
+		if(_.string.startsWith(idOrTplString, '#')) return $(idOrTplString).html();
+		if(_.string.startsWith(idOrTplString, '@')) {
+			//search the local templates cache:
+			var tpl = app.Util.Tpl.get(idOrTplString.substr(1));
+			if(tpl) return tpl;
+			//fetch from remote:
+			app.remote({
+				url: app.config.viewTemplates + '/' + idOrTplString.substr(1),
+				async: false
+			}).done(function(remoteTpl){
+				tpl = remoteTpl;
+			}).error(function(){
+				tpl = false;
+			});
+			if(tpl)
+				return app.Util.Tpl.build(idOrTplString.substr(1), tpl).string;
+			throw new Error('DEV::View Template::Can not load template...' + idOrTplString + ', re-check your app.config.viewTemplates setting');
+
+		}
+		if(_.isArray(idOrTplString)) return idOrTplString.join('');
+		return idOrTplString; //this can NOT be null or empty since Marionette.Render guards it so don't need to use idOrTplString || ' ';
+	};
+
+	//2 Override to use Handlebars templating engine with Backbone.Marionette
+	Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTemplate) {
+	  return Handlebars.compile(rawTemplate);
+	};
+
+})(Application);
+
 /**
  * Enhancing the Backbone.Marionette.Region Class
  *

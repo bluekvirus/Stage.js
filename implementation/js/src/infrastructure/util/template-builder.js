@@ -23,6 +23,9 @@
 				if(!_.isArray(tplString))	tplString = [tplString];
 			}
 
+			//process name to be valid id string
+			name = name.split('.').join('-');
+
 			if(map[name]) throw new Error('DEV::APP.Util.Template::Conflict! You have already named a template with id:' + name);
 
 			var tpl = _.isArray(tplString)?tplString.join(''):tplString;
@@ -35,6 +38,10 @@
 		},
 
 		get: function(name){
+			if(!name) return false;
+			//process name to be valid id string
+			name = name.split('.').join('-');
+			
 			if(map[name]) return $('head').find('#'+name).html();
 			return false;
 		},
@@ -43,10 +50,20 @@
 			return _.keys(map);
 		},
 
-	}
+		//load the prepared/combined templates package from server
+		load: function(url){
+			app.remote({
+				url: url,
+				async: false
+			}).done(function(tpls){
+				_.each(tpls, function(tpl, name){
+					app.Util.Tpl.build(name, tpl);
+				});
+			});
+		}
+
+	};
 
 	app.Util.Tpl = Template;
 
 })(Application);
-
-Application.Util.Tpl.build('_blank', ' ');
