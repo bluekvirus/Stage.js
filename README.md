@@ -5,8 +5,8 @@ This project produces **Stage.js** - an infrastructure for building modern web a
 
 What's next?
 ------------
-1.3.0 might bring:
-* Add mobile centered dev support (new index.html and starter distribution);
+1.4.0 might bring:
+* app@state/context@state/lvl1@state/lvl2@state: new stateful navigation mech;
 * Datagrid+ : select-all header/cell, details row;
 * Editor+ : Spinner/Range, Switches, DnD Listing;
 * local filter/sorter mech into list views; 

@@ -6,7 +6,7 @@ Building multi-context rich-client web application front-end in the modern way.
 
 Current version
 ---------------
-**@1.2.2**
+**@1.3.0**
 ([Why is it version-ed like this?](http://semver.org/))
 
 
@@ -224,6 +224,7 @@ Application.setup({
     contextRegion: //'your context region name marked in template',
     defaultContext: //'your default context name to show upon dom-ready',
     baseAjaxURI: //'your base url for using with Application.remote()',
+    viewTemplates: //'remote view templates folder, if using template:@**/*.html in views'
     crossdomain: {
         enabled: //false | true
         protocol: '', //https or not? default: '' -> http
@@ -326,6 +327,19 @@ Create a new file named `myContextA.js`, remember a *Context* is just an special
 ```
 alias: `Application.page()`. 
 
+**Tip:** When defining template for a context you can use one of the four ways we support:
+
+* \#id -- local html template by DOM id;
+* @\*\*/\*.html -- remote html templates;
+* 'html string' -- single line html string;
+* ['html str1', 'html str2', ...] -- array of html strings;
+
+**Note:** To enable remote template support, you need to configure `viewTemplates` through `Application.setup()`.
+
+**Note:** Remote view templates will only be fetched once and then cached and reused within the client side application. Additional view instances using the same remote template will not trigger another loading process.
+
+**Note:** Remote templates should be combined into a single `all.json` file before going into production deployment. This is already supported by our build tool. Check your build configure file to enable this auto processing. You don *NOT* need to care about this `all.json` file. It is automatically loaded once you've set the `viewTemplates` configure.
+
 
 #####Navigate within a context
 In the above code example, the `onNavigateTo` method handles the `context:navigate-to` event. This event will get triggered on the context if the application switched to `MyContextA`. 
@@ -383,7 +397,7 @@ Application.trigger('app:navigate', {
 ```
 Keep in mind that `Application.trigger('app:navigate', 'string...')` will always update the url hash.
 
-####Step 3. Define Regionals
+####Step 3. Regionals & Views
 Before creating a *Regional*, change your `myContextA.js` into `/context-a/index.js` so you can start adding regional definitions into the context folder as separate code files. Always maintain a clear code hierarchy through file structures. (Try to limit each code file to be **under 300-400 lines** including comments)
 
 Create `/context-a/myRegionalA.js` like this:
@@ -403,7 +417,9 @@ By default, `Application.regional(['you regional view name',] {...})` returns th
 
 Sometimes your *Regional* is comprised of other sub-regional views and that's fine, you can nest *Regional*s with the `region=""` and `view=""` attributes in the template (only if it is of `type: Layout`). 
 
-There will also be time when you just need plain *Marionette.xView* definitions to be used as item views within *Regional*s. Define them through the `Application.view()` API:
+There will also be time when you just need plain *Marionette.xView* definitions to be used as item views within *Regional*s. After all, *Regionals* are just *named* views for reuse and faster loading on regions.
+
+You can define non-regional (un-named) views through the `Application.view()` API:
 ```
 //myRegionalA.js
 (function(app) {
@@ -426,6 +442,8 @@ The above call to `app.view()` returns a **definition**. If you want an **instan
 var view = app.view({...}, true);
 ...
 ```
+
+**Tip:** Remember, when defining template for a regional/view you can use one of the four ways we support: \#id, @\*\*/\*.html, 'html string' and ['html string' array].
 
 Now, we've sketched the layout of our application, you might want more contexts defined before continue but that's the easy part, just repeat Step 1-2 till you are ready to proceed to light-up the views dynamically with remote data.
 
