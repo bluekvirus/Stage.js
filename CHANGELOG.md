@@ -1,5 +1,20 @@
 Change Log
 ==========
+1.3.0 (2014-07-08)
+------------------
+1. Added remote view template support @*.html and all.json (compiled);
+2. Added **/*.html -> all.json into build script;
+3. Updated doc (how-to) about view templating changes;
+
+
+1.2.2 (2014-07-08)
+-------------------
+1. fixed bug on region scanning in application's main template (#main);
+2. fixed application kickstart seq to hook to correct ready event (normal/hybrid);
+3. Allow multiple folder merge in build tool;
+4. Added ready-to-use @fontface kits in bower.json;
+
+
 1.2.1 (2014-06-23)
 -------------------
 1. added additional css class for editor help and status texts;

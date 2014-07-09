@@ -1,0 +1,6 @@
+{
+  "test-ct.html": "<div class=\"row\"><div region=\"left\" class=\"col-md-6\"></div><div region=\"right\" class=\"col-md-6\"></div><div class=\"col-md-12\"><div region=\"bottom\" class=\"alert alert-info\"></div></div></div>",
+  "test.html": "<h1>Hellow World</h1>",
+  "test2.html": "<h2>This template might not be compiled yet!</h2>",
+  "test/test2.html": "<h2>Hey!</h2>"
+}
