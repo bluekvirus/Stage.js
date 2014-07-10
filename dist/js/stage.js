@@ -340,7 +340,9 @@ _.each(['Core', 'Util'], function(coreModule){
 			//1. Put main template into position and scan for regions.
 			var regions = {};
 
-			$maintpl = $('#main'); if(Application.config.template) $maintpl.html(Application.config.template);
+			$maintpl = $('#main'); 
+			if(Application.config.template) 
+				$maintpl.html(Backbone.Marionette.TemplateCache.prototype.loadTemplate(Application.config.template));
 			$maintpl.find('[region]').each(function(index, el){
 				var name = $(el).attr('region');
 				regions[name] = '#main [region="' + name + '"]';

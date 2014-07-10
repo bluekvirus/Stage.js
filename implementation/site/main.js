@@ -6,7 +6,7 @@ NProgress.configure({showSpinner: false});
 
         //You can override other production config vars if wanted.
         //fullScreen: true,
-        template: '<div region="banner" view="Banner"></div><div region="center"></div><div region="footer" view="Footer"></div>',
+        template: '@site.html',
         contextRegion: 'center',
         defaultContext: 'Home',
         viewTemplates: 'static/templates'

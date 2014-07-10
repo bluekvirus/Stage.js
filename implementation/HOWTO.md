@@ -6,13 +6,13 @@ Building multi-context rich-client web application front-end in the modern way.
 
 Current version
 ---------------
-**@1.3.0**
+**@1.3.1**
 ([Why is it version-ed like this?](http://semver.org/))
 
 
 Introduction
 ------------
-This lightweight framework is made on top of **Backbone.Marionette** and **Bootstrap**. The goal is to maximize developer efficiency by introducing an intuitive workflow on top of a solid front-end architecture. You will be focusing on user interaction building without distraction. We even give you a web server for starting the development right away! Theming and packaging deployments are also a breeze through our tools.
+This lightweight framework is made on top of **Backbone.Marionette** and **Bootstrap**. The goal is to maximize developer efficiency by introducing an intuitive workflow on top of a solid front-end architecture. You will be focusing on user interaction building without distraction. We even give you a web server to start the development right away! Theming and packaging deployments are also a breeze through our tools.
 
 To flatten and lower the initial learning curve of adaptation, there is only a handful of APIs to remember:
 
@@ -220,7 +220,7 @@ Go to your `main.js` and setup the application by using `Application.setup()`:
 Application.setup({
     theme: //'your theme name',
     fullScreen: //false | true,
-    template: //'#id' or ['<div>...</div>', '<div>...</div>'] or '<div>...</div>'
+    template: //'#id', '@**/*.html', [html string array] or 'html string',
     contextRegion: //'your context region name marked in template',
     defaultContext: //'your default context name to show upon dom-ready',
     baseAjaxURI: //'your base url for using with Application.remote()',
@@ -339,6 +339,8 @@ alias: `Application.page()`.
 **Note:** Remote view templates will only be fetched once and then cached and reused within the client side application. Additional view instances using the same remote template will not trigger another loading process.
 
 **Note:** Remote templates should be combined into a single `all.json` file before going into production deployment. This is already supported by our build tool. Check your build configure file to enable this auto processing. You don *NOT* need to care about this `all.json` file. It is automatically loaded once you've set the `viewTemplates` configure.
+
+**Tip:** Combine remote templating with IDE tool (ZenCoding/(Emmet)[http://emmet.io]) will greatly improve your development speed.
 
 
 #####Navigate within a context

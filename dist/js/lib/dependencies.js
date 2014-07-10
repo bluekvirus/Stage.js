@@ -19857,7 +19857,7 @@ $.effects.effect.transfer = function( o, done ) {
 }));
 
 /*
- * jQuery File Upload Plugin 5.40.1
+ * jQuery File Upload Plugin 5.40.3
  * https://github.com/blueimp/jQuery-File-Upload
  *
  * Copyright 2010, Sebastian Tschan
@@ -20910,7 +20910,25 @@ $.effects.effect.transfer = function( o, done ) {
                     // to be returned together in one set:
                     dfd.resolve([e]);
                 },
-                dirReader;
+                successHandler = function (entries) {
+                    that._handleFileTreeEntries(
+                        entries,
+                        path + entry.name + '/'
+                    ).done(function (files) {
+                        dfd.resolve(files);
+                    }).fail(errorHandler);
+                },
+                readEntries = function () {
+                    dirReader.readEntries(function (results) {
+                        if (!results.length) {
+                            successHandler(entries);
+                        } else {
+                            entries = entries.concat(results);
+                            readEntries();
+                        }
+                    }, errorHandler);
+                },
+                dirReader, entries = [];
             path = path || '';
             if (entry.isFile) {
                 if (entry._file) {
@@ -20925,14 +20943,7 @@ $.effects.effect.transfer = function( o, done ) {
                 }
             } else if (entry.isDirectory) {
                 dirReader = entry.createReader();
-                dirReader.readEntries(function (entries) {
-                    that._handleFileTreeEntries(
-                        entries,
-                        path + entry.name + '/'
-                    ).done(function (files) {
-                        dfd.resolve(files);
-                    }).fail(errorHandler);
-                }, errorHandler);
+                readEntries();
             } else {
                 // Return an empy list for file system items
                 // other than files or directories:
@@ -21259,7 +21270,8 @@ $.effects.effect.transfer = function( o, done ) {
                                 return;
                             }
                             data.files = files;
-                            jqXHR = that._onSend(null, data).then(
+                            jqXHR = that._onSend(null, data);
+                            jqXHR.then(
                                 function (result, textStatus, jqXHR) {
                                     dfd.resolve(result, textStatus, jqXHR);
                                 },

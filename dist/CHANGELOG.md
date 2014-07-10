@@ -1,9 +1,13 @@
 Change Log
 ==========
+1.3.1 (2014-07-10)
+1. Fixed '@\*\*/\*.html' remote templating to application template;
+
+
 1.3.0 (2014-07-08)
 ------------------
 1. Added remote view template support @*.html and all.json (compiled);
-2. Added **/*.html -> all.json into build script;
+2. Added \*\*/\*.html -> all.json into build script;
 3. Updated doc (how-to) about view templating changes;
 
 
