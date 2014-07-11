@@ -8,6 +8,7 @@ Change Log
 1. Allow '@\*\*/\*.html' remote templating to be used for application template;
 2. Fixed navigation module/subpath broken-by-'/'-char issue;
 3. Named app.view() will now be considered/registered as regionals;
+4. Datagrid rows will now have a reference to their parent grid instance;
 
 
 1.3.0 (2014-07-08)

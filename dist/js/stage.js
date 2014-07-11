@@ -3015,9 +3015,9 @@ var I18N = {};
 
 				//2. rebuild header cells - let it rerender with new column array
 				_.each(this._options.columns, function(column){
-					column.header = column.header || 'string',
-					column.cell = column.cell || column.header || 'string',
-					column.label = column.label || _.string.titleize(column.name)
+					column.header = column.header || 'string';
+					column.cell = column.cell || column.header || 'string';
+					column.label = column.label || _.string.titleize(column.name);
 				});				
 				this.header.currentView.trigger('view:render-data', this._options.columns);
 
@@ -3048,15 +3048,19 @@ var I18N = {};
 			type: 'CollectionView',
 			itemView: 'dynamic',
 			tagName: 'tr',
+			initialize: function(options){
+				this.grid = options.body.parentCt; //give each row the grid view ref.
+			},
 			//buildItemView - select proper cell
 			buildItemView: function(item, ItemViewType, itemViewOptions){
 				return app.widget(_.string.classify([item.get('cell'), 'cell'].join('-')), {
-					model: item,
 					tagName: 'td',
+					model: item,
+
 					row: this //link each cell with the row. (use/link it in cell's init())
 				});
 			}			
-		})		
+		});
 
 		var Body = app.view({
 			type: 'CollectionView',
@@ -3067,12 +3071,13 @@ var I18N = {};
 						return _.extend({
 							value: selectn(column.name || '', model.attributes),
 							index: index
-						}, column)
-					}, this))
-				}
-			}
-		})
+						}, column);
+					}, this)),
 
+					body: this //passing body to row view
+				};
+			}
+		});
 		return UI;
 
 	});
@@ -3207,7 +3212,7 @@ var I18N = {};
 						this.actions[name] = function($action){
 							action.fn.apply(this.row, arguments);
 							/*Warning:: If we use options.row here, it won't work, since the options object will change, hence this event listener will be refering to other record's row when triggered*/
-						}
+						};
 					}
 				}, this);
 				this.model.set('actions', actions);

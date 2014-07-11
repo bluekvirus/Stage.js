@@ -32,6 +32,10 @@ module.exports = {
 			'stage.js': false,
 			'stage.min.js': false			
 		},
+		static: {
+			template: {},
+			resource: {}
+		},
 		themes: {
 			'default': {
 				css: {

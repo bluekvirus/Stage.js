@@ -9,7 +9,7 @@ NProgress.configure({showSpinner: false});
         template: '@site.html',
         contextRegion: 'center',
         defaultContext: 'Home',
-        viewTemplates: 'static/templates'
+        viewTemplates: 'static/template'
 
     }).run();
 

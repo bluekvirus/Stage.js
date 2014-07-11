@@ -42,7 +42,7 @@
 	    					edit: {
 	    						fn: function(){
 	    							//record, columns since action listeners are bound to the current row view
-	    							console.log(this.model, this.collection);
+	    							console.log(this.model, this.collection, this.grid);
 	    						}
 	    					}
 	    				}

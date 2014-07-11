@@ -28,7 +28,10 @@ module.exports = {
 		},
 		implementation: {
 			js: {},
-			static: {},
+			static: {
+				template: {},
+				resource: {}
+			},
 			themes: {
 				'default': 'themes/default'
 			},

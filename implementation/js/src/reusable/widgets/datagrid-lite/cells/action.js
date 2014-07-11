@@ -67,7 +67,7 @@
 						this.actions[name] = function($action){
 							action.fn.apply(this.row, arguments);
 							/*Warning:: If we use options.row here, it won't work, since the options object will change, hence this event listener will be refering to other record's row when triggered*/
-						}
+						};
 					}
 				}, this);
 				this.model.set('actions', actions);
