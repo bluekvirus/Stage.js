@@ -83,7 +83,7 @@
 	    				view.$el.addClass(this.activeClass);
 	    				this.$el.find('.panel-body').slideUp();
 	    				view.body.$el.slideDown();
-	    			})
+	    			});
 	    		},
 	    		itemView: app.view({
 	    			type: 'Layout',

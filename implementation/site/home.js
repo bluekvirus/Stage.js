@@ -47,7 +47,7 @@
 					this.trigger('view:track-full-screen');
 				},
 				onTrackFullScreen: function(){
-					this.$el.height(minH()*.44).css('marginTop', minH()*.06);
+					this.$el.height(minH()*0.44).css('marginTop', minH()*0.06);
 				}
 			}));
 
@@ -66,7 +66,7 @@
 						{name: 'Demo', href:'#navigate/Demo'}
 					]);
 				}
-			}))
+			}));
 		}
 
 	});
@@ -92,11 +92,11 @@
 			if(this.paper){
 				//delay 10ms for re-draw - for the scrollbars to recover(disappear)
 				var that = this;
-				setTimeout(function(){that.trigger('view:fit-and-draw')}, app.config.rapidEventDebounce/20);
+				setTimeout(function(){that.trigger('view:fit-and-draw');}, app.config.rapidEventDebounce/20);
 			}else {
 				this.onPaperReady = function(){
 					this.trigger('view:fit-and-draw');
-				}		
+				};
 			}
 		},
 
@@ -116,8 +116,8 @@
 			};
 
 			var start = {
-				x: size.w * .46,
-				y: size.h * .44
+				x: size.w * 0.46,
+				y: size.h * 0.44
 			};
 			this.paper.path(['M', start.x, ',', 0, 'V', size.h, 'L', size.w, ',', 0].join('')).attr({stroke: '#222'}); //none close
 
@@ -126,20 +126,20 @@
 			var gMesh = g.clone();
 
 			g.attr({fill: '0-rgba(63,182,24)-rgba(39,117,29):25-rgba(27,87,31)'});
-			$(g.node).css('fill-opacity', .6);
+			$(g.node).css('fill-opacity', 0.6);
 
 			gMesh.attr({fill: '0-rgba(255,255,255,0)-rgba(189,187,176,.5):15-rgba(72,66,36)'});
-			$(gMesh.node).css('fill-opacity', .25);			
+			$(gMesh.node).css('fill-opacity', 0.25);			
 
 			//blue followspot
 			var b = this.paper.path(['M', start.x, ',', 0, 'L', 0, ',', start.y, 'V', size.h, 'z'].join('')).attr({stroke: 'none'});
 			var bMesh = b.clone();
 
 			b.attr({fill:'180-#007FFF-rgba(16,73,126):25-#183044'});
-			$(b.node).css('fill-opacity', .8);
+			$(b.node).css('fill-opacity', 0.8);
 
 			bMesh.attr({fill: '0-rgba(255,255,255,0)-rgba(189,187,176,.5):15-rgba(72,66,36)'});
-			$(bMesh.node).css('fill-opacity', .3);	
+			$(bMesh.node).css('fill-opacity', 0.3);	
 
 			//red followspot
 			var r = this.paper.path(['M', size.w, ',', start.y, 'L', 0, ',', size.h, 'V', start.y, 'z'].join('')).attr({stroke: 'none'});
@@ -147,13 +147,13 @@
 
 			r.attr({fill:'180-#FF0039-rgba(139,17,41,.5):45-#5B1823'});
 			$(r.node).css({
-				'opacity': .6
+				'opacity': 0.6
 			});
 
 			rMesh.attr({fill: '0-rgba(255,255,255,0)-rgba(189,187,176,.5):15-rgba(72,66,36)'});
 			$(rMesh.node).css({
-				opacity: .25,
-				'fill-opacity': .25
+				opacity: 0.25,
+				'fill-opacity': 0.25
 			});			
 				
 		}		

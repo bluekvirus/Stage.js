@@ -6,7 +6,7 @@ Building multi-context rich-client web application front-end in the modern way.
 
 Current version
 ---------------
-**@1.3.1**
+**@1.3.2**
 ([Why is it version-ed like this?](http://semver.org/))
 
 
@@ -78,9 +78,11 @@ A *Context* is a special *Marionette.Layout* view object. *Context*s only appear
 alias: Page
 
 ####What's a Regional?
-A *Regional* is a *Marionette.xView* (*ItemView, Layout, CollectionView and CompositeView*) with name, it is to be shown on a region in template of your application or any *Marionette.Layout* instance. As you can see, since a *Context* is a *Layout* with extra functions, *Regional*s will be used closely with it. You can link a *Regional* with a *Context* by putting the *Regional*'s name in the *Context*'s template. Read more about *Regional* in the **Quick steps** section.
+A *Regional* is a *Marionette.xView* (*ItemView, Layout, CollectionView and CompositeView*) with name, it is to be shown on a region in template of your application or any *Marionette.Layout* instance. As you can see, since a *Context* is a *Layout* with extra functions, *Regional*s will be used closely with it. You can link a *Regional* with a *Context* by putting the *Regional*'s name in the *Context*'s template. Read more about *Regional* in the **Quick steps** section. 
 
-alias: Area
+**Update**: We are merging this concept with *View* in general. Future releases will not distinguish between *Regional*s and named *View*s.
+
+alias: Area, named View
 
 ####Remote data handling?
 Modern web application generates views according to user data dynamically. This is why we picked *Backbone/Marionette* as our implementation base -- to use dynamic views rendered through data. However, the way we handle remote data in our framework is a bit different than the original design in *Backbone*.
@@ -414,6 +416,7 @@ Create `/context-a/myRegionalA.js` like this:
 })(Application);
 ```
 alias: `Application.area()`. 
+alias: `Application.view({name: '...', ...})`.
 
 By default, `Application.regional(['you regional view name',] {...})` returns the **definition** of the view, if you want to use the returned view **anonymously**, remove the `name` argument. You will get an **instance** of the view definition to `show()` on a region right away. 
 
@@ -446,6 +449,13 @@ var view = app.view({...}, true);
 ```
 
 **Tip:** Remember, when defining template for a regional/view you can use one of the four ways we support: \#id, @\*\*/\*.html, 'html string' and ['html string' array].
+
+**Important:** If preferred, you can always give your view a name for it to be registered as regionals, this is another short-cut we create in an attempt towards removing the *Regional* concept in future releases.
+```
+...
+var regional = app.view({name: '...'});
+...
+```
 
 Now, we've sketched the layout of our application, you might want more contexts defined before continue but that's the easy part, just repeat Step 1-2 till you are ready to proceed to light-up the views dynamically with remote data.
 

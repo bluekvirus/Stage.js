@@ -1,8 +1,6 @@
 /**
  * This is a registry for saving 'named' regional view definitions.
  * 
- * Note: ignore config.name will return a instance of defined View. Since no name means to use it anonymously, which in turn creates it right away.
- * 
  * [We moved the static regional view listing from the Marionette.Layout class]
  *
  * @author Tim.Liu
@@ -16,14 +14,11 @@
 	_.extend(definition, {
 
 		create: function(config){
+			if(!config.name) throw new Error('DEV::Core.Regional::You must give this regional view a name...');
 			if(map[config.name]) console.warn('DEV::Core.Regional::You have overriden regional view \'', config.name, '\'');
 			
-			var View = M[config.type || 'Layout'].extend(config);
-			if(config.name)
-				map[config.name] = View;
-			//no name means to use it anonymously, which in turn creates it right away.
-			else return new View();
-			return View;
+			map[config.name] = M[config.type || 'Layout'].extend(config);
+			return map[config.name];
 			
 		},
 

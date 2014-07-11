@@ -27,10 +27,10 @@
  *
  * Pre-defined events
  * -navigation:
- * app:navigate (string) or ({context:..., module:...}) - app.onNavigate [pre-defined]
+ * app:navigate (string) or ({context:..., module/subpath:...}) - app.onNavigate [pre-defined]
  * context:navigate-away - context.onNavigateAway [not-defined]
  * app:context-switched (contextName)  - app.onContextSwitched [not-defined]
- * context:navigate-to (moduleName) on context] - context.onNavigateTo [not-defined]
+ * context:navigate-to (moduleName/subpath) on context] - context.onNavigateTo [not-defined]
  *
  * -ajax 
  * ...(see core/remote-data.js for more.)
@@ -214,13 +214,13 @@ _.each(['Core', 'Util'], function(coreModule){
 
 		//3.2 Initializers (Layout, Navigation)
 		/**
-		 * Setup the application with content routing (context + module navigation). 
+		 * Setup the application with content routing (context + subpath navigation). 
 		 * 
 		 * @author Tim.Liu
 		 * @update 2013.09.11
 		 * @update 2014.01.28 
 		 * - refined/simplified the router handler and context-switch navigation support
-		 * - use app:navigate (string) or ({context:..., module:...}) at all times when switching contexts.
+		 * - use app:navigate (string) or ({context:..., subpath:...}) at all times when switching contexts.
 		 */
 
 		//Application init: Global listeners
@@ -229,12 +229,15 @@ _.each(['Core', 'Util'], function(coreModule){
 			Application.Util.addMetaEvent(Application, 'app');
 
 			//Context switching utility
-			function navigate(context, module){
+			function navigate(context, subpath){
 				if(!context) throw new Error('DEV::Application::Empty context name...');
 				var TargetContext = Application.Core.Context[context];
 				if(!TargetContext) throw new Error('DEV::Application::You must have the requred context ' + context + ' defined...'); //see - special/registry/context.js			
 				if(!Application.currentContext || Application.currentContext.name !== context) {
-					if(Application.currentContext) Application.currentContext.trigger('context:navigate-away'); //save your context state within onNavigateAway()
+					
+					//save your context state within onNavigateAway()
+					if(Application.currentContext) Application.currentContext.trigger('context:navigate-away'); 
+					
 					Application.currentContext = new TargetContext(); //re-create each context upon switching
 					Application.Util.addMetaEvent(Application.currentContext, 'context');
 
@@ -242,8 +245,10 @@ _.each(['Core', 'Util'], function(coreModule){
 					Application[Application.config.contextRegion].show(Application.currentContext);
 					//fire a notification round to the sky.
 					Application.trigger('app:context-switched', Application.currentContext.name);
-				}			
-				Application.currentContext.trigger('context:navigate-to', module); //recover your context state within onNavigateTo()
+				}
+
+				//recover your context state within onNavigateTo()
+				Application.currentContext.trigger('context:navigate-to', subpath); 
 			}
 			
 			Application.onNavigate = function(options, silent){
@@ -251,9 +256,9 @@ _.each(['Core', 'Util'], function(coreModule){
 					window.location.hash = _.string.rtrim('navigate/' + options, '/');
 				else {
 					if(silent === true) //swap contents but don't update #hash accordingly
-						navigate(options.context || Application.currentContext.name, options.module);
+						navigate(options.context || Application.currentContext.name, options.module || options.subpath);
 					else
-						window.location.hash = _.string.rtrim(['navigate', options.context || Application.currentContext.name, options.module].join('/'), '/');
+						window.location.hash = _.string.rtrim(['navigate', options.context || Application.currentContext.name, options.module || options.subpath].join('/'), '/');
 				}
 			};
 
@@ -303,13 +308,13 @@ _.each(['Core', 'Util'], function(coreModule){
 			//init client page router and history:
 			var Router = Backbone.Marionette.AppRouter.extend({
 				appRoutes: {
-					'(navigate)(\/:context)(\/:module)' : 'navigateTo', //navigate to a context and signal it about :module (can be a path for further navigation within)
+					'(navigate)(/:context)(/*module_subpath)' : 'navigateTo', //navigate to a context and signal it about *module (can be a path for further navigation within)
 				},
 				controller: {
-					navigateTo: function(context, module){
+					navigateTo: function(context, subpath){
 						Application.trigger('app:navigate', {
 							context: context, 
-							module: module
+							subpath: subpath
 						}, true); //will skip updating #hash since the router is triggered by #hash change.
 					},
 				}
@@ -406,8 +411,15 @@ _.each(['Core', 'Util'], function(coreModule){
 				instant = options;
 				options = {};
 			}
-			var Def = Backbone.Marionette[options.type || 'ItemView'].extend(options);
-			if(instant) return new Def();
+
+			var Def;
+			if(!options.name){
+				Def = Backbone.Marionette[options.type || 'ItemView'].extend(options);
+				if(instant) return new Def();
+			}
+			else //named views should be regionals in concept
+				Def = Application.Core.Regional.create(options);
+			
 			return Def;
 		},
 
@@ -425,14 +437,20 @@ _.each(['Core', 'Util'], function(coreModule){
 			if(!_.isString(name)) {
 				options = name;
 				name = '';
-			}
+			}			
 			options = options || {};
-			_.extend(options, {name: name});			
+			_.extend(options, {name: name});
+
+			if(!options.name){
+				options.type = options.type || 'Layout';
+				//no name means to use a view on a region anonymously, which in turn creates it right away.
+				return Application.view(options, true);
+			}
+
 			return Application.Core.Regional.create(options);
 		},
 
 		widget: function(name, options){
-			if(!_.isString(name)) throw new Error('DEV::Application.widget::You must specify a widget name to use.');
 			if(_.isFunction(options)){
 				//register
 				Application.Core.Widget.register(name, options);
@@ -443,7 +461,6 @@ _.each(['Core', 'Util'], function(coreModule){
 		},
 
 		editor: function(name, options){
-			if(!_.isString(name)) throw new Error('DEV::Application.editor::You must specify a editor name to use.');
 			if(_.isFunction(options)){
 				//register
 				Application.Core.Editor.register(name, options);
