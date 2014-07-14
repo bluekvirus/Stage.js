@@ -1132,6 +1132,11 @@ datagrid.trigger('view:reconfigure', {...new config options...});
 
         var UI = app.view({
             template: '<span>{{{value}}}</span>',
+            initialize: function(options){
+                //options.row is the row view object this cell is on
+                //options.model is the column config + index & value
+                ...
+            }      
         });
 
         return UI;
@@ -1142,6 +1147,10 @@ datagrid.trigger('view:reconfigure', {...new config options...});
 
         var UI = app.view({
             template: '<span><i class="{{icon}}"></i> {{{label}}}</span>',
+            initialize: function(options){
+                //options.model is the column config
+                ...
+            }             
         });
 
         return UI;
@@ -1155,6 +1164,26 @@ datagrid.trigger('view:reconfigure', {...new config options...});
 * action
 * seq
 * string
+
+**Note:** If you want to get hold of the outer datagrid view instance from a cell, reference it like this
+```
+    app.widget('YourOwnCell', function(){
+
+        var UI = app.view({
+            template: '...',
+            initialize: function(options){
+
+                this.grid = options.row.grid;
+                //where grid.body is the table rows,
+                //grid.header is the header row;
+
+            }      
+        });
+
+        return UI;
+    });
+```
+
 
 **Built-in Headers**
 * string

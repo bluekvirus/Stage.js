@@ -59,6 +59,7 @@ program.command('*').description('build your web front-end project using customi
 			var all = {};
 			_.each(tpls, function(name){
 				var tpl = fs.readFileSync(path.join(tplBase, name), {encoding: 'utf8'});
+				name = name.split(path.sep).join('/');//normalize file path from different OS
 				console.log('[template]'.green, name, '+'.green);
 				all[name] = tpl.replace(/[\n\t]/g, '');
 			});
