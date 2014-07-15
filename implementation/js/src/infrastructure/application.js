@@ -8,7 +8,7 @@
  * config:
 		* theme,
 		* template,
-		* contextRegion,
+		* contextRegion/navRegion,
 		* defaultContext,
 		* fullScreen,
 		* rapidEventDebounce,
@@ -242,18 +242,22 @@ window.onerror = function(errorMsg, target, lineNum){
 
 		//Application init: Navigation Workers
 		/**
-		 * Setup the application with content routing (context + subpath navigation). 
+		 * Setup the application with content routing (navigation). 
 		 * 
 		 * @author Tim.Liu
 		 * @update 2013.09.11
-		 * @update 2014.01.28 
+		 * @update 2014.01.28
+		 * @update 2014.07.15
 		 * - refined/simplified the router handler and context-switch navigation support
-		 * - use app:navigate (string) or ({context:..., subpath:...}) at all times when switching contexts.
+		 * - use app:navigate (path) at all times when navigate between contexts & views.
 		 */
 		Application.addInitializer(function(options){
 
 			//1. Prepare context switching utility
-			function navigate(context, subpath){
+			function navigate(path){
+				path = path.split('/');
+				var context = path.shift();
+
 				if(!context) throw new Error('DEV::Application::Empty context name...');
 				var TargetContext = Application.Core.Context[context];
 				if(!TargetContext) throw new Error('DEV::Application::You must have the requred context ' + context + ' defined...'); //see - special/registry/context.js			
@@ -265,26 +269,30 @@ window.onerror = function(errorMsg, target, lineNum){
 					Application.currentContext = new TargetContext(); //re-create each context upon switching
 					Application.Util.addMetaEvent(Application.currentContext, 'context');
 
-					var tragetRegion = Application.mainView.getRegion(Application.config.contextRegion);
-					if(!tragetRegion) throw new Error('DEV::Application::You don\'t have region \'' + Application.config.contextRegion + '\' defined');		
+					var tragetRegion = Application.mainView.getRegion(Application.config.contextRegion || Application.config.navRegion);
+					if(!tragetRegion) throw new Error('DEV::Application::You don\'t have region \'' + (Application.config.contextRegion || Application.config.navRegion) + '\' defined');		
 					tragetRegion.show(Application.currentContext);
 					//fire a notification round to the sky.
 					Application.trigger('app:context-switched', Application.currentContext.name);
+					Application.currentContext.trigger('context:navigate-to');
 				}
 
-				//recover your context state within onNavigateTo()
-				Application.currentContext.trigger('context:navigate-to', subpath); 
+				Application.currentContext.trigger('context:navigate-chain', path);
+
 			}
 			
 			Application.onNavigate = function(options, silent){
-				if(_.isString(options))
-					window.location.hash = _.string.rtrim('navigate/' + options, '/');
-				else {
-					if(silent === true) //swap contents but don't update #hash accordingly
-						navigate(options.context || Application.currentContext.name, options.module || options.subpath);
-					else
-						window.location.hash = _.string.rtrim(['navigate', options.context || Application.currentContext.name, options.module || options.subpath].join('/'), '/');
+				var path = '';
+				if(_.isString(options)){
+					path = options;
+				}else {
+					//backward compatibility 
+					path = _.string.rtrim([options.context || Application.currentContext.name, options.module || options.subpath].join('/'), '/');
 				}
+				if(silent)
+					navigate(path);
+				else
+					window.location.hash = 'navigate/' + path;
 			};
 
 			//2.Auto-detect and init context (view that replaces the body region)
@@ -302,14 +310,11 @@ window.onerror = function(errorMsg, target, lineNum){
 			//init client page router and history:
 			var Router = Backbone.Marionette.AppRouter.extend({
 				appRoutes: {
-					'(navigate)(/:context)(/*module_subpath)' : 'navigateTo', //navigate to a context and signal it about *module (can be a path for further navigation within)
+					'navigate/*path' : 'navigateTo', //navigate to a context and signal it about *module (can be a path for further navigation within)
 				},
 				controller: {
-					navigateTo: function(context, subpath){
-						Application.trigger('app:navigate', {
-							context: context, 
-							subpath: subpath
-						}, true); //will skip updating #hash since the router is triggered by #hash change.
+					navigateTo: function(path){
+						Application.trigger('app:navigate', path, true); //will skip updating #hash since the router is triggered by #hash change.
 					},
 				}
 			});

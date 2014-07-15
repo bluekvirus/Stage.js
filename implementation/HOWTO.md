@@ -6,7 +6,7 @@ Building multi-context rich-client web application front-end in the modern way.
 
 Current version
 ---------------
-**@1.3.2**
+**@1.4.0**
 ([Why is it version-ed like this?](http://semver.org/))
 
 
@@ -70,7 +70,9 @@ In order to accomplish more with less code using Backbone, we picked Backbone.Ma
 
 ####What's Navigation?
 
-We achieve client-side multi-page-alike navigation through switching *Context*s on a pre-defined application region in respond to the URL fragment change event. You can also use the *sub-path* parameter received by the *Context* object upon context switching to further control its presentation accordingly (e.g #navigate/Context/sub-path or status).
+We achieve client-side multi-page-alike navigation through switching *Context*s on a pre-defined application region in respond to the URL hash fragment change event. You can also keep navigating to sub views by chaining view names in the hash. (e.g #navigate/Context/LvlOneSubView/LvlTwoSubView...)
+
+By using named views and their `navRegion` properties, our navigation mechanism enables endless possibilities in combining views in hierarchies.
 
 ####What's a Context?
 A *Context* is a special *Marionette.Layout* view object. *Context*s only appear on the application's context region (each application can have only 1 such region). If you have more than 1 *Context*s defined, they will automatically swap on the context region in response to the navigation event. You will not have more than 1 active *Context* at any given time.
@@ -223,8 +225,8 @@ Application.setup({
     theme: //'your theme name',
     fullScreen: //false | true,
     template: //'#id', '@**/*.html', [html string array] or 'html string',
-    contextRegion: //'your context region name marked in template',
-    defaultContext: //'your default context name to show upon dom-ready',
+    contextRegion/navRegion: //'your navRegion name marked in template',
+    defaultContext: //'your default context name to show in navRegion,
     baseAjaxURI: //'your base url for using with Application.remote()',
     viewTemplates: //'remote view templates folder, if using template:@**/*.html in views'
     crossdomain: {
@@ -345,52 +347,30 @@ alias: `Application.page()`.
 **Tip:** Combine remote templating with IDE tool (ZenCoding/(Emmet)[http://emmet.io]) will greatly improve your development speed.
 
 
-#####Navigate within a context
-In the above code example, the `onNavigateTo` method handles the `context:navigate-to` event. This event will get triggered on the context if the application switched to `MyContextA`. 
-
-It also gets triggered when the navigation is at `#navigate/MyContextA/SubViewA...`  so that you can do some *in-context* navigation. `SubViewA` will be the subpath/module argument. You can treat the subpath/module part as a status and render your context accordingly.
-
-API for triggering an *in-context* navigation:
-```
-Application.trigger('app:navigate', {module: 'Editors'});
-```
-Note that `onNavigateTo` will get triggered with or without a subpath/module, please avoid running your code twice in this listener. Especially when it is used as a *in-context* state switcher like this:
-```
-//myContextA.js
-...
-    onNavigateTo: function(subPath){
-        if(!subPath)
-            Application.trigger('app:navigate', {module: 'Editors'});
-        else
-            this.center.trigger('region:load-view', subPath);
-            //load specific regional view on region:center;
-    }
-...
-```
-
-
-#####Navigate between contexts
+#####Navigate between Contexts
 Use the `app:navigate` event on `Application` to actively switch between contexts.
 ```
 //full path mode
-Application.trigger('app:navigate', 'ABC/EFG...');
+Application.trigger('app:navigate', 'ABC/EFG/...');
 
-//context, module mode
+//context, module/subpath mode
 Application.trigger({
     context: 'ABC',
-    module: 'EFG...', //alias: subpath
+    subpath: 'EFG/...', //alias: module
 });
 ```
 You can also use the clicking event on an `<a>` anchor tag to switch context without any code involved:
 ```
-<a href="#navigate/ABC/EFG..."></a>
+<a href="#navigate/ABC/EFG/..."></a>
 ```
 Or, brutally using the actual `window.location` object:
 ```
-window.location.hash = '#navigate/ABC/EFG...';
+window.location.hash = '#navigate/ABC/EFG/...';
 ```
 
-As you can see there is also an `context:navigate-away` event triggered to call `onNavigateAway` method on a context when the application is switching away from one. Use this listener if you want to store some of the context state and recover in `onNavigateTo`. We recommend that you use the localStorage feature of HTML5 and we have already include a library for you in the framework distribution. (see [store.js](https://github.com/marcuswestin/store.js) for more)
+In the above code example, the `onNavigateTo` method handles the `context:navigate-to` event. This event will get triggered on the context if the application switched to `MyContextA`. 
+
+There is also an `context:navigate-away` event triggered to call `onNavigateAway` method on a context when the application is switching away from one. Use this listener if you want to store some of the context state and recover in `onNavigateTo`. We recommend that you use the localStorage feature of HTML5 and we have already include a library for you in the framework distribution. (see [store.js](https://github.com/marcuswestin/store.js) for more)
 
 **Note**: You can pass an additional *silent* argument with the `app:navigate` event to avoid changing the url hash path during the navigation:
 ```
@@ -398,8 +378,33 @@ Application.trigger('app:navigate', {
     context: context, //optional
     module: module
 }, true);
+//or
+Application.trigger('app:navigate', 'path string...', true);
 ```
-Keep in mind that `Application.trigger('app:navigate', 'string...')` will always update the url hash.
+
+#####Navigate within a Context or Named Layout
+When the navigation is at `#navigate/MyContextA/SubViewA/SubViewB...` the router finds `navRegion` in `MyContextA` and shows `SubViewA` in it and then move on to `SubViewA` to show `SubViewB...` in its `navRegion`. If, somehow, it can not find the definition of `SubViewA`, the navigation stops on `MyContextA` and triggers `view:navigateTo` event with the remaining subpath starting with `SubViewA/...` on `MyContextA`. The same process happens on `SubViewA` if the router can not find `SubViewB...`.
+
+Note that `onNavigateTo` will also get triggered on a context whenever it is freshly shown in the application's `context/navRegion`, please avoid running your code twice in this listener. Like this:
+```
+//myContextA.js
+...
+    onNavigateTo: function(subPath){
+        //this context is freshly shown on the application context/navRegion
+        if(!subPath)
+            Application.trigger('app:navigate', {module: 'Editors'});
+
+        //navigation cant seems to find named views suggested by subPath 
+        else 
+            this.center.trigger('region:load-view', ...);
+    }
+...
+```
+
+**Tip**: Use `onNavigationEnd` callback to recover the default content of a context or named layout if you need. The `view:navigation-end` event will be triggered on the context or named layout (in addition to `show`) if it is the last one on the navigation path. 
+
+**Note**: Names appear in the navigation path should be of *Marionette.Layout* views. The views (named layouts) should also define a property called `navRegion` to be the region name used for navigation. You will learn how to create named views in the next section.
+
 
 ####Step 3. Regionals & Views
 Before creating a *Regional*, change your `myContextA.js` into `/context-a/index.js` so you can start adding regional definitions into the context folder as separate code files. Always maintain a clear code hierarchy through file structures. (Try to limit each code file to be **under 300-400 lines** including comments)
@@ -455,6 +460,20 @@ var view = app.view({...}, true);
 ...
 var regional = app.view({name: '...'});
 ...
+
+//for a view to be used in the navigation chain
+var regional = app.view({
+    name: '...',
+    type: 'Layout',
+    template: '...',
+    navRegion: '...' //dont forget this
+});
+//the same as above
+var regional = app.regional('...', {
+    template: '...',
+    navRegion: '...' //dont forget this
+});
+
 ```
 
 Now, we've sketched the layout of our application, you might want more contexts defined before continue but that's the easy part, just repeat Step 1-2 till you are ready to proceed to light-up the views dynamically with remote data.

@@ -61,10 +61,11 @@
 			var config = $el.data();
 			var url = options.url || config.url;
 			$.get(url).done(function(res){
+				var content;
 				if(config.md && config.md.data === res) {
-					var content = config.md.content;
+					content = config.md.content;
 				}else {
-					var content = marked(res, options.marked);
+					content = marked(res, options.marked);
 					//cache the md data and calculation
 					$el.data('md', {
 						data: res,
@@ -73,10 +74,10 @@
 				}
 				$el.html(content).addClass('md-content');
 				theme($el, options);
-				options.cb && options.cb($el);
+				if(options.cb) options.cb($el);
 			});
 		});
-	}
+	};
 
 
 

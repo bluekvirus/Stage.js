@@ -3,11 +3,13 @@ Application.page('Demo', {
     template: [
         '<div region="center"></div>',
     ],
-    onNavigateTo: function(subPath){
-    	if(!subPath)
-    		Application.trigger('app:navigate', {module: 'Editors'});
-    	else
-        	this.center.trigger('region:load-view', subPath);
+    navRegion: 'center',
+    onNavigationEnd: function(){
+        Application.trigger('app:navigate', {subpath: 'Editors'});
+    },
+    onNavigateTo: function(path){
+        if(path)
+            console.log('Not Found:', path);
     }
 
 });

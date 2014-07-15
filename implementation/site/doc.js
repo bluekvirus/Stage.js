@@ -127,18 +127,16 @@
                             border: '1px solid'
                         });
                         //console.log(that.ui.libitem);
-                    });
+                    });                
                 }
             }));
+
+            this.doc.$el.data('md', store.get('doc'));
+            this.trigger('view:reload-doc'); 
         },
 
         onNavigateAway: function(){
             store.set('doc', this.doc.$el.data('md')); //use localStorage to cache the context state;
-        },
-
-        onNavigateTo: function(){
-            this.doc.$el.data('md', store.get('doc'));
-            this.trigger('view:reload-doc');
         }
     });
 

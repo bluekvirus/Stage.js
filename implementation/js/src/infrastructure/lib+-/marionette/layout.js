@@ -170,22 +170,39 @@
 			//supporting the navigation chain if it is a named layout view with valid navRegion (context, regional, ...)
 			if(options.name || this.name){
 				this.navRegion = options.navRegion || this.navRegion;
-				if(this.regions[this.navRegion]){
+				if(this.navRegion)
 					this.onNavigateChain = function(pathArray){
-						if(!pathArray || pathArray.length === 0) return;
+						if(!this.regions[this.navRegion]){
+							console.warn('DEV::Layout::View', 'invalid navRegion', this.navRegion, 'in', this.name || options.name);
+							return;
+						}
+						if(!pathArray || pathArray.length === 0){
+							this.trigger('view:navigation-end');//use this to show the default view
+							return;	
+						} 
+							
 						var targetViewName = pathArray.shift();
 						var TargetView = app.Core.Regional.get(targetViewName);
 						if(TargetView){
-							var view = new TargetView();
-							this.getRegion(this.navRegion).show(view);
-							view.trigger('view:navigate-chain', pathArray);
-							return;
+							var navRegion = this.getRegion(this.navRegion);
+							if(!navRegion.currentView || TargetView.prototype.name !== navRegion.currentView.name){
+								//new
+								var view = new TargetView();
+								navRegion.show(view);
+								view.trigger('view:navigate-chain', pathArray);
+								return;
+							}else{
+								//old
+								navRegion.currentView.trigger('view:navigate-chain', pathArray);
+							}
+
+
+						}else{
+							pathArray.unshift(targetViewName);
+							return this.trigger('view:navigate-to', pathArray.join('/'));	
 						}
 
-						return this.trigger('view:navigate-to', pathArray.unshift(targetViewName).join('/'));
 					};
-				}else if(this.navRegion) console.warn('DEV::Layout::View', 'invalid navRegion name ', this.navRegion, 'in', this.name || options.name);
-
 			}								
 
 			return Old.prototype.constructor.call(this, options);
