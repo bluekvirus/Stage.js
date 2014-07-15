@@ -21,11 +21,12 @@
             <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
         <![endif]-->
 
-        <div id="main" region="app"></div>
+        <div region="app"></div>
 
         <!--
             Bonus:: special <script> attributes for build:
                 [exclude attr]="false": This is for the build tool to ignore the script while building config file controlled all-in-one js.
+                persist="true": This is used for the build tool to persist this script tag in the produced index.html if it is ignored.
             Note that this attr is often the same as your build config name used in the build command.
         -->
 

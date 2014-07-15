@@ -30,7 +30,7 @@ module.exports = {
 		}, options);
 		options.js = _.extend({
 			name: 'all',
-			after: '#main'
+			after: '[region="app"]' //where to append the combined js
 		}, options.js);
 
 		var htmlPath = path.join(options.root, options.html);
@@ -79,7 +79,7 @@ module.exports = {
 
 		});		
 
-		return result	
+		return result;
 	}
 
-}
+};

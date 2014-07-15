@@ -1,8 +1,9 @@
 Change Log
 ==========
 1.4.0 (2014-07-11*)
-1. Adding new stateful navigation routing mech /v@s/sv@s/ssv@s/...;
+1. Adding new chainable navigation routing mech /v/sv/ssv/...;
 2. Fixed bug in building templates (all.json) on non-unix machines;
+3. Refined Application init/setup sequence;
 
 
 1.3.2 (2014-07-11)

@@ -24,7 +24,7 @@ module.exports = {
 	},
 	js: {
 		name: 'stage',
-		after: '[persist=true]'
+		after: '[persist=true]:last-of-type'
 	},
 	structure : { //path are relative to the distFolder and src.root above
 		js: {

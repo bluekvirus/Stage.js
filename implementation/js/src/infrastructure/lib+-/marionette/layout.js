@@ -1,10 +1,6 @@
 /**
  * Enhancing the Marionette.Layout Definition to auto detect regions and regional views through its template.
  *
- * Disable
- * -------
- * Use options.regions or a function as options to disable this and resume the normal behavior of a Marionette.Layout.
- * (when you want to control regions yourself or use getTemplate())
  *
  * Fixed
  * -----
@@ -20,6 +16,7 @@
  *
  * @author Tim.Liu
  * @create 2014.02.25
+ * @update 2014.07.15 (+chainable nav region support)
  */
 
 ;(function(app){
@@ -162,12 +159,34 @@
 						if(View)
 							this.show(new View(options));
 						else
-							throw new Error('DEV::Layout::View required ' + name + ' can NOT be found...use app.create(\'Regional\', {name: ..., ...}).');
+							//throw new Error('DEV::Layout::View required ' + name + ' can NOT be found...use app.create(\'Regional\', {name: ..., ...}).');
+							console.warn('DEV::Layout::View required ' + name + ' can NOT be found...use app.create(\'Regional\', {name: ..., ...}).');
 					});
 					this[r].trigger('region:load-view', this[r].$el.attr('view')); //found corresponding View def.
 
 				},this);
-			});								
+			});
+
+			//supporting the navigation chain if it is a named layout view with valid navRegion (context, regional, ...)
+			if(options.name || this.name){
+				this.navRegion = options.navRegion || this.navRegion;
+				if(this.regions[this.navRegion]){
+					this.onNavigateChain = function(pathArray){
+						if(!pathArray || pathArray.length === 0) return;
+						var targetViewName = pathArray.shift();
+						var TargetView = app.Core.Regional.get(targetViewName);
+						if(TargetView){
+							var view = new TargetView();
+							this.getRegion(this.navRegion).show(view);
+							view.trigger('view:navigate-chain', pathArray);
+							return;
+						}
+
+						return this.trigger('view:navigate-to', pathArray.unshift(targetViewName).join('/'));
+					};
+				}else if(this.navRegion) console.warn('DEV::Layout::View', 'invalid navRegion name ', this.navRegion, 'in', this.name || options.name);
+
+			}								
 
 			return Old.prototype.constructor.call(this, options);
 		},	

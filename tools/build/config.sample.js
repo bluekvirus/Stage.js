@@ -24,7 +24,8 @@ module.exports = {
 		//templates: 'static/template', //path relative to root
 	},
 	js: {
-		name: 'app'
+		name: 'app',
+		//after: '[region="app"]' //where to put the combined js
 	},
 	structure : { //path are relative to the distFolder and src.root above
 

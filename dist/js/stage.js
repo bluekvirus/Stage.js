@@ -106,6 +106,17 @@ _.each(['Core', 'Util'], function(coreModule){
 	Application.module(coreModule);
 });
 
+//General error capture: it will be rewired to app:error after app.run() call
+//It is to capture 3rd-party lib errors and those that cannot be seen during mobile (cordova) dev
+window.onerror = function(errorMsg, target, lineNum){
+    window._lastResort = window._lastResort || [];
+    window._lastResort.push({
+        errorMsg: errorMsg,
+        target: target,
+        lineNum: lineNum
+    });
+};
+
 ;(function(){
 
 	Application.setup = function(config){
@@ -158,31 +169,41 @@ _.each(['Core', 'Util'], function(coreModule){
 
 		}, config);
 
-		//2 Detect Theme & View Templates
-		var theme = URI(window.location.toString()).search(true).theme || Application.config.theme;
-		Application.Util.rollTheme(theme);
-
-		if(Application.config.viewTemplates)
-			Application.Util.Tpl.load(Application.config.viewTemplates + '/all.json');		
-
-		//3. Setup Application
-
-		//3.0 General error rewire
-		window.onerror = function(errorMsg, target, lineNum){
-			Application.trigger('app:error', {
-				errorMsg: errorMsg,
-				target: target,
-				lineNum: lineNum
-			});
-		};
 		
-		//3.1 Ajax Global
+		//2 Global settings. (events & ajax)
+		//Global App Events Listener Dispatcher
+		Application.Util.addMetaEvent(Application, 'app');
 
-			/**
-			 * Progress
-			 * --------
-			 * Configure NProgress as global progress indicator.
-			 */
+		//Track window resize
+		var $body = $('body');
+		function trackScreenSize(e, silent){
+			var screenSize = {h: $window.height(), w: $window.width()};
+			if(Application.config.fullScreen){
+				$body.height(screenSize.h);
+			}
+			if(!silent)
+				Application.trigger('app:resized', screenSize);
+		}
+		trackScreenSize(null, true);
+		$window.on('resize', _.debounce(trackScreenSize, Application.config.rapidEventDebounce));
+
+		//Track window scroll
+		function trackScroll(){
+			var top = $window.scrollTop();
+			Application.trigger('app:scroll', top);
+		}
+		$window.on('scroll', _.debounce(trackScroll, Application.config.rapidEventDebounce));
+		
+		//apply application.config.fullScreen = true
+		if(Application.config.fullScreen){
+			$body.css({
+				overflow: 'hidden',
+				margin: 0,
+				padding: 0					
+			});
+		}		
+		
+		//Ajax Progress -- Configure NProgress as global progress indicator.
 		if(window.NProgress){
 			Application.onAjaxStart = function() {
 				NProgress.start();
@@ -190,13 +211,9 @@ _.each(['Core', 'Util'], function(coreModule){
 			Application.onAjaxStop = function() {
 				NProgress.done();
 			};	
-		}
+		}		
 
-			/**
-			 *
-			 * Crossdomain Support
-			 * ----------------------
-			 */
+		//Ajax Crossdomain Support -- CORS client side.
 		Application.onAjax = function(options){
 			//crossdomain:
 			var crossdomain = Application.config.crossdomain;
@@ -213,7 +230,18 @@ _.each(['Core', 'Util'], function(coreModule){
 				options.cache = false;			
 		};
 
-		//3.2 Initializers (Layout, Navigation)
+
+		//3 Load Theme & View Templates
+		var theme = URI(window.location.toString()).search(true).theme || Application.config.theme;
+		Application.Util.rollTheme(theme); //theme = false or '' will disable theme rolling.
+
+		if(Application.config.viewTemplates)
+			Application.Util.Tpl.load(Application.config.viewTemplates + '/all.json');
+
+
+		//4 Initializers
+
+		//Application init: Navigation Workers
 		/**
 		 * Setup the application with content routing (context + subpath navigation). 
 		 * 
@@ -223,13 +251,9 @@ _.each(['Core', 'Util'], function(coreModule){
 		 * - refined/simplified the router handler and context-switch navigation support
 		 * - use app:navigate (string) or ({context:..., subpath:...}) at all times when switching contexts.
 		 */
-
-		//Application init: Global listeners
 		Application.addInitializer(function(options){
-			//Global App Events Listener Dispatcher
-			Application.Util.addMetaEvent(Application, 'app');
 
-			//Context switching utility
+			//1. Prepare context switching utility
 			function navigate(context, subpath){
 				if(!context) throw new Error('DEV::Application::Empty context name...');
 				var TargetContext = Application.Core.Context[context];
@@ -242,8 +266,9 @@ _.each(['Core', 'Util'], function(coreModule){
 					Application.currentContext = new TargetContext(); //re-create each context upon switching
 					Application.Util.addMetaEvent(Application.currentContext, 'context');
 
-					if(!Application[Application.config.contextRegion]) throw new Error('DEV::Application::You don\'t have region \'' + Application.config.contextRegion + '\' defined');		
-					Application[Application.config.contextRegion].show(Application.currentContext);
+					var tragetRegion = Application.mainView.getRegion(Application.config.contextRegion);
+					if(!tragetRegion) throw new Error('DEV::Application::You don\'t have region \'' + Application.config.contextRegion + '\' defined');		
+					tragetRegion.show(Application.currentContext);
 					//fire a notification round to the sky.
 					Application.trigger('app:context-switched', Application.currentContext.name);
 				}
@@ -263,48 +288,17 @@ _.each(['Core', 'Util'], function(coreModule){
 				}
 			};
 
-		});	
-
-		//Application init: Hookup window resize/scroll and app.config fullScreen, navigate to default context.
-		Application.addInitializer(function(options){
-
-			var $body = $('body');
-
-			function trackScreenSize(e, silent){
-				var screenSize = {h: $window.height(), w: $window.width()};
-				if(Application.config.fullScreen){
-					$body.height(screenSize.h);
-				}
-				if(!silent)
-					Application.trigger('app:resized', screenSize);
-			}
-			trackScreenSize(null, true);
-			$window.on('resize', _.debounce(trackScreenSize, Application.config.rapidEventDebounce));
-
-			function trackScroll(){
-				var top = $window.scrollTop();
-				Application.trigger('app:scroll', top);
-			}
-			$window.on('scroll', _.debounce(trackScroll, Application.config.rapidEventDebounce));
-			
-			if(Application.config.fullScreen){
-				$body.css({
-					overflow: 'hidden',
-					margin: 0,
-					padding: 0					
-				});
-			}
-
 			//2.Auto-detect and init context (view that replaces the body region)
 			if(!window.location.hash){
 				if(!Application.Core.Context[Application.config.defaultContext])
 					console.warn('DEV::Application::You might want to define a Default context using app.create(\'Context Name\', {...})');
 				else
 					window.location.hash = ['#navigate', Application.config.defaultContext].join('/');
-			}
-		});
+			}			
 
-		//Application init: Context Switching by Routes (can use href = #navigate/... to trigger them)
+		});	
+
+		//Activate Routing: Context Switching by Routes (can use href = #navigate/... to trigger them)
 		Application.on("initialize:after", function(options){
 			//init client page router and history:
 			var Router = Backbone.Marionette.AppRouter.extend({
@@ -342,26 +336,32 @@ _.each(['Core', 'Util'], function(coreModule){
 
 		function kickstart(){
 
-			//1. Put main template into position and scan for regions.
-			var regions = {};
+			//0. dump all errors before app run() then rewire general error.
+			if(window._lastResort){
+				_.each(window._lastResort, function(err){
+					Application.trigger('app:error', err);
+				});
+			}
+			window.onerror = function(errorMsg, target, lineNum){
+				Application.trigger('app:error', {
+					errorMsg: errorMsg,
+					target: target,
+					lineNum: lineNum
+				});
+			};
 
-			$maintpl = $('#main'); 
-			if(Application.config.template) 
-				$maintpl.html(Backbone.Marionette.TemplateCache.prototype.loadTemplate(Application.config.template));
-			$maintpl.find('[region]').each(function(index, el){
-				var name = $(el).attr('region');
-				regions[name] = '#main [region="' + name + '"]';
-			});
-			Application.addRegions(_.extend(regions, {
+			//1. Put main template into position.
+			Application.addRegions({
 				app: '[region="app"]'
-			}));
-
-			//2. Show Regional Views defined by region.$el.attr('view');
-			_.each(regions, function(selector, r){
-				Application[r].ensureEl();
-				var RegionalView = Application.Core.Regional.get(Application[r].$el.addClass('app-region region region-' + _.string.slugify(r)).attr('view'));
-				if(RegionalView) Application[r].show(new RegionalView());
-			});		
+			});
+			//Warning: calling ensureEl() on the app region will not work like regions in layouts. (Bug??)
+			//the additional <div> under the app region is somehow inevitable atm...
+			Application.mainView = Application.view({
+				type: 'Layout',
+				template: Application.config.template
+			}, true);
+			Application.getRegion('app').show(Application.mainView);
+	
 
 			//3. Start the app
 			Application.start();
@@ -1544,10 +1544,6 @@ _.each(['Core', 'Util'], function(coreModule){
 /**
  * Enhancing the Marionette.Layout Definition to auto detect regions and regional views through its template.
  *
- * Disable
- * -------
- * Use options.regions or a function as options to disable this and resume the normal behavior of a Marionette.Layout.
- * (when you want to control regions yourself or use getTemplate())
  *
  * Fixed
  * -----
@@ -1563,6 +1559,7 @@ _.each(['Core', 'Util'], function(coreModule){
  *
  * @author Tim.Liu
  * @create 2014.02.25
+ * @update 2014.07.15 (+chainable nav region support)
  */
 
 ;(function(app){
@@ -1705,12 +1702,34 @@ _.each(['Core', 'Util'], function(coreModule){
 						if(View)
 							this.show(new View(options));
 						else
-							throw new Error('DEV::Layout::View required ' + name + ' can NOT be found...use app.create(\'Regional\', {name: ..., ...}).');
+							//throw new Error('DEV::Layout::View required ' + name + ' can NOT be found...use app.create(\'Regional\', {name: ..., ...}).');
+							console.warn('DEV::Layout::View required ' + name + ' can NOT be found...use app.create(\'Regional\', {name: ..., ...}).');
 					});
 					this[r].trigger('region:load-view', this[r].$el.attr('view')); //found corresponding View def.
 
 				},this);
-			});								
+			});
+
+			//supporting the navigation chain if it is a named layout view with valid navRegion (context, regional, ...)
+			if(options.name || this.name){
+				this.navRegion = options.navRegion || this.navRegion;
+				if(this.regions[this.navRegion]){
+					this.onNavigateChain = function(pathArray){
+						if(!pathArray || pathArray.length === 0) return;
+						var targetViewName = pathArray.shift();
+						var TargetView = app.Core.Regional.get(targetViewName);
+						if(TargetView){
+							var view = new TargetView();
+							this.getRegion(this.navRegion).show(view);
+							view.trigger('view:navigate-chain', pathArray);
+							return;
+						}
+
+						return this.trigger('view:navigate-to', pathArray.unshift(targetViewName).join('/'));
+					};
+				}else if(this.navRegion) console.warn('DEV::Layout::View', 'invalid navRegion name ', this.navRegion, 'in', this.name || options.name);
+
+			}								
 
 			return Old.prototype.constructor.call(this, options);
 		},	
