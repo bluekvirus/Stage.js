@@ -1,7 +1,15 @@
 Change Log
 ==========
-1.3.1 (2014-07-10)
-1. Fixed '@\*\*/\*.html' remote templating to application template;
+1.4.0 (2014-07-11*)
+1. Adding new stateful navigation routing mech /v@s/sv@s/ssv@s/...;
+2. Fixed bug in building templates (all.json) on non-unix machines;
+
+
+1.3.2 (2014-07-11)
+1. Allow '@\*\*/\*.html' remote templating to be used for application template;
+2. Fixed navigation module/subpath broken-by-'/'-char issue;
+3. Named app.view() will now be considered/registered as regionals;
+4. Datagrid rows will now have a reference to their parent grid instance;
 
 
 1.3.0 (2014-07-08)
