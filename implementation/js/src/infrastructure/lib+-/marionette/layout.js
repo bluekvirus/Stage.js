@@ -180,9 +180,10 @@
 							this.trigger('view:navigation-end');//use this to show the default view
 							return;	
 						} 
-							
+						
 						var targetViewName = pathArray.shift();
 						var TargetView = app.Core.Regional.get(targetViewName);
+
 						if(TargetView){
 							var navRegion = this.getRegion(this.navRegion);
 							if(!navRegion.currentView || TargetView.prototype.name !== navRegion.currentView.name){

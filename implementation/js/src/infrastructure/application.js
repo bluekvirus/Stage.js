@@ -255,7 +255,9 @@ window.onerror = function(errorMsg, target, lineNum){
 
 			//1. Prepare context switching utility
 			function navigate(path){
-				path = path.split('/');
+				path = _.compact(path.split('/'));
+				if(path.length <= 0) throw new Error('DEV::Application::Navigation path error');
+
 				var context = path.shift();
 
 				if(!context) throw new Error('DEV::Application::Empty context name...');
@@ -314,7 +316,7 @@ window.onerror = function(errorMsg, target, lineNum){
 				},
 				controller: {
 					navigateTo: function(path){
-						Application.trigger('app:navigate', path, true); //will skip updating #hash since the router is triggered by #hash change.
+						Application.trigger('app:navigate', path || 'Unknown', true); //will skip updating #hash since the router is triggered by #hash change.
 					},
 				}
 			});
