@@ -38,7 +38,7 @@
 				if(!this.paper) return;
 				this.paper.setSize(this.$el.width(), this.$el.height());
 				this.trigger('view:paper-resized');
-			}
+			};
 		}
 	});
 
@@ -102,6 +102,7 @@
 			_.each(options, function(config, name){
 				if(name.match(/^_./)) return; //skip _config items like _global
 
+				var Editor, editor;
 				if(!_.isFunction(config)){
 					//0. apply global config
 					config = _.extend({name: name, parentCt: this}, global, config);
@@ -110,14 +111,14 @@
 
 					//1. instantiate
 					config.type = config.type || 'text'; 
-					var Editor = app.Core.Editor.map[config.type] || app.Core.Editor.map['Basic'];
-					var editor = new Editor(config);					
+					Editor = app.Core.Editor.map[config.type] || app.Core.Editor.map.Basic;
+					editor = new Editor(config);					
 				}else {
 					//if config is a view definition use it directly 
 					//(compound editor, e.g: app.view({template: ..., editors: ..., getVal: ..., setVal: ...}))
-					var Editor = config;
+					Editor = config;
 					config = _.extend({}, global);
-					var editor = new Editor();
+					editor = new Editor();
 					editor.name = name;
 					editor.isCompound = true;
 				}
@@ -149,7 +150,7 @@
 			//0. getEditor(name)
 			this.getEditor = function(name){
 				return this._editors[name] || (savedLayoutFns.getEditor && savedLayoutFns.getEditor.call(this, name));
-			}
+			};
 
 			//1. getValues (O(n) - n is the total number of editors on this form)
 			this.getValues = function(){
@@ -168,7 +169,8 @@
 					if(vals[name])
 						editor.setVal(vals[name], loud);
 				});
-				savedLayoutFns.setValues && savedLayoutFns.setValues.call(this, vals, loud);
+				if(savedLayoutFns.setValues) 
+					savedLayoutFns.setValues.call(this, vals, loud);
 			};
 
 			//3. validate
@@ -176,10 +178,11 @@
 				var errors = (savedLayoutFns.validate && savedLayoutFns.validate.call(this, show)) || {};
 
 				_.each(this._editors, function(editor, name){
+					var e;
 					if(!this.isCompound)
-						var e = editor.validate(show);
+						e = editor.validate(show);
 					else
-						var e = editor.validate(); //just collect errors
+						e = editor.validate(); //just collect errors
 					if(e) errors[name] = e;
 				}, this);
 
@@ -195,7 +198,8 @@
 					throw new Error('DEV::ItemView::activateEditors - You need to pass in messages object instead of ' + options);
 				}
 
-				savedLayoutFns.status && savedLayoutFns.status.call(this, options);
+				if(savedLayoutFns.status)
+					savedLayoutFns.status.call(this, options);
 
 				//clear status
 				if(!options || _.isEmpty(options)) {
@@ -208,8 +212,10 @@
 				_.each(options, function(opt, name){
 					if(this._editors[name]) this._editors[name].status(opt);
 				}, this);
-			}
+			};
+
 			//auto setValues according to this.model?
+			
 		}
 
 	});
@@ -222,13 +228,13 @@
 
 		onRenderData: function(data){
 			if(!this.model){
-				this.model = new Backbone.Model;
+				this.model = new Backbone.Model();
 				this.listenTo(this.model, 'change', this.render);
 			}
 			this.model.set(data);
 
 			this.trigger('view:data-rendered');
 		}
-	})
+	});
 
 })(Application);

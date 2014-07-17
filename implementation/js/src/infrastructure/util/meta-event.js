@@ -18,6 +18,6 @@
 			if(delegate[listener])
 				delegate[listener].apply(target, _.toArray(arguments).slice(1));
 		});
-	}
+	};
 
 })(Application);

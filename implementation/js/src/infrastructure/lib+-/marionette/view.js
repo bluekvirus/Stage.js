@@ -264,7 +264,7 @@
 		}
 
 		return Backbone.Marionette.View.apply(this, arguments);
-	}
+	};
 
 
-})(Application)
+})(Application);

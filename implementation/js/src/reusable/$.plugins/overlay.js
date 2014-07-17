@@ -59,17 +59,19 @@
 		options = options || {};
 
 		return this.each(function(index, el){
-			var $el = $(this);
+			var $el = $(this),
+			$overlay;
 
 			if(!show){
 				if(!$el.data('overlay')) return;
 
-				var $overlay = $el.data('overlay');
+				$overlay = $el.data('overlay');
 				options = _.extend({}, $overlay.data('closeOptions'), options);
 				$overlay.hide({
 					effect: options.closeEffect || options.effect || 'clip',
 					complete: function(){
-						options.onClose && options.onClose($el, $overlay);
+						if(options.onClose)
+							options.onClose($el, $overlay);
 						$window.off('resize', $overlay.data('onResize'));
 						$overlay.remove();//el, data, and events removed;
 						var recoverCSS = $el.data('recover-css');						
@@ -128,13 +130,14 @@
 				$overlay.show({
 					effect: options.openEffect || options.effect || 'clip',
 					complete: function(){
-						options.onShow && options.onShow($el, $overlay);
+						if(options.onShow)
+							options.onShow($el, $overlay);
 					}
 				});
 				
 			}
 
 		});
-	}
+	};
 
 })(jQuery);

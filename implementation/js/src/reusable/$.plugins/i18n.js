@@ -123,7 +123,7 @@ var I18N = {};
 				return key;
 			}
 		}
-		translation = new String(translation);
+		translation = String(translation);
 		if (translation.trim() === '') {
 			return key;
 		}
@@ -148,8 +148,8 @@ var I18N = {};
 		}
 
 		function makeLine(key, value) {
-			key = new String(key);
-			value = new String(value);
+			key = String(key);
+			value = String(value);
 			formatted.push('"');
 			formatted.push(key.replace(/"/g, '\\"'));
 			formatted.push('"');
@@ -189,7 +189,7 @@ var I18N = {};
 	window.clearResourceCache = function(){
 		var resources_cache_key = ['resources_', locale].join('');
 		store.remove(resources_cache_key);
-	}
+	};
 
 	/**
 	 * =============================================================
@@ -230,7 +230,7 @@ var I18N = {};
 		options = _.extend({
 			//defaults
 			search: false
-		}, options)
+		}, options);
 
 		if(!options.search)
 			return this.filter('[data-i18n-key]').each(_i18nIterator);
@@ -238,7 +238,7 @@ var I18N = {};
 			this.find('[data-i18n-key]').each(_i18nIterator);
 			return this;
 		}
-	}
+	};
 
 
 })(jQuery, _, URI);

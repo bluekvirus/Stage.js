@@ -92,6 +92,7 @@
 						break;
 						case 'checkboxes':
 						options.type = 'checkbox'; //fix the <input> type
+						break;
 						default:
 						break;
 					}
@@ -104,7 +105,7 @@
 					}, options.options);
 
 					var choices = options.options; //for easy reference within extractChoices()
-					function extractChoices(data){
+					var extractChoices = function (data){
 						if(_.isObject(data[0])){
 							data = _.map(data, function(c){
 								return {value: c[choices.valueField], label: c[choices.labelField]};
@@ -117,7 +118,7 @@
 						return data;
 					};
 
-					function prepareChoices(choices){
+					var prepareChoices = function (choices){
 
 						if(!_.isArray(choices.data)){
 							choices.grouped = true;
@@ -134,7 +135,7 @@
 						}
 
 						return choices;
-					}
+					};
 
 					if(!choices.remote)
 						prepareChoices(options.options);
@@ -154,7 +155,7 @@
 						choices.data = data;
 						this.model.set('options', prepareChoices(choices));
 						this.render();
-					}
+					};
 				}
 
 				//prep basic editor display
@@ -192,12 +193,13 @@
 					this.validate = function(show){
 						if(!this.isEnabled()) return; //skip the disabled ones.
 						
+						var error;
 						if(_.isFunction(options.validate)) {
-							var error = options.validate(this.getVal(), this.parentCt); 
+							error = options.validate(this.getVal(), this.parentCt); 
 
 						}
 						else {
-							var error, validators = _.clone(this.validators);
+							var validators = _.clone(this.validators);
 							while(validators.length > 0){
 								var validator = validators.shift();
 								if(validator.fn) {
@@ -265,7 +267,8 @@
 									});
 							}
 						});
-					},
+					};
+					
 					_.extend(this.actions, {
 						//2. implement [clear] button action
 						clear: function(){

@@ -31,7 +31,7 @@
 	var order = {};
 	for (var i = 1; i <= 6; i++) {
 		order['h' + i] = order['H' + i] = i;
-	};
+	}
 	function toc($el, options){
 		//default options
 		options = _.extend({
@@ -117,6 +117,6 @@
 			var $el = $(el);
 			toc($el, options);
 		});
-	}
+	};
 
 })(jQuery);

@@ -272,8 +272,9 @@ window.onerror = function(errorMsg, target, lineNum){
 					Application.currentContext = new TargetContext(); //re-create each context upon switching
 					Application.Util.addMetaEvent(Application.currentContext, 'context');
 
-					var targetRegion = Application.mainView.getRegion(Application.config.contextRegion || Application.config.navRegion) || Application.getRegion('app');
-					if(!targetRegion) throw new Error('DEV::Application::You don\'t have region \'' + (Application.config.contextRegion || Application.config.navRegion) + '\' defined');		
+					var navRegion = Application.config.contextRegion || Application.config.navRegion;
+					var targetRegion = Application.mainView.getRegion(navRegion) || Application.getRegion(navRegion);
+					if(!targetRegion) throw new Error('DEV::Application::You don\'t have region \'' + navRegion + '\' defined');		
 					targetRegion.show(Application.currentContext);
 					//fire a notification round to the sky.
 					Application.trigger('app:context-switched', Application.currentContext.name);
@@ -317,7 +318,7 @@ window.onerror = function(errorMsg, target, lineNum){
 				},
 				controller: {
 					navigateTo: function(path){
-						Application.trigger('app:navigate', path || 'Default', true); //will skip updating #hash since the router is triggered by #hash change.
+						Application.trigger('app:navigate', path || Application.config.defaultContext, true); //will skip updating #hash since the router is triggered by #hash change.
 					},
 				}
 			});
@@ -539,7 +540,7 @@ window.onerror = function(errorMsg, target, lineNum){
 			if(delegate[listener])
 				delegate[listener].apply(target, _.toArray(arguments).slice(1));
 		});
-	}
+	};
 
 })(Application);
 /**
@@ -566,7 +567,7 @@ window.onerror = function(errorMsg, target, lineNum){
 	app.Util.rollTheme = function(theme){
 		//TODO: re-render after theme re-apply.
 		_themeRoller(theme);
-	}
+	};
 
 })(Application);
 /**
@@ -1310,10 +1311,10 @@ window.onerror = function(errorMsg, target, lineNum){
 		}
 
 		return Backbone.Marionette.View.apply(this, arguments);
-	}
+	};
 
 
-})(Application)
+})(Application);
 /**
  * Marionette.ItemView Enhancements (can be used in Layout as well) - Note that you can NOT use these in a CompositeView.
  *
@@ -1354,7 +1355,7 @@ window.onerror = function(errorMsg, target, lineNum){
 				if(!this.paper) return;
 				this.paper.setSize(this.$el.width(), this.$el.height());
 				this.trigger('view:paper-resized');
-			}
+			};
 		}
 	});
 
@@ -1418,6 +1419,7 @@ window.onerror = function(errorMsg, target, lineNum){
 			_.each(options, function(config, name){
 				if(name.match(/^_./)) return; //skip _config items like _global
 
+				var Editor, editor;
 				if(!_.isFunction(config)){
 					//0. apply global config
 					config = _.extend({name: name, parentCt: this}, global, config);
@@ -1426,14 +1428,14 @@ window.onerror = function(errorMsg, target, lineNum){
 
 					//1. instantiate
 					config.type = config.type || 'text'; 
-					var Editor = app.Core.Editor.map[config.type] || app.Core.Editor.map['Basic'];
-					var editor = new Editor(config);					
+					Editor = app.Core.Editor.map[config.type] || app.Core.Editor.map.Basic;
+					editor = new Editor(config);					
 				}else {
 					//if config is a view definition use it directly 
 					//(compound editor, e.g: app.view({template: ..., editors: ..., getVal: ..., setVal: ...}))
-					var Editor = config;
+					Editor = config;
 					config = _.extend({}, global);
-					var editor = new Editor();
+					editor = new Editor();
 					editor.name = name;
 					editor.isCompound = true;
 				}
@@ -1465,7 +1467,7 @@ window.onerror = function(errorMsg, target, lineNum){
 			//0. getEditor(name)
 			this.getEditor = function(name){
 				return this._editors[name] || (savedLayoutFns.getEditor && savedLayoutFns.getEditor.call(this, name));
-			}
+			};
 
 			//1. getValues (O(n) - n is the total number of editors on this form)
 			this.getValues = function(){
@@ -1484,7 +1486,8 @@ window.onerror = function(errorMsg, target, lineNum){
 					if(vals[name])
 						editor.setVal(vals[name], loud);
 				});
-				savedLayoutFns.setValues && savedLayoutFns.setValues.call(this, vals, loud);
+				if(savedLayoutFns.setValues) 
+					savedLayoutFns.setValues.call(this, vals, loud);
 			};
 
 			//3. validate
@@ -1492,10 +1495,11 @@ window.onerror = function(errorMsg, target, lineNum){
 				var errors = (savedLayoutFns.validate && savedLayoutFns.validate.call(this, show)) || {};
 
 				_.each(this._editors, function(editor, name){
+					var e;
 					if(!this.isCompound)
-						var e = editor.validate(show);
+						e = editor.validate(show);
 					else
-						var e = editor.validate(); //just collect errors
+						e = editor.validate(); //just collect errors
 					if(e) errors[name] = e;
 				}, this);
 
@@ -1511,7 +1515,8 @@ window.onerror = function(errorMsg, target, lineNum){
 					throw new Error('DEV::ItemView::activateEditors - You need to pass in messages object instead of ' + options);
 				}
 
-				savedLayoutFns.status && savedLayoutFns.status.call(this, options);
+				if(savedLayoutFns.status)
+					savedLayoutFns.status.call(this, options);
 
 				//clear status
 				if(!options || _.isEmpty(options)) {
@@ -1524,8 +1529,10 @@ window.onerror = function(errorMsg, target, lineNum){
 				_.each(options, function(opt, name){
 					if(this._editors[name]) this._editors[name].status(opt);
 				}, this);
-			}
+			};
+
 			//auto setValues according to this.model?
+			
 		}
 
 	});
@@ -1538,14 +1545,14 @@ window.onerror = function(errorMsg, target, lineNum){
 
 		onRenderData: function(data){
 			if(!this.model){
-				this.model = new Backbone.Model;
+				this.model = new Backbone.Model();
 				this.listenTo(this.model, 'change', this.render);
 			}
 			this.model.set(data);
 
 			this.trigger('view:data-rendered');
 		}
-	})
+	});
 
 })(Application);
 /**
@@ -1792,7 +1799,7 @@ window.onerror = function(errorMsg, target, lineNum){
 			if(!_.isArray(data)) throw new Error('DEV::CollectionView+::You need to have an array passed in as data...');
 			
 			if(!this.collection){
-				this.collection = new Backbone.Collection;
+				this.collection = new Backbone.Collection();
 				this.listenTo(this.collection, 'add', this.addChildView);
 				this.listenTo(this.collection, 'remove', this.removeItemView);
 				this.listenTo(this.collection, 'reset', this.render);
@@ -1844,7 +1851,7 @@ window.onerror = function(errorMsg, target, lineNum){
 				that._remote = options;//_.pick(options, 'page', 'pageSize', 'dataKey', 'totalKey');
 			});
 		}
-	})
+	});
 
 })(Application);
 /**
@@ -1972,7 +1979,7 @@ var I18N = {};
 				return key;
 			}
 		}
-		translation = new String(translation);
+		translation = String(translation);
 		if (translation.trim() === '') {
 			return key;
 		}
@@ -1997,8 +2004,8 @@ var I18N = {};
 		}
 
 		function makeLine(key, value) {
-			key = new String(key);
-			value = new String(value);
+			key = String(key);
+			value = String(value);
 			formatted.push('"');
 			formatted.push(key.replace(/"/g, '\\"'));
 			formatted.push('"');
@@ -2038,7 +2045,7 @@ var I18N = {};
 	window.clearResourceCache = function(){
 		var resources_cache_key = ['resources_', locale].join('');
 		store.remove(resources_cache_key);
-	}
+	};
 
 	/**
 	 * =============================================================
@@ -2079,7 +2086,7 @@ var I18N = {};
 		options = _.extend({
 			//defaults
 			search: false
-		}, options)
+		}, options);
 
 		if(!options.search)
 			return this.filter('[data-i18n-key]').each(_i18nIterator);
@@ -2087,7 +2094,7 @@ var I18N = {};
 			this.find('[data-i18n-key]').each(_i18nIterator);
 			return this;
 		}
-	}
+	};
 
 
 })(jQuery, _, URI);
@@ -2209,7 +2216,7 @@ var I18N = {};
 	var order = {};
 	for (var i = 1; i <= 6; i++) {
 		order['h' + i] = order['H' + i] = i;
-	};
+	}
 	function toc($el, options){
 		//default options
 		options = _.extend({
@@ -2295,7 +2302,7 @@ var I18N = {};
 			var $el = $(el);
 			toc($el, options);
 		});
-	}
+	};
 
 })(jQuery);
 /**
@@ -2359,17 +2366,19 @@ var I18N = {};
 		options = options || {};
 
 		return this.each(function(index, el){
-			var $el = $(this);
+			var $el = $(this),
+			$overlay;
 
 			if(!show){
 				if(!$el.data('overlay')) return;
 
-				var $overlay = $el.data('overlay');
+				$overlay = $el.data('overlay');
 				options = _.extend({}, $overlay.data('closeOptions'), options);
 				$overlay.hide({
 					effect: options.closeEffect || options.effect || 'clip',
 					complete: function(){
-						options.onClose && options.onClose($el, $overlay);
+						if(options.onClose)
+							options.onClose($el, $overlay);
 						$window.off('resize', $overlay.data('onResize'));
 						$overlay.remove();//el, data, and events removed;
 						var recoverCSS = $el.data('recover-css');						
@@ -2428,14 +2437,15 @@ var I18N = {};
 				$overlay.show({
 					effect: options.openEffect || options.effect || 'clip',
 					complete: function(){
-						options.onShow && options.onShow($el, $overlay);
+						if(options.onShow)
+							options.onShow($el, $overlay);
 					}
 				});
 				
 			}
 
 		});
-	}
+	};
 
 })(jQuery);
 /**
@@ -2532,6 +2542,7 @@ var I18N = {};
 						break;
 						case 'checkboxes':
 						options.type = 'checkbox'; //fix the <input> type
+						break;
 						default:
 						break;
 					}
@@ -2544,7 +2555,7 @@ var I18N = {};
 					}, options.options);
 
 					var choices = options.options; //for easy reference within extractChoices()
-					function extractChoices(data){
+					var extractChoices = function (data){
 						if(_.isObject(data[0])){
 							data = _.map(data, function(c){
 								return {value: c[choices.valueField], label: c[choices.labelField]};
@@ -2557,7 +2568,7 @@ var I18N = {};
 						return data;
 					};
 
-					function prepareChoices(choices){
+					var prepareChoices = function (choices){
 
 						if(!_.isArray(choices.data)){
 							choices.grouped = true;
@@ -2574,7 +2585,7 @@ var I18N = {};
 						}
 
 						return choices;
-					}
+					};
 
 					if(!choices.remote)
 						prepareChoices(options.options);
@@ -2594,7 +2605,7 @@ var I18N = {};
 						choices.data = data;
 						this.model.set('options', prepareChoices(choices));
 						this.render();
-					}
+					};
 				}
 
 				//prep basic editor display
@@ -2632,12 +2643,13 @@ var I18N = {};
 					this.validate = function(show){
 						if(!this.isEnabled()) return; //skip the disabled ones.
 						
+						var error;
 						if(_.isFunction(options.validate)) {
-							var error = options.validate(this.getVal(), this.parentCt); 
+							error = options.validate(this.getVal(), this.parentCt); 
 
 						}
 						else {
-							var error, validators = _.clone(this.validators);
+							var validators = _.clone(this.validators);
 							while(validators.length > 0){
 								var validator = validators.shift();
 								if(validator.fn) {
@@ -2705,7 +2717,8 @@ var I18N = {};
 									});
 							}
 						});
-					},
+					};
+					
 					_.extend(this.actions, {
 						//2. implement [clear] button action
 						clear: function(){
@@ -2973,7 +2986,7 @@ var I18N = {};
 			if(!val) return (_.isObject(options) && options.msg) || 'This field is required';
 		}
 
-	}
+	};
 
 	//adding new rules at runtime
 	app.Core.Editor.addRule = function(name, fn){
@@ -2981,7 +2994,7 @@ var I18N = {};
 		if(app.Core.Editor.rules[name]) console.warn('DEV::Editor::Basic validation rule name ['+ name +'] is already defined.');
 
 		app.Core.Editor.rules[name] = fn;
-	}
+	};
 
 })(Application);
 /**
@@ -3344,7 +3357,7 @@ var I18N = {};
 						'$children': this.$el.find('> ul'),
 						'$parent': this.parent && this.parent.$el
 					});
-				})
+				});
 			},
 			template: [
 				'<a class="item" href="#"><i class="type-indicator"></i> <i class="{{icon}}"></i> {{{val}}}</a>',
@@ -3459,9 +3472,9 @@ var I18N = {};
 						return {
 							number: pNum,
 							isCurrent: pNum === this._options.currentPage
-						}
+						};
 					}, this)
-				}
+				};
 
 				this.trigger('view:render-data', config);
 			},

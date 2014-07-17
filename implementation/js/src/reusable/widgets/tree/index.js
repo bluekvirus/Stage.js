@@ -69,7 +69,7 @@
 						'$children': this.$el.find('> ul'),
 						'$parent': this.parent && this.parent.$el
 					});
-				})
+				});
 			},
 			template: [
 				'<a class="item" href="#"><i class="type-indicator"></i> <i class="{{icon}}"></i> {{{val}}}</a>',

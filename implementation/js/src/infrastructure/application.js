@@ -271,8 +271,9 @@ window.onerror = function(errorMsg, target, lineNum){
 					Application.currentContext = new TargetContext(); //re-create each context upon switching
 					Application.Util.addMetaEvent(Application.currentContext, 'context');
 
-					var targetRegion = Application.mainView.getRegion(Application.config.contextRegion || Application.config.navRegion) || Application.getRegion('app');
-					if(!targetRegion) throw new Error('DEV::Application::You don\'t have region \'' + (Application.config.contextRegion || Application.config.navRegion) + '\' defined');		
+					var navRegion = Application.config.contextRegion || Application.config.navRegion;
+					var targetRegion = Application.mainView.getRegion(navRegion) || Application.getRegion(navRegion);
+					if(!targetRegion) throw new Error('DEV::Application::You don\'t have region \'' + navRegion + '\' defined');		
 					targetRegion.show(Application.currentContext);
 					//fire a notification round to the sky.
 					Application.trigger('app:context-switched', Application.currentContext.name);
@@ -316,7 +317,7 @@ window.onerror = function(errorMsg, target, lineNum){
 				},
 				controller: {
 					navigateTo: function(path){
-						Application.trigger('app:navigate', path || 'Default', true); //will skip updating #hash since the router is triggered by #hash change.
+						Application.trigger('app:navigate', path || Application.config.defaultContext, true); //will skip updating #hash since the router is triggered by #hash change.
 					},
 				}
 			});

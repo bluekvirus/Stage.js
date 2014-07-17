@@ -29,7 +29,7 @@
 			if(!_.isArray(data)) throw new Error('DEV::CollectionView+::You need to have an array passed in as data...');
 			
 			if(!this.collection){
-				this.collection = new Backbone.Collection;
+				this.collection = new Backbone.Collection();
 				this.listenTo(this.collection, 'add', this.addChildView);
 				this.listenTo(this.collection, 'remove', this.removeItemView);
 				this.listenTo(this.collection, 'reset', this.render);
@@ -81,6 +81,6 @@
 				that._remote = options;//_.pick(options, 'page', 'pageSize', 'dataKey', 'totalKey');
 			});
 		}
-	})
+	});
 
 })(Application);

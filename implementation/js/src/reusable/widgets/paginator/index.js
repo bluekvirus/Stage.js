@@ -62,9 +62,9 @@
 						return {
 							number: pNum,
 							isCurrent: pNum === this._options.currentPage
-						}
+						};
 					}, this)
-				}
+				};
 
 				this.trigger('view:render-data', config);
 			},

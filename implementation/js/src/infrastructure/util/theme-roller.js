@@ -22,6 +22,6 @@
 	app.Util.rollTheme = function(theme){
 		//TODO: re-render after theme re-apply.
 		_themeRoller(theme);
-	}
+	};
 
 })(Application);

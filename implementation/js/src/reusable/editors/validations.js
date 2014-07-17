@@ -46,7 +46,7 @@
 			if(!val) return (_.isObject(options) && options.msg) || 'This field is required';
 		}
 
-	}
+	};
 
 	//adding new rules at runtime
 	app.Core.Editor.addRule = function(name, fn){
@@ -54,6 +54,6 @@
 		if(app.Core.Editor.rules[name]) console.warn('DEV::Editor::Basic validation rule name ['+ name +'] is already defined.');
 
 		app.Core.Editor.rules[name] = fn;
-	}
+	};
 
 })(Application);
