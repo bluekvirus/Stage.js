@@ -1,11 +1,21 @@
 Change Log
 ==========
-1.4.0 (2014-07-11*)
-1. Adding new stateful navigation routing mech /v@s/sv@s/ssv@s/...;
+1.4.1 (2014-07-17)
+------------------
+1. Fixed bug in app region fallback upon app template empty.
+2. Empty #navigate/ now fallback to context Default.
+
+
+1.4.0 (2014-07-17)
+------------------
+1. Added new chainable navigation routing mech (navRegion) /v/sv/ssv/...;
 2. Fixed bug in building templates (all.json) on non-unix machines;
+3. Refined Application init/setup sequence;
+4. Updated doc (how-to) about navigation mech changes;
 
 
 1.3.2 (2014-07-11)
+------------------
 1. Allow '@\*\*/\*.html' remote templating to be used for application template;
 2. Fixed navigation module/subpath broken-by-'/'-char issue;
 3. Named app.view() will now be considered/registered as regionals;
