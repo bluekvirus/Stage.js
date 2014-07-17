@@ -1,9 +1,12 @@
 Change Log
 ==========
-1.4.1 (2014-07-17)
+1.4.3 (2014-07-17)
 ------------------
-1. Fixed bug in app region fallback upon app template empty.
-2. Empty #navigate/ now fallback to context Default.
+1. Fixed bug in app nav/context region fallback upon app template empty;
+2. Empty #navigate/ now fallback to the default context;
+3. Code reviewed and linted;
+4. Fixed bug in setting checkbox editor val (uncheck);
+5. Removed 'context:navigate-to' event to reveal 'view:navigate-to' event in the navigation chain mech;
 
 
 1.4.0 (2014-07-17)
