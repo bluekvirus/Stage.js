@@ -278,7 +278,7 @@ window.onerror = function(errorMsg, target, lineNum){
 					targetRegion.show(Application.currentContext);
 					//fire a notification round to the sky.
 					Application.trigger('app:context-switched', Application.currentContext.name);
-					Application.currentContext.trigger('context:navigate-to');
+					//Application.currentContext.trigger('context:navigate-to');
 				}
 
 				Application.currentContext.trigger('context:navigate-chain', path);
@@ -2774,7 +2774,7 @@ var I18N = {};
 					this.ui['input-ro'].data('value', val).html(val);
 				}else {
 					if(this.model.get('type') === 'checkbox'){
-						if(val === this.model.get('checked')) this.ui.input.prop('checked', true);
+						this.ui.input.prop('checked', val === this.model.get('checked'));
 					}
 					this.ui.input.val(val);
 				}

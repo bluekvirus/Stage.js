@@ -6,7 +6,7 @@ Building multi-context rich-client web application front-end in the modern way.
 
 Current version
 ---------------
-**@1.4.1**
+**@1.4.3**
 ([Why is it version-ed like this?](http://semver.org/))
 
 
@@ -319,9 +319,6 @@ Create a new file named `myContextA.js`, remember a *Context* is just an special
     app.context('MyContextA', { //omitting the name indicates context:Default
         template: '...',
         //..., normal Marionette.Layout options
-        onNavigateTo: function(subpath){
-            //...
-        },
         onNavigateAway: function(){
             //... 
             //if you want to save context status (through localStorage maybe)
@@ -368,42 +365,26 @@ Or, brutally using the actual `window.location` object:
 window.location.hash = '#navigate/ABC/EFG/...';
 ```
 
-In the above code example, the `onNavigateTo` method handles the `context:navigate-to` event. This event will get triggered on the context if the application switched to `MyContextA`. 
-
-There is also an `context:navigate-away` event triggered to call `onNavigateAway` method on a context when the application is switching away from one. Use this listener if you want to store some of the context state and recover in `onNavigateTo`. We recommend that you use the localStorage feature of HTML5 and we have already include a library for you in the framework distribution. (see [store.js](https://github.com/marcuswestin/store.js) for more)
+There is an `context:navigate-away` event triggered to call `onNavigateAway` method on a context when the application is switching away from one. Use this listener if you want to store some of the context state and recover later. We recommend that you use the localStorage feature of HTML5 and we have already include a library for you in the framework distribution. (see [store.js](https://github.com/marcuswestin/store.js) for more)
 
 **Note**: You can pass an additional *silent* argument with the `app:navigate` event to avoid changing the url hash path during the navigation:
 ```
 Application.trigger('app:navigate', {
     context: context, //optional
-    module: module
+    subpath: subpath //omitting context will append subpath to current context
 }, true);
 //or
 Application.trigger('app:navigate', 'path string...', true);
 ```
 
-#####Navigate within a Context or Named Layout
+#####Navigate beyond a Context
 When the navigation is at `#navigate/MyContextA/SubViewA/SubViewB...` the router finds `navRegion` in `MyContextA` and shows `SubViewA` in it and then move on to `SubViewA` to show `SubViewB...` in its `navRegion`. If, somehow, it can not find the definition of `SubViewA`, the navigation stops on `MyContextA` and triggers `view:navigateTo` event with the remaining subpath starting with `SubViewA/...` on `MyContextA`. The same process happens on `SubViewA` if the router can not find `SubViewB...`.
-
-Note that `onNavigateTo` will also get triggered on a context whenever it is freshly shown in the application's `context/navRegion`, please avoid running your code twice in this listener. Like this:
-```
-//myContextA.js
-...
-    onNavigateTo: function(subPath){
-        //this context is freshly shown on the application context/navRegion
-        if(!subPath)
-            Application.trigger('app:navigate', {module: 'Editors'});
-
-        //navigation cant seems to find named views suggested by subPath 
-        else 
-            this.center.trigger('region:load-view', ...);
-    }
-...
-```
 
 **Tip**: Use `onNavigationEnd` callback to recover the default content of a context or named layout if you need. The `view:navigation-end` event will be triggered on the context or named layout (in addition to `show`) if it is the last one on the navigation path. 
 
-**Note**: Names appear in the navigation path should be *Regional*s. The regional views (if of type:Layout) should also define a property called `navRegion` to be the region name used for navigation. You will learn how to create *Regional*s in the next section.
+**Note**: *Context*s, *Regional*s (named views) of type `Layout` are all named *Layout*s, they can all appear in the navigation path if they have the `navRegion` property defined.
+
+You will learn how to create *Regional*s in the next section.
 
 
 ####Step 3. Regionals & Views
@@ -673,17 +654,22 @@ app:error - [empty stub]
 * Context -- context:meta-event
 ```
 context:navigate-away - [empty stub] - triggered before app:navigate
-context:navigate-to (moduleName) - [empty stub] - triggered after app:navigate
 ```
 * Marionette.xView -- view:meta-event
 ```
 //General
 view:render-data (data) - onRenderData [pre-defined]
 view:data-rendered
+
+//Layout with navRegion only
+view:navigate-to
+view:navigation-end
+
 //ItemView only (SVG)
 view:fit-paper
 view:paper-resized
 view:paper-ready
+
 //CollectionView only (Remote Data Pagination)
 view:load-page
 view:page-changed

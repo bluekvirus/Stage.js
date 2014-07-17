@@ -5,11 +5,10 @@ Application.page('Demo', {
     ],
     navRegion: 'center',
     onNavigationEnd: function(){
-        Application.trigger('app:navigate', {subpath: 'Editors'});
+        Application.trigger('app:navigate', 'Demo/Editors');
     },
     onNavigateTo: function(path){
-        if(path)
-            console.log('Not Found:', path);
+        console.log('Not Found:', path);
     }
 
 });

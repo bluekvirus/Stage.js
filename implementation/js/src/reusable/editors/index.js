@@ -324,7 +324,7 @@
 					this.ui['input-ro'].data('value', val).html(val);
 				}else {
 					if(this.model.get('type') === 'checkbox'){
-						if(val === this.model.get('checked')) this.ui.input.prop('checked', true);
+						this.ui.input.prop('checked', val === this.model.get('checked'));
 					}
 					this.ui.input.val(val);
 				}
