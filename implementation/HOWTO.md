@@ -6,7 +6,7 @@ Building multi-context rich-client web application front-end in the modern way.
 
 Current version
 ---------------
-**@1.4.0**
+**@1.4.1**
 ([Why is it version-ed like this?](http://semver.org/))
 
 
