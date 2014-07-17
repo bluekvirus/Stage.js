@@ -9,7 +9,7 @@
  * config:
 		* theme,
 		* template,
-		* contextRegion,
+		* contextRegion/navRegion,
 		* defaultContext,
 		* fullScreen,
 		* rapidEventDebounce,
@@ -243,18 +243,24 @@ window.onerror = function(errorMsg, target, lineNum){
 
 		//Application init: Navigation Workers
 		/**
-		 * Setup the application with content routing (context + subpath navigation). 
+		 * Setup the application with content routing (navigation). 
 		 * 
 		 * @author Tim.Liu
 		 * @update 2013.09.11
-		 * @update 2014.01.28 
+		 * @update 2014.01.28
+		 * @update 2014.07.15
 		 * - refined/simplified the router handler and context-switch navigation support
-		 * - use app:navigate (string) or ({context:..., subpath:...}) at all times when switching contexts.
+		 * - use app:navigate (path) at all times when navigate between contexts & views.
 		 */
 		Application.addInitializer(function(options){
 
 			//1. Prepare context switching utility
-			function navigate(context, subpath){
+			function navigate(path){
+				path = _.compact(path.split('/'));
+				if(path.length <= 0) throw new Error('DEV::Application::Navigation path error');
+
+				var context = path.shift();
+
 				if(!context) throw new Error('DEV::Application::Empty context name...');
 				var TargetContext = Application.Core.Context[context];
 				if(!TargetContext) throw new Error('DEV::Application::You must have the requred context ' + context + ' defined...'); //see - special/registry/context.js			
@@ -266,26 +272,30 @@ window.onerror = function(errorMsg, target, lineNum){
 					Application.currentContext = new TargetContext(); //re-create each context upon switching
 					Application.Util.addMetaEvent(Application.currentContext, 'context');
 
-					var tragetRegion = Application.mainView.getRegion(Application.config.contextRegion);
-					if(!tragetRegion) throw new Error('DEV::Application::You don\'t have region \'' + Application.config.contextRegion + '\' defined');		
+					var tragetRegion = Application.mainView.getRegion(Application.config.contextRegion || Application.config.navRegion);
+					if(!tragetRegion) throw new Error('DEV::Application::You don\'t have region \'' + (Application.config.contextRegion || Application.config.navRegion) + '\' defined');		
 					tragetRegion.show(Application.currentContext);
 					//fire a notification round to the sky.
 					Application.trigger('app:context-switched', Application.currentContext.name);
+					Application.currentContext.trigger('context:navigate-to');
 				}
 
-				//recover your context state within onNavigateTo()
-				Application.currentContext.trigger('context:navigate-to', subpath); 
+				Application.currentContext.trigger('context:navigate-chain', path);
+
 			}
 			
 			Application.onNavigate = function(options, silent){
-				if(_.isString(options))
-					window.location.hash = _.string.rtrim('navigate/' + options, '/');
-				else {
-					if(silent === true) //swap contents but don't update #hash accordingly
-						navigate(options.context || Application.currentContext.name, options.module || options.subpath);
-					else
-						window.location.hash = _.string.rtrim(['navigate', options.context || Application.currentContext.name, options.module || options.subpath].join('/'), '/');
+				var path = '';
+				if(_.isString(options)){
+					path = options;
+				}else {
+					//backward compatibility 
+					path = _.string.rtrim([options.context || Application.currentContext.name, options.module || options.subpath].join('/'), '/');
 				}
+				if(silent)
+					navigate(path);
+				else
+					window.location.hash = 'navigate/' + path;
 			};
 
 			//2.Auto-detect and init context (view that replaces the body region)
@@ -303,14 +313,11 @@ window.onerror = function(errorMsg, target, lineNum){
 			//init client page router and history:
 			var Router = Backbone.Marionette.AppRouter.extend({
 				appRoutes: {
-					'(navigate)(/:context)(/*module_subpath)' : 'navigateTo', //navigate to a context and signal it about *module (can be a path for further navigation within)
+					'navigate/*path' : 'navigateTo', //navigate to a context and signal it about *module (can be a path for further navigation within)
 				},
 				controller: {
-					navigateTo: function(context, subpath){
-						Application.trigger('app:navigate', {
-							context: context, 
-							subpath: subpath
-						}, true); //will skip updating #hash since the router is triggered by #hash change.
+					navigateTo: function(path){
+						Application.trigger('app:navigate', path || 'Unknown', true); //will skip updating #hash since the router is triggered by #hash change.
 					},
 				}
 			});
@@ -1713,22 +1720,40 @@ window.onerror = function(errorMsg, target, lineNum){
 			//supporting the navigation chain if it is a named layout view with valid navRegion (context, regional, ...)
 			if(options.name || this.name){
 				this.navRegion = options.navRegion || this.navRegion;
-				if(this.regions[this.navRegion]){
+				if(this.navRegion)
 					this.onNavigateChain = function(pathArray){
-						if(!pathArray || pathArray.length === 0) return;
-						var targetViewName = pathArray.shift();
-						var TargetView = app.Core.Regional.get(targetViewName);
-						if(TargetView){
-							var view = new TargetView();
-							this.getRegion(this.navRegion).show(view);
-							view.trigger('view:navigate-chain', pathArray);
+						if(!this.regions[this.navRegion]){
+							console.warn('DEV::Layout::View', 'invalid navRegion', this.navRegion, 'in', this.name || options.name);
 							return;
 						}
+						if(!pathArray || pathArray.length === 0){
+							this.trigger('view:navigation-end');//use this to show the default view
+							return;	
+						} 
+						
+						var targetViewName = pathArray.shift();
+						var TargetView = app.Core.Regional.get(targetViewName);
 
-						return this.trigger('view:navigate-to', pathArray.unshift(targetViewName).join('/'));
+						if(TargetView){
+							var navRegion = this.getRegion(this.navRegion);
+							if(!navRegion.currentView || TargetView.prototype.name !== navRegion.currentView.name){
+								//new
+								var view = new TargetView();
+								navRegion.show(view);
+								view.trigger('view:navigate-chain', pathArray);
+								return;
+							}else{
+								//old
+								navRegion.currentView.trigger('view:navigate-chain', pathArray);
+							}
+
+
+						}else{
+							pathArray.unshift(targetViewName);
+							return this.trigger('view:navigate-to', pathArray.join('/'));	
+						}
+
 					};
-				}else if(this.navRegion) console.warn('DEV::Layout::View', 'invalid navRegion name ', this.navRegion, 'in', this.name || options.name);
-
 			}								
 
 			return Old.prototype.constructor.call(this, options);
@@ -2130,10 +2155,11 @@ var I18N = {};
 			var config = $el.data();
 			var url = options.url || config.url;
 			$.get(url).done(function(res){
+				var content;
 				if(config.md && config.md.data === res) {
-					var content = config.md.content;
+					content = config.md.content;
 				}else {
-					var content = marked(res, options.marked);
+					content = marked(res, options.marked);
 					//cache the md data and calculation
 					$el.data('md', {
 						data: res,
@@ -2142,10 +2168,10 @@ var I18N = {};
 				}
 				$el.html(content).addClass('md-content');
 				theme($el, options);
-				options.cb && options.cb($el);
+				if(options.cb) options.cb($el);
 			});
 		});
-	}
+	};
 
 
 

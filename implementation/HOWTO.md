@@ -403,7 +403,7 @@ Note that `onNavigateTo` will also get triggered on a context whenever it is fre
 
 **Tip**: Use `onNavigationEnd` callback to recover the default content of a context or named layout if you need. The `view:navigation-end` event will be triggered on the context or named layout (in addition to `show`) if it is the last one on the navigation path. 
 
-**Note**: Names appear in the navigation path should be of *Marionette.Layout* views. The views (named layouts) should also define a property called `navRegion` to be the region name used for navigation. You will learn how to create named views in the next section.
+**Note**: Names appear in the navigation path should be *Regional*s. The regional views (if of type:Layout) should also define a property called `navRegion` to be the region name used for navigation. You will learn how to create *Regional*s in the next section.
 
 
 ####Step 3. Regionals & Views

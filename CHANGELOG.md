@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.4.0 (2014-07-11*)
+1.4.0 (2014-07-17)
 1. Added new chainable navigation routing mech (navRegion) /v/sv/ssv/...;
 2. Fixed bug in building templates (all.json) on non-unix machines;
 3. Refined Application init/setup sequence;

@@ -6,11 +6,17 @@ This project produces **Stage.js** - an infrastructure for building modern web a
 What's next?
 ------------
 1.5.0 might bring:
-* New stateful navigation mech: app@state/context@state/lvl1@state/lvl2@state;
+* Stateful navigation mech: app@state/context@state/lvl1@state/lvl2@state;
 * Datagrid+ : select-all header/cell, details row;
 * Editor+ : Spinner/Range, Switches, DnD Listing;
 * local filter/sorter mech into list views; 
-* local pagination mech into list views (in addition to the remote one we already have); 
+* local pagination mech into list views (in addition to the remote one we already have);
+
+2.0.0 Roadmap:
+* Merge Context, Regional, Widget and Editor to be named Views with Roles(mixins -Context, Widgets, Editors);
+* Use the navigation chain from start based only on named layout views with navRegions;
+* New lib/dep book-keeping & building mech;
+* New build tools for js employing [gulpjs](http://gulpjs.com/) with live detect & build refactored for less/css & templates;
 
 
 Build
