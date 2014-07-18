@@ -266,19 +266,26 @@ window.onerror = function(errorMsg, target, lineNum){
 				if(!TargetContext) throw new Error('DEV::Application::You must have the requred context ' + context + ' defined...'); //see - special/registry/context.js			
 				if(!Application.currentContext || Application.currentContext.name !== context) {
 					
+					//re-create target context upon switching
+					var targetCtx = new TargetContext(), guardError;
+					//allow context to guard itself (e.g for user authentication)
+					if(targetCtx.guard) guardError = targetCtx.guard();
+					if(guardError) {
+						Application.trigger('app:context-guard-error', guardError, targetCtx.name);
+						return;
+					}
 					//save your context state within onNavigateAway()
 					if(Application.currentContext) Application.currentContext.trigger('context:navigate-away'); 
-					
-					Application.currentContext = new TargetContext(); //re-create each context upon switching
-					Application.Util.addMetaEvent(Application.currentContext, 'context');
-
+					//prepare and show this new context					
+					Application.Util.addMetaEvent(targetCtx, 'context');
 					var navRegion = Application.config.contextRegion || Application.config.navRegion;
 					var targetRegion = Application.mainView.getRegion(navRegion) || Application.getRegion(navRegion);
 					if(!targetRegion) throw new Error('DEV::Application::You don\'t have region \'' + navRegion + '\' defined');		
-					targetRegion.show(Application.currentContext);
+					targetRegion.show(targetCtx);
+					Application.currentContext =  targetCtx;
+
 					//fire a notification round to the sky.
 					Application.trigger('app:context-switched', Application.currentContext.name);
-					//Application.currentContext.trigger('context:navigate-to');
 				}
 
 				Application.currentContext.trigger('context:navigate-chain', path);
@@ -297,6 +304,10 @@ window.onerror = function(errorMsg, target, lineNum){
 					navigate(path);
 				else
 					window.location.hash = 'navigate/' + path;
+			};
+
+			Application.onContextGuardError = function(error, ctxName){
+				console.error('DEV:Context-Guard-Error:', ctxName, error);
 			};
 
 			//2.Auto-detect and init context (view that replaces the body region)
@@ -863,7 +874,7 @@ window.onerror = function(errorMsg, target, lineNum){
  * Design
  * ------
  * Context switch can be triggered by 
- * 	a. use app:navigate (path) or ({context:..., module:...}) event;
+ * 	a. use event on app app:navigate (path);
  *  b. click <a href="#/navigate/[contextName][/subPath]"/> tag;
  *
  * 
@@ -875,15 +886,13 @@ window.onerror = function(errorMsg, target, lineNum){
  * 		template: 'html template of the view as in Marionette.Layout',
  * 							- region=[] attribute --- mark a tag to be a region container
  * 							- view=[] attribute --- mark this region to show an new instance of specified view definition (in context.Views, see context.create below)
- * 	    onNavigateTo: function(module or path string) - upon getting the context:navigate-to event,
- * 	    ...: other Marionette Layout options.
+ *      guard: function(){
+ *      	return undefined/''/false for pass
+ *      	return error msg/object for blocking - triggers app:context-guard-error on app with the error returned
+ *      }
  * });
- *
- * or use the unified API entry point:
- * app.create('Context', {...});
- *
- * ###How to populate the context with regional views?
- * app.create('Regional', {...});
+ * or
+ * app.context('name', {config});
  *
  * ###How to swap regional view on a region?
  * use this.[region name].show()
@@ -895,6 +904,7 @@ window.onerror = function(errorMsg, target, lineNum){
  * @author Tim.Liu
  * @created 2013.09.21
  * @updated 2014.02.21 (1.0.0-rc1)
+ * @updated 2014.07.18 (1.5.0)
  */
 
 ;(function(app, _){
@@ -902,9 +912,12 @@ window.onerror = function(errorMsg, target, lineNum){
 	var def = app.module('Core.Context');
 	_.extend(def, {
 		create: function(config){
-			config.name = config.name || 'Default';
-			config.className = 'context context-' + _.string.slugify(config.name) + ' ' + (config.className || '');
-			config.isContext = true;
+			_.extend(config, {
+				name: config.name || 'Default',
+				className: 'context context-' + _.string.slugify(config.name) + ' ' + (config.className || ''),
+				isContext: true
+			});
+
 			if(def[config.name]) console.warn('DEV::Core.Context::You have overriden context \'', config.name, '\'');
 
 			def[config.name] = Backbone.Marionette.Layout.extend(config);
@@ -918,7 +931,7 @@ window.onerror = function(errorMsg, target, lineNum){
 
 
 /**
- * This is a registry for saving 'named' regional view definitions.
+ * This is a registry for saving 'named' view definitions.
  * 
  * [We moved the static regional view listing from the Marionette.Layout class]
  *

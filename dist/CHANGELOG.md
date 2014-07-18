@@ -1,5 +1,11 @@
 Change Log
 ==========
+1.5.0 (2014-07-18*)
+-------------------
+1. Added navigation guard function to Contexts. (auth related)
+2. Added app:context-guard-error event to Application.
+
+
 1.4.4 (2014-07-18)
 ------------------
 1. Added row:clicked and row:dbclicked to Datagrid widget;

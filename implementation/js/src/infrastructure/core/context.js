@@ -7,7 +7,7 @@
  * Design
  * ------
  * Context switch can be triggered by 
- * 	a. use app:navigate (path) or ({context:..., module:...}) event;
+ * 	a. use event on app app:navigate (path);
  *  b. click <a href="#/navigate/[contextName][/subPath]"/> tag;
  *
  * 
@@ -19,15 +19,13 @@
  * 		template: 'html template of the view as in Marionette.Layout',
  * 							- region=[] attribute --- mark a tag to be a region container
  * 							- view=[] attribute --- mark this region to show an new instance of specified view definition (in context.Views, see context.create below)
- * 	    onNavigateTo: function(module or path string) - upon getting the context:navigate-to event,
- * 	    ...: other Marionette Layout options.
+ *      guard: function(){
+ *      	return undefined/''/false for pass
+ *      	return error msg/object for blocking - triggers app:context-guard-error on app with the error returned
+ *      }
  * });
- *
- * or use the unified API entry point:
- * app.create('Context', {...});
- *
- * ###How to populate the context with regional views?
- * app.create('Regional', {...});
+ * or
+ * app.context('name', {config});
  *
  * ###How to swap regional view on a region?
  * use this.[region name].show()
@@ -39,6 +37,7 @@
  * @author Tim.Liu
  * @created 2013.09.21
  * @updated 2014.02.21 (1.0.0-rc1)
+ * @updated 2014.07.18 (1.5.0)
  */
 
 ;(function(app, _){
@@ -46,9 +45,12 @@
 	var def = app.module('Core.Context');
 	_.extend(def, {
 		create: function(config){
-			config.name = config.name || 'Default';
-			config.className = 'context context-' + _.string.slugify(config.name) + ' ' + (config.className || '');
-			config.isContext = true;
+			_.extend(config, {
+				name: config.name || 'Default',
+				className: 'context context-' + _.string.slugify(config.name) + ' ' + (config.className || ''),
+				isContext: true
+			});
+
 			if(def[config.name]) console.warn('DEV::Core.Context::You have overriden context \'', config.name, '\'');
 
 			def[config.name] = Backbone.Marionette.Layout.extend(config);

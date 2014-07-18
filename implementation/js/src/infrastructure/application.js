@@ -265,19 +265,26 @@ window.onerror = function(errorMsg, target, lineNum){
 				if(!TargetContext) throw new Error('DEV::Application::You must have the requred context ' + context + ' defined...'); //see - special/registry/context.js			
 				if(!Application.currentContext || Application.currentContext.name !== context) {
 					
+					//re-create target context upon switching
+					var targetCtx = new TargetContext(), guardError;
+					//allow context to guard itself (e.g for user authentication)
+					if(targetCtx.guard) guardError = targetCtx.guard();
+					if(guardError) {
+						Application.trigger('app:context-guard-error', guardError, targetCtx.name);
+						return;
+					}
 					//save your context state within onNavigateAway()
 					if(Application.currentContext) Application.currentContext.trigger('context:navigate-away'); 
-					
-					Application.currentContext = new TargetContext(); //re-create each context upon switching
-					Application.Util.addMetaEvent(Application.currentContext, 'context');
-
+					//prepare and show this new context					
+					Application.Util.addMetaEvent(targetCtx, 'context');
 					var navRegion = Application.config.contextRegion || Application.config.navRegion;
 					var targetRegion = Application.mainView.getRegion(navRegion) || Application.getRegion(navRegion);
 					if(!targetRegion) throw new Error('DEV::Application::You don\'t have region \'' + navRegion + '\' defined');		
-					targetRegion.show(Application.currentContext);
+					targetRegion.show(targetCtx);
+					Application.currentContext =  targetCtx;
+
 					//fire a notification round to the sky.
 					Application.trigger('app:context-switched', Application.currentContext.name);
-					//Application.currentContext.trigger('context:navigate-to');
 				}
 
 				Application.currentContext.trigger('context:navigate-chain', path);
@@ -296,6 +303,10 @@ window.onerror = function(errorMsg, target, lineNum){
 					navigate(path);
 				else
 					window.location.hash = 'navigate/' + path;
+			};
+
+			Application.onContextGuardError = function(error, ctxName){
+				console.error('DEV:Context-Guard-Error:', ctxName, error);
 			};
 
 			//2.Auto-detect and init context (view that replaces the body region)

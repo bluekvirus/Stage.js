@@ -1,5 +1,5 @@
 /**
- * This is a registry for saving 'named' regional view definitions.
+ * This is a registry for saving 'named' view definitions.
  * 
  * [We moved the static regional view listing from the Marionette.Layout class]
  *
