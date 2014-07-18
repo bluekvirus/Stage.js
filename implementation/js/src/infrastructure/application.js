@@ -8,7 +8,7 @@
  * config:
 		* theme,
 		* template,
-		* contextRegion/navRegion,
+		* navRegion/contextRegion,
 		* defaultContext,
 		* fullScreen,
 		* rapidEventDebounce,
@@ -148,7 +148,7 @@ window.onerror = function(errorMsg, target, lineNum){
 			 * 
 			 * @type {String}
 			 */		
-			contextRegion: 'app',
+			contextRegion: 'app', //alias: navRegion, prefered: navRegion
 			defaultContext: 'Default', //This is the context (name) the application will sit on upon loading.
 			fullScreen: false, //This will put <body> to be full screen sized (window.innerHeight).
 	        rapidEventDebounce: 200, //in ms this is the rapid event debounce value shared within the application (e.g window resize).
@@ -262,7 +262,7 @@ window.onerror = function(errorMsg, target, lineNum){
 
 				if(!context) throw new Error('DEV::Application::Empty context name...');
 				var TargetContext = Application.Core.Context[context];
-				if(!TargetContext) throw new Error('DEV::Application::You must have the requred context ' + context + ' defined...'); //see - special/registry/context.js			
+				if(!TargetContext) throw new Error('DEV::Application::You must have the required context ' + context + ' defined...'); //see - special/registry/context.js			
 				if(!Application.currentContext || Application.currentContext.name !== context) {
 					
 					//re-create target context upon switching
@@ -277,7 +277,7 @@ window.onerror = function(errorMsg, target, lineNum){
 					if(Application.currentContext) Application.currentContext.trigger('context:navigate-away'); 
 					//prepare and show this new context					
 					Application.Util.addMetaEvent(targetCtx, 'context');
-					var navRegion = Application.config.contextRegion || Application.config.navRegion;
+					var navRegion = Application.config.navRegion || Application.config.contextRegion;
 					var targetRegion = Application.mainView.getRegion(navRegion) || Application.getRegion(navRegion);
 					if(!targetRegion) throw new Error('DEV::Application::You don\'t have region \'' + navRegion + '\' defined');		
 					targetRegion.show(targetCtx);
