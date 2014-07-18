@@ -657,9 +657,9 @@ window.onerror = function(errorMsg, target, lineNum){
 			return _.keys(map);
 		},
 
-		//load the prepared/combined templates package from server
+		//load the prepared/combined templates package from server (without CORS)
 		load: function(url){
-			app.remote({
+			$.ajax({
 				url: url,
 				async: false
 			}).done(function(tpls){
@@ -960,8 +960,8 @@ window.onerror = function(errorMsg, target, lineNum){
 			//search the local templates cache:
 			var tpl = app.Util.Tpl.get(idOrTplString.substr(1));
 			if(tpl) return tpl;
-			//fetch from remote:
-			app.remote({
+			//fetch from remote: (without CORS)
+			$.ajax({
 				url: app.config.viewTemplates + '/' + idOrTplString.substr(1),
 				async: false
 			}).done(function(remoteTpl){
@@ -3022,6 +3022,12 @@ var I18N = {};
  * 3. details: false or datum name in data row or a view definition (render with row.model) - TBI
  * 
  *
+ * events
+ * ------
+ * 1. row:clicked
+ * 2. row:dblclicked
+ * 
+ * 
  * note
  * ----
  * the details row appears under each normal data row;
@@ -3092,6 +3098,7 @@ var I18N = {};
 		var HeaderRow = app.view({
 			type: 'CollectionView',
 			itemView: 'dynamic',
+			itemViewEventPrefix: 'headercell',
 			tagName: 'tr',
 			//buildItemView - select proper header cell
 			buildItemView: function(item, ItemViewType, itemViewOptions){
@@ -3105,7 +3112,12 @@ var I18N = {};
 		var Row = app.view({
 			type: 'CollectionView',
 			itemView: 'dynamic',
+			itemViewEventPrefix: 'cell',
 			tagName: 'tr',
+			triggers: { //forward DOM events to row
+				'click': 'clicked',
+				'dblclick': 'dblclicked'
+			},
 			initialize: function(options){
 				this.grid = options.body.parentCt; //give each row the grid view ref.
 			},
@@ -3123,6 +3135,7 @@ var I18N = {};
 		var Body = app.view({
 			type: 'CollectionView',
 			itemView: Row,
+			itemViewEventPrefix: 'row',
 			itemViewOptions: function(model, index){
 				return {
 					collection: app.collection(_.map(this._options.columns, function(column){
@@ -3134,6 +3147,14 @@ var I18N = {};
 
 					body: this //passing body to row view
 				};
+			},
+			itemEvents: { //forward row events to grid
+				'clicked': function(e, row){
+					row.grid.trigger('row:clicked', row);
+				},
+				'dblclicked': function(e, row){
+					row.grid.trigger('row:dblclicked', row);
+				}
 			}
 		});
 		return UI;

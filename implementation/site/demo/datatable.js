@@ -53,6 +53,9 @@
 
 	    	//load data grid page from server
 	    	var table = this.table.currentView;
+	    	table.on('row:clicked row:dblclicked', function(row){
+	    		console.log('selected/focused on', row);
+	    	});
 	    	this.footer.trigger('region:load-view', 'Paginator', {
 	    		target: table,
 	    		className: 'pagination pagination-sm pull-right'

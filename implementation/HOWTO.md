@@ -6,7 +6,7 @@ Building multi-context rich-client web application front-end in the modern way.
 
 Current version
 ---------------
-**@1.4.3**
+**@1.4.4**
 ([Why is it version-ed like this?](http://semver.org/))
 
 
@@ -636,7 +636,8 @@ object.trigger('object:meta-event', arguments);
 object.onMetaEvent(arguments);
 ```
 We have `Application (app:)`, `Context (context:)` and all the `Marionette.xView (view:)` enhanced to accept meta-event triggers. Some of the events are already listened/triggered for you:
-* Application -- app:meta-event
+
+**Application** -- app:meta-event
 ```
 app:navigate (string) or ({context:..., module:...}, silent) - Application.onNavigate [pre-defined]
 app:context-switched (contextName)  - [empty stub] - triggered after app:navigate
@@ -651,11 +652,11 @@ app:scroll - [empty stub]
 app:success - [empty stub]
 app:error - [empty stub]
 ```
-* Context -- context:meta-event
+**Context** -- context:meta-event
 ```
 context:navigate-away - [empty stub] - triggered before app:navigate
 ```
-* Marionette.xView -- view:meta-event
+**Marionette.xView** -- view:meta-event
 ```
 //General
 view:render-data (data) - onRenderData [pre-defined]
@@ -1077,7 +1078,7 @@ columns:
 ```
 ...
 //Scenario 1. configured
-this.table.trigger('region:load-view', 'Datagrid', {
+this.region.trigger('region:load-view', 'Datagrid', {
     className: 'table table-hover',
 
     data: Mock.mock(mockDataTpl).data, //optional, you can put data into the grid later.
@@ -1120,7 +1121,7 @@ this.table.trigger('region:load-view', 'Datagrid', {
 ...
 
 //Scenario 2. feed data into the grid after it is shown:
-var datagrid = this.table.currentView;
+var datagrid = this.region.currentView;
 datagrid.trigger('view:render-data', [...data...]);
 
 //Scenario 3. re-configure the columns and cells:
@@ -1128,7 +1129,18 @@ datagrid.trigger('view:reconfigure', {...new config options...});
 });
 ```
 
-**Extend**:
+**Operate on a row**
+```
+var table = new Datagrid();
+table.on('row:clicked', function(row){...});
+table.on('row:dblclicked', function(row){...});
+
+or
+otherView.listenTo(table, 'row:clicked', function(row){...});
+otherView.listenTo(table, 'row:dblclicked', function(row){...});
+```
+
+**Extend columns**:
 ```
 ;(function(app){
 
@@ -1298,7 +1310,7 @@ totalPages: //total pages in number
 **Usage**:
 ```
 ...
-var table = this.table.currentView;
+var table = tableRegion.currentView;
 this.footer.trigger('region:load-view', 'Paginator', {
     target: table,
     className: 'pagination pagination-sm pull-right'

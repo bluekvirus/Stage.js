@@ -1,5 +1,12 @@
 Change Log
 ==========
+1.4.4 (2014-07-18)
+------------------
+1. Added row:clicked and row:dbclicked to Datagrid widget;
+2. Removed CORS ability from remote template loading;
+3. Fixed doc markdown format;
+
+
 1.4.3 (2014-07-17)
 ------------------
 1. Fixed bug in app nav/context region fallback upon app template empty;

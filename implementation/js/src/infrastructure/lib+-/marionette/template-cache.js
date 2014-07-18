@@ -8,8 +8,8 @@
 			//search the local templates cache:
 			var tpl = app.Util.Tpl.get(idOrTplString.substr(1));
 			if(tpl) return tpl;
-			//fetch from remote:
-			app.remote({
+			//fetch from remote: (without CORS)
+			$.ajax({
 				url: app.config.viewTemplates + '/' + idOrTplString.substr(1),
 				async: false
 			}).done(function(remoteTpl){

@@ -51,9 +51,9 @@
 			return _.keys(map);
 		},
 
-		//load the prepared/combined templates package from server
+		//load the prepared/combined templates package from server (without CORS)
 		load: function(url){
-			app.remote({
+			$.ajax({
 				url: url,
 				async: false
 			}).done(function(tpls){
