@@ -6,7 +6,7 @@ Building multi-context rich-client web application front-end in the modern way.
 
 Current version
 ---------------
-**@1.4.4**
+**@1.5.0**
 ([Why is it version-ed like this?](http://semver.org/))
 
 
@@ -22,7 +22,6 @@ Initialize:
 
 Structure:
 * Application.context (name, options) - alias: page()
-* Application.regional (name, options) - alias: area()
 * Application.view (options, instant)
 
 Reuse:
@@ -70,12 +69,14 @@ In order to accomplish more with less code using Backbone, we picked Backbone.Ma
 
 ####What's Navigation?
 
-We achieve client-side multi-page-alike navigation through switching *Context*s on a pre-defined application region in respond to the URL hash fragment change event. You can also keep navigating to sub views by chaining view names in the hash. (e.g #navigate/Context/LvlOneSubView/LvlTwoSubView...)
+We achieve client-side multi-page-alike navigation through switching *Context*s on a pre-defined application region in respond to the URL hash fragment change event. You can also keep navigating beyond a *Context* by chaining view names in the hash. (e.g #navigate/Context/LvlOneSubView/LvlTwoSubView...)
 
 By using named views and their `navRegion` properties, our navigation mechanism enables endless possibilities in combining views in hierarchies.
 
 ####What's a Context?
 A *Context* is a special *Marionette.Layout* view object. *Context*s only appear on the application's context region (each application can have only 1 such region). If you have more than 1 *Context*s defined, they will automatically swap on the context region in response to the navigation event. You will not have more than 1 active *Context* at any given time.
+
+A *Context* can also guard itself from being viewed by certain user by utilizing the `guard` property (a function) before switched to in navigation. This is good for automatically jumping to other contexts if the targeted one requires authenticated user in session. 
 
 alias: Page
 
@@ -377,6 +378,33 @@ Application.trigger('app:navigate', {
 Application.trigger('app:navigate', 'path string...', true);
 ```
 
+If you defined a `guard` function as property in one of your contexts, it will be called before the context gets switched to. If the `guard` function returns an error, `app:context-guard-error` will get triggered on the `Application` object with the returned error and context name. You can use this mechanism to guard your contexts from unauthenticated users and automatically jump to a pre-defined login context. 
+```
+(function(app){
+
+    app.context('AccessDenied', {
+        template: '...',
+        guard: function(){
+            
+            //block access
+            return {
+                msg: 'You are not allowed to see this context',
+                target: this
+            };
+
+            //or to signal passing of this guard simply return nothing
+            return;
+        }
+    });
+
+    //the default guard error listener for Application
+    app.onContextGuardError = function(error, ctxName){
+        console.error('DEV:Context-Guard-Error:', ctxName, error);
+    };
+
+})(Application);
+```
+
 #####Navigate beyond a Context
 When the navigation is at `#navigate/MyContextA/SubViewA/SubViewB...` the router finds `navRegion` in `MyContextA` and shows `SubViewA` in it and then move on to `SubViewA` to show `SubViewB...` in its `navRegion`. If, somehow, it can not find the definition of `SubViewA`, the navigation stops on `MyContextA` and triggers `view:navigateTo` event with the remaining subpath starting with `SubViewA/...` on `MyContextA`. The same process happens on `SubViewA` if the router can not find `SubViewB...`.
 
@@ -640,7 +668,8 @@ We have `Application (app:)`, `Context (context:)` and all the `Marionette.xView
 **Application** -- app:meta-event
 ```
 app:navigate (string) or ({context:..., module:...}, silent) - Application.onNavigate [pre-defined]
-app:context-switched (contextName)  - [empty stub] - triggered after app:navigate
+app:context-guard-error (error, contextName) - [pre-defined]
+app:context-switched (contextName)  - [empty stub]
 //the followings are triggered by Application.remote():
 app:ajax - Application.onAjax [pre-defined]
 app:ajax-start - Application.onAjaxStart [pre-defined]
