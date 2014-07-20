@@ -33,7 +33,9 @@ module.exports = {
 				'app.min.js': false, //'app' is the name you set using js:{name: 'app'} above.
 			},
 			static: {
-				template: {},
+				template: {
+					'all.json': ''
+				},
 				resource: {}
 			},
 			themes: {

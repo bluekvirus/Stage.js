@@ -8,8 +8,7 @@ NProgress.configure({showSpinner: false});
         //fullScreen: true,
         template: '@site.html',
         contextRegion: 'center',
-        defaultContext: 'Home',
-        viewTemplates: 'static/template'
+        defaultContext: 'Home'
 
     }).run();
 

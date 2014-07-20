@@ -29,7 +29,9 @@ module.exports = {
 		implementation: {
 			js: {},
 			static: {
-				template: {},
+				template: {
+					'all.json': ''
+				},
 				resource: {}
 			},
 			themes: {

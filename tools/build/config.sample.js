@@ -21,7 +21,7 @@ module.exports = {
 	src: {
 		root: '../../implementation', //path relative to this config.js
 		index: 'index.html', //path relative to root
-		//templates: 'static/template', //path relative to root
+		templates: 'static/template', //path relative to root
 	},
 	js: {
 		name: 'app',
@@ -32,7 +32,7 @@ module.exports = {
 		js: {
 			'app.min.js': true, //'app' is the name you set using js:{name: 'app'} above.
 		},
-		//static: { template: { 'all.json': 'static/template/all.json' } },
+		static: { template: { 'all.json': 'static/template/all.json' } },
 		themes: {
 			'default': {
 				css: {

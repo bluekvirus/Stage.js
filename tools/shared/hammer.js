@@ -19,7 +19,7 @@
 var buildify = require('buildify'),
 _ = require('underscore'),
 path = require('path'),
-fs = require('fs'),
+fs = require('fs-extra'),
 rimraf = require('rimraf'), //rm -rf;
 mkdirp = require('mkdirp'),
 ncp = require('ncp').ncp,
@@ -50,6 +50,7 @@ module.exports = {
 				key: key
 			});
 		});
+		
 		//use iteration - bfs to create/copy/dump the files/folders
 		function iterator(done){
 			if(targets.length > 0) {
@@ -66,6 +67,7 @@ module.exports = {
 					iterator(done);
 				}else {
 
+					//copy worker
 					function copy(p, cb){
 						var srcPath = path.join(options.src.root, p);
 						ncp(srcPath, currentTarget.path, function(error){
@@ -75,11 +77,20 @@ module.exports = {
 								cb(currentTarget.path);
 						});
 					}
+
 					if(_.isString(currentTarget.content)){
-						//path string - copy
-						copy(currentTarget.content, function(){
-							iterator(done);
-						});
+						//'' create blank file, '...' path string - copy
+						if(currentTarget.content === ''){
+							fs.ensureFile(currentTarget.path, function(error){
+								if(!error) console.log(currentTarget.path, '+'.grey, '[OK]'.green);
+								else console.log(currentTarget.path, '+'.grey, '[ERROR:'.red, error, ']'.red);
+								iterator(done);
+							});
+						}
+						else
+							copy(currentTarget.content, function(){
+								iterator(done);
+							});
 
 					}else if(_.isArray(currentTarget.content)){
 						//multiple string - merge
@@ -89,7 +100,7 @@ module.exports = {
 								console.log(p, '+=>'.grey, distPath, '[OK]'.green);
 							});
 							iterator(done);
-						})
+						});
 
 						
 					}else if(_.isObject(currentTarget.content)){
@@ -112,7 +123,7 @@ module.exports = {
 				}
 			}else 
 				done();
-		};
+		}
 		//clear base dir and create the project structure.
 		rimraf(baseDir, function(err){
 			if(err) console.log('ERROR:'.red, err);
@@ -123,10 +134,10 @@ module.exports = {
 				mkdirp(baseDir, function(err){
 					if(err) console.log('ERROR:'.red, err);
 					else iterator(done);
-				})
+				});
 			}
 		});
 		
 	}	
 
-}
+};

@@ -33,7 +33,9 @@ module.exports = {
 			'stage.min.js': false			
 		},
 		static: {
-			template: {},
+			template: {
+				'all.json': ''
+			},
 			resource: {}
 		},
 		themes: {

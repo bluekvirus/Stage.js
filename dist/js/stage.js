@@ -154,7 +154,7 @@ window.onerror = function(errorMsg, target, lineNum){
 			fullScreen: false, //This will put <body> to be full screen sized (window.innerHeight).
 	        rapidEventDebounce: 200, //in ms this is the rapid event debounce value shared within the application (e.g window resize).
 	        baseAjaxURI: '/api', //Modify this to fit your own backend apis. e.g index.php?q= or '/api',
-	        viewTemplates: '', //this is assisted by the build tool, combining all the *.html handlebars templates into one big json.
+	        viewTemplates: 'static/template', //this is assisted by the build tool, combining all the *.html handlebars templates into one big json.
 			/*CROSSDOMAIN Settings*/
 			//see MDN - https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS
 			//If you ever need crossdomain development, we recommend that you TURN OFF local server's auth layer/middleware. 
