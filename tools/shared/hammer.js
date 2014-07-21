@@ -20,14 +20,10 @@ var buildify = require('buildify'),
 _ = require('underscore'),
 path = require('path'),
 fs = require('fs-extra'),
-rimraf = require('rimraf'), //rm -rf;
-mkdirp = require('mkdirp'),
-ncp = require('ncp').ncp,
 merge = require('merge-dirs'),
 gzip = require('../shared/gzip'),
 colors = require('colors');
 
-ncp.limit = 16; //ncp concurrency limit
 
 module.exports = {
 
@@ -36,7 +32,11 @@ module.exports = {
 
 		options = _.extend({
 			structure: {}, //see config
-			cachedFiles: {}
+			src: {
+				root: '.'
+			},
+			cachedFiles: {},
+			clear: true
 		}, options);
 
 		var targets = [];
@@ -70,7 +70,7 @@ module.exports = {
 					//copy worker
 					function copy(p, cb){
 						var srcPath = path.join(options.src.root, p);
-						ncp(srcPath, currentTarget.path, function(error){
+						fs.copy(srcPath, currentTarget.path, function(error){
 							if(!error) console.log(srcPath, '==>'.grey, currentTarget.path, '[OK]'.green);
 							else console.log(srcPath, '==>'.grey, currentTarget.path, '[ERROR:'.red, error, ']'.red);
 							if(cb)
@@ -105,7 +105,7 @@ module.exports = {
 						
 					}else if(_.isObject(currentTarget.content)){
 						//{} and {...} create folder and keep the bfs going
-						mkdirp(currentTarget.path, function(error){
+						fs.ensureDir(currentTarget.path, function(error){
 							if(!error) {
 								console.log(currentTarget.path, '{+}'.grey, '[OK]'.green);
 								_.each(currentTarget.content, function(subContent, subKey){
@@ -124,18 +124,18 @@ module.exports = {
 			}else 
 				done();
 		}
-		//clear base dir and create the project structure.
-		rimraf(baseDir, function(err){
+
+		//clear base dir.
+		if(options.clear) {
+			fs.removeSync(baseDir);
+			console.log('Output Dir Cleared:'.green, baseDir);
+		}
+		console.log('Creating Folders & Files...'.yellow);
+		
+		//create baseDir again and create the folder structure.
+		fs.ensureDir(baseDir, function(err){
 			if(err) console.log('ERROR:'.red, err);
-			else {
-				console.log('Output Dir Cleared:'.green, baseDir);
-				console.log('Creating Folders & Files...'.yellow);
-				//create baseDir again
-				mkdirp(baseDir, function(err){
-					if(err) console.log('ERROR:'.red, err);
-					else iterator(done);
-				});
-			}
+			else iterator(done);
 		});
 		
 	}	

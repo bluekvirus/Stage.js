@@ -35,7 +35,9 @@ module.exports = {
 				resource: {}
 			},
 			themes: {
-				'default': 'themes/default'
+				'default': {
+					less: 'theme/default/less'
+				}
 			},
 			'index.html': 'starter-kit.index.html',
 			'bower.json': 'starter-kit.bower.json'

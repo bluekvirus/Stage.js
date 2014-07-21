@@ -1629,7 +1629,6 @@ Themes are located at `/implementation/themes/[your theme name]/` with the follo
 >     - vars.less -- base variable override
 >     - components.less -- framework Widgets/Editors/Plugins/Containers style
 >     - main.less -- always start with this file
-> * index.html
 
 Open up the `themes/default/less/main.less` file and read the details about how to modify the default theme bundled with the starter-kit distribution. The `bower` distribution only contains a built version of the default theme.
 
@@ -1648,11 +1647,11 @@ One perk of using LESS is that you can define each .less to do only one thing, e
 ###Assets preparation
 [TBC]
 
-Fonts, logos, icons and textures are the 4 major types of asset when it comes to making themes.
+Fonts, logos, icons and textures are the 4 major types of asset you will need when it comes to making themes.
 
 If you can, always use the icon fonts from bootstrap & font-awesome as icons in you application. Locate them in your `/implementation/bower_components` folder and copy both `/fonts` folders from `bootstrap` and `fontawesome` then merge into your theme's `/fonts` folder. The related CSS/LESS referencing the font files should already be compiled in your main.css by our theme monitor.
 
-**Note**: Usually this is already done for you in the framework distributions. In case `bower update` updates bootstrap and font-awesome, you need to manually copy the font files into your themes to replace the old ones. Again, don't worry about the CSS/LESS files.
+**Note**: Usually this is already done for you in the framework distributions. In case `bower update` updates bootstrap and font-awesome, you need to re-run the theme prep tool to update the icon fonts.
 
 If you need to have customized icons, please ask your designer for 64x64 or even 128x128 sized icon files in the *PNG* format. You can use the icon preparation tool to resize and combine them into a single CSS sprite package (icon.css, icons.png and a demo.html to show you css-class to icon mappings). Note that background image and texture images should *NOT* be combined into the CSS sprite. 
 
