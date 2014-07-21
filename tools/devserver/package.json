@@ -2,10 +2,10 @@
   "name": "api-box-lite",
   "version": "0.2.0",
   "description": "lite version of our api engine, no DB, Users, Session support. Use mockjs in routers for mocking api data.",
-  "main": "server.js",
+  "main": "run.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node run.js"
   },
   "repository": "",
   "author": "Tim Liu (bluekvirus@gmail.com)",

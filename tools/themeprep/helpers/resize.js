@@ -40,7 +40,7 @@ program
 	.parse(process.argv);
 
 //check icon folder
-var iconFolder = program.args[0]
+var iconFolder = program.args[0];
 if(!iconFolder) {
 	console.log('empty icon folder'.red);
 	return;
@@ -78,7 +78,7 @@ fs.readdir(iconFolder, function(err, files){
 					console.log('converted'.green, name, '==>'.green, size, 'x', size, rname);
 				});
 			
-		})
+		});
 	});
 
 });

@@ -35,7 +35,7 @@ program
 	.parse(process.argv);
 
 //check icon folder
-var iconFolder = program.args[0]
+var iconFolder = program.args[0];
 if(!iconFolder) {
 	console.log('empty icon folder'.red);
 	return;
@@ -123,7 +123,7 @@ nsg({
 				'</tbody>',
 			'</table>',
 		'</body>'
-	]
+	];
 	demo.write(page.join(''));
 	demo.end();
 	console.log('done!'.green, '[', demo.path.yellow, ']');

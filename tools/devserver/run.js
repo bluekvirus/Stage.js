@@ -18,7 +18,7 @@ load = require('express-load'),
 path = require('path'),
 _ = require('underscore'),
 colors = require('colors'),
-info = require('./package.json')
+info = require('./package.json');
 server = express();
 
 

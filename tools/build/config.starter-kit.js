@@ -42,10 +42,10 @@ module.exports = {
 		},
 		tools: {
 			build: {
-				'build.js': '../tools/build/build.js',
+				'run.js': '../tools/build/run.js',
 				'config.dist.js': '../tools/build/config.sample.js'
 			},
-			iconprep: '../tools/iconprep',
+			themeprep: '../tools/themeprep',
 			devserver: '../tools/devserver',
 			shared: '../tools/shared',
 			'package.json': '../tools/package.json'

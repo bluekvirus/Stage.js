@@ -54,7 +54,7 @@ function processSVGXML(dir, svgxml, svglib, groupName){
 
 	console.log('processing'.yellow, svgxml);
 	var name = _.str.dasherize('svg-' + path.basename(svgxml, '.svg'));
-	var svgxml = buildify(dir).load(svgxml).getContent();
+	svgxml = buildify(dir).load(svgxml).getContent();
 	//use cheerio to pick up and concat the d= attributes of <path> tags.
 	var $ = cheerio.load(svgxml);
 	var svgPath = '';

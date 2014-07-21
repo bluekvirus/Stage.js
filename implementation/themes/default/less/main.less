@@ -19,18 +19,29 @@
 @import "../../../bower_components/bootswatch/cosmo/bootswatch.less";
 @import "../../../bower_components/bootswatch/cosmo/variables.less";
 
-//Fonts & Icons
+//Fonts & Logo/Icons
 @import "../../../bower_components/open-sans-fontface/open-sans.less";
-//fonts (including bootstrap and fontawesome icon fonts are copied by the theme prep tool)
-@import "imgs.less"; //this is produced by the theme prep tool.
-
-//Framework - Widgets/Editors/Plugins/Containers
-@import "components.less"; //- add more style to this one
+//Note: Together with bootstrap and fontawesome icon-fonts, fonts are copied by the theme prep tool into /fonts)
+@import "img.less"; //this is produced by the theme prep tool.
 
 //Theming related (color, size and effects)
-@import "mixins.less"; //- add more short-cut funcz/style into this one
-@import "vars.less"; //- modify this to change your theme
+@import "mixins.less"; //- add more short-cut funcz/stylez into this one
+@import "vars.less"; //- reusable theme variables (colors, sizes and gaps), modify this to change your theme
 
-//=======================================================================================================
-//DO NOT add anything below this line, always modify your components.less, variables.less and mixins.less
-//=======================================================================================================
+//Framework - Widgets/Editors/Plugins/Containers
+@import "components.less"; //- add more style to this one if added new components
+
+
+//==========================================================================================================
+//Put your context specific styles below this line:
+//==========================================================================================================
+
+
+//@import "contexts.less";
+
+//or put directly here:
+/*
+.context-abc {
+	//for context named Abc
+}
+*/

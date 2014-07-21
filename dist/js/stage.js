@@ -223,6 +223,10 @@ window.onerror = function(errorMsg, target, lineNum){
 				options.xhrFields = _.extend(options.xhrFields || {}, {
 					withCredentials: true //persists session cookies.
 				});
+				// Using another way of setting withCredentials flag to skip FF error in sycned CORS ajax - no cookies tho...:(
+				// options.beforeSend = function(xhr) {
+				// 	xhr.withCredentials = true;
+				// };
 			}
 
 			//cache:[disable it for IE only]

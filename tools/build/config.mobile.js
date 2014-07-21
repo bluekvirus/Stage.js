@@ -51,7 +51,7 @@ module.exports = {
 
 		},
 		devtools: {
-			iconprep: '../tools/iconprep',
+			themeprep: '../tools/themeprep',
 			devserver: '../tools/devserver',
 			shared: '../tools/shared',
 			'package.json': '../tools/package.json'
