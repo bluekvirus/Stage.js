@@ -6,23 +6,31 @@
  */
 
 
-//Required
-//========
+//jQuery UI minimum
 @import (inline) "../../../bower_components/jquery-ui/themes/base/jquery.ui.core.css";
 @import (inline) "../../../bower_components/jquery-ui/themes/base/jquery.ui.resizable.css";
 @import (inline) "../../../bower_components/jquery-ui/themes/base/jquery.ui.selectable.css";
 
-@import (less) "../../../bower_components/fontawesome/css/font-awesome.css"; //in order to use the icon classes in :extend
+//Base - Bootstrap + FontAwesome
+@import (less) "../../../bower_components/fontawesome/css/font-awesome.css";
 @import "../../../bower_components/bootstrap/less/bootstrap.less";
 
-//Remove/Change
-//=============
-//- swap these two or values in them if starting a new theme
-@import "include/cosmo/variables.less";
-//optionally you can include a custom made mixins.less
-@import "include/cosmo/bootswatch-cosmo-modified.less"; // <- this is your theme.less which should be named with your theme name
+//Base+ - Cosmo theme from Bootswatch
+@import "../../../bower_components/bootswatch/cosmo/bootswatch.less";
+@import "../../../bower_components/bootswatch/cosmo/variables.less";
 
+//Fonts & Icons
+@import "../../../bower_components/open-sans-fontface/open-sans.less";
+//fonts (including bootstrap and fontawesome icon fonts are copied by the theme prep tool)
+@import "imgs.less"; //this is produced by the theme prep tool.
 
-//==================================================================================================
-//DO NOT add anything below this line, always modify your theme.less, variables.less and mixins.less
-//==================================================================================================
+//Framework - Widgets/Editors/Plugins/Containers
+@import "components.less"; //- add more style to this one
+
+//Theming related (color, size and effects)
+@import "mixins.less"; //- add more short-cut funcz/style into this one
+@import "vars.less"; //- modify this to change your theme
+
+//=======================================================================================================
+//DO NOT add anything below this line, always modify your components.less, variables.less and mixins.less
+//=======================================================================================================

@@ -60,6 +60,7 @@
   },
   "themeDependencies": {
     "bootstrap": "~3.x.x",
+    "bootswatch": "~3.x.x",
     "fontawesome": "~4.x.x",
     "jquery-ui": "1.10.4",
     "open-sans-fontface": "*",
@@ -94,7 +95,11 @@
     "ratchet": "*",
     "pure": "*",
     "foundation": "*",
-    "animate.css": "*"
+    "animate.css": "*",
+    "bootswatch": "~3.x.x",
+    "open-sans-fontface": "*",
+    "roboto-fontface": "*",
+    "ubuntu-fontface": "*"    
   },
   "resolutions": {
     "modernizr": "~2.x.x"
