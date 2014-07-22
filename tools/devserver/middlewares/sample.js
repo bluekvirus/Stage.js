@@ -13,6 +13,6 @@ module.exports = function(server){
 	
 		next(); // or error out
 
-	}
+	};
 
-}
+};

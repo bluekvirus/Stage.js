@@ -16,9 +16,9 @@
 var _ = require('underscore'),
 path = require('path'),
 fs = require('fs-extra'),
-watch = require('watch'),
 less = require('less'),
 colors = require('colors'),
+gaze = require('gaze'),
 compiler = require('../../shared/less-css.js');
 
 _.str = require('underscore.string');
@@ -47,29 +47,23 @@ module.exports = function(server){
 	var themesFolder = path.join(profile.clients[selectedClient], 'themes');
 	fs.readdir(themesFolder, function(err, list){
 		if(err) throw err;
+		var themeFolders = [];
 		_.each(list, function(theme){
 			//monitor only the selected theme(s) in config.
 			if(theme in watchlist){
 				var root = path.join(themesFolder, theme);
-				watch.createMonitor(root, {
-					ignoreDotFiles: true
-				}, function(monitor){
-					// monitor.on("created", function (f, stat) {
-						//monitor .less file creation
-					// });
-					monitor.on("changed", function (f, curr, prev) {
-						//monitor .less file change and icons/resized folder change
-						if(path.extname(f) !== '.less') return;
-						console.log('[Changed:'.yellow, f, ']'.yellow);
-						//recompile main.less:
-						compiler(root);
-					});
-					// monitor.on("removed", function (f, stat) {
-					// });
-					console.log(('[Theme ' + theme + ': .less files monitored]').yellow, '-', ('lessjs v' + less.version.join('.')).grey);
-					return monitor;
-				});
+				themeFolders.push({ name: theme, glob: path.join(root, '**/*.less') });
 			}
 		});
+
+		gaze(_.map(themeFolders, function(t){return t.glob;}), function(err, watcher){
+			this.on('all', function(e, f){
+				console.log('['.yellow, e, ':'.yellow, f, ']'.yellow);
+				var name = _.compact((f.replace(themesFolder, '')).split('/')).shift();
+				compiler(path.join(themesFolder, name));
+			});
+			if(!err)
+				console.log(('[Themes ' + _.map(themeFolders, function(t){return t.name}) + ': .less files monitored]').yellow, '-', ('lessjs v' + less.version.join('.')).grey);					
+		});		
 	});
 };

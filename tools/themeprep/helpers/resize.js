@@ -19,16 +19,16 @@
 
 var program = require('commander'),
 _ = require('underscore'),
-fs = require('fs'),
-mkdirp = require('mkdirp'),
+fs = require('fs-extra'),
 path = require('path'),
 colors = require('colors'),
+glob = require('glob'),
 gm = require('gm');
 _.string = require('underscore.string');
 
 program
 	.version('0.1.1')
-	.usage('[options] <image folder (icons, pics, logo...)>')
+	.usage('[options] <image folder (icon, pic, logo...)>')
 	.option('-B --base <path>', 'themes base folder, default to ../../../implementation/themes/', '../../../implementation/themes/')
 	.option('-T --theme <name>', 'default on theme default', 'default')
 	.option('-S --sizes <16,32,64,.., array of sizes>', 'default to 16,32 (16x16 and 32x32)')
@@ -58,8 +58,8 @@ fs.readdir(imageFolder, function(err, files){
 	if(err) throw err;
 
 	//create dist folder for the resized images
-	var distFolder = program.dist || path.join(imageFolder, 'resized');
-	if(!fs.existsSync(distFolder)) mkdirp.sync(distFolder);
+	var distFolder = program.dist || imageFolder;
+	if(!fs.existsSync(distFolder)) fs.ensureDirSync(distFolder);
 	console.log('dist:', '[', path.resolve(distFolder).yellow, ']');
 
 	//scan and convert the files

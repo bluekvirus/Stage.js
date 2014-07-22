@@ -23,6 +23,6 @@ module.exports = function(server){
 		//server.use...
 		//server.use...
 
-	}
+	};
 
-}
+};

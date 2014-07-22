@@ -65,7 +65,8 @@
     "jquery-ui": "1.10.4",
     "open-sans-fontface": "*",
     "roboto-fontface": "*",
-    "ubuntu-fontface": "*"
+    "ubuntu-fontface": "*",
+    "animate.css": "*"
   },
   "dependencies": {
     "spin.js": "*",

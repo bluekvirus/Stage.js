@@ -12,6 +12,7 @@
  * @author Tim.Liu
  * @created 2014.06.13
  * @updated 2014.06.26
+ * @deprecated 2014.07.22 (use themeprep/run.js instead)
  */
 
 var program = require('commander'),

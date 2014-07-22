@@ -49,7 +49,8 @@ path = require('path'),
 hammer = require('../shared/hammer.js'),
 lessc = require('../shared/less-css.js'),
 colors = require('colors'),
-nsg = require('node-sprite-generator');
+nsg = require('node-sprite-generator'),
+glob = require('glob');
 _.string = require('underscore.string');
 
 program
@@ -57,7 +58,8 @@ program
 	.usage('[options] <theme name>')
 	.option('-B --base <path>', 'themes base folder, default to ../../implementation/themes/', '../../implementation/themes/')
 	.option('-L --lib <path>', 'library base folder, default to ../../implementation/bower_components/', '../../implementation/bower_components/')
-	.option('-F --fonts [names]', 'font packages to collect /fonts from, default to [bootstrap, fontawesome, open-sans-fontface]', ['bootstrap', 'fontawesome', 'open-sans-fontface'])
+	.option('-F --fonts [names]', 'font packages to collect /fonts from, default to bootstrap, fontawesome, open-sans-fontface', ['bootstrap', 'fontawesome', 'open-sans-fontface'])
+	.option('-S --sprites [names]', '/img/? folders to include in the sprite.png, default to icons, logo, pics', ['icon', 'logo', 'pic'])
 	.parse(process.argv);
 
 //check target theme name, default to 'default'
@@ -74,9 +76,9 @@ hammer.createFolderStructure({
 		css: {},
 		fonts: {},
 		img: {
-			icons: {},
+			icon: {},
 			logo: {},
-			pics: {},
+			pic: {},
 			texture: {}
 		}
 	},
@@ -94,9 +96,65 @@ hammer.createFolderStructure({
 	//2.pre - you might what to use the ./helpers/resize.js to resize the images in /logo, /icons and /pics of /img
 	//2. process the /img folder to produce sprite.png (logo, icons, pics) and img.less (+ texture)
 	console.log('[Tip:'.yellow, 'You might want to run ./helpers/resize.js on <your theme>/img/icons folder before making css-sprite here'.grey,']'.yellow);
-	//2.1 make sprite.png with /logo, /icons and /pics -> ../less/img.less
-	//2.2 scan /texture and merge with ../less/img.less
-	//2.3 produce img.json to describe img.less for demo purposes 
+	//2.1 make sprite.png and ../less/img.less
+	console.log('[CSS Sprite]'.yellow, 'processing', program.sprites, 'and /texture under /img', '(.png files only)'.yellow);
+	
+	var iconClassPrefix = 'custom',
+	imageFolder = path.join(themeFolder, 'img'),
+	registry = [], //remember the sprite image elements
+	lessFilePath = path.join(themeFolder, 'less', 'img.less');
+	
+	nsg({
+	    src: _.map(program.sprites, function(folder){ return path.join(imageFolder, folder, '**/*.png') }),
+	    spritePath: path.join(imageFolder, 'sprite.png'),
+	    stylesheetPath: lessFilePath,
+	    layoutOptions: {
+	        padding: 5
+	    },
+	    compositor: 'gm', //we use GraphicsMagick
+	    stylesheet: 'css',
+	    stylesheetOptions: {
+	        prefix: iconClassPrefix,
+	        spritePath: '../img/sprite.png',
+	        nameMapping: function(fpath){
+	        	var name = fpath.replace(imageFolder, '').split('/').join('-');
+	        	name = path.basename(name, '.png');
+	        	registry.push(iconClassPrefix + name);
+	        	console.log('found:', '[', name.grey, ']');
+	        	return name;
+	        },
+	        //pixelRatio: 1
+	    }
+	}, function(err){
+		if (err) throw err;
+		else console.log('[CSS Sprite]'.yellow, 'done'.green, '==>'.grey, lessFilePath);
+
+		//2.2 scan /texture and merge with ../less/img.less
+		glob('**/*.png', {
+			cwd: path.join(imageFolder, 'texture')
+		}, function(err, files){
+			_.each(files, function(t){
+				//iconClassPrefix-texture {
+				//	background-image: url('../img/texture/' + t);
+				//}
+				t = '/' + t;
+				var name = ['-texture', path.basename(t.split('/').join('-'), '.png')].join('');
+				fs.appendFileSync(lessFilePath, [
+					'','//texture',
+					['.', iconClassPrefix, name].join('') + ' {',
+					'\tbackground-image: url(\'../img/texture' + t + '\');',
+					'}'
+				].join('\n'));
+				registry.push(iconClassPrefix + name);
+				console.log('found:', '[', name.grey, ']', '(texture)');
+			});
+
+			//2.3 produce img.json to describe img.less for demo purposes
+			//console.log(registry);
+			//[TBI]	
+		
+		});			
+	});
 
 	//3. build the /css/main.css from /less/main.less
 	lessc(themeFolder);
