@@ -90,7 +90,6 @@
     "scroll-reveal": "*",
     "html5-boilerplate": "*",
     "mockjs": "*",
-    "jquery-mockjax": "*",
     "crossfilter": "*",
     "ratchet": "*",
     "pure": "*",

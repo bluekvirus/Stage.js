@@ -46,7 +46,7 @@
                             if(i.title !== info.title) return {
                                 title: i.title,
                                 id: i.id
-                            }
+                            };
                         })
                     });
 
@@ -55,7 +55,7 @@
                 this.breadcrumbs.$el.show();
                 this.breadcrumbs.currentView.trigger('view:render-data', {path: path});
                 //console.log(path);
-            })
+            });
         },
         actions: {
             refresh: function($region, e){
@@ -112,7 +112,7 @@
                 ],
                 onShow: function(){
                     var that = this;
-                    app.remote('js/lib/dependencies.json').done(function(data){
+                    $.get('js/lib/dependencies.json').done(function(data){
                         _.extend(data, {
                             created: moment(data.created).fromNow()
                         });

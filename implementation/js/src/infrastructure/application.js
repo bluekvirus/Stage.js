@@ -212,8 +212,13 @@ window.onerror = function(errorMsg, target, lineNum){
 			};	
 		}		
 
-		//Ajax Crossdomain Support -- CORS client side.
+		//Ajax Options Fix: (baseAjaxURI, CORS and cache)
 		Application.onAjax = function(options){
+
+			//app.config.baseAjaxURI
+			if(Application.config.baseAjaxURI)
+				options.url = [Application.config.baseAjaxURI, options.url].join('/');	
+
 			//crossdomain:
 			var crossdomain = Application.config.crossdomain;
 			if(crossdomain.enabled){
@@ -229,8 +234,9 @@ window.onerror = function(errorMsg, target, lineNum){
 			}
 
 			//cache:[disable it for IE only]
-			if(Modernizr.ie)
-				options.cache = false;			
+			// if(Modernizr.ie)
+			// 	options.cache = false;
+		
 		};
 
 

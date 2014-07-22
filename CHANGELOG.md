@@ -5,7 +5,8 @@ Change Log
 1. app.config.viewTemplates now defaults to 'static/template';
 2. An empty all.json now ships with all the dist packages;
 3. Build tools now accepts creating ''s (blank files) in build configs;
-4. Refining theme mocks and less structure + prep script;
+4. app.config.baseAjaxURI now correctly gets picked up by app.remote();
+5. Refining theme mocks and less structure + prep script;
 
 
 1.5.0 (2014-07-18)

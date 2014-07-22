@@ -32,10 +32,11 @@
 
 	function fixOptions(options){
 		if(!options) throw new Error('DEV::Core.Remote::options empty, you need to pass in at least a url string');
-		if(_.isString(options)) options	= { 
-			url: options,
-			type: 'GET'
-		};
+		if(_.isString(options)) 
+			options	= { 
+				url: options,
+				type: 'GET'
+			};
 		else {
 			//default options
 			_.extend(options, {
@@ -47,7 +48,7 @@
 			//process entity[_id] and strip off options.querys(alias:params)
 			if(options.entity){
 				var entity = options.entity;
-				options.url = [app.config.baseAjaxURI, entity].join('/');
+				options.url = entity;
 			}
 			if(options.payload && options.payload._id){
 				if(options._id) console.warn('DEV::Core.Remote::options.payload._id', options.payload._id,'overriding options._id', options._id);
@@ -89,7 +90,7 @@
 
 		//GET
 		get: function(options){
-			fixOptions(options);
+			options = fixOptions(options);
 			options.type = 'GET';
 			app.trigger('app:remote-pre-get', options);
 			return notify($.ajax(options));
@@ -97,7 +98,7 @@
 
 		//POST(no payload._id)/PUT/DELETE(payload = {_id: ...})
 		change: function(options){
-			fixOptions(options);
+			options = fixOptions(options);
 			if(!options.payload) throw new Error('DEV::Core.Remote::payload empty, please use GET');
 			if(options.payload._id && _.size(options.payload) === 1) options.type = 'DELETE';
 			else {

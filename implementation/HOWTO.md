@@ -490,6 +490,8 @@ Now, we've sketched the layout of our application, you might want more contexts 
 ####Step 4. Handle data
 Though we do not agree with *Backbone*'s way of loading and persisting data through *Model/Collection*s. We do agree that **data** should be the central part of every computer program. In our case, the remote data from server are still used to power the dynamic views. We use *Backbone.Model/Collection* only when there is a *View*. In other words, *data* and *View*s are centric in our framework paradigm, *Model/Collection*s are not. Try to think of them as a integrated part of *View*s. 
 
+**Note:** Use normal `$.ajax()` calls for **NON-API** resources such as static `.json` files. You don't want to pick up `Application.config.baseAjaxURI` and `Application.config.crossdomain` settings in these situations.
+
 Our recommended way of loading/persisting remote data is through:
 ```
 //returns the $.ajax() object - jqXHR for using promises.
@@ -572,6 +574,7 @@ Data returned should be in the [JSON](http://json.org/) format and with `Content
 **Note:** If you use `view:render-data` and pass in an `Array`, it will **reset** the collection of that view. 
 
 Modify (paginate/filter/sort) the data before passing to the `view:render-data` event. *Do NOT* bind pagination/filtering/sorting operations with model/collection instances.
+
 
 ####Step 5. Adding UX
 UX stands for user experience, it is not just about look'n'feel and clickings but also transitions/animations that links between interactions and state change. UX is hard to design, without a clear think-through over the purposes and targeted user tasks, it can be a total chaos... Make sure you have had your plan/sketch reviewed by targeted audience/friends or colleagues before implementation. Employ the *Goal-Directed Design* technique as much as you can.

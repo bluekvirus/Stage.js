@@ -61,7 +61,7 @@
 	    		className: 'pagination pagination-sm pull-right'
 	    	});
 	    	table.trigger('view:load-page', {
-	    		url: '/sample1/user',
+	    		url: 'sample1/user',
 	    		page: 1,
 	    		querys: {
 	    			status: 'active'

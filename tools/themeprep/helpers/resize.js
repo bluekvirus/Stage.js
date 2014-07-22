@@ -7,11 +7,6 @@
  * =====
  * See node [filename] -h
  *
- * ==========
- * CSS Sprite
- * ==========
- * You can use csssprite.js or other tools to combine prepared icons into a big css sprite for faster brower UI exp.
- *
  *
  * [Todo:]
  * Need to include func like mobile-icon-resizer to resize for mobile devices according to a config file.
@@ -33,19 +28,22 @@ _.string = require('underscore.string');
 
 program
 	.version('0.1.1')
-	.usage('[options] <icon folder>')
+	.usage('[options] <image folder (icons, pics, logo...)>')
+	.option('-B --base <path>', 'themes base folder, default to ../../../implementation/themes/', '../../../implementation/themes/')
+	.option('-T --theme <name>', 'default on theme default', 'default')
 	.option('-S --sizes <16,32,64,.., array of sizes>', 'default to 16,32 (16x16 and 32x32)')
-	.option('-K --keep', 'keep the original ones as unchanged copies [TBI]') //TBI
-	.option('-D --dist <path>', 'default to be <icon folder>/resized/')
+	.option('-D --dist <path>', 'default to be <image folder>/resized/')	
 	.parse(process.argv);
 
-//check icon folder
-var iconFolder = program.args[0];
-if(!iconFolder) {
-	console.log('empty icon folder'.red);
-	return;
+//check image folder
+var imageFolder = program.args[0];
+if(!imageFolder) {
+	imageFolder = 'icons';
 }
-console.log('src:', '[', path.resolve(iconFolder).yellow, ']');
+var themeFolder = path.join(__dirname, program.base, program.theme);
+imageFolder = path.join(themeFolder, imageFolder);
+console.log('src:', '[', path.resolve(imageFolder).yellow, ']');
+
 
 //check on sizes
 if(program.sizes) {
@@ -56,11 +54,11 @@ if(program.sizes) {
 console.log('sizing:', program.sizes.join(',').yellow);
 
 //start resizing
-fs.readdir(iconFolder, function(err, files){
+fs.readdir(imageFolder, function(err, files){
 	if(err) throw err;
 
-	//create the resized icon dist folder
-	var distFolder = program.dist || path.join(iconFolder, 'resized');
+	//create dist folder for the resized images
+	var distFolder = program.dist || path.join(imageFolder, 'resized');
 	if(!fs.existsSync(distFolder)) mkdirp.sync(distFolder);
 	console.log('dist:', '[', path.resolve(distFolder).yellow, ']');
 
@@ -71,7 +69,7 @@ fs.readdir(iconFolder, function(err, files){
 		_.each(program.sizes, function(size){
 			var rname = _.string.slugify(path.basename(name, ext)) + '-' + String(size) + ext;
 			//resize only the width while maintaining aspect ratio
-			gm(path.join(iconFolder, name))
+			gm(path.join(imageFolder, name))
 				.resize(size)
 				.write(path.join(distFolder, rname), function (err) {
 					if(err) return console.log('ERROR'.red, err.message);
