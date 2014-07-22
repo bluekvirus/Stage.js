@@ -1702,8 +1702,6 @@ Read more about [express.js](http://expressjs.com/) and [express-load](https://g
 
 
 ###Theme Preparation
-[TBC]
-
 Use `/tools/themeprep/helpers/resize.js` to resize your icons obtained from your designer (64x64 ~ 512x512) down to various sizes and make css-sprite to use them conveniently. You can also record svg paths exported from their design tools.
 
 **Note**: You will need [GraphicsMagick](http://www.graphicsmagick.org/) to be installed on your machine.
@@ -1719,17 +1717,9 @@ Use `-h` to get more from `resize.js`
 node resize -h
 ```
 
-After resizing you can continue to use `cssprite.js` to produce a big css-sprite file from the resized icons folder:
-```
-//under /tools/themeprep/helpers type
-node cssprite ../../../implementation/themes/site/img/icons/resized
-```
-Check the program output and there should be a `iconsprite.html` demo page with all the icons made available by the `iconsprite.png` and `iconsprite.css` files produced.
+After resizing you can continue to use `/tools/themeprep/run.js` to prepare your theme with required fonts and images (icons, texture, logo and pics).
 
-Use `-h` to get more from `cssprite.js`
-```
-node cssprite -h
-```
+[TBC]
 
 
 FAQs

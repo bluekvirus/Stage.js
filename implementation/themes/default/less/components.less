@@ -9,12 +9,18 @@
   .node {
     list-style: none;
     .type-indicator {
-      //&:extend(.@{fa-css-prefix}-plus-square-o all); //[+]
+      .fa;
+      &:before{
+        content: @fa-var-plus-square-o; //[+]
+      }
     }
 
     &.expanded {
       & > .item .type-indicator {
-        //&:extend(.fa-minus-square-o all); //[-]
+        .fa;
+        &:before{
+          content: @fa-var-minus-square-o; //[-]
+        }  
       }
     }
 

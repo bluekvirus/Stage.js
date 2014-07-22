@@ -48,7 +48,8 @@ fs = require('fs-extra'),
 path = require('path'),
 hammer = require('../shared/hammer.js'),
 lessc = require('../shared/less-css.js'),
-colors = require('colors');
+colors = require('colors'),
+nsg = require('node-sprite-generator');
 _.string = require('underscore.string');
 
 program
@@ -92,7 +93,10 @@ hammer.createFolderStructure({
 
 	//2.pre - you might what to use the ./helpers/resize.js to resize the images in /logo, /icons and /pics of /img
 	//2. process the /img folder to produce sprite.png (logo, icons, pics) and img.less (+ texture)
-	
+	console.log('[Tip:'.yellow, 'You might want to run ./helpers/resize.js on <your theme>/img/icons folder before making css-sprite here'.grey,']'.yellow);
+	//2.1 make sprite.png with /logo, /icons and /pics -> ../less/img.less
+	//2.2 scan /texture and merge with ../less/img.less
+	//2.3 produce img.json to describe img.less for demo purposes 
 
 	//3. build the /css/main.css from /less/main.less
 	lessc(themeFolder);
