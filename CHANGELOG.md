@@ -1,6 +1,23 @@
 Change Log
 ==========
-1.5.0 (2014-07-18*)
+1.5.1 - 1.6.0 (2014-07-21*)
+---------------------------
+1. app.config.viewTemplates now defaults to 'static/template';
+2. An empty all.json now ships with all the dist packages;
+3. Build tools now accepts creating ''s (blank files) in build configs;
+4. app.config.baseAjaxURI now correctly gets picked up by app.remote();
+5. Refined theme less structure;
+6. Added theme preparation script to tools;
+7. Removed resize, svg, cssprite theme helper scripts;
+
+In progress...
+
+8. Converting theme mockups + sprite preview (_Mockups context);
+9. Adding basic wrapper/heading/box style to default theme;
+10. Adding proxied service support to devserver (http-route-proxy);
+
+
+1.5.0 (2014-07-18)
 -------------------
 1. Added navigation guard function to Contexts. (auth related)
 2. Added app:context-guard-error event to Application.

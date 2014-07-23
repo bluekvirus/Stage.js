@@ -6,7 +6,7 @@ Building multi-context rich-client web application front-end in the modern way.
 
 Current version
 ---------------
-**@1.5.0**
+**@1.5.1**
 ([Why is it version-ed like this?](http://semver.org/))
 
 
@@ -141,7 +141,7 @@ We also maintain a list of 3rd party libraries for the developers to choose from
 >   * bower.json
 > * /tools
 >   * /build -- minify and concatenate your js files by scanning index.html
->   * /iconprep -- build icons into big css sprite
+>   * /themeprep -- prepare your theme with textures, fonts and icons
 >   * /devserver -- development web server with less file monitor
 >   * /shared -- shared scripts used by the tools
 >   * package.json
@@ -490,6 +490,8 @@ Now, we've sketched the layout of our application, you might want more contexts 
 ####Step 4. Handle data
 Though we do not agree with *Backbone*'s way of loading and persisting data through *Model/Collection*s. We do agree that **data** should be the central part of every computer program. In our case, the remote data from server are still used to power the dynamic views. We use *Backbone.Model/Collection* only when there is a *View*. In other words, *data* and *View*s are centric in our framework paradigm, *Model/Collection*s are not. Try to think of them as a integrated part of *View*s. 
 
+**Note:** Use normal `$.ajax()` calls for **NON-API** resources such as static `.json` files. You don't want to pick up `Application.config.baseAjaxURI` and `Application.config.crossdomain` settings in these situations.
+
 Our recommended way of loading/persisting remote data is through:
 ```
 //returns the $.ajax() object - jqXHR for using promises.
@@ -572,6 +574,7 @@ Data returned should be in the [JSON](http://json.org/) format and with `Content
 **Note:** If you use `view:render-data` and pass in an `Array`, it will **reset** the collection of that view. 
 
 Modify (paginate/filter/sort) the data before passing to the `view:render-data` event. *Do NOT* bind pagination/filtering/sorting operations with model/collection instances.
+
 
 ####Step 5. Adding UX
 UX stands for user experience, it is not just about look'n'feel and clickings but also transitions/animations that links between interactions and state change. UX is hard to design, without a clear think-through over the purposes and targeted user tasks, it can be a total chaos... Make sure you have had your plan/sketch reviewed by targeted audience/friends or colleagues before implementation. Employ the *Goal-Directed Design* technique as much as you can.
@@ -1617,26 +1620,20 @@ http(s)://your host'n'app/?theme=xyz
 ###Theme structure
 Themes are located at `/implementation/themes/[your theme name]/` with the following structure:
 > * /css
->     - /include
 >     - main.css -- do *NOT* change this one directly
-> * /fonts
+> * /fonts -- prepared by the themeprep tool
 > * /img
+>     - /texture
+>     - /icons
+>     - /logo
 > * /less
->     - /include
+>     - img.less -- prepared by the themeprep tool (textures, icons & logos)
+>     - mixins.less -- style short-cuts
+>     - vars.less -- base variable override
+>     - components.less -- framework Widgets/Editors/Plugins/Containers style
 >     - main.less -- always start with this file
-> * index.html
 
-Open up the `/less/main.less` file and you will see the following:
-* @import (inline) "../css/include/*.css" (the statically included styles)
-* bootstrap.less (do **NOT** change) - includes all the original bootstrap styles
-* **variables.less** - basic css override through pre-defined variables
-* **theme.less** - components and components override
-* mixins.less (optional)
-* font.less (optional) - extra web fonts
-* print.less (optional)
-
-You should be focusing on changing the theme.less and variables.less files. Note that the *Bootstrap* .less files are *NOT* included in the framework package. Your LESS compiler might pop errors as it can not find the required `bootstrap.less` file. Go to `/implementation` and run `bower update` (you should have bower installed through [npm](https://www.npmjs.org/) first). It will fetch you the required *Bootstrap* package.
-
+Open up the `themes/default/less/main.less` file and read the details about how to modify the default theme bundled with the starter-kit distribution. The `bower` distribution only contains a built version of the default theme.
 
 ###LESS to CSS
 (What's [LESS](http://lesscss.org/)?)
@@ -1646,24 +1643,19 @@ The `main.less` loads/glues all the above files and compiles into main.css, you 
 In any .less file you can @include (to merge with, to have) other .less/.css files and you can define styles using LESS or css as well. That's why `bootstrap.less` loads other style definition files but doesn't have its own definition, it is used solely as a glue file. `variables.less` is another extreme, it only contains LESS vars to be reused in other style definition files so you can override the basic styles with ease later.
 
 One perk of using LESS is that you can define each .less to do only one thing, e.g:
-* static.less - to copy static css files;
 * vars.less - to define reusable css codes into variables;
 * component.less - use styles loaded/defined in static.less/vars.less to define new css styles in a nested class format;
 * main.less - glue(@include) the above .less files and let the compiler compile into main.css;
 
+###Assets preparation
+[TBC]
 
-###Icons
-If you can, always use the icon fonts from bootstrap & font-awesome as icons in you application. Locate them in your `/implementation/bower_components` folder and copy both `/fonts` folders from `bootstrap` and `fontawesome` then merge into your theme's `/fonts` folder. The related CSS/LESS referencing the font files should already be compiled in your main.css by our theme monitor.
+Fonts, logos, icons and textures are the 4 major types of asset you will need when it comes to making themes. There is a theme preparation script that we prepared for you to get started quickly when building a new theme.
 
-**Note**: Usually this is already done for you in the framework distributions. In case `bower update` updates bootstrap and font-awesome, you need to manually copy the font files into your themes to replace the old ones. Again, don't worry about the CSS/LESS files.
+See the **Theme Preparation** in the **Tools** section below for more details.
 
-If you need to have customized icons, please ask your designer for 64x64 or even 128x128 sized icon files in the *PNG* format. You can use the icon preparation tool to resize and combine them into a single CSS sprite package (icon.css, icons.png and a demo.html to show you css-class to icon mappings). Note that background image and texture images should *NOT* be combined into the CSS sprite. 
-
-See the **Icon Prep** section below for more details.
-
-
-###Preview page
-There is a theme preview page at `[your theme folder]/index.html`. Change it to include more UI components and use it to demo your theme. `http(s)://[your host]/themes/[your theme]/`
+###Preview
+There is a theme mockup elements preview context at `#navigate/_Mockups`.
 
 
 Tools
@@ -1671,17 +1663,17 @@ Tools
 ###Build & Deploy
 Under `/tools/build/`, type in this command in console/terminal to build:
 ```
-node build.js dist //find your built deployment under /tools/build/dist
+node run.js dist //find your built deployment under /tools/build/dist
 ```
 You might need to change the `config.dist.js` file if you want to include more files in deployment.
 
-By default, the `node build.js abc` command will look for `config.dist.js` and construct your deployment folder `abc` with folders and files accordingly.
+By default, the `node run.js abc` command will look for `config.dist.js` and construct your deployment folder `abc` with folders and files accordingly.
 
 Also by default, the build tool will grab the targeted index.html indicated by `config.dist.js` and scan through all the `<script>` tags to collect and combine the js codes.
 
 Type this command to get more from the build tool:
 ```
-node build.js -h
+node run.js -h
 ```
 
 
@@ -1706,35 +1698,10 @@ You can add more bots, profiles and most importantly routers into the server. Ju
 Read more about [express.js](http://expressjs.com/) and [express-load](https://github.com/jarradseers/express-load) so you can make full use of this development server.
 
 
-###Icon/Image Prep
-Use `/tools/iconprep` to resize the icon blueprints down to various sizes from 128x128 or 256x256 obtained from your designer and make css-sprite to use them conveniently. You can also record svg paths exported from their design tools.
+###Theme Preparation
+Use `/tools/themeprep/run.js` to prepare your theme with required fonts and images (icons, texture, logo and pics).
 
-**Note**: You will need [GraphicsMagick](http://www.graphicsmagick.org/) to be installed on your machine.
-
-Assume that you have put all the icon blueprints into `/implementation/themes/default/img/icons`:
-```
-//under /tools/iconprep type
-node resize -S 16,32,48 ../../implementation/themes/default/img/icons
-```
-
-Use `-h` to get more from `resize.js`
-```
-node resize -h
-```
-
-After resizing you can continue to use `cssprite.js` to produce a big css-sprite file from the resized icons folder:
-```
-//under /tools/iconprep type
-node cssprite ../../implementation/themes/site/img/icons/resized
-```
-Check the program output and there should be a `iconsprite.html` demo page with all the icons made available by the `iconsprite.png` and `iconsprite.css` files produced.
-
-Use `-h` to get more from `cssprite.js`
-```
-node cssprite -h
-```
-
-**Tip:** switch on the `-r` or `--retina` option when invoking the `cssprite.js` will turn on the retina display support on the produced icon sprite.
+[TBC]
 
 
 FAQs
