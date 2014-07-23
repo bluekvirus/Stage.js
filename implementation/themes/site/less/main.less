@@ -1,31 +1,58 @@
 /**
  * Theme Base. Bootstrap 3.1.+ using Bootswatch Cosmo
  *
+ * Start a new theme:
+ * ------------------
+ * 0. create a new folder under /themes
+ * 1. copy the /less folder from this one into the new theme folder
+ * 2. run `node tools/themeprep/run.js <your new theme name>`
+ * 3. start tweaking the new theme
+ * 4. re-run step.2 whenever you want to update /fonts or have added new icons into /img folders
+ *
  * @author Tim.Liu
- * @2014.03.09
+ * @created 2014.03.09
+ * @updated 2014.07.22
  */
 
+//Animation - animate.css
+@import (inline) "../../../bower_components/animate.css/animate.css";
 
-//Required
-//========
-@import (inline) "../../../bower_components/highlightjs/styles/monokai_sublime.css";
-@import (inline) "../../../bower_components/nprogress/nprogress.css";
+//jQuery UI minimum
 @import (inline) "../../../bower_components/jquery-ui/themes/base/jquery.ui.core.css";
 @import (inline) "../../../bower_components/jquery-ui/themes/base/jquery.ui.resizable.css";
 @import (inline) "../../../bower_components/jquery-ui/themes/base/jquery.ui.selectable.css";
 
-@import (less) "../../../bower_components/fontawesome/css/font-awesome.css";
+//Base - Bootstrap + FontAwesome
+@import "../../../bower_components/fontawesome/less/font-awesome.less";
 @import "../../../bower_components/bootstrap/less/bootstrap.less";
 
-//Remove/Change
-//=============
-@import "include/font.less"; // <- add new font css into this one
-//- swap these two or values in them if starting a new theme
-@import "include/cosmo/variables.less";
-//optionally you can include a custom made mixins.less
-@import "include/cosmo/bootswatch-cosmo-modified.less"; // <- this is your theme.less which should be named with your theme name
+//Base+ - Cosmo theme from Bootswatch
+@import "../../../bower_components/bootswatch/cosmo/bootswatch.less";
+@import "../../../bower_components/bootswatch/cosmo/variables.less";
 
-@import "include/theme.less";
-//==================================================================================================
-//DO NOT add anything below this line, always modify your theme.less, variables.less and mixins.less
-//==================================================================================================
+//Fonts & Logo/Icons
+//Note: Together with bootstrap and fontawesome icon-fonts, fonts are copied by the theme prep tool into /fonts)
+@import "../../../bower_components/open-sans-fontface/open-sans.less";
+@import "../img/img.less"; //this is produced by the theme prep tool.
+
+//Theming related (color, size and effects)
+@import "vars.less"; //- reusable theme variables (colors, sizes and gaps), modify this to change your theme
+//@import "mixins.less"; //- add more short-cut funcz/stylez into this one
+
+//Framework - Widgets/Editors/Plugins/Containers
+@import "components.less"; //- add more style to this one if added new components
+
+
+//==========================================================================================================
+//Put your context specific styles below this line:
+//==========================================================================================================
+
+
+@import "theme.less";
+
+//or put directly here:
+/*
+.context-abc {
+	//for context named Abc
+}
+*/

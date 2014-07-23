@@ -34,8 +34,8 @@ module.exports = {
 				css: {
 					'main.css':'themes/site/css/main.css'
 				},
-				img: 'themes/site/img',
-				fonts: ['themes/default/fonts','themes/site/fonts'], //merge multiple folders
+				img: { texture: 'themes/site/img/texture', 'sprite.png': 'themes/site/img/sprite.png' },
+				fonts: 'themes/site/fonts',
 				'index.html': 'themes/site/index.html'
 			}
 		},
