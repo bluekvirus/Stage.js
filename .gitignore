@@ -224,3 +224,9 @@ node_modules/
 
 #build
 tools/build/dist/
+
+#fonts
+implementation/themes/**/fonts/
+
+#dist donwloads
+implementation/static/resource/default/download/

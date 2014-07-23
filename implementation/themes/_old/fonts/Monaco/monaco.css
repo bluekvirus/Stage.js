@@ -1,8 +1,0 @@
-@font-face {
-    font-family: 'MonacoRegular';
-    src: url('monaco.eot');
-    src: url('monaco.eot') format('embedded-opentype'),
-         url('monaco.woff') format('woff'),
-         url('monaco.ttf') format('truetype'),
-         url('monaco.svg#MonacoRegular') format('svg');
-}
