@@ -8,12 +8,13 @@ Change Log
 4. app.config.baseAjaxURI now correctly gets picked up by app.remote();
 5. Refined theme less structure;
 6. Added theme preparation script to tools;
+7. Removed resize, svg, cssprite theme helper scripts;
 
 In progress...
 
-7. Refining resize.js and theme mockups (_Mockups context);
-8. Adding basic wrapper/heading/box style to default theme;
-9. Adding proxied service support to devserver;
+8. Converting theme mockups + sprite preview (_Mockups context);
+9. Adding basic wrapper/heading/box style to default theme;
+10. Adding proxied service support to devserver (http-route-proxy);
 
 
 1.5.0 (2014-07-18)

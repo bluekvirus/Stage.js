@@ -38,7 +38,8 @@ module.exports = {
 				css: {
 					'main.css':'themes/default/css/main.css'
 				},
-				fonts: 'themes/default/fonts'
+				fonts: 'themes/default/fonts',
+				//img: { texture: 'themes/default/img/texture', 'sprite.png': 'themes/default/img/sprite.png' }
 			}
 		},
 		'index.html': true

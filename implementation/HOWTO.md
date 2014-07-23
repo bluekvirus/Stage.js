@@ -6,7 +6,7 @@ Building multi-context rich-client web application front-end in the modern way.
 
 Current version
 ---------------
-**@1.5.0**
+**@1.5.1**
 ([Why is it version-ed like this?](http://semver.org/))
 
 
@@ -1650,13 +1650,7 @@ One perk of using LESS is that you can define each .less to do only one thing, e
 ###Assets preparation
 [TBC]
 
-Fonts, logos, icons and textures are the 4 major types of asset you will need when it comes to making themes.
-
-If you can, always use the icon fonts from bootstrap & font-awesome as icons in you application. Locate them in your `/implementation/bower_components` folder and copy both `/fonts` folders from `bootstrap` and `fontawesome` then merge into your theme's `/fonts` folder. The related CSS/LESS referencing the font files should already be compiled in your main.css by our theme monitor.
-
-**Note**: Usually this is already done for you in the framework distributions. In case `bower update` updates bootstrap and font-awesome, you need to re-run the theme prep tool to update the icon fonts.
-
-If you need to have customized icons, please ask your designer for 64x64 or even 128x128 sized icon files in the *PNG* format. You can use the icon preparation tool to resize and combine them into a single CSS sprite package (icon.css, icons.png and a demo.html to show you css-class to icon mappings). Note that background image and texture images should *NOT* be combined into the CSS sprite. 
+Fonts, logos, icons and textures are the 4 major types of asset you will need when it comes to making themes. There is a theme preparation script that we prepared for you to get started quickly when building a new theme.
 
 See the **Theme Preparation** in the **Tools** section below for more details.
 
@@ -1705,22 +1699,7 @@ Read more about [express.js](http://expressjs.com/) and [express-load](https://g
 
 
 ###Theme Preparation
-Use `/tools/themeprep/helpers/resize.js` to resize your icons obtained from your designer (64x64 ~ 512x512) down to various sizes and make css-sprite to use them conveniently. You can also record svg paths exported from their design tools.
-
-**Note**: You will need [GraphicsMagick](http://www.graphicsmagick.org/) to be installed on your machine.
-
-Assume that you have put all the icon blueprints into `/implementation/themes/default/img/icons`:
-```
-//under /tools/themeprep/helpers type
-node resize -S 16,32,48 ../../../implementation/themes/default/img/icons
-```
-
-Use `-h` to get more from `resize.js`
-```
-node resize -h
-```
-
-After resizing you can continue to use `/tools/themeprep/run.js` to prepare your theme with required fonts and images (icons, texture, logo and pics).
+Use `/tools/themeprep/run.js` to prepare your theme with required fonts and images (icons, texture, logo and pics).
 
 [TBC]
 

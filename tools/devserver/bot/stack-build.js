@@ -15,13 +15,11 @@ module.exports = function(server){
 	//compression, logger
 	//not used in this simple version of api-box
 
-
 	//mount different clients (static web.roots)
 	_.each(profile.clients, function(filePath, uriName){
 		server.use(uriName, express.static(profile.clients[uriName]));
 		console.log('[static/public]', uriName.yellow, '[', profile.clients[uriName], ']');
 	});
-
 
 	//mount shared middlewares, see /middlewares/inject.js
 	server.middlewares.inject(server);
@@ -33,4 +31,4 @@ module.exports = function(server){
 		console.log('[router]', mountpath.yellow);
 	});
 
-}
+};

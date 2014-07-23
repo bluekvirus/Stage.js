@@ -2,8 +2,8 @@
  * This is the theme assets preparation tool to:
  *
  * 1. Gather font files from bower_components into [theme]/fonts
- * 2. Process logo & icons & pics - merge them into [theme]/img/sprite.png & [theme]/less/img.less
- * 3. Process texture - collect them into [theme]/less/img.less too (textures can't be put into sprite?)
+ * 2. Process logo & icons & pics - merge them into [theme]/img/sprite.png & [theme]/img/img.less
+ * 3. Process texture - collect them into [theme]/img/img.less too (textures can't be put into sprite!)
  * 4. Build *.less into /css/main.css
  *
  * Usage
@@ -96,13 +96,13 @@ hammer.createFolderStructure({
 	//2.pre - you might what to use the ./helpers/resize.js to resize the images in /logo, /icons and /pics of /img
 	//2. process the /img folder to produce sprite.png (logo, icons, pics) and img.less (+ texture)
 	console.log('[Tip:'.yellow, 'You might want to run ./helpers/resize.js on <your theme>/img/icons folder before making css-sprite here'.grey,']'.yellow);
-	//2.1 make sprite.png and ../less/img.less
+	//2.1 make sprite.png and img.less
 	console.log('[CSS Sprite]'.yellow, 'processing', program.sprites, 'and /texture under /img', '(.png files only)'.yellow);
 	
 	var iconClassPrefix = 'custom',
 	imageFolder = path.join(themeFolder, 'img'),
 	registry = [], //remember the sprite image elements
-	lessFilePath = path.join(themeFolder, 'less', 'img.less');
+	lessFilePath = path.join(imageFolder, 'img.less');
 	
 	nsg({
 	    src: _.map(program.sprites, function(folder){ return path.join(imageFolder, folder, '**/*.png') }),
@@ -129,7 +129,7 @@ hammer.createFolderStructure({
 		if (err) throw err;
 		else console.log('[CSS Sprite]'.yellow, 'done'.green, '==>'.grey, lessFilePath);
 
-		//2.2 scan /texture and merge with ../less/img.less
+		//2.2 scan /texture and merge with img.less
 		glob('**/*.png', {
 			cwd: path.join(imageFolder, 'texture')
 		}, function(err, files){
