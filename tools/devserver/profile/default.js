@@ -1,6 +1,6 @@
 /**
- * All webroot paths are relative to the devserver folder. (except below)
- * All webroot paths that start with '/' will be treated as is, otherwise they will be resolved with __dirname (as the above dictates)
+ * All paths are relative to the devserver folder. (except below)
+ * All paths that start with '/' will be treated as is, otherwise they will be resolved with __dirname (as the above dictates)
  *
  * simplest setting:
  * -----------------
@@ -38,4 +38,4 @@ module.exports = {
 		themes: ['default', 'site']
 	}
 
-}
+};

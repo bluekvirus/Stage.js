@@ -67,7 +67,7 @@ var theme = program.args[0];
 if(!theme) {
 	theme = 'default';
 }
-var themeFolder = path.join(__dirname, program.base, theme);
+var themeFolder = path.join(_.string.startsWith(program.base, '/')?'':__dirname, program.base, theme);
 console.log('Preparing Theme:'.yellow, theme);
 
 //0. ensure theme folder structures
@@ -89,7 +89,7 @@ hammer.createFolderStructure({
 	//1. collect /fonts from lib packages into base/[theme]/fonts
 	var fontsFolder = path.join(themeFolder, 'fonts');
 	_.each(program.fonts, function(name){
-		fs.copySync(path.join(__dirname, program.lib, name, 'fonts'), path.join(fontsFolder, name));
+		fs.copySync(path.join(_.string.startsWith(program.lib, '/')?'':__dirname, program.lib, name, 'fonts'), path.join(fontsFolder, name));
 		console.log('[Font]'.yellow, name, '==>'.grey, fontsFolder + '/' + name);
 	});
 

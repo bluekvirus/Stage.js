@@ -34,7 +34,8 @@
     "fs-extra": "^0.10.0",
     "gaze": "^0.6.4",
     "glob": "^4.0.4",
-    "http-route-proxy": "^0.1.1"
+    "http-route-proxy": "^0.1.1",
+    "cors": "^2.4.1"
   },
   "devDependencies": {},
   "scripts": {

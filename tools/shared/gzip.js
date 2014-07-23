@@ -7,7 +7,7 @@
 
 var fs = require('fs'),
 path = require('path'), 
-zlib = require('zlib')
+zlib = require('zlib'),
 colors = require('colors');
 
 /*--A way to check if this script is called directly in command-line or require() in another script--*/
@@ -26,7 +26,7 @@ function doCompress (src, target) {
 		inp.pipe(gzip).pipe(out);
 		gzip.on('end', function(){
 			console.log(src, 'Gzipped.'.yellow);
-		})
+		});
 	}else
 		throw new Error('Can NOT find file:' + src);
 }
@@ -39,5 +39,5 @@ if(isCLI()){
 else {
 	module.exports = {
 		compress: doCompress
-	}
+	};
 }
