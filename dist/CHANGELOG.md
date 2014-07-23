@@ -1,11 +1,19 @@
 Change Log
 ==========
-1.5.1 (2014-07-21*)
--------------------
+1.5.1 - 1.6.0 (2014-07-21*)
+---------------------------
 1. app.config.viewTemplates now defaults to 'static/template';
 2. An empty all.json now ships with all the dist packages;
 3. Build tools now accepts creating ''s (blank files) in build configs;
-4. Refining theme mocks and less structure + prep script;
+4. app.config.baseAjaxURI now correctly gets picked up by app.remote();
+5. Refined theme less structure;
+6. Added theme preparation script to tools;
+
+In progress...
+
+7. Refining resize.js and theme mockups (_Mockups context);
+8. Adding basic wrapper/heading/box style to default theme;
+9. Adding proxied service support to devserver;
 
 
 1.5.0 (2014-07-18)

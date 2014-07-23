@@ -5,7 +5,7 @@ This project produces **Stage.js** - an infrastructure for building modern web a
 
 What's next?
 ------------
-1.6.0 might bring:
+1.7.0 might bring:
 * Stateful navigation mech: app@state/context@state/lvl1@state/lvl2@state;
 * Datagrid+ : select-all header/cell, details row;
 * Editor+ : Spinner/Range, Switches, DnD Listing;

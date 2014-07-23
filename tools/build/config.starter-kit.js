@@ -36,7 +36,7 @@ module.exports = {
 			},
 			themes: {
 				'default': {
-					less: 'theme/default/less'
+					less: 'themes/default/less'
 				}
 			},
 			'index.html': 'starter-kit.index.html',

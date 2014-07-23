@@ -79,7 +79,7 @@
     "socket.io-client": "*",
     "jquery-serializeForm": "*",
     "flot": "*",
-    "Chart.js": "~1.x.x",
+    "Chart.js": "*",
     "peity": "*",
     "d3": "*",
     "highcharts-release": "*",
@@ -99,7 +99,8 @@
     "bootswatch": "~3.x.x",
     "open-sans-fontface": "*",
     "roboto-fontface": "*",
-    "ubuntu-fontface": "*"    
+    "ubuntu-fontface": "*",
+    "togetherjs": "*"
   },
   "resolutions": {
     "modernizr": "~2.x.x"
