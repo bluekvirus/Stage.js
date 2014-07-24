@@ -1,7 +1,20 @@
 Change Log
 ==========
-1.5.1 - 1.6.0 (2014-07-21*)
----------------------------
+1.6.0 (2014-07-24*)
+-------------------
+1. Removed default actions settings from datagrid action cell;
+2. Added wrapper style;
+3. Added btn-outline style;
+
+In progress...
+
+8. Converting theme mockups + sprite preview (_Mockups context);
+9. Adding basic wrapper/heading/box style to default theme;
+10. Adding proxied service support to devserver (http-route-proxy);
+
+
+1.5.1 (2014-07-24)
+------------------
 1. app.config.viewTemplates now defaults to 'static/template';
 2. An empty all.json now ships with all the dist packages;
 3. Build tools now accepts creating ''s (blank files) in build configs;
@@ -9,12 +22,6 @@ Change Log
 5. Refined theme less structure;
 6. Added theme preparation script to tools;
 7. Removed resize, svg, cssprite theme helper scripts;
-
-In progress...
-
-8. Converting theme mockups + sprite preview (_Mockups context);
-9. Adding basic wrapper/heading/box style to default theme;
-10. Adding proxied service support to devserver (http-route-proxy);
 
 
 1.5.0 (2014-07-18)
