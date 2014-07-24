@@ -1,7 +1,6 @@
 ;(function(app){
 
 	app.regional('RemoteTpl', {
-		className: 'container',
 		template: '@test-ct.html',
 		navRegion: 'bottom',
 		onShow: function(){

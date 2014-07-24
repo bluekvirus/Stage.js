@@ -3284,7 +3284,7 @@ var I18N = {};
 
 			initialize: function(options){
 				this.row = options.row;
-				var actions = this.model.get('actions') || [];
+				var actions = this.model.get('actions') || {};
 
 					//default
 					_.each({
@@ -3293,18 +3293,17 @@ var I18N = {};
 							tooltip: 'Preview'
 						},
 						edit: {
-							icon: 'fa fa-edit',
+							icon: 'fa fa-pencil',
 							tooltip: 'Edit'
 						},
 						'delete': {
-							icon: 'fa fa-trash-o',
+							icon: 'fa fa-times',
 							tooltip: 'Delete'
 						}
 					}, function(def, name){
 						if(actions[name]){
 							actions[name] = _.extend(def, actions[name]);
-						}else
-							actions[name] = def;
+						}
 					});
 
 

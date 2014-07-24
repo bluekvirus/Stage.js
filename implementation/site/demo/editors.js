@@ -167,7 +167,6 @@
 
     //////////Form/////////
     app.area('Editors', {
-        className: 'container',
         template: [
             '<div class="row">',
                 '<div class="form form-horizontal">',
@@ -178,11 +177,11 @@
             '<div class="row">',
                 '<div class="col-sm-10 col-sm-offset-2">',
                     '<span class="btn btn-primary" action="submit">Submit</span> ',
-                    '<span class="btn btn-warning" action="validate">Validate</span> ',
+                    '<span class="btn btn-warning btn-outline" action="validate">Validate</span> ',
                     '<span class="btn btn-default" action="test">Test</span> ',
-                    '<span class="btn btn-default" action="test2">Test(Disable/Enable)</span> ',
+                    '<span class="btn btn-default btn-outline" action="test2">Test(Disable/Enable)</span> ',
                     '<span class="btn btn-info" action="info">Inform</span> ',
-                    '<span class="btn btn-info" action="clearinfo">Clear Info</span> ',
+                    '<span class="btn btn-info btn-outline" action="clearinfo">Clear Info</span> ',
                 '</div>',
             '</div>'
         ],

@@ -107,7 +107,6 @@
 	});
 
 	app.regional('Notify', {
-		className: 'container',
 		template: [
 			'<h1>Notification Examples</h1>',
 			'<hr/>',

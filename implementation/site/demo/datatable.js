@@ -1,7 +1,6 @@
 ;(function(app){
 
 	app.area('Datatable', {
-	    className: 'container',
 	    template: [
 	    	'<div region="header"></div>',
 	    	'<div region="table"></div>',
@@ -44,7 +43,8 @@
 	    							//record, columns since action listeners are bound to the current row view
 	    							console.log(this.model, this.collection, this.grid);
 	    						}
-	    					}
+	    					}, 
+	    					delete: {}
 	    				}
 	    			}
 	    		]

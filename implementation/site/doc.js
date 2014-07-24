@@ -1,7 +1,7 @@
 ;(function(app){
 
     app.page('Document', {
-        className: 'container-fluid',
+        className: 'wrapper container-fluid',
         template: [
             '<div class="row">',
                 '<div class="col-sm-offset-1 col-sm-3">',

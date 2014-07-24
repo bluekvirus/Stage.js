@@ -56,7 +56,8 @@ module.exports = function(server){
 			}
 		});
 
-		gaze(_.map(themeFolders, function(t){return t.glob;}), function(err, watcher){
+		//using mode:poll to force detecting changes (OpenSuse will stop watching after the 1st change...)
+		gaze(_.map(themeFolders, function(t){return t.glob;}), {mode: 'poll'}, function(err, watcher){
 			this.on('all', function(e, f){
 				console.log('['.yellow, e, ':'.yellow, f, ']'.yellow);
 				var name = _.compact((f.replace(themesFolder, '')).split('/')).shift();
