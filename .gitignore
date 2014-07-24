@@ -230,3 +230,6 @@ implementation/themes/**/fonts/
 
 #dist donwloads
 implementation/static/resource/default/download/
+
+#un-minified deps
+**/js/lib/dependencies.js
