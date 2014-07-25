@@ -255,8 +255,15 @@
             })
         },
         onShow: function(){
-            this.getRegion('fieldset-a').show(new FieldsetA);
-            this.getRegion('fieldset-b').show(new FieldsetB);
+            this.getRegion('fieldset-a').show(new FieldsetA());
+            this.getRegion('fieldset-b').show(new FieldsetB());
+
+            if(app.currentTheme === 'site')
+                $('input').iCheck({
+                    checkboxClass: 'icheckbox_square',
+                    radioClass: 'iradio_square',
+                });
+
         },
         actions: {
             validate: function($btn){

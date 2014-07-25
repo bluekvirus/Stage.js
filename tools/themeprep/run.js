@@ -117,7 +117,7 @@ hammer.createFolderStructure({
 	        prefix: iconClassPrefix,
 	        spritePath: '../img/sprite.png',
 	        nameMapping: function(fpath){
-	        	var name = fpath.replace(imageFolder, '').split('/').join('-');
+	        	var name = fpath.replace(imageFolder, '').split(/[\/@]/).join('-');
 	        	name = path.basename(name, '.png');
 	        	registry.push(iconClassPrefix + name);
 	        	console.log('found:', '[', name.grey, ']');
@@ -138,7 +138,7 @@ hammer.createFolderStructure({
 				//	background-image: url('../img/texture/' + t);
 				//}
 				t = '/' + t;
-				var name = ['-texture', path.basename(t.split('/').join('-'), '.png')].join('');
+				var name = ['-texture', path.basename(t.split(/[\/@]/).join('-'), '.png')].join('');
 				fs.appendFileSync(lessFilePath, [
 					'','//texture',
 					['.', iconClassPrefix, name].join('') + ' {',
@@ -152,13 +152,10 @@ hammer.createFolderStructure({
 			//2.3 produce img.json to describe img.less for demo purposes
 			//console.log(registry);
 			//[TBI]	
-		
+
+			//3. build the /css/main.css from /less/main.less
+			lessc(themeFolder);
 		});			
 	});
-
-	//3. build the /css/main.css from /less/main.less
-	lessc(themeFolder);
-
-
 });
  

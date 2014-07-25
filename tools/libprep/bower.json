@@ -100,7 +100,8 @@
     "open-sans-fontface": "*",
     "roboto-fontface": "*",
     "ubuntu-fontface": "*",
-    "togetherjs": "*"
+    "togetherjs": "*",
+    "iCheck": "*"
   },
   "resolutions": {
     "modernizr": "~2.x.x"
