@@ -155,12 +155,76 @@
 
 }
 
+// Bordered -------------------------
+.border {
+
+  border-style: solid;
+  border-width: 0;
+  border-color: @base-border-color;
+  
+  &-top {
+    border-top-width: 1px;
+
+    &-lg {
+      border-top-width: 4px;
+    }
+  }
+
+  &-left {
+    border-left-width: 1px;
+
+    &-lg {
+      border-left-width: 4px;
+    }
+  }
+  
+  &-right {
+    border-right-width: 1px;
+
+    &-lg {
+      border-right-width: 4px;
+    }
+  }
+
+  &-bottom {
+    border-bottom-width: 1px;
+
+    &-lg {
+      border-bottom-width: 4px;
+    }
+  }  
+
+  &-full {
+    border-width: 1px;
+
+    &-lg {
+      border-width: 4px;
+    }
+  }
+
+}
 
 /**
  * =================
  * UI Components
  * =================
  */
+
+//Breadcrumbs Reset -----------------
+.breadcrumb {
+  margin: 0;
+}
+
+//Button White --------------------
+.btn-white {
+  background: none;
+  border: 1px solid @gray-lighter;
+
+  &:hover, &:focus, &:active {
+    color: @text-color;
+    border: 1px solid darken(@gray-lighter, 20%);
+  }
+}
 
 //Button Outlined -------------------
 
@@ -201,12 +265,20 @@
   }
 }
 
+//Button Rounded -------------------
+.btn-rounded {
+
+  border-radius: 50px;
+
+}
+
 // Heading ---------------------
 .heading {
 
   padding-left: 1.5em;
   padding-right: 1.5em;
-  border-bottom: 1px solid lighten(@text-color, 60%);
+  padding-bottom: 0.75em;
+  border-bottom: 1px solid @base-border-color;
 
 }
 
@@ -216,7 +288,6 @@
   .heading {
 
     padding-top: 1.25em;
-    padding-bottom: 0.75em;
     
     h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
       margin-top: 0;
@@ -226,6 +297,12 @@
 
     .tools {
       .pull-right;
+
+      .dropdown-menu {
+        left: auto;
+        right: 0;
+        top: auto;
+      }
     }
   }
 
