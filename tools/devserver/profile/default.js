@@ -36,6 +36,17 @@ module.exports = {
 		//multiple themes can be monitored under the watched webroot.
 		//use -name in themes array to exclude.
 		themes: ['default', 'site']
+	},
+
+	//use :false or '' to disable empty-ing all.json upon templates change.
+	tplwatch: '../../implementation/static/template',
+
+	//cors (front-end crossdomain ajax support)
+	crossdomain: true,
+
+	//proxied (back-end request pass-through/foward) -- TBI (through http-route-proxy)
+	proxied: {
+
 	}
 
 };

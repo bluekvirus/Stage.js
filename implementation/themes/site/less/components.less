@@ -6,17 +6,149 @@
  * @updated 2014.07.24
  */
 
+
 /**
- * ===================
+ * =================================
+ * Containers & Outline/Position Aid
+ * =================================
+ */
+
+// Wrapper --------------------------
+.wrapper {
+
+  padding-top: @line-height-computed/2;
+  padding-bottom: @line-height-computed/2;
+
+}
+
+.wrapper-2x {
+
+  padding-top: @line-height-computed;
+  padding-bottom: @line-height-computed;
+
+}
+
+.wrapper-full {
+
+  padding: @line-height-computed/2 @line-height-computed/2;
+
+}
+
+.wrapper-full-2x {
+
+  padding: @line-height-computed @line-height-computed;
+
+}
+
+// Bordered -------------------------
+.border {
+
+  border-style: solid;
+  border-width: 0;
+  border-color: @base-border-color;
+  
+  &-top {
+    border-top-width: 1px;
+
+    &-lg {
+      border-top-width: 4px;
+    }
+  }
+
+  &-left {
+    border-left-width: 1px;
+
+    &-lg {
+      border-left-width: 4px;
+    }
+  }
+  
+  &-right {
+    border-right-width: 1px;
+
+    &-lg {
+      border-right-width: 4px;
+    }
+  }
+
+  &-bottom {
+    border-bottom-width: 1px;
+
+    &-lg {
+      border-bottom-width: 4px;
+    }
+  }  
+
+  &-full {
+    border-width: 1px;
+
+    &-lg {
+      border-width: 4px;
+    }
+  }
+
+}
+
+// Rounded -----------------------
+.rounded {
+
+  border-radius: 15px;
+
+  &-xs {
+    border-radius: 3px;
+  }
+
+  &-sm {
+    border-radius: 6px;
+  }
+
+  &-lg {
+    border-radius: 25px;
+  }
+
+  &-upper {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  &-lower {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+
+}
+
+.circle {
+
+  border-radius: 50%;
+  text-align: center;
+  
+  //use .square(@size) to complete the circle.
+  //use font-size, line-height and padding to center the content.
+
+}
+
+// .center-box(@width, @height) {
+//   .center-block();
+//   position: absolute;
+//   top: 50%;
+//   margin-top: -@heigth;
+//   .size(@width, @height);
+//   //.size() to complete the centered-in-the-page (parent -> position relative) effect
+// }
+
+
+/**
+ * =================================================
  * Editors
- * ===================
+ * =================================================
  */
 
 
 /**
- * ===================
+ * =================================================
  * Widgets/Plugins
- * ===================
+ * =================================================
  */
 
 // Tree ---------------------------------------------------
@@ -123,91 +255,9 @@
 
 
 /**
- * =================
- * Containers
- * =================
- */
-
-// Wrapper --------------------------
-.wrapper {
-
-  padding-top: @line-height-computed/2;
-  padding-bottom: @line-height-computed/2;
-
-}
-
-.wrapper-2x {
-
-  padding-top: @line-height-computed;
-  padding-bottom: @line-height-computed;
-
-}
-
-.wrapper-full {
-
-  padding: @line-height-computed/2 @line-height-computed/2;
-
-}
-
-.wrapper-full-2x {
-
-  padding: @line-height-computed @line-height-computed;
-
-}
-
-// Bordered -------------------------
-.border {
-
-  border-style: solid;
-  border-width: 0;
-  border-color: @base-border-color;
-  
-  &-top {
-    border-top-width: 1px;
-
-    &-lg {
-      border-top-width: 4px;
-    }
-  }
-
-  &-left {
-    border-left-width: 1px;
-
-    &-lg {
-      border-left-width: 4px;
-    }
-  }
-  
-  &-right {
-    border-right-width: 1px;
-
-    &-lg {
-      border-right-width: 4px;
-    }
-  }
-
-  &-bottom {
-    border-bottom-width: 1px;
-
-    &-lg {
-      border-bottom-width: 4px;
-    }
-  }  
-
-  &-full {
-    border-width: 1px;
-
-    &-lg {
-      border-width: 4px;
-    }
-  }
-
-}
-
-/**
- * =================
+ * ===============================================
  * UI Components
- * =================
+ * ===============================================
  */
 
 //Breadcrumbs Reset -----------------
@@ -263,13 +313,6 @@
   &:hover {
     color: @btn-default-color;
   }
-}
-
-//Button Rounded -------------------
-.btn-rounded {
-
-  border-radius: 50px;
-
 }
 
 // Heading ---------------------

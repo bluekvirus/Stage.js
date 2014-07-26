@@ -31,6 +31,6 @@ module.exports = function(server){
 			});
 		}
 		return router;
-	}
+	};
 
-}
+};

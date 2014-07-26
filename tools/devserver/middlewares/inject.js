@@ -16,10 +16,19 @@
  * @created 2014.05.30
  */
 
+var cors = require('cors');
+
 module.exports = function(server){
+
+	var profile = server.get('profile');
 
 	return function(server){
 
+		if(profile.crossdomain){
+			server.use(cors());
+			console.log('[CORS: enabled]'.yellow);
+		}
+		
 		//server.use...
 		//server.use...
 

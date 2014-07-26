@@ -35,16 +35,24 @@ profile = server.set('profile', _.extend({
 	//profile default settings:
 	port: 4000,
 	clients: {},
-}, require(__dirname + '/profile/' + profile))).get('profile');
-	//fix web root(s)' path(s)
+}, require(__dirname + '/profile/' + profile), {
+	root: __dirname,
+	resolve: function(filePath){
+		var relative = filePath.match(/^\//) ? '/' : this.root;
+		return path.resolve(path.join(relative, filePath));
+	}
+}
+)).get('profile');
+
+//fix web root(s)' path(s)
 if(!profile.clients['/']) profile.clients['/'] = '../../implementation';
 _.each(profile.clients, function(filePath, uriName){
-	var relative = filePath.match(/^\//) ? '/' : __dirname;
-	profile.clients[uriName] = path.resolve(path.join(relative, filePath));
+	profile.clients[uriName] = profile.resolve(filePath);
 });
+if(profile.tplwatch) profile.tplwatch = profile.resolve(profile.tplwatch);
 
 //loading...
-var options = {verbose:true, cwd: __dirname};
+var options = {verbose:true, cwd: profile.root};
 load('util', options)
 .then('middlewares', options) //not yet injected
 .then('routers', options) //not yet injected

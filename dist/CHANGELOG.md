@@ -4,9 +4,12 @@ Change Log
 -------------------
 1. Removed default actions settings from datagrid action cell;
 2. Added wrapper style (full, x2);
-3. Added btn-outline style;
+3. Added btn-outline, white;
 4. Added heading style;
 5. Added box style (heading, body);
+6. Added border-ed style (top, left, right, bottom & -lg);
+7. Added rounded, circle style (sm, lg, upper, lower);
+8. Refined tpl-watch and less-watch worker; (removed gaze)
 
 In progress...
 

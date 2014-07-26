@@ -18,7 +18,7 @@ path = require('path'),
 fs = require('fs-extra'),
 less = require('less'),
 colors = require('colors'),
-gaze = require('gaze'),
+globwatcher = require("globwatcher").globwatcher,
 compiler = require('../../shared/less-css.js');
 
 _.str = require('underscore.string');
@@ -57,14 +57,20 @@ module.exports = function(server){
 		});
 
 		//using mode:poll to force detecting changes (OpenSuse will stop watching after the 1st change...)
-		gaze(_.map(themeFolders, function(t){return t.glob;}), {mode: 'poll'}, function(err, watcher){
-			this.on('all', function(e, f){
-				console.log('['.yellow, e, ':'.yellow, f, ']'.yellow);
-				var name = _.compact((f.replace(themesFolder, '')).split('/')).shift();
-				compiler(path.join(themesFolder, name));
+		var watcher = globwatcher(_.map(themeFolders, function(t){return t.glob;}));
+		console.log(('[Themes ' + _.map(themeFolders, function(t){return t.name}) + ': .less files monitored]').yellow, '-', ('lessjs v' + less.version.join('.')).grey);
+
+		function doCompile(e, f){
+			console.log('[Theme file'.yellow, e, ':'.yellow, f, ']'.yellow);
+			var name = _.compact((f.replace(themesFolder, '')).split('/')).shift();
+			compiler(path.join(themesFolder, name));
+		}
+
+		_.each(['added', 'changed', 'deleted'], function(e){
+			watcher.on(e, function(f){
+				doCompile(e, f);
 			});
-			if(!err)
-				console.log(('[Themes ' + _.map(themeFolders, function(t){return t.name}) + ': .less files monitored]').yellow, '-', ('lessjs v' + less.version.join('.')).grey);					
-		});		
+		});
+					
 	});
 };

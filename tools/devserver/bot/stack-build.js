@@ -22,8 +22,9 @@ module.exports = function(server){
 	});
 
 	//mount shared middlewares, see /middlewares/inject.js
+	console.log('[middlewares]', 'processing...');
 	server.middlewares.inject(server);
-	console.log('[middlewares]', 'injected');
+	console.log('[middlewares]', 'injected.');
 
 	//mount routers
 	_.each(server.get('routers'), function(router, mountpath){
