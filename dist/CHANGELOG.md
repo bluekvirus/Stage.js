@@ -10,12 +10,12 @@ Change Log
 6. Added border-ed style (top, left, right, bottom & -lg);
 7. Added rounded, circle style (sm, lg, upper, lower);
 8. Refined tpl-watch and less-watch worker; (removed gaze)
+9. Added mockup loading short-cut to a region in template (view="@tpl.html")
 
 In progress...
 
-8. Converting theme mockups + sprite preview (_Mockups context);
-9. Adding basic wrapper/heading/box style to default theme;
-10. Adding proxied service support to devserver (http-route-proxy);
+10. Converting theme mockups + sprite preview (_Mockups context);
+11. Adding proxied service support to devserver (http-route-proxy);
 
 
 1.5.1 (2014-07-24)

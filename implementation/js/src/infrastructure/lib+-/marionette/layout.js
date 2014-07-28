@@ -5,7 +5,7 @@
  * Fixed
  * -----
  * auto region detect and register by region="" in template
- * auto regional view display by attribute view="" in template
+ * auto regional view display by attribute view="" in template (+@mockup.html)
  * change a region's view by trigger 'region:load-view' on that region, then give it a view name. (registered through B.M.Layout.regional() or say app.create('Regional', ...))
  * 
  * 
@@ -17,6 +17,7 @@
  * @author Tim.Liu
  * @create 2014.02.25
  * @update 2014.07.15 (+chainable nav region support)
+ * @update 2014.07.28 (+view="@mockup.html" support)
  */
 
 ;(function(app){
@@ -151,16 +152,26 @@
 					if(this.debug) this[r].$el.html('<p class="alert alert-info">Region <strong>' + r + '</strong></p>'); //give it a fake one.
 					this[r].listenTo(this[r], 'region:load-view', function(name, options){ //can load both view and widget.
 						if(!name) return;
+						//Widget?
 						if(app.Core.Widget.has(name)) {
 							this.show(app.Core.Widget.create(name, options));
 							return;
 						}
+						//Named View?
 						var View = app.Core.Regional.get(name);
-						if(View)
+						if(View){
 							this.show(new View(options));
-						else
-							//throw new Error('DEV::Layout::View required ' + name + ' can NOT be found...use app.create(\'Regional\', {name: ..., ...}).');
-							console.warn('DEV::Layout::View required ' + name + ' can NOT be found...use app.create(\'Regional\', {name: ..., ...}).');
+							return;
+						}
+						//Template mockups?
+						if(_.string.startsWith(name, '@')){
+							this.show(app.view({
+								template: name,
+								type: 'Layout'
+							}, true));
+						}
+						//throw new Error('DEV::Layout::View required ' + name + ' can NOT be found...use app.create(\'Regional\', {name: ..., ...}).');
+						console.warn('DEV::Layout::View required ' + name + ' can NOT be found...use app.create(\'Regional\', {name: ..., ...}).');
 					});
 					this[r].trigger('region:load-view', this[r].$el.attr('view')); //found corresponding View def.
 

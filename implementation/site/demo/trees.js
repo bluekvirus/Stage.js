@@ -25,7 +25,7 @@
 		className: 'container',
 	    template: [
 	    	'<p class="alert alert-info"><strong>Note:</strong> Bootstrap 3 has removed multi-level dropdown-menu support...</p>',
-	    	'<div class="row">',
+	    	'<div class="row wrapper">',
 		    	'<div region="left" class="col-md-4"></div>',
 		    	'<div class="col-md-4">',
 		    		'<div region="mid"></div>',
