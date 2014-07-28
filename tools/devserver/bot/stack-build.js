@@ -6,7 +6,8 @@
  */
 var express = require('express'),
 path = require('path'),
-_ = require('underscore');
+_ = require('underscore'),
+cors = require('cors');
 
 module.exports = function(server){
 
@@ -21,8 +22,24 @@ module.exports = function(server){
 		console.log('[static/public]', uriName.yellow, '[', profile.clients[uriName], ']');
 	});
 
-	//mount shared middlewares, see /middlewares/inject.js
-	console.log('[middlewares]', 'processing...');
+	//mount pre-defined middlewares
+	console.log('[middlewares]', 'processing...', '[pre-defined]'.grey);
+	//1. cors
+	if(profile.crossdomain){
+		server.use(cors());
+		console.log('[CORS: enabled]'.yellow);
+	}
+	//2. proxied data services
+	_.each(profile.proxied, function(config, uri){
+		if(!config.enabled) return;
+
+		//TBI: use http-route-proxy here(from middlewares/proxy.js)
+
+		console.log('[Proxied API]:'.yellow, uri, '-->', config.host, ':', config.port || 80);
+	});
+
+	//mount customized (developer added) middlewares, see /middlewares/inject.js
+	console.log('[middlewares]', 'processing...', '[customized]'.grey);
 	server.middlewares.inject(server);
 	console.log('[middlewares]', 'injected.');
 

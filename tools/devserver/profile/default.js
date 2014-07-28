@@ -46,7 +46,19 @@ module.exports = {
 
 	//proxied (back-end request pass-through/foward) -- TBI (through http-route-proxy)
 	proxied: {
-
+		'/api': {
+			enabled: false,
+			https: false, //default on http requests
+			host: '172.22.16.100',
+			port: '8080',
+			//either
+			username: 'admin',
+			password: '',
+			//or
+			token: ''
+		},
+		//can be multiple
+		//'/other': {}, '/special': {}, '/3rd-party': {} ...
 	}
 
 };

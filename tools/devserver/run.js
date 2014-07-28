@@ -37,6 +37,7 @@ profile = server.set('profile', _.extend({
 	clients: {},
 }, require(__dirname + '/profile/' + profile), {
 	root: __dirname,
+	///////////////////use this to resolve all the path/////////////////// 
 	resolve: function(filePath){
 		var relative = filePath.match(/^\//) ? '/' : this.root;
 		return path.resolve(path.join(relative, filePath));
