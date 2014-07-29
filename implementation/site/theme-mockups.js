@@ -13,7 +13,10 @@
 			{tpl: 'heading.html', className: 'heading'},
 
 			//boxes
-			{tpl: 'boxes.html', className:'row'}
+			{tpl: 'boxes.html', className:'row'},
+
+			//buttons
+			{tpl: 'buttons.html',}
 
 		],
 

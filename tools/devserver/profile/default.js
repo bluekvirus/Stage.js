@@ -44,18 +44,20 @@ module.exports = {
 	//cors (front-end crossdomain ajax support)
 	crossdomain: true,
 
-	//proxied (back-end request pass-through/foward) -- TBI (through http-route-proxy)
+	//proxied (back-end request pass-through/foward) -- (through http-proxy)
 	proxied: {
 		'/api': {
-			enabled: false,
+			//enabled: true,
 			https: false, //default on http requests
 			host: '172.22.16.100',
 			port: '8080',
-			//either
-			username: 'admin',
+			username: '',
 			password: '',
-			//or
-			token: ''
+			headers: {
+				//'Authorization': 'API token',
+				'Origin': 'abc.com',
+				//...
+			}
 		},
 		//can be multiple
 		//'/other': {}, '/special': {}, '/3rd-party': {} ...

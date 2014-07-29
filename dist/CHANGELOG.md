@@ -11,11 +11,11 @@ Change Log
 7. Added rounded, circle style (sm, lg, upper, lower);
 8. Refined tpl-watch and less-watch worker; (removed gaze)
 9. Added mockup loading short-cut to a region in template (view="@tpl.html")
+10. Added proxied service support to devserver (http-proxy);
 
 In progress...
 
-10. Converting theme mockups + sprite preview (_Mockups context);
-11. Adding proxied service support to devserver (http-route-proxy);
+11. Converting theme mockups + sprite preview (_Mockups context);
 
 
 1.5.1 (2014-07-24)

@@ -7,7 +7,9 @@
 var express = require('express'),
 path = require('path'),
 _ = require('underscore'),
-cors = require('cors');
+cors = require('cors'),
+httpProxy = require('http-proxy'),
+colors = require('colors');
 
 module.exports = function(server){
 
@@ -29,14 +31,42 @@ module.exports = function(server){
 		server.use(cors());
 		console.log('[CORS: enabled]'.yellow);
 	}
-	//2. proxied data services
+
+	//2. proxied data services (routes proxy)
 	_.each(profile.proxied, function(config, uri){
 		if(!config.enabled) return;
 
-		//TBI: use http-route-proxy here(from middlewares/proxy.js)
-
-		console.log('[Proxied API]:'.yellow, uri, '-->', config.host, ':', config.port || 80);
-	});
+		var target = [
+				'http', 
+				(config.https?'s':''),
+				'://',
+				(config.username?([config.username, config.password].join(':') + '@'):''),
+				config.host, ':', config.port || 80
+			].join('');		
+		var proxy = httpProxy.createProxyServer({
+			target: target
+		});
+		///////////////NOT WORKING ATM (see work-around)///////////
+		proxy.on('proxyReq', function(proxyReq, req, res, options){
+			console.log('???');
+		});
+		///////////////////////////////////////////////////////////
+		proxy.on('proxyRes', function(res){
+			console.log('[Forwarding]'.yellow, res.req.path, '=>', target);
+		});
+		proxy.on('error', function(e){
+			console.warn('[Forwarding Error]'.red, e);
+		});
+		server.all(uri + '/*', function(req, res){
+			///////////////work-around////////////////
+			_.each(config.headers, function(val, key){
+				req.headers[key] = val;
+			});
+			//////////////////////////////////////////
+			proxy.web(req, res);
+		});
+		console.log('[Proxied API]:'.yellow, uri, '-->', target);
+	});	
 
 	//mount customized (developer added) middlewares, see /middlewares/inject.js
 	console.log('[middlewares]', 'processing...', '[customized]'.grey);

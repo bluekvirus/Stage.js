@@ -1750,6 +1750,7 @@ window.onerror = function(errorMsg, target, lineNum){
 								template: name,
 								type: 'Layout'
 							}, true));
+							return;
 						}
 						//throw new Error('DEV::Layout::View required ' + name + ' can NOT be found...use app.create(\'Regional\', {name: ..., ...}).');
 						console.warn('DEV::Layout::View required ' + name + ' can NOT be found...use app.create(\'Regional\', {name: ..., ...}).');
