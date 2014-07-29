@@ -1,6 +1,13 @@
 Change Log
 ==========
-1.6.0 (2014-07-24*)
+1.6.1 (2014-07-29*)
+-------------------
+In progress...
+
+1. Converting theme mockups + sprite preview (_Mockups context);
+
+
+1.6.0 (2014-07-29)
 -------------------
 1. Removed default actions settings from datagrid action cell;
 2. Added wrapper style (full, x2);
@@ -12,10 +19,6 @@ Change Log
 8. Refined tpl-watch and less-watch worker; (removed gaze)
 9. Added mockup loading short-cut to a region in template (view="@tpl.html")
 10. Added proxied service support to devserver (http-proxy);
-
-In progress...
-
-11. Converting theme mockups + sprite preview (_Mockups context);
 
 
 1.5.1 (2014-07-24)
