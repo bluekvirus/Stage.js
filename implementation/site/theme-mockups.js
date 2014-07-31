@@ -5,9 +5,6 @@
 		className: 'wrapper-full container-fluid',
 
 		mockups: [
-			//navbars
-			{tpl: 'nav-bar.html', className: 'navbar-default'},
-			{tpl: 'nav-bar.html', className: 'navbar-inverse'},
 
 			//headings
 			{tpl: 'heading.html', className: 'heading'},
@@ -15,8 +12,18 @@
 			//boxes
 			{tpl: 'boxes.html', className:'row'},
 
+			//navbars
+			{tpl: 'nav-bar.html', className: 'navbar-default'},
+			{tpl: 'nav-bar.html', className: 'navbar-inverse'},
+
 			//buttons
-			{tpl: 'buttons.html',}
+			{tpl: 'buttons.html',},
+
+			//typography
+			{tpl: 'typography.html'},
+
+			//indicators (alert, lable, badge and progress bar)
+			{tpl: 'indicators.html'}
 
 		],
 
