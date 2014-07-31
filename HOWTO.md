@@ -1730,6 +1730,8 @@ If you are using the **starter-kit** version, please go download the kit again a
 
 Make sure you have saved your `/tools/build/config.dist.js` and `/tools/devserver/` related content (e.g `profile`, `middlewares` and `routers`).
 
+You should also keep an eye on `/implementation/index.html` in case `/tools/build` updates. The build tool might change its way of reading and analyzing the index file to support more build/combine options. 
+
 ###What should I put in `/static`?
 `/resource` should contain static resources per locale. (per xx_XX folder, `/default` for locale independent)
 
