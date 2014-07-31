@@ -21,6 +21,23 @@ What's next?
 * Use [gulpjs](http://gulpjs.com/) in devserver.
 
 
+Installation
+------------
+###Framework
+(compiled index.html, js and css only)
+```
+bower install stage
+```
+
+###Starter-Kit 
+(base project structure with development theme/tools bundled)
+[download](implementation/static/resource/default/download/stagejs-starter-kit.tar.gz)
+
+Follow the documentation link below to see how you can quickly start your project with this package.
+
+If you are on Windows you might need [7z](http://www.7-zip.org/) to open it.
+
+
 Documentation
 -------------
 See [documentation](http://bluekvirus.github.io/Stage.js/#navigate/Document)
@@ -51,7 +68,7 @@ This should fire-up the development server. It will serve the `/implementation` 
 ###Develop, Demo & Tryout
 Change code under `/implementation/js/src` to test and contribute your ideas to this framework.
 
-The `/implementation` folder is also the product intro & download page of **Stage.js** releases. You can go to change the code under `/implementation/site`, it is the application for **Stage.js**'s documentation site.
+The `/implementation` folder is also the product intro & download page of **Stage.js** releases. You can go change the code under `/implementation/site`, it is the application for **Stage.js**'s documentation site.
 
 Look closely to the `/implementation/index.html` file, it not only defines the loading sequence of all the src files but also defines which one goes to which build target in the build process.
 
