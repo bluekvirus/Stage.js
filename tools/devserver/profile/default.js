@@ -47,7 +47,8 @@ module.exports = {
 	//proxied (back-end request pass-through/foward) -- (through http-proxy)
 	proxied: {
 		'/api': {
-			//enabled: true,
+			enabled: true,
+			path: '', //can change /api to /abc on targeted host
 			https: false, //default on http requests
 			host: '172.22.16.100',
 			port: '8080',

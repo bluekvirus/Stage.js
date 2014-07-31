@@ -3,6 +3,7 @@
  *
  * @author Tim.Liu
  * @created 2014.04.20
+ * @updated 2014.07.31
  */
 var express = require('express'),
 path = require('path'),
@@ -35,6 +36,7 @@ module.exports = function(server){
 	//2. proxied data services (routes proxy)
 	_.each(profile.proxied, function(config, uri){
 		if(!config.enabled) return;
+		config.path = config.path || uri;
 
 		var target = [
 				'http', 
@@ -52,7 +54,7 @@ module.exports = function(server){
 		});
 		///////////////////////////////////////////////////////////
 		proxy.on('proxyRes', function(res){
-			console.log('[Forwarding]'.yellow, res.req.path, '=>', target);
+			console.log('[Forwarding]'.yellow, res.req.path, '=>', target, config.path);
 		});
 		proxy.on('error', function(e){
 			console.warn('[Forwarding Error]'.red, e);
@@ -63,9 +65,10 @@ module.exports = function(server){
 				req.headers[key] = val;
 			});
 			//////////////////////////////////////////
+			req.url = req.path.replace(uri, config.path);
 			proxy.web(req, res);
 		});
-		console.log('[Proxied API]:'.yellow, uri, '-->', target);
+		console.log('[Proxied API]:'.yellow, uri, '-->', target, config.path);
 	});	
 
 	//mount customized (developer added) middlewares, see /middlewares/inject.js

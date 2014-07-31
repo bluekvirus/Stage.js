@@ -6,7 +6,7 @@ Building multi-context rich-client web application front-end in the modern way.
 
 Current version
 ---------------
-**@1.6.0**
+**@1.6.1**
 ([Why is it version-ed like this?](http://semver.org/))
 
 
@@ -1623,8 +1623,9 @@ Themes are located at `/implementation/themes/[your theme name]/` with the follo
 >     - main.css -- do *NOT* change this one directly
 > * /fonts -- prepared by the themeprep tool
 > * /img
->     - /texture
+>     - /texture -- these will/should not be included in the css-spirte
 >     - /icons
+>     - /pics
 >     - /logo
 > * /less
 >     - img.less -- prepared by the themeprep tool (textures, icons & logos)
@@ -1648,11 +1649,9 @@ One perk of using LESS is that you can define each .less to do only one thing, e
 * main.less - glue(@include) the above .less files and let the compiler compile into main.css;
 
 ###Assets preparation
-[TBC]
-
 Fonts, logos, icons and textures are the 4 major types of asset you will need when it comes to making themes. There is a theme preparation script that we prepared for you to get started quickly when building a new theme.
 
-See the **Theme Preparation** in the **Tools** section below for more details.
+See the **Theme Preparation** in the **Tools** section below for more details. Please run this script whenever you want to create a new theme.
 
 ###Preview
 There is a theme mockup elements preview context at `#navigate/_Mockups`.
@@ -1699,9 +1698,15 @@ Read more about [express.js](http://expressjs.com/) and [express-load](https://g
 
 
 ###Theme Preparation
-Use `/tools/themeprep/run.js` to prepare your theme with required fonts and images (icons, texture, logo and pics).
+Use `/tools/themeprep` to prepare your theme with required fonts and images (icons, texture, logo and pics). This tool will create required folders and copy needed fonts for you. It will also combine css-sprite from the image folders each time you run it and produce `img.less` to be included in your `main.less`.
 
-[TBC]
+```
+//under /tools/themeprep
+node run [your theme name] - default on 'default'
+
+//create a new theme
+node run [your new theme name] - if theme name not found, it will be created
+```
 
 
 FAQs
@@ -1716,10 +1721,14 @@ Include your libraries after `dependences.js` in `/implementation/index.html`.
 Alternatively, you can always use a *CDN* (Content Delivery Network) to load the JavaScript libraries into your index.html (e.g [jsDelivr](http://www.jsdelivr.com/)) However, this will affect the build process since these libraries will not be combined if they are not from local.
 
 ###Upgrade/Update
-Download and replace `stage.js` to update the infrastructure through `bower`:
+Download and replace `stage.js` to update the infrastructure or through `bower`:
 ```
+//under '[kit]/implementation/'
 bower update stage
 ```
+If you are using the **starter-kit** version, please go download the kit again and replace `/tools` folder and `/implementation/bower.json` as well. 
+
+Make sure you have saved your `/tools/build/config.dist.js` and `/tools/devserver/` related content (e.g `profile`, `middlewares` and `routers`).
 
 ###What should I put in `/static`?
 `/resource` should contain static resources per locale. (per xx_XX folder, `/default` for locale independent)

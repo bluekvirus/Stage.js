@@ -5,17 +5,15 @@
  * 2. Process logo & icons & pics - merge them into [theme]/img/sprite.png & [theme]/img/img.less
  * 3. Process texture - collect them into [theme]/img/img.less too (textures can't be put into sprite!)
  * 4. Build *.less into /css/main.css
+ * 5. Create a new theme based on theme 'default'
  *
  * Usage
  * -----
  * Refreshing the /css, /fonts & /img folder content of a certain theme with the latest changes. 
- *
- * Note
- * ----
- * Use ./helpers/resize.js to resize the logo/icon or even pics before running this preparation sequence.
+ * or
+ * Create a new theme based on theme 'default'.
  *
  * Theme structures, one based on the other, in sequence:
- * 
  * Theme Assets
  * ------------
  * * Fonts
@@ -39,6 +37,7 @@
  *
  * @author Tim.Liu
  * @created 2014.07.21
+ * @updated 2014.07.31
  * 
  */
 
@@ -50,7 +49,8 @@ hammer = require('../shared/hammer.js'),
 lessc = require('../shared/less-css.js'),
 colors = require('colors'),
 nsg = require('node-sprite-generator'),
-glob = require('glob');
+glob = require('glob'),
+os = require('os');
 _.string = require('underscore.string');
 
 program
@@ -63,12 +63,20 @@ program
 	.parse(process.argv);
 
 //check target theme name, default to 'default'
-var theme = program.args[0];
-if(!theme) {
-	theme = 'default';
-}
+var theme = program.args[0] || 'default';
 var themeFolder = path.join(_.string.startsWith(program.base, '/')?'':__dirname, program.base, theme);
 console.log('Preparing Theme:'.yellow, theme);
+var baseTheme = 'default';
+
+if(!fs.existsSync(themeFolder)){
+	console.log('Creating new theme from'.yellow, baseTheme, '==>', theme);
+	if(!fs.existsSync(path.join(program.base, baseTheme))) {
+		console.log('[Error:] We can NOT create the new theme for you since the base theme'.red, baseTheme.yellow, 'can NOT be found'.red);
+		return;
+	}
+	fs.ensureDirSync(themeFolder);
+	fs.copySync(path.join(program.base, baseTheme, 'less'), path.join(themeFolder, 'less'));
+}
 
 //0. ensure theme folder structures
 hammer.createFolderStructure({
@@ -93,9 +101,9 @@ hammer.createFolderStructure({
 		console.log('[Font]'.yellow, name, '==>'.grey, fontsFolder + '/' + name);
 	});
 
-	//2.pre - you might what to use the ./helpers/resize.js to resize the images in /logo, /icons and /pics of /img
+	//2.pre - you might want to resize the images in /logo, /icon and /pic under /img first
 	//2. process the /img folder to produce sprite.png (logo, icons, pics) and img.less (+ texture)
-	console.log('[Tip:'.yellow, 'You might want to run ./helpers/resize.js on <your theme>/img/icons folder before making css-sprite here'.grey,']'.yellow);
+	console.log('[Tip:'.yellow, 'You might want resize /img/icons folder content before making css-sprite here'.grey,']'.yellow);
 	//2.1 make sprite.png and img.less
 	console.log('[CSS Sprite]'.yellow, 'processing', program.sprites, 'and /texture under /img', '(.png files only)'.yellow);
 	
@@ -104,8 +112,17 @@ hammer.createFolderStructure({
 	registry = [], //remember the sprite image elements
 	lessFilePath = path.join(imageFolder, 'img.less');
 	
+	var imgFolderGlobs = _.map(program.sprites, function(folder){ return path.join(imageFolder, folder, '**/*.png'); });
+	if(_.every(imgFolderGlobs, function(g){
+		return glob.sync(g).length === 0;
+	})){
+		//jump to 3. build the /css/main.css from /less/main.less
+		lessc(themeFolder);
+		return;
+	}
+
 	nsg({
-	    src: _.map(program.sprites, function(folder){ return path.join(imageFolder, folder, '**/*.png') }),
+	    src: imgFolderGlobs,
 	    spritePath: path.join(imageFolder, 'sprite.png'),
 	    stylesheetPath: lessFilePath,
 	    layoutOptions: {

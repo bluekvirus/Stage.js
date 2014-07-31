@@ -1,6 +1,8 @@
-Stage.js
+Stage.js     v1.6.1
 ===================
-This project produces **Stage.js** - an infrastructure for building modern web application client with many contexts (e.g a data-heavy administration app).
+This project produces **Stage.js** - an infrastructure for building modern web application client with many contexts (e.g a data-heavy administration app). In other words, we solve this problem for you:
+
+<img src="raw/master/implementation/static/resource/default/diagram/Diagram-1.png" alt="UI/UX Problems" class="center-block"></img>
 
 
 What's next?
@@ -19,34 +21,67 @@ What's next?
 * Use [gulpjs](http://gulpjs.com/) in devserver.
 
 
-Build
+Documentation
 -------------
+See [documentation](http://bluekvirus.github.io/Stage.js/#navigate/Document)
+
+
+Contribute
+----------
+Fork/Clone the project and tweak the code locally, then contribute by making a pull request so you can push the change in.
+
+###Prepare
+After cloning the project, you should go to `/tools` and run these commands:
 ```
+//1. prepare bower packages
+//under /tools/libprep
+bower update
+node run all
+
+//2. prepare npm packages
+//under /tools
+npm install
+
+//3. fire up dev server
+//under /tools
+[sudo] npm start
+```
+This should fire-up the development server. It will serve the `/implementation` folder as web root on the port define by `/tools/devserver/profile/default`. Please go check the content of this profile config file before starting. It has some nice middlewares and auto-change-detectors there you can switch on/off to make the development a lot easier.
+
+###Develop, Demo & Tryout
+Change code under `/implementation/js/src` to test and contribute your ideas to this framework.
+
+The `/implementation` folder is also the product intro & download page of **Stage.js** releases. You can go to change the code under `/implementation/site`, it is the application for **Stage.js**'s documentation site.
+
+Look closely to the `/implementation/index.html` file, it not only defines the loading sequence of all the src files but also defines which one goes to which build target in the build process.
+
+###Modify theme
+Please go check the `/implementation/themes/default` basic theme package and follow instructions in the `/less/main.less` over there. You can easily switch to use other base themes offered by [bootswatch](http://bootswatch.com/) (based on Bootstrap 3) to quickly build up your own.
+
+You can always refresh existing theme or start a new one by using the theme-prep tool under `/implementation/tools/themeprep`.
+
+
+Distribute
+----------
+###Build
+```
+//0. change version numbers
+README.md, HOWTO.md, CHANGELOG.md and libprep/bower.json
+
 //1. update libs through tools/libprep/
 bower update
-node buildify.js all
+node run all
 
-//2. copy updated fonts from bootstrap and fontawesome into themes
+//2. [optional] update themes through tools/themeprep/
+node run 
+node run site
 
-//3. build both distributions through tools/build
+//3. build all distributions through tools/build
 ./shortcut.sh
 ```
-See in `tools/build/dist` and `dist` for details. The shortcut command also builds the project site github page.
 
-
-Deploy-able
------------
-The `/implementation` folder is also servable as a product intro & download page of **Stage.js** releases.
-
-
-Core Concepts & Workflow
-----------------------
-See 'implementation/HOWTO.md'
-
-
-Tooling
--------
-See `/tools`
+###Deploy
+See in `tools/build/dist` and `dist` for details. The shortcut command also builds the project site (as its github page).
 
 
 License
@@ -54,87 +89,3 @@ License
 Copyright 2013 - 2014 Tim (Zhiyuan) Liu. 
 Under the [MIT](http://opensource.org/licenses/MIT) License.
 
-
-Notes
-=====
-Continuous Integration
-----------------------
-###gitlab_ci fix: trouble shooting
-
-####1. Allow guest ssh to clone repo in build
-(since we might have changed the host name during gitlab installation.)
-
-`sudo su - gitlab_ci -c "ssh-keygen -R [your host name or ip, e.g: 172.22.4.24]"`
-
-or
-
-`sudo su - gitlab_ci -c "ssh git@[your host name or ip, e.g: 172.22.4.24]"`
-
-and then accept to add host to known hosts.
-
-
-####2. build script format
-`cmd1 && cmd2 && cmd3 && ... && cmd4 &`
-
-Do **NOT** hang the build script, use `&` if needs be or avoid at all times.
-
-*Class.extend*
-----------------------
-Mind the prototypical (chain) inheritance, if B = A.extend({}) and then C = B.extend({}), changing B through B' = B.extend({+ properties}) will **NOT** affect C with newly added properties in B'.prototype, since this new B' is not the one used to create the C.prototype [coz C.prototype = new B() previously in C = B.extend({})]. Use _.extend(B.prototype) instead. _.extend(B'.prototype) will not affect previously/newly created C instances.
-
-New C() will still call the B/B'.apply(this, args) to create a new instance of itself [coz C.constructor = function(){B/B'.apply(this, args)}], thus B' = B.extend({* constructor}) can work in Backbone since this B' function will be executed again whenever a new C() is called. However, the prototypical chain B->C is now broken. C will have to extend from B' again to pick up _.extend(B'.prototype, {...}) added properties. (C's descendents will have to do the extend along the prototypical chain all over again...)
-
-Note that Backbone define its special inheritance method extend({}) to accept {constructor} overridden, like this:
-```
-...
-    // The constructor function for the new subclass is either defined by you
-    // (the "constructor" property in your `extend` definition), or defaulted
-    // by us to simply call the parent's constructor.
-    if (protoProps && _.has(protoProps, 'constructor')) {
-      child = protoProps.constructor;
-    } else {
-      child = function(){ return parent.apply(this, arguments); };
-    }
-...
-```
-This is why B' = B.extend({* constructor}) works, it is never to change B.prototype.constructor, but to directly change B. This is how js works. When a function (like B) is defined, B.prototype.constructor gets created, it is just a property, changing it will not affect the way *new* B() behaves. B will still be called instead of the *changed* B.prototype.constructor, if you ever tried to change it.
-
-Note that by doing C.prototype = new B' again after B' = B.extend() will amend the broken prototypical chain for C and C only, it will not work for D (D = C.extend()) because chain C->D is now broken... D will suffer from possible property lost.
-
-However, Backbone supports changing B.prototype.constructor to affect C without affecting new B instances. Since all Backbone classes use parent.prototype.constructor.apply() instead of just parent.apply() like in its extend method (supported by the extend method itself, see above code block)
-
-Note that You can always augment a new B() by _.extend(B.prototype, {+ properties}) or (new B())[+ property] = ...; Only the former can affect C (C = B.extend()) since C.prototype = new B() and every instance of B will have it's property inherited from B.prototype. (The prototypical chain is walked dynamically upon searching of a property or method, so a later change to the B.prototype can still affect previously created B and C instances, you can think of B.prototype as a symbolic ref which will be interpreted each time the chain-walking-searching happens)
-
-Again, remember changing B.prototype.constructor will not bring wanted effect as B' = B.extend({*constructor}) would. And after B' = B.extend({* constructor}), if you still want _.extend(B'.prototype) to mean something in C, move it up before B' = B.extend({* constructor});
-
-_.extend(X.prototype) will affect both already and newly created instances of X and those extended from X.
-
-Don't mess up the chain by just re-assigning X.prototype (since it will break the chain). Do 'X = Y(){...} and then X'.prototype = new X and lastly X'.prototype.constructor = X'. If you want to add more property to Z (Z = X.extend) through X', put altered construction code in Y(){} and add new property to Z through _.extend(X.prototype) instead of on X'. If you don't need to alter X itself, **in Backbone**, just do X.prototype.constructor = Y(){ ...; X.apply(this, arguments);}, this will only affect new instances of X's descendants.
-
-
-*Ghost View*
---------------------
-This is caused by removing a view's html but leaving the event listeners 'on'... Thus make sure you remove a view's html together with the event listeners by invoking the `view.close()`(Marionette) method, which will in turn invoke the `view.undelegateEvents()`(Backbone) method which will further grab `$.off`(jQuery) to clean up the listeners.
-
-Note that calling `region.show()` will automatically `close()` the previously shown view object, the view object closed will still exist in the js runtime, if you somehow decide to `show()` it again, you need to manually call `view.delegateEvents()` to re-activate the event listeners.
-
-In other words, if you `show()` an old view without re-`new()` it, you will have to hook up the events again using `view.delegateEvents()`.
-
-Also, please use the `events:{...}` block to register listeners in a view definition, stop using `$.on()` in case you forgot to use `$.off()`.
-
-If you have to use `$.on()` use it in a delegated form (on a parent dom object).
-
-
-IE(6-9)
----------------
-Before IE10, some efforts are still needed before the web app can work on an IE browser. We've prepared to add the following lib/tool to accommodate this in the future: (though we don't want to...)
-
-1. selectivizr.js - client libs (already added in bower.json, not in use) We need to disable our app theme-roller for IE after adding this into index.html.
-```
-<!--[if (gte IE 6)&(lte IE 8)]>
-  <script type="text/javascript" src="selectivizr.js"></script>
-  <noscript><link rel="stylesheet" href="[fallback css]" /></noscript>
-<![endif]-->
-```
-
-2. fixmyjs - client tools npm (already added in package.json, not in use) Need to put it into both build and spawn tool (shared/hammer.js) before js minification. This will fix the extra commas that IE complains about.
