@@ -1,10 +1,17 @@
 Change Log
 ==========
-1.6.1 (2014-07-29*)
+1.6.2 (2014-07-31*)
 -------------------
 In progress...
 
-1. Converting theme mockups + sprite preview (_Mockups context);
+x. Converting theme mockups + sprite preview (_Mockups context);
+
+
+1.6.1 (2014-07-31)
+-------------------
+1. Fixed Windows_NT support in devserver (*-watch);
+2. Fixed proxied service path redirect in devserver (/api -> /abc);
+3. Fixed error in themeprep tool when /img/** folders are empty;
 
 
 1.6.0 (2014-07-29)
