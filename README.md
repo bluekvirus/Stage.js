@@ -31,7 +31,7 @@ bower install stage
 
 ###Starter-Kit 
 (base project structure with development theme/tools bundled)
-[download](implementation/static/resource/default/download/stagejs-starter-kit.tar.gz)
+[download](http://bluekvirus.github.io/Stage.js/static/resource/default/download/stagejs-starter-kit.tar.gz)
 
 Follow the documentation link below to see how you can quickly start your project with this package.
 
