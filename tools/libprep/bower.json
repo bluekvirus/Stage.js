@@ -66,7 +66,8 @@
     "open-sans-fontface": "*",
     "roboto-fontface": "*",
     "ubuntu-fontface": "*",
-    "animate.css": "*"
+    "animate.css": "*",
+    "lesshat": "*"
   },
   "dependencies": {
     "spin.js": "*",
@@ -96,6 +97,7 @@
     "pure": "*",
     "foundation": "*",
     "animate.css": "*",
+    "lesshat": "*",
     "bootswatch": "~3.x.x",
     "open-sans-fontface": "*",
     "roboto-fontface": "*",

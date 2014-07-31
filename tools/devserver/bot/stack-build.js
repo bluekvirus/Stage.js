@@ -65,7 +65,9 @@ module.exports = function(server){
 				req.headers[key] = val;
 			});
 			//////////////////////////////////////////
-			req.url = req.path.replace(uri, config.path);
+			
+			//Warning: Don't use req.path here, it is read-only and will not contain query params.
+			req.url = req.url.replace(uri, config.path);
 			proxy.web(req, res);
 		});
 		console.log('[Proxied API]:'.yellow, uri, '-->', target, config.path);
