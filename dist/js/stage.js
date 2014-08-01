@@ -3151,8 +3151,14 @@ var I18N = {};
 			itemViewEventPrefix: 'cell',
 			tagName: 'tr',
 			triggers: { //forward DOM events to row
-				'click': 'clicked',
-				'dblclick': 'dblclicked'
+				'click': {
+					event: 'clicked',
+					preventDefault: false //for cell elements to work properly (checkbox/radio/<anchor/>)
+				},
+				'dblclick': {
+					event: 'dblclicked',
+					preventDefault: false
+				}
 			},
 			initialize: function(options){
 				this.grid = options.body.parentCt; //give each row the grid view ref.

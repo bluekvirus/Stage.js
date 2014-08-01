@@ -2,9 +2,13 @@ Change Log
 ==========
 1.6.2 (2014-07-31*)
 -------------------
+1. Fixed row event triggers intercept issue in Datagrid.
+2. Converted theme mockups to _Mockups context.
+
 In progress...
 
-x. Converting theme mockups + sprite preview (_Mockups context);
+x. + fieldset style;
+x. + sprite preview (_Mockups context);
 
 
 1.6.1 (2014-07-31)

@@ -12,6 +12,9 @@
 			//boxes
 			{tpl: 'boxes.html', className:'row'},
 
+			//containers
+			{tpl: 'containers.html'},			
+
 			//navbars
 			{tpl: 'nav-bar.html', className: 'navbar-default'},
 			{tpl: 'nav-bar.html', className: 'navbar-inverse'},
@@ -23,20 +26,39 @@
 			{tpl: 'typography.html'},
 
 			//indicators (alert, lable, badge and progress bar)
-			{tpl: 'indicators.html'}
+			{tpl: 'indicators.html'},
+
+			//navigators
+			{tpl: 'navs.html'},
+
+			//popups & dialogs
+			{tpl: 'dialogs.html', onShow: function(){
+				this.$el.find('[data-toggle="popover"]').popover();
+				this.$el.find('[data-toggle="tooltip"]').tooltip();
+			}},
+
+			//table
+			{tpl: 'table.html'},
+
+			//forms
+			{tpl: 'forms.html'}
 
 		],
 
 		onShow: function(){
 			_.each(this.mockups, function(m){
-
-				this.$el.append(app.view({
+				var view = app.view({
 					className: 'wrapper-full',
 					template: '@mockups/' + m.tpl,
 					onRender: function(){
 						this.$el.find('> div').addClass(m.className);
+					},
+					onShow: function(){
+						if(m.onShow) m.onShow.call(this);
 					}
-				}, true).render().el);
+				}, true);
+				this.$el.append(view.render().el);
+				view.trigger('view:show');
 
 			}, this);
 		}
