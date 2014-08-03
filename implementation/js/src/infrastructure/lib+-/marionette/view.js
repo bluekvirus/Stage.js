@@ -79,7 +79,7 @@
 				var action = $el.attr('action') || 'UNKNOWN';
 
 				//allow triggering certain event only.
-				var eventForwarding = action.split(':');
+				var eventForwarding = String(action).split(':');
 				if(eventForwarding.length >= 2) {
 					eventForwarding.shift();
 					e.stopPropagation(); //Important::This is to prevent confusing the parent view's action tag listeners.

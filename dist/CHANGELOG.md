@@ -4,9 +4,11 @@ Change Log
 -------------------
 1. Fixed row event triggers intercept issue in Datagrid.
 2. Converted theme mockups to _Mockups context.
+3. Fixed String.split() errors in code by adding strong type conversion.
 
 In progress...
 
+x. + fieldset style;
 x. + sprite preview (_Mockups context);
 
 

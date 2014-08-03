@@ -92,7 +92,7 @@
 		getEditor: function(pathname){
 			if(!pathname || _.isEmpty(pathname)) return;
 			if(!_.isArray(pathname))
-				pathname = pathname.split('.');
+				pathname = String(pathname).split('.');
 			var fieldset = pathname.shift();
 			if(this._fieldsets && this._fieldsets[fieldset])
 				return this._fieldsets[fieldset].getEditor(pathname.join('.'));

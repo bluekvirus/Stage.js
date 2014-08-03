@@ -12,7 +12,7 @@
 	app.Util.addMetaEvent = function(target, namespace, delegate){
 		if(!delegate) delegate = target;
 		target.listenTo(target, 'all', function(e){
-			var tmp = e.split(':');
+			var tmp = String(e).split(':');
 			if(tmp.length !== 2 || tmp[0] !== namespace) return;
 			var listener = _.string.camelize('on-' + tmp[1]);
 			if(delegate[listener])

@@ -24,8 +24,8 @@
 				if(!_.isArray(tplString))	tplString = [tplString];
 			}
 
-			//process name to be valid id string
-			name = name.split(namefix).join('-');
+			//process name to be valid id string, use String() to force type conversion before using .split()
+			name = String(name).split(namefix).join('-');
 
 			if(map[name]) throw new Error('DEV::APP.Util.Template::Conflict! You have already named a template with id:' + name);
 
@@ -41,7 +41,7 @@
 		get: function(name){
 			if(!name) return false;
 			//process name to be valid id string
-			name = name.split(namefix).join('-');
+			name = String(name).split(namefix).join('-');
 			
 			if(map[name]) return $('head').find('#'+name).html();
 			return false;

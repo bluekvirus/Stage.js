@@ -266,7 +266,7 @@ window.onerror = function(errorMsg, target, lineNum){
 
 			//1. Prepare context switching utility
 			function navigate(path){
-				path = _.compact(path.split('/'));
+				path = _.compact(String(path).split('/'));
 				if(path.length <= 0) throw new Error('DEV::Application::Navigation path error');
 
 				var context = path.shift();
@@ -555,7 +555,7 @@ window.onerror = function(errorMsg, target, lineNum){
 	app.Util.addMetaEvent = function(target, namespace, delegate){
 		if(!delegate) delegate = target;
 		target.listenTo(target, 'all', function(e){
-			var tmp = e.split(':');
+			var tmp = String(e).split(':');
 			if(tmp.length !== 2 || tmp[0] !== namespace) return;
 			var listener = _.string.camelize('on-' + tmp[1]);
 			if(delegate[listener])
@@ -651,8 +651,8 @@ window.onerror = function(errorMsg, target, lineNum){
 				if(!_.isArray(tplString))	tplString = [tplString];
 			}
 
-			//process name to be valid id string
-			name = name.split(namefix).join('-');
+			//process name to be valid id string, use String() to force type conversion before using .split()
+			name = String(name).split(namefix).join('-');
 
 			if(map[name]) throw new Error('DEV::APP.Util.Template::Conflict! You have already named a template with id:' + name);
 
@@ -668,7 +668,7 @@ window.onerror = function(errorMsg, target, lineNum){
 		get: function(name){
 			if(!name) return false;
 			//process name to be valid id string
-			name = name.split(namefix).join('-');
+			name = String(name).split(namefix).join('-');
 			
 			if(map[name]) return $('head').find('#'+name).html();
 			return false;
@@ -1150,7 +1150,7 @@ window.onerror = function(errorMsg, target, lineNum){
 				var action = $el.attr('action') || 'UNKNOWN';
 
 				//allow triggering certain event only.
-				var eventForwarding = action.split(':');
+				var eventForwarding = String(action).split(':');
 				if(eventForwarding.length >= 2) {
 					eventForwarding.shift();
 					e.stopPropagation(); //Important::This is to prevent confusing the parent view's action tag listeners.
@@ -1673,7 +1673,7 @@ window.onerror = function(errorMsg, target, lineNum){
 		getEditor: function(pathname){
 			if(!pathname || _.isEmpty(pathname)) return;
 			if(!_.isArray(pathname))
-				pathname = pathname.split('.');
+				pathname = String(pathname).split('.');
 			var fieldset = pathname.shift();
 			if(this._fieldsets && this._fieldsets[fieldset])
 				return this._fieldsets[fieldset].getEditor(pathname.join('.'));

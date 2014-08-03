@@ -265,7 +265,7 @@ window.onerror = function(errorMsg, target, lineNum){
 
 			//1. Prepare context switching utility
 			function navigate(path){
-				path = _.compact(path.split('/'));
+				path = _.compact(String(path).split('/'));
 				if(path.length <= 0) throw new Error('DEV::Application::Navigation path error');
 
 				var context = path.shift();
