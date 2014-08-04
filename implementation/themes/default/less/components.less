@@ -15,34 +15,25 @@
 
 // Wrapper --------------------------
 .wrapper {
-
   padding-top: @line-height-computed/2;
   padding-bottom: @line-height-computed/2;
-
 }
 
 .wrapper-2x {
-
   padding-top: @line-height-computed;
   padding-bottom: @line-height-computed;
-
 }
 
 .wrapper-full {
-
   padding: @line-height-computed/2 @line-height-computed/2;
-
 }
 
 .wrapper-full-2x {
-
   padding: @line-height-computed @line-height-computed;
-
 }
 
 // Bordered -------------------------
 .border {
-
   border-style: solid;
   border-width: 0;
   border-color: @base-border-color;
@@ -91,7 +82,6 @@
 
 // Rounded -----------------------
 .rounded {
-
   border-radius: 15px;
 
   &-xs {
@@ -121,13 +111,11 @@
 // Circle --------------------------
 
 .circle {
-
   border-radius: 50%;
   text-align: center;
   
   //use .square(@size) to complete the circle.
   //use font-size, line-height and padding to center the content.
-
 }
 
 // Center (mixin) ------------------
@@ -143,29 +131,28 @@
 
 // Heading ----------------------
 .heading {
-
   padding-left: 1.5em;
   padding-right: 1.5em;
   padding-bottom: 0.75em;
   border-bottom: 1px solid @base-border-color;
-
 }
 
 // Box --------------------------
 .box {
 
   .heading {
-
     padding-top: 1.25em;
     
     h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
       margin-top: 0;
       margin-bottom: 0.5em;
-      display: inline-block;
+      display: inline-block !important;
     }
 
-    .tools {
-      .pull-right;
+    .tools { 
+      //add .pull-right in class="" if want to float right in heading 
+      //!BUG! -- (currently Chrome has a float bug that breaks floaded items into the next line...)
+      display: inline-block !important;
 
       .dropdown-menu {
         left: auto;

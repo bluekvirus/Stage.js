@@ -15,34 +15,25 @@
 
 // Wrapper --------------------------
 .wrapper {
-
   padding-top: @line-height-computed/2;
   padding-bottom: @line-height-computed/2;
-
 }
 
 .wrapper-2x {
-
   padding-top: @line-height-computed;
   padding-bottom: @line-height-computed;
-
 }
 
 .wrapper-full {
-
   padding: @line-height-computed/2 @line-height-computed/2;
-
 }
 
 .wrapper-full-2x {
-
   padding: @line-height-computed @line-height-computed;
-
 }
 
 // Bordered -------------------------
 .border {
-
   border-style: solid;
   border-width: 0;
   border-color: @base-border-color;
@@ -91,7 +82,6 @@
 
 // Rounded -----------------------
 .rounded {
-
   border-radius: 15px;
 
   &-xs {
@@ -121,13 +111,11 @@
 // Circle --------------------------
 
 .circle {
-
   border-radius: 50%;
   text-align: center;
   
   //use .square(@size) to complete the circle.
   //use font-size, line-height and padding to center the content.
-
 }
 
 // Center (mixin) ------------------
@@ -139,6 +127,79 @@
 //   margin-top: -@heigth;
 //   .size(@width, @height);
 // }
+
+
+// Heading ----------------------
+.heading {
+  padding-left: 1.5em;
+  padding-right: 1.5em;
+  padding-bottom: 0.75em;
+  border-bottom: 1px solid @base-border-color;
+}
+
+// Box --------------------------
+.box {
+
+  .heading {
+    padding-top: 1.25em;
+    
+    h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+      margin-top: 0;
+      margin-bottom: 0.5em;
+      display: inline-block !important;
+    }
+
+    .tools { 
+      //add .pull-right in class="" if want to float right in heading 
+      //!BUG! -- (currently Chrome has a float bug that breaks floaded items into the next line...)
+      display: inline-block !important;
+
+      .dropdown-menu {
+        left: auto;
+        right: 0;
+        top: auto;
+      }
+    }
+  }
+
+  .body {
+    .wrapper-full-2x;
+  }
+
+}
+
+// Fieldset ---------------------
+.fieldset {
+  margin-top: 1.5em;
+  .border;
+  border-width: 1px;
+  .wrapper-full-2x;
+
+  legend, .legend {
+    font-size: @font-size-base;
+    border: none;
+    width: auto;
+    margin: 0;
+  }
+
+  &-shadowed {
+    position: relative;
+    box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
+    border-width: 0;
+    padding-top: @line-height-computed * 3;
+
+    legend, .legend {
+      width: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      padding: 0.5em 1em;
+      background-color: @btn-default-bg; //borrow btn default colors here
+      color: @btn-default-color;
+    }
+  }
+
+}
 
 
 /**
@@ -268,7 +329,7 @@
   margin: 0;
 }
 
-//Button White --------------------
+//Button White ------------------
 .btn-white {
   background: none;
   border: 1px solid @gray-lighter;
@@ -279,7 +340,7 @@
   }
 }
 
-//Button Outlined -------------------
+//Button Outlined ---------------
 
 .btn-outline {
   background-color: transparent;
@@ -318,44 +379,5 @@
   }
 }
 
-// Heading ---------------------
-.heading {
-
-  padding-left: 1.5em;
-  padding-right: 1.5em;
-  padding-bottom: 0.75em;
-  border-bottom: 1px solid @base-border-color;
-
-}
-
-// Box -------------------------
-.box {
-
-  .heading {
-
-    padding-top: 1.25em;
-    
-    h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
-      margin-top: 0;
-      margin-bottom: 0.5em;
-      display: inline-block;
-    }
-
-    .tools {
-      .pull-right;
-
-      .dropdown-menu {
-        left: auto;
-        right: 0;
-        top: auto;
-      }
-    }
-  }
-
-  .body {
-    .wrapper-full-2x;
-  }
-
-}
 
 

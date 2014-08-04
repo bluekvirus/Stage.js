@@ -10,7 +10,11 @@
 			{tpl: 'heading.html', className: 'heading'},
 
 			//boxes
-			{tpl: 'boxes.html', className:'row'},
+			{tpl: 'boxes.html', onShow: function(){
+				if(Modernizr.chrome){
+					this.$el.find('[warning="chrome"]').removeClass('hidden');
+				}
+			}},
 
 			//containers
 			{tpl: 'containers.html'},			

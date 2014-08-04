@@ -1,4 +1,4 @@
-Stage.js     v1.6.1
+Stage.js     v1.6.2
 ===================
 This project produces **Stage.js** - an infrastructure for building modern web application client with many contexts (e.g a data-heavy administration app). In other words, we solve this problem for you:
 
