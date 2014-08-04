@@ -38,10 +38,6 @@ NProgress.configure({showSpinner: false});
             //     var base = 'static/resource/default/download/';
             //     app.Util.download(base + $btn.attr('target'));  
             // },
-            themePreview: function($btn, e){
-                e.preventDefault();
-                location.href = ['themes', app.currentTheme, 'index.html'].join('/') ;
-            }
         },
         className: 'navbar navbar-default hidden',
         template: [
@@ -62,7 +58,7 @@ NProgress.configure({showSpinner: false});
                 '<li context="Demo" class="dropdown">',
                   '<a data-toggle="dropdown" class="dropdown-toggle" href="#">DEMO <b class="caret"></b></a>',
                   '<ul class="dropdown-menu">',
-                    '<li><a href="#" action="themePreview">Theme Preview</a></li>',
+                    '<li><a href="#navigate/_Mockups">Theme Preview</a></li>',
                     '<li class="divider"></li>',
                     '<li class="dropdown-header">View Plus</li>',
                     '<li><a href="#navigate/Demo/RemoteTpl">Remote Templates</a></li>',

@@ -12,7 +12,7 @@ Theme Notes
 
 2. fonts/ 
 --------
-(this is where the web fonts go)
+(this is where the web fonts go, use the themeprep tool first before adding new fonts)
 	- use 'dfontsplitter' tool if you have .dfont font collection pack instead of .ttf files.
 	- use any online/offline converter to produce .eot(IE) and .woff web font files.
 	- add the @font-face css block into less or css files of your theme.
@@ -33,8 +33,7 @@ Theme Notes
 
 3. img/ 
 ------
-(this is where the images go, only export the sprites and css when build)
-	- use 'glue' and /tools/iconprep to resize and concat into css sprites (with .css or .less icon class files)
+(this is where the images go, use themeprep tool to combine them into css-sprite)
 
 
 4. css/ 

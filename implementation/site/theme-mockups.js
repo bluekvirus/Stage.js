@@ -41,7 +41,10 @@
 			{tpl: 'table.html'},
 
 			//forms
-			{tpl: 'forms.html'}
+			{tpl: 'forms.html'},
+
+			//copyright of the mockup collections above
+			{tpl: 'copyright.html'}
 
 		],
 

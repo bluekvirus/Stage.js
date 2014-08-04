@@ -35,8 +35,7 @@ module.exports = {
 					'main.css':'themes/site/css/main.css'
 				},
 				img: { texture: 'themes/site/img/texture', 'sprite.png': 'themes/site/img/sprite.png' },
-				fonts: 'themes/site/fonts',
-				'index.html': 'themes/site/index.html'
+				fonts: 'themes/site/fonts'
 			}
 		},
 		static: {
