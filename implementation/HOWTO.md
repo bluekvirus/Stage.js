@@ -219,6 +219,8 @@ Remember, creating a web application is like drawing a picture. Start by laying 
 Now, let's start building a real web application.
 
 ####Step 1. Initialize
+
+#####Configure
 Go to your `main.js` and setup the application by using `Application.setup()`:
 ``` 
 //main.js
@@ -290,6 +292,11 @@ onShow: function(){
 
 If your application is a single-context application, you don't need to assign the application template. There will always be a region that wraps the whole application -- the *app* region. The **Default** *Context* will automatically show on region *app* if you did not specify `contextRegion` and `defaultContext`.
 
+#####Start up
+```
+Application.setup({...}).run();
+```
+
 **Tip:** If you are using Stage.js in a hybrid app (cordova/phonegap), use this to kickstart the app:
 ```
 Application.setup({...}).run(true);
@@ -298,19 +305,28 @@ Application.setup({...}).run(true);
 
 Application.setup({...}).run('deviceready'); //hook on specified ready event
 ```
-Note that the ready event may vary in under different hybrid app development package.
+Note that the ready event may vary in different hybrid app development package.
 
-**Tip:** The application bootstrapping sequence can be modified but this is only limited to adding `initializer` functions to the `Application` object.
+#####Customized bootstrapping
+The application bootstrapping sequence can be modified, since we are simply using the Marionette.Application object, you can add your own environment preparation code in one of the 4 ways that Marionette offers:
 ```
-//your own prep code.
+//0. "initialize:before" / onInitializeBefore:
+// - fired (on Application) just before the initializers kick off
+
+//1. add more initializers
 Application.addInitializer(function(options){...});
 
-//kick-start
+//2. "initialize:after" / onInitializeAfter: 
+// - fires (on Application) just after the initializers have finished
+
+//3. "start" / onStart: 
+// - fires (on Application) after all initializers and after the initializer events
+
 Application.setup({...}).run();
 ```
-**Note:** The first event that indicates the application is running is the `app:navigate` event, and followed by the `app:context-switched` event. Most of the time, you can make good use of these events and the `initialize()` or `onShow()` functions in specific context to hook up your custom preparation code.
+You can also make good use of the `app:navigate` event and the `app:context-switched` event for per-context preparation.
 
-Now we've marked the context region, let's proceed to define them.
+Let's proceed to define your contexts so you have something to show after the application starts.
 
 ####Step 2. Define Contexts
 Create a new file named `myContextA.js`, remember a *Context* is just an special *Marionette.Layout* view object, all you need to do is adding a name to the ordinary *Marionette.Layout* options:
