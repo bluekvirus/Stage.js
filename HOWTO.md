@@ -219,6 +219,8 @@ Remember, creating a web application is like drawing a picture. Start by laying 
 Now, let's start building a real web application.
 
 ####Step 1. Initialize
+
+#####Configure
 Go to your `main.js` and setup the application by using `Application.setup()`:
 ``` 
 //main.js
@@ -290,6 +292,11 @@ onShow: function(){
 
 If your application is a single-context application, you don't need to assign the application template. There will always be a region that wraps the whole application -- the *app* region. The **Default** *Context* will automatically show on region *app* if you did not specify `contextRegion` and `defaultContext`.
 
+#####Start up
+```
+Application.setup({...}).run();
+```
+
 **Tip:** If you are using Stage.js in a hybrid app (cordova/phonegap), use this to kickstart the app:
 ```
 Application.setup({...}).run(true);
@@ -298,19 +305,28 @@ Application.setup({...}).run(true);
 
 Application.setup({...}).run('deviceready'); //hook on specified ready event
 ```
-Note that the ready event may vary in under different hybrid app development package.
+Note that the ready event may vary in different hybrid app development package.
 
-**Tip:** The application bootstrapping sequence can be modified but this is only limited to adding `initializer` functions to the `Application` object.
+#####Customized bootstrapping
+The application bootstrapping sequence can be modified, since we are simply using the Marionette.Application object, you can add your own environment preparation code in one of the 4 ways that Marionette offers:
 ```
-//your own prep code.
+//0. "initialize:before" / onInitializeBefore:
+// - fired (on Application) just before the initializers kick off
+
+//1. add more initializers
 Application.addInitializer(function(options){...});
 
-//kick-start
+//2. "initialize:after" / onInitializeAfter: 
+// - fires (on Application) just after the initializers have finished
+
+//3. "start" / onStart: 
+// - fires (on Application) after all initializers and after the initializer events
+
 Application.setup({...}).run();
 ```
-**Note:** The first event that indicates the application is running is the `app:navigate` event, and followed by the `app:context-switched` event. Most of the time, you can make good use of these events and the `initialize()` or `onShow()` functions in specific context to hook up your custom preparation code.
+You can also make good use of the `app:navigate` event and the `app:context-switched` event for per-context preparation.
 
-Now we've marked the context region, let's proceed to define them.
+Let's proceed to define your contexts so you have something to show after the application starts.
 
 ####Step 2. Define Contexts
 Create a new file named `myContextA.js`, remember a *Context* is just an special *Marionette.Layout* view object, all you need to do is adding a name to the ordinary *Marionette.Layout* options:
@@ -1526,7 +1542,6 @@ Internationalization/Localization is always a painful process, making substituti
 
 Luckily, JavaScript is a prototypical language, we can extend the `String` class through its prototype and give every string a way of finding its own translation.
 
-
 ###Cast i18n on strings
 To use the i18n mechanism in your application, simply add `.i18n()` to the tail of your string:
 ```
@@ -1556,14 +1571,12 @@ $('div').i18n({search: true}); //if you want to use parent container to cast
 ```
 Remember to use the `data-i18n-key` attribute to identify the content of a tag for translation. If you want to use the entire content text as a *big* key for the translation, use `data-i18n-key="*"`. If you use `data-i18n-key="efg"` to identify a tag, its content will be translated as if you were using string `efg`.
 
-
 ###Translation file
 The translation files are needed to complete the i18n mechanism. We use a simple opt-in way of loading resource file for a given locale:
 ```
 http(s)://your host'n'app/?locale=xx_XX
 ```
 The query param **locale** in the url will tell the i18n mechanism to load a specific resource file.
-
 
 ####Format
 Your translation file should be in the [JSON](http://json.org/) format, like this:
@@ -1606,7 +1619,20 @@ I18N.configure({
     translationFile: 'i18n.json'
 });
 ```
-The default settings will always look for `http://your host'n'app/static/resource/xx_XX/i18n.json`.
+The default settings will always look for `http://your host/static/resource/xx_XX/i18n.json`.
+
+###Gather keys at runtime
+When the application is running in browser, you can fire-up the developer console and call the following APIs on the `I18N` object to collect the translation keys:
+```
+//get all i18n keys and trans rendered in the app in "key" = "val" format;
+I18N.getResourceProperties(flag) 
+
+//get the above listing in JSON format;
+I18N.getResourceJSON(flag)
+```
+You can use `flag = true` in the above functions if you only want to get un-translated entries. This is a great way of collecting un-translated strings  for your localizer (by simply go through the application views).
+
+**Note**: If your view hasn't been shown in the application, the i18n keys for that view can not be collected by the above functions.
 
 
 Themes
