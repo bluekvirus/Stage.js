@@ -3,6 +3,7 @@ Change Log
 1.6.3 (2014-08-04*)
 -------------------
 1. Fixed i18n APIs;
+2. Fixed template all.json loading on mobile platform;
 
 In progress...
 

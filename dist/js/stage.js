@@ -682,6 +682,7 @@ window.onerror = function(errorMsg, target, lineNum){
 		load: function(url){
 			$.ajax({
 				url: url,
+				dataType: 'json', //force return data type.
 				async: false
 			}).done(function(tpls){
 				_.each(tpls, function(tpl, name){
