@@ -1903,6 +1903,14 @@ window.onerror = function(errorMsg, target, lineNum){
  * 		translationFile: ... - the file name that holds the key trans pairs for a certain locale.
  *
  * =====
+ * APIs
+ * =====
+ * .getResourceProperties(flag) -- get all i18n keys and trans rendered in the app in "key" = "val" format;
+ * .getResourceJSON(flag) -- get the above listing in JSON format;
+ *
+ * use flag = true in the above functions if you only want to get un-translated entries;
+ * 
+ * =====
  * Usage
  * =====
  * 1. load this i18n.js before any of your modules/widgets
@@ -1912,7 +1920,9 @@ window.onerror = function(errorMsg, target, lineNum){
  *
  * 
  * @author Yan Zhu, Tim Liu
- * @date 2013-08-26
+ * @created 2013-08-26
+ * @updated 2014-08-06
+ * 
  */
 var I18N = {};
 ;(function($, _, URI) {
@@ -2029,7 +2039,7 @@ var I18N = {};
 		}
 	}
 
-	function getResourceProperties() {
+	function getResourceProperties(untransedOnly) {
 		var formatted = [];
 
 		function makeNSLine(ns) {
@@ -2051,6 +2061,8 @@ var I18N = {};
 		}
 
 		_.each(resources, function(value, key) {
+			if(untransedOnly && !value) return;
+
 			if (typeof(value) === 'object') {
 				_.each(value, function(translation, ns) {
 					if (ns !== '_default') {
@@ -2069,16 +2081,22 @@ var I18N = {};
 		return result;
 	}
 
-	function getResourceJSON() {
+	function getResourceJSON(untransedOnly) {
+		var res = resources;
+		if(untransedOnly){
+			res = _.reject(resources, function(trans, key){
+				if(trans) return true; return false;
+			});
+		}
 		return JSON.stringify({
 			locale: locale,
-			trans: resources
+			trans: res
 		});
 	}
 
-	window.getResourceProperties = getResourceProperties;
-	window.getResourceJSON = getResourceJSON;
-	window.clearResourceCache = function(){
+	I18N.getResourceProperties = getResourceProperties;
+	I18N.getResourceJSON = getResourceJSON;
+	I18N.clearResourceCache = function(){
 		var resources_cache_key = ['resources_', locale].join('');
 		store.remove(resources_cache_key);
 	};

@@ -1542,7 +1542,6 @@ Internationalization/Localization is always a painful process, making substituti
 
 Luckily, JavaScript is a prototypical language, we can extend the `String` class through its prototype and give every string a way of finding its own translation.
 
-
 ###Cast i18n on strings
 To use the i18n mechanism in your application, simply add `.i18n()` to the tail of your string:
 ```
@@ -1572,14 +1571,12 @@ $('div').i18n({search: true}); //if you want to use parent container to cast
 ```
 Remember to use the `data-i18n-key` attribute to identify the content of a tag for translation. If you want to use the entire content text as a *big* key for the translation, use `data-i18n-key="*"`. If you use `data-i18n-key="efg"` to identify a tag, its content will be translated as if you were using string `efg`.
 
-
 ###Translation file
 The translation files are needed to complete the i18n mechanism. We use a simple opt-in way of loading resource file for a given locale:
 ```
 http(s)://your host'n'app/?locale=xx_XX
 ```
 The query param **locale** in the url will tell the i18n mechanism to load a specific resource file.
-
 
 ####Format
 Your translation file should be in the [JSON](http://json.org/) format, like this:
@@ -1622,7 +1619,20 @@ I18N.configure({
     translationFile: 'i18n.json'
 });
 ```
-The default settings will always look for `http://your host'n'app/static/resource/xx_XX/i18n.json`.
+The default settings will always look for `http://your host/static/resource/xx_XX/i18n.json`.
+
+###Gather keys at runtime
+When the application is running in browser, you can fire-up the developer console and call the following APIs on the `I18N` object to collect the translation keys:
+```
+//get all i18n keys and trans rendered in the app in "key" = "val" format;
+I18N.getResourceProperties(flag) 
+
+//get the above listing in JSON format;
+I18N.getResourceJSON(flag)
+```
+You can use `flag = true` in the above functions if you only want to get un-translated entries. This is a great way of collecting un-translated strings  for your localizer (by simply go through the application views).
+
+**Note**: If your view hasn't been shown in the application, the i18n keys for that view can not be collected by the above functions.
 
 
 Themes

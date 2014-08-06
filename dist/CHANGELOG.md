@@ -2,6 +2,8 @@ Change Log
 ==========
 1.6.3 (2014-08-04*)
 -------------------
+1. Fixed i18n APIs;
+
 In progress...
 
 x. + sprite preview (_Mockups context);
