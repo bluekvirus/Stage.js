@@ -30,15 +30,12 @@ module.exports = function(server) {
 
     if (os.type() === 'Windows_NT') {
         watch.createMonitor(tplRoot, {
-            filter: function(f, stat) {
-                if (stat.isDirectory()) return true;
-                if (_.str.endsWith(f, '.html')) return true;
-                return false;
-            }
+            //.html filters not working...
         }, function(monitor) {
             console.log('[Templates monitored]'.yellow, tplRoot);
             _.each(['created', 'changed', 'removed'], function(e) {
                 monitor.on(e, function(f) {
+                    if (!_.str.endsWith(f, '.html')) return;
                     mergeIntoAllTplJson(e, f);
                 });
             });

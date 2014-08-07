@@ -1,4 +1,4 @@
-Stage.js     v1.6.2
+Stage.js     v1.6.3
 ===================
 This project produces **Stage.js** - an infrastructure for building modern web application client with many contexts (e.g a data-heavy administration app). In other words, we solve this problem for you:
 
@@ -55,11 +55,15 @@ After cloning the project, you should go to `/tools` and run these commands:
 bower update
 node run all
 
-//2. prepare npm packages
+//2. prepare default theme pack
+//under /tools/themeprep
+node run
+
+//3. prepare npm packages
 //under /tools
 npm install
 
-//3. fire up dev server
+//4. fire up dev server
 //under /tools
 [sudo] npm start
 ```
