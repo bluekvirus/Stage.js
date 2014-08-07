@@ -1,13 +1,18 @@
 Change Log
 ==========
-1.6.3 (2014-08-04*)
+1.6.4 (2014-08-07*)
 -------------------
-1. Fixed i18n APIs;
-2. Fixed template all.json loading on mobile platform;
-
 In progress...
 
 x. + sprite preview (_Mockups context);
+
+
+1.6.3 (2014-08-07)
+-------------------
+1. Fixed i18n APIs;
+2. Fixed template all.json loading on mobile platform;
+3. Fixed app init sequence and added app:before-/app:template-ready events;
+4. Fixed template watch tool filter on Windows_NT;
 
 
 1.6.2 (2014-08-04)

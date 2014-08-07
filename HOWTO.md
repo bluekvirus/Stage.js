@@ -6,7 +6,7 @@ Building multi-context rich-client web application front-end in the modern way.
 
 Current version
 ---------------
-**@1.6.2**
+**@1.6.3**
 ([Why is it version-ed like this?](http://semver.org/))
 
 
@@ -173,16 +173,22 @@ Here is the recommended **workflow**. You should follow the steps each time you 
 Download the *Stage.js* [project-kit](static/resource/default/download/stagejs-starter-kit.tar.gz) and extract its content to your project folder of choice.
 
 Under your project folder, open up a console/terminal on your OS and do the following:
-* Under the `/tools` folder run
+1. Under the `/tools` folder run
 ```
 npm install
-npm start //this will start the development server on http://localhost:5000/dev/
+npm start //this will start the development web server
 ```
-* Under the `/implementation` folder run
+2. Under the `/implementation` folder run
 ```
 bower install
 ```
-* Create a `main.js` (you are free to choose whatever the name you like) 
+3. Under the '/tools/themeprep' folder run
+```
+node run [your theme name] //leave blank if you are using theme 'default'
+```
+**Note**: It is recommended that you use the theme preparation tool to create a new theme before you continue to develop your project. This way, whenever the basic (default) theme updates, you can upgrade to it easily.
+
+4. Create a `main.js` (you are free to choose whatever the name you like) 
 and include it in `index.html` below the `<!--main.js-->` comment line:
 ```
 <script src="bower_components/stage/dist/js/lib/dependencies.min.js"></script>
@@ -324,6 +330,16 @@ Application.addInitializer(function(options){...});
 
 Application.setup({...}).run();
 ```
+
+Plus the events we put in during application loading:
+```
+app:before-template-ready //fired before the application template is shown
+app:template-ready //fired after the application template is shown
+```
+Note that only after the `app:template-ready` event, can the application start its initializer-calling sequence. In other words, if you've added customized initializers, they will be called after the `app:template-ready` event.
+
+**Tip**: You can swap application template using the `Application.setup()` call upon receiving the `app:before-template-ready` event to layout your application differently on different platforms. (Use the `Modernizr` global variable for platform/feature detections.)
+
 You can also make good use of the `app:navigate` event and the `app:context-switched` event for per-context preparation.
 
 Let's proceed to define your contexts so you have something to show after the application starts.
@@ -506,7 +522,7 @@ Now, we've sketched the layout of our application, you might want more contexts 
 ####Step 4. Handle data
 Though we do not agree with *Backbone*'s way of loading and persisting data through *Model/Collection*s. We do agree that **data** should be the central part of every computer program. In our case, the remote data from server are still used to power the dynamic views. We use *Backbone.Model/Collection* only when there is a *View*. In other words, *data* and *View*s are centric in our framework paradigm, *Model/Collection*s are not. Try to think of them as a integrated part of *View*s. 
 
-**Note:** Use normal `$.ajax()` calls for **NON-API** resources such as static `.json` files. You don't want to pick up `Application.config.baseAjaxURI` and `Application.config.crossdomain` settings in these situations.
+**Note:** Use normal `$.ajax()` calls for **NON-API** resources such as static `.json` files. You don't want to pick up `Application.config.baseAjaxURI` and `Application.config.crossdomain` settings in these situations. Further, you should specify `dataType: 'json'` in your `$.ajax()` call configure explicitly for loading `*.json` files so that the data can be returned as expected locally on mobile platforms. (When there isn't a web server, `$.ajax()` get `*.json` files into text strings instead of parsed Javascript object due to incorrect MIME type.)
 
 Our recommended way of loading/persisting remote data is through:
 ```
@@ -1677,7 +1693,7 @@ One perk of using LESS is that you can define each .less to do only one thing, e
 ###Assets preparation
 Fonts, logos, icons and textures are the 4 major types of asset you will need when it comes to making themes. There is a theme preparation script that we prepared for you to get started quickly when building a new theme.
 
-See the **Theme Preparation** in the **Tools** section below for more details. Please run this script whenever you want to create a new theme.
+Read the **Theme Preparation** section below (under **Tools** ) for more details. Please run this script whenever you want to create a new theme or update an existing one.
 
 ###Preview
 There is a theme mockup elements preview context at `#navigate/_Mockups`.
