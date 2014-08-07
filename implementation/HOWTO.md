@@ -324,6 +324,16 @@ Application.addInitializer(function(options){...});
 
 Application.setup({...}).run();
 ```
+
+Plus the events we put in during application loading:
+```
+app:before-template-ready //fired before the application template is shown
+app:template-ready //fired after the application template is shown
+```
+Note that only after the `app:template-ready` event, can the application start its initializer-calling sequence. In other words, if you've added customized initializers, they will be called after the `app:template-ready` event.
+
+**Tip**: You can swap application template using the `Application.setup()` call upon receiving the `app:before-template-ready` event to layout your application differently on different platforms. (Use the `Modernizr` global variable for platform/feature detections.)
+
 You can also make good use of the `app:navigate` event and the `app:context-switched` event for per-context preparation.
 
 Let's proceed to define your contexts so you have something to show after the application starts.

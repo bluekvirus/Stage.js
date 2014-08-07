@@ -4,6 +4,7 @@ Change Log
 -------------------
 1. Fixed i18n APIs;
 2. Fixed template all.json loading on mobile platform;
+3. Fixed app init sequence and added app:before-/app:template-ready events;
 
 In progress...
 

@@ -249,9 +249,7 @@ window.onerror = function(errorMsg, target, lineNum){
 			Application.Util.Tpl.load(Application.config.viewTemplates + '/all.json');
 
 
-		//4 Initializers
-
-		//Application init: Navigation Workers
+		//4 Add Navigation workers
 		/**
 		 * Setup the application with content routing (navigation). 
 		 * 
@@ -262,7 +260,6 @@ window.onerror = function(errorMsg, target, lineNum){
 		 * - refined/simplified the router handler and context-switch navigation support
 		 * - use app:navigate (path) at all times when navigate between contexts & views.
 		 */
-		Application.addInitializer(function(options){
 
 			//1. Prepare context switching utility
 			function navigate(path){
@@ -318,19 +315,11 @@ window.onerror = function(errorMsg, target, lineNum){
 
 			Application.onContextGuardError = function(error, ctxName){
 				console.error('DEV:Context-Guard-Error:', ctxName, error);
-			};
+			};			
 
-			//2.Auto-detect and init context (view that replaces the body region)
-			if(!window.location.hash){
-				if(!Application.Core.Context[Application.config.defaultContext])
-					console.warn('DEV::Application::You might want to define a Default context using app.create(\'Context Name\', {...})');
-				else
-					window.location.hash = ['#navigate', Application.config.defaultContext].join('/');
-			}			
 
-		});	
-
-		//Activate Routing: Context Switching by Routes (can use href = #navigate/... to trigger them)
+		//5 Activate Routing - activate after running all the initializers user has defined
+		//Context Switching by Routes (can use href = #navigate/... to trigger them)
 		Application.on("initialize:after", function(options){
 			//init client page router and history:
 			var Router = Backbone.Marionette.AppRouter.extend({
@@ -385,12 +374,21 @@ window.onerror = function(errorMsg, target, lineNum){
 			});
 			//Warning: calling ensureEl() on the app region will not work like regions in layouts. (Bug??)
 			//the additional <div> under the app region is somehow inevitable atm...
+			Application.trigger('app:before-template-ready');
 			Application.mainView = Application.view({
 				type: 'Layout',
 				template: Application.config.template
 			}, true);
 			Application.getRegion('app').show(Application.mainView);
-	
+			Application.trigger('app:template-ready');
+
+			//2.Auto-detect and init context (view that replaces the body region)
+			if(!window.location.hash){
+				if(!Application.Core.Context[Application.config.defaultContext])
+					console.warn('DEV::Application::You might want to define a Default context using app.create(\'Context Name\', {...})');
+				else
+					window.location.hash = ['#navigate', Application.config.defaultContext].join('/');
+			}
 
 			//3. Start the app
 			Application.start();
