@@ -64,7 +64,7 @@ program
 
 //check target theme name, default to 'default'
 var theme = program.args[0] || 'default';
-var themeFolder = path.join(_.string.startsWith(program.base, '/')?'':__dirname, program.base, theme);
+var themeFolder = path.join(_.string.startsWith(program.base, path.sep)?'':__dirname, program.base, theme);
 console.log('Preparing Theme:'.yellow, theme);
 var baseTheme = 'default';
 
@@ -97,7 +97,7 @@ hammer.createFolderStructure({
 	//1. collect /fonts from lib packages into base/[theme]/fonts
 	var fontsFolder = path.join(themeFolder, 'fonts');
 	_.each(program.fonts, function(name){
-		fs.copySync(path.join(_.string.startsWith(program.lib, '/')?'':__dirname, program.lib, name, 'fonts'), path.join(fontsFolder, name));
+		fs.copySync(path.join(_.string.startsWith(program.lib, path.sep)?'':__dirname, program.lib, name, 'fonts'), path.join(fontsFolder, name));
 		console.log('[Font]'.yellow, name, '==>'.grey, fontsFolder + '/' + name);
 	});
 
@@ -157,7 +157,7 @@ hammer.createFolderStructure({
 				//iconClassPrefix-texture {
 				//	background-image: url('../img/texture/' + t);
 				//}
-				t = '/' + t;
+				t = path.sep + t;
 				var name = ['-texture', path.basename(t.split(breakNameRegex).join('-'), '.png')].join('');
 				fs.appendFileSync(lessFilePath, [
 					'','//texture',
