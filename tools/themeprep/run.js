@@ -121,6 +121,7 @@ hammer.createFolderStructure({
 		return;
 	}
 
+	var breakNameRegex = new RegExp('[\\' + path.sep + '@' + ']');
 	nsg({
 	    src: imgFolderGlobs,
 	    spritePath: path.join(imageFolder, 'sprite.png'),
@@ -134,7 +135,9 @@ hammer.createFolderStructure({
 	        prefix: iconClassPrefix,
 	        spritePath: '../img/sprite.png',
 	        nameMapping: function(fpath){
-	        	var name = fpath.replace(imageFolder, '').split(/[\/@]/).join('-');
+	        	if(os.type() === 'Windows_NT')
+	        		fpath = fpath.split('/').join(path.sep);
+	        	var name = fpath.replace(imageFolder, '').split(breakNameRegex).join('-');
 	        	name = path.basename(name, '.png');
 	        	registry.push(iconClassPrefix + name);
 	        	console.log('found:', '[', name.grey, ']');
@@ -155,7 +158,7 @@ hammer.createFolderStructure({
 				//	background-image: url('../img/texture/' + t);
 				//}
 				t = '/' + t;
-				var name = ['-texture', path.basename(t.split(/[\/@]/).join('-'), '.png')].join('');
+				var name = ['-texture', path.basename(t.split(breakNameRegex).join('-'), '.png')].join('');
 				fs.appendFileSync(lessFilePath, [
 					'','//texture',
 					['.', iconClassPrefix, name].join('') + ' {',

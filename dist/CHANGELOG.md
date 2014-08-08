@@ -2,6 +2,8 @@ Change Log
 ==========
 1.6.4 (2014-08-07*)
 -------------------
+1. Fixed themeprep tool icon path issue on Windows_NT;
+
 In progress...
 
 x. + sprite preview (_Mockups context);
