@@ -2,112 +2,122 @@
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <title></title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+<!--[if gt IE 8]><!-->
+<html class="no-js">
+<!--<![endif]-->
 
-        <!-- Theme detector see core/utils/theme-roller.js or core.js -->
-        <link rel="stylesheet" id="theme-roller">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
-    </head>
-    <body>
+    <!-- Theme detector see core/utils/theme-roller.js or core.js -->
+    <link rel="stylesheet" id="theme-roller">
 
-        <!--[if lt IE 7]>
+</head>
+
+<body>
+
+    <!--[if lt IE 9]>
             <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
         <![endif]-->
 
-        <div region="app"></div>
+    <div region="app"></div>
 
-        <!--
-            Bonus:: special <script> attributes for build:
-                [exclude attr]="false": This is for the build tool to ignore the script while building config file controlled all-in-one js.
-                persist="true": This is used for the build tool to persist this script tag in the produced index.html if it is ignored.
-            Note that this attr is often the same as your build config name used in the build command.
+    <!--
+            Bonus:: special <script/> attributes for build:
+                [include="buildA, buildB, ..."]: include this script only during these builds.
+                [exclude="buildA, buildB, ..."]: exclude this script only during these builds.
+                [build cfg name="false"/"true"]: whether to include this script for this specific build.
+                [target="xyz.js"]: combine this script into specified js file.
+                [persist="true"]: This is used for the build tool to persist this script tag in the produced index.html if it is ignored.
+            
+            Note::
+                1. The build name is the same as your build config name used in the build command.
+                2. include > exclude > build cfg name if you use these attributes together on a single <script/>
         -->
 
-        <!--========Infrastructure Space: the engine======================================================-->
-        <!--Deps-->
-        <script type="text/javascript" src="js/lib/dependencies.min.js" framework-only="false" starter-kit="false" persist="true"></script>
-        <!--APP-->
-        <script type="text/javascript" src="js/src/infrastructure/application.js"></script>
-        <!--APP Util-->
-        <script type="text/javascript" src="js/src/infrastructure/util/meta-event.js"></script>
-        <script type="text/javascript" src="js/src/infrastructure/util/theme-roller.js"></script>
-        <script type="text/javascript" src="js/src/infrastructure/util/downloader.js" mobile="false"></script>
-        <script type="text/javascript" src="js/src/infrastructure/util/template-builder.js"></script>        
-        <!--APP Core-->
-        <script type="text/javascript" src="js/src/infrastructure/core/remote-data.js"></script>
-        <script type="text/javascript" src="js/src/infrastructure/core/reusable.js"></script>
-        <script type="text/javascript" src="js/src/infrastructure/core/context.js"></script>
-        <script type="text/javascript" src="js/src/infrastructure/core/regional.js"></script>
-        <!--Marionette.js Enhancement-/+-->      
-        <script type="text/javascript" src="js/src/infrastructure/lib+-/marionette/template-cache.js"></script>
-        <script type="text/javascript" src="js/src/infrastructure/lib+-/marionette/region.js"></script>
-        <script type="text/javascript" src="js/src/infrastructure/lib+-/marionette/view.js"></script>
-        <script type="text/javascript" src="js/src/infrastructure/lib+-/marionette/item-view.js"></script>
-        <script type="text/javascript" src="js/src/infrastructure/lib+-/marionette/layout.js"></script>
-        <script type="text/javascript" src="js/src/infrastructure/lib+-/marionette/collection-view.js"></script>
-        
+    <!--========Infrastructure Space: the engine======================================================-->
+    <!--Deps-->
+    <script type="text/javascript" src="js/lib/dependencies.min.js" exclude="starter-kit, framework-only" persist="true"></script>
+    <!--APP-->
+    <script type="text/javascript" src="js/src/infrastructure/application.js"></script>
+    <!--APP Util-->
+    <script type="text/javascript" src="js/src/infrastructure/util/meta-event.js"></script>
+    <script type="text/javascript" src="js/src/infrastructure/util/theme-roller.js"></script>
+    <script type="text/javascript" src="js/src/infrastructure/util/downloader.js"></script>
+    <script type="text/javascript" src="js/src/infrastructure/util/template-builder.js"></script>
+    <!--APP Core-->
+    <script type="text/javascript" src="js/src/infrastructure/core/remote-data.js"></script>
+    <script type="text/javascript" src="js/src/infrastructure/core/reusable.js"></script>
+    <script type="text/javascript" src="js/src/infrastructure/core/context.js"></script>
+    <script type="text/javascript" src="js/src/infrastructure/core/regional.js"></script>
+    <!--Marionette.js Enhancement-/+-->
+    <script type="text/javascript" src="js/src/infrastructure/lib+-/marionette/template-cache.js"></script>
+    <script type="text/javascript" src="js/src/infrastructure/lib+-/marionette/region.js"></script>
+    <script type="text/javascript" src="js/src/infrastructure/lib+-/marionette/view.js"></script>
+    <script type="text/javascript" src="js/src/infrastructure/lib+-/marionette/item-view.js"></script>
+    <script type="text/javascript" src="js/src/infrastructure/lib+-/marionette/layout.js"></script>
+    <script type="text/javascript" src="js/src/infrastructure/lib+-/marionette/collection-view.js"></script>
 
-        <!--Predefined Goods(UI policy)-->
-        <!--Basic (provide in order):
+
+    <!--Predefined Goods(UI policy)-->
+    <!--Basic (provide in order):
             [input] editors & form/fieldset;
             optional:[display notification] event msg & user prompt;
             md text chunk;
         -->
-        <script type="text/javascript" src="js/src/reusable/$.plugins/i18n.js"></script>
-        <script type="text/javascript" src="js/src/reusable/$.plugins/md-content.js"></script>
-        <script type="text/javascript" src="js/src/reusable/$.plugins/toc.js" mobile="false"></script>
-        <script type="text/javascript" src="js/src/reusable/$.plugins/overlay.js"></script>
-        <script type="text/javascript" src="js/src/reusable/editors/index.js" mobile="false"></script>
-        <script type="text/javascript" src="js/src/reusable/editors/validations.js" mobile="false"></script>
-        <script type="text/javascript" src="js/src/reusable/widgets/datagrid-lite/index.js" mobile="false"></script>
-        <script type="text/javascript" src="js/src/reusable/widgets/datagrid-lite/headers/string.js" mobile="false"></script>
-        <script type="text/javascript" src="js/src/reusable/widgets/datagrid-lite/cells/string.js" mobile="false"></script>
-        <script type="text/javascript" src="js/src/reusable/widgets/datagrid-lite/cells/seq.js" mobile="false"></script>
-        <script type="text/javascript" src="js/src/reusable/widgets/datagrid-lite/cells/action.js" mobile="false"></script>
-        <script type="text/javascript" src="js/src/reusable/widgets/tree/index.js" mobile="false"></script>
-        <script type="text/javascript" src="js/src/reusable/widgets/paginator/index.js" mobile="false"></script>
-        <!--Advanced (provide in order):
+    <script type="text/javascript" src="js/src/reusable/$.plugins/i18n.js"></script>
+    <script type="text/javascript" src="js/src/reusable/$.plugins/md-content.js"></script>
+    <script type="text/javascript" src="js/src/reusable/$.plugins/toc.js"></script>
+    <script type="text/javascript" src="js/src/reusable/$.plugins/overlay.js"></script>
+    <script type="text/javascript" src="js/src/reusable/editors/index.js" target="stage-editors.js"></script>
+    <script type="text/javascript" src="js/src/reusable/editors/validations.js" target="stage-editors.js"></script>
+    <script type="text/javascript" src="js/src/reusable/widgets/datagrid-lite/index.js" target="stage-widgets.js"></script>
+    <script type="text/javascript" src="js/src/reusable/widgets/datagrid-lite/headers/string.js" target="stage-widgets.js"></script>
+    <script type="text/javascript" src="js/src/reusable/widgets/datagrid-lite/cells/string.js" target="stage-widgets.js"></script>
+    <script type="text/javascript" src="js/src/reusable/widgets/datagrid-lite/cells/seq.js" target="stage-widgets.js"></script>
+    <script type="text/javascript" src="js/src/reusable/widgets/datagrid-lite/cells/action.js" target="stage-widgets.js"></script>
+    <script type="text/javascript" src="js/src/reusable/widgets/tree/index.js" target="stage-widgets.js"></script>
+    <script type="text/javascript" src="js/src/reusable/widgets/paginator/index.js" target="stage-widgets.js"></script>
+    <!--Advanced (provide in order):
             [display data] table/list & paginator;
             [query/control] filter/search & toolbar;
             optional:[aggregation/transition/info-hiding(reduce distraction)] tree/accordion/slide/mini-maximum/tab
         -->
-        <!--==============End of the engine===============================================================-->
-        
-        <!--User/Programmer Space: the web application dev-->
+    <!--==============End of the engine===============================================================-->
 
-        <!--Project Spec Libs: e.g
+    <!--User/Programmer Space: the web application dev-->
+
+    <!--Project Spec Libs: e.g
             <script type="text/javascript" src="bower_components/highcharts-release/highcharts.src.js"></script>
             <script type="text/javascript" src="bower_components/highcharts-release/highcharts-more.src.js"></script>
         -->
-        <script type="text/javascript" src="bower_components/mockjs/dist/mock.js" framework-only="false" starter-kit="false" mobile="false"></script>
-        <script type="text/javascript" src="bower_components/highlightjs/highlight.pack.js" framework-only="false" starter-kit="false" mobile="false"></script>
-        <script type="text/javascript" src="bower_components/nprogress/nprogress.js" framework-only="false" starter-kit="false" mobile="false"></script>
-        <script type="text/javascript" src="bower_components/iCheck/icheck.js" framework-only="false" starter-kit="false" mobile="false"></script>
+    <script type="text/javascript" src="bower_components/mockjs/dist/mock.js" include="site"></script>
+    <script type="text/javascript" src="bower_components/highlightjs/highlight.pack.js" include="site"></script>
+    <script type="text/javascript" src="bower_components/nprogress/nprogress.js" include="site"></script>
+    <script type="text/javascript" src="bower_components/iCheck/icheck.js" include="site"></script>
 
-        <!--Widgets/Editors-->
-        <!--Contexts/Regionals-->
-       <script type="text/javascript" src="site/theme-mockups.js" framework-only="false" starter-kit="false" mobile="false"></script>            
-        <script type="text/javascript" src="site/home.js" framework-only="false" starter-kit="false" mobile="false"></script>
-        <script type="text/javascript" src="site/doc.js" framework-only="false" starter-kit="false" mobile="false"></script>
-        <script type="text/javascript" src="site/acc-deny.js" framework-only="false" starter-kit="false" mobile="false"></script>
-        <script type="text/javascript" src="site/demo/index.js" framework-only="false" starter-kit="false" mobile="false"></script>
-        <script type="text/javascript" src="site/demo/editors.js" framework-only="false" starter-kit="false" mobile="false"></script>
-        <script type="text/javascript" src="site/demo/datatable.js" framework-only="false" starter-kit="false" mobile="false"></script>
-        <script type="text/javascript" src="site/demo/trees.js" framework-only="false" starter-kit="false" mobile="false"></script>
-        <script type="text/javascript" src="site/demo/notification.js" framework-only="false" starter-kit="false" mobile="false"></script>
-        <script type="text/javascript" src="site/demo/remote-tpl.js" framework-only="false" starter-kit="false" mobile="false"></script>
+    <!--Widgets/Editors-->
+    <!--Contexts/Regionals-->
+    <script type="text/javascript" src="site/theme-mockups.js" include="site"></script>
+    <script type="text/javascript" src="site/home.js" include="site"></script>
+    <script type="text/javascript" src="site/doc.js" include="site"></script>
+    <script type="text/javascript" src="site/acc-deny.js" include="site"></script>
+    <script type="text/javascript" src="site/demo/index.js" include="site"></script>
+    <script type="text/javascript" src="site/demo/editors.js" include="site"></script>
+    <script type="text/javascript" src="site/demo/datatable.js" include="site"></script>
+    <script type="text/javascript" src="site/demo/trees.js" include="site"></script>
+    <script type="text/javascript" src="site/demo/notification.js" include="site"></script>
+    <script type="text/javascript" src="site/demo/remote-tpl.js" include="site"></script>
 
-        <!--main.js-->
-        <script type="text/javascript" src="site/main.js" framework-only="false" starter-kit="false" mobile="false"></script>
+    <!--main.js-->
+    <script type="text/javascript" src="site/main.js" include="site"></script>
 
-        <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. 
+    <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. 
             <script>
                 var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
                 (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
@@ -116,8 +126,9 @@
             </script>
         -->
 
-        </script>
+    </script>
 
 
-    </body>
+</body>
+
 </html>

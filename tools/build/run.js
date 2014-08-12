@@ -45,7 +45,7 @@ program.command('*').description('build your web front-end project using customi
 		root: config.src.root,
 		html: config.src.index,
 		js: config.js,
-		excludeAttr: program.config
+		cfgName: program.config
 	}): {};
 
 	//2. combine view templates into all.json

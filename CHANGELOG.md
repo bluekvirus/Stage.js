@@ -3,6 +3,7 @@ Change Log
 1.6.4 (2014-08-07*)
 -------------------
 1. Fixed themeprep tool icon path issue on Windows_NT;
+2. Updated process-html.js tool to allow multiple js combine target (to separate widgets/editors out and help remove libprep scripts);
 
 In progress...
 

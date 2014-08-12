@@ -1,36 +1,64 @@
 /**
  * This is the Application Build Config.
- * The build tool simply loads in an index.html file (or any .html file) process it and combine all the js.
- * After processing, 'all.js', 'all.min.js' and 'index.html' will be in buffer, 
+ * The build tool simply loads in the targeted .html, process it and combine all the js (also put the combined targets back)
+ * After processing, '*.js' and 'index.html' will be in buffer, 
  * output them to desired location together with a wanted folder structure using this config file.
  * 
- * Config/Structure
+ * +Structure
  * ----------------
- * {} - create folder
- * 'string' - copy file or folder
- * 'all.js', 'all.min.js' and 'index.html' are predefined file placeholder, use 'true'/'false' to choose whether to gzip them.
- *
- * Note: you can change all.js into your-name.js by using the js:{ name : 'you-name' } config block, this will also change the .min.js version.
+ * name: {} - create folder with name
+ * name: 'string' - copy file or folder as 
+ * name: ['folderA', 'folderB'] - copy and merge folder content into 
+ * '*.js': true/false - cached js combine target, use 'true'/'false' to choose whether to use the gzip version.
+ * 'index.html': true/false - cached index page after js combine, use 'true'/'false' to choose whether to use the gzip version.
+ * 
+ * Note: you can combine into multiple .js by using the [target="abc.js"] attr on the <script/> tags.
+ * The js config block below controls whether to enable this mode and where to put the combined js after processing the html.
+ * You can also set the default js target to combine into if you don't specify [target="...js"] on a <script/> tag.
+ * 
+ * NOte: Each combined js target will have both minified and non-minified versions produced. (you can use both .js and .min.js in the structure block later)
+ * (If you omit the js config block, the default combine target will be all.js and all.min.js)
+ * (If js.targets is falsey, the multi-js mode processing will be disabled, regardless of the [target="...js"] attributes on <script/> tags)
  * 
  * @author Tim.Liu
  * @created 2013.09.25
  * @updated 2014.03.04 (minimum output)
+ * @updated 2014.08.12 (empty file, multi-folder merge, multi-js combine targets)
  */
 
 module.exports = {
+	//input
 	src: {
 		root: '../../implementation', //path relative to this config.js
 		index: 'index.html', //path relative to root
 		templates: 'static/template', //path relative to root
 	},
-	js: {
-		name: 'app',
-		//after: '[region="app"]' //where to put the combined js
-	},
+
+	//combine js (single/multiple mode)
+	
+	// js: {
+	// 	default: 'app.js',
+	// 	after: '[region="app"]', or after: '[persist=true]:last-of-type',
+	// 	min: true,
+	// 	targets: { -- Use targets: false to turn off the multi-js-target mode.
+	// 		'abc.js': {
+	// 			after: ..., [default: append after previous target]
+	// 			min: ... [default: true]
+	// 		},
+	// 		'xyz.js': {
+	// 			...
+	// 		},
+	// 		'omitted.js': false, -- This will cause the build process to skip putting this js back after combine.
+	// 								Note that you can still obtain 'omitted.js', but it won't appear in the built index.html.
+	// 		...
+	// 	}
+	// },
+	
+	//output
 	structure : { //path are relative to the distFolder and src.root above
 
 		js: {
-			'app.min.js': true, //'app' is the name you set using js:{name: 'app'} above.
+			'app.min.js': true, //'app' is the name you set in the js config above.
 		},
 		static: { template: { 'all.json': 'static/template/all.json' } },
 		themes: {

@@ -8,7 +8,6 @@ This project produces **Stage.js** - an infrastructure for building modern web a
 What's next?
 ------------
 1.7.0 might bring:
-* Update process-html.js tool to allow multiple js combine target (to separate widgets/editors out and help remove libprep scripts);
 * Stateful navigation mech: app@state/context@state/lvl1@state/lvl2@state;
 * Datagrid+ : select-all header/cell, details row;
 * Editor+ : Spinner/Range, Switches, DnD Listing;
