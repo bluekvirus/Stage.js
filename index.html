@@ -2,62 +2,73 @@
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <title></title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+<!--[if gt IE 8]><!-->
+<html class="no-js">
+<!--<![endif]-->
 
-        <!-- Theme detector see core/utils/theme-roller.js or core.js -->
-        <link rel="stylesheet" id="theme-roller">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
-    </head>
-    <body>
+    <!-- Theme detector see core/utils/theme-roller.js or core.js -->
+    <link rel="stylesheet" id="theme-roller">
 
-        <!--[if lt IE 7]>
+</head>
+
+<body>
+
+    <!--[if lt IE 9]>
             <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
         <![endif]-->
 
-        <div region="app"></div>
-		<script src="js/all.min.js"></script>
-        <!--
-            Bonus:: special <script> attributes for build:
-                [exclude attr]="false": This is for the build tool to ignore the script while building config file controlled all-in-one js.
-                persist="true": This is used for the build tool to persist this script tag in the produced index.html if it is ignored.
-            Note that this attr is often the same as your build config name used in the build command.
+    <div region="app"></div>
+	<script src="js/all.min.js"></script>
+
+    <!--
+            Bonus:: special <script/> attributes for build:
+                [include="buildA, buildB, ..."]: include this script only during these builds.
+                [exclude="buildA, buildB, ..."]: exclude this script only during these builds.
+                [build cfg name="false"/"true"]: whether to include this script for this specific build.
+                [target="xyz.js"]: combine this script into specified js file.
+                [persist="true"]: This is used for the build tool to persist this script tag in the produced index.html if it is ignored.
+            Note::
+                1. The build name is the same as your build config name used in the build command.
+                2. include > exclude > build cfg name if you use these attributes together on a single <script/>
         -->
 
-        <!--========Infrastructure Space: the engine======================================================-->
-        <!--Deps-->
-        <!--APP-->
-        <!--APP Util-->
-        <!--APP Core-->
-        <!--Marionette.js Enhancement-/+-->      
-        <!--Predefined Goods(UI policy)-->
-        <!--Basic (provide in order):
+    <!--========Infrastructure Space: the engine======================================================-->
+    <!--Deps-->
+    <!--APP-->
+    <!--APP Util-->
+    <!--APP Core-->
+    <!--Marionette.js Enhancement-/+-->
+    <!--Predefined Goods(UI policy)-->
+    <!--Basic (provide in order):
             [input] editors & form/fieldset;
             optional:[display notification] event msg & user prompt;
             md text chunk;
         -->
-        <!--Advanced (provide in order):
+    <!--Advanced (provide in order):
             [display data] table/list & paginator;
             [query/control] filter/search & toolbar;
             optional:[aggregation/transition/info-hiding(reduce distraction)] tree/accordion/slide/mini-maximum/tab
         -->
-        <!--==============End of the engine===============================================================-->
-        <!--User/Programmer Space: the web application dev-->
+    <!--==============End of the engine===============================================================-->
 
-        <!--Project Spec Libs: e.g
+    <!--User/Programmer Space: the web application dev-->
+
+    <!--Project Spec Libs: e.g
             <script type="text/javascript" src="bower_components/highcharts-release/highcharts.src.js"></script>
             <script type="text/javascript" src="bower_components/highcharts-release/highcharts-more.src.js"></script>
         -->
-        <!--Widgets/Editors-->
-        <!--Contexts/Regionals-->
-        <!--main.js-->
-        <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. 
+    <!--Widgets/Editors-->
+    <!--Contexts/Regionals-->
+    <!--main.js-->
+    <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. 
             <script>
                 var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
                 (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
@@ -65,5 +76,6 @@
                 s.parentNode.insertBefore(g,s)}(document,'script'));
             </script>
         -->
-    </body>
+</body>
+
 </html>
