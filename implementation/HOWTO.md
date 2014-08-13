@@ -1398,7 +1398,7 @@ The `view:page-changed` event emitted by the table will bring `currentPage` and 
 
 This event can start a pagination enabled data loading process in any *CollectionView* instance.
 ```
-collectionView.trigger('view:load-data', {
+collectionView.trigger('view:load-page', {
     page: 1,
     pageSize: 15,
     dataKey: 'payload',

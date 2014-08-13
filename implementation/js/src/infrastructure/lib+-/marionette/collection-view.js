@@ -69,16 +69,30 @@
 			});
 
 			var that = this;
-			app.remote(_.omit(options, 'page', 'pageSize', 'dataKey', 'totalKey')).done(function(result){
-				//render this page:
-				that.trigger('view:render-data', result[options.dataKey]);
-				//signal other widget (e.g a paginator widget)
-				that.trigger('view:page-changed', {
-					current: options.page,
-					total: Math.ceil(result[options.totalKey]/options.pageSize), //total page-count
+			//store pagination status for later access
+			this._remote = options;
+
+			//allow customized page data processing sequence, but provides a default (onLoadPageDone).
+			app.remote(_.omit(options, 'page', 'pageSize', 'dataKey', 'totalKey'))
+				.done(function(){
+					that.trigger('view:load-page-done', arguments);
+				})
+				.fail(function(){
+					that.trigger('view:load-page-fail', arguments);
+				})
+				.always(function(){
+					that.trigger('view:load-page-always', arguments);
 				});
-				//store pagination status for later access
-				that._remote = options;//_.pick(options, 'page', 'pageSize', 'dataKey', 'totalKey');
+		},
+
+		onLoadPageDone: function(args){
+			var result = args[0];
+			//render this page:
+			this.trigger('view:render-data', result[this._remote.dataKey]);
+			//signal other widget (e.g a paginator widget)
+			this.trigger('view:page-changed', {
+				current: this._remote.page,
+				total: Math.ceil(result[this._remote.totalKey]/this._remote.pageSize), //total page-count
 			});
 		}
 	});
