@@ -4,5 +4,6 @@
 	"marionette": "lib/backbone.marionette.js",
 	"underscore.string": "lib",
 	"uri.js": "dist",
-	"jquery-ui": "dist/jquery-no-widget-ui.js"
+	"jquery-ui": "dist/jquery-no-widget-ui.js",
+	"fontawesome": "../../bower_components/fontawesome"
 }

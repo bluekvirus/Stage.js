@@ -33,6 +33,7 @@ module.exports = {
 			shared: '../tools/shared',
 			'package.json': '../tools/package.json'
 		},
-		'LICENSE': '../LICENSE'
+		'LICENSE': '../LICENSE',
+		'.gitignore': 'starter-kit.gitignore'
 	}
 };

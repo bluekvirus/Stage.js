@@ -6,6 +6,7 @@ Change Log
 2. Refined process-html.js tool to allow multiple js combine target (to separate widgets/editors out and help remove libprep scripts);
 3. Added rounded-left/right class styles;
 4. Added view:load-page-done/fail/always events to CollectionView;
+5. Added hammer.js for multi-touch-screen events handling;
 
 In progress...
 
