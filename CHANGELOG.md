@@ -1,12 +1,16 @@
 Change Log
 ==========
-1.6.4 (2014-08-07*)
+1.7.0 (2014-08-07*)
 -------------------
 1. Fixed themeprep tool icon path issue on Windows_NT;
-2. Updated process-html.js tool to allow multiple js combine target (to separate widgets/editors out and help remove libprep scripts);
+2. Refined process-html.js tool to allow multiple js combine target (to separate widgets/editors out and help remove libprep scripts);
+3. Added rounded-left/right class styles;
+4. Added view:load-page-done/fail/always events to CollectionView;
+5. Added hammer.js for multi-touch-screen events handling;
 
 In progress...
 
+x. + devtools npm package for streamlining new project creation;
 x. + sprite preview (_Mockups context);
 
 
