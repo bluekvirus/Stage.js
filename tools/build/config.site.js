@@ -16,11 +16,16 @@ module.exports = {
 			}
 		},
 		themes: {
-			'default': {
+			'site': {
 				css: {
 					'main.css':'themes/site/css/main.css'
 				},
-				img: { texture: 'themes/site/img/texture', 'sprite.png': 'themes/site/img/sprite.png' },
+				img: { 
+					texture: 'themes/site/img/texture', 
+					'sprite.png': 'themes/site/img/sprite.png',
+					'square.png': 'themes/site/img/square.png',
+					'square@2x.png': 'themes/site/img/square@2x.png'
+				},
 				fonts: 'themes/site/fonts'
 			}
 		},

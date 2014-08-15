@@ -6,6 +6,7 @@ NProgress.configure({showSpinner: false});
 
         //You can override other production config vars if wanted.
         //fullScreen: true,
+        theme: 'site',
         template: '@site.html',
         contextRegion: 'center',
         defaultContext: 'Home',
