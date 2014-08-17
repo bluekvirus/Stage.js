@@ -10,7 +10,7 @@ Change Log
 
 In progress...
 
-x. + devtools npm package for streamlining new project creation;
+x. + stage-devtools npm package for streamlining new project creation;
 x. + sprite preview (_Mockups context);
 
 
