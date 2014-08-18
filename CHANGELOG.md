@@ -7,6 +7,7 @@ Change Log
 3. Added rounded-left/right class styles;
 4. Added view:load-page-done/fail/always events to CollectionView;
 5. Added hammer.js for multi-touch-screen events handling;
+6. Fixed bootstrap @icon-font-path override in themes;
 
 In progress...
 
