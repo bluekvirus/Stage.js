@@ -238,35 +238,22 @@ Application.setup({
     defaultContext: //'your default context name to show in navRegion,
     baseAjaxURI: //'your base url for using with Application.remote()',
     viewTemplates: //'remote view templates folder, if using template:@**/*.html in views'
-    crossdomain: {
-        enabled: //false | true
-        protocol: '', //https or not? default: '' -> http
-        host: '10.128.6.100', 
-        port: '8080',
-        username: 'admin',
-        password: ''
-    } //the crossdomain ajax call configure
 }).run();
 ```
 The configure variables have sensible defaults, you can safely skip configuring them here, however, there is one you might want to change now -- `template`.
 
-**Tip:** You can always change the application configure by using `Application.setup()` again. For example, you can configure your application in a two-step way:
+You can re-configure the `baseAjaxURI` and `viewTemplates` later by invoking the `Application.setup()` method again:
 ```
-//main.js
+//main-type-desktop.js
 Application.setup({
-    crossdomain: false
+    viewTemplates: 'static/template/desktop'
 }).run();
 
-//crossdomain.js
+//main-type-mobile.js
 Application.setup({
-    crossdomain: {
-        enabled: true,
-        ...
-        ...
-    }
+    viewTemplates: 'static/template/mobile'
 });
 ```
-Exclude the `crossdomain.js` from your index.html to stop ajax calls from using crossdomain setups.
 
 Since your goal is to build a *multi-context* application, you will need some *regions* in the application template and a *Context Region*:
 ```javascript
@@ -522,7 +509,7 @@ Now, we've sketched the layout of our application, you might want more contexts 
 ####Step 4. Handle data
 Though we do not agree with *Backbone*'s way of loading and persisting data through *Model/Collection*s. We do agree that **data** should be the central part of every computer program. In our case, the remote data from server are still used to power the dynamic views. We use *Backbone.Model/Collection* only when there is a *View*. In other words, *data* and *View*s are centric in our framework paradigm, *Model/Collection*s are not. Try to think of them as a integrated part of *View*s. 
 
-**Note:** Use normal `$.ajax()` calls for **NON-API** resources such as static `.json` files. You don't want to pick up `Application.config.baseAjaxURI` and `Application.config.crossdomain` settings in these situations. Further, you should specify `dataType: 'json'` in your `$.ajax()` call configure explicitly for loading `*.json` files so that the data can be returned as expected locally on mobile platforms. (When there isn't a web server, `$.ajax()` get `*.json` files into text strings instead of parsed Javascript object due to incorrect MIME type.)
+**Note:** Use normal `$.ajax()` calls for **NON-API** resources such as static `.json` files. You don't want to pick up `Application.config.baseAjaxURI` in these situations. Further, you should specify `dataType: 'json'` in your `$.ajax()` call configure explicitly for loading `*.json` files so that the data can be returned as expected locally on mobile platforms. (When there isn't a web server, `$.ajax()` get `*.json` files into text strings instead of parsed Javascript object due to incorrect MIME type.)
 
 Our recommended way of loading/persisting remote data is through:
 ```
@@ -847,9 +834,13 @@ The editors will be appended inside the calling view instance one by one by defa
 * boxLabel: (single checkbox label other than field label.)
 * checked: '...' - (checked value, single checkbox only)
 * unchecked: '...' - (unchecked value, single checkbox only)
-* upload: (file only)
-    * url - a string or function that gives a url string as where to upload the file to.
-    * cb (this, result, textStatus, jqXHR) - the upload callback if successful.
+* upload:
+    *  standalone: false/true - whether or not to display a stand-alone upload button for this field.
+    *  formData: - an {} or function to return additional data to be submitted together with the file.
+    *  url - a string indicating where to upload the file to.
+    *  ...  see complete option listing on [https://github.com/blueimp/jQuery-File-Upload/wiki/Options].
+    *  callbacks:
+        *      done/fail/always/progress ... - see complete callback listing on [https://github.com/blueimp/jQuery-File-Upload/wiki/Options].
 
 Remember, you can always layout your editors in a *Marionette.xView* through the `editor=""` attribute in the template: 
 ```
@@ -1802,7 +1793,29 @@ Remember, use tabs as last resort and only in a layout template.
 
 
 ###Supporting crossdomain ajax?
+Yes, if you need client-side crossdomain ajax calls, you can supply the `xdomain` option to your ajax requests:
+```
+$.ajax({
+    ...,
+    xdomain: {
+        protocal: 'http'/'https',
+        host: ...,
+        port: ...,
+        headers: {
+            'X-User': ...,
+            'X-Pwd': ...,
+            'X-Token': ...,
+            ... //any thing that can represent a credential.
+        },
+    },
+    ...
+});
+
+//the same applys to Application.remote() calls.
+```
 Besides configuring your `Application` with crossdomain setups, your web services must support crossdomain in the first place by replying the ajax calls with additional access control headers. Read more in **Appendix.B.MDN - CORS**.
+
+**Heads up:** Don't forget to include your credential headers in the `Access-Control-Allow-Headers` whitelist.
 
 
 Appendix

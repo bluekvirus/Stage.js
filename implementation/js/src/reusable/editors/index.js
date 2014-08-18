@@ -38,8 +38,14 @@
  *
  * //specifically for file only
  * upload: {
- * 	url - a string or function that gives a url string as where to upload the file to.
- * 	cb (_this, result, textStatus, jqXHR) - the upload callback if successful.
+ * 	standalone: false/true - whether or not to display a stand-alone upload button for this field.
+ * 	formData: - an {} or function to return additional data to be submitted together with the file.
+ * 	url - a string indicating where to upload the file to.
+ * 	...  see complete option listing on [https://github.com/blueimp/jQuery-File-Upload/wiki/Options].
+ *
+ *  callbacks: {
+ *  	done/fail/always/progress ... - see complete callback listing on [https://github.com/blueimp/jQuery-File-Upload/wiki/Options].
+ *  }
  * }
  * 
  * validate (custom function and/or rules see core/parts/editors/basic/validations.js) - The validation function should return null or 'error string' to be used in status.
@@ -241,10 +247,14 @@
 
 				//prep fileupload if type === 'file'
 				if(options.type === 'file'){
+					this.enableActionTags('Editor.File');
+					if(!options.upload || !options.upload.url) throw new Error('DEV::Editor.Basic.File::You need options.upload.url to point to where to upload the file.');
+
 					//1. listen to editor:change so we can reveal [upload] and [clear] buttons
 					this.listenTo(this, 'editor:change', function(){
 						if(this.ui.input.val()){
-							this.ui.upload.removeClass('hide').show();
+							if(options.upload.standalone)
+								this.ui.upload.removeClass('hide').show();
 							this.ui.clearfile.removeClass('hide').show();
 						}
 						else {
@@ -252,21 +262,18 @@
 							this.ui.clearfile.hide();
 						}
 					});
-					this.enableActionTags('Editor.File');
-					if(!options.upload || !options.upload.url) throw new Error('DEV::Editor.Basic.File::You need options.upload.url to point to where to upload the file.');
 					this.onRender = function(){
-						var _this = this;
+
 						this.$el.fileupload({
-							url: _.isFunction(options.upload.url)?options.upload.url():options.upload.url,
 							fileInput: null, //-remove the plugin's 'change' listener to delay the add event.
 							//forceIframeTransport: true, //-note that if iframe is used, error/fail callback will not be possible without further hack using frame['iframe name'].document
-							add: function (e, data) {
-								data.submit()
-									.success(function(result, textStatus, jqXHR){
-										if(options.upload.cb) options.upload.cb(_this, result, textStatus, jqXHR);
-									});
-							}
 						});
+
+						if(options.upload.callbacks){
+							_.each(options.upload.callbacks, function(f, e){
+								this.$el.bind('fileupload' + e, f);
+							}, this);
+						}
 					};
 					
 					_.extend(this.actions, {
@@ -276,12 +283,24 @@
 						},
 						//3. implement [upload] button action
 						upload: function(){
-							//add file to fileupload plugin.
-							this.$el.fileupload('add', {
-								fileInput: this.ui.input
-							});
+							this.upload(options.upload);
 						}
 					});
+
+					//unique editor api
+					this.upload = function(config){
+						//fix the formData value
+						if(_.isFunction(config.formData)) 
+							config.formData = config.formData();
+						//fix the url with app.config.baseAjaxURI
+						if(app.config.baseAjaxURI)
+							config.url = [app.config.baseAjaxURI, config.url].join('/');
+
+						//send the file through fileupload plugin.
+						this.$el.fileupload('send', _.extend({
+							fileInput: this.ui.input,
+						}, config));
+					};
 
 				}
 

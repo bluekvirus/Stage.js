@@ -154,17 +154,21 @@ window.onerror = function(errorMsg, target, lineNum){
 	        rapidEventDebounce: 200, //in ms this is the rapid event debounce value shared within the application (e.g window resize).
 	        baseAjaxURI: '/api', //Modify this to fit your own backend apis. e.g index.php?q= or '/api',
 	        viewTemplates: 'static/template', //this is assisted by the build tool, combining all the *.html handlebars templates into one big json.
-			/*CROSSDOMAIN Settings*/
+			
+			/*Global CROSSDOMAIN Settings - Deprecated: set this in a per-request base or use server side proxy*/
 			//see MDN - https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS
-			//If you ever need crossdomain development, we recommend that you TURN OFF local server's auth layer/middleware. 
-			crossdomain: {
-			    //enabled: true,
-			    protocol: '', //https or not? default: '' -> http
-			    host: '127.0.0.1', 
-			    port: '5000',
-			    username: 'admin',
-			    password: '123'
-			}
+			//If you ever need crossdomain in development, we recommend that you TURN OFF local server's auth layer/middleware. 
+			//To use crossdomain ajax, in any of your request, add this option:
+			// xdomain: {
+			//     protocol: '', //https or not? default: '' -> http
+			//     host: '127.0.0.1', 
+			//     port: '5000',
+			//     headers: {
+			//     		'Credential': 'user:pwd'/'token',
+			//     		...
+			//     }
+			// }
+			//Again, it is always better to use server side proxy/forwarding instead of client side x-domain.
 
 		}, config);
 
@@ -220,13 +224,14 @@ window.onerror = function(errorMsg, target, lineNum){
 				options.url = [Application.config.baseAjaxURI, options.url].join('/');	
 
 			//crossdomain:
-			var crossdomain = Application.config.crossdomain;
-			if(crossdomain.enabled){
+			var crossdomain = options.xdomain;
+			if(crossdomain){
 				options.url = (crossdomain.protocol || 'http') + '://' + (crossdomain.host || 'localhost') + ((crossdomain.port && (':'+crossdomain.port)) || '') + (/^\//.test(options.url)?options.url:('/'+options.url));
 				options.crossDomain = true;
 				options.xhrFields = _.extend(options.xhrFields || {}, {
 					withCredentials: true //persists session cookies.
 				});
+				options.headers = _.extend(options.headers || {}, crossdomain.headers);
 				// Using another way of setting withCredentials flag to skip FF error in sycned CORS ajax - no cookies tho...:(
 				// options.beforeSend = function(xhr) {
 				// 	xhr.withCredentials = true;
