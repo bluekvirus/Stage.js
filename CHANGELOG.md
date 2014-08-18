@@ -8,6 +8,9 @@ Change Log
 4. Added view:load-page-done/fail/always events to CollectionView;
 5. Added hammer.js for multi-touch-screen events handling;
 6. Fixed bootstrap @icon-font-path override in themes;
+7. Refined fileupload editor and editor options, +editor.upload api;
+8. Removed global crossdomain settings;
+9. Individual ajax request can enable its crossdomain ability with the 'xdomain' option;
 
 In progress...
 
