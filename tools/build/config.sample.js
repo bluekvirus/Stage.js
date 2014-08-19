@@ -62,12 +62,12 @@ module.exports = {
 		},
 		static: { template: { 'all.json': 'static/template/all.json' } },
 		themes: {
-			'default': {
+			'project': {
 				css: {
-					'main.css':'themes/default/css/main.css'
+					'main.css':'themes/project/css/main.css'
 				},
-				fonts: 'themes/default/fonts',
-				//img: { texture: 'themes/default/img/texture', 'sprite.png': 'themes/default/img/sprite.png' }
+				fonts: 'themes/project/fonts',
+				//img: { texture: 'themes/project/img/texture', 'sprite.png': 'themes/project/img/sprite.png' }
 			}
 		},
 		'index.html': true

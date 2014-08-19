@@ -73,6 +73,7 @@
   "dependencies": {
     "spin.js": "*",
     "nprogress": "*",
+    "progress.js": "*",
     "colorbox": "*",
     "flexslider": "*",
     "jquery.terminal": "*",
