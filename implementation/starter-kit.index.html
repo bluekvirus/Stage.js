@@ -57,8 +57,10 @@
     <!--main.js-->
     <script type="text/javascript">
     //!!!make sure you replace this script with your main.js!!!
-    Application.setup().run().context({
-        template: '<h1>hello world</h1>'
+    Application.setup({
+        theme: 'project'
+    }).run().context({
+        template: '<h1>Hello World</h1>'
     });
     </script>
 

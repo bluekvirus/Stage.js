@@ -299,7 +299,7 @@
 						//send the file through fileupload plugin.
 						this.$el.fileupload('send', _.extend({
 							fileInput: this.ui.input,
-						}, config));
+						}, options.upload, config));
 					};
 
 				}

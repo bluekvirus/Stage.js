@@ -18,21 +18,21 @@ module.exports = {
 			// 'stage-widgets.js': false,
 			// 'stage-widgets.min.js': false			
 		},
-		static: {
-			template: {
-				'all.json': ''
-			},
-			resource: {}
-		},
-		themes: {
-			'default': {
-				css: {
-					'main.css' : 'themes/default/css/main.css'
-				},
-				fonts: 'themes/default/fonts'
-			}
-		},					
-		'index.html': false,
+		// static: {
+		// 	template: {
+		// 		'all.json': ''
+		// 	},
+		// 	resource: {}
+		// },
+		// themes: {
+		// 	'default': {
+		// 		css: {
+		// 			'main.css' : 'themes/default/css/main.css'
+		// 		},
+		// 		fonts: 'themes/default/fonts'
+		// 	}
+		// },					
+		// 'index.html': false,
 		'RELEASE.md': 'RELEASE.md',
 		'CHANGELOG.md': '../CHANGELOG.md',
 		'LICENSE': '../LICENSE'

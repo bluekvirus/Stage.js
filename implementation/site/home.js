@@ -60,8 +60,8 @@
 				}),
 				initialize: function(){
 					this.collection = app.collection([
-						{name: 'Download Latest Version', href:'static/resource/default/download/stagejs-edge.tar.gz'},
-						{name: 'Download Project Kit', href:'static/resource/default/download/stagejs-starter-kit.tar.gz'},
+						{name: 'Edge Build', href:'static/resource/default/download/stagejs-edge.tar.gz'},
+						{name: 'Download Starter Kit', href:'static/resource/default/download/stagejs-starter-kit.tar.gz'},
 						{name: 'Document', href:'#navigate/Document'},
 						{name: 'Demo', href:'#navigate/Demo'}
 					]);
@@ -74,7 +74,7 @@
 	app.area('Home.Footer', {
 		template: [
 			'<span class="pull-right github-link"><a href="https://github.com/bluekvirus/Stage.js/"><i class="fa fa-github"></i>View on Github</a></span>',
-			'<p>Super-powered by Stage.js © 2013-2014</p>',
+			'<p>Super-powered by Stage.js © 2013 - 2015</p>',
 			'<p>Code licensed under The <a href="http://opensource.org/licenses/MIT">MIT</a> License. Documentation licensed under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>',
 		]
 	});

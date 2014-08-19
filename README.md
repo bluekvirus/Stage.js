@@ -1,4 +1,4 @@
-Stage.js     v1.6.3
+Stage.js     v1.7.0
 ===================
 This project produces **Stage.js** - an infrastructure for building modern web application client with many contexts (e.g a data-heavy administration app). In other words, we solve this problem for you:
 
@@ -7,18 +7,16 @@ This project produces **Stage.js** - an infrastructure for building modern web a
 
 What's next?
 ------------
-1.7.0 might bring:
+2.0.0 Roadmap:
+* Merge Context, Regional, Widget and Editor to be named Views with Roles(mixins);
+* Use the navigation chain from start based only on named layout views with navRegions;
+* Introduce State(ViewModel) into the picture. (Data => State, View/Layout, Navigation, Widget/Editor, Events);
 * Stateful navigation mech: app@state/context@state/lvl1@state/lvl2@state;
+* Remove deps on Marionette.js;
 * Datagrid+ : select-all header/cell, details row;
 * Editor+ : Spinner/Range, Switches, DnD Listing;
 * local filter/sorter mech into list views; 
 * local pagination mech into list views (in addition to the remote one we already have);
-
-2.0.0 Roadmap:
-* Merge Context, Regional, Widget and Editor to be named Views with Roles(mixins);
-* Use the navigation chain from start based only on named layout views with navRegions;
-* Use [gulpjs](http://gulpjs.com/) in devserver.
-
 
 Installation
 ------------
@@ -106,6 +104,6 @@ See in `tools/build/dist` and `dist` for details. The shortcut command also buil
 
 License
 -------
-Copyright 2013 - 2014 Tim (Zhiyuan) Liu. 
+Copyright 2013 - 2015 Tim (Zhiyuan) Liu. 
 Under the [MIT](http://opensource.org/licenses/MIT) License.
 
