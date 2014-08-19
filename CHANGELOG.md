@@ -1,6 +1,13 @@
 Change Log
 ==========
-1.7.0 (2014-08-07*)
+1.7.1 (2014-08-19*)
+-------------------
+In progress...
+
+x. + sprite preview (_Mockups context);
+
+
+1.7.0 (2014-08-19)
 -------------------
 1. Fixed themeprep tool icon path issue on Windows_NT;
 2. Refined process-html.js tool to allow multiple js combine target (to separate widgets/editors out and help remove libprep scripts);
@@ -11,11 +18,8 @@ Change Log
 7. Refined fileupload editor and editor options, +editor.upload api;
 8. Removed global crossdomain settings;
 9. Individual ajax request can enable its crossdomain ability with the 'xdomain' option;
-
-In progress...
-
-x. + stage-devtools npm package for streamlining new project creation;
-x. + sprite preview (_Mockups context);
+10. Reduced edge-build size, added fix in less-css tool for google-font;
+11. Added stage-devtools npm package for streamlining new project dev;
 
 
 1.6.3 (2014-08-07)

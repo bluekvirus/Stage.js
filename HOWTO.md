@@ -6,7 +6,7 @@ Building multi-context rich-client web application front-end in the modern way.
 
 Current version
 ---------------
-**@1.6.3**
+**@1.7.0**
 ([Why is it version-ed like this?](http://semver.org/))
 
 
@@ -877,6 +877,13 @@ editor.disable([flag]); //false to enable, default to disable, true to disable +
 editor.isEnabled();
 editor.validate(showError); //if you have options.validator configured
 editor.status(status, message); //info, error, warning, success status, empty to reset status.
+
+//in addition, the file editor have a .upload() method
+editor.upload({
+    url: ...,
+    formData: {...}
+});
+//you can use this to trigger the upload process and submit additional data
 ```
 
 **Note:** The *select, radios and checkboxes* editors can be initialized without `options.data` configuration, these editors have an additional `setChoices()` API that you can use to set the available choices later. However it is recommended that you use the `options.remote` configure if the options data is from a remote data source.
