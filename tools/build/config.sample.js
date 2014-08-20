@@ -36,8 +36,8 @@ module.exports = {
 
 	//combine js (single/multiple mode)
 	
-	// js: {
-	// 	default: 'app.js',
+	js: {
+		default: 'app.js',
 	// 	after: '[region="app"]', or after: '[persist=true]:last-of-type',
 	// 	min: true,
 	// 	targets: { -- Use targets: false to turn off the multi-js-target mode.
@@ -52,10 +52,10 @@ module.exports = {
 	// 								Note that you can still obtain 'omitted.js', but it won't appear in the built index.html.
 	// 		...
 	// 	}
-	// },
+	},
 	
 	//output
-	structure : { //path are relative to the distFolder and src.root above
+	structure : { //path are relative to the output folder and the src.root above respectively.
 
 		js: {
 			'app.min.js': true, //'app' is the name you set in the js config above.
