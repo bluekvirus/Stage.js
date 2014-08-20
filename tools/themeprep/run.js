@@ -53,29 +53,35 @@ glob = require('glob'),
 os = require('os');
 _.string = require('underscore.string');
 
+
+////////////Temp Solution(transit to stage-devtools)/////////////
+var implFolder = '../../implementation';
+/////////////////////////////////////////////////////////////////
+
 program
 	.version('0.1.0')
 	.usage('[options] <theme name>')
-	.option('-B --base <path>', 'themes base folder, default to ../../implementation/themes/', '../../implementation/themes/')
-	.option('-L --lib <path>', 'library base folder, default to ../../implementation/bower_components/', '../../implementation/bower_components/')
+	.option('-B --base <path>', 'implementation base folder, default to ' + implFolder, implFolder)
 	.option('-F --fonts [names]', 'font packages to collect /fonts from, default to bootstrap, fontawesome, open-sans-fontface', ['bootstrap', 'fontawesome', 'open-sans-fontface'])
 	.option('-S --sprites [names]', '/img/? folders to include in the sprite.png, default to icons, logo, pics', ['icon', 'logo', 'pic'])
 	.parse(process.argv);
 
-//check target theme name, default to 'default'
-var theme = program.args[0] || 'default';
-var themeFolder = path.join(_.string.startsWith(program.base, path.sep)?'':__dirname, program.base, theme);
+//check target theme name, default to 'project' (transit to stage-devtools)
+var theme = program.args[0] || 'project';
+var themeFolder = path.join(_.string.startsWith(program.base, path.sep)?'':__dirname, program.base, 'themes', theme);
+var libFolder = path.join(themeFolder, '../../', 'bower_components');
 console.log('Preparing Theme:'.yellow, theme);
-var baseTheme = 'default';
+var baseTheme = 'default',
+baseThemeFolder = path.join(themeFolder, '../', baseTheme);
 
 if(!fs.existsSync(themeFolder)){
 	console.log('Creating new theme from'.yellow, baseTheme, '==>', theme);
-	if(!fs.existsSync(path.join(program.base, baseTheme))) {
+	if(!fs.existsSync(baseThemeFolder)) {
 		console.log('[Error:] We can NOT create the new theme for you since the base theme'.red, baseTheme.yellow, 'can NOT be found'.red);
 		return;
 	}
 	fs.ensureDirSync(themeFolder);
-	fs.copySync(path.join(program.base, baseTheme, 'less'), path.join(themeFolder, 'less'));
+	fs.copySync(path.join(baseThemeFolder, 'less'), path.join(themeFolder, 'less'));
 }
 
 //0. ensure theme folder structures
@@ -97,7 +103,7 @@ hammer.createFolderStructure({
 	//1. collect /fonts from lib packages into base/[theme]/fonts
 	var fontsFolder = path.join(themeFolder, 'fonts');
 	_.each(program.fonts, function(name){
-		fs.copySync(path.join(_.string.startsWith(program.lib, path.sep)?'':__dirname, program.lib, name, 'fonts'), path.join(fontsFolder, name));
+		fs.copySync(path.join(libFolder, name, 'fonts'), path.join(fontsFolder, name));
 		console.log('[Font]'.yellow, name, '==>'.grey, fontsFolder + '/' + name);
 	});
 

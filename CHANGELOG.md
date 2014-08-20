@@ -2,7 +2,8 @@ Change Log
 ==========
 1.7.1 (2014-08-19*)
 -------------------
-Removed redundant info from bower release dist package.
+1. Removed redundant info from bower release dist package.
+2. Simplified themeprep script options.
 
 In progress...
 
