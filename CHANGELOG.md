@@ -2,6 +2,8 @@ Change Log
 ==========
 1.7.1 (2014-08-19*)
 -------------------
+Removed redundant info from bower release dist package.
+
 In progress...
 
 x. + sprite preview (_Mockups context);
