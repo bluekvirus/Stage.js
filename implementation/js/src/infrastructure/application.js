@@ -304,6 +304,11 @@ window.onerror = function(errorMsg, target, lineNum){
 			}
 			
 			Application.onNavigate = function(options, silent){
+				if(!Application.available()) {
+					Application.trigger('app:blocked', options);
+					return;
+				}
+
 				var path = '';
 				if(_.isString(options)){
 					path = options;
@@ -424,7 +429,7 @@ window.onerror = function(errorMsg, target, lineNum){
 	 * @deprecated Use the detailed apis instead.
 	 */
 	Application.create = function(type, config){
-		console.warn('DEV::Application::create() method is deprecated, use methods listed in Application._apis for alternatives');
+		console.warn('DEV::Application::create() method is deprecated, use methods listed in ', Application._apis, ' for alternatives');
 	};
 
 	/**
@@ -504,6 +509,18 @@ window.onerror = function(errorMsg, target, lineNum){
 			}
 			return Application.Core.Editor.create(name, options);
 			//you can not get the definition returned.
+		},
+
+		lock: function(topic){
+			return Application.Core.Lock.lock(topic);
+		},
+
+		unlock: function(topic){
+			return Application.Core.Lock.unlock(topic);
+		},
+
+		available: function(topic){
+			return Application.Core.Lock.available(topic);
 		}		
 
 	});
@@ -539,6 +556,7 @@ window.onerror = function(errorMsg, target, lineNum){
 		'view',
 		'widget', 'editor', 'editor.validator - @alias:editor.rule',
 		'remote',
+		'lock', 'unlock', 'available',
 		'create - @deprecated'
 	];
 

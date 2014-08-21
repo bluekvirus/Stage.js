@@ -5,10 +5,10 @@ Change Log
 1. Removed redundant info from bower release dist package.
 2. Simplified themeprep script options.
 3. Added support for fast-click on mobile platforms.
+4. Refined app lock/unlock mech & updated docs.
 
 In progress...
 
-x. + refining app locking mech, app.lock/unlock/createLock(topic, allowance) methods with actions/a tags.
 x. + sprite preview (_Mockups context);
 
 

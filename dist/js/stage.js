@@ -305,6 +305,11 @@ window.onerror = function(errorMsg, target, lineNum){
 			}
 			
 			Application.onNavigate = function(options, silent){
+				if(!Application.available()) {
+					Application.trigger('app:blocked', options);
+					return;
+				}
+
 				var path = '';
 				if(_.isString(options)){
 					path = options;
@@ -425,7 +430,7 @@ window.onerror = function(errorMsg, target, lineNum){
 	 * @deprecated Use the detailed apis instead.
 	 */
 	Application.create = function(type, config){
-		console.warn('DEV::Application::create() method is deprecated, use methods listed in Application._apis for alternatives');
+		console.warn('DEV::Application::create() method is deprecated, use methods listed in ', Application._apis, ' for alternatives');
 	};
 
 	/**
@@ -505,6 +510,18 @@ window.onerror = function(errorMsg, target, lineNum){
 			}
 			return Application.Core.Editor.create(name, options);
 			//you can not get the definition returned.
+		},
+
+		lock: function(topic){
+			return Application.Core.Lock.lock(topic);
+		},
+
+		unlock: function(topic){
+			return Application.Core.Lock.unlock(topic);
+		},
+
+		available: function(topic){
+			return Application.Core.Lock.available(topic);
 		}		
 
 	});
@@ -540,6 +557,7 @@ window.onerror = function(errorMsg, target, lineNum){
 		'view',
 		'widget', 'editor', 'editor.validator - @alias:editor.rule',
 		'remote',
+		'lock', 'unlock', 'available',
 		'create - @deprecated'
 	];
 
@@ -982,6 +1000,109 @@ window.onerror = function(errorMsg, target, lineNum){
 	});
 
 })(Application, _, Marionette);
+/**
+ * Application locking mech for actions, events and <a href> navigations ...
+ *
+ * Usage
+ * -----
+ * create (name, number) -- topic and allowance;
+ * lock (name) -- 	return true for locking successfully, false otherwise;
+ * 					default on creating a (name, 1) lock for unknown name;
+ * 					no name means to use the global lock;
+ * unlock (name) -- unlock topic, does nothing by default;
+ * 					no name means to use the global lock;
+ * get(name) -- get specific lock topic info;
+ * 				no name means to return all info;
+ *
+ * @author Tim.Liu
+ * @created 2014.08.21
+ */
+
+;(function(app){
+
+	var definition = app.module('Core.Lock');
+	var locks = {},
+	global = false; //true to lock globally, false otherwise.
+
+	_.extend(definition, {
+		create: function(topic, allowance){
+			if(!_.isString(topic) || !topic) throw new Error('DEV::Core.Lock::You must give this lock a name/topic ...');
+			if(locks[topic]) return false;
+
+			allowance = _.isNumber(allowance)? (allowance || 1) : 1;
+			locks[topic] = {
+				current: allowance,
+				allowance: allowance
+			};
+			return true;
+		},
+
+		get: function(topic){
+			if(!topic || topic === '*') return {
+				global: global,
+				locks: locks
+			};
+			else
+				return locks[topic];
+		},
+
+		//return true/false indicating op successful/unsuccessful
+		lock: function(topic){
+			if(global) return false;
+
+			if(!topic || topic === '*') {
+				//global
+				if(!global){ //not locked
+					global = true;
+					return true;
+				}else //locked already
+					return false;
+			}else {
+				if(_.isUndefined(locks[topic])){
+					this.create(topic, 1);
+					return this.lock(topic);
+				}else{
+					if(locks[topic].current > 0){
+						locks[topic].current --;
+						return true;
+					}else 
+						return false;
+				}
+			}
+		},
+
+		//return nothing...
+		unlock: function(topic){
+			if(!topic || topic === '*') {
+				//global
+				if(global){ //locked
+					global = false;
+				}
+			}else {
+				if(!_.isUndefined(locks[topic])){
+					if(locks[topic].current < locks[topic].allowance)
+						locks[topic].current ++;
+				}
+			}
+		},
+
+		available: function(topic){
+			if(global) return false;
+			
+			if(!topic || topic === '*')
+				return global === false;
+			else {
+				var status = this.get(topic);
+				if(status) return status.current > 0;
+				else return true;
+			} 
+				
+		}
+	});
+
+
+
+})(Application);
 ;(function(app){
 
 	//1 Override the default raw-template retrieving method
@@ -1081,14 +1202,9 @@ window.onerror = function(errorMsg, target, lineNum){
  * Here we extend the html tag attributes to be auto-recognized by a Marionette.View.
  * This simplifies the view creation by indicating added functionality through template string. (like angular.js?)
  *
- * Disable
- * -------
- * Pass in this.ui or options.ui or a function as options to return options to bypass the Fixed enhancement.
- * 	
  * Optional
  * --------
- * 1. action tags auto listener hookup with mutex-locking on other action listeners. (this.un/lockUI(no param) and this.isUILocked(no param))
- * 	  	[do not use param in this.un/lockUI() and this.isUILocked() with the current impl since they will be simplified further]
+ * 1. action tags auto listener hookup with mutex-locking
  * 2. tooltip
  * 3. overlay - use this view as an overlay
  * 
@@ -1133,7 +1249,6 @@ window.onerror = function(errorMsg, target, lineNum){
 	_.extend(Backbone.Marionette.View.prototype, {
 
 		enableActionTags: function(uiName, passOn){ //the uiName is just there to output meaningful dev msg if some actions haven't been implemented.
-			this.enableUILocks();
 
 			if(_.isBoolean(uiName)){
 				passOn = uiName;
@@ -1149,13 +1264,17 @@ window.onerror = function(errorMsg, target, lineNum){
 			uiName = uiName || this.name || 'UNKNOWN.View';
 
 			this._doAction = function(e){
-				if(this.isUILocked()) {
-					e.stopPropagation();
-					e.preventDefault();
-					return; //check on the general lock first (not per-region locks)
-				}
+
 				var $el = $(e.currentTarget);
 				var action = $el.attr('action') || 'UNKNOWN';
+				var lockTopic = $el.attr('lock');
+
+				if(lockTopic && !app.lock(lockTopic)){
+					e.stopPropagation();
+					e.preventDefault();
+					app.trigger('app:blocked', action, lockTopic);
+					return;
+				}
 
 				//allow triggering certain event only.
 				var eventForwarding = String(action).split(':');
@@ -1168,7 +1287,7 @@ window.onerror = function(errorMsg, target, lineNum){
 				var doer = this.actions[action];
 				if(doer) {
 					e.stopPropagation(); //Important::This is to prevent confusing the parent view's action tag listeners.
-					doer.apply(this, [$el, e]); //use 'this' view object as scope when applying the action listeners.
+					doer.apply(this, [$el, e, lockTopic]); //use 'this' view object as scope when applying the action listeners.
 				}else {
 					if(passOn){
 						return;
@@ -1182,77 +1301,6 @@ window.onerror = function(errorMsg, target, lineNum){
 
 			
 	});
-
-
-	/**
-	* UI Locks support
-	* Add a _uilocks map for each of the UI view on screen, for managing UI action locks for its regions
-	* Also it will add in a _all region for locking the whole UI
-	* Usage: 
-	* 		1. lockUI/unlockUI([region], [caller])
-	* 		2. isUILocked([region])
-	*/
-	_.extend(Backbone.Marionette.View.prototype, {
-		//only for layouts
-		enableUILocks: function(){
-			//collect valid regions besides _all
-			this._uilocks = _.reduce(this.regions, function(memo, val, key, list){
-				memo[key] = false;
-				return memo;
-			}, {_all: false});
-
-			//region, caller are optional
-			this.lockUI = function(region, caller){
-				region = this._checkRegion(region);
-
-				caller = caller || '_default_';
-				if(!this._uilocks[region]){ //not locked, lock it with caller signature!
-					this._uilocks[region] = caller;
-					return true;
-				}
-				if(this._uilocks[region] === caller) //locked by caller already, bypass.
-					return true;
-				//else throw error...since it is already locked, by something else tho...
-				throw new Error('DEV::View::UI Locks::This region ' + region + ' is already locked by ' + this._uilocks[region]);
-			};
-
-			//region, caller are optional
-			this.unlockUI = function(region, caller){
-				region = this._checkRegion(region);
-
-				caller = caller || '_default_';
-				if(!this._uilocks[region]) return true; //not locked, bypass.
-				if(this._uilocks[region] === caller){ //locked by caller, release it.
-					this._uilocks[region] = false;
-					return true;
-				}
-				//else throw error...
-				throw new Error('DEV::View::UI Locks::This region ' + region + ' is locked by ' + this._uilocks[region] + ', you can NOT unlock it with ' + caller);
-			};
-
-			this.isUILocked = function(region){
-				region = this._checkRegion(region);
-
-				return this._uilocks[region];
-			};
-
-			//=====Internal Workers=====
-			this._checkRegion = function(region){
-				if(!this._uilocks) throw new Error('DEV::View::You need to enableUILocks() before you can use this...');
-
-				if(!region)
-					region = '_all';
-				else
-					if(!this.regions || !this.regions[region])
-						throw new Error('DEV::View::UI Locks::This region does NOT exist - ' + region);
-				return region;
-			};
-			//=====Internal Workers=====		
-		}				
-
-	});
-
-
 
 
 	/**
@@ -1983,6 +2031,7 @@ var I18N = {};
 			url: [configure.resourcePath, locale, configure.translationFile].join('/'),
 			async: false,
 			success: function(data, textStatus, jqXHR) {
+				if(!data || !data.trans) throw new Error('RUNTIME::i18n::Malformed ' + locale + ' data...');
 				resources = data.trans;
 			},
 			error: function(jqXHR, textStatus, errorThrown) {

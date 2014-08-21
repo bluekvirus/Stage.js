@@ -69,6 +69,7 @@ var I18N = {};
 			url: [configure.resourcePath, locale, configure.translationFile].join('/'),
 			async: false,
 			success: function(data, textStatus, jqXHR) {
+				if(!data || !data.trans) throw new Error('RUNTIME::i18n::Malformed ' + locale + ' data...');
 				resources = data.trans;
 			},
 			error: function(jqXHR, textStatus, errorThrown) {

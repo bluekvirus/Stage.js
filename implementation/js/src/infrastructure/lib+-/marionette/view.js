@@ -2,14 +2,9 @@
  * Here we extend the html tag attributes to be auto-recognized by a Marionette.View.
  * This simplifies the view creation by indicating added functionality through template string. (like angular.js?)
  *
- * Disable
- * -------
- * Pass in this.ui or options.ui or a function as options to return options to bypass the Fixed enhancement.
- * 	
  * Optional
  * --------
- * 1. action tags auto listener hookup with mutex-locking on other action listeners. (this.un/lockUI(no param) and this.isUILocked(no param))
- * 	  	[do not use param in this.un/lockUI() and this.isUILocked() with the current impl since they will be simplified further]
+ * 1. action tags auto listener hookup with mutex-locking
  * 2. tooltip
  * 3. overlay - use this view as an overlay
  * 
@@ -54,7 +49,6 @@
 	_.extend(Backbone.Marionette.View.prototype, {
 
 		enableActionTags: function(uiName, passOn){ //the uiName is just there to output meaningful dev msg if some actions haven't been implemented.
-			this.enableUILocks();
 
 			if(_.isBoolean(uiName)){
 				passOn = uiName;
@@ -70,13 +64,17 @@
 			uiName = uiName || this.name || 'UNKNOWN.View';
 
 			this._doAction = function(e){
-				if(this.isUILocked()) {
-					e.stopPropagation();
-					e.preventDefault();
-					return; //check on the general lock first (not per-region locks)
-				}
+
 				var $el = $(e.currentTarget);
 				var action = $el.attr('action') || 'UNKNOWN';
+				var lockTopic = $el.attr('lock');
+
+				if(lockTopic && !app.lock(lockTopic)){
+					e.stopPropagation();
+					e.preventDefault();
+					app.trigger('app:blocked', action, lockTopic);
+					return;
+				}
 
 				//allow triggering certain event only.
 				var eventForwarding = String(action).split(':');
@@ -89,7 +87,7 @@
 				var doer = this.actions[action];
 				if(doer) {
 					e.stopPropagation(); //Important::This is to prevent confusing the parent view's action tag listeners.
-					doer.apply(this, [$el, e]); //use 'this' view object as scope when applying the action listeners.
+					doer.apply(this, [$el, e, lockTopic]); //use 'this' view object as scope when applying the action listeners.
 				}else {
 					if(passOn){
 						return;
@@ -103,77 +101,6 @@
 
 			
 	});
-
-
-	/**
-	* UI Locks support
-	* Add a _uilocks map for each of the UI view on screen, for managing UI action locks for its regions
-	* Also it will add in a _all region for locking the whole UI
-	* Usage: 
-	* 		1. lockUI/unlockUI([region], [caller])
-	* 		2. isUILocked([region])
-	*/
-	_.extend(Backbone.Marionette.View.prototype, {
-		//only for layouts
-		enableUILocks: function(){
-			//collect valid regions besides _all
-			this._uilocks = _.reduce(this.regions, function(memo, val, key, list){
-				memo[key] = false;
-				return memo;
-			}, {_all: false});
-
-			//region, caller are optional
-			this.lockUI = function(region, caller){
-				region = this._checkRegion(region);
-
-				caller = caller || '_default_';
-				if(!this._uilocks[region]){ //not locked, lock it with caller signature!
-					this._uilocks[region] = caller;
-					return true;
-				}
-				if(this._uilocks[region] === caller) //locked by caller already, bypass.
-					return true;
-				//else throw error...since it is already locked, by something else tho...
-				throw new Error('DEV::View::UI Locks::This region ' + region + ' is already locked by ' + this._uilocks[region]);
-			};
-
-			//region, caller are optional
-			this.unlockUI = function(region, caller){
-				region = this._checkRegion(region);
-
-				caller = caller || '_default_';
-				if(!this._uilocks[region]) return true; //not locked, bypass.
-				if(this._uilocks[region] === caller){ //locked by caller, release it.
-					this._uilocks[region] = false;
-					return true;
-				}
-				//else throw error...
-				throw new Error('DEV::View::UI Locks::This region ' + region + ' is locked by ' + this._uilocks[region] + ', you can NOT unlock it with ' + caller);
-			};
-
-			this.isUILocked = function(region){
-				region = this._checkRegion(region);
-
-				return this._uilocks[region];
-			};
-
-			//=====Internal Workers=====
-			this._checkRegion = function(region){
-				if(!this._uilocks) throw new Error('DEV::View::You need to enableUILocks() before you can use this...');
-
-				if(!region)
-					region = '_all';
-				else
-					if(!this.regions || !this.regions[region])
-						throw new Error('DEV::View::UI Locks::This region does NOT exist - ' + region);
-				return region;
-			};
-			//=====Internal Workers=====		
-		}				
-
-	});
-
-
 
 
 	/**
