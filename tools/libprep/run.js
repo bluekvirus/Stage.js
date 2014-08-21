@@ -9,7 +9,7 @@
 
 var buildify = require('buildify'),
 path = require('path'),
-fs = require('fs'),
+fs = require('fs-extra'),
 ncp = require('ncp').ncp,
 colors = require('colors'),
 _ = require('underscore'),
@@ -20,8 +20,8 @@ ncp.limit = 16;
 
 /*!!!!!Change this if .bowerrc changes!!!!!*/
 var implFolder = '../../implementation',
-distFolder = [implFolder, 'js/lib'].join('/'),
-libBase = [implFolder, 'bower_components'].join('/');
+distFolder = path.join(implFolder, 'js', 'lib'),
+libBase = path.join(implFolder, 'bower_components');
 
 
 buildify.task({
@@ -80,7 +80,7 @@ buildify.task({
 	task: function(){
 		var config = ['fontawesome'];
 		_.each(config, function(lib){
-			buildify().setDir([libBase, lib].join('/')).setContent(';').save(lib + '.js');
+			buildify().setDir(path.join(libBase, lib)).setContent(';').save(lib + '.js');
 		});
 	}
 })
@@ -93,7 +93,7 @@ buildify.task({
 		};
 
 		_.each(config, function(js, pack){
-			buildify().setDir([libBase, pack].join('/')).load(js).uglify().save([path.basename(js, '.js'), 'min', 'js'].join('.'));
+			buildify().setDir(path.join(libBase, pack)).load(js).uglify().save([path.basename(js, '.js'), 'min', 'js'].join('.'));
 		})
 	}
 });
@@ -131,7 +131,7 @@ buildify.task({
 			//now libMap[lib] may or may not be a single string path			
 			if(fix[lib])
 				//reset to lib's root folder
-				libMap[lib] = [libBase, lib, fix[lib]].join('/');
+				libMap[lib] = path.join(libBase, lib, fix[lib]);
 			else
 				//use map path
 				libMap[lib] = _.isArray(map[lib])? libMap[lib] : map[lib];
@@ -182,8 +182,9 @@ function combine(bowerInfo, name){
 				libPackageInfo = {};
 			}
 
-			versions.list.push({name: lib, version: libBowerInfo.version, url: libBowerInfo.homepage || libPackageInfo.homepage || (libPackageInfo.repository && libPackageInfo.repository.url)});
-			console.log(lib.yellow, libBowerInfo.version.green, '[', libMap[lib].grey, ']');
+			var size = _.str.numberFormat(fs.statSync(libMap[lib]).size/1024, 1);
+			versions.list.push({name: lib, size: size, version: libBowerInfo.version, url: libBowerInfo.homepage || libPackageInfo.homepage || (libPackageInfo.repository && libPackageInfo.repository.url)});
+			console.log(lib.yellow, libBowerInfo.version.green, '[', (size > 100? size.red : size.grey)  + ' KB', ']', '[', libMap[lib].grey, ']');
 			
 		}
 		else {
@@ -207,7 +208,9 @@ function combine(bowerInfo, name){
 		dependencies: bowerInfo.dependencies
 	}))).setDir(implFolder).save('starter-kit.bower.json');
 	target.setDir(distFolder).save(name + '.js').uglify().save(name + '.min.js');
-	
+	_.each(['.js', '.min.js'], function(v){
+		console.log((name + v).yellow, _.str.numberFormat(fs.statSync(path.join(distFolder, name + v)).size/1024, 1).grey, 'KB');
+	});
 };
 //-------------------------------------------
 

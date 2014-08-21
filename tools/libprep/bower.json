@@ -39,6 +39,7 @@
     "modernizr": "~2.x.x",
     "detectizr": "~2.x.x",
     "yepnope": "~1.x.x",
+    "fastclick": "~1.x.x",
     "jquery": "~2.x.x",
     "jquery.cookie": "~1.x.x",
     "jquery-ui": "1.10.4",
@@ -112,6 +113,7 @@
     "pickadate": "*"
   },
   "resolutions": {
-    "modernizr": "~2.x.x"
+    "modernizr": "~2.x.x",
+    "fastclick": "~1.0.3"
   }
 }

@@ -373,7 +373,11 @@ window.onerror = function(errorMsg, target, lineNum){
 				});
 			};
 
-			//1. Put main template into position.
+			//1. check if we need 'fast-click' on mobile plateforms
+			if(Modernizr.mobile)
+				FastClick.attach(document.body);
+
+			//2. Put main template into position.
 			Application.addRegions({
 				app: '[region="app"]'
 			});
@@ -387,7 +391,7 @@ window.onerror = function(errorMsg, target, lineNum){
 			Application.getRegion('app').show(Application.mainView);
 			Application.trigger('app:template-ready');
 
-			//2.Auto-detect and init context (view that replaces the body region)
+			//3.Auto-detect and init context (view that replaces the body region)
 			if(!window.location.hash){
 				if(!Application.Core.Context[Application.config.defaultContext])
 					console.warn('DEV::Application::You might want to define a Default context using app.create(\'Context Name\', {...})');
@@ -395,7 +399,7 @@ window.onerror = function(errorMsg, target, lineNum){
 					window.location.hash = ['#navigate', Application.config.defaultContext].join('/');
 			}
 
-			//3. Start the app
+			//4. Start the app
 			Application.start();
 
 		}
