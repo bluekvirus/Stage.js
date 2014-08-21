@@ -1766,20 +1766,40 @@ Include your libraries after `dependences.js` in `/implementation/index.html`.
 **Tip:** 
 Alternatively, you can always use a *CDN* (Content Delivery Network) to load the JavaScript libraries into your index.html (e.g [jsDelivr](http://www.jsdelivr.com/)) However, this will affect the build process since these libraries will not be combined if they are not from local.
 
-###Upgrade/Update
-Download and replace `stage.js` to update the infrastructure or through `bower`:
+###Initialize/Update project
+Start developing and keep your project up-to-date is made easy with the command-line devtools. You can install it through `npm`:
 ```
-//under '[kit]/implementation/'
-bower update stage
+npm -g install stage-devtools
 ```
-If you are using the **starter-kit** version, please go download the kit again and replace `/tools` folder and `/implementation/bower.json` as well. 
-
-Make sure you have saved your `/tools/build/config.dist.js` and `/tools/devserver/` related content (e.g `profile`, `middlewares` and `routers`).
-
-You should also keep an eye on `/implementation/index.html` in case `/tools/build` updates. The build tool might change its way of reading and analyzing the index file to support more build/combine options. 
+After installation, you can start using the tool with a globally available command `stagejs`:
+```
+stagejs env
+stagejs init
+stagejs update [--edge --packages]
+...
+```
+Read more about this cli tool [here](https://github.com/bluekvirus/Stage-devtools).
 
 ###What should I put in `/static`?
 `/resource` should contain static resources per locale. (per xx_XX folder, `/default` for locale independent)
+
+###Developing for Full-Screen?
+To develop your app to be full-screen, first setup the application to be in full-screen mode:
+```
+Application.setup({
+    fullScreen: true,
+    ...
+});
+```
+This will keep the `<body>` tag to be 100% on both its width and height to the browser window and set its `overflow-y/x` to `hidden`. You now need to set the height of your content region:
+```
+//Recall that when initialize is called, app template is already on screen.
+Application.addInitializer(function(options){
+    //1. calculate your content area height dynamically here;
+    //2. hook this calcuation function with app:resized event;
+});
+```
+You can use the `Application.mainView` variable to access the view instance that's holding the app template.
 
 ###View size measurement error?
 Our dynamic theme loading mechanism is currently racing with el size measuring in views' `onShow()` functions. This is mainly caused by modern browser's ability to multi-threading CSS rendering and JavaScript execution. Here is a quick & dirty solution:

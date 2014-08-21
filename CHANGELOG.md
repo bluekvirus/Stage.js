@@ -8,6 +8,7 @@ Change Log
 
 In progress...
 
+x. + refining app locking mech, app.lock/unlock/createLock(topic, allowance) methods with actions/a tags.
 x. + sprite preview (_Mockups context);
 
 
