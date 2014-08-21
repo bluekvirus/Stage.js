@@ -4,6 +4,7 @@ Change Log
 -------------------
 1. Removed redundant info from bower release dist package.
 2. Simplified themeprep script options.
+3. Added support for fast-click on mobile platforms.
 
 In progress...
 
