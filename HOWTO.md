@@ -33,6 +33,11 @@ Handling Data:
 * Application.remote (options)
 * Application.model({data}) - shortcut for new Backbone.Model(data)
 * Application.collection([data]) - shortcut for new Backbone.Collection(data)
+
+Mutual Exclusion:
+* Application.lock ([topic/lock])
+* Application.unlock ([topic/lock])
+* Application.available ([topic/lock])
 -----------------------------------------------------------------------------
 
 **Remember:** Your goal is to
@@ -96,7 +101,10 @@ Modern web application generates views according to user data dynamically. This 
 For *Regional*s (or any *Marionette.xView*) that you need to use again and again but with different configuration (e.g a Datagrid). Register it as a *Widget* or, in case of a basic input, an *Editor*. These reusable view definitions are call *Reusable*s in the framework. Think in terms of the **List and Container** technique as much as possible when creating them.
 
 ####Glue through events
-We encourage event programming in this framework. We glue views into a functioning whole by using meta-events. Whenever an interaction or transition happens (e.g navigation, context-swap, login, error, data-ready...), intead of calling the actual *doer*s, **fire/trigger an event first and provide a default listener**, so that later the actual behavior triggered by this event can be changed without affecting the glue/interfacing logic. Read carefully through the **Events** subsection in **Quick steps** below so you understand how to implement and extend application behaviors mainly through events. 
+We encourage event programming in this framework. We glue views into a functioning whole by using meta-events. Whenever an interaction or transition happens (e.g navigation, context-swap, login, error, data-ready...), instead of calling the actual *doer*s, **fire/trigger an event first and provide a default listener**, so that later the actual behavior triggered by this event can be changed without affecting the glue/interfacing logic. Read carefully through the **Events** subsection in **Quick steps** below so you understand how to implement and extend application behaviors mainly through events. 
+
+####Application locking
+Sometimes, with Ajax or other asynchronized operations (like timer related ones), you might need to disable the application's ability to navigate through views or respond to certain events/actions. We have a very neat locking module for you to use in just those situations. The 2-level locking design allows you to decide when to use the global lock or the topic based ones to maximize your control over the availability of UIs.
 
 ####Seems complicated...
 To focus, think of your application in terms of *Context*s and *Regional*s (pages and areas). Like drawing a series of pictures, each page is a *Context* and you lay things out by sketching out regions (areas) first on each page then refined the details (*Regionals*). Each *Context* can also be made state-aware through the same navigation mechanism that powers *Context* switching in the application container.
@@ -152,8 +160,14 @@ Use the project-kit distribution whenever you want to start a production level w
 
 ####Release pack
 > * /js
-> * /themes
-> * index.html
+>     - /lib
+>         + dependencies.min.js
+>         + dependencies.json
+>     - stage.js
+>     - stage.min.js
+> * CHANGELOG.md
+> * LICENSE
+> * README.md
 
 This distribution is designed to be simple and doesn't have tools and theme packages for production level development. The release-pack folder is serve-able out of the box.
 
@@ -170,6 +184,22 @@ Here is the recommended **workflow**. You should follow the steps each time you 
 
 
 ####Preparation
+#####Automatically
+1. Install the `stage-devtools` from `npm`:
+```
+npm -g install stage-devtools
+```
+2. Under an empty folder run:
+```
+stagejs init
+```
+3. [optional] Update everything with the latest edge version:
+```
+stagejs update --edge --packages
+```
+Read more about the dev tool [here](https://github.com/bluekvirus/Stage-devtools).
+
+#####Manually
 Download the *Stage.js* [project-kit](static/resource/default/download/stagejs-starter-kit.tar.gz) and extract its content to your project folder of choice.
 
 Under your project folder, open up a console/terminal on your OS and do the following:
@@ -630,52 +660,32 @@ Any *Marionette.xView* can have its actions configure block activated like this 
         ...,
         template: [
             '<div>',
-                '<span class="btn" action="opA">Do it!</span>', //1. mark action tag(s).
+                '<span class="btn" action="opA" lock="oplock">Do it!</span>', //1. mark action tag(s).
                 ...,
             '</div>',
         ],
         ...,
         actions: { //2. implement the action listeners.
             _bubble: false | true, //bubble un-matched click event up. [default: false]
-            'opA': function($triggerTag, e){...},
+            'opA': function($triggerTag, e, lock){
+                //do something here...
+                ...
+                app.unlock(lock); //lock = "oplock"
+            },
             'opB': ...
         }
     });
 })(Application);
 ```
-Note that only 'single-click' actions can be registered like this at the moment. 
+Note that only 'single-click' actions can be registered like this at the moment. As you can see from the example, optionally, you can lock the action tags with topic based application locks through the `lock="..."` attribute.
 
 Use `_bubble: true` if you want the click event to **propagate** to the parent view/container. `e.preventDefault()` needs to be specified in the action listeners if you don't want a clicking on `<a href="#xyz" action="another"></a>` tag to affect the navigation.
 
+If you have locked the application with `Application.lock()` then the actions will not respond until the application becomes available again. This constrain is stronger than topic based locking throught the `lock="your lock name"` attribute on action tags.
 
-#####Graphs
-We support graphs through SVG. A basic SVG library is integrated with the framework (Raphaël.js). You can use it in any *Marionette.xView* through:
-```
-Application.view({
-    svg: true,
-    onShow: function(){
-        if(this.paper) 
-            //draw...
-        else 
-            this.onPaperReady = function(paper){
-                //draw...
-            }
-    }
-});
-```
-Don't worry about the resizing routine, it is already prepared for you. The paper size will be set correctly to the container's through the use of `view:fit-paper` event on the container view object and there is an follow-up meta event `view:paper-resized` triggered on the view so you can do something accordingly after the SVG canvas is resized.
-```
-view.listenTo(app, 'app:resized', function(){
-    this.trigger('view:fit-paper')
-});
-view.onPaperResized(){
-    //draw...
-}
-```
+**Heads up**: Don't forget to unlock your lock, if specified through the `lock="..."` attribute, at the bottom of your action listener. 
 
-If you require charts to be drawn, look through our monitored libraries under `/bower_components` there should be **d3.js** and **highcharts.js** for exactly that.
-
-**Note:** HTML5 *Canvas* libraries will be added in the future.
+**Tip**: You can use `lock="*"` to lock the application globally.
 
 #####Events
 Some interactions demand **collaboration** between view objects, this is why we introduce the concept of meta-event programming. It is like coding through just interfaces in a object-oriented programming language but much more flexible. The goal is to let the developer code with events instead of APIs so the implementation can be delayed as much as possible. The underlying principle is very simple:
@@ -689,6 +699,10 @@ We have `Application (app:)`, `Context (context:)` and all the `Marionette.xView
 
 **Application** -- app:meta-event
 ```
+//bootstraping
+app:before-template-ready //fired before the application template is shown
+app:template-ready //fired after the application template is shown
+//navigation
 app:navigate (string) or ({context:..., module:...}, silent) - Application.onNavigate [pre-defined]
 app:context-guard-error (error, contextName) - [pre-defined]
 app:context-switched (contextName)  - [empty stub]
@@ -702,6 +716,8 @@ app:scroll - [empty stub]
 //global - for alerts and prompts
 app:success - [empty stub]
 app:error - [empty stub]
+//lock related
+app:blocked - [empty stub] (action/options, lock/(n/a))
 ```
 **Context** -- context:meta-event
 ```
@@ -765,6 +781,67 @@ subViewA {
 }
 ```
 **Remember:** Always prefer *Events* over *APIs* while implementing collaborations.
+
+#####Locks
+You can use a global lock to lock all UIs of your application, like this
+```
+//global lock
+var successful = Application.lock(); 
+Application.available(); //false
+Application.unlock();
+Application.available(); //true
+
+//global lock 
+var successful = Application.lock('*');
+Application.available('*'); //false 
+Application.unlock('*');
+Application.available('*'); //true
+```
+Global lock will also disable your navigation.
+
+Alternatively, you can choose to use topic based locking like we've introduced in the **Actions** section previously:
+```
+//topic based lock
+var successful = Application.lock('topic'); 
+Application.available('topic'); //false
+Application.unlock('topic');
+Application.available('topic'); //true
+
+Application.available('anything'); //true
+Application.lock();
+Application.lock('anything'); //false, since global lock is unavailable.
+Application.available('anything'); //false, since global lock is unavailable.
+```
+You can't acquire topic locks if the global lock is currently unavailable.
+
+#####Graphs
+We support graphs through SVG. A basic SVG library is integrated with the framework (Raphaël.js). You can use it in any *Marionette.xView* through:
+```
+Application.view({
+    svg: true,
+    onShow: function(){
+        if(this.paper) 
+            //draw...
+        else 
+            this.onPaperReady = function(paper){
+                //draw...
+            }
+    }
+});
+```
+Don't worry about the resizing routine, it is already prepared for you. The paper size will be set correctly to the container's through the use of `view:fit-paper` event on the container view object and there is an follow-up meta event `view:paper-resized` triggered on the view so you can do something accordingly after the SVG canvas is resized.
+```
+view.listenTo(app, 'app:resized', function(){
+    this.trigger('view:fit-paper')
+});
+view.onPaperResized(){
+    //draw...
+}
+```
+
+If you require charts to be drawn, look through our monitored libraries under `/bower_components` there should be **d3.js** and **highcharts.js** for exactly that.
+
+**Note:** HTML5 *Canvas* libraries will be added in the future.
 
 
 Inputs/Editors
@@ -1766,20 +1843,40 @@ Include your libraries after `dependences.js` in `/implementation/index.html`.
 **Tip:** 
 Alternatively, you can always use a *CDN* (Content Delivery Network) to load the JavaScript libraries into your index.html (e.g [jsDelivr](http://www.jsdelivr.com/)) However, this will affect the build process since these libraries will not be combined if they are not from local.
 
-###Upgrade/Update
-Download and replace `stage.js` to update the infrastructure or through `bower`:
+###Initialize/Update project
+Start developing and keep your project up-to-date is made easy with the command-line devtools. You can install it through `npm`:
 ```
-//under '[kit]/implementation/'
-bower update stage
+npm -g install stage-devtools
 ```
-If you are using the **starter-kit** version, please go download the kit again and replace `/tools` folder and `/implementation/bower.json` as well. 
-
-Make sure you have saved your `/tools/build/config.dist.js` and `/tools/devserver/` related content (e.g `profile`, `middlewares` and `routers`).
-
-You should also keep an eye on `/implementation/index.html` in case `/tools/build` updates. The build tool might change its way of reading and analyzing the index file to support more build/combine options. 
+After installation, you can start using the tool with a globally available command `stagejs`:
+```
+stagejs env
+stagejs init
+stagejs update [--edge --packages]
+...
+```
+Read more about this cli tool [here](https://github.com/bluekvirus/Stage-devtools).
 
 ###What should I put in `/static`?
 `/resource` should contain static resources per locale. (per xx_XX folder, `/default` for locale independent)
+
+###Developing for Full-Screen?
+To develop your app to be full-screen, first setup the application to be in full-screen mode:
+```
+Application.setup({
+    fullScreen: true,
+    ...
+});
+```
+This will keep the `<body>` tag to be 100% on both its width and height to the browser window and set its `overflow-y/x` to `hidden`. You now need to set the height of your content region:
+```
+//Recall that when initialize is called, app template is already on screen.
+Application.addInitializer(function(options){
+    //1. calculate your content area height dynamically here;
+    //2. hook this calcuation function with app:resized event;
+});
+```
+You can use the `Application.mainView` variable to access the view instance that's holding the app template.
 
 ###View size measurement error?
 Our dynamic theme loading mechanism is currently racing with el size measuring in views' `onShow()` functions. This is mainly caused by modern browser's ability to multi-threading CSS rendering and JavaScript execution. Here is a quick & dirty solution:
