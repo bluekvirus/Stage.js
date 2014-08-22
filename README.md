@@ -25,7 +25,7 @@ npm -g install stage-devtools
 mkdir project
 cd project
 stagejs init
-stagejs serve
+stagejs serve [--port <number>]
 ```
 You can now start developing your app with Stage.js. Read the documentation below for more.
 

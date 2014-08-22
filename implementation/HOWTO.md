@@ -199,7 +199,7 @@ stagejs update --edge --packages
 ```
 4. Start the development server
 ```
-stagejs serve [port]
+stagejs serve [--port <number>]
 ```
 Read more about the dev tool [here](https://github.com/bluekvirus/Stage-devtools).
 
