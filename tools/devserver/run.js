@@ -62,6 +62,7 @@ load('util', options)
 
 
 //start server
+profile.port = args[1] || profile.port;
 server.listen(profile.port, function(){
 	console.log('Server started on', profile.port.yellow);
 });

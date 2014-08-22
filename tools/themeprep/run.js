@@ -69,10 +69,10 @@ program
 //check target theme name, default to 'project' (transit to stage-devtools)
 var theme = program.args[0] || 'project';
 var themeFolder = path.join(_.string.startsWith(program.base, path.sep)?'':__dirname, program.base, 'themes', theme);
-var libFolder = path.join(themeFolder, '../../', 'bower_components');
+var libFolder = path.join(themeFolder, '..', '..', 'bower_components');
 console.log('Preparing Theme:'.yellow, theme);
 var baseTheme = 'default',
-baseThemeFolder = path.join(themeFolder, '../', baseTheme);
+baseThemeFolder = path.join(themeFolder, '..', baseTheme);
 
 if(!fs.existsSync(themeFolder)){
 	console.log('Creating new theme from'.yellow, baseTheme, '==>', theme);

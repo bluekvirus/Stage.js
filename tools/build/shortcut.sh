@@ -12,5 +12,5 @@ rm ../../dist/*.md
 rm ../../dist/LICENSE
 #----------------------------
 node run.js -C starter-kit -G ../../implementation/static/resource/default/download/stagejs-starter-kit.tar.gz 'dist/kit'
-node run.js 'dist/site'
+node run.js -C site 'dist/site'
 exit 0

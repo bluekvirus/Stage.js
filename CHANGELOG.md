@@ -6,6 +6,7 @@ Change Log
 2. Simplified themeprep script options.
 3. Added support for fast-click on mobile platforms.
 4. Refined app lock/unlock mech & updated docs.
+5. Fixed args/path issue in tools to support stage-devtools.
 
 In progress...
 

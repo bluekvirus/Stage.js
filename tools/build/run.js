@@ -23,21 +23,29 @@ targz = new (require('tar.gz'))(9, 9),
 fs = require('fs-extra'),
 wrench = require('wrench');
 
+_.string = require('underscore.string');
+
+////////////Temp Solution(transit to stage-devtools)/////////////
+var implFolder = '../../implementation';
+/////////////////////////////////////////////////////////////////
+
 program.version('1.0.0')
 		.usage('[options] <output folder>')
-		.option('-C --config [dist]', 'config name used for the build, \'abc\' means to use \'config.abc.js\'')
+		.option('-B --base <path>', 'implementation base folder, default to ' + implFolder, implFolder)
+		.option('-C --config [dist]', 'config name used for the build, \'abc\' means to use \'config.abc.js\'', 'dist')
 		.option('-G --targz <path>', 'put the output path into a compressed .tar.gz file')
 		.option('-Z --zip <path>', 'put the output path into a compressed .zip file [use only on non-Unix env]');
 
 program.command('*').description('build your web front-end project using customized configure').action(function(outputFolder){
 	var startTime = new Date().getTime();
-	program.config = program.config || path.basename(outputFolder);
 
 	if(!program.config) throw new Error('You must choose a config.[profile].js for this build...');
 
 	//0. load build config according to --config
 	var configName = './config.' + program.config + '.js';
 	var config = require(configName);
+	config.src.root = program.base || config.src.root;
+	config.src.root = path.join(_.string.startsWith(config.src.root, path.sep)?'':__dirname, config.src.root);
 	console.log('Start building using config ['.yellow, configName, '] >> ['.yellow, outputFolder, ']'.yellow);
 
 	//1. start processing index page
@@ -50,7 +58,7 @@ program.command('*').description('build your web front-end project using customi
 
 	//2. combine view templates into all.json
 	if(config.src.templates){
-		var tplBase = path.join(__dirname, config.src.root, config.src.templates);
+		var tplBase = path.join(config.src.root, config.src.templates);
 		if(fs.existsSync(tplBase)){
 			var tpls = wrench.readdirSyncRecursive(tplBase);
 			tpls = _.reject(tpls, function(name){

@@ -115,7 +115,7 @@ module.exports = {
 		if(!targetJS[options.js.default]) {
 			targetJS[options.js.default] = {
 				name: options.js.default,
-				script:buildify().setContent(';')
+				script:buildify().setDir(options.root).setContent(';')
 			};
 			options.js.targets[options.js.default] = {
 				after: options.js.after,
@@ -132,7 +132,7 @@ module.exports = {
 			if(shouldInclude($script)){
 				if(srcPath){
 					//ref-ed js, concat 
-					getTargetJS(target).script.concat(path.join(options.root, srcPath));
+					getTargetJS(target).script.concat(srcPath);
 					console.log('[included:'.green + getTargetJS(target).name.grey +'] '.green + srcPath);
 				}else {
 					//in-line
