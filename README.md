@@ -8,37 +8,30 @@ This project produces **Stage.js** - an infrastructure for building modern web a
 What's next?
 ------------
 2.0.0 Roadmap:
-* Merge Context, Regional, Widget and Editor to be named Views with Roles(mixins);
+* Merge Context, Regional, Widget, Editor and Canvas to be named Views with mixins;
 * Use the navigation chain from start based only on named layout views with navRegions;
-* Introduce State(ViewModel) into the picture. (Data => State, View/Layout, Navigation, Widget/Editor, Events);
+* Introduce State(ViewModel) into the picture. (Data, State, (View)Model/(View)Collection, View/Layout, Navigation, Widget/Editor, Events);
 * Stateful navigation mech: app@state/context@state/lvl1@state/lvl2@state;
-* Remove deps on Marionette.js;
+* Remove deps on Marionette.js, jQuery UI Core/Widget and Raphael.js;
 * Datagrid+ : select-all header/cell, details row;
 * Editor+ : Spinner/Range, Switches, DnD Listing;
 * local filter/sorter mech into list views; 
 * local pagination mech into list views (in addition to the remote one we already have);
 
-Installation
+Quick Start
 ------------
-###Framework
-(compiled index.html, js and css only)
 ```
-bower install stage
+npm -g install stage-devtools
+mkdir project
+cd project
+stagejs init
+stagejs serve
 ```
-
-###Starter-Kit 
-(base project structure with development theme/tools bundled)
-[download](http://bluekvirus.github.io/Stage.js/static/resource/default/download/stagejs-starter-kit.tar.gz)
-
-Follow the documentation link below to see how you can quickly start your project with this package.
-
-If you are on Windows you might need [7z](http://www.7-zip.org/) to open it.
-
+You can now start developing your app with Stage.js. Read the documentation below for more.
 
 Documentation
 -------------
 See [documentation](http://bluekvirus.github.io/Stage.js/#navigate/Document)
-
 
 Contribute
 ----------

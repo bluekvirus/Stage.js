@@ -13,6 +13,8 @@
 		* fullScreen,
 		* rapidEventDebounce,
 		* baseAjaxURI
+		* i18nResources
+		* i18nTransFile
  * 2. Application.run();
  *
  * ###How to interface with remote data?
@@ -154,7 +156,8 @@ window.onerror = function(errorMsg, target, lineNum){
 	        rapidEventDebounce: 200, //in ms this is the rapid event debounce value shared within the application (e.g window resize).
 	        baseAjaxURI: '/api', //Modify this to fit your own backend apis. e.g index.php?q= or '/api',
 	        viewTemplates: 'static/template', //this is assisted by the build tool, combining all the *.html handlebars templates into one big json.
-			
+			i18nResources: 'static/resource', //this the the default location where our I18N plugin looks for locale translations.
+			i18nTransFile: 'i18n.json', //can be {locale}.json
 			/*Global CROSSDOMAIN Settings - Deprecated: set this in a per-request base or use server side proxy*/
 			//see MDN - https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS
 			//If you ever need crossdomain in development, we recommend that you TURN OFF local server's auth layer/middleware. 
@@ -245,13 +248,17 @@ window.onerror = function(errorMsg, target, lineNum){
 		};
 
 
-		//3 Load Theme & View Templates
+		//3 Load Theme css & View templates & i18n translations
 		var theme = URI(window.location.toString()).search(true).theme || Application.config.theme;
 		Application.Util.rollTheme(theme); //theme = false or '' will disable theme rolling.
 
 		if(Application.config.viewTemplates)
 			Application.Util.Tpl.load(Application.config.viewTemplates + '/all.json');
 
+		I18N.configure({
+			resourcePath: Application.config.i18nResources,
+			translationFile: Application.config.i18nTransFile
+		});
 
 		//4 Add Navigation workers
 		/**

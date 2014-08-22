@@ -7,6 +7,7 @@ Change Log
 3. Added support for fast-click on mobile platforms.
 4. Refined app lock/unlock mech & updated docs.
 5. Fixed args/path issue in tools to support stage-devtools.
+6. Added i18n related config to app.setup(). Refined i18n file name setting.
 
 In progress...
 

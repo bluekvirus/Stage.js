@@ -40,65 +40,66 @@ var I18N = {};
 		resourcePath: 'static/resource',
 		translationFile: 'i18n.json'
 	};
-	I18N.configure = function(options){
-		_.extend(configure, options);
-	};
-	//-------------------------------------------------
-	
+
 	var params = URI(window.location.toString()).search(true);
 	var locale = params.locale;
 	var localizer = params.localizer;
 	
-	var resources;
-	
-	if (locale) {
-		// load resources from file
-		/**
-		 * {locale}.json
-		 * {
-		 * 	locale: {locale},
-		 *  trans: {
-		 * 	 key: "" or {
-		 * 	  "_default": "",
-		 *    {ns}: ""
-		 *   }
-		 *  }
-		 * }
-		 */
-		$.ajax({
-			url: [configure.resourcePath, locale, configure.translationFile].join('/'),
-			async: false,
-			success: function(data, textStatus, jqXHR) {
-				if(!data || !data.trans) throw new Error('RUNTIME::i18n::Malformed ' + locale + ' data...');
-				resources = data.trans;
-			},
-			error: function(jqXHR, textStatus, errorThrown) {
-				throw new Error('RUNTIME::i18n::' + errorThrown);
-			}
-		});
+	var resources;	
+	I18N.configure = function(options){
+		_.extend(configure, options);
+		if (locale) {
+			// load resources from file
+			/**
+			 * {locale}.json or {locale}/{translationFile}
+			 * {
+			 * 	locale: {locale},
+			 *  trans: {
+			 * 	 key: "" or {
+			 * 	  "_default": "",
+			 *    {ns}: ""
+			 *   }
+			 *  }
+			 * }
+			 */
+			$.ajax({
+				url: [configure.resourcePath, (configure.translationFile.contains('{locale}')?configure.translationFile.replace('{locale}', locale):[locale, configure.translationFile].join('/'))].join('/'),
+				async: false,
+				success: function(data, textStatus, jqXHR) {
+					if(!data || !data.trans) throw new Error('RUNTIME::i18n::Malformed ' + locale + ' data...');
+					resources = data.trans;
+				},
+				error: function(jqXHR, textStatus, errorThrown) {
+					throw new Error('RUNTIME::i18n::' + errorThrown);
+				}
+			});
 
-		resources = resources || {};
-		
-		//Localizer mode, merge resources with localStorage, cache is modified upon localizer's DnD action (modified property file).
-		if (localizer) {
-			var resources_cache_key = ['resources_', locale].join('');
-			var cached_resources = store.get(resources_cache_key);
-			if (cached_resources) {
-				_.each(cached_resources, function(trans, key){
-					//favor cached_ over loaded resources.
-					if(!trans) return;
-					if(!resources[key]) {
-						resources[key] = trans;
-						return;
-					}
-					//if we had a string trans, let cache (object/string) override resource.
-					if(_.isString(resources[key])) resources[key] = trans;
-					//if we had a trans object(with ns), only extend if cached is a trans object.
-					else if(_.isObject(resources[key]) && _.isObject(trans)) _.extend(resources[key], trans);
-				});
+			resources = resources || {};
+			
+			//Localizer mode, merge resources with localStorage, cache is modified upon localizer's DnD action (modified property file).
+			if (localizer) {
+				var resources_cache_key = ['resources_', locale].join('');
+				var cached_resources = store.get(resources_cache_key);
+				if (cached_resources) {
+					_.each(cached_resources, function(trans, key){
+						//favor cached_ over loaded resources.
+						if(!trans) return;
+						if(!resources[key]) {
+							resources[key] = trans;
+							return;
+						}
+						//if we had a string trans, let cache (object/string) override resource.
+						if(_.isString(resources[key])) resources[key] = trans;
+						//if we had a trans object(with ns), only extend if cached is a trans object.
+						else if(_.isObject(resources[key]) && _.isObject(trans)) _.extend(resources[key], trans);
+					});
+				}
 			}
-		}
-	}
+		}		
+		return this;
+	};
+	//-------------------------------------------------
+	
 	
 	/**
 	 * =============================================================

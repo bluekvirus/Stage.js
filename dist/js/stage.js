@@ -14,6 +14,8 @@
 		* fullScreen,
 		* rapidEventDebounce,
 		* baseAjaxURI
+		* i18nResources
+		* i18nTransFile
  * 2. Application.run();
  *
  * ###How to interface with remote data?
@@ -155,7 +157,8 @@ window.onerror = function(errorMsg, target, lineNum){
 	        rapidEventDebounce: 200, //in ms this is the rapid event debounce value shared within the application (e.g window resize).
 	        baseAjaxURI: '/api', //Modify this to fit your own backend apis. e.g index.php?q= or '/api',
 	        viewTemplates: 'static/template', //this is assisted by the build tool, combining all the *.html handlebars templates into one big json.
-			
+			i18nResources: 'static/resource', //this the the default location where our I18N plugin looks for locale translations.
+			i18nTransFile: 'i18n.json', //can be {locale}.json
 			/*Global CROSSDOMAIN Settings - Deprecated: set this in a per-request base or use server side proxy*/
 			//see MDN - https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS
 			//If you ever need crossdomain in development, we recommend that you TURN OFF local server's auth layer/middleware. 
@@ -246,13 +249,17 @@ window.onerror = function(errorMsg, target, lineNum){
 		};
 
 
-		//3 Load Theme & View Templates
+		//3 Load Theme css & View templates & i18n translations
 		var theme = URI(window.location.toString()).search(true).theme || Application.config.theme;
 		Application.Util.rollTheme(theme); //theme = false or '' will disable theme rolling.
 
 		if(Application.config.viewTemplates)
 			Application.Util.Tpl.load(Application.config.viewTemplates + '/all.json');
 
+		I18N.configure({
+			resourcePath: Application.config.i18nResources,
+			translationFile: Application.config.i18nTransFile
+		});
 
 		//4 Add Navigation workers
 		/**
@@ -2002,65 +2009,66 @@ var I18N = {};
 		resourcePath: 'static/resource',
 		translationFile: 'i18n.json'
 	};
-	I18N.configure = function(options){
-		_.extend(configure, options);
-	};
-	//-------------------------------------------------
-	
+
 	var params = URI(window.location.toString()).search(true);
 	var locale = params.locale;
 	var localizer = params.localizer;
 	
-	var resources;
-	
-	if (locale) {
-		// load resources from file
-		/**
-		 * {locale}.json
-		 * {
-		 * 	locale: {locale},
-		 *  trans: {
-		 * 	 key: "" or {
-		 * 	  "_default": "",
-		 *    {ns}: ""
-		 *   }
-		 *  }
-		 * }
-		 */
-		$.ajax({
-			url: [configure.resourcePath, locale, configure.translationFile].join('/'),
-			async: false,
-			success: function(data, textStatus, jqXHR) {
-				if(!data || !data.trans) throw new Error('RUNTIME::i18n::Malformed ' + locale + ' data...');
-				resources = data.trans;
-			},
-			error: function(jqXHR, textStatus, errorThrown) {
-				throw new Error('RUNTIME::i18n::' + errorThrown);
-			}
-		});
+	var resources;	
+	I18N.configure = function(options){
+		_.extend(configure, options);
+		if (locale) {
+			// load resources from file
+			/**
+			 * {locale}.json or {locale}/{translationFile}
+			 * {
+			 * 	locale: {locale},
+			 *  trans: {
+			 * 	 key: "" or {
+			 * 	  "_default": "",
+			 *    {ns}: ""
+			 *   }
+			 *  }
+			 * }
+			 */
+			$.ajax({
+				url: [configure.resourcePath, (configure.translationFile.contains('{locale}')?configure.translationFile.replace('{locale}', locale):[locale, configure.translationFile].join('/'))].join('/'),
+				async: false,
+				success: function(data, textStatus, jqXHR) {
+					if(!data || !data.trans) throw new Error('RUNTIME::i18n::Malformed ' + locale + ' data...');
+					resources = data.trans;
+				},
+				error: function(jqXHR, textStatus, errorThrown) {
+					throw new Error('RUNTIME::i18n::' + errorThrown);
+				}
+			});
 
-		resources = resources || {};
-		
-		//Localizer mode, merge resources with localStorage, cache is modified upon localizer's DnD action (modified property file).
-		if (localizer) {
-			var resources_cache_key = ['resources_', locale].join('');
-			var cached_resources = store.get(resources_cache_key);
-			if (cached_resources) {
-				_.each(cached_resources, function(trans, key){
-					//favor cached_ over loaded resources.
-					if(!trans) return;
-					if(!resources[key]) {
-						resources[key] = trans;
-						return;
-					}
-					//if we had a string trans, let cache (object/string) override resource.
-					if(_.isString(resources[key])) resources[key] = trans;
-					//if we had a trans object(with ns), only extend if cached is a trans object.
-					else if(_.isObject(resources[key]) && _.isObject(trans)) _.extend(resources[key], trans);
-				});
+			resources = resources || {};
+			
+			//Localizer mode, merge resources with localStorage, cache is modified upon localizer's DnD action (modified property file).
+			if (localizer) {
+				var resources_cache_key = ['resources_', locale].join('');
+				var cached_resources = store.get(resources_cache_key);
+				if (cached_resources) {
+					_.each(cached_resources, function(trans, key){
+						//favor cached_ over loaded resources.
+						if(!trans) return;
+						if(!resources[key]) {
+							resources[key] = trans;
+							return;
+						}
+						//if we had a string trans, let cache (object/string) override resource.
+						if(_.isString(resources[key])) resources[key] = trans;
+						//if we had a trans object(with ns), only extend if cached is a trans object.
+						else if(_.isObject(resources[key]) && _.isObject(trans)) _.extend(resources[key], trans);
+					});
+				}
 			}
-		}
-	}
+		}		
+		return this;
+	};
+	//-------------------------------------------------
+	
 	
 	/**
 	 * =============================================================
