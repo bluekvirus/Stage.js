@@ -197,6 +197,10 @@ stagejs init
 ```
 stagejs update --edge --packages
 ```
+4. Start the development server
+```
+stagejs serve [port]
+```
 Read more about the dev tool [here](https://github.com/bluekvirus/Stage-devtools).
 
 #####Manually
@@ -261,13 +265,15 @@ Go to your `main.js` and setup the application by using `Application.setup()`:
 ``` 
 //main.js
 Application.setup({
-    theme: //'your theme name',
+    theme: //your theme name,
     fullScreen: //false | true,
     template: //'#id', '@**/*.html', [html string array] or 'html string',
-    contextRegion/navRegion: //'your navRegion name marked in template',
-    defaultContext: //'your default context name to show in navRegion,
-    baseAjaxURI: //'your base url for using with Application.remote()',
-    viewTemplates: //'remote view templates folder, if using template:@**/*.html in views'
+    contextRegion/navRegion: //your navRegion name marked in template,
+    defaultContext: //your default context name to show in navRegion,
+    baseAjaxURI: //your base url for using with Application.remote(),
+    viewTemplates: //remote view templates folder, if using template:@**/*.html in views,
+    i18nResources: //where to load i18n related data (e.g translations),
+    i18nTransFile: //the translation file name/pattern under i18nResources
 }).run();
 ```
 The configure variables have sensible defaults, you can safely skip configuring them here, however, there is one you might want to change now -- `template`.
@@ -1711,12 +1717,24 @@ $('span').i18n();
 ###Configuration
 You can configure where and what the i18n mechanism need to look for its required translation files through the I18N global variable:
 ```
+//a. through Application
+Application.setup({
+    ...,
+    i18nResources: 'static/resource',
+    i18nTransFile: 'i18n.json',
+    ...
+});
+
+//or b. through I18N global
 I18N.configure({
     resourcePath: 'static/resource',
-    translationFile: 'i18n.json'
+    translationFile: 'i18n.json' // => 'static/resource/{locale}/i18n.json'
+    //or
+    translationFile: '{locale}.json' //=> 'static/resource/{locale}.json'
+    translationFile: '[any string]{locale}[any string].json'
 });
 ```
-The default settings will always look for `http://your host/static/resource/xx_XX/i18n.json`.
+The default settings will always look for `http://your host/static/resource/{locale}/i18n.json`.
 
 ###Gather keys at runtime
 When the application is running in browser, you can fire-up the developer console and call the following APIs on the `I18N` object to collect the translation keys:
