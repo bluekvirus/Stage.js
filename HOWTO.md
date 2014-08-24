@@ -693,6 +693,8 @@ If you have locked the application with `Application.lock()` then the actions wi
 
 **Tip**: You can use `lock="*"` to lock the application globally.
 
+**Tip**: You can also use `unlock="..."` attribute to unlock the app or certain topic/action, this is in case that you want a pair of *Start/Stop* controls with app locking/unlocking splited into the 2 actions. 
+
 #####Events
 Some interactions demand **collaboration** between view objects, this is why we introduce the concept of meta-event programming. It is like coding through just interfaces in a object-oriented programming language but much more flexible. The goal is to let the developer code with events instead of APIs so the implementation can be delayed as much as possible. The underlying principle is very simple:
 ```
