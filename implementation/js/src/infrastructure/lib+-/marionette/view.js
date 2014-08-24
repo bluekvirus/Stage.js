@@ -67,7 +67,10 @@
 
 				var $el = $(e.currentTarget);
 				var action = $el.attr('action') || 'UNKNOWN';
-				var lockTopic = $el.attr('lock');
+				var lockTopic = $el.attr('lock'),
+				unlockTopic = $el.attr('unlock');
+
+				if(unlockTopic) app.unlock(unlockTopic);
 
 				if(lockTopic && !app.lock(lockTopic)){
 					e.stopPropagation();
