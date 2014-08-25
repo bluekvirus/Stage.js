@@ -5,11 +5,12 @@ Change Log
 1. Removed redundant info from bower release dist package.
 2. Simplified themeprep script options.
 3. Added support for fast-click on mobile platforms.
-4. Refined app lock/unlock mech & updated docs.
+4. Refined app lock/unlock/available mech & updated docs.
 5. Fixed args/path issue in tools to support stage-devtools.
 6. Added i18n related config to app.setup(). Refined i18n file name setting.
 7. Fixed $.ajax()'s and app.remote()'s default `dataType:'json'`.
 8. Synced header-cell property with row-cell (+this.row, this.row.grid).
+9. Added export script to build tool, for better code sharing in devtools.
 
 In progress...
 

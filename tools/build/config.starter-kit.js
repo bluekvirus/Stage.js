@@ -26,7 +26,8 @@ module.exports = {
 		tools: {
 			build: {
 				'run.js': '../tools/build/run.js',
-				'config.dist.js': '../tools/build/config.sample.js'
+				'config.dist.js': '../tools/build/sample/config.dist.js',
+				'config.export.js': '../tools/build/sample/config.export.js'
 			},
 			themeprep: '../tools/themeprep',
 			devserver: '../tools/devserver',

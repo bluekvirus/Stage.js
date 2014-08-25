@@ -22,16 +22,12 @@ AdmZip = require('adm-zip'),
 targz = new (require('tar.gz'))(9, 9),
 fs = require('fs-extra'),
 wrench = require('wrench');
-
 _.string = require('underscore.string');
 
-////////////Temp Solution(transit to stage-devtools)/////////////
-var implFolder = '../../implementation';
-/////////////////////////////////////////////////////////////////
 
 program.version('1.0.0')
 		.usage('[options] <output folder>')
-		.option('-B --base <path>', 'implementation base folder, default to ' + implFolder, implFolder)
+		.option('-B --base <path>', 'implementation base folder, default to config.src.root')
 		.option('-C --config [dist]', 'config name used for the build, \'abc\' means to use \'config.abc.js\'', 'dist')
 		.option('-G --targz <path>', 'put the output path into a compressed .tar.gz file')
 		.option('-Z --zip <path>', 'put the output path into a compressed .zip file [use only on non-Unix env]');

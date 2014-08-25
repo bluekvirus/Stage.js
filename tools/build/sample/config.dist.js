@@ -39,7 +39,8 @@ module.exports = {
 	js: {
 		default: 'app.js',
 	// 	after: '[region="app"]', or after: '[persist=true]:last-of-type',
-	// 	min: true,
+	// 	min: false, //use false to indicate you want app.js instead of app.min.js in the final index.html
+
 	// 	targets: { -- Use targets: false to turn off the multi-js-target mode.
 	// 		'abc.js': {
 	// 			after: ..., [default: append after previous target]
@@ -52,12 +53,14 @@ module.exports = {
 	// 								Note that you can still obtain 'omitted.js', but it won't appear in the built index.html.
 	// 		...
 	// 	}
+
 	},
 	
 	//output
 	structure : { //path are relative to the output folder and the src.root above respectively.
 
 		js: {
+			//'app.js': false,
 			'app.min.js': true, //'app' is the name you set in the js config above.
 		},
 		static: { template: { 'all.json': 'static/template/all.json' } },
