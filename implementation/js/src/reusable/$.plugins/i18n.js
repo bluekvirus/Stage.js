@@ -65,6 +65,7 @@ var I18N = {};
 			$.ajax({
 				url: [configure.resourcePath, (configure.translationFile.contains('{locale}')?configure.translationFile.replace('{locale}', locale):[locale, configure.translationFile].join('/'))].join('/'),
 				async: false,
+				dataType: 'json',
 				success: function(data, textStatus, jqXHR) {
 					if(!data || !data.trans) throw new Error('RUNTIME::i18n::Malformed ' + locale + ' data...');
 					resources = data.trans;

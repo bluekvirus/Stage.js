@@ -34,6 +34,6 @@ module.exports = {
 			'package.json': '../tools/package.json'
 		},
 		'LICENSE': '../LICENSE',
-		'.gitignore': 'starter-kit.gitignore'
+		'gitignore': 'starter-kit.gitignore'
 	}
 };

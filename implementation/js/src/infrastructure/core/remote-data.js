@@ -43,7 +43,8 @@
 				type: undefined,
 				data: undefined,
 				processData: false,
-				contentType: 'application/json; charset=UTF-8'
+				contentType: 'application/json; charset=UTF-8', // req format
+				dataType: 'json' //res format
 			});
 			//process entity[_id] and strip off options.querys(alias:params)
 			if(options.entity){

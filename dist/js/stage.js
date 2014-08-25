@@ -774,7 +774,8 @@ window.onerror = function(errorMsg, target, lineNum){
 				type: undefined,
 				data: undefined,
 				processData: false,
-				contentType: 'application/json; charset=UTF-8'
+				contentType: 'application/json; charset=UTF-8', // req format
+				dataType: 'json' //res format
 			});
 			//process entity[_id] and strip off options.querys(alias:params)
 			if(options.entity){
@@ -1274,7 +1275,10 @@ window.onerror = function(errorMsg, target, lineNum){
 
 				var $el = $(e.currentTarget);
 				var action = $el.attr('action') || 'UNKNOWN';
-				var lockTopic = $el.attr('lock');
+				var lockTopic = $el.attr('lock'),
+				unlockTopic = $el.attr('unlock');
+
+				if(unlockTopic) app.unlock(unlockTopic);
 
 				if(lockTopic && !app.lock(lockTopic)){
 					e.stopPropagation();
@@ -2034,6 +2038,7 @@ var I18N = {};
 			$.ajax({
 				url: [configure.resourcePath, (configure.translationFile.contains('{locale}')?configure.translationFile.replace('{locale}', locale):[locale, configure.translationFile].join('/'))].join('/'),
 				async: false,
+				dataType: 'json',
 				success: function(data, textStatus, jqXHR) {
 					if(!data || !data.trans) throw new Error('RUNTIME::i18n::Malformed ' + locale + ' data...');
 					resources = data.trans;
@@ -3252,11 +3257,16 @@ var I18N = {};
 			itemView: 'dynamic',
 			itemViewEventPrefix: 'headercell',
 			tagName: 'tr',
+			initialize: function(options){
+				this.grid = this.parentCt || (options && options.grid); //give each row the grid view ref.
+			},
 			//buildItemView - select proper header cell
 			buildItemView: function(item, ItemViewType, itemViewOptions){
 				return app.widget(_.string.classify([item.get('header'), 'header', 'cell'].join('-')), {
 					model: item,
-					tagName: 'th'
+					tagName: 'th',
+
+					row: this //link each cell with the row. (use/link it in cell's init())
 				});
 			}
 		});

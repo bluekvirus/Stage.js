@@ -101,11 +101,16 @@
 			itemView: 'dynamic',
 			itemViewEventPrefix: 'headercell',
 			tagName: 'tr',
+			initialize: function(options){
+				this.grid = this.parentCt || (options && options.grid); //give each row the grid view ref.
+			},
 			//buildItemView - select proper header cell
 			buildItemView: function(item, ItemViewType, itemViewOptions){
 				return app.widget(_.string.classify([item.get('header'), 'header', 'cell'].join('-')), {
 					model: item,
-					tagName: 'th'
+					tagName: 'th',
+
+					row: this //link each cell with the row. (use/link it in cell's init())
 				});
 			}
 		});
