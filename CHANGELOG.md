@@ -8,6 +8,8 @@ Change Log
 4. Refined app lock/unlock mech & updated docs.
 5. Fixed args/path issue in tools to support stage-devtools.
 6. Added i18n related config to app.setup(). Refined i18n file name setting.
+7. Fixed $.ajax()'s and app.remote()'s default `dataType:'json'`.
+8. Synced header-cell property with row-cell (+this.row, this.row.grid).
 
 In progress...
 
