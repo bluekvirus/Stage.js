@@ -2036,7 +2036,7 @@ var I18N = {};
 			 * }
 			 */
 			$.ajax({
-				url: [configure.resourcePath, (configure.translationFile.contains('{locale}')?configure.translationFile.replace('{locale}', locale):[locale, configure.translationFile].join('/'))].join('/'),
+				url: [configure.resourcePath, (configure.translationFile.indexOf('{locale}') >= 0?configure.translationFile.replace('{locale}', locale):[locale, configure.translationFile].join('/'))].join('/'),
 				async: false,
 				dataType: 'json',
 				success: function(data, textStatus, jqXHR) {
