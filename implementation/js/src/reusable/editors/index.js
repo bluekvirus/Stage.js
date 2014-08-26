@@ -43,7 +43,7 @@
  * 	url - a string indicating where to upload the file to.
  * 	...  see complete option listing on [https://github.com/blueimp/jQuery-File-Upload/wiki/Options].
  *
- *  callbacks: {
+ *  callbacks: { - with 'this' in the callbacks pointing to the editor.
  *  	done/fail/always/progress ... - see complete callback listing on [https://github.com/blueimp/jQuery-File-Upload/wiki/Options].
  *  }
  * }
@@ -271,7 +271,7 @@
 
 						if(options.upload.callbacks){
 							_.each(options.upload.callbacks, function(f, e){
-								this.$el.bind('fileupload' + e, f);
+								this.$el.bind('fileupload' + e, _.bind(f, this));
 							}, this);
 						}
 					};

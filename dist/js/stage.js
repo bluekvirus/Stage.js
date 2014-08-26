@@ -1639,7 +1639,10 @@ window.onerror = function(errorMsg, target, lineNum){
 				this.model = new Backbone.Model();
 				this.listenTo(this.model, 'change', this.render);
 			}
-			this.model.set(data);
+			if(_.isArray(data))
+				this.model.set('items', data); //conform to original Backbone/Marionette settings
+			else
+				this.model.set(data);
 
 			this.trigger('view:data-rendered');
 		}
@@ -2859,7 +2862,7 @@ var I18N = {};
 
 						if(options.upload.callbacks){
 							_.each(options.upload.callbacks, function(f, e){
-								this.$el.bind('fileupload' + e, f);
+								this.$el.bind('fileupload' + e, _.bind(f, this));
 							}, this);
 						}
 					};

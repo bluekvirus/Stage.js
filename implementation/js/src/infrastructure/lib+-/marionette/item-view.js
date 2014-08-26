@@ -231,7 +231,10 @@
 				this.model = new Backbone.Model();
 				this.listenTo(this.model, 'change', this.render);
 			}
-			this.model.set(data);
+			if(_.isArray(data))
+				this.model.set('items', data); //conform to original Backbone/Marionette settings
+			else
+				this.model.set(data);
 
 			this.trigger('view:data-rendered');
 		}
