@@ -11,6 +11,8 @@ Change Log
 7. Fixed $.ajax()'s and app.remote()'s default `dataType:'json'`.
 8. Synced header-cell property with row-cell (+this.row, this.row.grid).
 9. Added export script to build tool, for better code sharing in devtools.
+10. Fixed view:render-data event with array in ItemViews.
+11. Fixed upload editor callback scopes.
 
 In progress...
 
