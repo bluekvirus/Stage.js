@@ -39,6 +39,7 @@
     "modernizr": "~2.x.x",
     "detectizr": "~2.x.x",
     "yepnope": "~1.x.x",
+    "loadcss": "~0.1.1",
     "fastclick": "~1.x.x",
     "jquery": "~2.x.x",
     "jquery.cookie": "~1.x.x",
@@ -110,7 +111,8 @@
     "switchery": "*",
     "powerange": "*",
     "knex": "*",
-    "pickadate": "*"
+    "pickadate": "*",
+    "veinjs": "*"
   },
   "resolutions": {
     "modernizr": "~2.x.x",

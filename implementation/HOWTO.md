@@ -265,7 +265,7 @@ Go to your `main.js` and setup the application by using `Application.setup()`:
 ``` 
 //main.js
 Application.setup({
-    theme: //your theme name,
+    theme: //your theme name, use false or '' to disable dynamic theme loading,
     fullScreen: //false | true,
     template: //'#id', '@**/*.html', [html string array] or 'html string',
     contextRegion/navRegion: //your navRegion name marked in template,
@@ -1758,6 +1758,8 @@ You can have multiple themes for an application and switch between them. The def
 ```
 http(s)://your host'n'app/?theme=xyz
 ```
+
+You can also use the `loadCSS()` function included in the our `dependencies.js` to load additional stylesheets at runtime. There is also `veinjs` to use for dynamically adding CSS rules into your application.
 
 
 ###Theme structure

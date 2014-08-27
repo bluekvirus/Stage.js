@@ -13,6 +13,7 @@ Change Log
 9. Added export script to build tool, for better code sharing in devtools.
 10. Fixed view:render-data event with array in ItemViews.
 11. Fixed upload editor callback scopes.
+12. Replaced app.Util.theme-roller with loadCSS().
 
 In progress...
 

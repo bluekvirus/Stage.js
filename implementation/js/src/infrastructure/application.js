@@ -250,7 +250,10 @@ window.onerror = function(errorMsg, target, lineNum){
 
 		//3 Load Theme css & View templates & i18n translations
 		var theme = URI(window.location.toString()).search(true).theme || Application.config.theme;
-		Application.Util.rollTheme(theme); //theme = false or '' will disable theme rolling.
+		if(theme){
+			loadCSS('themes/'+theme+'/css/main.css', $('#theme-roller')[0]);
+			Application.currentTheme = theme;
+		}
 
 		if(Application.config.viewTemplates)
 			Application.Util.Tpl.load(Application.config.viewTemplates + '/all.json');

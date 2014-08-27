@@ -251,7 +251,10 @@ window.onerror = function(errorMsg, target, lineNum){
 
 		//3 Load Theme css & View templates & i18n translations
 		var theme = URI(window.location.toString()).search(true).theme || Application.config.theme;
-		Application.Util.rollTheme(theme); //theme = false or '' will disable theme rolling.
+		if(theme){
+			loadCSS('themes/'+theme+'/css/main.css', $('#theme-roller')[0]);
+			Application.currentTheme = theme;
+		}
 
 		if(Application.config.viewTemplates)
 			Application.Util.Tpl.load(Application.config.viewTemplates + '/all.json');
@@ -593,33 +596,6 @@ window.onerror = function(errorMsg, target, lineNum){
 			if(delegate[listener])
 				delegate[listener].apply(target, _.toArray(arguments).slice(1));
 		});
-	};
-
-})(Application);
-/**
- * ============================
- * Theme detector/roller
- *
- *
- * @author Tim.Liu
- * @created 2013.04.01
- * @updated 2013.11.08
- * ============================
- */
-;(function(app){
-
-	var _themeRoller = function(theme){
-		if(!theme) return;
-		
-	    $('#theme-roller').attr('href', 'themes/'+theme+'/css/main.css');
-	    app.currentTheme = theme;
-	};	
-
-	//Can expose the api to the Application
-	//To be considered...
-	app.Util.rollTheme = function(theme){
-		//TODO: re-render after theme re-apply.
-		_themeRoller(theme);
 	};
 
 })(Application);
@@ -2634,7 +2610,7 @@ var I18N = {};
  * 	url - a string indicating where to upload the file to.
  * 	...  see complete option listing on [https://github.com/blueimp/jQuery-File-Upload/wiki/Options].
  *
- *  callbacks: {
+ *  callbacks: { - with 'this' in the callbacks pointing to the editor.
  *  	done/fail/always/progress ... - see complete callback listing on [https://github.com/blueimp/jQuery-File-Upload/wiki/Options].
  *  }
  * }
