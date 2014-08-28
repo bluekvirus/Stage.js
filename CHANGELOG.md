@@ -15,6 +15,7 @@ Change Log
 11. Fixed upload editor callback scopes.
 12. Replaced app.Util.theme-roller with loadCSS().
 13. Added region.resize() ability for easier UI sizing control and propagation (e.g during full-screen mode).
+14. Added overflow attrs on regions for easier region content overflow control.
 
 In progress...
 

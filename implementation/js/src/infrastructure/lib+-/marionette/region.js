@@ -14,26 +14,20 @@
 
 ;(function(app){
 
-	/**
-	 * effect config
-	 * 
-	 * 'string' name of the effect in jQuery;
-	 * or
-	 * {
-	 * 		name: ...
-	 * 	 	options: ...
-	 * 	 	duration: ...
-	 * }
-	 */
 	_.extend(Backbone.Marionette.Region.prototype, {
 		open: function(view){
 
-			view.$el.css({
-				width: '100%',
-				height: '100%',
-				overflow: 'auto'
-			});
-
+			/**
+			 * effect config
+			 * 
+			 * 'string' name of the effect in jQuery;
+			 * or
+			 * {
+			 * 		name: ...
+			 * 	 	options: ...
+			 * 	 	duration: ...
+			 * }
+			 */
 			if(view.effect){
 				if(_.isString(view.effect)){
 					view.effect = {
@@ -68,16 +62,22 @@
 		//you don't need to calculate paddings on a region, since we are using $.innerHeight()
 		resize:function(options){
 			options = options || {};
+			var contentStyle = {};
 			if(options.height){
 				this.$el.innerHeight(options.height);
+				contentStyle.height = '100%';
 			}
 			if(options.width){
 				this.$el.innerWidth(options.width);
+				contentStyle.width = '100%';
 			}
 
 			/*Note that since we use box-sizing in css, if using this.$el.css() to set height/width, they are equal to using innerHeight/Width()*/
 
-			if(this.currentView) this.currentView.trigger('view:resized');
+			if(this.currentView) {
+				this.currentView.$el.css(_.extend(contentStyle, this._contentOverflow));
+				this.currentView.trigger('view:resized');
+			}
 		}
 	});
 

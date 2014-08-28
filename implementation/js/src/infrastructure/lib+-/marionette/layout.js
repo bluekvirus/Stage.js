@@ -143,6 +143,11 @@
 					this[region].ensureEl();
 					this[region].$el.addClass('region region-' + _.string.slugify(region));
 					this[region]._parentLayout = this;
+					this[region]._contentOverflow = {};
+					_.each(['overflow-x', 'overflow-y', 'overflow'], function(oKey){
+						var oVal = this[region].$el.attr(oKey);
+						if(oVal) this[region]._contentOverflow[_.str.camelize(oKey)] = oVal;
+					}, this);
 				},this);
 			});
 			//automatically show a registered View from a 'view=' marked region.
