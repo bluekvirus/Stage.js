@@ -185,6 +185,9 @@ window.onerror = function(errorMsg, target, lineNum){
 		var $body = $('body');
 		function trackScreenSize(e, silent){
 			var screenSize = {h: $window.height(), w: $window.width()};
+			////////////////cache the screen size/////////////
+			Application.screenSize = screenSize;
+			//////////////////////////////////////////////////
 			if(Application.config.fullScreen){
 				$body.height(screenSize.h);
 			}
@@ -290,12 +293,19 @@ window.onerror = function(errorMsg, target, lineNum){
 					
 					//re-create target context upon switching
 					var targetCtx = new TargetContext(), guardError;
+
 					//allow context to guard itself (e.g for user authentication)
 					if(targetCtx.guard) guardError = targetCtx.guard();
 					if(guardError) {
 						Application.trigger('app:context-guard-error', guardError, targetCtx.name);
 						return;
 					}
+					//allow context to check/do certain stuff before navigated to (similar to guard() above)
+					if(targetCtx.onBeforeNavigateTo &&  !targetCtx.onBeforeNavigateTo()){
+						Application.trigger('app:navigation-aborted', targetCtx.name);
+						return;
+					}
+
 					//save your context state within onNavigateAway()
 					if(Application.currentContext) Application.currentContext.trigger('context:navigate-away'); 
 					//prepare and show this new context					
@@ -1180,7 +1190,12 @@ window.onerror = function(errorMsg, target, lineNum){
 			}
 
 			//trigger view:resized anyway upon its first display
-			view.trigger('view:resized'); //!!Caution: this might be racing if using view.effect as well!!
+			if(this._contentStyle){
+				view.$el.css(this._contentStyle); //Tricky, use a .$el.css() call to smooth dom sizing/refreshing after $el.empty().append()
+				view.trigger('view:resized'); //!!Caution: this might be racing if using view.effect as well!!
+			}
+
+			return this;
 		},
 
 		//you don't need to calculate paddings on a region, since we are using $.innerHeight()
@@ -1201,7 +1216,10 @@ window.onerror = function(errorMsg, target, lineNum){
 			if(this.currentView) {
 				this.currentView.$el.css(_.extend(contentStyle, this._contentOverflow));
 				this.currentView.trigger('view:resized');
-			}
+			}else
+				this._contentStyle = _.extend(contentStyle, this._contentOverflow);
+
+			return this;
 		}
 	});
 
@@ -1846,7 +1864,7 @@ window.onerror = function(errorMsg, target, lineNum){
 							return;
 						}
 						if(!pathArray || pathArray.length === 0){
-							this.trigger('view:navigation-end');//use this to show the default view
+							this.trigger('view:navigate-to');//use this to show the default view
 							return;	
 						} 
 						

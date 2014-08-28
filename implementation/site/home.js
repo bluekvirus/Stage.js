@@ -11,7 +11,7 @@
 
 		template: [
 			//very very important to have overflow:hidden for svg powered background
-			'<div style="position:absolute;width:100%;overflow:hidden;" region="bg" view="Home.BG"></div>',
+			'<div overflow="hidden" region="bg" view="Home.BG" style="position:absolute"></div>',
 			'<div class="container-fluid">',
 				'<div class="row">',
 					'<div class="col-sm-offset-6 col-sm-4" region="title"></div>',
@@ -22,6 +22,29 @@
 			'</div>',
 			'<div style="position:absolute;bottom:0;width:100%" region="footer" view="Home.Footer"></div>'
 		],
+
+		onBeforeNavigateTo:function(){
+			console.log('before navi to', this.name);
+			$('body').css('overflow', 'hidden');
+			return true;
+		},
+
+		onNavigateAway: function(){
+			console.log('before navi away from', this.name);
+			$('body').css({
+				'overflowX': 'hidden',
+				'overflowY': 'auto'
+			});
+		},
+
+		initialize: function(){
+			this.listenTo(app, 'app:resized', function(){
+				this.bg.resize({
+					height: app.screenSize.h,
+					width: app.screenSize.w
+				});
+			});
+		},
 
 		onShow: function(){
 			//title + short desc
@@ -50,6 +73,11 @@
 					this.$el.height(minH()*0.44).css('marginTop', minH()*0.06);
 				}
 			}));
+
+			this.bg.resize({
+				height: app.screenSize.h,
+				width: app.screenSize.w
+			});
 
 			//navi links
 			this.menu.show(app.area({
@@ -82,10 +110,8 @@
 	app.area('Home.BG', {
 		svg: true,
 
-		initialize: function(){
-			this.listenTo(app, 'app:resized', function(screenSize){
-				this.trigger('view:fit-and-draw');
-			});
+		onResized: function(){
+			this.trigger('view:fit-and-draw');
 		},
 
 		onShow: function(){

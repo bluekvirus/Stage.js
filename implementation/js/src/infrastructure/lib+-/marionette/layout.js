@@ -194,7 +194,7 @@
 							return;
 						}
 						if(!pathArray || pathArray.length === 0){
-							this.trigger('view:navigation-end');//use this to show the default view
+							this.trigger('view:navigate-to');//use this to show the default view
 							return;	
 						} 
 						

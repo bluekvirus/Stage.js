@@ -184,6 +184,9 @@ window.onerror = function(errorMsg, target, lineNum){
 		var $body = $('body');
 		function trackScreenSize(e, silent){
 			var screenSize = {h: $window.height(), w: $window.width()};
+			////////////////cache the screen size/////////////
+			Application.screenSize = screenSize;
+			//////////////////////////////////////////////////
 			if(Application.config.fullScreen){
 				$body.height(screenSize.h);
 			}
@@ -289,12 +292,19 @@ window.onerror = function(errorMsg, target, lineNum){
 					
 					//re-create target context upon switching
 					var targetCtx = new TargetContext(), guardError;
+
 					//allow context to guard itself (e.g for user authentication)
 					if(targetCtx.guard) guardError = targetCtx.guard();
 					if(guardError) {
 						Application.trigger('app:context-guard-error', guardError, targetCtx.name);
 						return;
 					}
+					//allow context to check/do certain stuff before navigated to (similar to guard() above)
+					if(targetCtx.onBeforeNavigateTo &&  !targetCtx.onBeforeNavigateTo()){
+						Application.trigger('app:navigation-aborted', targetCtx.name);
+						return;
+					}
+
 					//save your context state within onNavigateAway()
 					if(Application.currentContext) Application.currentContext.trigger('context:navigate-away'); 
 					//prepare and show this new context					

@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.7.1 (2014-08-19*)
+1.7.1 (2014-08-28*)
 -------------------
 1. Removed redundant info from bower release dist package.
 2. Simplified themeprep script options.
@@ -16,6 +16,8 @@ Change Log
 12. Replaced app.Util.theme-roller with loadCSS().
 13. Added region.resize() ability for easier UI sizing control and propagation (e.g during full-screen mode).
 14. Added overflow attrs on regions for easier region content overflow control.
+15. Removed 'view:navigation-end' event, use 'view:naviagte-to' instead.
+16. Added onBeforeNavigateTo() to contexts.
 
 In progress...
 

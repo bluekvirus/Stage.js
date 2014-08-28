@@ -5,11 +5,11 @@ Application.page('Demo', {
         '<div region="center"></div>',
     ],
     navRegion: 'center',
-    onNavigationEnd: function(){
-        Application.trigger('app:navigate', 'Demo/Editors');
-    },
     onNavigateTo: function(path){
-        console.log('Not Found:', path);
+        if(path)
+            console.log('Not Found:', path);
+        else
+            Application.trigger('app:navigate', 'Demo/Editors');
     }
 
 });

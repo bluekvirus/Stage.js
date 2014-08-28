@@ -13,10 +13,11 @@
 				template: '@test.html' //same template will be cached and will not trigger a re-fetch.
 			}, true));
 		},
-		onNavigationEnd: function(){
-			this.getRegion('nav').show(app.view({
-				template: '@test2.html' //cached template in all.json will not trigger a re-fetch either.
-			}, true));
+		onNavigateTo: function(path){
+			if(!path)
+				this.getRegion('nav').show(app.view({
+					template: '@test2.html' //cached template in all.json will not trigger a re-fetch either.
+				}, true));
 		}
 	});
 

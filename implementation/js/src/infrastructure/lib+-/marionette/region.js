@@ -56,7 +56,12 @@
 			}
 
 			//trigger view:resized anyway upon its first display
-			view.trigger('view:resized'); //!!Caution: this might be racing if using view.effect as well!!
+			if(this._contentStyle){
+				view.$el.css(this._contentStyle); //Tricky, use a .$el.css() call to smooth dom sizing/refreshing after $el.empty().append()
+				view.trigger('view:resized'); //!!Caution: this might be racing if using view.effect as well!!
+			}
+
+			return this;
 		},
 
 		//you don't need to calculate paddings on a region, since we are using $.innerHeight()
@@ -77,7 +82,10 @@
 			if(this.currentView) {
 				this.currentView.$el.css(_.extend(contentStyle, this._contentOverflow));
 				this.currentView.trigger('view:resized');
-			}
+			}else
+				this._contentStyle = _.extend(contentStyle, this._contentOverflow);
+
+			return this;
 		}
 	});
 
