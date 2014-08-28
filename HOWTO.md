@@ -771,6 +771,13 @@ Recall that you can use `view=""` in a template to link a *Regional* to a region
 
 The `region.resize()` method call is there for better UI sizing control and propagation. The region's currentView (if exists) will automatically receive a `view:resized` event at the end of this function call, thus triggering `view.onResized()` method, you can choose to propagate the resizing action into the sub-regions of the region's currentView within its `onResized()` method.
 
+If you want also to control the overflow css style of a region's `currentView`, do it either in your theme (CSS/LESS) or mark it on the region template:
+```
+<div region="abc" overflow="auto"></div>
+<div region="efg" overflow-x="hidden" overflow-y="auto"></div>
+```
+Note that for the overflow settings to show effect, you need to first use the region's `resize()` method call to size the region. 
+
 
 ######Use parentCt?
 Before you move on, there is one more thing in this event section we want to clarify. If you use `region=""` in your template to define regions in a *Context*/*Marionette.Layout*, your sub-view instances within those regions will receive a `parentCt` property upon showing which should help you find its parent container view instance (the layout instance).
