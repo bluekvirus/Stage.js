@@ -736,6 +736,7 @@ context:navigate-away - [empty stub] - triggered before app:navigate
 //General
 view:render-data (data) - onRenderData [pre-defined]
 view:data-rendered
+view:resized - fired when parent region's .resize() method gets called
 
 //Layout with navRegion only
 view:navigate-to
@@ -753,14 +754,22 @@ view:page-changed
 
 Remember, you can always trigger a customized event `my-event-xyz` and implement it later on the object by creating `onMyEventXyz()`.
 
-Though you can not yet use customized meta-event on Marionette.Regions, there is a  convenient one for you:
+Though you can not use customized meta-event on Marionette.Regions, there are still some helpers we provide on the regions:
 ```
 //region:load-view
 anyregion.trigger('region:load-view', name[, options]);
+
+//region.resize
+anyregion.resize({
+    height: ..., //can be 100, '50%'' or '100px'
+    width: ...
+});
 ```
 The `region:load-view` event listener is implemented for you and can search through both the *Regional* and *Widget* registry to find the view by name and show it on the region. You can pass in addition factory options to the event trigger. 
 
 Recall that you can use `view=""` in a template to link a *Regional* to a region to show as well, but it will *NOT* search through the *Widget* registry for finding the view definition, due to the difficulties of putting widget options into the `view=""` marked tags.
+
+The `region.resize()` method call is there for better UI sizing control and propagation. The region's currentView (if exists) will automatically receive a `view:resized` event at the end of this function call, thus triggering `view.onResized()` method, you can choose to propagate the resizing action into the sub-regions of the region's currentView within its `onResized()` method.
 
 
 ######Use parentCt?
@@ -1894,11 +1903,20 @@ This will keep the `<body>` tag to be 100% on both its width and height to the b
 ```
 //Recall that when initialize is called, app template is already on screen.
 Application.addInitializer(function(options){
-    //1. calculate your content area height dynamically here;
-    //2. hook this calcuation function with app:resized event;
+    //1. calculate your content region height dynamically here;
+    ...
+    //2. set it using region.resize();
+    Application.myContextRegion.resize({
+        height: ..., //number, x% or 50px
+        width: ...
+    });
+    //3. hook this calcuation function with app:resized event;
+    ...
 });
 ```
-You can use the `Application.mainView` variable to access the view instance that's holding the app template.
+You can use the `Application.mainView` variable to access the view instance that's holding the app template. 
+
+The `region.resize()` api will automatically trigger `view:resized` event on the region's `currentView` instance. So make sure you are listening to this event in the `onResized` function within that view instance. You can choose to propagate the resizing action down into the sub-regions by applying the same technique on that `currentView`'s regions.
 
 ###View size measurement error?
 Our dynamic theme loading mechanism is currently racing with el size measuring in views' `onShow()` functions. This is mainly caused by modern browser's ability to multi-threading CSS rendering and JavaScript execution. Here is a quick & dirty solution:
