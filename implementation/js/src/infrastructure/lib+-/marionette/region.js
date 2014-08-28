@@ -27,6 +27,13 @@
 	 */
 	_.extend(Backbone.Marionette.Region.prototype, {
 		open: function(view){
+
+			view.$el.css({
+				width: '100%',
+				height: '100%',
+				overflow: 'auto'
+			});
+
 			if(view.effect){
 				if(_.isString(view.effect)){
 					view.effect = {
@@ -53,6 +60,24 @@
 				this._parentLayout._fieldsets = this._parentLayout._fieldsets || {};
 				this._parentLayout._fieldsets[view.fieldset] = view;
 			}
+
+			//trigger view:resized anyway upon its first display
+			view.trigger('view:resized'); //!!Caution: this might be racing if using view.effect as well!!
+		},
+
+		//you don't need to calculate paddings on a region, since we are using $.innerHeight()
+		resize:function(options){
+			options = options || {};
+			if(options.height){
+				this.$el.innerHeight(options.height);
+			}
+			if(options.width){
+				this.$el.innerWidth(options.width);
+			}
+
+			/*Note that since we use box-sizing in css, if using this.$el.css() to set height/width, they are equal to using innerHeight/Width()*/
+
+			if(this.currentView) this.currentView.trigger('view:resized');
 		}
 	});
 
