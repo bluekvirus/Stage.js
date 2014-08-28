@@ -375,6 +375,18 @@ Create a new file named `myContextA.js`, remember a *Context* is just an special
     app.context('MyContextA', { //omitting the name indicates context:Default
         template: '...',
         //..., normal Marionette.Layout options
+        guard: function(){
+            //return error to cancel navigation;
+            //return '', false, undefined to proceed;
+        },
+        //listeners: (after guard)
+        onBeforeNavigateTo: function(){
+            //return true to proceed;
+            //return false, '', undefined to cancel navigation
+        },
+        onNavigateTo: function(path){
+            //path == '', undefined means the navigation stopped here.
+        },
         onNavigateAway: function(){
             //... 
             //if you want to save context status (through localStorage maybe)
@@ -461,9 +473,7 @@ If you defined a `guard` function as property in one of your contexts, it will b
 ```
 
 #####Navigate beyond a Context
-When the navigation is at `#navigate/MyContextA/SubViewA/SubViewB...` the router finds `navRegion` in `MyContextA` and shows `SubViewA` in it and then move on to `SubViewA` to show `SubViewB...` in its `navRegion`. If, somehow, it can not find the definition of `SubViewA`, the navigation stops on `MyContextA` and triggers `view:navigateTo` event with the remaining subpath starting with `SubViewA/...` on `MyContextA`. The same process happens on `SubViewA` if the router can not find `SubViewB...`.
-
-**Tip**: Use `onNavigationEnd` callback to recover the default content of a context or named layout if you need. The `view:navigation-end` event will be triggered on the context or named layout (in addition to `show`) if it is the last one on the navigation path. 
+When the navigation is at `#navigate/MyContextA/SubViewA/SubViewB...` the router finds `navRegion` in `MyContextA` and shows `SubViewA` in it and then move on to `SubViewA` to show `SubViewB...` in its `navRegion`. If, somehow, it can not find the definition of `SubViewA`, the navigation stops on `MyContextA` and triggers `view:navigate-to` event with the remaining subpath starting with `SubViewA/...` on `MyContextA`. The same process happens on `SubViewA` if the router can not find `SubViewB...`.
 
 **Note**: *Context*s, *Regional*s (named views) of type `Layout` are all named *Layout*s, they can all appear in the navigation path if they have the `navRegion` property defined.
 
@@ -740,7 +750,6 @@ view:resized - fired when parent region's .resize() method gets called
 
 //Layout with navRegion only
 view:navigate-to
-view:navigation-end
 
 //ItemView only (SVG)
 view:fit-paper
