@@ -1,6 +1,15 @@
 Change Log
 ==========
-1.7.1 (2014-08-28*)
+1.7.2 (2014-08-29*)
+-------------------
+
+
+In progress...
+
+x. + sprite preview (_Mockups context);
+
+
+1.7.1 (2014-08-29)
 -------------------
 1. Removed redundant info from bower release dist package.
 2. Simplified themeprep script options.
@@ -18,6 +27,7 @@ Change Log
 14. Added overflow attrs on regions for easier region content overflow control.
 15. Removed 'view:navigation-end' event, use 'view:naviagte-to' instead.
 16. Added onBeforeNavigateTo() to contexts.
+17. Removed raphael.js from deps.
 
 In progress...
 

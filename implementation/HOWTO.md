@@ -6,7 +6,7 @@ Building multi-context rich-client web application front-end in the modern way.
 
 Current version
 ---------------
-**@1.7.0**
+**@1.7.1**
 ([Why is it version-ed like this?](http://semver.org/))
 
 
@@ -848,7 +848,7 @@ Application.available('anything'); //false, since global lock is unavailable.
 You can't acquire topic locks if the global lock is currently unavailable.
 
 #####Graphs
-We support graphs through SVG. A basic SVG library is integrated with the framework (Raphaël.js). You can use it in any *Marionette.xView* through:
+We support graphs through SVG. An optional basic SVG library (Raphaël.js) is included in the framework's starter-kit distribution. You can use it in any *Marionette.xView* through:
 ```
 Application.view({
     svg: true,
@@ -874,7 +874,7 @@ view.onPaperResized(){
 
 If you require charts to be drawn, look through our monitored libraries under `/bower_components` there should be **d3.js** and **highcharts.js** for exactly that.
 
-**Note:** HTML5 *Canvas* libraries will be added in the future.
+**Note:** HTML5 *Canvas* libraries are also included in the bower registry.
 
 
 Inputs/Editors

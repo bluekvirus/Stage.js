@@ -1,4 +1,4 @@
-Stage.js     v1.7.0
+Stage.js     v1.7.1
 ===================
 This project produces **Stage.js** - an infrastructure for building modern web application client with many contexts (e.g a data-heavy administration app). In other words, we solve this problem for you:
 
@@ -12,7 +12,7 @@ What's next?
 * Use the navigation chain from start based only on named layout views with navRegions;
 * Introduce State(ViewModel) into the picture. (Data, State, (View)Model/(View)Collection, View/Layout, Navigation, Widget/Editor, Events);
 * Stateful navigation mech: app@state/context@state/lvl1@state/lvl2@state;
-* Remove deps on Marionette.js, jQuery UI Core/Widget and Raphael.js;
+* Remove deps on Marionette.js, jQuery UI Core/Widget;
 * Datagrid+ : select-all header/cell, details row;
 * Editor+ : Spinner/Range, Switches, DnD Listing;
 * local filter/sorter mech into list views; 

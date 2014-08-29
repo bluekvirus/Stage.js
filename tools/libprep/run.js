@@ -83,7 +83,7 @@ buildify.task({
 			buildify().setDir(path.join(libBase, lib)).setContent(';').save(lib + '.js');
 		});
 	}
-})
+});
 
 buildify.task({
 	name: 'min',

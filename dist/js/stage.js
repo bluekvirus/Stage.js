@@ -1201,23 +1201,13 @@ window.onerror = function(errorMsg, target, lineNum){
 		//you don't need to calculate paddings on a region, since we are using $.innerHeight()
 		resize:function(options){
 			options = options || {};
-			var contentStyle = {};
-			if(options.height){
-				this.$el.innerHeight(options.height);
-				contentStyle.height = '100%';
-			}
-			if(options.width){
-				this.$el.innerWidth(options.width);
-				contentStyle.width = '100%';
-			}
 
 			/*Note that since we use box-sizing in css, if using this.$el.css() to set height/width, they are equal to using innerHeight/Width()*/
-
+			this._contentStyle = _.extend({}, options, this._contentOverflow);
 			if(this.currentView) {
-				this.currentView.$el.css(_.extend(contentStyle, this._contentOverflow));
+				this.currentView.$el.css(this._contentStyle);
 				this.currentView.trigger('view:resized');
-			}else
-				this._contentStyle = _.extend(contentStyle, this._contentOverflow);
+			}
 
 			return this;
 		}
@@ -1444,7 +1434,7 @@ window.onerror = function(errorMsg, target, lineNum){
 	 */
 	_.extend(Backbone.Marionette.ItemView.prototype, {
 		enableSVG: function(){
-			if(!Raphael) throw new Error('DEV::View::You did NOT have Raphael.js included in the libs.');
+			if(!Raphael) throw new Error('DEV::View::You did NOT have Raphael.js included...');
 			var that = this;
 
 			Raphael(this.el, this.$el.width(), this.$el.height(), function(){

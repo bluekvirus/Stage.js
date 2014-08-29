@@ -1,6 +1,6 @@
 {
   "name": "stage.js",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "homepage": "http://bluekvirus.github.io/Stage.js/",
   "authors": [
     "Tim Liu <bluekvirus@gmail.com>"
@@ -56,7 +56,6 @@
     "uri.js": "~1.x.x",
     "store.js": "~1.x.x",
     "momentjs": "~2.x.x",
-    "raphael": "~2.x.x",
     "marked": "~0.3.x",
     "bootstrap": "~3.x.x",
     "fontawesome": "~4.x.x"
@@ -83,6 +82,7 @@
     "highlightjs": "*",
     "socket.io-client": "*",
     "jquery-serializeForm": "*",
+    "raphael": "~2.x.x",
     "flot": "*",
     "Chart.js": "*",
     "peity": "*",

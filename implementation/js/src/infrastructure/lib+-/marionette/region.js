@@ -67,23 +67,13 @@
 		//you don't need to calculate paddings on a region, since we are using $.innerHeight()
 		resize:function(options){
 			options = options || {};
-			var contentStyle = {};
-			if(options.height){
-				this.$el.innerHeight(options.height);
-				contentStyle.height = '100%';
-			}
-			if(options.width){
-				this.$el.innerWidth(options.width);
-				contentStyle.width = '100%';
-			}
 
 			/*Note that since we use box-sizing in css, if using this.$el.css() to set height/width, they are equal to using innerHeight/Width()*/
-
+			this._contentStyle = _.extend({}, options, this._contentOverflow);
 			if(this.currentView) {
-				this.currentView.$el.css(_.extend(contentStyle, this._contentOverflow));
+				this.currentView.$el.css(this._contentStyle);
 				this.currentView.trigger('view:resized');
-			}else
-				this._contentStyle = _.extend(contentStyle, this._contentOverflow);
+			}
 
 			return this;
 		}

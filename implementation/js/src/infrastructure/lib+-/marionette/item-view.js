@@ -17,7 +17,7 @@
 	 */
 	_.extend(Backbone.Marionette.ItemView.prototype, {
 		enableSVG: function(){
-			if(!Raphael) throw new Error('DEV::View::You did NOT have Raphael.js included in the libs.');
+			if(!Raphael) throw new Error('DEV::View::You did NOT have Raphael.js included...');
 			var that = this;
 
 			Raphael(this.el, this.$el.width(), this.$el.height(), function(){
