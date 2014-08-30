@@ -36,6 +36,7 @@ _ = require('underscore'),
 cheerio = require('cheerio'), //as server side jquery
 colors = require('colors'),
 path = require('path'),
+os = require('os'),
 fs = require('fs-extra');
 _.str = require('underscore.string');
 
@@ -131,8 +132,10 @@ module.exports = {
 			var target = $script.attr('target') || options.js.default;
 			if(shouldInclude($script)){
 				if(srcPath){
-					//ref-ed js, concat 
-					getTargetJS(target).script.concat(srcPath);
+					//ref-ed js, concat (separate with ;)
+					getTargetJS(target).script
+						//.perform(function(js){return js + ';';})
+						.concat(srcPath, os.EOL + ';');
 					console.log('[included:'.green + getTargetJS(target).name.grey +'] '.green + srcPath);
 				}else {
 					//in-line

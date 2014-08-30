@@ -1,5 +1,5 @@
 ;
-/*
+;/*
  * Main application definition.
  *
  * Usage (General)
@@ -586,7 +586,7 @@ window.onerror = function(errorMsg, target, lineNum){
 
 
 
-/**
+;/**
  * Util for adding meta-event programming ability to object
  *
  * Currently applied to: Application, Context and View.
@@ -609,7 +609,7 @@ window.onerror = function(errorMsg, target, lineNum){
 	};
 
 })(Application);
-/**
+;/**
  * Application universal downloader
  *
  * Usage
@@ -643,7 +643,7 @@ window.onerror = function(errorMsg, target, lineNum){
 	app.Util.download = _downloader;
 
 })(Application);
-/**
+;/**
  * This is the template builder/registry util, making it easier to create new templates for View objects.
  *
  * Usage (name as id)
@@ -715,7 +715,7 @@ window.onerror = function(errorMsg, target, lineNum){
 
 })(Application);
 
-/**
+;/**
  * This is the Remote data interfacing core module of this application framework.
  * (Replacing the old Data API module)
  *
@@ -846,7 +846,7 @@ window.onerror = function(errorMsg, target, lineNum){
 	
 
 })(Application, _, jQuery);
-/**
+;/**
  * Widget/Editor registry. With a regFacotry to control the registry mech.
  *
  * Important
@@ -896,7 +896,7 @@ window.onerror = function(errorMsg, target, lineNum){
 	makeRegistry('Editor');
 
 })(Application);
-/**
+;/**
  * This is the Application context registry. 
  * A context defines the scope of a group of modules that represent a phase/mode/page of the Application. 
  * (e.g. Login, Admin, AppUser, AppPublic(can be the same thing as Login) ...etc.)
@@ -961,7 +961,7 @@ window.onerror = function(errorMsg, target, lineNum){
 
 
 
-/**
+;/**
  * This is a registry for saving 'named' view definitions.
  * 
  * [We moved the static regional view listing from the Marionette.Layout class]
@@ -994,7 +994,7 @@ window.onerror = function(errorMsg, target, lineNum){
 	});
 
 })(Application, _, Marionette);
-/**
+;/**
  * Application locking mech for actions, events and <a href> navigations ...
  *
  * Usage
@@ -1097,7 +1097,7 @@ window.onerror = function(errorMsg, target, lineNum){
 
 
 })(Application);
-;(function(app){
+;;(function(app){
 
 	//1 Override the default raw-template retrieving method
 	//We allow both #id or @*.html(remote) and template html string(or string array) as parameter.
@@ -1132,7 +1132,7 @@ window.onerror = function(errorMsg, target, lineNum){
 
 })(Application);
 
-/**
+;/**
  * Enhancing the Backbone.Marionette.Region Class
  *
  * 1. open()+
@@ -1215,7 +1215,7 @@ window.onerror = function(errorMsg, target, lineNum){
 
 })(Application);
 
-/**
+;/**
  * Here we extend the html tag attributes to be auto-recognized by a Marionette.View.
  * This simplifies the view creation by indicating added functionality through template string. (like angular.js?)
  *
@@ -1415,7 +1415,7 @@ window.onerror = function(errorMsg, target, lineNum){
 
 
 })(Application);
-/**
+;/**
  * Marionette.ItemView Enhancements (can be used in Layout as well) - Note that you can NOT use these in a CompositeView.
  *
  * 1. SVG (view:fit-paper, view:paper-resized, view:paper-ready)
@@ -1658,7 +1658,7 @@ window.onerror = function(errorMsg, target, lineNum){
 	});
 
 })(Application);
-/**
+;/**
  * Enhancing the Marionette.Layout Definition to auto detect regions and regional views through its template.
  *
  *
@@ -1888,7 +1888,7 @@ window.onerror = function(errorMsg, target, lineNum){
 	});	
 
 })(Application);
-/**
+;/**
  * Marionette.CollectionView Enhancements (can be used in CompositeView as well)
  *
  * 1. Render with data 
@@ -1988,7 +1988,7 @@ window.onerror = function(errorMsg, target, lineNum){
 	});
 
 })(Application);
-/**
+;/**
  * i18n loading file
  * dependencies: jQuery, underscore, store.js, [Handlebars]
  *
@@ -2254,7 +2254,7 @@ var I18N = {};
 
 })(jQuery, _, URI);
 
-/**
+;/**
  * This is the jquery plugin that fetch and show static .md contents through markd js lib
  * (If you have highlight.js, the code block will be themed for you...)
  *
@@ -2338,7 +2338,7 @@ var I18N = {};
 
 
 })(jQuery);
-/**
+;/**
  * The Table-Of-Content plugin used with document html pages.
  *
  * Usage
@@ -2460,7 +2460,7 @@ var I18N = {};
 	};
 
 })(jQuery);
-/**
+;/**
  * This is the plug-in that put an div(overlay) on top of selected elements (inner-div style)
  *
  * Arguments
@@ -2603,7 +2603,7 @@ var I18N = {};
 	};
 
 })(jQuery);
-/**
+;/**
  * This is the code template for **basic** <input>, <select>, <textarea> editor.
  *
  * Note that the validate function defaults on no-op. You should override this according to field settings during form/formPart init.
@@ -3112,7 +3112,7 @@ var I18N = {};
 	]);
 
 })(Application);
-/**
+;/**
  * Pre-defined validation rules/methods for basic editors.
  *
  * Rule Signature
@@ -3171,7 +3171,7 @@ var I18N = {};
 	};
 
 })(Application);
-/**
+;/**
  * This is the minimum Datagrid widget for data tables
  *
  * [table]
@@ -3347,7 +3347,7 @@ var I18N = {};
 	});
 
 })(Application);
-/**
+;/**
  * The Default String Column Header Definition.
  *
  * @author Tim.Liu
@@ -3368,7 +3368,7 @@ var I18N = {};
 	});
 
 })(Application);
-/**
+;/**
  * The Default String Column Cell Definition.
  *
  * @author Tim.Liu
@@ -3389,7 +3389,7 @@ var I18N = {};
 	});
 
 })(Application);
-/**
+;/**
  * Cell that shows the seq number of record
  *
  * @author Tim.Liu
@@ -3407,7 +3407,7 @@ var I18N = {};
 	});
 
 })(Application);
-/**
+;/**
  * This is the ActionCell definition 
  *
  * options
@@ -3491,7 +3491,7 @@ var I18N = {};
 
 })(Application);
 
-/**
+;/**
  * This is the Tree widget.
  *
  * <ul>
@@ -3613,7 +3613,7 @@ var I18N = {};
 	});
 
 })(Application);
-/**
+;/**
  * Passive Paginator widget used with lists (CollectionView instances)
  *
  * options

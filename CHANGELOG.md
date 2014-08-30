@@ -2,7 +2,7 @@ Change Log
 ==========
 1.7.2 (2014-08-29*)
 -------------------
-
+1. Changed script concat EOL to be (os.EOL + ';') in tools.
 
 In progress...
 
