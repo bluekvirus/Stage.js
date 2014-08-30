@@ -169,7 +169,7 @@
                 type: 'select',
                 options: {
                     remote: {
-                        url: 'sample1/choices'
+                        url: 'sample/choices'
                     }
                 }
             } 

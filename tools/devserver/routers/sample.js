@@ -24,7 +24,7 @@ module.exports = function(server){
 				'username': '@EMAIL',
 				'status|1': ['active', 'blocked', 'offline', 'guest'],
 				profile: {
-					'name|1': _.times(250, function(){return Random.name()}),
+					'name|1': _.times(250, function(){return Random.name();}),
 					'age': '@INTEGER(20,90)',
 					'dob': '@DATE',
 					'major|1': ['CS', 'SE', 'Design', 'EE', 'Math'],
@@ -41,7 +41,7 @@ module.exports = function(server){
 			}]
 		}
 
-	}
+	};
 
 	////////////////services/////////////////
 
@@ -55,6 +55,6 @@ module.exports = function(server){
 
 	router.get('/choices', function(req, res, next){
 		res.json(Mock.mock(mockTpl.choices).payload);
-	})
+	});
 
-}
+};
