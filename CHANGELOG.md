@@ -3,6 +3,7 @@ Change Log
 1.7.2 (2014-08-29*)
 -------------------
 1. Changed script concat EOL to be (os.EOL + ';') in tools.
+2. Removed default app.config.baseAjaxURI value to fit cordova dev better.
 
 In progress...
 
