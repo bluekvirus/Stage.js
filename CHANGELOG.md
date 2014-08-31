@@ -4,6 +4,7 @@ Change Log
 -------------------
 1. Changed script concat EOL to be (os.EOL + ';') in tools.
 2. Removed default app.config.baseAjaxURI value to fit cordova dev better.
+3. Added Cordova touch callout css fix in theme.
 
 In progress...
 
