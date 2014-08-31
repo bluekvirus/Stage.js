@@ -154,7 +154,7 @@ window.onerror = function(errorMsg, target, lineNum){
 			defaultContext: 'Default', //This is the context (name) the application will sit on upon loading.
 			fullScreen: false, //This will put <body> to be full screen sized (window.innerHeight).
 	        rapidEventDebounce: 200, //in ms this is the rapid event debounce value shared within the application (e.g window resize).
-	        baseAjaxURI: '/api', //Modify this to fit your own backend apis. e.g index.php?q= or '/api',
+	        baseAjaxURI: '', //Modify this to fit your own backend apis. e.g index.php?q= or '/api',
 	        viewTemplates: 'static/template', //this is assisted by the build tool, combining all the *.html handlebars templates into one big json.
 			i18nResources: 'static/resource', //this the the default location where our I18N plugin looks for locale translations.
 			i18nTransFile: 'i18n.json', //can be {locale}.json
@@ -561,6 +561,7 @@ window.onerror = function(errorMsg, target, lineNum){
 	 * @returns jqXHR object (use promise pls)
 	 */
 	Application.remote = function(options){
+		options = options || {};
 		if(options.payload)
 			return Application.Core.Remote.change(options);
 		else
