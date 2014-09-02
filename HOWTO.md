@@ -750,6 +750,7 @@ view:resized - fired when parent region's .resize() method gets called
 
 //Layout with navRegion only
 view:navigate-to
+view:navigate-away (if parentCt persists)
 
 //ItemView only (SVG)
 view:fit-paper
@@ -788,7 +789,7 @@ If you want also to control the overflow css style of a region's `currentView`, 
 Note that for the overflow settings to show effect, you need to first use the region's `resize()` method call to size the region. 
 
 
-######Use parentCt?
+######Use parentCt/Ctx/Region?
 Before you move on, there is one more thing in this event section we want to clarify. If you use `region=""` in your template to define regions in a *Context*/*Marionette.Layout*, your sub-view instances within those regions will receive a `parentCt` property upon showing which should help you find its parent container view instance (the layout instance).
 
 This is helpful when you want to achieve **collaborations** between sub-views by using event managed by the layout.
@@ -814,6 +815,8 @@ subViewA {
 }
 ```
 **Remember:** Always prefer *Events* over *APIs* while implementing collaborations.
+
+Besides `parentCt`, views shown in regions will also get a ref to `parentCtx` and `parentRegion`.
 
 #####Locks
 You can use a global lock to lock all UIs of your application, like this
