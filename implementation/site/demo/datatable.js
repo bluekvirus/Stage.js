@@ -67,6 +67,15 @@
 	    			status: 'active'
 	    		}
 	    	});
+	    },
+
+	    onNavigateTo: function(path){
+	    	console.log('Datatable nav to', path);
+	    },
+
+	    //can only be detected if parentCt is still present.
+	    onNavigateAway: function(){
+	    	console.log('Datatable nav away', this);
 	    }
 	});	
 

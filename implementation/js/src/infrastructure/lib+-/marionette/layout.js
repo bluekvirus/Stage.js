@@ -189,16 +189,17 @@
 				this.navRegion = options.navRegion || this.navRegion;
 				//if(this.navRegion)
 				this.onNavigateChain = function(pathArray){
+					if(!pathArray || pathArray.length === 0){
+						this.trigger('view:navigate-to');//use this to show the default view
+						return;	
+					} 
+
 					if(!this.navRegion) return this.trigger('view:navigate-to', pathArray.join('/'));
 
 					if(!this.regions[this.navRegion]){
 						console.warn('DEV::Layout::View', 'invalid navRegion', this.navRegion, 'in', this.name || options.name);
 						return;
 					}
-					if(!pathArray || pathArray.length === 0){
-						this.trigger('view:navigate-to');//use this to show the default view
-						return;	
-					} 
 					
 					var targetViewName = pathArray.shift();
 					var TargetView = app.Core.Regional.get(targetViewName);
@@ -208,6 +209,7 @@
 						if(!navRegion.currentView || TargetView.prototype.name !== navRegion.currentView.name){
 							//new
 							var view = new TargetView();
+							if(navRegion.currentView) navRegion.currentView.trigger('view:navigate-away');
 							navRegion.show(view);
 							view.trigger('view:navigate-chain', pathArray);
 							return;

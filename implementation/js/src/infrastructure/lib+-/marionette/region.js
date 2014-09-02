@@ -61,6 +61,8 @@
 				view.trigger('view:resized', {region: this}); //!!Caution: this might be racing if using view.effect as well!!
 			}
 
+			view.parentRegion = this;
+
 			return this;
 		},
 
