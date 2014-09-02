@@ -1849,40 +1849,42 @@ window.onerror = function(errorMsg, target, lineNum){
 			//supporting the navigation chain if it is a named layout view with valid navRegion (context, regional, ...)
 			if(options.name || this.name){
 				this.navRegion = options.navRegion || this.navRegion;
-				if(this.navRegion)
-					this.onNavigateChain = function(pathArray){
-						if(!this.regions[this.navRegion]){
-							console.warn('DEV::Layout::View', 'invalid navRegion', this.navRegion, 'in', this.name || options.name);
+				//if(this.navRegion)
+				this.onNavigateChain = function(pathArray){
+					if(!this.navRegion) return this.trigger('view:navigate-to', pathArray.join('/'));
+
+					if(!this.regions[this.navRegion]){
+						console.warn('DEV::Layout::View', 'invalid navRegion', this.navRegion, 'in', this.name || options.name);
+						return;
+					}
+					if(!pathArray || pathArray.length === 0){
+						this.trigger('view:navigate-to');//use this to show the default view
+						return;	
+					} 
+					
+					var targetViewName = pathArray.shift();
+					var TargetView = app.Core.Regional.get(targetViewName);
+
+					if(TargetView){
+						var navRegion = this.getRegion(this.navRegion);
+						if(!navRegion.currentView || TargetView.prototype.name !== navRegion.currentView.name){
+							//new
+							var view = new TargetView();
+							navRegion.show(view);
+							view.trigger('view:navigate-chain', pathArray);
 							return;
-						}
-						if(!pathArray || pathArray.length === 0){
-							this.trigger('view:navigate-to');//use this to show the default view
-							return;	
-						} 
-						
-						var targetViewName = pathArray.shift();
-						var TargetView = app.Core.Regional.get(targetViewName);
-
-						if(TargetView){
-							var navRegion = this.getRegion(this.navRegion);
-							if(!navRegion.currentView || TargetView.prototype.name !== navRegion.currentView.name){
-								//new
-								var view = new TargetView();
-								navRegion.show(view);
-								view.trigger('view:navigate-chain', pathArray);
-								return;
-							}else{
-								//old
-								navRegion.currentView.trigger('view:navigate-chain', pathArray);
-							}
-
-
 						}else{
-							pathArray.unshift(targetViewName);
-							return this.trigger('view:navigate-to', pathArray.join('/'));	
+							//old
+							navRegion.currentView.trigger('view:navigate-chain', pathArray);
 						}
 
-					};
+
+					}else{
+						pathArray.unshift(targetViewName);
+						return this.trigger('view:navigate-to', pathArray.join('/'));	
+					}
+
+				};
 			}								
 
 			return Old.prototype.constructor.call(this, options);

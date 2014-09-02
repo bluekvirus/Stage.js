@@ -7,6 +7,7 @@ Change Log
 3. Disabled webkit touch callout & user selection in css. (for Cordova)
 4. Refined build script and added default output folder path.
 5. Refined region resize code & event propagation.
+6. Removed navRegion constrain on firing the view/context:navigate-chain events.
 
 In progress...
 
