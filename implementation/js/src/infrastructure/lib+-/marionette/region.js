@@ -57,8 +57,8 @@
 
 			//trigger view:resized anyway upon its first display
 			if(this._contentStyle){
-				view.$el.css(this._contentStyle); //Tricky, use a .$el.css() call to smooth dom sizing/refreshing after $el.empty().append()
-				view.trigger('view:resized'); //!!Caution: this might be racing if using view.effect as well!!
+				//view.$el.css(this._contentStyle); //Tricky, use a .$el.css() call to smooth dom sizing/refreshing after $el.empty().append()
+				view.trigger('view:resized', {region: this}); //!!Caution: this might be racing if using view.effect as well!!
 			}
 
 			return this;
@@ -70,9 +70,10 @@
 
 			/*Note that since we use box-sizing in css, if using this.$el.css() to set height/width, they are equal to using innerHeight/Width()*/
 			this._contentStyle = _.extend({}, options, this._contentOverflow);
+			this.$el.css(this._contentStyle);
 			if(this.currentView) {
-				this.currentView.$el.css(this._contentStyle);
-				this.currentView.trigger('view:resized');
+				//this.currentView.$el.css(this._contentStyle);
+				this.currentView.trigger('view:resized', {region: this});
 			}
 
 			return this;

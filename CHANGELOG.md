@@ -6,6 +6,7 @@ Change Log
 2. Removed default app.config.baseAjaxURI value to fit Cordova dev better.
 3. Disabled webkit touch callout & user selection in css. (for Cordova)
 4. Refined build script and added default output folder path.
+5. Refined region resize code & event propagation.
 
 In progress...
 
