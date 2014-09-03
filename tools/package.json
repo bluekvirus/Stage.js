@@ -33,6 +33,7 @@
     "request": "~2.x.x",
     "rimraf": "~2.x.x",
     "tar.gz": "~0.1.1",
+    "tingodb": "^0.2.2",
     "underscore": "~1.x.x",
     "underscore.string": "~2.x.x",
     "watch": "^0.11.0",

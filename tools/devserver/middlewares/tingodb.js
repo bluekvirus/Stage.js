@@ -1,8 +1,8 @@
 /**
- * Sample custom middleware script, expressjs 4.0+
+ * Middleware that injects TingoDB ref to req
  *
  * @author Tim.Liu
- * @created 2014.06.11
+ * @created 2014.09.03
  */
 
 module.exports = function(server){
