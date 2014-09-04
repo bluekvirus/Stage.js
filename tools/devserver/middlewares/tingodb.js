@@ -9,11 +9,18 @@ module.exports = function(server){
 
 	var profile = server.get('profile');
 
-	return function(req, res, next){
+	//call this function to return your middleware;
+	return function(options){
 
-		//you customized code here, req.app for application server
+		//prepare your middleware according to options
+
+		return function(req, res, next){
+
+			//you customized code here, req.app for application server
 	
-		next(); // or error out
+			next(); // or error out
+
+		};
 
 	};
 
