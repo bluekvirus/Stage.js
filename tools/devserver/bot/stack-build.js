@@ -10,6 +10,7 @@ path = require('path'),
 _ = require('underscore'),
 cors = require('cors'),
 httpProxy = require('http-proxy'),
+errorhandler = require('errorhandler'),
 colors = require('colors');
 
 module.exports = function(server){
@@ -84,4 +85,9 @@ module.exports = function(server){
 		console.log('[router]', mountpath.yellow);
 	});
 
+	//overall error errorhandler
+	if(profile.errorpage){
+		server.use(errorhandler);
+		console.log('[Error Page: enabled]'.yellow, 'use next(err) in routes and middlewares'.grey);
+	}
 };

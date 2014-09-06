@@ -61,6 +61,9 @@ module.exports = {
 		},
 		//can be multiple
 		//'/other': {}, '/special': {}, '/3rd-party': {} ...
-	}
+	},
+
+	//whether to use the express/connect errorhandler in general
+	errorpage: true 
 
 };
