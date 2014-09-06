@@ -23,7 +23,7 @@ module.exports = {
 		//normally if you don't put '/' path here, '/': '../../implementation' will be added for you.
 		'/': '../build/dist/site', 
 		'/dev': '../../implementation', //this will be available under uri /dev
-		'/devmobile': '../build/dist/mobile'
+		//'/devmobile': '../build/dist/mobile'
 	},
 
 	//use lesswatch:false to turn off LESS monitor.
