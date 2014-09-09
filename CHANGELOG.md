@@ -2,6 +2,8 @@ Change Log
 ==========
 1.7.3 (2014-09-09*)
 -------------------
+1. Refined $.md plugin and region.resize() with `_.defer()`.
+
 In progress...
 
 x. + sprite preview (_Mockups context);
