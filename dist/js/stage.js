@@ -2649,10 +2649,11 @@ var I18N = {};
  * checked: '...' - checked value
  * unchecked: '...' - unchecked value
  *
- * //specifically for file only
+ * //specifically for file only (see also fileeditor.upload(options))
  * upload: {
  * 	standalone: false/true - whether or not to display a stand-alone upload button for this field.
  * 	formData: - an {} or function to return additional data to be submitted together with the file.
+ * 	fileInput: - a jQuery collection of input[type=file][name=file[]] objects. (for multi-file upload through one editor api)
  * 	url - a string indicating where to upload the file to.
  * 	...  see complete option listing on [https://github.com/blueimp/jQuery-File-Upload/wiki/Options].
  *
@@ -2902,14 +2903,18 @@ var I18N = {};
 
 					//unique editor api
 					this.upload = function(config){
+						config = config || {};
 						//fix the formData value
-						if(_.isFunction(config.formData)) 
-							config.formData = config.formData();
+						if(config.formData) 
+							config.formData = _.result(config, 'formData');
+						if(options.upload && options.upload.formData)
+							options.upload.formData = _.result(options.upload, 'formData');
+						
 						//fix the url with app.config.baseAjaxURI
 						if(app.config.baseAjaxURI)
 							config.url = [app.config.baseAjaxURI, config.url].join('/');
 
-						//send the file through fileupload plugin.
+						//send the file(s) through fileupload plugin.
 						this.$el.fileupload('send', _.extend({
 							fileInput: this.ui.input,
 						}, options.upload, config));

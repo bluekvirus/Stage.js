@@ -1,6 +1,13 @@
 Change Log
 ==========
-1.7.2 (2014-08-29*)
+1.7.3 (2014-09-09*)
+-------------------
+In progress...
+
+x. + sprite preview (_Mockups context);
+
+
+1.7.2 (2014-09-09)
 -------------------
 1. Changed script concat EOL to be (os.EOL + ';') in tools.
 2. Removed default app.config.baseAjaxURI value to fit Cordova dev better.
@@ -10,10 +17,7 @@ Change Log
 6. Removed navRegion constrain on listening to the view/context:navigate-chain events.
 7. Added view:navigate-away event. (if parentCt persists)
 8. Added parentRegion to views shown in a region.
-
-In progress...
-
-x. + sprite preview (_Mockups context);
+9. Confirmed 'fileInput' option usage in file editor's .upload() api. (multi-file upload through single file editor, with fieldname all set to 'files[]')
 
 
 1.7.1 (2014-08-29)
@@ -35,10 +39,6 @@ x. + sprite preview (_Mockups context);
 15. Removed 'view:navigation-end' event, use 'view:naviagte-to' instead.
 16. Added onBeforeNavigateTo() to contexts.
 17. Removed raphael.js from deps.
-
-In progress...
-
-x. + sprite preview (_Mockups context);
 
 
 1.7.0 (2014-08-19)

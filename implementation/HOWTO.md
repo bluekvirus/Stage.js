@@ -6,7 +6,7 @@ Building multi-context rich-client web application front-end in the modern way.
 
 Current version
 ---------------
-**@1.7.1**
+**@1.7.2**
 ([Why is it version-ed like this?](http://semver.org/))
 
 
@@ -950,6 +950,7 @@ The editors will be appended inside the calling view instance one by one by defa
 * upload:
     *  standalone: false/true - whether or not to display a stand-alone upload button for this field.
     *  formData: - an {} or function to return additional data to be submitted together with the file.
+    *  fileInput: - a jQuery collection of input\[type=file\]\[name="file[]"\] objects. (for multi-file upload through one editor api)
     *  url - a string indicating where to upload the file to.
     *  ...  see complete option listing on [https://github.com/blueimp/jQuery-File-Upload/wiki/Options].
     *  callbacks:
@@ -994,7 +995,8 @@ editor.status(status, message); //info, error, warning, success status, empty to
 //in addition, the file editor have a .upload() method
 editor.upload({
     url: ...,
-    formData: {...}
+    formData: {...},
+    fileInput: this.$el.find('input[name="files[]"]') //multi-files
 });
 //you can use this to trigger the upload process and submit additional data
 ```

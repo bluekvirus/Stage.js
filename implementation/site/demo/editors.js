@@ -84,8 +84,9 @@
                 label: 'File',
                 type: 'file',
                 help: 'Please choose your image to upload.',
+                fieldname: 'files[]',
                 upload: {
-                    standalone: true,
+                    //standalone: true,
                     formData: function(){
                         //return [{name: 'a', value: 1}, {name: 'b', value: 2}];
                         return {a: 1, b: 2};
@@ -99,6 +100,29 @@
                     }
                 }
             },
+
+            xyz2: {
+                label: 'File2',
+                type: 'file',
+                help: 'Please choose your abc to upload.',
+                fieldname: 'files[]',
+                upload: {
+                    //standalone: true,
+                    formData: function(){
+                        //return [{name: 'a', value: 1}, {name: 'b', value: 2}];
+                        return {a: 1, b: 2};
+                    },
+                    //formData: {a: 1, b: 2},
+                    url: 'file/Blog2/',
+                    callbacks: {
+                        always: function(e, info){
+                            console.log(e, info);
+                        }
+                    }
+                }
+
+            },
+
             radios: {
                 label: 'Radios',
                 type: 'radios',
@@ -281,6 +305,10 @@
                 console.log('error', this.validate(true));
             },
             submit: function(){
+                // var f = this.getEditor('fieldset-b.xyz');
+                // f.upload({
+                //     fileInput: this.$el.find('input[name="files[]"]')
+                // });
                 console.log(this.getValues());
             },
             test: function(){
