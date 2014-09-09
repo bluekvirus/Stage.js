@@ -1208,12 +1208,17 @@ window.onerror = function(errorMsg, target, lineNum){
 			/*Note that since we use box-sizing in css, if using this.$el.css() to set height/width, they are equal to using innerHeight/Width()*/
 			this._contentStyle = _.extend({}, options, this._contentOverflow);
 			this.$el.css(this._contentStyle);
-			if(this.currentView) {
-				//this.currentView.$el.css(this._contentStyle);
-				this.currentView.trigger('view:resized', {region: this});
-			}
+			
+			var that = this;
+			_.defer(function(){ //give browser a chance to catch up with style changes.
+				if(that.currentView) {
+					//this.currentView.$el.css(this._contentStyle);
+					that.currentView.trigger('view:resized', {region: that});
+				}
+			});
 
 			return this;
+
 		}
 	});
 
@@ -2336,9 +2341,13 @@ var I18N = {};
 						content: content
 					});
 				}
-				$el.html(content).addClass('md-content');
-				theme($el, options);
-				if(options.cb) options.cb($el);
+
+				_.defer(function(){
+					$el.html(content).addClass('md-content');
+					theme($el, options);
+					if(options.cb) options.cb($el);
+				});
+
 			});
 		});
 	};

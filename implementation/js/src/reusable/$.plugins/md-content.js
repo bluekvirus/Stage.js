@@ -72,9 +72,13 @@
 						content: content
 					});
 				}
-				$el.html(content).addClass('md-content');
-				theme($el, options);
-				if(options.cb) options.cb($el);
+
+				_.defer(function(){
+					$el.html(content).addClass('md-content');
+					theme($el, options);
+					if(options.cb) options.cb($el);
+				});
+
 			});
 		});
 	};
