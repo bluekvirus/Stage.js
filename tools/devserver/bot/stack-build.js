@@ -85,9 +85,14 @@ module.exports = function(server){
 		console.log('[router]', mountpath.yellow);
 	});
 
+	//404 Not Found
+	server.use(function(req, res, next){
+		res.status(404).send('Not Found!');
+	});
+
 	//overall error errorhandler
 	if(profile.errorpage){
-		server.use(errorhandler);
+		server.use(errorhandler());
 		console.log('[Error Page: enabled]'.yellow, 'use next(err) in routes and middlewares'.grey);
 	}
 };

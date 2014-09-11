@@ -16,14 +16,23 @@
  * @created 2014.05.30
  */
 
+var morgan = require('morgan'),
+bodyParser = require('body-parser');
+
 module.exports = function(server){
 
 	var profile = server.get('profile');
 
 	return function(server){
 
-		//server.use...
-		//server.use...
+		//+server.use...
+		//...
+		server.use(morgan('short'));
+		server.use(bodyParser.urlencoded({extended: true}));
+		server.use(bodyParser.json());
+		//+server.use...
+		//server.use(server.middlewares.your-middleware-factory())
+		//...
 
 	};
 

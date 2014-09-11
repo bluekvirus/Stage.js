@@ -57,4 +57,8 @@ module.exports = function(server){
 		res.json(Mock.mock(mockTpl.choices).payload);
 	});
 
+	router.get('/error', function(req, res, next){
+		next(new Error('error!'));
+	});
+
 };

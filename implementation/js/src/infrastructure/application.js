@@ -541,6 +541,10 @@ window.onerror = function(errorMsg, target, lineNum){
 
 		available: function(topic){
 			return Application.Core.Lock.available(topic);
+		},
+
+		download: function(ticket){
+			return Application.Util.download(ticket);
 		}		
 
 	});
@@ -578,6 +582,7 @@ window.onerror = function(errorMsg, target, lineNum){
 		'widget', 'editor', 'editor.validator - @alias:editor.rule',
 		'remote',
 		'lock', 'unlock', 'available',
+		'download',
 		'create - @deprecated'
 	];
 
