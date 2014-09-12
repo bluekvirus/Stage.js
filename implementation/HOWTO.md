@@ -31,8 +31,8 @@ Reuse:
 
 Handling Data:
 * Application.remote (options)
-* Application.model({data}) - shortcut for new Backbone.Model(data)
-* Application.collection([data]) - shortcut for new Backbone.Collection(data)
+* Application.model ({data}) - shortcut for new Backbone.Model(data)
+* Application.collection ([data]) - shortcut for new Backbone.Collection(data)
 
 Mutual Exclusion:
 * Application.lock ([topic/lock])
@@ -40,7 +40,8 @@ Mutual Exclusion:
 * Application.available ([topic/lock])
 
 Download:
-* Application.download(options)
+* Application.download (options)
+
 -----------------------------------------------------------------------------
 
 **Remember:** Your goal is to
@@ -204,6 +205,11 @@ stagejs update --edge --packages
 ```
 stagejs serve [--port <number>]
 ```
+
+**Tip**: You can now use the `stage-devtools` cli to create all the element needed in your application. Use the following cmd to see what you can create from the command-line:
+```
+stagejs create -l
+```
 Read more about the dev tool [here](https://github.com/bluekvirus/Stage-devtools).
 
 #####Manually
@@ -260,11 +266,6 @@ Application.setup({
 Remember, creating a web application is like drawing a picture. Start by laying things out and gradually refine the details. In our case, always start by defining the application template.
 
 Now, let's start building a real web application.
-
-**Tip**: You can now use the `stage-devtools` cli to create all the element needed in your application. Use the following cmd to see what you can create from the command-line:
-```
-stagejs create -l
-```
 
 ####Step 1. Initialize
 To create your main.js file from our suggested code template, simply use the `stage-devtools` with the `create` command:
