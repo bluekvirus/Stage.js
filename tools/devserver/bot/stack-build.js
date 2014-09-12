@@ -1,6 +1,10 @@
 /**
  * The server stack mounting bot (static webroots, middleware/services, routers)
  *
+ * Warning
+ * -------
+ * Make sure the middlewares are built with their factory methods before use...
+ *
  * @author Tim.Liu
  * @created 2014.04.20
  * @updated 2014.07.31
@@ -83,11 +87,6 @@ module.exports = function(server){
 	_.each(server.get('routers'), function(router, mountpath){
 		server.use(mountpath, router);
 		console.log('[router]', mountpath.yellow);
-	});
-
-	//404 Not Found
-	server.use(function(req, res, next){
-		res.status(404).send('Not Found!');
 	});
 
 	//overall error errorhandler

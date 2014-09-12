@@ -5,7 +5,7 @@ Change Log
 1. Refined $.md plugin and region.resize() with `_.defer()`.
 2. app.Util.download <-> app.download.
 3. Fixed bug in app.Util.download url query strings.
-4. Refined devserver basic middleware stack (inject + build bot).
+4. Refined devserver basic middleware stack (inject).
 
 In progress...
 
