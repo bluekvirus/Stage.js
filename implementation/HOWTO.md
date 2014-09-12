@@ -38,6 +38,9 @@ Mutual Exclusion:
 * Application.lock ([topic/lock])
 * Application.unlock ([topic/lock])
 * Application.available ([topic/lock])
+
+Download:
+* Application.download(options)
 -----------------------------------------------------------------------------
 
 **Remember:** Your goal is to
@@ -252,13 +255,22 @@ Application.setup({
     ]
 }).run();
 ```
-**Tip:** Instead of configure a template in the `Application`, you can put your application's main template under a HTML tag with attribute `region="app"` in your `index.html`.
+**Tip**: Instead of configure a template in the `Application`, you can put your application's main template under a HTML tag with attribute `region="app"` in your `index.html`.
 
 Remember, creating a web application is like drawing a picture. Start by laying things out and gradually refine the details. In our case, always start by defining the application template.
 
 Now, let's start building a real web application.
 
+**Tip**: You can now use the `stage-devtools` cli to create all the element needed in your application. Use the following cmd to see what you can create from the command-line:
+```
+stagejs create -l
+```
+
 ####Step 1. Initialize
+To create your main.js file from our suggested code template, simply use the `stage-devtools` with the `create` command:
+```
+stagejs create main [your main file name, default to main.js]
+```
 
 #####Configure
 Go to your `main.js` and setup the application by using `Application.setup()`:

@@ -542,6 +542,10 @@ window.onerror = function(errorMsg, target, lineNum){
 
 		available: function(topic){
 			return Application.Core.Lock.available(topic);
+		},
+
+		download: function(ticket){
+			return Application.Util.download(ticket);
 		}		
 
 	});
@@ -579,6 +583,7 @@ window.onerror = function(errorMsg, target, lineNum){
 		'widget', 'editor', 'editor.validator - @alias:editor.rule',
 		'remote',
 		'lock', 'unlock', 'available',
+		'download',
 		'create - @deprecated'
 	];
 
@@ -638,7 +643,7 @@ window.onerror = function(errorMsg, target, lineNum){
 	    }
 	    
 	    if(_.isString(ticket)) ticket = { url: ticket };
-	    drone.attr('src', (new URI(ticket.url || '/').search(_.omit(ticket, 'url'))).toString());
+	    drone.attr('src', (new URI(ticket.url || '/').addQuery(_.omit(ticket, 'url'))).toString());
 	};
 
 	app.Util.download = _downloader;
