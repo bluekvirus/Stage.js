@@ -42,12 +42,14 @@ After cloning the project, you should go to `/tools` and run these commands:
 ```
 //1. prepare bower packages
 //under /tools/libprep
+bower install
 bower update
 node run all
 
 //2. prepare default theme pack
 //under /tools/themeprep
-node run
+node run default
+node run site
 
 //3. prepare npm packages
 //under /tools

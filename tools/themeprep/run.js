@@ -60,7 +60,7 @@ var implFolder = '../../implementation';
 
 program
 	.version('0.1.0')
-	.usage('[options] <theme name>')
+	.usage('[options] <theme name> or ls')
 	.option('-B --base <path>', 'implementation base folder, default to ' + implFolder, implFolder)
 	.option('-F --fonts [names]', 'font packages to collect /fonts from, default to bootstrap, fontawesome, open-sans-fontface', ['bootstrap', 'fontawesome', 'open-sans-fontface'])
 	.option('-S --sprites [names]', '/img/? folders to include in the sprite.png, default to icons, logo, pics', ['icon', 'logo', 'pic'])
@@ -68,12 +68,24 @@ program
 
 //check target theme name, default to 'project' (transit to stage-devtools)
 var theme = program.args[0] || 'project';
-var themeFolder = path.join(_.string.startsWith(program.base, path.sep)?'':__dirname, program.base, 'themes', theme);
-var libFolder = path.join(themeFolder, '..', '..', 'bower_components');
-console.log('Preparing Theme:'.yellow, theme);
+var themesBase = path.join(_.string.startsWith(program.base, path.sep)?'':__dirname, program.base, 'themes');
+var libFolder = path.join(themesBase, '..', 'bower_components');
+var themeFolder = path.join(themesBase, theme);
 var baseTheme = 'default',
-baseThemeFolder = path.join(themeFolder, '..', baseTheme);
+baseThemeFolder = path.join(themesBase, baseTheme);
 
+//allow listing of theme folders
+if(theme === 'ls'){
+	var tNames = _.map(fs.readdirSync(themesBase), function(t){
+		t = path.join(themesBase, t);
+		if(fs.statSync(t).isDirectory() && fs.existsSync(path.join(t, 'less')))
+			return path.basename(t);
+	});
+	console.log('Available themes:'.yellow, _.compact(tNames).join(', '));
+	return;
+}
+
+console.log('Preparing Theme:'.yellow, theme);
 if(!fs.existsSync(themeFolder)){
 	console.log('Creating new theme from'.yellow, baseTheme, '==>', theme);
 	if(!fs.existsSync(baseThemeFolder)) {

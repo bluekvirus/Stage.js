@@ -116,6 +116,7 @@
   },
   "resolutions": {
     "modernizr": "~2.x.x",
-    "fastclick": "~1.0.3"
+    "fastclick": "~1.0.3",
+    "handlebars": "~2.x.x"
   }
 }
