@@ -2917,12 +2917,10 @@ var I18N = {};
 
 					//unique editor api
 					this.upload = function(config){
-						config = config || {};
+						config = _.extend({}, options.upload, config);
 						//fix the formData value
 						if(config.formData) 
 							config.formData = _.result(config, 'formData');
-						if(options.upload && options.upload.formData)
-							options.upload.formData = _.result(options.upload, 'formData');
 						
 						//fix the url with app.config.baseAjaxURI
 						if(app.config.baseAjaxURI)
@@ -2931,7 +2929,7 @@ var I18N = {};
 						//send the file(s) through fileupload plugin.
 						this.$el.fileupload('send', _.extend({
 							fileInput: this.ui.input,
-						}, options.upload, config));
+						}, config));
 					};
 
 				}
