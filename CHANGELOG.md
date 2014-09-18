@@ -1,11 +1,12 @@
 Change Log
 ==========
-1.7.3 (2014-09-12*)
+1.7.3 (2014-09-17*)
 -------------------
 1. Refined $.md plugin and region.resize() with `_.defer()`.
 2. app.Util.download <-> app.download.
 3. Fixed bug in app.Util.download url query strings.
 4. Refined devserver basic middleware stack (inject).
+5. Fixed error in file editor upload() api handling.
 
 In progress...
 
