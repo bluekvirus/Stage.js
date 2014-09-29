@@ -23,6 +23,8 @@
 		},
 
 		get: function(name, options){
+			if(!name) return _.keys(map);
+			
 			var Def = map[name];
 			if(options) return new Def(options);
 			return Def;

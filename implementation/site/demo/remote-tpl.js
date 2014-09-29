@@ -1,6 +1,7 @@
 ;(function(app){
 
 	app.regional('RemoteTpl', {
+		overlay: true,
 		template: '@test-ct.html',
 		className: 'wrapper-full-2x border border-full',
 		navRegion: 'nav',

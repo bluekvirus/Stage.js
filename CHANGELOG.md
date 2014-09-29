@@ -8,6 +8,7 @@ Change Log
 4. Refined devserver basic middleware stack (inject).
 5. Fixed error in file editor upload() api handling.
 6. Added theme listing to themeprep tool.
+7. Added named view (Regional) listing.
 
 In progress...
 
