@@ -42,6 +42,9 @@ Mutual Exclusion:
 Download:
 * Application.download (options)
 
+Script(s) Injection:
+* Application.inject ([path to js/json]) - json should contain a js listing
+
 -----------------------------------------------------------------------------
 
 **Remember:** Your goal is to

@@ -9,6 +9,7 @@ Change Log
 5. Fixed error in file editor upload() api handling.
 6. Added theme listing to themeprep tool.
 7. Added named view (Regional) listing.
+8. Added live script(s) [batch] injection API to application.
 
 In progress...
 

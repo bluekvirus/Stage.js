@@ -545,6 +545,10 @@ window.onerror = function(errorMsg, target, lineNum){
 
 		download: function(ticket){
 			return Application.Util.download(ticket);
+		},
+
+		inject: function(scripts){
+			return Application.Util.inject(scripts);
 		}		
 
 	});

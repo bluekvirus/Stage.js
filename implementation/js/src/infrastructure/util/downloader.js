@@ -17,7 +17,7 @@
  */
 ;(function(app){
 
-	var _downloader = function(ticket){
+	function downloader(ticket){
 	    var drone = $('#hidden-download-iframe');
 	    if(drone.length > 0){
 	    }else{
@@ -27,8 +27,8 @@
 	    
 	    if(_.isString(ticket)) ticket = { url: ticket };
 	    drone.attr('src', (new URI(ticket.url || '/').addQuery(_.omit(ticket, 'url'))).toString());
-	};
+	}
 
-	app.Util.download = _downloader;
+	app.Util.download = downloader;
 
 })(Application);
