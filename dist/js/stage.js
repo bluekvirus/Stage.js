@@ -546,6 +546,10 @@ window.onerror = function(errorMsg, target, lineNum){
 
 		download: function(ticket){
 			return Application.Util.download(ticket);
+		},
+
+		inject: function(scripts){
+			return Application.Util.inject(scripts);
 		}		
 
 	});
@@ -634,7 +638,7 @@ window.onerror = function(errorMsg, target, lineNum){
  */
 ;(function(app){
 
-	var _downloader = function(ticket){
+	function downloader(ticket){
 	    var drone = $('#hidden-download-iframe');
 	    if(drone.length > 0){
 	    }else{
@@ -644,9 +648,9 @@ window.onerror = function(errorMsg, target, lineNum){
 	    
 	    if(_.isString(ticket)) ticket = { url: ticket };
 	    drone.attr('src', (new URI(ticket.url || '/').addQuery(_.omit(ticket, 'url'))).toString());
-	};
+	}
 
-	app.Util.download = _downloader;
+	app.Util.download = downloader;
 
 })(Application);
 ;/**
@@ -721,6 +725,46 @@ window.onerror = function(errorMsg, target, lineNum){
 
 })(Application);
 
+;/**
+ * Script injecting util for [batch] reloading certain script[s] without refreshing app.
+ *
+ * batch mode: use a .json to describe the js listing
+ * json format:
+ * 1. ["scriptA.js", "lib/scriptB.js", "another-listing.json"]
+ * 2. {
+ * 		"base": "js",
+ * 		"list": [ ... ] //same as 1
+ * }
+ *
+ * @author Tim Liu
+ * @created 2014.10.08
+ */
+
+;(function(app){
+
+	app.Util.inject = function(url){
+
+		url = url || 'patch.json';
+
+		if(_.string.endsWith(url, '.js')) {
+			$.getScript(url);
+			app.trigger('app:script-injected', url);
+		}
+		else
+			$.getJSON(url).done(function(list){
+				var base = '';
+				if(!_.isArray(list)) {
+					base = list.base;
+					list = list.list;
+				}
+				_.each(list, function(js){
+					app.Util.inject((_.string.endsWith(base, '/')?base: (!base?'':(base + '/'))) + js);
+				});
+			});
+
+	};
+
+})(Application);
 ;/**
  * This is the Remote data interfacing core module of this application framework.
  * (Replacing the old Data API module)
@@ -992,6 +1036,8 @@ window.onerror = function(errorMsg, target, lineNum){
 		},
 
 		get: function(name, options){
+			if(!name) return _.keys(map);
+			
 			var Def = map[name];
 			if(options) return new Def(options);
 			return Def;
