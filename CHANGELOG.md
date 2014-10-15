@@ -1,6 +1,13 @@
 Change Log
 ==========
-1.7.3 (2014-09-18*)
+1.7.4 (2014-10-14*)
+
+In progress...
+
+x. + sprite preview (_Mockups context);
+
+
+1.7.3 (2014-10-08)
 -------------------
 1. Refined $.md plugin and region.resize() with `_.defer()`.
 2. app.Util.download <-> app.download.
@@ -10,10 +17,6 @@ Change Log
 6. Added theme listing to themeprep tool.
 7. Added named view (Regional) listing.
 8. Added live script(s) [batch] injection API to application.
-
-In progress...
-
-x. + sprite preview (_Mockups context);
 
 
 1.7.2 (2014-09-09)
