@@ -17,6 +17,17 @@
     <!-- Theme detector see core/utils/theme-roller.js or core.js -->
     <link rel="stylesheet" id="theme-roller">
 
+    <!-- Google Analytics -->
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-55859893-1', 'auto');
+        ga('send', 'pageview');
+    </script>  
+
 </head>
 
 <body>
@@ -42,27 +53,27 @@
 
     <!--========Infrastructure Space: the engine======================================================-->
     <!--Deps-->
-    <script type="text/javascript" src="js/lib/dependencies.min.js" exclude="starter-kit, framework-only" persist="true"></script>
+    <script  src="js/lib/dependencies.min.js" exclude="starter-kit, framework-only" persist="true"></script>
     <!--APP-->
-    <script type="text/javascript" src="js/src/infrastructure/application.js"></script>
+    <script  src="js/src/infrastructure/application.js"></script>
     <!--APP Util-->
-    <script type="text/javascript" src="js/src/infrastructure/util/meta-event.js"></script>
-    <script type="text/javascript" src="js/src/infrastructure/util/downloader.js"></script>
-    <script type="text/javascript" src="js/src/infrastructure/util/template-builder.js"></script>
-    <script type="text/javascript" src="js/src/infrastructure/util/script-inject.js"></script>
+    <script  src="js/src/infrastructure/util/meta-event.js"></script>
+    <script  src="js/src/infrastructure/util/downloader.js"></script>
+    <script  src="js/src/infrastructure/util/template-builder.js"></script>
+    <script  src="js/src/infrastructure/util/script-inject.js"></script>
     <!--APP Core-->
-    <script type="text/javascript" src="js/src/infrastructure/core/remote-data.js"></script>
-    <script type="text/javascript" src="js/src/infrastructure/core/reusable.js"></script>
-    <script type="text/javascript" src="js/src/infrastructure/core/context.js"></script>
-    <script type="text/javascript" src="js/src/infrastructure/core/regional.js"></script>
-    <script type="text/javascript" src="js/src/infrastructure/core/lock.js"></script>
+    <script  src="js/src/infrastructure/core/remote-data.js"></script>
+    <script  src="js/src/infrastructure/core/reusable.js"></script>
+    <script  src="js/src/infrastructure/core/context.js"></script>
+    <script  src="js/src/infrastructure/core/regional.js"></script>
+    <script  src="js/src/infrastructure/core/lock.js"></script>
     <!--Marionette.js Enhancement-/+-->
-    <script type="text/javascript" src="js/src/infrastructure/lib+-/marionette/template-cache.js"></script>
-    <script type="text/javascript" src="js/src/infrastructure/lib+-/marionette/region.js"></script>
-    <script type="text/javascript" src="js/src/infrastructure/lib+-/marionette/view.js"></script>
-    <script type="text/javascript" src="js/src/infrastructure/lib+-/marionette/item-view.js"></script>
-    <script type="text/javascript" src="js/src/infrastructure/lib+-/marionette/layout.js"></script>
-    <script type="text/javascript" src="js/src/infrastructure/lib+-/marionette/collection-view.js"></script>
+    <script  src="js/src/infrastructure/lib+-/marionette/template-cache.js"></script>
+    <script  src="js/src/infrastructure/lib+-/marionette/region.js"></script>
+    <script  src="js/src/infrastructure/lib+-/marionette/view.js"></script>
+    <script  src="js/src/infrastructure/lib+-/marionette/item-view.js"></script>
+    <script  src="js/src/infrastructure/lib+-/marionette/layout.js"></script>
+    <script  src="js/src/infrastructure/lib+-/marionette/collection-view.js"></script>
 
 
     <!--Predefined Goods(UI policy)-->
@@ -71,19 +82,19 @@
             optional:[display notification] event msg & user prompt;
             md text chunk;
         -->
-    <script type="text/javascript" src="js/src/reusable/$.plugins/i18n.js"></script>
-    <script type="text/javascript" src="js/src/reusable/$.plugins/md-content.js"></script>
-    <script type="text/javascript" src="js/src/reusable/$.plugins/toc.js"></script>
-    <script type="text/javascript" src="js/src/reusable/$.plugins/overlay.js"></script>
-    <script type="text/javascript" src="js/src/reusable/editors/index.js" target="stage-editors.js"></script>
-    <script type="text/javascript" src="js/src/reusable/editors/validations.js" target="stage-editors.js"></script>
-    <script type="text/javascript" src="js/src/reusable/widgets/datagrid-lite/index.js" target="stage-widgets.js"></script>
-    <script type="text/javascript" src="js/src/reusable/widgets/datagrid-lite/headers/string.js" target="stage-widgets.js"></script>
-    <script type="text/javascript" src="js/src/reusable/widgets/datagrid-lite/cells/string.js" target="stage-widgets.js"></script>
-    <script type="text/javascript" src="js/src/reusable/widgets/datagrid-lite/cells/seq.js" target="stage-widgets.js"></script>
-    <script type="text/javascript" src="js/src/reusable/widgets/datagrid-lite/cells/action.js" target="stage-widgets.js"></script>
-    <script type="text/javascript" src="js/src/reusable/widgets/tree/index.js" target="stage-widgets.js"></script>
-    <script type="text/javascript" src="js/src/reusable/widgets/paginator/index.js" target="stage-widgets.js"></script>
+    <script  src="js/src/reusable/$.plugins/i18n.js"></script>
+    <script  src="js/src/reusable/$.plugins/md-content.js"></script>
+    <script  src="js/src/reusable/$.plugins/toc.js"></script>
+    <script  src="js/src/reusable/$.plugins/overlay.js"></script>
+    <script  src="js/src/reusable/editors/index.js" target="stage-editors.js"></script>
+    <script  src="js/src/reusable/editors/validations.js" target="stage-editors.js"></script>
+    <script  src="js/src/reusable/widgets/datagrid-lite/index.js" target="stage-widgets.js"></script>
+    <script  src="js/src/reusable/widgets/datagrid-lite/headers/string.js" target="stage-widgets.js"></script>
+    <script  src="js/src/reusable/widgets/datagrid-lite/cells/string.js" target="stage-widgets.js"></script>
+    <script  src="js/src/reusable/widgets/datagrid-lite/cells/seq.js" target="stage-widgets.js"></script>
+    <script  src="js/src/reusable/widgets/datagrid-lite/cells/action.js" target="stage-widgets.js"></script>
+    <script  src="js/src/reusable/widgets/tree/index.js" target="stage-widgets.js"></script>
+    <script  src="js/src/reusable/widgets/paginator/index.js" target="stage-widgets.js"></script>
     <!--Advanced (provide in order):
             [display data] table/list & paginator;
             [query/control] filter/search & toolbar;
@@ -94,42 +105,30 @@
     <!--User/Programmer Space: the web application dev-->
 
     <!--Project Spec Libs: e.g
-            <script type="text/javascript" src="bower_components/highcharts-release/highcharts.src.js"></script>
-            <script type="text/javascript" src="bower_components/highcharts-release/highcharts-more.src.js"></script>
+            <script  src="bower_components/highcharts-release/highcharts.src.js"></script>
+            <script  src="bower_components/highcharts-release/highcharts-more.src.js"></script>
         -->
-    <script type="text/javascript" src="bower_components/mockjs/dist/mock.js" include="site"></script>
-    <script type="text/javascript" src="bower_components/highlightjs/highlight.pack.js" include="site"></script>
-    <script type="text/javascript" src="bower_components/nprogress/nprogress.js" include="site"></script>
-    <script type="text/javascript" src="bower_components/iCheck/icheck.js" include="site"></script>
-    <script type="text/javascript" src="bower_components/raphael/raphael.js" include="site"></script>
+    <script  src="bower_components/mockjs/dist/mock.js" include="site"></script>
+    <script  src="bower_components/highlightjs/highlight.pack.js" include="site"></script>
+    <script  src="bower_components/nprogress/nprogress.js" include="site"></script>
+    <script  src="bower_components/iCheck/icheck.js" include="site"></script>
+    <script  src="bower_components/raphael/raphael.js" include="site"></script>
 
     <!--Widgets/Editors-->
     <!--Contexts/Regionals-->
-    <script type="text/javascript" src="site/theme-mockups.js" include="site"></script>
-    <script type="text/javascript" src="site/home.js" include="site"></script>
-    <script type="text/javascript" src="site/doc.js" include="site"></script>
-    <script type="text/javascript" src="site/acc-deny.js" include="site"></script>
-    <script type="text/javascript" src="site/demo/index.js" include="site"></script>
-    <script type="text/javascript" src="site/demo/editors.js" include="site"></script>
-    <script type="text/javascript" src="site/demo/datatable.js" include="site"></script>
-    <script type="text/javascript" src="site/demo/trees.js" include="site"></script>
-    <script type="text/javascript" src="site/demo/notification.js" include="site"></script>
-    <script type="text/javascript" src="site/demo/remote-tpl.js" include="site"></script>
+    <script  src="site/theme-mockups.js" include="site"></script>
+    <script  src="site/home.js" include="site"></script>
+    <script  src="site/doc.js" include="site"></script>
+    <script  src="site/acc-deny.js" include="site"></script>
+    <script  src="site/demo/index.js" include="site"></script>
+    <script  src="site/demo/editors.js" include="site"></script>
+    <script  src="site/demo/datatable.js" include="site"></script>
+    <script  src="site/demo/trees.js" include="site"></script>
+    <script  src="site/demo/notification.js" include="site"></script>
+    <script  src="site/demo/remote-tpl.js" include="site"></script>
 
     <!--main.js-->
-    <script type="text/javascript" src="site/main.js" include="site"></script>
-
-    <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. 
-            <script>
-                var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
-                (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
-                g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
-                s.parentNode.insertBefore(g,s)}(document,'script'));
-            </script>
-        -->
-
-    </script>
-
+    <script  src="site/main.js" include="site"></script>
 
 </body>
 

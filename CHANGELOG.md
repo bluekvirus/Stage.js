@@ -1,6 +1,9 @@
 Change Log
 ==========
 1.7.4 (2014-10-14*)
+--------------------
+1. Changed config.rapidEventDebounce to rapidEventDelay for both debounce and throttle calls.
+2. Adjusted process-html tool to only include scripts in the html body section.
 
 In progress...
 

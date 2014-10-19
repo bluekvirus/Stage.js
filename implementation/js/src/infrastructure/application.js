@@ -11,7 +11,7 @@
 		* navRegion/contextRegion,
 		* defaultContext,
 		* fullScreen,
-		* rapidEventDebounce,
+		* rapidEventDelay,
 		* baseAjaxURI
 		* i18nResources
 		* i18nTransFile
@@ -150,10 +150,10 @@ window.onerror = function(errorMsg, target, lineNum){
 			 * 
 			 * @type {String}
 			 */		
-			contextRegion: 'app', //alias: navRegion, prefered: navRegion
+			contextRegion: 'app', //alias: navRegion, preferred: navRegion
 			defaultContext: 'Default', //This is the context (name) the application will sit on upon loading.
 			fullScreen: false, //This will put <body> to be full screen sized (window.innerHeight).
-	        rapidEventDebounce: 200, //in ms this is the rapid event debounce value shared within the application (e.g window resize).
+	        rapidEventDelay: 200, //in ms this is the rapid event delay control value shared within the application (e.g window resize).
 	        baseAjaxURI: '', //Modify this to fit your own backend apis. e.g index.php?q= or '/api',
 	        viewTemplates: 'static/template', //this is assisted by the build tool, combining all the *.html handlebars templates into one big json.
 			i18nResources: 'static/resource', //this the the default location where our I18N plugin looks for locale translations.
@@ -194,14 +194,14 @@ window.onerror = function(errorMsg, target, lineNum){
 				Application.trigger('app:resized', screenSize);
 		}
 		trackScreenSize(null, true);
-		$window.on('resize', _.debounce(trackScreenSize, Application.config.rapidEventDebounce));
+		$window.on('resize', _.debounce(trackScreenSize, Application.config.rapidEventDelay));
 
 		//Track window scroll
 		function trackScroll(){
 			var top = $window.scrollTop();
 			Application.trigger('app:scroll', top);
 		}
-		$window.on('scroll', _.debounce(trackScroll, Application.config.rapidEventDebounce));
+		$window.on('scroll', _.throttle(trackScroll, Application.config.rapidEventDelay));
 		
 		//apply application.config.fullScreen = true
 		if(Application.config.fullScreen){

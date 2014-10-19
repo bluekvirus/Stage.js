@@ -17,28 +17,33 @@
     <!-- Theme detector see core/utils/theme-roller.js or core.js -->
     <link rel="stylesheet" id="theme-roller">
 
+    <!-- Google Analytics: GA script with your site's ID. 
+        <script include="*" persist="true">
+            ... your script copied from your GA account ...
+        </script>
+    -->
 </head>
 
 <body>
 
     <!--[if lt IE 9]>
-            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
-        <![endif]-->
+        <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+    <![endif]-->
 
     <div region="app"></div>
 
     <!--
-            Bonus:: special <script/> attributes for build:
-                [include="buildA, buildB, ..."]: include this script only during these builds.
-                [exclude="buildA, buildB, ..."]: exclude this script only during these builds.
-                [build cfg name="false"/"true"]: whether to include this script for this specific build.
-                [target="xyz.js"]: combine this script into specified js file.
-                [persist="true"]: This is used for the build tool to persist this script tag in the produced index.html if it is ignored.
-            
-            Note::
-                1. The build name is the same as your build config name used in the build command.
-                2. include > exclude > build cfg name if you use these attributes together on a single <script/>
-        -->
+        Bonus:: special <script/> attributes for build:
+            [include="buildA, buildB, ..."]: include this script only during these builds.
+            [exclude="buildA, buildB, ..."]: exclude this script only during these builds.
+            [build cfg name="false"/"true"]: whether to include this script for this specific build.
+            [target="xyz.js"]: combine this script into specified js file.
+            [persist="true"]: This is used for the build tool to persist this script tag in the produced index.html if it is ignored.
+        
+        Note::
+            1. The build name is the same as your build config name used in the build command.
+            2. include > exclude > build cfg name if you use these attributes together on a single <script/>
+    -->
 
     <!--========Infrastructure Space: the engine======================================================-->
     <!--Deps-->
@@ -48,30 +53,22 @@
     <!--User/Programmer Space: the web application dev-->
 
     <!--Project Spec Libs: e.g
-            <script type="text/javascript" src="bower_components/highcharts-release/highcharts.src.js"></script>
-            <script type="text/javascript" src="bower_components/highcharts-release/highcharts-more.src.js"></script>
-        -->
+        <script type="text/javascript" src="bower_components/highcharts-release/highcharts.src.js"></script>
+        <script type="text/javascript" src="bower_components/highcharts-release/highcharts-more.src.js"></script>
+    -->
     <!--Widgets/Editors-->
     <!--Contexts/Regionals-->
 
     <!--main.js-->
     <script type="text/javascript">
     //!!!make sure you replace this script with your main.js!!!
-    Application.setup({
-        theme: 'project'
-    }).run().context({
-        template: '<h1>Hello World</h1>'
-    });
+        Application.setup({
+            theme: 'project'
+        }).run().context({
+            template: '<h1>Hello World</h1>'
+        });
     </script>
 
-    <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. 
-            <script>
-                var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
-                (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
-                g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
-                s.parentNode.insertBefore(g,s)}(document,'script'));
-            </script>
-        -->
 </body>
 
 </html>

@@ -126,7 +126,7 @@ module.exports = {
 
 		//go through script tags in the .html file.
 		var $script;
-		$('script').each(function(index, el){
+		$('body > script').each(function(index, el){
 			$script = $(el);
 			var srcPath = $script.attr('src');
 			var target = $script.attr('target') || options.js.default;
