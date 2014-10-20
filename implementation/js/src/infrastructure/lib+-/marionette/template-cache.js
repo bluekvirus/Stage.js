@@ -5,21 +5,12 @@
 	Backbone.Marionette.TemplateCache.prototype.loadTemplate = function(idOrTplString){
 		if(_.string.startsWith(idOrTplString, '#')) return $(idOrTplString).html();
 		if(_.string.startsWith(idOrTplString, '@')) {
+			var name = idOrTplString.substr(1);
 			//search the local templates cache:
-			var tpl = app.Util.Tpl.get(idOrTplString.substr(1));
+			var tpl = app.Util.Tpl.get(name);
 			if(tpl) return tpl;
 			//fetch from remote: (without CORS)
-			$.ajax({
-				url: app.config.viewTemplates + '/' + idOrTplString.substr(1),
-				async: false
-			}).done(function(remoteTpl){
-				tpl = remoteTpl;
-			}).error(function(){
-				tpl = false;
-			});
-			if(tpl)
-				return app.Util.Tpl.build(idOrTplString.substr(1), tpl).string;
-			throw new Error('DEV::View Template::Can not load template...' + idOrTplString + ', re-check your app.config.viewTemplates setting');
+			return app.Util.Tpl.load(app.config.viewTemplates + '/' + name, false, name).string;
 
 		}
 		if(_.isArray(idOrTplString)) return idOrTplString.join('');
