@@ -287,7 +287,7 @@ window.onerror = function(errorMsg, target, lineNum){
 				var context = path.shift();
 
 				if(!context) throw new Error('DEV::Application::Empty context name...');
-				var TargetContext = Application.Core.Context[context];
+				var TargetContext = Application.Core.Context.get(context);
 				if(!TargetContext) throw new Error('DEV::Application::You must have the required context ' + context + ' defined...'); //see - special/registry/context.js			
 				if(!Application.currentContext || Application.currentContext.name !== context) {
 					
@@ -418,7 +418,7 @@ window.onerror = function(errorMsg, target, lineNum){
 
 			//3.Auto-detect and init context (view that replaces the body region)
 			if(!window.location.hash){
-				if(!Application.Core.Context[Application.config.defaultContext])
+				if(!Application.Core.Context.get(Application.config.defaultContext))
 					console.warn('DEV::Application::You might want to define a Default context using app.create(\'Context Name\', {...})');
 				else
 					window.location.hash = ['#navigate', Application.config.defaultContext].join('/');
@@ -670,7 +670,8 @@ window.onerror = function(errorMsg, target, lineNum){
 	var namefix = /[\.\/]/;
 	var Template = {
 
-		build: function (name, tplString){
+		//Note that 'name' can be 'name' or 'path to .html'
+		build: function (name, tplString, override){
 			if(arguments.length === 0 || _.string.trim(name) === '') return {id:'#_blank', tpl: ' '};
 			if(arguments.length === 1) {
 				if(_.string.startsWith(name, '#')) return {id: name};
@@ -682,10 +683,15 @@ window.onerror = function(errorMsg, target, lineNum){
 			//process name to be valid id string, use String() to force type conversion before using .split()
 			name = String(name).split(namefix).join('-');
 
-			if(map[name]) throw new Error('DEV::APP.Util.Template::Conflict! You have already named a template with id:' + name);
+			if(map[name] && !override) throw new Error('DEV::APP.Util.Template::Conflict! You have already named a template with id:' + name);
+			if(!map[name]) override = false;
 
 			var tpl = _.isArray(tplString)?tplString.join(''):tplString;
-			$('head').append(['<script type="text/tpl" id="',name,'">',tpl,'</script>'].join(''));
+			if(override){
+				$('head > script[id="' + name + '"]').html(tpl);
+				Backbone.Marionette.TemplateCache.clear();//!important (clear all yes, since individual tpl id used by TemplateCache is not 'name')
+			} else
+				$('head').append(['<script type="text/tpl" id="',name,'">',tpl,'</script>'].join(''));
 			map[name] = true;
 			return {
 				id: '#' + name,
@@ -697,7 +703,8 @@ window.onerror = function(errorMsg, target, lineNum){
 			if(!name) return false;
 			//process name to be valid id string
 			name = String(name).split(namefix).join('-');
-			
+
+			//this is only called for each View def once
 			if(map[name]) return $('head').find('#'+name).html();
 			return false;
 		},
@@ -706,17 +713,35 @@ window.onerror = function(errorMsg, target, lineNum){
 			return _.keys(map);
 		},
 
-		//load the prepared/combined templates package from server (without CORS)
-		load: function(url){
-			$.ajax({
-				url: url,
-				dataType: 'json', //force return data type.
-				async: false
-			}).done(function(tpls){
-				_.each(tpls, function(tpl, name){
-					app.Util.Tpl.build(name, tpl);
+		//load all prepared/combined templates from server (*.json without CORS)
+		//or
+		//load individual tpl into (Note: that tplName can be name or path to html) 
+		load: function(url, override, tplName){
+			if(_.string.endsWith(url, '.json')){
+				//load all from preped .json
+				$.ajax({
+					url: url,
+					dataType: 'json', //force return data type.
+					async: false
+				}).done(function(tpls){
+					_.each(tpls, function(tpl, name){
+						app.Util.Tpl.build(name, tpl, override);
+					});
 				});
-			});
+			}else {
+				//individual tpl
+				var result = '';
+				$.ajax({
+					url: url,
+					dataType: 'html',
+					async: false
+				}).done(function(tpl){
+					result = app.Util.Tpl.build(tplName || url, tpl, override);
+				}).fail(function(){
+					throw new Error('DEV::View Template::Can not load template...' + url + ', re-check your app.config.viewTemplates setting');
+				});
+				return result; //{id: ..., string: ...}
+			}
 		}
 
 	};
@@ -991,6 +1016,8 @@ window.onerror = function(errorMsg, target, lineNum){
 ;(function(app, _){
 
 	var def = app.module('Core.Context');
+	var map = {};
+
 	_.extend(def, {
 		create: function(config){
 			_.extend(config, {
@@ -999,10 +1026,18 @@ window.onerror = function(errorMsg, target, lineNum){
 				isContext: true
 			});
 
-			if(def[config.name]) console.warn('DEV::Core.Context::You have overriden context \'', config.name, '\'');
+			return this.set(config.name, Backbone.Marionette.Layout.extend(config));
+		},
 
-			def[config.name] = Backbone.Marionette.Layout.extend(config);
-			return def[config.name];
+		set: function(name, Layout){
+			if(map[name]) console.warn('DEV::Core.Context::You have overriden context \'', name, '\'');
+			map[name] = Layout;
+			return Layout;
+		},
+
+		get: function(name){
+			if(!name) return _.keys(map);
+			return map[name];
 		}
 
 	});
@@ -1156,21 +1191,12 @@ window.onerror = function(errorMsg, target, lineNum){
 	Backbone.Marionette.TemplateCache.prototype.loadTemplate = function(idOrTplString){
 		if(_.string.startsWith(idOrTplString, '#')) return $(idOrTplString).html();
 		if(_.string.startsWith(idOrTplString, '@')) {
+			var name = idOrTplString.substr(1);
 			//search the local templates cache:
-			var tpl = app.Util.Tpl.get(idOrTplString.substr(1));
+			var tpl = app.Util.Tpl.get(name);
 			if(tpl) return tpl;
 			//fetch from remote: (without CORS)
-			$.ajax({
-				url: app.config.viewTemplates + '/' + idOrTplString.substr(1),
-				async: false
-			}).done(function(remoteTpl){
-				tpl = remoteTpl;
-			}).error(function(){
-				tpl = false;
-			});
-			if(tpl)
-				return app.Util.Tpl.build(idOrTplString.substr(1), tpl).string;
-			throw new Error('DEV::View Template::Can not load template...' + idOrTplString + ', re-check your app.config.viewTemplates setting');
+			return app.Util.Tpl.load(app.config.viewTemplates + '/' + name, false, name).string;
 
 		}
 		if(_.isArray(idOrTplString)) return idOrTplString.join('');
