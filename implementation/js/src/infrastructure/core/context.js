@@ -43,6 +43,8 @@
 ;(function(app, _){
 
 	var def = app.module('Core.Context');
+	var map = {};
+
 	_.extend(def, {
 		create: function(config){
 			_.extend(config, {
@@ -51,10 +53,18 @@
 				isContext: true
 			});
 
-			if(def[config.name]) console.warn('DEV::Core.Context::You have overriden context \'', config.name, '\'');
+			return this.set(config.name, Backbone.Marionette.Layout.extend(config));
+		},
 
-			def[config.name] = Backbone.Marionette.Layout.extend(config);
-			return def[config.name];
+		set: function(name, Layout){
+			if(map[name]) console.warn('DEV::Core.Context::You have overriden context \'', name, '\'');
+			map[name] = Layout;
+			return Layout;
+		},
+
+		get: function(name){
+			if(!name) return _.keys(map);
+			return map[name];
 		}
 
 	});

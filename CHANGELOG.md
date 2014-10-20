@@ -4,6 +4,7 @@ Change Log
 --------------------
 1. Changed config.rapidEventDebounce to rapidEventDelay for both debounce and throttle calls.
 2. Adjusted process-html tool to only include scripts in the html body section.
+3. Refined core.Context module with map reg and get/set.
 
 In progress...
 

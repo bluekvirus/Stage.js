@@ -286,7 +286,7 @@ window.onerror = function(errorMsg, target, lineNum){
 				var context = path.shift();
 
 				if(!context) throw new Error('DEV::Application::Empty context name...');
-				var TargetContext = Application.Core.Context[context];
+				var TargetContext = Application.Core.Context.get(context);
 				if(!TargetContext) throw new Error('DEV::Application::You must have the required context ' + context + ' defined...'); //see - special/registry/context.js			
 				if(!Application.currentContext || Application.currentContext.name !== context) {
 					
@@ -417,7 +417,7 @@ window.onerror = function(errorMsg, target, lineNum){
 
 			//3.Auto-detect and init context (view that replaces the body region)
 			if(!window.location.hash){
-				if(!Application.Core.Context[Application.config.defaultContext])
+				if(!Application.Core.Context.get(Application.config.defaultContext))
 					console.warn('DEV::Application::You might want to define a Default context using app.create(\'Context Name\', {...})');
 				else
 					window.location.hash = ['#navigate', Application.config.defaultContext].join('/');
