@@ -40,10 +40,12 @@ Mutual Exclusion:
 * Application.available ([topic/lock])
 
 Download:
-* Application.download (options)
+* Application.download (url or +params)
 
-Script(s) Injection:
-* Application.inject ([path to js/json]) - json should contain a js listing
+Script(s)/Template(s)/CSS Injection:
+* Application.inject.js ([path to js/json]) - util/script-inject.js
+* Application.inject.tpl ([path to html/json ]) - util/template-builder.js
+* Application.inject.css ([path to css], ...) - same arguments to loadCSS
 
 -----------------------------------------------------------------------------
 

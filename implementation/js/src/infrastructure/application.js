@@ -254,12 +254,12 @@ window.onerror = function(errorMsg, target, lineNum){
 		//3 Load Theme css & View templates & i18n translations
 		var theme = URI(window.location.toString()).search(true).theme || Application.config.theme;
 		if(theme){
-			loadCSS('themes/'+theme+'/css/main.css', $('#theme-roller')[0]);
+			Application.inject.css('themes/'+theme+'/css/main.css', $('#theme-roller')[0]);
 			Application.currentTheme = theme;
 		}
 
 		if(Application.config.viewTemplates)
-			Application.Util.Tpl.load(Application.config.viewTemplates + '/all.json');
+			Application.inject.tpl('all.json');
 
 		I18N.configure({
 			resourcePath: Application.config.i18nResources,
@@ -547,9 +547,19 @@ window.onerror = function(errorMsg, target, lineNum){
 			return Application.Util.download(ticket);
 		},
 
-		inject: function(scripts){
-			return Application.Util.inject(scripts);
-		}		
+		inject: {
+			js: function(){
+				return Application.Util.inject.apply(null, arguments);
+			},
+
+			tpl: function(){
+				return Application.Util.Tpl.remote.load.apply(Application.Util.Tpl.remote, arguments);
+			},
+
+			css: function(){
+				return loadCSS.apply(null, arguments);
+			}
+		}	
 
 	});
 

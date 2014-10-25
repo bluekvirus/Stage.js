@@ -112,7 +112,10 @@
     "powerange": "*",
     "knex": "*",
     "pickadate": "*",
-    "veinjs": "*"
+    "veinjs": "*",
+    "victor": "~0.2.6",
+    "soundmanager": "*",
+    "video.js": "~4.9.1"
   },
   "resolutions": {
     "modernizr": "~2.x.x",
