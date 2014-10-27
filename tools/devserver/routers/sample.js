@@ -13,6 +13,7 @@ Random = Mock.Random;
 module.exports = function(server){
 
 	var router = server.mount(this);
+	server.secure(router, 'read', 'modify', 'comment', 'report');
 
 	/////////////fake data tpl///////////////
 
@@ -45,7 +46,7 @@ module.exports = function(server){
 
 	////////////////services/////////////////
 
-	router.get('/', function(req, res, next){
+	router.get('/', router.token('read'), function(req, res, next){
 		res.json({hello: true});
 	});
 

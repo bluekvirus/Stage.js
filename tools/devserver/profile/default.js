@@ -17,6 +17,25 @@ module.exports = {
 
 	port: '5000',
 
+	//standard express-session middleware config
+	session: {
+		name: 'stagejs',
+		secret: 'stagejs dev server session',
+		resave: true,
+		saveUninitialized: true
+		//store: [your customized session store here]
+	},
+
+	db: {
+		tingo: { path: '../tmp/db/dev.tingo' }
+	},
+
+	store: {
+
+	},
+
+	auth: false, //whether or not server.secure(router) will take effect
+
 	//mount the client webroot folders
 	clients: {
 		//format - uri:webroot path

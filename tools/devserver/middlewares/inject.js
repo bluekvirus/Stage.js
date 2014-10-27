@@ -17,7 +17,8 @@
  */
 
 var morgan = require('morgan'),
-bodyParser = require('body-parser');
+bodyParser = require('body-parser'),
+session = require('express-session');
 
 module.exports = function(server){
 
@@ -30,6 +31,9 @@ module.exports = function(server){
 		server.use(morgan('short'));
 		server.use(bodyParser.urlencoded({extended: true}));
 		server.use(bodyParser.json());
+		//[+multipart parsing here]
+		server.use(session(profile.session || {secret: 'unknown...'}));
+		server.use(server.middlewares.db.tingo());
 		//+server.use...
 		//server.use(server.middlewares.your-middleware-factory())
 		//...
