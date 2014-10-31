@@ -1,18 +1,15 @@
 <i class="project-title"></i>
 <hr/>
-Building multi-context rich-client web application front-end in the modern way.
-[@Tim (Zhiyuan) Liu](mailto:bluekvirus@gmail.com)
-
-
-Current version
----------------
-**@1.7.3**
+<a href="mailto:bluekvirus@gmail.com"><img src="http://img.shields.io/badge/author-Tim (Zhiyuan) Liu-green.svg?style=flat-square" alt="Tim Liu"></a> 
+<img src="http://img.shields.io/bower/v/stage.js.svg?style=flat-square" alt="Current Version"></img> 
 ([Why is it version-ed like this?](http://semver.org/))
+
+Building multi-context rich-client web application front-end in the modern way.
 
 
 Introduction
 ------------
-This lightweight framework is made on top of **Backbone.Marionette** and **Bootstrap**. The goal is to maximize developer efficiency by introducing an intuitive workflow on top of a solid front-end architecture. You will be focusing on user interaction building without distraction. We even give you a web server to start the development right away! Theming and packaging deployments are also a breeze through our tools.
+This lightweight framework is made on top of **Backbone** and **Bootstrap**. The goal is to maximize developer efficiency by introducing an intuitive workflow on top of a solid front-end architecture. You will be focusing on user interaction building without distraction. We even give you a web server to start the development right away! Theming and packaging deployments are also a breeze through our tools.
 
 To flatten and lower the initial learning curve of adaptation, there is only a handful of APIs to remember:
 
@@ -40,10 +37,12 @@ Mutual Exclusion:
 * Application.available ([topic/lock])
 
 Download:
-* Application.download (options)
+* Application.download (url or +params)
 
-Script(s) Injection:
-* Application.inject ([path to js/json]) - json should contain a js listing
+Script(s)/Template(s)/CSS Injection:
+* Application.inject.js ([path to js/json]) - util/script-inject.js
+* Application.inject.tpl ([path to html/json ]) - util/template-builder.js
+* Application.inject.css ([path to css], ...) - same arguments to loadCSS
 
 -----------------------------------------------------------------------------
 
@@ -72,9 +71,14 @@ We choose what we choose when designing this framework simply because we want to
 
 **The Backbone library can implement them all** (Yes, any client side framework). (Not 100% for Meteor though, since Meteor combines its server into a full-stack solution. You need nodejs in the picture, and we do have a dev-server package called **ajax-box-lite** in the toolset for just that based on the [express.js](http://expressjs.com/4x/) framework). And, if you need more evidence, YUI3 has the exact same concepts from Backbone implemented as its infrastructure. (Why did we mention YUI here? Because of Yahoo!'s JavaScript [Architect](http://www.crockford.com/))
 
-In order to accomplish more with less code using Backbone, we picked Backbone.Marionette as our pattern library. It offers cleanup/boilerplate routines and very neat concepts for building large JavaScript front-end projects. The resulting framework accomplishes all the big frameworks have promised but with **a thiner and flatter structure**. We believe scripting languages are always going to be the perfect thin glue layer between mechanisms and policies. The JavaScript language were picked to glue HTML/CSS and UX but nothing more, it should not be overdosed and attempt to mimic Java. In other words, **only the burger is important**:
+In order to accomplish more with less code using Backbone, we picked **Backbone.Marionette** as our pattern library base but only use its *module*, *region* and *4-type-of-view* concepts. We also removed the needs to work with the Model/Collection sync methods in the original *Backbone* library. The resulting framework accomplishes all the big frameworks have promised but with **a thiner and flatter structure**. We believe scripting languages are always going to be the perfect thin glue layer between mechanisms and policies. The JavaScript language were picked to glue HTML/CSS and UX but nothing more, it should not be overdosed and attempt to mimic Java. In other words, **only the burger is important**:
 
 <img src="static/resource/default/diagram/Diagram-6.png" alt="HTML is the burger" class="center-block"></img>
+
+**Note**: Although the **Marionette** library offers many cool concepts for building large JavaScript front-end projects, we felt that the core value it offers lies within its region (for better view life-cycle management) and module managers. Thus only those are included and supported throughout the framework. We also extended the base view classes to enable remote templating, ui and region detection, action listeners, navigation hooks, svg canvas and faster **Cordova** development. 
+
+**Note**: The **JQuery UI** library contained in this framework is a custom build (Core, Interaction and Effect). It is sufficient for you to create plugins and widgets and to use the `$.fn.position()` and `$.fn.animation()` methods. However, you will *NOT* be able to use any UIs in the original library.
+
 
 ###Core concepts
 <img src="static/resource/default/diagram/Diagram-3.png" alt="Stage.js Architecture" class="center-block"></img>
@@ -114,7 +118,7 @@ We encourage event programming in this framework. We glue views into a functioni
 Sometimes, with Ajax or other asynchronized operations (like timer related ones), you might need to disable the application's ability to navigate through views or respond to certain events/actions. We have a very neat locking module for you to use in just those situations. The 2-level locking design allows you to decide when to use the global lock or the topic based ones to maximize your control over the availability of UIs.
 
 ####Seems complicated...
-To focus, think of your application in terms of *Context*s and *Regional*s (pages and areas). Like drawing a series of pictures, each page is a *Context* and you lay things out by sketching out regions (areas) first on each page then refined the details (*Regionals*). Each *Context* can also be made state-aware through the same navigation mechanism that powers *Context* switching in the application container.
+To focus, think of your application in terms of *Context*s and *Regional*s (pages and areas). Like drawing a series of pictures, each page is a *Context* and you lay things out by sketching out regions (areas) first on each page then refine the details (*Regionals*). Each *Context* can also be made state-aware through the same navigation mechanism that powers *Context* switching in the application container.
 
 Use *Model*/*Collection* wisely, try not to involve them before relating to any *Marionette.xView*. In other words, unless you want a dynamic view, do **NOT** use *Model*/*Collection*. Fetch/persist data through a unified *Data API* (CRUD in RESTful format). Focus on UI/UX and make the data interfacing/manipulation layer as thin as possible. Operate on plain data object/array only. Bind pagination, sorting and filtering operations with views instead.
 

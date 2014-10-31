@@ -2,9 +2,15 @@ Change Log
 ==========
 1.7.4 (2014-10-20*)
 --------------------
+1. Refined template-builder code to better support tpl injection/overriden.
+2. @*.html, 'string', ['string', 'array'] tpls no longer have their tpl strings injected into `<head>`.
+3. Splited the Application.inject func into 3 sub funcz (js, tpl, css).
+4. Added version badages to README.md, HOWTO.md to replace static version texts and updated the docs.
+
 In progress...
 
-x. Reload tpl dynamically during View/Context overriden.
+x. +User session and api authorization to devserver
+x. Reload tpl dynamically during View/Context overriden?
 x. + sprite preview (_Mockups context);
 
 
