@@ -22,6 +22,8 @@ What's next?
 
 Quick Start
 ------------
+<a href="https://www.npmjs.org/package/stage-devtools"><img src="http://img.shields.io/npm/v/stage-devtools.svg?style=flat-square" alt="DevTools Version"></img></a> Use the devtools to get started quickly.
+
 ```
 npm -g install stage-devtools
 mkdir project
