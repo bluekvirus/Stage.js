@@ -19,7 +19,7 @@ module.exports = function(server) {
     var profile = server.get('profile');
     if (!profile.tplwatch) return;
 
-    var tplRoot = profile.tplwatch;
+    var tplRoot = profile.resolve(profile.tplwatch);
 
     function mergeIntoAllTplJson(e, f) {
         console.log('[Tpl file'.yellow, e, ':'.yellow, f, ']'.yellow);
@@ -42,7 +42,7 @@ module.exports = function(server) {
         });
     } else {
         var watcher = globwatcher(path.join(tplRoot, '**/*.html'));
-        console.log('[Templates monitored]'.yellow, tplRoot);
+        console.log('[monitor]', 'Templates'.yellow, profile.tplwatch.grey);
 
         _.each(['added', 'changed', 'deleted'], function(e) {
             watcher.on(e, function(f) {

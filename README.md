@@ -1,5 +1,7 @@
-Stage.js     v1.7.3
+Stage.js
 ===================
+<img src="http://img.shields.io/bower/v/stage.js.svg?style=flat" alt="Current Version"></img> <img src="http://img.shields.io/badge/supports-Cordova-3B4854.svg?style=flat-square" alt="Supports Cordova"></img>
+
 This project produces **Stage.js** - an infrastructure for building modern web application client with many contexts (e.g a data-heavy administration app). In other words, we solve this problem for you:
 
 <img src="implementation/static/resource/default/diagram/Diagram-1.png" alt="UI/UX Problems" class="center-block"></img>
@@ -79,7 +81,8 @@ Distribute
 ###Build
 ```
 //0. change version numbers
-README.md, HOWTO.md, CHANGELOG.md and libprep/bower.json
+a. CHANGELOG.md and libprep/bower.json
+b. README.md, HOWTO.md (optional, can be through http://shields.io/)
 
 //1. update libs through tools/libprep/
 bower update

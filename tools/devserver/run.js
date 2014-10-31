@@ -50,11 +50,11 @@ if(!profile.clients['/']) profile.clients['/'] = '../../implementation';
 _.each(profile.clients, function(filePath, uriName){
 	profile.clients[uriName] = profile.resolve(filePath);
 });
-if(profile.tplwatch) profile.tplwatch = profile.resolve(profile.tplwatch);
 
 //loading...
 var options = {verbose:true, cwd: profile.root};
 load('util', options)
+.then('schemas', options)
 .then('middlewares', options) //not yet injected
 .then('routers', options) //not yet injected
 .then('bot', options) //inject middlewares and routers into server

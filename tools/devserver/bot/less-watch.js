@@ -101,7 +101,7 @@ module.exports = function(server) {
             var watcher = globwatcher(_.map(themeFolders, function(t) {
                 return t.glob;
             }));
-            console.log(('[Themes ' + watchedThemes + ': .less files monitored]').yellow, '-', ('lessjs v' + less.version.join('.')).grey);
+            console.log('[monitor]', ('Themes ' + watchedThemes).yellow, '-', ('lessjs v' + less.version.join('.')).grey);
 
             _.each(['added', 'changed', 'deleted'], function(e) {
                 watcher.on(e, function(f) {

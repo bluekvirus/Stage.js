@@ -27,7 +27,7 @@ module.exports = function(server){
 	//mount different clients (static web.roots)
 	_.each(profile.clients, function(filePath, uriName){
 		server.use(uriName, express.static(profile.clients[uriName]));
-		console.log('[static/public]', uriName.yellow, '[', profile.clients[uriName], ']');
+		console.log('[www root]', uriName.yellow, '[', profile.clients[uriName], ']');
 	});
 
 	//mount pre-defined middlewares

@@ -59,7 +59,12 @@
 						'you can direct your next web application front-end like a play on stage with multiple scenes and elements right away.\n',
 						'Enjoy!',
 						/////////////////Intro/////////////////
-					].join('\n'))
+					].join('\n')),
+					'<p>',
+						'<a href="https://github.com/bluekvirus/Stage.js/releases"><img src="http://img.shields.io/bower/v/stage.js.svg?style=flat-square" alt="Framework Version"></img></a> ', //version badge
+						'<a href="https://www.npmjs.org/package/stage-devtools"><img src="http://img.shields.io/npm/v/stage-devtools.svg?style=flat-square" alt="DevTools Version"></img></a> ', //version badge
+						'<a href="http://cordova.apache.org/"><img src="http://img.shields.io/badge/supports-Cordova-3B4854.svg?style=flat-square" alt="Supports Cordova"></img></a>', //cordova badge
+					'</p>',
 				],
 				initialize: function(){
 					this.listenTo(app, 'app:resized', function(){
@@ -101,8 +106,8 @@
 
 	app.area('Home.Footer', {
 		template: [
-			'<span class="pull-right github-link"><a href="https://github.com/bluekvirus/Stage.js/"><i class="fa fa-github"></i>View on Github</a></span>',
-			'<p>Super-powered by Stage.js © 2013 - 2015</p>',
+			'<span class="pull-right github-link"><a href="https://github.com/bluekvirus/Stage.js/"><i class="fa fa-github"></i>View on Github</a></span>',	
+			'<span>Super-powered by Stage.js © 2013 - 2015</span> ',		
 			'<p>Code licensed under The <a href="http://opensource.org/licenses/MIT">MIT</a> License. Documentation licensed under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>',
 		]
 	});

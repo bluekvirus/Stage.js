@@ -20,6 +20,10 @@ module.exports = function(server){
 		var dbFile = (options && options.path) || path.join(profile.root, profile.db.tingo.path);
 		fs.ensureDirSync(dbFile); //db path must be a folder
 		var db = new (tingo.Db)(dbFile, {});
+		
+		//server.set('db', db); //due to the stack loading/building seq, there is no need to set this! use req.db in routers instead.
+
+		console.log('[DB: Tingo]'.yellow);
 
 		return function(req, res, next){
 
