@@ -37,9 +37,8 @@
  * -----------
  * possible tokens:
  * create -> record +owner, +(userspace or userspace - 1) => space
- * read -> userspace >(=) record space, consult mutex
- * update -> can read first, consult mutex, 
- * delete -> can update first, consult mutex
+ * list/read -> userspace >(=) record space, consult mutex
+ * modify -> update/delete, consult mutex, 
  * comment -> ...
  * execute -> ...
  * ...
@@ -87,7 +86,7 @@ module.exports = function(server){
 		apiTokenMap[router.meta.entity] = apiTokenMap[router.meta.entity] || {};
 		var atm = apiTokenMap[router.meta.entity];
 
-		var tokens = _.toArray(arguments).slice(1).concat(['create', 'read', 'modify']);
+		var tokens = _.toArray(arguments).slice(1).concat(['create', 'list', 'read', 'modify']);
 		_.each(tokens, function(t){
 			atm[t] = false;
 		});

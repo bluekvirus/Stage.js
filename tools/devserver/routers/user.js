@@ -11,13 +11,14 @@
 module.exports = function(server){
 
 	var router = server.mount(this);
-	server.secure(router, 'read', 'modify', 'debug');
+	server.secure(router, 'debug');
+
+	var collection = server.get('db').collection(router.meta.entity);
 
 	//login
 	router.post('/login', function(req, res, next){
 		if(!req.session) return next();
 		if(!req.session.username){
-			var users = req.db.collection('users');
 
 			//TBI: go into db find record and compare hash
 

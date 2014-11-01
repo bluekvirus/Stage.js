@@ -46,7 +46,7 @@
     "serve-index": "^1.2.0",
     "sqlite3": "^2.2.7",
     "tar.gz": "~0.1.1",
-    "tingodb": "^0.2.2",
+    "tingodb": "^0.3.x",
     "underscore": "~1.x.x",
     "underscore.string": "~2.x.x",
     "watch": "^0.11.0",

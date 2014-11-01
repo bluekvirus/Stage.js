@@ -9,7 +9,12 @@ module.exports = function(server){
 
 	var profile = server.get('profile');
 
-	//call this function to return your middleware;
+	//1. setup something here upon middleware loading
+	//e.g db/store connection, global server vars...
+
+
+	//2.a return a factory function to further config your middleware; [suggested]
+	//2.b skip this factory function and return the middleware directly; [optional, zero-configuration]
 	return function(options){
 
 		//prepare your middleware according to options

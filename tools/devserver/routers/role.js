@@ -13,6 +13,7 @@ module.exports = function(server){
 	var router = server.mount(this);
 	server.secure(router, 'debug');
 
+	//var collection = server.get('db').collection(router.meta.entity);
 
 	//map (api-token-map)
 	router.get('/api-token-map', router.token('create'), function(req, res, next){

@@ -14,7 +14,8 @@
 
 var path = require('path'),
 fs = require('fs-extra'),
-tingo = require('tingodb')();
+tingo = require('tingodb')(),
+_ = require('underscore');
 
 module.exports = function(server){
 
@@ -33,32 +34,74 @@ module.exports = function(server){
 	//TBI
 	
 	//3. provide general server.crud() for serving basic entity crud
-	server.crud = function(router, entity, mutex){
+	//Note: the basic crud support can be overridden in individual router by putting route before server.crud()
+	server.crud = function(router, entity, hooks){
 		entity = entity || router.meta.entity;
 		var collection = db.collection(entity);
 
+		////////////////////////////////////////////////////
 		router.route('/')
-		.get(router.token('read'), function(req, res, next){
-			//TBI
-			next('Not implemented yet...');
+		.get(router.token('list'), function(req, res, next){
+			//TBI: +skip, limit, field filter and search query 
+			collection.find().toArray(function(err, docs){
+				if(err) return next(err);
+				if(hooks.list) 
+					return hooks.list(docs, req, res, next); //hook.list
+				return res.json(docs);
+			});
 		})
 		.post(router.token('create'), function(req, res, next){
-			//TBI
-			next('Not implemented yet...');
+			var docs = req.body;
+			if(!_.isArray(docs)) docs = [docs];
+			//validate them first
+			var schema = server.schemas[router.name];
+			if(schema){
+				for (var i in docs) {
+					var result = schema.validate(docs[i]);
+					if(result.error) return res.status(400).json({msg: result.error, rejected: docs[i]});
+					else docs[i] = result.value;
+				}
+			}
+			if(hooks.create)
+				return hooks.create(docs, req, res, next); //hook.create
+			collection.insert(docs, function(err, result){
+				if(err) return next(err);
+				return res.json({msg: result});
+			});
 		});
 
+		////////////////////////////////////////////////////
 		router.route('/:id')
 		.get(router.token('read'), function(req, res, next){
-			//TBI
-			next('Not implemented yet...');
+			collection.findOne({_id: req.param('id')}, function(err, doc){
+				if(err) return next(err);
+				if(hooks.read) return hooks.read(doc, req, res, next); //hook.read
+				return res.json(doc);
+			});
 		})
 		.put(router.token('read', 'modify'), function(req, res, next){
-			//TBI
-			next('Not implemented yet...');
+			var doc = req.body;
+			//validate them first
+			var schema = server.schemas[router.name];
+			if(schema){
+				var result = schema.validate(doc);
+				if(result.error) return res.status(400).json({msg: result.error, rejected: doc});
+				else doc = result.value;
+			}
+			if(hooks.modify)
+				return hooks.modify(doc, req, res, next); //hook.modify (update)
+			collection.update({_id: req.param('id')}, doc, function(err, result){
+				if(err) return next(err);
+				return res.json({msg: result});
+			});
 		})
 		.delete(router.token('read', 'modify'), function(req, res, next){
-			//TBI
-			next('Not implemented yet...');
+			collection.remove({_id: req.param('id')}, function(err, result){
+				if(err) return next(err);
+				if(hooks.modify) 
+					return hooks.modify(req.param('id'), req, res, next); //hook.modify (remove)
+				return res.json({msg: result});
+			});
 		});
 	};
 
