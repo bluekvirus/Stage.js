@@ -29,9 +29,11 @@ module.exports = function(server){
 			reg['/' + mountpath] = router;
 		});
 
-		//turn router name into EntityName to be used later
+		//turn router name into EntityName to be used in CRUD later
 		var entity = _.str.classify(routerFile.name);
 		router.meta = _.extend({entity: entity}, routerFile);
+		//empty non-secured router .token() stub
+		router.token = function(){ return function(req, res, next){ next(); };};
 
 		return router;
 	};

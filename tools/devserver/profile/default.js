@@ -34,7 +34,10 @@ module.exports = {
 
 	},
 
-	auth: false, //whether or not server.secure(router) will take effect
+	auth: {
+		enabled: false, //whether or not server.secure(router) will take effect
+		superadmin: 'pwd123'
+	},
 
 	//mount the client webroot folders
 	clients: {

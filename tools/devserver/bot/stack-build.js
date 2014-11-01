@@ -94,6 +94,5 @@ module.exports = function(server){
 		server.use(errorhandler());
 		console.log('[Error Page: enabled]'.yellow, 'use next(err) in routes and middlewares'.grey);
 	}
-
-	//console.log(server.get('api-token-map'));
+	
 };

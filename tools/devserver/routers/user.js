@@ -1,5 +1,5 @@
 /**
- * The User router - including roles, depends on (any) db middleware (req.db and server.get('db')).
+ * The User router, depends on a db middleware (req.db).
  * 
  * +space rule
  * +mutex rules
@@ -11,7 +11,7 @@
 module.exports = function(server){
 
 	var router = server.mount(this);
-	server.secure(router, 'read', 'modify', 'debug', 'role.manage');
+	server.secure(router, 'read', 'modify', 'debug');
 
 	//login
 	router.post('/login', function(req, res, next){
@@ -19,7 +19,7 @@ module.exports = function(server){
 		if(!req.session.username){
 			var users = req.db.collection('users');
 
-			//go into db find record and compare hash
+			//TBI: go into db find record and compare hash
 
 			return res.json({msg: 'user logged in', username: req.session.username});
 		}
@@ -35,7 +35,7 @@ module.exports = function(server){
 			username = req.session.username;
 			req.session.destroy();
 
-			//go into db update record - last logged in
+			//TBI: go into db update record - last logged in
 		}
 		return res.json({msg: 'user logged out', username: username});
 	});
@@ -45,14 +45,13 @@ module.exports = function(server){
 		if(!req.session) return next();
 		return req.session.username ? res.json(req.session) : res.json({});
 	});
+
+	//override basic crud 
+	// router.get('/', function(req, res, next){
+	// 	next('Overriden...');
+	// });	
 		
-	//create/read/update/delete
-	router.post('/', function(req, res, next){
+	//crud
+	server.crud(router);
 
-	});
-
-
-	//- /role/
-		//map (api-token-map)
-		//create/read/update/delete
 };

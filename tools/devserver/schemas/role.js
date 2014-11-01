@@ -1,6 +1,10 @@
 /**
  * The Role collection data record schema using Joi
  *
+ * Used in
+ * -------
+ * routers.role
+ *
  * @author Tim Liu
  * @created 2014.10.30
  */
@@ -17,4 +21,4 @@ module.exports = function(server){
 		'api-token-map': joi.object().pattern(/.*/, joi.boolean()).unknown(true)
 
 	}).with('name', 'api-token-map');
-}
+};

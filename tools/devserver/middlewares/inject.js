@@ -33,7 +33,7 @@ module.exports = function(server){
 		server.use(bodyParser.json());
 		//[+multipart parsing here]
 		server.use(session(profile.session || {secret: 'unknown...'}));
-		server.use(server.middlewares.db.tingo());
+		server.use(server.middlewares.db.tingo);
 		//+server.use...
 		//server.use(server.middlewares.your-middleware-factory())
 		//...

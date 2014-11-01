@@ -17,13 +17,14 @@
  * --------------------
  * {
  * 		username,
- * 		space,
+ * 		userspace, -- (string)
  * 		api-token-map,
  * 		expire/refresh,
+ * 		
  * 		data (everything else)
  * }
  *
- * mutex rules: (when on user space with same token) - (not implemented)
+ * mutex rules: (when userspace === 'user' under the same api token) - (not implemented)
  * ------
  * user level mutex 1: (simple version: owner and others)
  * private - owner only
@@ -35,8 +36,8 @@
  * api tokens (supported)
  * -----------
  * possible tokens:
- * create -> record +owner, +(space or space - 1)
- * read -> user space >(=) record space, consult mutex
+ * create -> record +owner, +(userspace or userspace - 1) => space
+ * read -> userspace >(=) record space, consult mutex
  * update -> can read first, consult mutex, 
  * delete -> can update first, consult mutex
  * comment -> ...
@@ -49,12 +50,12 @@
  * 	+owner
  *  +collaborator
  *  +subscriber/watcher
- *  +space
+ *  +space -- the record space (number)
  *  +timestamps
  *
  * overall
  * --------
- * user (api-token-map + space) + entity-record ([mutex rules] + space) = authorization
+ * user (api-token-map + userspace) + entity-record ([mutex rules] + space) = authorization
  * 4 important bits in this design
  * a. login (get session established);
  * b. api hit, access token check;
@@ -63,7 +64,7 @@
  *
  * warning:
  * --------
- * Only api-token checker and space is implemented. We will set `req.mutex = true` for you to indicate that mutex is required.
+ * Only api-token checker and userspace is implemented. We will set `req.mutex = true` for you to indicate that mutex is required.
  * The ACTUAL mutex enforcing mech needs to be implemented in the api route by you. (e.g mutex(record, req.session))
  * 
  * @author Tim Liu
@@ -86,8 +87,7 @@ module.exports = function(server){
 		apiTokenMap[router.meta.entity] = apiTokenMap[router.meta.entity] || {};
 		var atm = apiTokenMap[router.meta.entity];
 
-		var tokens = _.toArray(arguments).slice(1);
-		if(tokens.length === 0) tokens = ['read', 'modify', 'execute'];
+		var tokens = _.toArray(arguments).slice(1).concat(['create', 'read', 'modify']);
 		_.each(tokens, function(t){
 			atm[t] = false;
 		});
@@ -95,12 +95,12 @@ module.exports = function(server){
 		//give router a token checker to be used when defining the routes (apis)
 		//e.g router.get('url..', router.token(...), function(req, res, next){...});
 		router.token = function(/*token1, token2, ...*/){
-			if(!profile.auth) return function(req, res, next){next();};
+			if(!profile.auth || !profile.auth.enabled) return function(req, res, next){next();};
 
 			var tokens = _.toArray(arguments);
 			return function(req, res, next){
 				if(req.session && req.session.username){
-					if(req.session.space === 'superadmin') return next();
+					if(req.session.userspace === 'superadmin') return next();
 					//within the user & admin space, check api-access-token first
 					var pass = true;
 					var map = req.session['api-token-map'] && req.session['api-token-map'][router.meta.entity];
@@ -114,7 +114,7 @@ module.exports = function(server){
 				    }else
 				    	pass = false;
 					if(pass) {
-						if(req.session.space === 'user') req.mutex = true;
+						if(req.session.userspace === 'user') req.mutex = true;
 						return next();
 					/////////////////////////////////////////////////////////////////////
 					//Don't forget to apply the space, mutex rule(s) in the guarded api//
