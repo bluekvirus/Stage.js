@@ -6,10 +6,12 @@ Change Log
 2. @*.html, 'string', ['string', 'array'] tpls no longer have their tpl strings injected into `<head>`.
 3. Splited the Application.inject func into 3 sub funcz (js, tpl, css).
 4. Added version badages to README.md, HOWTO.md to replace static version texts and updated the docs.
+5. Added effect data-attributes recognition to regions.
+6. Fixed 'show' event missing problem in overlay enabled views. (with .triggerMethod())
 
 In progress...
 
-x. +User session and api authorization to devserver
+x. +User session, basic crud and api authorization to devserver
 x. Reload tpl dynamically during View/Context overriden?
 x. + sprite preview (_Mockups context);
 

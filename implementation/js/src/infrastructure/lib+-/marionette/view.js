@@ -182,9 +182,14 @@
 				this.listenTo(this, 'close', function(){
 					$anchor.overlay();//close the overlay if this.close() is called.
 				});
-				this.render().trigger('view:show');
 				$anchor.overlay(_.extend(this._overlayConfig, options, {
-					content: this.el,
+					content: function(){
+						return that.render().el;
+					},
+					onShow: function(){
+						//that.trigger('show'); //Trigger 'show' doesn't invoke onShow, use triggerMethod the Marionette way!
+						that.triggerMethod('show'); //trigger event while invoking on{Event};
+					},
 					onClose: function(){
 						that.close(); //closed by overlay x
 					}

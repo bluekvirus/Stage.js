@@ -37,6 +37,7 @@ module.exports = function(server){
 			req.session.destroy();
 
 			//TBI: go into db update record - last logged in
+			
 		}
 		return res.json({msg: 'user logged out', username: username});
 	});

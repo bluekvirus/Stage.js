@@ -54,9 +54,9 @@ _.each(profile.clients, function(filePath, uriName){
 //loading...
 var options = {verbose:true, cwd: profile.root};
 load('util', options)
-.then('schemas', options)
 .then('middlewares', options) //not yet injected
 .then('routers', options) //not yet injected
+.then('schemas', options)
 .then('bot', options) //inject middlewares and routers into server
 .into(server);
 

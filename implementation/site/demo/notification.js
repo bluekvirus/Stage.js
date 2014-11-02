@@ -81,6 +81,7 @@
 	//custom view as overlay
 	var Overlay = app.view({
 		overlay: true,
+		type: 'Layout',
 		template: [
 		  '<div class="modal-dialog text-left">',
 		    '<div class="modal-content">',
@@ -88,8 +89,7 @@
 		        '<button type="button" class="close" data-dismiss="modal" aria-hidden="true" action="close">×</button>',
 		        '<h4 class="modal-title">Modal title</h4>',
 		      '</div>',
-		      '<div class="modal-body">',
-		        '<p>One fine body…</p>',
+		      '<div class="modal-body" region="body" >', //view="OverlayBody"
 		      '</div>',
 		      '<div class="modal-footer">',
 		        '<button type="button" class="btn btn-default" data-dismiss="modal" action="close">Close</button>',
@@ -102,8 +102,15 @@
 			close: function(){
 				this.close();
 			}
+		},
+		onShow: function(){
+			this.body.trigger('region:load-view', 'OverlayBody');
 		}
 
+	});
+	app.view({
+		name: 'OverlayBody',
+		template: '<p>One fine body…</p>' 
 	});
 
 	app.regional('Notify', {

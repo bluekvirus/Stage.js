@@ -150,11 +150,10 @@
 					}, this);
 				},this);
 			});
-			//automatically show a registered View from a 'view=' marked region.
-			//automatically show a registered View/Widget through event 'region:load-view' (name [,options])
-			this.listenTo(this, 'show', function(){
+
+			//Giving region the ability to show a registered View/Widget or @remote.tpl.html through event 'region:load-view' (name [,options])
+			this.listenTo(this, 'render', function(){
 				_.each(this.regions, function(selector, r){
-					if(this.debug) this[r].$el.html('<p class="alert alert-info">Region <strong>' + r + '</strong></p>'); //give it a fake one.
 					this[r].listenTo(this[r], 'region:load-view', function(name, options){ //can load both view and widget.
 						if(!name) return;
 						//Widget?
@@ -179,9 +178,16 @@
 						//throw new Error('DEV::Layout::View required ' + name + ' can NOT be found...use app.create(\'Regional\', {name: ..., ...}).');
 						console.warn('DEV::Layout::View required ' + name + ' can NOT be found...use app.create(\'Regional\', {name: ..., ...}).');
 					});
-					this[r].trigger('region:load-view', this[r].$el.attr('view')); //found corresponding View def.
-
+					
 				},this);
+			});
+
+			//Automatically shows the region's view="" attr indicated View/Widget or @remote.tpl.html
+			this.listenTo(this, 'show', function(){
+				_.each(this.regions, function(selector, r){
+					if(this.debug) this[r].$el.html('<p class="alert alert-info">Region <strong>' + r + '</strong></p>'); //give it a fake one.
+					this[r].trigger('region:load-view', this[r].$el.attr('view')); //found corresponding View def.
+				}, this);
 			});
 
 			//supporting the navigation chain if it is a named layout view with valid navRegion (context, regional, ...)

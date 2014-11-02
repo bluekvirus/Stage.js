@@ -18,7 +18,7 @@
 		open: function(view){
 
 			/**
-			 * effect config
+			 * effect config in view 
 			 * 
 			 * 'string' name of the effect in jQuery;
 			 * or
@@ -27,7 +27,16 @@
 			 * 	 	options: ...
 			 * 	 	duration: ...
 			 * }
+			 *
+			 * or 
+			 *
+			 * effect config on region attr $.data()
+			 * <div region="..." data-effect="slide"></div>
+			 * <div region="..." data-effect="{"name":"slide", "options":{...}, "duration":...}"></div>
+			 * 
 			 */
+			if(view.effect !== false && this.$el.data('effect'))
+				view.effect = view.effect || this.$el.data('effect');
 			if(view.effect){
 				if(_.isString(view.effect)){
 					view.effect = {

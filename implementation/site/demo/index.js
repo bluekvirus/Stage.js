@@ -2,7 +2,7 @@ Application.page('Demo', {
     //debug: true,
     className: 'wrapper container',
     template: [
-        '<div region="center"></div>',
+        '<div region="center" data-effect="slide"></div>',
     ],
     navRegion: 'center',
     onNavigateTo: function(path){

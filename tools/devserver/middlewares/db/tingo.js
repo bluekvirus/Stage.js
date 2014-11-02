@@ -37,6 +37,7 @@ module.exports = function(server){
 	//Note: the basic crud support can be overridden in individual router by putting route before server.crud()
 	server.crud = function(router, entity, hooks){
 		entity = entity || router.meta.entity;
+		hooks = hooks || {};
 		var collection = db.collection(entity);
 
 		////////////////////////////////////////////////////
@@ -54,7 +55,7 @@ module.exports = function(server){
 			var docs = req.body;
 			if(!_.isArray(docs)) docs = [docs];
 			//validate them first
-			var schema = server.schemas[router.name];
+			var schema = server.schemas[router.meta.name];
 			if(schema){
 				for (var i in docs) {
 					var result = schema.validate(docs[i]);
@@ -76,13 +77,13 @@ module.exports = function(server){
 			collection.findOne({_id: req.param('id')}, function(err, doc){
 				if(err) return next(err);
 				if(hooks.read) return hooks.read(doc, req, res, next); //hook.read
-				return res.json(doc);
+				return res.json(doc || {});
 			});
 		})
 		.put(router.token('read', 'modify'), function(req, res, next){
 			var doc = req.body;
 			//validate them first
-			var schema = server.schemas[router.name];
+			var schema = server.schemas[router.meta.name];
 			if(schema){
 				var result = schema.validate(doc);
 				if(result.error) return res.status(400).json({msg: result.error, rejected: doc});
