@@ -23,24 +23,32 @@
 			map: {},
 			has: function(name){
 				if(!_.isString(name) || !name) throw new Error('DEV::Application.editor::You must specify the name of the ' + regName + ' to look for.');
-				if(manager.map[name]) return true;
+				if(this.map[name]) return true;
 				return false;
 			},
 			register: function(name, factory){
 				if(!_.isString(name) || !name) throw new Error('DEV::Application.editor::You must specify a ' + regName + ' name to register.');
-				if(manager.has(name))
+				if(this.has(name))
 					console.warn('DEV::Overriden::' + regName + '.' + name);
-				manager.map[name] = factory();
+				this.map[name] = factory();
+				this.map[name].prototype.name = name;
 			},
 
 			create: function(name, options){
 				if(!_.isString(name) || !name) throw new Error('DEV::Application.editor::You must specify the name of the ' + regName + ' to create.');
-				if(manager.has(name))
-					return new (manager.map[name])(options);
+				if(this.has(name))
+					return new (this.map[name])(options);
 				throw new Error('DEV::' + regName + '.Registry:: required definition [' + name + '] not found...');
+			},
+
+			get: function(name){
+				if(!name) return _.keys(this.map);
+				return this.map[name];
 			}
 
 		});
+
+		return manager;
 
 	}
 

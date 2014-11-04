@@ -467,11 +467,9 @@ window.onerror = function(errorMsg, target, lineNum){
 			return new Backbone.Collection(data);
 		},
 
-		view: function(options, instant){
-			if(_.isBoolean(options)){
-				instant = options;
-				options = {};
-			}
+		view: function(options /*or name*/, instant){
+			if(_.isBoolean(options)) throw new Error('DEV::Application.view::pass in {options} or a name string...');
+			if(_.isString(options) || !options) return Application.Core.Regional.get(options);
 
 			var Def;
 			if(!options.name){
@@ -486,8 +484,11 @@ window.onerror = function(errorMsg, target, lineNum){
 
 		context: function(name, options){
 			if(!_.isString(name)) {
+				if(!name) return Application.Core.Context.get();
 				options = name;
 				name = '';
+			}else {
+				if(!options) return Application.Core.Context.get(name);
 			}
 			options = options || {};
 			_.extend(options, {name: name});
@@ -496,8 +497,11 @@ window.onerror = function(errorMsg, target, lineNum){
 
 		regional: function(name, options){
 			if(!_.isString(name)) {
+				if(!name) return Application.Core.Regional.get();
 				options = name;
 				name = '';
+			}else {
+				if(!options) return Application.Core.Regional.get(name);
 			}			
 			options = options || {};
 			_.extend(options, {name: name});
@@ -512,6 +516,7 @@ window.onerror = function(errorMsg, target, lineNum){
 		},
 
 		widget: function(name, options){
+			if(!options) return Application.Core.Widget.get(name);
 			if(_.isFunction(options)){
 				//register
 				Application.Core.Widget.register(name, options);
@@ -522,6 +527,7 @@ window.onerror = function(errorMsg, target, lineNum){
 		},
 
 		editor: function(name, options){
+			if(!options) return Application.Core.Editor.get(name);
 			if(_.isFunction(options)){
 				//register
 				Application.Core.Editor.register(name, options);
