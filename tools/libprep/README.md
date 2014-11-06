@@ -2,7 +2,7 @@
 
 ##Usage##
 1. Install using bower ```bower install```
-2. prepare the lib map ```bower list --path > map.json```
+2. prepare the lib map ```bower list --path --json > map.json```
 3. fix lib map in ```map-fix.json```
 4. Build some of the libs ```node run.js all```
 

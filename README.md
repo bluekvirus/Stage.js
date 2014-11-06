@@ -12,11 +12,13 @@ What's next?
 2.0.0 Roadmap:
 * Merge Context, Regional, Widget, Editor and Canvas to be named Views with mixins;
 * Use the navigation chain from start based only on named layout views with navRegions;
-* Introduce State(ViewModel) into the picture. (Data, State, (View)Model/(View)Collection, View/Layout, Navigation, Widget/Editor, Events);
+* Introduce State(ViewModel?) into the picture. (Data, State, (View)Model/(View)Collection, View/Layout, Navigation, Widget/Editor, Events);
 * Stateful navigation mech: app@state/context@state/lvl1@state/lvl2@state;
 * Remove deps on Marionette.js, jQuery UI Core/Widget;
-* Datagrid+ : select-all header/cell, details row;
+* Datagrid+ : select-all header/cell, details row, header/cell param refine ('str', @, view func);
 * Editor+ : Spinner/Range, Switches, DnD Listing;
+
+optional:
 * local filter/sorter mech into list views; 
 * local pagination mech into list views (in addition to the remote one we already have);
 

@@ -1127,6 +1127,8 @@ Application.editor.validator('my-validator-name', function(options, val, parentC
 ```
 alias: `Application.editor.rule()`.
 
+**Tip:** We included the [`validator-js`](https://github.com/chriso/validator.js) library for you in the framework through `dependencies.js`. You can use it as a base to implement your validations faster and easier.
+
 ###Compound
 Sometimes you need to build a compound editor with more basic editors than the number of values collected. You can do this by assigning a view **definition** to the editor configure:
 ```
@@ -2026,9 +2028,11 @@ see [CHANGELOG.md](https://github.com/bluekvirus/Stage.js/blob/master/CHANGELOG.
 ####CDN
 * [jsDelivr](http://www.jsdelivr.com/)
 
-####MDN
+####Web Standards
 * [CORS](https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS) - crossdomain ajax support.
-* [Web API](https://developer.mozilla.org/en-US/docs/Web/API)
+* [Web API 1](https://developer.mozilla.org/en-US/docs/Web/API) - Mozzila MDN
+* [Web API 2](https://developer.chrome.com/extensions/api_other) - Chrome Dev
+* [Can I Use?](http://caniuse.com/) - feature compatibility check
 
 ####JavaScript
 * [Douglas Crockford on js](http://www.crockford.com/javascript/)
@@ -2039,6 +2043,7 @@ see [CHANGELOG.md](https://github.com/bluekvirus/Stage.js/blob/master/CHANGELOG.
 * [Initializr](http://www.initializr.com/) - faster way of using h5bp
 * [HTML5 rocks!](http://www.html5rocks.com/en/)
 * [HTML5.org](http://html5.org/)
+* [CSS-Tricks.com](http://css-tricks.com/snippets/)
 
 ####Look'n'Feel
 * [Bootswatch](http://bootswatch.com/) - Bootstrap themes
@@ -2048,6 +2053,9 @@ see [CHANGELOG.md](https://github.com/bluekvirus/Stage.js/blob/master/CHANGELOG.
 * [Google Fonts](http://www.google.com/fonts/)/[Font Squirrell](http://www.fontsquirrel.com/) - web fonts
 
 ####Platform Options
-1. HTML5, JS, CSS3 - Ubuntu OS, Firefox OS or Titanium/Cordova(PhoneGap)
+#####Cross-platform
+1. HTML5, JS, CSS3 - iOS, Android, Windows Phone, Ubuntu OS, Firefox OS through Cordova(PhoneGap)
 2. C++ with Boost & Qt(+QML) - Ubuntu OS and General (Win, MacOS/iOS, Linux/Android)
-3. Object-C & Java - iOS and Android
+
+#####Native
+3. Swift/Object-C & Java - iOS and Android

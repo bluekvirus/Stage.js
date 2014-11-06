@@ -2,19 +2,25 @@ Change Log
 ==========
 1.7.4 (2014-10-20*)
 --------------------
-1. Refined template-builder code to better support tpl injection/overriden.
+1. Refined template-builder code to better support tpl injection/overridden.
 2. @*.html, 'string', ['string', 'array'] tpls no longer have their tpl strings injected into `<head>`.
 3. Splited the Application.inject func into 3 sub funcz (js, tpl, css).
-4. Added version badages to README.md, HOWTO.md to replace static version texts and updated the docs.
+4. Added version badges to README.md, HOWTO.md to replace static version texts and updated the docs.
 5. Added effect data-attributes recognition to regions.
 6. Fixed 'show' event missing problem in overlay enabled views. (with .triggerMethod())
 7. Added server.model method to devserver for defining data entities for RESTful.
+8. Included validator-js in the deps for built-in validators support.
+9. Fixed animate.css activation error in themes.
+10. Included jquery.transit back into deps.
+
 
 In progress...
 
+x. Swapping Handlebars + Swag with mustache.js
+x. Breaking basic editors into individual ones 
 x. +User session, basic crud and api authorization to devserver
-x. Reload tpl dynamically during View/Context overriden?
-x. + sprite preview (_Mockups context);
+x. Reload tpl dynamically during View/Context overridden?
+x. + sprite preview? (in _Mockups context);
 
 
 1.7.3 (2014-10-19)

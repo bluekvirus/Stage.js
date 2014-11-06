@@ -9,7 +9,7 @@
                     '<div region="libinfo"></div>',
                 '</div>',
                 '<div class="col-sm-7">',
-                    '<div region="breadcrumbs" view="Doc.Breadcrumbs" style="position: fixed; top: 0; right: 0; display:none"></div>',
+                    '<div region="breadcrumbs" view="Doc.Breadcrumbs" style="background-color:#eee; padding: 0 1em;position: fixed; top: 0; right: 0; display:none"></div>',
                     '<div region="doc" data-url="HOWTO.md"></div>',
                 '</div>',
             '</div>'
