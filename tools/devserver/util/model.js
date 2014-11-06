@@ -1,6 +1,11 @@
 /**
  * Utility function for creating model with validation schema and accepts events.
  *
+ * This implementation does NOT depend on the actual db middleware.
+ *
+ * Assumption:
+ * we assume the schema param has a function called .validate()
+ *
  * @author Tim Liu
  * @created 2014.11.05
  */
@@ -20,11 +25,11 @@ module.exports = function(server){
 			this.schema = schema;
 			EventEmitter.call(this);
 			if(this.schema) this.validate = this.schema.validate;
-			else this.validate = function(vals){return {value: vals}};
-		}
+			else this.validate = function(vals){return {value: vals};};
+		};
 
 		util.inherits(M, EventEmitter);
 		return new M(schema);
-	}
+	};
 
-}
+};

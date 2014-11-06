@@ -1,18 +1,18 @@
 /**
- * The User collection data record schema using Joi
+ * The User collection data record schema using Joi (depends on a specific db middleware)
  *
  * How to define
  * -------------
- * server.model(this, {schema});
+ * server.model(this, {schema}); //use Joi to define your schema
  *
  * Events
  * ------
- * 'read' (list, read)
- * 'validate' (create, update, before schema validate)
- * 'pre-save' (create, update, after schema validate)
- * 'post-save' (create, update, after schema validate)
- * 'pre-delete'
- * 'post-delete'
+ * 'read' (in list, read)
+ * 'validate' (in create, update, before model.validate)
+ * 'pre-save' (in create, update, after model.validate)
+ * 'post-save' (in create, update)
+ * 'pre-delete' (in delete)
+ * 'post-delete' (in delete)
  *
  * Used in
  * -------

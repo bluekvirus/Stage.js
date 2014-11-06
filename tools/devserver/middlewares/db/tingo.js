@@ -6,7 +6,15 @@
  * 1. connect to db with profile setting
  * 2. init db according to profile setting (optional)
  * 3. provide basic entity crud op to server.crud(router [, entity name, mutex]) (optional)
- * 4. assign req.db and return db middleware 
+ * 4. assign req.db and return db middleware
+ *
+ * Relates to
+ * ----------
+ * server.routers
+ * server.models
+ *
+ * If non-NoSQL db is used, then the routers and the models need to be coded again.
+ * 
  *
  * @author Tim.Liu
  * @created 2014.06.11
@@ -22,6 +30,7 @@ module.exports = function(server){
 	var profile = server.get('profile');
 	server.crud = function(){};
 
+	//do not load this middleware definition if don't want to use tingodb.
 	if(!profile.db.tingo) return function(req, res, next){ next('Missing TingoDB configure in profile...'); };
 
 	//1. connect to db according to profile
@@ -30,14 +39,14 @@ module.exports = function(server){
 	var db = new (tingo.Db)(dbFile, {});
 	server.set('db', db);
 
-	//2. init db (optional)
+	//2. init db (optional, can be delayed into model def)
 	
 	//3. provide general server.crud() for serving basic entity crud
 	//Note: the basic crud support can be overridden in individual router by putting route before server.crud()
 	server.crud = function(router, entity){
 		entity = entity || router.meta.entity;
 		var collection = db.collection(entity);
-		var model = server.models[entity];
+		var model = server.models[router.meta.name];
 
 		////////////////////////////////////////////////////
 		router.route('/')
@@ -59,15 +68,22 @@ module.exports = function(server){
 			var docs = req.body;
 			if(!_.isArray(docs)) docs = [docs];
 
+			var rejected = [];
 			if(model) {
 				for (var i in docs) {
 					model.emit('validate', docs[i]);
-					var result = model.validate(dos[i]);
-					if(result.error) return res.status(400).json({msg: result.error, rejected: docs[i]});
+					var result = model.validate(docs[i]);
+					if(result.error){
+						rejected.push({doc: docs[i], reason:result.error});
+						docs[i] = null;
+					} 
+					//return res.status(400).json({msg: result.error, rejected: docs[i]});
 					else docs[i] = result.value;
 					model.emit('pre-save', docs[i], collection, 'create');
 				}
 			}
+			if(rejected.length > 0)
+				docs = _.compact(docs);
 			collection.insert(docs, function(err, result){
 				if(err) return next(err);
 				if(model) {
@@ -75,7 +91,7 @@ module.exports = function(server){
 						model.emit('post-save', d, collection, 'create');
 					});
 				}
-				return res.json({msg: result});
+				return res.json({created: result, rejected:rejected});
 			});
 		});
 

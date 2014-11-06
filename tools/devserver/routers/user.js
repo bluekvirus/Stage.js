@@ -1,5 +1,5 @@
 /**
- * The User router, depends on a db middleware (req.db).
+ * The User router, depends on a specific db middleware(req.db).
  * 
  * +space rule
  * +mutex rules
