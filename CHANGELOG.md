@@ -8,6 +8,7 @@ Change Log
 4. Added version badages to README.md, HOWTO.md to replace static version texts and updated the docs.
 5. Added effect data-attributes recognition to regions.
 6. Fixed 'show' event missing problem in overlay enabled views. (with .triggerMethod())
+7. Added server.model method to devserver for defining data entities for RESTful.
 
 In progress...
 

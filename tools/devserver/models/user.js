@@ -1,6 +1,19 @@
 /**
  * The User collection data record schema using Joi
  *
+ * How to define
+ * -------------
+ * server.model(this, {schema});
+ *
+ * Events
+ * ------
+ * 'read' (list, read)
+ * 'validate' (create, update, before schema validate)
+ * 'pre-save' (create, update, after schema validate)
+ * 'post-save' (create, update, after schema validate)
+ * 'pre-delete'
+ * 'post-delete'
+ *
  * Used in
  * -------
  * routers.user
@@ -13,9 +26,10 @@ var joi = require('joi');
 
 module.exports = function(server){
 
-	console.log('[schema]', 'User'.yellow);
-
-	return joi.object().keys({
+	//1. check & create superadmin if profile.auth is enabled
+	
+	//2. definition:
+	var m = server.model(this, joi.object().keys({
 
 		username: joi.string().alphanum().min(3).max(36).required(),
 		password: joi.string().min(6).max(36), //will be hashed by salt later
@@ -36,6 +50,8 @@ module.exports = function(server){
 		//updated_at: timestamp
 		
 
-	}).with('username', 'password');
+	}).with('username', 'password'));
+
+	return m;
 
 };

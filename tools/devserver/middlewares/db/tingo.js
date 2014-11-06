@@ -30,77 +30,89 @@ module.exports = function(server){
 	var db = new (tingo.Db)(dbFile, {});
 	server.set('db', db);
 
-	//2. init db (check & create superadmin if profile.auth is enabled)
-	//TBI
+	//2. init db (optional)
 	
 	//3. provide general server.crud() for serving basic entity crud
 	//Note: the basic crud support can be overridden in individual router by putting route before server.crud()
-	server.crud = function(router, entity, hooks){
+	server.crud = function(router, entity){
 		entity = entity || router.meta.entity;
-		hooks = hooks || {};
 		var collection = db.collection(entity);
+		var model = server.models[entity];
 
 		////////////////////////////////////////////////////
 		router.route('/')
+		//read all
 		.get(router.token('list'), function(req, res, next){
 			//TBI: +skip, limit, field filter and search query 
 			collection.find().toArray(function(err, docs){
 				if(err) return next(err);
-				if(hooks.list) 
-					return hooks.list(docs, req, res, next); //hook.list
+				if(model) {
+					_.each(docs, function(d){
+						model.emit('read', d);
+					});
+				}
 				return res.json(docs);
 			});
 		})
+		//create one*
 		.post(router.token('create'), function(req, res, next){
 			var docs = req.body;
 			if(!_.isArray(docs)) docs = [docs];
-			//validate them first
-			var schema = server.schemas[router.meta.name];
-			if(schema){
+
+			if(model) {
 				for (var i in docs) {
-					var result = schema.validate(docs[i]);
+					model.emit('validate', docs[i]);
+					var result = model.validate(dos[i]);
 					if(result.error) return res.status(400).json({msg: result.error, rejected: docs[i]});
 					else docs[i] = result.value;
+					model.emit('pre-save', docs[i], collection, 'create');
 				}
 			}
-			if(hooks.create)
-				return hooks.create(docs, req, res, next); //hook.create
 			collection.insert(docs, function(err, result){
 				if(err) return next(err);
+				if(model) {
+					_.each(docs, function(d){
+						model.emit('post-save', d, collection, 'create');
+					});
+				}
 				return res.json({msg: result});
 			});
 		});
 
 		////////////////////////////////////////////////////
 		router.route('/:id')
+		//read one
 		.get(router.token('read'), function(req, res, next){
 			collection.findOne({_id: req.param('id')}, function(err, doc){
 				if(err) return next(err);
-				if(hooks.read) return hooks.read(doc, req, res, next); //hook.read
+				if(model) model.emit('read', doc);
 				return res.json(doc || {});
 			});
 		})
+		//update one
 		.put(router.token('read', 'modify'), function(req, res, next){
 			var doc = req.body;
-			//validate them first
-			var schema = server.schemas[router.meta.name];
-			if(schema){
-				var result = schema.validate(doc);
+
+			if(model) {
+				model.emit('validate', doc);
+				var result = model.validate(doc);
 				if(result.error) return res.status(400).json({msg: result.error, rejected: doc});
 				else doc = result.value;
+				model.emit('pre-save', doc, collection, 'update');
 			}
-			if(hooks.modify)
-				return hooks.modify(doc, req, res, next); //hook.modify (update)
 			collection.update({_id: req.param('id')}, doc, function(err, result){
 				if(err) return next(err);
+				if(model) model.emit('post-save', doc, collection, 'update');
 				return res.json({msg: result});
 			});
 		})
+		//delete one
 		.delete(router.token('read', 'modify'), function(req, res, next){
-			collection.remove({_id: req.param('id')}, function(err, result){
+			var id = req.param('id');
+			if(model) model.emit('pre-delete', id, collection);
+			collection.remove({_id: id}, function(err, result){
 				if(err) return next(err);
-				if(hooks.modify) 
-					return hooks.modify(req.param('id'), req, res, next); //hook.modify (remove)
+				if(model) model.emit('post-delete', id, collection);
 				return res.json({msg: result});
 			});
 		});
