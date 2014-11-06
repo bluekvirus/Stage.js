@@ -15,8 +15,6 @@ Change Log
 
 
 In progress...
-
-x. Swapping Handlebars + Swag with mustache.js
 x. Breaking basic editors into individual ones 
 x. +User session, basic crud and api authorization to devserver
 x. Reload tpl dynamically during View/Context overridden?
