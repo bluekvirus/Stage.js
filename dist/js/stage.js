@@ -468,11 +468,9 @@ window.onerror = function(errorMsg, target, lineNum){
 			return new Backbone.Collection(data);
 		},
 
-		view: function(options, instant){
-			if(_.isBoolean(options)){
-				instant = options;
-				options = {};
-			}
+		view: function(options /*or name*/, instant){
+			if(_.isBoolean(options)) throw new Error('DEV::Application.view::pass in {options} or a name string...');
+			if(_.isString(options) || !options) return Application.Core.Regional.get(options);
 
 			var Def;
 			if(!options.name){
@@ -487,8 +485,11 @@ window.onerror = function(errorMsg, target, lineNum){
 
 		context: function(name, options){
 			if(!_.isString(name)) {
+				if(!name) return Application.Core.Context.get();
 				options = name;
 				name = '';
+			}else {
+				if(!options) return Application.Core.Context.get(name);
 			}
 			options = options || {};
 			_.extend(options, {name: name});
@@ -497,8 +498,11 @@ window.onerror = function(errorMsg, target, lineNum){
 
 		regional: function(name, options){
 			if(!_.isString(name)) {
+				if(!name) return Application.Core.Regional.get();
 				options = name;
 				name = '';
+			}else {
+				if(!options) return Application.Core.Regional.get(name);
 			}			
 			options = options || {};
 			_.extend(options, {name: name});
@@ -513,6 +517,7 @@ window.onerror = function(errorMsg, target, lineNum){
 		},
 
 		widget: function(name, options){
+			if(!options) return Application.Core.Widget.get(name);
 			if(_.isFunction(options)){
 				//register
 				Application.Core.Widget.register(name, options);
@@ -523,6 +528,7 @@ window.onerror = function(errorMsg, target, lineNum){
 		},
 
 		editor: function(name, options){
+			if(!options) return Application.Core.Editor.get(name);
 			if(_.isFunction(options)){
 				//register
 				Application.Core.Editor.register(name, options);
@@ -970,24 +976,32 @@ window.onerror = function(errorMsg, target, lineNum){
 			map: {},
 			has: function(name){
 				if(!_.isString(name) || !name) throw new Error('DEV::Application.editor::You must specify the name of the ' + regName + ' to look for.');
-				if(manager.map[name]) return true;
+				if(this.map[name]) return true;
 				return false;
 			},
 			register: function(name, factory){
 				if(!_.isString(name) || !name) throw new Error('DEV::Application.editor::You must specify a ' + regName + ' name to register.');
-				if(manager.has(name))
+				if(this.has(name))
 					console.warn('DEV::Overriden::' + regName + '.' + name);
-				manager.map[name] = factory();
+				this.map[name] = factory();
+				this.map[name].prototype.name = name;
 			},
 
 			create: function(name, options){
 				if(!_.isString(name) || !name) throw new Error('DEV::Application.editor::You must specify the name of the ' + regName + ' to create.');
-				if(manager.has(name))
-					return new (manager.map[name])(options);
+				if(this.has(name))
+					return new (this.map[name])(options);
 				throw new Error('DEV::' + regName + '.Registry:: required definition [' + name + '] not found...');
+			},
+
+			get: function(name){
+				if(!name) return _.keys(this.map);
+				return this.map[name];
 			}
 
 		});
+
+		return manager;
 
 	}
 
@@ -1257,7 +1271,7 @@ window.onerror = function(errorMsg, target, lineNum){
 		open: function(view){
 
 			/**
-			 * effect config
+			 * effect config in view 
 			 * 
 			 * 'string' name of the effect in jQuery;
 			 * or
@@ -1266,7 +1280,16 @@ window.onerror = function(errorMsg, target, lineNum){
 			 * 	 	options: ...
 			 * 	 	duration: ...
 			 * }
+			 *
+			 * or 
+			 *
+			 * effect config on region attr $.data()
+			 * <div region="..." data-effect="slide"></div>
+			 * <div region="..." data-effect="{"name":"slide", "options":{...}, "duration":...}"></div>
+			 * 
 			 */
+			if(view.effect !== false && this.$el.data('effect'))
+				view.effect = view.effect || this.$el.data('effect');
 			if(view.effect){
 				if(_.isString(view.effect)){
 					view.effect = {
@@ -1512,9 +1535,14 @@ window.onerror = function(errorMsg, target, lineNum){
 				this.listenTo(this, 'close', function(){
 					$anchor.overlay();//close the overlay if this.close() is called.
 				});
-				this.render().trigger('view:show');
 				$anchor.overlay(_.extend(this._overlayConfig, options, {
-					content: this.el,
+					content: function(){
+						return that.render().el;
+					},
+					onShow: function(){
+						//that.trigger('show'); //Trigger 'show' doesn't invoke onShow, use triggerMethod the Marionette way!
+						that.triggerMethod('show'); //trigger event while invoking on{Event};
+					},
 					onClose: function(){
 						that.close(); //closed by overlay x
 					}
@@ -1923,11 +1951,10 @@ window.onerror = function(errorMsg, target, lineNum){
 					}, this);
 				},this);
 			});
-			//automatically show a registered View from a 'view=' marked region.
-			//automatically show a registered View/Widget through event 'region:load-view' (name [,options])
-			this.listenTo(this, 'show', function(){
+
+			//Giving region the ability to show a registered View/Widget or @remote.tpl.html through event 'region:load-view' (name [,options])
+			this.listenTo(this, 'render', function(){
 				_.each(this.regions, function(selector, r){
-					if(this.debug) this[r].$el.html('<p class="alert alert-info">Region <strong>' + r + '</strong></p>'); //give it a fake one.
 					this[r].listenTo(this[r], 'region:load-view', function(name, options){ //can load both view and widget.
 						if(!name) return;
 						//Widget?
@@ -1952,9 +1979,16 @@ window.onerror = function(errorMsg, target, lineNum){
 						//throw new Error('DEV::Layout::View required ' + name + ' can NOT be found...use app.create(\'Regional\', {name: ..., ...}).');
 						console.warn('DEV::Layout::View required ' + name + ' can NOT be found...use app.create(\'Regional\', {name: ..., ...}).');
 					});
-					this[r].trigger('region:load-view', this[r].$el.attr('view')); //found corresponding View def.
-
+					
 				},this);
+			});
+
+			//Automatically shows the region's view="" attr indicated View/Widget or @remote.tpl.html
+			this.listenTo(this, 'show', function(){
+				_.each(this.regions, function(selector, r){
+					if(this.debug) this[r].$el.html('<p class="alert alert-info">Region <strong>' + r + '</strong></p>'); //give it a fake one.
+					this[r].trigger('region:load-view', this[r].$el.attr('view')); //found corresponding View def.
+				}, this);
 			});
 
 			//supporting the navigation chain if it is a named layout view with valid navRegion (context, regional, ...)
