@@ -327,7 +327,7 @@ Application.setup({
 ```
 A `region=""` attribute on any html tag marks a pre-defined region in the template, **you can also do this with any *Marionette.Layout*** in our framework. Doing so is equivalent of using the `regions:{}` property.
 
-Tag marked with `region=""` can use an additional `view=""` attribute to load up a *Regional* view by name:
+Tag marked with `region=""` can use an additional `view=""` attribute to load up a *Regional* / *Widget* or *@remote.template.html* by name:
 ```
 '<div region="banner" view="Banner"></div>'
 //is equivalent to
@@ -337,7 +337,7 @@ onShow: function(){
     this.getRegion('banner').show(new Application.Core.Regional.get('Banner'));
 }
 ```
-**Note:** *Regional* views loaded by the `view=""` attribute should have no init options. If you do need to specify init options when showing a *Regional* view, use the alternatives.
+**Note:** *Regional* views loaded by the `view=""` attribute should have no init options. If you do need to specify init options when showing a *Regional* view, use the alternative `region:load-view` event.
 
 If your application is a single-context application, you don't need to assign the application template. There will always be a region that wraps the whole application -- the *app* region. The **Default** *Context* will automatically show on region *app* if you did not specify `contextRegion` and `defaultContext`.
 
@@ -667,7 +667,7 @@ UX stands for user experience, it is not just about look'n'feel and clickings bu
 To implement your design is, however, very easy. We have enhanced *Marionette.View* thus its sub-classes (*ItemView, Layout, CollectionView and CompositeView*) with opt-in abilities, you can use them while adding user interactions and view transitions to the application.
 
 #####Effect
-Any *Marionette.xView* can have an `effect` configure to control the effect through which it will be shown on a region:
+Both *Region* and *Marionette.xView* can have an `effect` configure to control the effect through which it will be shown on a region:
 ```
 //myRegionalA.js or any Marionette.xView
 (function(app) {
@@ -684,6 +684,14 @@ Any *Marionette.xView* can have an `effect` configure to control the effect thro
 })(Application);
 ```
 Pass just an effect name as a string to the configure if you don't need more tweak on the effect options. For more information regarding the effect options, please go to [jQuery.Effect](http://jqueryui.com/effect/).
+
+You can also use `data-attributes` on a region tag to set the defalt effect for showing a (any) view on the region:
+```
+//effect config on region attr $.data()
+<div region="..." data-effect="slide"></div>
+<div region="..." data-effect="{"name":"slide", "options":{...}, "duration":...}"></div>
+```
+Use `view.effect` to override region effects and `view.effect = false` to disable region effects.
 
 #####Actions
 Actions are click-ables marked by `action=""` attribute in your view template. The original way of registering events and listeners introduced by *Backbone.View* are flexible but tedious and repetitive. We offer you the *Action Tags for speeding things up.
@@ -795,9 +803,14 @@ anyregion.resize({
     width: ...
 });
 ```
-The `region:load-view` event listener is implemented for you and can search through both the *Regional* and *Widget* registry to find the view by name and show it on the region. You can pass in addition factory options to the event trigger. 
+The `region:load-view` event listener is implemented for you and can search through both the *Regional* and *Widget* registry to find the view by name and show it on the region. You can pass in addition factory options to the event trigger. Remember it can also load up a remote template for you just to boost your prototyping process:
+```
+//in a region template
+<div region="abc" view="@remote/template/abc.html"></div>
 
-Recall that you can use `view=""` in a template to link a *Regional* to a region to show as well, but it will *NOT* search through the *Widget* registry for finding the view definition, due to the difficulties of putting widget options into the `view=""` marked tags.
+//use 'region:load-view' event
+anyregion.trigger('region:load-view', '@remote/template/abc.html');
+```
 
 The `region.resize()` method call is there for better UI sizing control and propagation. The region's currentView (if exists) will automatically receive a `view:resized` event at the end of this function call, thus triggering `view.onResized()` method, you can choose to propagate the resizing action into the sub-regions of the region's currentView within its `onResized()` method.
 
@@ -1113,6 +1126,8 @@ Application.editor.validator('my-validator-name', function(options, val, parentC
 });
 ```
 alias: `Application.editor.rule()`.
+
+**Tip:** We included the [`validator-js`](https://github.com/chriso/validator.js) library for you in the framework through `dependencies.js`. You can use it as a base to implement your validations faster and easier.
 
 ###Compound
 Sometimes you need to build a compound editor with more basic editors than the number of values collected. You can do this by assigning a view **definition** to the editor configure:
@@ -2013,9 +2028,11 @@ see [CHANGELOG.md](https://github.com/bluekvirus/Stage.js/blob/master/CHANGELOG.
 ####CDN
 * [jsDelivr](http://www.jsdelivr.com/)
 
-####MDN
+####Web Standards
 * [CORS](https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS) - crossdomain ajax support.
-* [Web API](https://developer.mozilla.org/en-US/docs/Web/API)
+* [Web API 1](https://developer.mozilla.org/en-US/docs/Web/API) - Mozzila MDN
+* [Web API 2](https://developer.chrome.com/extensions/api_other) - Chrome Dev
+* [Can I Use?](http://caniuse.com/) - feature compatibility check
 
 ####JavaScript
 * [Douglas Crockford on js](http://www.crockford.com/javascript/)
@@ -2026,6 +2043,7 @@ see [CHANGELOG.md](https://github.com/bluekvirus/Stage.js/blob/master/CHANGELOG.
 * [Initializr](http://www.initializr.com/) - faster way of using h5bp
 * [HTML5 rocks!](http://www.html5rocks.com/en/)
 * [HTML5.org](http://html5.org/)
+* [CSS-Tricks.com](http://css-tricks.com/snippets/)
 
 ####Look'n'Feel
 * [Bootswatch](http://bootswatch.com/) - Bootstrap themes
@@ -2035,6 +2053,9 @@ see [CHANGELOG.md](https://github.com/bluekvirus/Stage.js/blob/master/CHANGELOG.
 * [Google Fonts](http://www.google.com/fonts/)/[Font Squirrell](http://www.fontsquirrel.com/) - web fonts
 
 ####Platform Options
-1. HTML5, JS, CSS3 - Ubuntu OS, Firefox OS or Titanium/Cordova(PhoneGap)
+#####Cross-platform
+1. HTML5, JS, CSS3 - iOS, Android, Windows Phone, Ubuntu OS, Firefox OS through Cordova(PhoneGap)
 2. C++ with Boost & Qt(+QML) - Ubuntu OS and General (Win, MacOS/iOS, Linux/Android)
-3. Object-C & Java - iOS and Android
+
+#####Native
+3. Swift/Object-C & Java - iOS and Android
