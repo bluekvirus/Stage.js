@@ -7,6 +7,26 @@ This project produces **Stage.js** - an infrastructure for building modern web a
 <img src="implementation/static/resource/default/diagram/Diagram-1.png" alt="UI/UX Problems" class="center-block"></img>
 
 
+Quick Start
+------------
+<a href="https://www.npmjs.org/package/stage-devtools"><img src="http://img.shields.io/npm/v/stage-devtools.svg?style=flat-square" alt="DevTools Version"></img></a> 
+
+Use the devtools to get started quickly.
+```
+npm -g install stage-devtools
+mkdir project
+cd project
+stagejs init
+stagejs serve [--port <number>]
+```
+You can now start developing your app with Stage.js. Read the [documentation](http://bluekvirus.github.io/Stage.js/#navigate/Document) for more.
+
+
+Documentation
+-------------
+Again, as an application developer you should read this [documentation](http://bluekvirus.github.io/Stage.js/#navigate/Document)
+
+
 What's next?
 ------------
 2.0.0 Roadmap:
@@ -22,23 +42,6 @@ optional:
 * local filter/sorter mech into list views; 
 * local pagination mech into list views (in addition to the remote one we already have);
 
-Quick Start
-------------
-<a href="https://www.npmjs.org/package/stage-devtools"><img src="http://img.shields.io/npm/v/stage-devtools.svg?style=flat-square" alt="DevTools Version"></img></a> 
-
-Use the devtools to get started quickly.
-```
-npm -g install stage-devtools
-mkdir project
-cd project
-stagejs init
-stagejs serve [--port <number>]
-```
-You can now start developing your app with Stage.js. Read the documentation below for more.
-
-Documentation
--------------
-See [documentation](http://bluekvirus.github.io/Stage.js/#navigate/Document)
 
 Contribute
 ----------
@@ -79,6 +82,13 @@ Look closely to the `/implementation/index.html` file, it not only defines the l
 Please go check the `/implementation/themes/default` basic theme package and follow instructions in the `/less/main.less` over there. You can easily switch to use other base themes offered by [bootswatch](http://bootswatch.com/) (based on Bootstrap 3) to quickly build up your own.
 
 You can always refresh existing theme or start a new one by using the theme-prep tool under `/implementation/tools/themeprep`.
+
+###Commit Info
+Use the following `git` command to see some brief info about repo commits
+```
+git log --abbrev-commit --pretty=oneline -n 5
+git rev-list HEAD --count
+```
 
 
 Distribute

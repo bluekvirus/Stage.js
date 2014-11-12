@@ -50,7 +50,8 @@
     "underscore": "~1.x.x",
     "underscore.string": "~2.x.x",
     "watch": "^0.11.0",
-    "wrench": "^1.5.8"
+    "wrench": "^1.5.8",
+    "shelljs": "^0.3.0"
   },
   "devDependencies": {},
   "scripts": {

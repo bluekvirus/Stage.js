@@ -102,7 +102,7 @@ _.each(['document', 'window'], function(coreDomObj){
  * 	run();
  * 	create(); - universal object (model/collection/views[context/regional-view/widget/editor]) creation point [hierarchy flattened to enhance transparency]. 
  */
-Application = new Backbone.Marionette.Application();
+window.app = window.Application = new Backbone.Marionette.Application();
 _.each(['Core', 'Util'], function(coreModule){
 	Application.module(coreModule);
 });
