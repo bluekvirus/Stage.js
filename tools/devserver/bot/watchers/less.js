@@ -5,7 +5,7 @@
  * Any file change under themes/[theme-name]/ will trigger the recompile.
  * Produced main.css will always be @ themes/[theme-name]/css/main.css
  *
- * Only themes specified in the leswatch list will be monitored
+ * Only themes specified in the lesswatch list will be monitored
  * server.get('profile').lesswatch
  *
  * @author Tim Liu
@@ -22,7 +22,7 @@ var _ = require('underscore'),
     colors = require('colors'),
     globwatcher = require("globwatcher").globwatcher,
     watch = require('watch'),
-    compiler = require('../../shared/less-css.js');
+    compiler = require('../../../shared/less-css.js');
 
 _.str = require('underscore.string');
 
@@ -89,7 +89,7 @@ module.exports = function(server) {
                     return false;
                 }
             }, function(monitor) {
-                console.log('[Themes ' + watchedThemes + ': .less files monitored]'.yellow, '-', ('lessjs v' + less.version.join('.')).grey);
+                console.log('[watcher]', ('Themes ' + watchedThemes).yellow, '-', ('lessjs v' + less.version.join('.')).grey);
                 _.each(['created', 'changed', 'removed'], function(e) {
                     monitor.on(e, function(f) {
                         doCompile(e, f);
@@ -101,7 +101,7 @@ module.exports = function(server) {
             var watcher = globwatcher(_.map(themeFolders, function(t) {
                 return t.glob;
             }));
-            console.log('[monitor]', ('Themes ' + watchedThemes).yellow, '-', ('lessjs v' + less.version.join('.')).grey);
+            console.log('[watcher]', ('Themes ' + watchedThemes).yellow, '-', ('lessjs v' + less.version.join('.')).grey);
 
             _.each(['added', 'changed', 'deleted'], function(e) {
                 watcher.on(e, function(f) {

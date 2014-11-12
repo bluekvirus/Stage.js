@@ -14,6 +14,7 @@ Change Log
 10. Included jquery.transit back into deps.
 11. Added window.app as an alias to window.Application. (XDK compatible)
 12. Added release/edge build tag into app.stagejs.
+13. Fixed error in ro type editor enable/disable ops.
 
 
 In progress...

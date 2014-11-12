@@ -52,12 +52,13 @@ _.each(profile.clients, function(filePath, uriName){
 });
 
 //loading...
-var options = {verbose:true, cwd: profile.root};
+var options = {verbose:false, cwd: profile.root};
 load('util', options)
 .then('middlewares', options) //not yet injected
 .then('models', options)
 .then('routers', options) //not yet injected
-.then('bot', options) //inject middlewares and routers into server
+.then('bot', options) //1. build the server stack with the above loaded objects
+					  //2. start the watcherz
 .into(server);
 
 

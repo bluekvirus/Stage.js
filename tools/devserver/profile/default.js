@@ -2,8 +2,8 @@
  * All paths are relative to the devserver folder. (except below)
  * All paths that start with '/' will be treated as is, otherwise they will be resolved with __dirname (as the above dictates)
  *
- * simplest setting:
- * -----------------
+ * simplest profile setting:
+ * -------------------------
  * {
  * 	lesswatch: 'default'
  * }
@@ -60,7 +60,17 @@ module.exports = {
 	},
 
 	//use :false or '' to disable empty-ing all.json upon templates change.
-	tplwatch: '../../implementation/static/template',
+	tplwatch: {
+		client: '/dev'
+	},
+
+	cordovawatch: {
+		client: '/dev',
+		index: 'mobile.html',
+		folders: [
+		],
+		mirror: '../../www'
+	},
 
 	//cors (front-end crossdomain ajax support)
 	crossdomain: true,

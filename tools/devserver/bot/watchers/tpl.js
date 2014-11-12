@@ -19,7 +19,7 @@ module.exports = function(server) {
     var profile = server.get('profile');
     if (!profile.tplwatch) return;
 
-    var tplRoot = profile.resolve(profile.tplwatch);
+    var tplRoot = profile.resolve(_.isString(profile.tplwatch)?profile.tplwatch:path.join(profile.clients[profile.tplwatch.client], 'static', 'template'));
 
     function mergeIntoAllTplJson(e, f) {
         console.log('[Tpl file'.yellow, e, ':'.yellow, f, ']'.yellow);
@@ -32,7 +32,7 @@ module.exports = function(server) {
         watch.createMonitor(tplRoot, {
             //.html filters not working...
         }, function(monitor) {
-            console.log('[Templates monitored]'.yellow, tplRoot);
+            console.log('[watcher]', 'Templates'.yellow, tplRoot.grey);
             _.each(['created', 'changed', 'removed'], function(e) {
                 monitor.on(e, function(f) {
                     if (!_.str.endsWith(f, '.html')) return;
@@ -42,7 +42,7 @@ module.exports = function(server) {
         });
     } else {
         var watcher = globwatcher(path.join(tplRoot, '**/*.html'));
-        console.log('[monitor]', 'Templates'.yellow, profile.tplwatch.grey);
+        console.log('[watcher]', 'Templates'.yellow, tplRoot.grey);
 
         _.each(['added', 'changed', 'deleted'], function(e) {
             watcher.on(e, function(f) {

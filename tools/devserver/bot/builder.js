@@ -1,5 +1,5 @@
 /**
- * The server stack mounting bot (static webroots, middleware/services, routers)
+ * The server stack building bot (static webroots, middleware/services, routers)
  *
  * Warning
  * -------
@@ -25,6 +25,7 @@ module.exports = function(server){
 	//not used in this simple version of api-box
 
 	//mount different clients (static web.roots)
+	console.log('[web roots]', 'processing...');
 	_.each(profile.clients, function(filePath, uriName){
 		server.use(uriName, express.static(profile.clients[uriName]));
 		console.log('[www root]', uriName.yellow, '[', profile.clients[uriName], ']');
@@ -88,6 +89,7 @@ module.exports = function(server){
 		server.use(mountpath, router);
 		console.log('[router]', mountpath.yellow);
 	});
+	console.log('[routers]', 'mounted.');
 
 	//overall error errorhandler
 	if(profile.errorpage){

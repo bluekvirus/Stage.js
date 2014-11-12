@@ -323,7 +323,8 @@
 
 				if(_.isUndefined(flag)){
 					//disable but visible, will not participate in validation
-					this.ui.input.prop('disabled', true);
+					if(this.ui.input)
+						this.ui.input.prop('disabled', true);
 					return;
 				}
 
@@ -332,7 +333,8 @@
 					this.$el.hide();
 				}else {
 					//shown and editable
-					this.ui.input.prop('disabled', false);
+					if(this.ui.input)
+						this.ui.input.prop('disabled', false);
 					this.$el.show();
 				}
 			},
