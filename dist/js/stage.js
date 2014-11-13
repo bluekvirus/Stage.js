@@ -1724,7 +1724,7 @@ window.onerror = function(errorMsg, target, lineNum){
 			this.setValues = function(vals, loud){
 				if(!vals) return;
 				_.each(this._editors, function(editor, name){
-					if(vals[name])
+					if(vals[name] !== null && vals[name] !== undefined)
 						editor.setVal(vals[name], loud);
 				});
 				if(savedLayoutFns.setValues) 
@@ -3083,7 +3083,8 @@ var I18N = {};
 
 				if(_.isUndefined(flag)){
 					//disable but visible, will not participate in validation
-					this.ui.input.prop('disabled', true);
+					if(this.ui.input)
+						this.ui.input.prop('disabled', true);
 					return;
 				}
 
@@ -3092,7 +3093,8 @@ var I18N = {};
 					this.$el.hide();
 				}else {
 					//shown and editable
-					this.ui.input.prop('disabled', false);
+					if(this.ui.input)
+						this.ui.input.prop('disabled', false);
 					this.$el.show();
 				}
 			},
@@ -3877,4 +3879,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.7.3-778 build 1415765483878";
+;;app.stagejs = "1.7.3-781 build 1415852282633";
