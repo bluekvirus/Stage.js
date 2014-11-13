@@ -12,11 +12,16 @@ Change Log
 8. Included validator-js in the deps for built-in validators support.
 9. Fixed animate.css activation error in themes.
 10. Included jquery.transit back into deps.
+11. Added window.app as an alias to window.Application. (XDK compatible)
+12. Added release/edge build tag into app.stagejs.
+13. Fixed error in ro type editor enable/disable ops.
+14. Fixed error in form view (item-view) setValues (allow 0, '' & false).
+15. Added cordova watch to devserver watchers. (Unix-like system only)
 
 
 In progress...
-x. Breaking basic editors into individual ones 
 x. +User session, basic crud and api authorization to devserver
+x. Breaking basic editors into individual ones 
 x. Reload tpl dynamically during View/Context overridden?
 x. + sprite preview? (in _Mockups context);
 
