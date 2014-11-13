@@ -48,7 +48,7 @@ module.exports = {
 		//'/devmobile': '../build/dist/mobile'
 	},
 
-	//use lesswatch:false to turn off LESS monitor.
+	//use enabled: false to turn off LESS monitor.
 	lesswatch: {
 		//default client: '/'.
 		//use client: '[path]' set in the clients config section above to change the monitored webroot.
@@ -59,15 +59,21 @@ module.exports = {
 		themes: ['default', 'site', 'project'] 
 	},
 
-	//use :false or '' to disable empty-ing all.json upon templates change.
+	//use enabled: false to disable empty-ing all.json upon templates change.
 	tplwatch: {
 		client: '/dev'
 	},
 
+	//use enabled: false to disable this special change mirroring service 
 	cordovawatch: {
+		enabled: false,
 		client: '/dev',
 		index: 'mobile.html',
-		folders: [
+		files: [ //in glob format
+			'!bower_components/**',
+			'js/**',
+			'static/**',
+			'themes/mobile/**',
 		],
 		mirror: '../../www'
 	},

@@ -31,7 +31,7 @@ module.exports = function(server){
 	server.crud = function(){};
 
 	//do not load this middleware definition if don't want to use tingodb.
-	if(!profile.db.tingo) return function(req, res, next){ next('Missing TingoDB configure in profile...'); };
+	if(!profile.db || !profile.db.tingo) return function(req, res, next){ next('Missing TingoDB configure in profile...'); };
 
 	//1. connect to db according to profile
 	var dbFile = path.join(profile.root, profile.db.tingo.path);

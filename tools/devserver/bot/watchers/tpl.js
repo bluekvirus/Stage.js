@@ -17,12 +17,12 @@ _.str = require('underscore.string');
 module.exports = function(server) {
 
     var profile = server.get('profile');
-    if (!profile.tplwatch) return;
+    if (!profile.tplwatch || profile.tplwatch.enabled === false) return;
 
-    var tplRoot = profile.resolve(_.isString(profile.tplwatch)?profile.tplwatch:path.join(profile.clients[profile.tplwatch.client], 'static', 'template'));
+    var tplRoot = _.isString(profile.tplwatch)?profile.resolve(profile.tplwatch):path.join(profile.clients[profile.tplwatch.client], 'static', 'template');
 
     function mergeIntoAllTplJson(e, f) {
-        console.log('[Tpl file'.yellow, e, ':'.yellow, f, ']'.yellow);
+        console.log('[Template file'.yellow, e, ':'.yellow, f, ']'.yellow);
         //currently we just clean the all.json file
         fs.outputJSONSync(path.join(tplRoot, 'all.json'), {});
         console.log('['.yellow, 'all.json templates cleared'.cyan, ']'.yellow);
@@ -42,12 +42,15 @@ module.exports = function(server) {
         });
     } else {
         var watcher = globwatcher(path.join(tplRoot, '**/*.html'));
-        console.log('[watcher]', 'Templates'.yellow, tplRoot.grey);
 
         _.each(['added', 'changed', 'deleted'], function(e) {
             watcher.on(e, function(f) {
                 mergeIntoAllTplJson(e, f);
             });
+        });
+
+        watcher.ready.then(function(){
+            console.log('[watcher]', 'Templates'.yellow, tplRoot.grey);
         });
     }
 };

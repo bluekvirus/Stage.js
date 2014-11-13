@@ -166,7 +166,7 @@
 			this.setValues = function(vals, loud){
 				if(!vals) return;
 				_.each(this._editors, function(editor, name){
-					if(vals[name])
+					if(vals[name] !== null && vals[name] !== undefined)
 						editor.setVal(vals[name], loud);
 				});
 				if(savedLayoutFns.setValues) 

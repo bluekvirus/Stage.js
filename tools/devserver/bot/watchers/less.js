@@ -29,7 +29,7 @@ _.str = require('underscore.string');
 module.exports = function(server) {
 
     var profile = server.get('profile');
-    if (!profile.lesswatch) return;
+    if (!profile.lesswatch || profile.lesswatch.enabled === false) return;
 
     var selectedClient = "/";
     if (!_.isArray(profile.lesswatch)) {
@@ -101,12 +101,15 @@ module.exports = function(server) {
             var watcher = globwatcher(_.map(themeFolders, function(t) {
                 return t.glob;
             }));
-            console.log('[watcher]', ('Themes ' + watchedThemes).yellow, '-', ('lessjs v' + less.version.join('.')).grey);
 
             _.each(['added', 'changed', 'deleted'], function(e) {
                 watcher.on(e, function(f) {
                     doCompile(e, f);
                 });
+            });
+
+            watcher.ready.then(function(){
+                console.log('[watcher]', ('Themes ' + watchedThemes).yellow, '-', ('lessjs v' + less.version.join('.')).grey);
             });
         }
     });
