@@ -23,8 +23,8 @@
 
 var path = require('path'),
     os = require('os'),
-    minimatch = require('minimatch'),
-    globwatcher = require("globwatcher").globwatcher,
+    globule = require('globule'),
+    globwatcher = require('globwatcher').globwatcher,
     watch = require('watch'),
     fs = require('fs-extra'),
     cheerio = require('cheerio'),
@@ -45,22 +45,12 @@ module.exports = function(server) {
    	//2. ensure the mirror folder exists with ref-ed bower libs
    	console.log('[Cordova mirror init...]');
    	if(!fs.existsSync(mirror)) {
-   		fs.copySync(root, mirror, function(f){
-   			
-   			//TBI: Prevent empty folders!
-   			
-	   		f = _.str.ltrim(f.replace(root, ''), path.sep);
-
-	   		var m = false;
-	   		for (var p in profile.cordovawatch.files) {
-	   			var match = minimatch(f, profile.cordovawatch.files[p]);
-				if(!match && _.str.startsWith(profile.cordovawatch.files[p], '!'))
-					return false;
-
-				if(match && !_.str.startsWith(profile.cordovawatch.files[p], '!'))
-					m = match;
-	   		}
-	   		return m;
+   		var files = globule.find(profile.cordovawatch.files, {
+	   			filter: 'isFile',
+	   			srcBase: root
+	   	});
+	   	_.each(files, function(f){
+	   		fs.copySync(path.join(root, f), path.join(mirror, f));
 	   	});
    		mirrorChange('init', path.join(root, profile.cordovawatch.index));
    	}
@@ -98,7 +88,7 @@ module.exports = function(server) {
     if (os.type() === 'Windows_NT') {
     	console.log('Cordova mirror not supported on Windows_NT'.grey);
 
-    	//TBI use minimatch and watch to filter out files with glob pattern array in profile.cordovawatch.files
+    	//TBI use globule and watch to filter out files with glob pattern array in profile.cordovawatch.files
     	
     }else {
     	//Unix-like - we use globwatcher

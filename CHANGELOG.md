@@ -17,6 +17,7 @@ Change Log
 13. Fixed error in ro type editor enable/disable ops.
 14. Fixed error in form view (item-view) setValues (allow 0, '' & false).
 15. Added cordova watch to devserver watchers. (Unix-like system only)
+16. Added app.navigate() as alias to app.trigger('app:navigate', ...). 
 
 
 In progress...

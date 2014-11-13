@@ -565,6 +565,10 @@ window.onerror = function(errorMsg, target, lineNum){
 			css: function(){
 				return loadCSS.apply(null, arguments);
 			}
+		},
+
+		navigate: function(options, silent){
+			return Application.trigger('app:navigate', options || Application.config.defaultContext, silent);
 		}	
 
 	});
