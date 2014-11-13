@@ -566,6 +566,10 @@ window.onerror = function(errorMsg, target, lineNum){
 			css: function(){
 				return loadCSS.apply(null, arguments);
 			}
+		},
+
+		navigate: function(options, silent){
+			return Application.trigger('app:navigate', options || Application.config.defaultContext, silent);
 		}	
 
 	});
@@ -3879,4 +3883,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.7.3-781 build 1415852282633";
+;;app.stagejs = "1.7.3-783 build 1415913989394";
