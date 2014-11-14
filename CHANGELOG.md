@@ -1,6 +1,16 @@
 Change Log
 ==========
-1.7.4 (2014-10-20*)
+1.7.5 (2014-11-13*)
+-------------------
+
+In progress...
+x. +User and api authorization to devserver
+x. Breaking basic editors into individual ones 
+x. Reload tpl dynamically during View/Context overridden?
+x. + sprite preview? (in _Mockups context);
+
+
+1.7.4 (2014-11-13)
 --------------------
 1. Refined template-builder code to better support tpl injection/overridden.
 2. @*.html, 'string', ['string', 'array'] tpls no longer have their tpl strings injected into `<head>`.
@@ -8,7 +18,7 @@ Change Log
 4. Added version badges to README.md, HOWTO.md to replace static version texts and updated the docs.
 5. Added effect data-attributes recognition to regions.
 6. Fixed 'show' event missing problem in overlay enabled views. (with .triggerMethod())
-7. Added server.model method to devserver for defining data entities for RESTful.
+7. Added server.model method to devserver for defining data entities for RESTful. (with basic session, basic crud)
 8. Included validator-js in the deps for built-in validators support.
 9. Fixed animate.css activation error in themes.
 10. Included jquery.transit back into deps.
@@ -16,15 +26,8 @@ Change Log
 12. Added release/edge build tag into app.stagejs.
 13. Fixed error in ro type editor enable/disable ops.
 14. Fixed error in form view (item-view) setValues (allow 0, '' & false).
-15. Added cordova watch to devserver watchers. (Unix-like system only)
-16. Added app.navigate() as alias to app.trigger('app:navigate', ...). 
-
-
-In progress...
-x. +User session, basic crud and api authorization to devserver
-x. Breaking basic editors into individual ones 
-x. Reload tpl dynamically during View/Context overridden?
-x. + sprite preview? (in _Mockups context);
+15. Added cordova watch to devserver watchers.
+16. Added app.navigate() as alias to app.trigger('app:navigate', ...).
 
 
 1.7.3 (2014-10-19)

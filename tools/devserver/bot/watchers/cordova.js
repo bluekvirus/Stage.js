@@ -43,8 +43,8 @@ module.exports = function(server) {
    		profile.cordovawatch.files = [profile.cordovawatch.files];
 
    	//2. ensure the mirror folder exists with ref-ed bower libs
-   	console.log('[Cordova mirror init...]');
    	if(!fs.existsSync(mirror)) {
+      console.log('[watcher]', 'Cordova www mirror init...');
    		var files = globule.find(profile.cordovawatch.files, {
 	   			filter: 'isFile',
 	   			srcBase: root
@@ -52,7 +52,9 @@ module.exports = function(server) {
 	   	_.each(files, function(f){
 	   		fs.copySync(path.join(root, f), path.join(mirror, f));
 	   	});
-   		mirrorChange('init', path.join(root, profile.cordovawatch.index));
+      var indexFile = path.join(root, profile.cordovawatch.index);
+      if(fs.existsSync(indexFile))
+        mirrorChange('init', indexFile);
    	}
 
    	function copyBowerLibs(indexFile){
@@ -69,15 +71,17 @@ module.exports = function(server) {
    		console.log('[Cordova mirror file'.yellow, e, ':', f, ']'.yellow);
 
    		if(f === profile.cordovawatch.index){
-   			//process the bower_components related libs
-   			copyBowerLibs(src);
    			//rename it to index.html
    			f = 'index.html';
    		}
    		//mirror the file change by copy the original over to mirrored path.
    		var dest = path.join(mirror, f);
-   		if(e !== 'deleted')
+   		if(e !== 'deleted' &&  e !=='removed'){
+        if(f === 'index.html')          
+        //process the bower_components related libs
+          copyBowerLibs(src);
    			fs.copySync(src, dest);
+      }
    		else
    			fs.deleteSync(dest);
    		console.log('[', dest.grey, 'synced ]');
@@ -86,10 +90,21 @@ module.exports = function(server) {
    	//3. Start watching and mirror changes
    	profile.cordovawatch.files.push(profile.cordovawatch.index);
     if (os.type() === 'Windows_NT') {
-    	console.log('Cordova mirror not supported on Windows_NT'.grey);
-
-    	//TBI use globule and watch to filter out files with glob pattern array in profile.cordovawatch.files
-    	
+      watch.createMonitor(root, {
+          //.html filters not working...
+      }, function(monitor) {
+          console.log('[watcher]', 'Cordova www mirror'.yellow, profile.cordovawatch.client.grey, '-->' , mirror.grey);
+          _.each(['created', 'changed', 'removed'], function(e) {
+              monitor.on(e, function(f) {
+                var match = globule.isMatch(profile.cordovawatch.files, _.str.ltrim(f.replace(root, ''), path.sep), {
+                    filter: 'isFile',
+                    srcBase: root
+                });
+                if(match)
+                  mirrorChange(e, f);
+              });
+          });
+      });	
     }else {
     	//Unix-like - we use globwatcher
     	var watcher = globwatcher(profile.cordovawatch.files, {
