@@ -1260,7 +1260,7 @@ window.onerror = function(errorMsg, target, lineNum){
  *
  * 1. open()+
  * --------------
- * a. consult view.effect config block when showing a view;
+ * a. consult view.effect animation names (from Animate.css or your own) when showing a view;
  * b. inject parent view as parentCt to sub-regional view;
  * c. store sub view as parent view's _fieldsets[member];
  * 
@@ -1275,34 +1275,36 @@ window.onerror = function(errorMsg, target, lineNum){
 		open: function(view){
 
 			/**
-			 * effect config in view 
-			 * 
-			 * 'string' name of the effect in jQuery;
-			 * or
-			 * {
-			 * 		name: ...
-			 * 	 	options: ...
-			 * 	 	duration: ...
-			 * }
+			 * Effect config in view & region
+			 * use the css animation name as enter & exit effect name.
+			 * e.g 'lightSpeedIn' or {enter: 'lightSpeedIn', exit: '...'}
+			 * e.g data-effect="lightSpeedIn" or data-effect-enter="lightSpeedIn" data-effect-exit="..."
 			 *
-			 * or 
-			 *
-			 * effect config on region attr $.data()
-			 * <div region="..." data-effect="slide"></div>
-			 * <div region="..." data-effect="{"name":"slide", "options":{...}, "duration":...}"></div>
+			 * animationName:defer means calling view.enter() to animate out the effect instead of right after 'show' event.
 			 * 
 			 */
-			if(view.effect !== false && this.$el.data('effect'))
-				view.effect = view.effect || this.$el.data('effect');
+			if(view.effect !== false)
+				view.effect = (_.isObject(view.effect)?view.effect.enter:view.effect) || this.$el.data('effect') || this.$el.data('effectEnter');
 			if(view.effect){
-				if(_.isString(view.effect)){
-					view.effect = {
-						name: view.effect
-					};
-				}
-				this.$el.hide();
+				var meta = view.effect.split(':'); //effectName:defer?
+				view.$el.css('opacity', 0).addClass(meta[0]);
 				this.$el.empty().append(view.el);
-				this.$el.show(view.effect.name, view.effect.options, view.effect.duration || 200);
+
+				function enter(){
+					_.defer(function(){
+						view.$el.addClass('animated');
+						_.defer(function(){
+							view.$el.css('opacity', 1);
+						});
+					});
+				}
+
+				if(meta[1] === 'defer')
+					view.enter = enter;
+				else
+					view.once('show', function(){
+						enter();
+					});
 			}
 			else 
 				this.$el.empty().append(view.el);
@@ -1324,7 +1326,10 @@ window.onerror = function(errorMsg, target, lineNum){
 			//trigger view:resized anyway upon its first display
 			if(this._contentStyle){
 				//view.$el.css(this._contentStyle); //Tricky, use a .$el.css() call to smooth dom sizing/refreshing after $el.empty().append()
-				view.trigger('view:resized', {region: this}); //!!Caution: this might be racing if using view.effect as well!!
+				var that = this;
+				_.defer(function(){
+					view.trigger('view:resized', {region: that}); //!!Caution: this might be racing if using view.effect as well!!
+				});			
 			}
 
 			view.parentRegion = this;
@@ -1949,9 +1954,9 @@ window.onerror = function(errorMsg, target, lineNum){
 					this[region].$el.addClass('region region-' + _.string.slugify(region));
 					this[region]._parentLayout = this;
 					this[region]._contentOverflow = {};
-					_.each(['overflow-x', 'overflow-y', 'overflow'], function(oKey){
-						var oVal = this[region].$el.attr(oKey);
-						if(oVal) this[region]._contentOverflow[_.str.camelize(oKey)] = oVal;
+					_.each(['overflowX', 'overflowX', 'overflow'], function(oKey){
+						var oVal = this[region].$el.data(oKey);
+						if(oVal) this[region]._contentOverflow[oKey] = oVal;
 					}, this);
 				},this);
 			});
@@ -3883,4 +3888,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.7.4-785 build 1415943918380";
+;;app.stagejs = "1.7.4-787 build 1416003962910";
