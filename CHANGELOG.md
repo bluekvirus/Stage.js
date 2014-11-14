@@ -1,7 +1,9 @@
 Change Log
 ==========
-1.7.5 (2014-11-13*)
+1.8.0 (2014-11-13*)
 -------------------
+1. Removed jQuery.Effect on region and views, use css animation name instead.
+2. overflow settings on region contents for resize() now align with `data-attributes` format. 
 
 In progress...
 x. +User and api authorization to devserver
