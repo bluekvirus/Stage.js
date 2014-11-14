@@ -675,22 +675,19 @@ Both *Region* and *Marionette.xView* can have an `effect` configure to control t
         ...,
         effect: 'string' or
         {
-            name: ..., //name of the effect in jQueryUI.Effect
-            options: ..., //effect specific options
-            duration: ...
+            enter: '...',
+            exit: '...'
         },
         ...
     });
 })(Application);
-```
-Pass just an effect name as a string to the configure if you don't need more tweak on the effect options. For more information regarding the effect options, please go to [jQuery.Effect](http://jqueryui.com/effect/).
 
-You can also use `data-attributes` on a region tag to set the defalt effect for showing a (any) view on the region:
+//Or in a layout template
+<div region="..." data-effect="..."></div>
+<div region="..." data-effect-enter="..."></div>
 ```
-//effect config on region attr $.data()
-<div region="..." data-effect="slide"></div>
-<div region="..." data-effect="{"name":"slide", "options":{...}, "duration":...}"></div>
-```
+Use the css animation class name you build or from the included *Animate.css* library.
+
 Use `view.effect` to override region effects and `view.effect = false` to disable region effects.
 
 #####Actions
@@ -816,8 +813,8 @@ The `region.resize()` method call is there for better UI sizing control and prop
 
 If you want also to control the overflow css style of a region's `currentView`, do it either in your theme (CSS/LESS) or mark it on the region template:
 ```
-<div region="abc" overflow="auto"></div>
-<div region="efg" overflow-x="hidden" overflow-y="auto"></div>
+<div region="abc" data-overflow="auto"></div>
+<div region="efg" data-overflow-x="hidden" data-overflow-y="auto"></div>
 ```
 Note that for the overflow settings to show effect, you need to first use the region's `resize()` method call to size the region. 
 

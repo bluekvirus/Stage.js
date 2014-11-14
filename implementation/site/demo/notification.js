@@ -126,8 +126,10 @@
 				'<div region="msg-bus" style="position:absolute;right:0;top:0;width:360px;"></div>',
 			'</div>'
 		],
+		effect: 'rollIn:defer',
 		onShow: function(){
 			this.getRegion('msg-bus').show(new MsgBus());
+			this.enter();
 		},
 		actions: {
 			overlay: function(){

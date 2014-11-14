@@ -5,6 +5,9 @@
 		template: '@test-ct.html',
 		className: 'wrapper-full-2x border border-full',
 		navRegion: 'nav',
+		effect: {
+			enter: 'fadeInDown'
+		},
 		onShow: function(){
 			this.getRegion('left').show(app.view({
 				template: '@test/test2.html' //nested template path, != @test2.html

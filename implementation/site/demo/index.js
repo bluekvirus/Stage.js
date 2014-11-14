@@ -2,7 +2,7 @@ Application.page('Demo', {
     //debug: true,
     className: 'wrapper container',
     template: [
-        '<div region="center" data-effect="slide"></div>',
+        '<div region="center" data-effect="zoomIn"></div>',
     ],
     navRegion: 'center',
     onNavigateTo: function(path){

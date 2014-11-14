@@ -144,9 +144,9 @@
 					this[region].$el.addClass('region region-' + _.string.slugify(region));
 					this[region]._parentLayout = this;
 					this[region]._contentOverflow = {};
-					_.each(['overflow-x', 'overflow-y', 'overflow'], function(oKey){
-						var oVal = this[region].$el.attr(oKey);
-						if(oVal) this[region]._contentOverflow[_.str.camelize(oKey)] = oVal;
+					_.each(['overflowX', 'overflowX', 'overflow'], function(oKey){
+						var oVal = this[region].$el.data(oKey);
+						if(oVal) this[region]._contentOverflow[oKey] = oVal;
 					}, this);
 				},this);
 			});
