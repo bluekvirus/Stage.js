@@ -179,6 +179,7 @@ _.each(['Core', 'Util'], function(coreModule){
 			//////////////////////////////////////////////////
 			if(Application.config.fullScreen){
 				$body.height(screenSize.h);
+				$body.width(screenSize.w);
 			}
 			if(!silent)
 				Application.trigger('app:resized', screenSize);
@@ -3874,4 +3875,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.7.4-789 build 1416020334625";
+;;app.stagejs = "1.7.4-790 build 1416027569541";

@@ -178,6 +178,7 @@ _.each(['Core', 'Util'], function(coreModule){
 			//////////////////////////////////////////////////
 			if(Application.config.fullScreen){
 				$body.height(screenSize.h);
+				$body.width(screenSize.w);
 			}
 			if(!silent)
 				Application.trigger('app:resized', screenSize);
