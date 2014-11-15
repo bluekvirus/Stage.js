@@ -3,8 +3,8 @@ Change Log
 1.8.0 (2014-11-13*)
 -------------------
 1. Removed jQuery.Effect on region and views, use css animation name instead.
-2. overflow settings on region contents for resize() now align with `data-attributes` format. 
-3. Default to silent navigation (no #hash) in Cordova dev/deployment.
+2. overflow settings on region contents for resize() now align with `data-attributes` format.
+3. Default to silent navigation (no #hash) in Cordova/Phonegap dev/deployment.
 
 In progress...
 x. +User and api authorization to devserver
