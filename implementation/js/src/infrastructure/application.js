@@ -107,17 +107,6 @@ _.each(['Core', 'Util'], function(coreModule){
 	Application.module(coreModule);
 });
 
-//General error capture: it will be rewired to app:error after app.run() call
-//It is to capture 3rd-party lib errors and those that cannot be seen during mobile (cordova) dev
-window.onerror = function(errorMsg, target, lineNum){
-    window._lastResort = window._lastResort || [];
-    window._lastResort.push({
-        errorMsg: errorMsg,
-        target: target,
-        lineNum: lineNum
-    });
-};
-
 ;(function(){
 
 	Application.setup = function(config){
@@ -336,8 +325,8 @@ window.onerror = function(errorMsg, target, lineNum){
 					//backward compatibility 
 					path = _.string.rtrim([options.context || Application.currentContext.name, options.module || options.subpath].join('/'), '/');
 				}
-				if(silent)
-					navigate(path);
+				if(silent || Application.hybridEvent)
+					navigate(path);//hybrid app will navigate using the silent mode.
 				else
 					window.location.hash = 'navigate/' + path;
 			};
@@ -383,12 +372,7 @@ window.onerror = function(errorMsg, target, lineNum){
 
 		function kickstart(){
 
-			//0. dump all errors before app run() then rewire general error.
-			if(window._lastResort){
-				_.each(window._lastResort, function(err){
-					Application.trigger('app:error', err);
-				});
-			}
+			//0. rewire general error.
 			window.onerror = function(errorMsg, target, lineNum){
 				Application.trigger('app:error', {
 					errorMsg: errorMsg,
@@ -429,8 +413,10 @@ window.onerror = function(errorMsg, target, lineNum){
 		}
 
 		if(hybridEvent){
+			//mobile development
+			Application.hybridEvent = hybridEvent; //window.cordova is probably true.
 		    Application.onError = function(err){
-		    	//assign default remote debugging assistant
+		    	//override this to have remote debugging assistant
 		        console.error(err, err.target);
 		    };
 			document.addEventListener(hybridEvent, function(){
