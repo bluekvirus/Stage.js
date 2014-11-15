@@ -414,12 +414,19 @@ _.each(['Core', 'Util'], function(coreModule){
 		}
 
 		if(hybridEvent){
-			//mobile development
+			//Mobile development
 			Application.hybridEvent = hybridEvent; //window.cordova is probably true.
 		    Application.onError = function(err){
 		    	//override this to have remote debugging assistant
 		        console.error(err, err.target);
 		    };
+			//!!VERY IMPORTANT!! Disable 'touchmove' on non .scrollable elements
+			document.addEventListener("touchmove", function(e) {
+			  if (!e.target.classList.contains('scrollable')) {
+			    // no more scrolling
+			    e.preventDefault();
+			  }
+			}, false);
 			document.addEventListener(hybridEvent, function(){
 				$document.ready(kickstart);
 			}, false);

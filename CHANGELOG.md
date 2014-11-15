@@ -6,6 +6,8 @@ Change Log
 2. overflow settings on region contents for resize() now align with `data-attributes` format.
 3. Default to silent navigation (no #hash) in Cordova/Phonegap dev/deployment.
 4. Fixed bug in app.config.fullScreen where body.width gets left out.
+5. Fixed watchers in devserver (replaced globwatcher with node-watch).
+6. Added touchmove scroll-x fix (.scrollable).
 
 In progress...
 x. +User and api authorization to devserver

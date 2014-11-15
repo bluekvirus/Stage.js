@@ -72,10 +72,11 @@ module.exports = {
 		files: [ //in glob format
 			'!bower_components/**',
 			'js/**',
-			'static/**',
+			'static/**/*.html',
 			'themes/mobile/**',
+			'!themes/**/less/**'
 		],
-		mirror: '../../www'
+		mirror: '../../../www'
 	},
 
 	//cors (front-end crossdomain ajax support)

@@ -20,7 +20,6 @@ var _ = require('underscore'),
     fs = require('fs-extra'),
     less = require('less'),
     colors = require('colors'),
-    globwatcher = require("globwatcher").globwatcher,
     watch = require('watch'),
     compiler = require('../../../shared/less-css.js');
 
@@ -73,44 +72,29 @@ module.exports = function(server) {
             return t.name;
         });
 
-        if (os.type() === 'Windows_NT') {
-            var watchedThemesPath = _.map(watchedThemes, function(t) {
-                return path.join(themesFolder, t);
-            });
-            watch.createMonitor(themesFolder, {
-                filter: function(f, stat) {
-                    var pass = _.any(watchedThemesPath, function(path) {
-                        if (_.str.startsWith(f, path)) return true;
-                        return false;
-                    });
-                    if (!pass) return false;
-                    if (stat.isDirectory()) return true;
-                    if (_.str.endsWith(f, '.less')) return true;
-                    return false;
-                }
-            }, function(monitor) {
-                console.log('[watcher]', ('Themes ' + watchedThemes).yellow, '-', ('lessjs v' + less.version.join('.')).grey);
-                _.each(['created', 'changed', 'removed'], function(e) {
-                    monitor.on(e, function(f) {
-                        doCompile(e, f);
-                    });
-                });
-            });
-        } else {
-            //using mode:poll to force detecting changes (OpenSuse will stop watching after the 1st change...)
-            var watcher = globwatcher(_.map(themeFolders, function(t) {
-                return t.glob;
-            }));
 
-            _.each(['added', 'changed', 'deleted'], function(e) {
-                watcher.on(e, function(f) {
+        var watchedThemesPath = _.map(watchedThemes, function(t) {
+            return path.join(themesFolder, t);
+        });
+        watch.createMonitor(themesFolder, {
+            filter: function(f, stat) {
+                var pass = _.any(watchedThemesPath, function(path) {
+                    if (_.str.startsWith(f, path)) return true;
+                    return false;
+                });
+                if (!pass) return false;
+                if (stat.isDirectory()) return true;
+                if (_.str.endsWith(f, '.less')) return true;
+                return false;
+            }
+        }, function(monitor) {
+            console.log('[watcher]', ('Themes ' + watchedThemes).yellow, '-', ('lessjs v' + less.version.join('.')).grey);
+            _.each(['created', 'changed', 'removed'], function(e) {
+                monitor.on(e, function(f) {
                     doCompile(e, f);
                 });
             });
+        });
 
-            watcher.ready.then(function(){
-                console.log('[watcher]', ('Themes ' + watchedThemes).yellow, '-', ('lessjs v' + less.version.join('.')).grey);
-            });
-        }
     });
 };

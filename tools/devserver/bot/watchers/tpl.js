@@ -8,7 +8,6 @@
 
 var path = require('path'),
     os = require('os'),
-    globwatcher = require("globwatcher").globwatcher,
     watch = require('watch'),
     fs = require('fs-extra'),
     _ = require('underscore');
@@ -28,29 +27,16 @@ module.exports = function(server) {
         console.log('['.yellow, 'all.json templates cleared'.cyan, ']'.yellow);
     }
 
-    if (os.type() === 'Windows_NT') {
-        watch.createMonitor(tplRoot, {
-            //.html filters not working...
-        }, function(monitor) {
-            console.log('[watcher]', 'Templates'.yellow, tplRoot.grey);
-            _.each(['created', 'changed', 'removed'], function(e) {
-                monitor.on(e, function(f) {
-                    if (!_.str.endsWith(f, '.html')) return;
-                    mergeIntoAllTplJson(e, f);
-                });
-            });
-        });
-    } else {
-        var watcher = globwatcher(path.join(tplRoot, '**/*.html'));
-
-        _.each(['added', 'changed', 'deleted'], function(e) {
-            watcher.on(e, function(f) {
+    watch.createMonitor(tplRoot, {
+        //.html filters not working...
+    }, function(monitor) {
+        console.log('[watcher]', 'Templates'.yellow, tplRoot.grey);
+        _.each(['created', 'changed', 'removed'], function(e) {
+            monitor.on(e, function(f) {
+                if (!_.str.endsWith(f, '.html')) return;
                 mergeIntoAllTplJson(e, f);
             });
         });
+    });
 
-        watcher.ready.then(function(){
-            console.log('[watcher]', 'Templates'.yellow, tplRoot.grey);
-        });
-    }
 };

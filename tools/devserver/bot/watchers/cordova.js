@@ -24,7 +24,6 @@
 var path = require('path'),
     os = require('os'),
     globule = require('globule'),
-    globwatcher = require('globwatcher').globwatcher,
     watch = require('watch'),
     fs = require('fs-extra'),
     cheerio = require('cheerio'),
@@ -89,38 +88,19 @@ module.exports = function(server) {
 
    	//3. Start watching and mirror changes
    	profile.cordovawatch.files.push(profile.cordovawatch.index);
-    if (os.type() === 'Windows_NT') {
-      watch.createMonitor(root, {
-          //.html filters not working...
-      }, function(monitor) {
-          console.log('[watcher]', 'Cordova www mirror'.yellow, profile.cordovawatch.client.grey, '-->' , mirror.grey);
-          _.each(['created', 'changed', 'removed'], function(e) {
-              monitor.on(e, function(f) {
-                var match = globule.isMatch(profile.cordovawatch.files, _.str.ltrim(f.replace(root, ''), path.sep), {
-                    filter: 'isFile',
-                    srcBase: root
-                });
-                if(match)
-                  mirrorChange(e, f);
+    watch.createMonitor(root, {
+        //.html filters not working...
+    }, function(monitor) {
+        console.log('[watcher]', 'Cordova www mirror'.yellow, profile.cordovawatch.client.grey, '-->' , mirror.grey);
+        _.each(['created', 'changed', 'removed'], function(e) {
+            monitor.on(e, function(f) {
+              var match = globule.isMatch(profile.cordovawatch.files, _.str.ltrim(f.replace(root, ''), path.sep), {
+                  filter: 'isFile',
+                  srcBase: root
               });
-          });
-      });	
-    }else {
-    	//Unix-like - we use globwatcher
-    	var watcher = globwatcher(profile.cordovawatch.files, {
-    		cwd: root
-    	});
-
-		_.each(['added', 'changed', 'deleted'], function(e) {
-		    watcher.on(e, function(f) {
-		        mirrorChange(e, f);
-		    });
-		});
-
-    	watcher.ready.then(function(){
-    		console.log('[watcher]', 'Cordova www mirror'.yellow, profile.cordovawatch.client.grey, '-->' , mirror.grey);
-    	});
-    	
-    }
-
+              if(match)
+                mirrorChange(e, f);
+            });
+        });
+    });	
 };
