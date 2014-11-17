@@ -193,7 +193,7 @@ _.each(['Core', 'Util'], function(coreModule){
 		//check screen size, trigger app:resized and get app.screenSize ready.
 		Application._ensureScreenSize = function(done){
 			trackScreenSize(); 
-			if(!app.screenSize) _.delay(Application._ensureScreenSize, Application.config.rapidEventDelay/4, done);
+			if(!Application.screenSize) _.delay(Application._ensureScreenSize, Application.config.rapidEventDelay/4, done);
 			else done();
 		};
 
@@ -3893,4 +3893,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.7.4-795 build 1416263847001";
+;;app.stagejs = "1.7.5-796 build 1416264884300";
