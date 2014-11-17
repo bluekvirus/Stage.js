@@ -10,6 +10,7 @@ Change Log
 6. Added touchmove scroll-x fix (.scrollable).
 7. Fixed .circle() less mixin;
 8. Fixed app:resized event timing during app bootstrapping;
+9. app.mainView can now be overridden during 'app:before-template-ready' event;
 
 In progress...
 x. +User and api authorization to devserver

@@ -335,8 +335,12 @@ _.each(['Core', 'Util'], function(coreModule){
 				console.error('DEV:Context-Guard-Error:', ctxName, error);
 			};			
 
-
-		//5 Activate Routing/Check Screen Size AFTER running all the initializers user has defined
+		//5 Check screen size BEFORE running all the initializers user has defined
+		Application.on('initialize:before', function(){
+			//check screen size, trigger app:resized and get app.screenSize ready.
+			trackScreenSize();
+		});
+		//6 Activate Routing AFTER running all the initializers user has defined
 		//Context Switching by Routes (can use href = #navigate/... to trigger them)
 		Application.on("initialize:after", function(options){
 			//init client page router and history:
@@ -355,8 +359,6 @@ _.each(['Core', 'Util'], function(coreModule){
 			if(Backbone.history)
 				Backbone.history.start();
 
-			//check screen size, trigger app:resized.
-			trackScreenSize();
 		});
 
 		return Application;
@@ -394,7 +396,7 @@ _.each(['Core', 'Util'], function(coreModule){
 			//Warning: calling ensureEl() on the app region will not work like regions in layouts. (Bug??)
 			//the additional <div> under the app region is somehow inevitable atm...
 			Application.trigger('app:before-template-ready');
-			Application.mainView = Application.view({
+			Application.mainView = Application.mainView || Application.view({
 				type: 'Layout',
 				template: Application.config.template
 			}, true);
