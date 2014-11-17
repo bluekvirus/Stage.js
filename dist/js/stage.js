@@ -174,6 +174,8 @@ _.each(['Core', 'Util'], function(coreModule){
 		var $body = $('body');
 		function trackScreenSize(e, silent){
 			var screenSize = {h: $window.height(), w: $window.width()};
+			if(!validScreenSize(screenSize)) return;
+
 			////////////////cache the screen size/////////////
 			Application.screenSize = screenSize;
 			//////////////////////////////////////////////////
@@ -184,8 +186,16 @@ _.each(['Core', 'Util'], function(coreModule){
 			if(!silent)
 				Application.trigger('app:resized', screenSize);
 		}
-		trackScreenSize(null, true);
+		function validScreenSize(size){
+			return size.h > 0 && size.w > 0;
+		}
 		$window.on('resize', _.debounce(trackScreenSize, Application.config.rapidEventDelay));
+		//check screen size, trigger app:resized and get app.screenSize ready.
+		Application._ensureScreenSize = function(done){
+			trackScreenSize(); 
+			if(!app.screenSize) _.delay(Application._ensureScreenSize, Application.config.rapidEventDelay/4, done);
+			else done();
+		};
 
 		//Track window scroll
 		function trackScroll(){
@@ -337,8 +347,7 @@ _.each(['Core', 'Util'], function(coreModule){
 				console.error('DEV:Context-Guard-Error:', ctxName, error);
 			};			
 
-
-		//5 Activate Routing - activate after running all the initializers user has defined
+		//5 Activate Routing AFTER running all the initializers user has defined
 		//Context Switching by Routes (can use href = #navigate/... to trigger them)
 		Application.on("initialize:after", function(options){
 			//init client page router and history:
@@ -348,7 +357,7 @@ _.each(['Core', 'Util'], function(coreModule){
 				},
 				controller: {
 					navigateTo: function(path){
-						Application.trigger('app:navigate', path || Application.config.defaultContext, true); //will skip updating #hash since the router is triggered by #hash change.
+						Application.navigate(path || Application.config.defaultContext, true); //will skip updating #hash since the router is triggered by #hash change.
 					},
 				}
 			});
@@ -394,7 +403,7 @@ _.each(['Core', 'Util'], function(coreModule){
 			//Warning: calling ensureEl() on the app region will not work like regions in layouts. (Bug??)
 			//the additional <div> under the app region is somehow inevitable atm...
 			Application.trigger('app:before-template-ready');
-			Application.mainView = Application.view({
+			Application.mainView = Application.mainView || Application.view({
 				type: 'Layout',
 				template: Application.config.template
 			}, true);
@@ -406,11 +415,13 @@ _.each(['Core', 'Util'], function(coreModule){
 				if(!Application.Core.Context.get(Application.config.defaultContext))
 					console.warn('DEV::Application::You might want to define a Default context using app.create(\'Context Name\', {...})');
 				else
-					window.location.hash = ['#navigate', Application.config.defaultContext].join('/');
+					Application.navigate(Application.config.defaultContext);
 			}
 
-			//4. Start the app
-			Application.start();
+			//4. Start the app --> pre init --> initializers --> post init(router setup)
+			Application._ensureScreenSize(function(){
+				Application.start();
+			});
 
 		}
 
@@ -3882,4 +3893,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.7.4-792 build 1416086799224";
+;;app.stagejs = "1.7.4-795 build 1416263847001";
