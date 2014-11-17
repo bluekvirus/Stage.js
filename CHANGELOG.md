@@ -1,6 +1,16 @@
 Change Log
 ==========
-1.8.0 (2014-11-13*)
+1.8.0 (2014-11-17*)
+-------------------
+
+In progress...
+x. +User and api authorization to devserver
+x. Breaking basic editors into individual ones 
+x. Reload tpl dynamically during View/Context overridden?
+x. + sprite preview? (in _Mockups context);
+
+
+1.7.5 (2014-11-13*)
 -------------------
 1. Removed jQuery.Effect on region and views, use css animation name instead.
 2. overflow settings on region contents for resize() now align with `data-attributes` format.
@@ -8,12 +18,10 @@ Change Log
 4. Fixed bug in app.config.fullScreen where body.width gets left out.
 5. Fixed watchers in devserver (replaced globwatcher with node-watch).
 6. Added touchmove scroll-x fix (.scrollable).
-
-In progress...
-x. +User and api authorization to devserver
-x. Breaking basic editors into individual ones 
-x. Reload tpl dynamically during View/Context overridden?
-x. + sprite preview? (in _Mockups context);
+7. Fixed .circle() less mixin;
+8. Fixed app:resized event timing during app bootstrapping;
+9. app.mainView can now be overridden during 'app:before-template-ready' event;
+10. Ensured app.screenSize before app.start(); (available in all initializers)
 
 
 1.7.4 (2014-11-13)
