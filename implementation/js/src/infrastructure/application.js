@@ -183,7 +183,6 @@ _.each(['Core', 'Util'], function(coreModule){
 			if(!silent)
 				Application.trigger('app:resized', screenSize);
 		}
-		trackScreenSize(null, true);
 		$window.on('resize', _.debounce(trackScreenSize, Application.config.rapidEventDelay));
 
 		//Track window scroll
@@ -337,7 +336,7 @@ _.each(['Core', 'Util'], function(coreModule){
 			};			
 
 
-		//5 Activate Routing - activate after running all the initializers user has defined
+		//5 Activate Routing/Check Screen Size AFTER running all the initializers user has defined
 		//Context Switching by Routes (can use href = #navigate/... to trigger them)
 		Application.on("initialize:after", function(options){
 			//init client page router and history:
@@ -356,6 +355,8 @@ _.each(['Core', 'Util'], function(coreModule){
 			if(Backbone.history)
 				Backbone.history.start();
 
+			//check screen size, trigger app:resized.
+			trackScreenSize();
 		});
 
 		return Application;
@@ -408,7 +409,7 @@ _.each(['Core', 'Util'], function(coreModule){
 					window.location.hash = ['#navigate', Application.config.defaultContext].join('/');
 			}
 
-			//4. Start the app
+			//4. Start the app --> pre init --> initializers --> post init(router setup)
 			Application.start();
 
 		}

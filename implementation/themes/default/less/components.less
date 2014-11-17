@@ -130,11 +130,11 @@
 
 // Circle --------------------------
 
-.circle {
+.circle(@size: 5em) {
   border-radius: 50%;
   text-align: center;
-  
-  //use .square(@size) to complete the circle.
+  line-height: .6 * @size;
+  .square(@size);
   //use font-size, line-height and padding to center the content.
 }
 

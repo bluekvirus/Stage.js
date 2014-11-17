@@ -8,6 +8,8 @@ Change Log
 4. Fixed bug in app.config.fullScreen where body.width gets left out.
 5. Fixed watchers in devserver (replaced globwatcher with node-watch).
 6. Added touchmove scroll-x fix (.scrollable).
+7. Fixed .circle() less mixin;
+8. Fixed app:resized event timing during app bootstrapping;
 
 In progress...
 x. +User and api authorization to devserver
