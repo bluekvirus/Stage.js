@@ -2,6 +2,7 @@ Change Log
 ==========
 1.8.0 (2014-11-17*)
 -------------------
+1. Fixed editor label color mis-config in default theme less.
 
 In progress...
 x. +User and api authorization to devserver
