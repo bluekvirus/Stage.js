@@ -221,6 +221,67 @@
 
 }
 
+// Segmented tab-like controls ------
+
+.segmented-control {
+  position: relative;
+  display: table;
+  overflow: hidden;
+  font-size: @font-size-base * 0.8;
+  font-weight: 400;
+  background-color: @body-bg;
+  color: @gray-dark;
+  border: 1px solid @base-border-color;
+  border-radius: 3px;
+  margin: 1em auto;
+
+  .control-item {
+    display: table-cell;
+    width: 1%;
+    padding-top: 0.5em;
+    padding-bottom: 0.6em;
+    overflow: hidden;
+    line-height: 1;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    border-left: 1px solid inherit;
+    color: inherit;
+
+    &:first-child {
+      border-left-width: 0;
+    }
+
+    &:active, &.active {
+      color: @body-bg;
+      background-color: @base-border-color;
+    }
+  }
+
+  //5 major coloring types
+  .segmented-control(@type) {
+    @color: 'brand-@{type}';
+
+    &-@{type} {
+      color: @@color;
+      border-color: @@color;
+
+      .control-item {
+        &:active, &.active {
+          background-color: @@color;
+        }
+      }
+    }
+  }
+
+  .segmented-control(primary);
+  .segmented-control(success);
+  .segmented-control(info);
+  .segmented-control(warning);
+  .segmented-control(danger);
+
+}
+
 
 /**
  * =================================================
