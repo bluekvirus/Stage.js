@@ -230,7 +230,7 @@
   font-size: @font-size-base * 0.8;
   font-weight: 400;
   background-color: @body-bg;
-  color: @gray-dark;
+  color: @base-border-color;
   border: 1px solid @base-border-color;
   border-radius: 3px;
   margin: 1em auto;
@@ -245,7 +245,7 @@
     text-align: center;
     text-overflow: ellipsis;
     white-space: nowrap;
-    border-left: 1px solid inherit;
+    border-left: 1px solid; //inherits 'color' attr
     color: inherit;
 
     &:first-child {
