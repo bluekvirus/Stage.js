@@ -1,8 +1,11 @@
 Change Log
 ==========
-1.8.0 (2014-11-17*)
+1.7.6 (2014-11-17*)
 -------------------
 1. Fixed editor label color mis-config in default theme less.
+2. Added .segmented-control to base theme.
+3. Fixed region layout attr 'data-overflow-y' recognition error.
+4. Added _ref folder to theme after each theme regeneration, containing a copy of default theme less files for theme updating purposes.
 
 In progress...
 x. +User and api authorization to devserver
@@ -11,7 +14,7 @@ x. Reload tpl dynamically during View/Context overridden?
 x. + sprite preview? (in _Mockups context);
 
 
-1.7.5 (2014-11-13*)
+1.7.5 (2014-11-17)
 -------------------
 1. Removed jQuery.Effect on region and views, use css animation name instead.
 2. overflow settings on region contents for resize() now align with `data-attributes` format.
