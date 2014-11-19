@@ -144,7 +144,7 @@
 					this[region].$el.addClass('region region-' + _.string.slugify(region));
 					this[region]._parentLayout = this;
 					this[region]._contentOverflow = {};
-					_.each(['overflowX', 'overflowX', 'overflow'], function(oKey){
+					_.each(['overflowX', 'overflowY', 'overflow'], function(oKey){
 						var oVal = this[region].$el.data(oKey);
 						if(oVal) this[region]._contentOverflow[oKey] = oVal;
 					}, this);

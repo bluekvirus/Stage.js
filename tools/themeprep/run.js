@@ -95,6 +95,11 @@ if(!fs.existsSync(themeFolder)){
 	fs.ensureDirSync(themeFolder);
 	fs.copySync(path.join(baseThemeFolder, 'less'), path.join(themeFolder, 'less'));
 }
+else {
+	console.log('Theme already there, creating _ref from'.yellow, baseTheme);
+	fs.copySync(path.join(baseThemeFolder, 'less'), path.join(themeFolder, 'less', '_ref'));
+}
+
 
 //0. ensure theme folder structures
 hammer.createFolderStructure({
