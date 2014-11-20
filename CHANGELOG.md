@@ -6,6 +6,7 @@ Change Log
 2. Added .segmented-control to base theme.
 3. Fixed region layout attr 'data-overflow-y' recognition error.
 4. Added _ref folder to theme after each theme regeneration, containing a copy of default theme less files for theme updating purposes.
+5. Fixed theme watcher script in devserver.
 
 In progress...
 x. +User and api authorization to devserver

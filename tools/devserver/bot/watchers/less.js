@@ -21,6 +21,7 @@ var _ = require('underscore'),
     less = require('less'),
     colors = require('colors'),
     watch = require('watch'),
+    globule = require('globule'),
     compiler = require('../../../shared/less-css.js');
 
 _.str = require('underscore.string');
@@ -42,59 +43,34 @@ module.exports = function(server) {
             profile.lesswatch = [profile.lesswatch];
     }
 
-    //convert name array into name map
-    var watchlist = _.object(profile.lesswatch, profile.lesswatch);
-
-    // watch the client themes folder
     var themesFolder = path.join(profile.clients[selectedClient], 'themes');
-    fs.readdir(themesFolder, function(err, list) {
-        if (err) throw err;
 
-        function doCompile(e, f) {
-            console.log('[Theme file'.yellow, e, ':'.yellow, f, ']'.yellow);
-            var name = _.compact((f.replace(themesFolder, '')).split(path.sep)).shift();
-            compiler(path.join(themesFolder, name));
+    function doCompile(e, f) {
+        console.log('[Theme file'.yellow, e, ':'.yellow, f, ']'.yellow);
+        var name = _.compact((f.replace(themesFolder, '')).split(path.sep)).shift();
+        compiler(path.join(themesFolder, name));
+    }
+
+    // watch the selected client themes folders that exist.
+    var validThemes = []
+    var globs = _.map(profile.lesswatch, function(tname){
+        if(fs.existsSync(path.join(themesFolder, tname))){
+            validThemes.push(tname);
+            return path.join(themesFolder, tname, '**', '*.less');
         }
+        return;
+    });
+    globs = _.compact(globs);
 
-        var themeFolders = [];
-        _.each(list, function(theme) {
-            //monitor only the selected theme(s) in config.
-            if (theme in watchlist) {
-                var root = path.join(themesFolder, theme);
-                themeFolders.push({
-                    name: theme,
-                    glob: path.join(root, '**/*.less')
-                });
-            }
-        });
-
-        var watchedThemes = _.map(themeFolders, function(t) {
-            return t.name;
-        });
-
-
-        var watchedThemesPath = _.map(watchedThemes, function(t) {
-            return path.join(themesFolder, t);
-        });
-        watch.createMonitor(themesFolder, {
-            filter: function(f, stat) {
-                var pass = _.any(watchedThemesPath, function(path) {
-                    if (_.str.startsWith(f, path)) return true;
-                    return false;
-                });
-                if (!pass) return false;
-                if (stat.isDirectory()) return true;
-                if (_.str.endsWith(f, '.less')) return true;
-                return false;
-            }
-        }, function(monitor) {
-            console.log('[watcher]', ('Themes ' + watchedThemes).yellow, '-', ('lessjs v' + less.version.join('.')).grey);
-            _.each(['created', 'changed', 'removed'], function(e) {
-                monitor.on(e, function(f) {
+    watch.createMonitor(themesFolder, {
+        //filter isn't working...
+    }, function(monitor) {
+        console.log('[watcher]', ('Themes ' + validThemes).yellow, '-', ('lessjs v' + less.version.join('.')).grey);
+        _.each(['created', 'changed', 'removed'], function(e) {
+            monitor.on(e, function(f) {
+                if(globule.isMatch(globs, f))
                     doCompile(e, f);
-                });
             });
         });
-
-    });
+    });    
 };
