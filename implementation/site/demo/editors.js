@@ -105,15 +105,15 @@
                 label: 'File2',
                 type: 'file',
                 help: 'Please choose your abc to upload.',
-                fieldname: 'files[]',
+                //fieldname: 'files[]',
                 upload: {
-                    //standalone: true,
+                    standalone: true,
                     formData: function(){
                         //return [{name: 'a', value: 1}, {name: 'b', value: 2}];
                         return {a: 1, b: 2};
                     },
                     //formData: {a: 1, b: 2},
-                    url: 'file/Blog2/',
+                    url: 'sample/file/',
                     callbacks: {
                         always: function(e, info){
                             console.log(e, info);

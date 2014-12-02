@@ -58,7 +58,8 @@
 	    	});
 	    	this.footer.trigger('region:load-view', 'Paginator', {
 	    		target: table,
-	    		className: 'pagination pagination-sm pull-right'
+	    		className: 'pagination pagination-sm pull-right',
+	    		pageWindowSize: 3
 	    	});
 	    	table.trigger('view:load-page', {
 	    		url: 'sample/user',

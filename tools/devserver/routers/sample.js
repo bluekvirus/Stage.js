@@ -8,10 +8,13 @@
  */
 var Mock = require('mockjs'),
 _ = require('underscore'),
+path = require('path'),
+fs = require('fs-extra'),
 Random = Mock.Random;
 
 module.exports = function(server){
 
+	var profile = server.get('profile');
 	var router = server.mount(this);
 	server.secure(router);
 
@@ -56,6 +59,28 @@ module.exports = function(server){
 
 	router.get('/choices', function(req, res, next){
 		res.json(Mock.mock(mockTpl.choices).payload);
+	});
+
+	//file upload example
+	//use truncate -s 100M dummy.pdf to test on linux
+	router.post('/file', function(req, res, next){
+		req.busboy.on('file', function(fieldname, file, fname, encoding, mimetype){
+
+			var dist = path.join(profile.resolve(path.join(profile.upload.path, fname)));
+			fs.ensureFileSync(dist);
+			file.pipe(fs.createWriteStream(dist));
+
+			file.on('end', function(){
+				res.json({msg: 'upload processed ' + (fs.statSync(dist).size/1024/1024).toFixed(2) + ' MB'});
+				console.log('tmp file:', dist.grey, 'received'.yellow);
+				_.delay(function(){
+					fs.delete(dist);
+					console.log('tmp file:', dist.grey, 'removed'.yellow);
+				}, 25 * 1000);
+			});
+		});
+		//req.busboy.on('finish', function(){});
+		req.pipe(req.busboy);
 	});
 
 	router.get('/error', function(req, res, next){

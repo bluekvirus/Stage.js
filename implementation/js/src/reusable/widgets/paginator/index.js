@@ -6,7 +6,7 @@
  * 0. target [opt] - target list view instance
  * 1. currentPage
  * 2. totalPages
- * 3. visibleIndices [TBI] - 3 means [1,2,3,...,last page] or [...,4,5,6,..., last page]
+ * 3. pageWindowSize - 3 means [1,2,3,...,] or [...,4,5,6,...] or [...,7,8,9] - default on 5
  *
  * format
  * ------
@@ -21,6 +21,7 @@
  * 
  * @author Tim.Liu
  * @create 2014.05.05
+ * @update 2014.12.01 (+pageWindowSize)
  */
 
 ;(function(app){
@@ -33,14 +34,19 @@
 			
 			template: [
 				'<li {{#if atFirstPage}}class="disabled"{{/if}}><a href="#" action="goToAdjacentPage" data-page="-">&laquo;</a></li>',
+				'<li {{#if atFirstWindow}}class="hidden"{{/if}}><a href="#" action="goToAdjacentWindow" data-window="-">...</a></li>',
 				'{{#each pages}}',
 					'<li {{#if isCurrent}}class="active"{{/if}}><a href="#" action="goToPage" data-page="{{number}}">{{number}} <span class="sr-only">(current)</span></a></li>',
 				'{{/each}}',
+				'<li {{#if atLastWindow}}class="hidden"{{/if}}><a href="#" action="goToAdjacentWindow" data-window="+">...</a></li>',
 				'<li {{#if atLastPage}}class="disabled"{{/if}}><a href="#" action="goToAdjacentPage" data-page="+">&raquo;</a></li>',
 			],
 
 			initialize: function(options){
-				this._options = options || {};
+				this._options = _.extend({
+					pageWindowSize: 5,
+					currentWindow: 1
+				},options);
 				//if options.target, link to its 'view:page-changed' event
 				if(options.target) this.listenTo(options.target, 'view:page-changed', function(args){
 					this.trigger('view:reconfigure', {
@@ -58,12 +64,16 @@
 				var config = {
 					atFirstPage: this._options.currentPage === 1,
 					atLastPage: this._options.currentPage === this._options.totalPages,
-					pages: _.map(_.range(1, this._options.totalPages + 1), function(pNum){
-						return {
-							number: pNum,
-							isCurrent: pNum === this._options.currentPage
-						};
-					}, this)
+					atFirstWindow: this._options.currentWindow === 1,
+					atLastWindow: this._options.currentWindow === Math.ceil(this._options.totalPages/this._options.pageWindowSize),
+					pages: _.reduce(_.range(1, this._options.totalPages + 1), function(memo, pNum){
+						if(pNum > (this._options.currentWindow - 1) * this._options.pageWindowSize && pNum <= this._options.currentWindow * this._options.pageWindowSize)
+							memo.push({
+								number: pNum,
+								isCurrent: pNum === this._options.currentPage
+							})
+						return memo;
+					}, [], this)
 				};
 
 				this.trigger('view:render-data', config);
@@ -79,15 +89,31 @@
 				goToAdjacentPage: function($btn, e){
 					e.preventDefault();
 					var pNum = this._options.currentPage;
-					var page = $btn.data('page');
-					if(page === '+')
+					var op = $btn.data('page');
+					if(op === '+')
 						pNum ++;
 					else
 						pNum --;
 
 					if(pNum < 1 || pNum > this._options.totalPages) return;
+					if(pNum > this._options.currentWindow * this._options.pageWindowSize) this._options.currentWindow ++;
+					if(pNum <= (this._options.currentWindow - 1) * this._options.pageWindowSize) this._options.currentWindow --;
 					this.trigger('view:change-page', pNum);
 				},
+				goToAdjacentWindow: function($btn, e){
+					e.preventDefault()
+					var pWin = this._options.currentWindow;
+					var op = $btn.data('window');
+					if(op === '+')
+						pWin ++;
+					else
+						pWin --;
+
+					if (pWin < 1 || pWin > Math.ceil(this._options.totalPages/this._options.pageWindowSize)) return;
+					this.trigger('view:reconfigure', {
+						currentWindow: pWin
+					});
+				}
 			},
 			//////can be overriden///////
 			onChangePage: function(pNum){

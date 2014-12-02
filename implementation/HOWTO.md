@@ -1514,6 +1514,7 @@ nodeView.$el.data('$parent').data('$parent');
 target: //the view object it binds to [optional]
 currentPage: //current page number
 totalPages: //total pages in number
+pageWindowSize: //visible number of page indices (default to 5)
 ```
 
 **Usage**:

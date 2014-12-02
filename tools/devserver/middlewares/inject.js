@@ -18,6 +18,7 @@
 
 var morgan = require('morgan'),
 bodyParser = require('body-parser'),
+busboy = require('connect-busboy'),
 session = require('express-session');
 
 module.exports = function(server){
@@ -31,7 +32,7 @@ module.exports = function(server){
 		server.use(morgan('short'));
 		server.use(bodyParser.urlencoded({extended: true}));
 		server.use(bodyParser.json());
-		//[+multipart parsing here]
+		server.use(busboy({limits:{fileSize: profile.upload.size * 1024 * 1024}})); //multipart form & file upload
 		server.use(session(profile.session || {secret: 'unknown...'}));
 		server.use(server.middlewares.db.tingo);
 		//+server.use...

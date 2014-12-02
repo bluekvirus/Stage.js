@@ -1,18 +1,22 @@
 Change Log
 ==========
-1.7.6 (2014-11-17*)
+1.7.7 (2014-12-01*)
+-------------------
+
+In progress...
+x. +User and api authorization to devserver
+x. Breaking basic editors into individual ones 
+
+
+1.7.6 (2014-12-01)
 -------------------
 1. Fixed editor label color mis-config in default theme less.
 2. Added .segmented-control to base theme.
 3. Fixed region layout attr 'data-overflow-y' recognition error.
 4. Added _ref folder to theme after each theme regeneration, containing a copy of default theme less files for theme updating purposes.
 5. Fixed theme watcher script in devserver.
-
-In progress...
-x. +User and api authorization to devserver
-x. Breaking basic editors into individual ones 
-x. Reload tpl dynamically during View/Context overridden?
-x. + sprite preview? (in _Mockups context);
+6. Added page window size to the Paginator widget.
+7. Added file upload handling to devserver. (through busboy)
 
 
 1.7.5 (2014-11-17)

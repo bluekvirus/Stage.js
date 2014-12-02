@@ -23,7 +23,7 @@ module.exports = {
 		secret: 'stagejs dev server session',
 		resave: true,
 		saveUninitialized: true
-		//store: [your customized session store here]
+		//store: [your customized session store (on top of db, k-v, file or memory) here]
 	},
 
 	db: {
@@ -31,12 +31,18 @@ module.exports = {
 	},
 
 	store: {
-
+		//k-v stores	
 	},
 
 	auth: {
 		enabled: false, //whether or not server.secure(router) will take effect
 		superadmin: 'pwd123'
+	},
+
+	//optional file upload path and size limit configz
+	upload: {
+		path: '../tmp/file-uploads',
+		size: 250 //MB (1024 * 1024 Bytes) & will truncate the file if >
 	},
 
 	//mount the client webroot folders

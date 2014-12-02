@@ -255,8 +255,8 @@
 					this.listenTo(this, 'editor:change', function(){
 						if(this.ui.input.val()){
 							if(options.upload.standalone)
-								this.ui.upload.removeClass('hide').show();
-							this.ui.clearfile.removeClass('hide').show();
+								this.ui.upload.removeClass('hidden').show();
+							this.ui.clearfile.removeClass('hidden').show();
 						}
 						else {
 							this.ui.upload.hide();
@@ -284,7 +284,16 @@
 						},
 						//3. implement [upload] button action
 						upload: function(){
-							this.upload(options.upload);
+							var that = this;
+							this.upload(_.extend({
+								//stub success callback:
+								success: function(reply){
+									that.ui.result.html(_.isString(reply)?reply:JSON.stringify(reply));
+									_.delay(function(){
+										that.ui.result.empty();
+									}, 6000)
+								}
+							}, options.upload));
 						}
 					});
 
@@ -494,9 +503,9 @@
 							'{{else}}',
 								'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" {{#isnt type "file"}}class="form-control"{{else}} style="display:inline;" {{/isnt}} type="{{type}}" id="{{uiId}}" placeholder="{{placeholder}}" value="{{value}}"> <!--1 space-->',
 								'{{#is type "file"}}',
-									'<span action="upload" class="hide file-upload-action-trigger" ui="upload" style="cursor:pointer;"><i class="glyphicon glyphicon-upload"></i> <!--1 space--></span>',
-									'<span action="clear" class="hide file-upload-action-trigger" ui="clearfile"  style="cursor:pointer;"><i class="glyphicon glyphicon-remove-circle"></i></span>',
-									'<span ui="result" class="file-upload-result"></span>',
+									'<span action="upload" class="hidden file-upload-action-trigger" ui="upload" style="cursor:pointer;"><i class="glyphicon glyphicon-upload"></i> <!--1 space--></span>',
+									'<span action="clear" class="hidden file-upload-action-trigger" ui="clearfile"  style="cursor:pointer;"><i class="glyphicon glyphicon-remove-circle"></i></span>',
+									'<span ui="result" class="file-upload-result wrapper-horizontal"></span>',
 								'{{/is}}',							
 							'{{/is}}',
 						'{{/is}}',
