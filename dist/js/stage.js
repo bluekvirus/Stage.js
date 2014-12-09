@@ -16,6 +16,7 @@
 		* baseAjaxURI
 		* i18nResources
 		* i18nTransFile
+		* timeout (ms) - for app.remote and $.fileupload only, not for general $.ajax.
  * 2. Application.run();
  *
  * ###How to interface with remote data?
@@ -148,6 +149,7 @@ _.each(['Core', 'Util'], function(coreModule){
 	        viewTemplates: 'static/template', //this is assisted by the build tool, combining all the *.html handlebars templates into one big json.
 			i18nResources: 'static/resource', //this the the default location where our I18N plugin looks for locale translations.
 			i18nTransFile: 'i18n.json', //can be {locale}.json
+			timeout: 5 * 60 * 1000,
 			/*Global CROSSDOMAIN Settings - Deprecated: set this in a per-request base or use server side proxy*/
 			//see MDN - https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS
 			//If you ever need crossdomain in development, we recommend that you TURN OFF local server's auth layer/middleware. 
@@ -866,6 +868,7 @@ _.each(['Core', 'Util'], function(coreModule){
 		if(_.isString(options)) 
 			options	= { 
 				url: options,
+				timeout: app.config.timeout,
 				type: 'GET'
 			};
 		else {
@@ -875,7 +878,8 @@ _.each(['Core', 'Util'], function(coreModule){
 				data: undefined,
 				processData: false,
 				contentType: 'application/json; charset=UTF-8', // req format
-				dataType: 'json' //res format
+				dataType: 'json', //res format
+				timeout: app.config.timeout,
 			});
 			//process entity[_id] and strip off options.querys(alias:params)
 			if(options.entity){
@@ -1443,6 +1447,12 @@ _.each(['Core', 'Util'], function(coreModule){
 					e.stopPropagation();
 					e.preventDefault();
 					app.trigger('app:blocked', action, lockTopic);
+					return;
+				}
+
+				if($el.hasClass('disabled') || $el.parent().hasClass('disabled')) {
+					e.stopPropagation();
+					e.preventDefault();					
 					return;
 				}
 
@@ -3084,6 +3094,7 @@ var I18N = {};
 
 						//send the file(s) through fileupload plugin.
 						this.$el.fileupload('send', _.extend({
+							timeout: app.config.timeout * 2,
 							fileInput: this.ui.input,
 						}, config));
 					};
@@ -3808,7 +3819,7 @@ var I18N = {};
  *
  * format
  * ------
- * << [1,2,...,last] >>
+ * << [1,2,...] >>
  *
  * link with lists
  * ---------------
@@ -3831,19 +3842,18 @@ var I18N = {};
 			tagName: 'ul',
 			
 			template: [
-				'<li {{#if atFirstPage}}class="disabled"{{/if}}><a href="#" action="goToAdjacentPage" data-page="-">&laquo;</a></li>',
+				'<li {{#if atFirstPage}}class="disabled"{{/if}}><a href="#" action="goToFirstPage" data-page="--">'+_.escape('<<')+'</a></li>',
 				'<li {{#if atFirstWindow}}class="hidden"{{/if}}><a href="#" action="goToAdjacentWindow" data-window="-">...</a></li>',
 				'{{#each pages}}',
 					'<li {{#if isCurrent}}class="active"{{/if}}><a href="#" action="goToPage" data-page="{{number}}">{{number}} <span class="sr-only">(current)</span></a></li>',
 				'{{/each}}',
 				'<li {{#if atLastWindow}}class="hidden"{{/if}}><a href="#" action="goToAdjacentWindow" data-window="+">...</a></li>',
-				'<li {{#if atLastPage}}class="disabled"{{/if}}><a href="#" action="goToAdjacentPage" data-page="+">&raquo;</a></li>',
+				'<li {{#if atLastPage}}class="disabled"{{/if}}><a href="#" action="goToLastPage" data-page="++">'+_.escape('>>')+'</a></li>',
 			],
 
 			initialize: function(options){
 				this._options = _.extend({
 					pageWindowSize: 5,
-					currentWindow: 1
 				},options);
 				//if options.target, link to its 'view:page-changed' event
 				if(options.target) this.listenTo(options.target, 'view:page-changed', function(args){
@@ -3859,6 +3869,8 @@ var I18N = {};
 			onReconfigure: function(options){
 				_.extend(this._options, options);
 				//use options.currentPage, totalPages to build config data - atFirstPage, atLastPage, pages[{number:..., isCurrent:...}]
+				//calculate currentWindow dynamically
+				this._options.currentWindow = Math.ceil(this._options.currentPage/this._options.pageWindowSize);
 				var config = {
 					atFirstPage: this._options.currentPage === 1,
 					atLastPage: this._options.currentPage === this._options.totalPages,
@@ -3884,20 +3896,30 @@ var I18N = {};
 
 					this.trigger('view:change-page', page);
 				},
-				goToAdjacentPage: function($btn, e){
+				goToFirstPage: function($btn, e){
 					e.preventDefault();
-					var pNum = this._options.currentPage;
-					var op = $btn.data('page');
-					if(op === '+')
-						pNum ++;
-					else
-						pNum --;
-
-					if(pNum < 1 || pNum > this._options.totalPages) return;
-					if(pNum > this._options.currentWindow * this._options.pageWindowSize) this._options.currentWindow ++;
-					if(pNum <= (this._options.currentWindow - 1) * this._options.pageWindowSize) this._options.currentWindow --;
-					this.trigger('view:change-page', pNum);
+					this.trigger('view:change-page', 1);
 				},
+				goToLastPage: function($btn, e){
+					e.preventDefault();
+					this.trigger('view:change-page', this._options.totalPages);
+				},
+				//Skipped atm.../////////////////////////
+				// goToAdjacentPage: function($btn, e){
+				// 	e.preventDefault();
+				// 	var pNum = this._options.currentPage;
+				// 	var op = $btn.data('page');
+				// 	if(op === '+')
+				// 		pNum ++;
+				// 	else
+				// 		pNum --;
+
+				// 	if(pNum < 1 || pNum > this._options.totalPages) return;
+				// 	if(pNum > this._options.currentWindow * this._options.pageWindowSize) this._options.currentWindow ++;
+				// 	if(pNum <= (this._options.currentWindow - 1) * this._options.pageWindowSize) this._options.currentWindow --;
+				// 	this.trigger('view:change-page', pNum);
+				// },
+				/////////////////////////////////////////
 				goToAdjacentWindow: function($btn, e){
 					e.preventDefault()
 					var pWin = this._options.currentWindow;
@@ -3908,9 +3930,7 @@ var I18N = {};
 						pWin --;
 
 					if (pWin < 1 || pWin > Math.ceil(this._options.totalPages/this._options.pageWindowSize)) return;
-					this.trigger('view:reconfigure', {
-						currentWindow: pWin
-					});
+					this.trigger('view:change-page', (pWin == 1) ? 1 : (pWin-1) * this._options.pageWindowSize + 1);
 				}
 			},
 			//////can be overriden///////
@@ -3928,4 +3948,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.7.6-806 build 1417485562915";
+;;app.stagejs = "1.7.6-808 build 1418098620058";
