@@ -79,6 +79,12 @@
 					return;
 				}
 
+				if($el.hasClass('disabled') || $el.parent().hasClass('disabled')) {
+					e.stopPropagation();
+					e.preventDefault();					
+					return;
+				}
+
 				//allow triggering certain event only.
 				var eventForwarding = String(action).split(':');
 				if(eventForwarding.length >= 2) {

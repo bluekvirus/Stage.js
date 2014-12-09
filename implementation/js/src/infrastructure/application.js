@@ -15,6 +15,7 @@
 		* baseAjaxURI
 		* i18nResources
 		* i18nTransFile
+		* timeout (ms) - for app.remote and $.fileupload only, not for general $.ajax.
  * 2. Application.run();
  *
  * ###How to interface with remote data?
@@ -147,6 +148,7 @@ _.each(['Core', 'Util'], function(coreModule){
 	        viewTemplates: 'static/template', //this is assisted by the build tool, combining all the *.html handlebars templates into one big json.
 			i18nResources: 'static/resource', //this the the default location where our I18N plugin looks for locale translations.
 			i18nTransFile: 'i18n.json', //can be {locale}.json
+			timeout: 5 * 60 * 1000,
 			/*Global CROSSDOMAIN Settings - Deprecated: set this in a per-request base or use server side proxy*/
 			//see MDN - https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS
 			//If you ever need crossdomain in development, we recommend that you TURN OFF local server's auth layer/middleware. 

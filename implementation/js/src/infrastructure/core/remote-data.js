@@ -35,6 +35,7 @@
 		if(_.isString(options)) 
 			options	= { 
 				url: options,
+				timeout: app.config.timeout,
 				type: 'GET'
 			};
 		else {
@@ -44,7 +45,8 @@
 				data: undefined,
 				processData: false,
 				contentType: 'application/json; charset=UTF-8', // req format
-				dataType: 'json' //res format
+				dataType: 'json', //res format
+				timeout: app.config.timeout,
 			});
 			//process entity[_id] and strip off options.querys(alias:params)
 			if(options.entity){

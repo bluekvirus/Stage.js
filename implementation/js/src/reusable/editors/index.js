@@ -310,6 +310,7 @@
 
 						//send the file(s) through fileupload plugin.
 						this.$el.fileupload('send', _.extend({
+							timeout: app.config.timeout * 2,
 							fileInput: this.ui.input,
 						}, config));
 					};

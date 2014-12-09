@@ -24,7 +24,7 @@ You can now start developing your app with Stage.js. Read the [documentation](ht
 
 Documentation
 -------------
-Again, as an application developer you should read this [documentation](http://bluekvirus.github.io/Stage.js/#navigate/Document)
+Again, as an application developer you are encouraged read this [documentation](http://bluekvirus.github.io/Stage.js/#navigate/Document)
 
 
 What's next?
