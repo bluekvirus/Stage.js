@@ -2,6 +2,8 @@ Stage.js
 ===================
 <img src="http://img.shields.io/bower/v/stage.js.svg?style=flat" alt="Current Version"></img> <img src="http://img.shields.io/badge/supports-Cordova-3B4854.svg?style=flat" alt="Supports Cordova"></img>
 
+**Announcement**: Please note that 1.7.7 is the last stable version of our 1.x branch, I am now working on the 2.x branch site and development preparation. A complete roadmap in terms of user stories will be available soon.
+
 This project produces **Stage.js** - an infrastructure for building modern web application client with many contexts (e.g a data-heavy administration app). In other words, we solve this problem for you:
 
 <img src="implementation/static/resource/default/diagram/Diagram-1.png" alt="UI/UX Problems" class="center-block"></img>
@@ -30,17 +32,25 @@ Again, as an application developer you are encouraged read this [documentation](
 What's next?
 ------------
 2.0.0 Roadmap:
-* Merge Context, Regional, Widget, Editor and Canvas to be named Views with mixins;
-* Use the navigation chain from start based only on named layout views with navRegions;
-* Introduce State(ViewModel?) into the picture. (Data, State, (View)Model/(View)Collection, View/Layout, Navigation, Widget/Editor, Events);
-* Stateful navigation mech: app@state/context@state/lvl1@state/lvl2@state;
+* Merge Context, Regional, Widget, Editor and Canvas to be generic named Views;
+* Refine the navigation and layout region concepts;
+* Introduce state into views;
+* Give view action listeners a choice to go background;
 * Remove deps on Marionette.js, jQuery UI Core/Widget;
-* Datagrid+ : select-all header/cell, details row, header/cell param refine ('str', @, view func);
-* Editor+ : Spinner/Range, Switches, DnD Listing;
+* Websocket support;
+* Test automation;
+* Solid lightweight core;
+* Progressive & reactive; (but no two-way binding)
+* Breaking basic editors into individual ones
+* APIs, Tokens & Permissions for Users & Groups
+* Simpler dev stack through Sails.js
+* ...
 
 optional:
 * local filter/sorter mech into list views; 
 * local pagination mech into list views (in addition to the remote one we already have);
+* Datagrid+ : select-all header/cell, details row;
+* Editor+ : Spinner/Range, Switches, DnD Listing;
 
 
 Contribute
