@@ -1,14 +1,10 @@
 Change Log
 ==========
-1.7.7 (2014-12-01*)
+1.7.7 (2014-12-08)
 -------------------
 1. Fixed app.remote() and fileupload timeout with app.config.timeout.
 2. Refined page & window switching in Paginator widget.
 3. 'disabled' css class on tag now correctly disable its actions and the child tag actions. 
-
-In progress...
-x. +User and api authorization to devserver
-x. Breaking basic editors into individual ones 
 
 
 1.7.6 (2014-12-01)
