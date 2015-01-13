@@ -12,7 +12,7 @@
 	app.widget('StringHeaderCell', function(){
 
 		var UI = app.view({
-			template: '<span><i class="{{icon}}"></i> {{{label}}}</span>',
+			template: '<span><i class="{{icon}}"></i> {{{i18n label}}}</span>',
 		});
 
 		return UI;

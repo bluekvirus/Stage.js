@@ -72,7 +72,7 @@
 				});
 			},
 			template: [
-				'<a class="item" href="#"><i class="type-indicator"></i> <i class="{{icon}}"></i> {{{val}}}</a>',
+				'<a class="item" href="#"><i class="type-indicator"></i> <i class="{{icon}}"></i> {{{i18n val}}}</a>',
 				'<ul class="children hidden"></ul>' //1--tree nodes default on collapsed
 			]
 		};

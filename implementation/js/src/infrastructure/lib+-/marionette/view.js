@@ -203,6 +203,12 @@
 				return this;
 			};
 		}
+		//auto-enable i18n
+		if(I18N.locale) {
+			this.listenTo(this, 'render', function(){
+				this.$el.i18n({search: true});
+			});
+		}
 
 		return Backbone.Marionette.View.apply(this, arguments);
 	};

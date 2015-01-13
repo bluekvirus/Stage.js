@@ -29,7 +29,7 @@
 		var UI = app.view({
 			template: [
 				'{{#each actions}}',
-					'<span class="action-cell-item" action="{{@key}}" data-toggle="tooltip" title="{{tooltip}}"><i class="{{icon}}"></i> {{label}}</span> ',
+					'<span class="action-cell-item" action="{{@key}}" data-toggle="tooltip" title="{{i18n tooltip}}"><i class="{{icon}}"></i> {{i18n label}}</span> ',
 				'{{/each}}'
 			],
 			className: 'action-cell',

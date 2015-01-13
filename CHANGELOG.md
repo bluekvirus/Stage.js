@@ -1,5 +1,11 @@
 Change Log
 ==========
+1.7.8 (2015-01-12)
+------------------
+1. Fixed i18n plugin bugs and refined view/editor/grid/tree auto support to i18n labels.
+2. Auto detect browser locale in i18n process.
+
+
 1.7.7 (2014-12-08)
 -------------------
 1. Fixed app.remote() and fileupload timeout with app.config.timeout.

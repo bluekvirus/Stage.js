@@ -288,7 +288,7 @@
 							this.upload(_.extend({
 								//stub success callback:
 								success: function(reply){
-									that.ui.result.html(_.isString(reply)?reply:JSON.stringify(reply));
+									that.ui.result.html(_.isString(reply)?reply.i18n():JSON.stringify(reply));
 									_.delay(function(){
 										that.ui.result.empty();
 									}, 6000)
@@ -414,7 +414,7 @@
 						.removeClass(this.$el.data('type-class'))
 						.addClass(className)
 						.data('type-class', className);
-					this.ui.msg.html(msg);
+					this.ui.msg.html(msg.i18n());
 
 				}else {
 					//clear
@@ -449,31 +449,31 @@
 
 	app.Util.Tpl.build('editor-basic-tpl', [
 		'{{#if label}}',
-			'<label class="control-label {{#if layout}}{{layout.label}}{{/if}}" for="{{uiId}}">{{label}}</label>',
+			'<label class="control-label {{#if layout}}{{layout.label}}{{/if}}" for="{{uiId}}">{{i18n label}}</label>',
 		'{{/if}}',
-		'<div class="{{#if layout}}{{layout.field}}{{/if}}" data-toggle="tooltip" title="{{tooltip}}">', //for positioning with the label.
+		'<div class="{{#if layout}}{{layout.field}}{{/if}}" data-toggle="tooltip" title="{{i18n tooltip}}">', //for positioning with the label.
 
 			//1. select
 			'{{#is type "select"}}',
 				'<select ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" class="form-control" id="{{uiId}}" {{#if multiple}}multiple="multiple"{{/if}} style="margin-bottom:0">',
 					'{{#if options.grouped}}',
 						'{{#each options.data}}',
-						'<optgroup label="{{@key}}">',
+						'<optgroup label="{{i18n @key}}">',
 							'{{#each this}}',
-							'<option value="{{value}}">{{label}}</option>',
+							'<option value="{{value}}">{{i18n label}}</option>',
 							'{{/each}}',
 						'</optgroup>',
 						'{{/each}}',
 					'{{else}}',
 						'{{#each options.data}}',
-						'<option value="{{value}}">{{label}}</option>',
+						'<option value="{{value}}">{{i18n label}}</option>',
 						'{{/each}}',
 					'{{/if}}',
 				'</select>',
 			'{{else}}',
 				//2. textarea
 				'{{#is type "textarea"}}',
-					'<textarea ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" class="form-control" id="{{uiId}}" rows="{{rows}}" placeholder="{{placeholder}}" style="margin-bottom:0"></textarea>',
+					'<textarea ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" class="form-control" id="{{uiId}}" rows="{{rows}}" placeholder="{{i18n placeholder}}" style="margin-bottom:0"></textarea>',
 				'{{else}}',
 					//3. input
 					//checkboxes/radios
@@ -483,7 +483,7 @@
 							'{{#unless ../options.inline}}<div class="{{../../type}}">{{/unless}}',
 							'<label class="{{#if ../options.inline}}{{../../type}}-inline{{/if}}">',
 								//note that the {{if}} within a {{each}} will impose +1 level down in the content scope.  
-								'<input ui="input" name="{{#if ../fieldname}}{{../../fieldname}}{{else}}{{../../name}}{{/if}}{{#is ../type "checkbox"}}[]{{/is}}" type="{{../type}}" value={{value}}> {{label}}',
+								'<input ui="input" name="{{#if ../fieldname}}{{../../fieldname}}{{else}}{{../../name}}{{/if}}{{#is ../type "checkbox"}}[]{{/is}}" type="{{../type}}" value={{value}}> {{i18n label}}',
 							'</label>',
 							'{{#unless ../options.inline}}</div>{{/unless}}',
 						'{{/each}}',
@@ -495,14 +495,14 @@
 							//single checkbox
 							'<label>',
 								//note that the {{if}} within a {{each}} will impose +1 level down in the content scope.  
-								'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" type="checkbox" value="{{value}}"> {{boxLabel}}',
+								'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" type="checkbox" value="{{value}}"> {{i18n boxLabel}}',
 							'</label>',
 						'{{else}}',
 							//normal field
 							'{{#is type "ro"}}',//read-only
-								'<div ui="input-ro" data-value="{{{value}}}" class="form-control-static">{{{value}}}</div>',
+								'<div ui="input-ro" data-value="{{{value}}}" class="form-control-static">{{value}}</div>',
 							'{{else}}',
-								'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" {{#isnt type "file"}}class="form-control"{{else}} style="display:inline;" {{/isnt}} type="{{type}}" id="{{uiId}}" placeholder="{{placeholder}}" value="{{value}}"> <!--1 space-->',
+								'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" {{#isnt type "file"}}class="form-control"{{else}} style="display:inline;" {{/isnt}} type="{{type}}" id="{{uiId}}" placeholder="{{i18n placeholder}}" value="{{value}}"> <!--1 space-->',
 								'{{#is type "file"}}',
 									'<span action="upload" class="hidden file-upload-action-trigger" ui="upload" style="cursor:pointer;"><i class="glyphicon glyphicon-upload"></i> <!--1 space--></span>',
 									'<span action="clear" class="hidden file-upload-action-trigger" ui="clearfile"  style="cursor:pointer;"><i class="glyphicon glyphicon-remove-circle"></i></span>',
@@ -516,8 +516,8 @@
 			'{{/is}}',
 
 			//msg & help
-			'{{#if help}}<span class="help-block editor-help-text" style="margin-bottom:0"><small>{{help}}</small></span>{{/if}}',
-			'<span class="help-block editor-status-text input-error" ui="msg">{{msg}}</span>',
+			'{{#if help}}<span class="help-block editor-help-text" style="margin-bottom:0"><small>{{i18n help}}</small></span>{{/if}}',
+			'<span class="help-block editor-status-text input-error" ui="msg">{{i18n msg}}</span>',
 		'</div>'
 	]);
 

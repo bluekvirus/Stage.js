@@ -42,8 +42,8 @@ var I18N = {};
 	};
 
 	var params = URI(window.location.toString()).search(true);
-	var locale = params.locale;
-	var localizer = params.localizer;
+	var locale = I18N.locale = params.locale || Detectizr.browser.language;
+
 	
 	var resources;	
 	I18N.configure = function(options){
@@ -77,25 +77,6 @@ var I18N = {};
 
 			resources = resources || {};
 			
-			//Localizer mode, merge resources with localStorage, cache is modified upon localizer's DnD action (modified property file).
-			if (localizer) {
-				var resources_cache_key = ['resources_', locale].join('');
-				var cached_resources = store.get(resources_cache_key);
-				if (cached_resources) {
-					_.each(cached_resources, function(trans, key){
-						//favor cached_ over loaded resources.
-						if(!trans) return;
-						if(!resources[key]) {
-							resources[key] = trans;
-							return;
-						}
-						//if we had a string trans, let cache (object/string) override resource.
-						if(_.isString(resources[key])) resources[key] = trans;
-						//if we had a trans object(with ns), only extend if cached is a trans object.
-						else if(_.isObject(resources[key]) && _.isObject(trans)) _.extend(resources[key], trans);
-					});
-				}
-			}
 		}		
 		return this;
 	};
@@ -122,7 +103,7 @@ var I18N = {};
 			//console.log('translation', translation, 'is undefined');
 			// report this key
 			resources[key] = '';
-			cacheResources();
+
 			return key;
 		} else if (typeof(translation) === 'object') {
 			//console.log('translation', translation, 'is object');
@@ -132,7 +113,7 @@ var I18N = {};
 				//console.log('translation', translation, 'is undefined');
 				// report this namespace
 				resources[key][ns] = '';
-				cacheResources();
+
 				return key;
 			}
 		}
@@ -142,13 +123,6 @@ var I18N = {};
 		}
 		return translation;
 	};
-	
-	function cacheResources() {
-		//console.log('cacheResources', 'localizer', localizer);
-		if (localizer) {
-			store.set(resources_cache_key, resources);
-		}
-	}
 
 	function getResourceProperties(untransedOnly) {
 		var formatted = [];
@@ -207,10 +181,6 @@ var I18N = {};
 
 	I18N.getResourceProperties = getResourceProperties;
 	I18N.getResourceJSON = getResourceJSON;
-	I18N.clearResourceCache = function(){
-		var resources_cache_key = ['resources_', locale].join('');
-		store.remove(resources_cache_key);
-	};
 
 	/**
 	 * =============================================================
@@ -223,7 +193,11 @@ var I18N = {};
 				options = ns;
 				ns = undefined;
 			}
-	  		return String(key).i18n(ns && {module:ns});
+			if(_.isString(key))
+	  			return key.i18n(ns && {module:ns});
+	  		if(_.isUndefined(key))
+	  			return '';
+	  		return key;
 		});
 	}
 
@@ -246,6 +220,7 @@ var I18N = {};
 		var ns = $el.data('i18nModule');
 		if(key === '*') key = $.trim($el.html());
 		$el.html(key.i18n({module:ns}));
+		$el.removeAttr('data-i18n-key');
 	}
 	$.fn.i18n = function(options){
 		options = _.extend({
