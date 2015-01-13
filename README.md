@@ -2,7 +2,7 @@ Stage.js
 ===================
 <img src="http://img.shields.io/bower/v/stage.js.svg?style=flat" alt="Current Version"></img> <img src="http://img.shields.io/badge/supports-Cordova-3B4854.svg?style=flat" alt="Supports Cordova"></img>
 
-**Announcement**: Please note that 1.7.7 is the last stable version of our 1.x branch, I am now working on the 2.x branch site and development preparation. A complete roadmap in terms of user stories will be available soon.
+**Announcement**: Please note that 1.7.8 will be the last stable release of the 1.x branch, I am now working on the 2.x branch site and development preparation. A complete feature listing in terms of user stories will be available soon.
 
 This project produces **Stage.js** - an infrastructure for building modern web application client with many contexts (e.g a data-heavy administration app). In other words, we solve this problem for you:
 
@@ -38,12 +38,13 @@ What's next?
 * Give view action listeners a choice to go background;
 * Remove deps on Marionette.js, jQuery UI Core/Widget;
 * Websocket support;
-* Test automation;
-* Solid lightweight core;
-* Progressive & reactive; (but no two-way binding)
 * Breaking basic editors into individual ones
+* Solid lightweight core;
+* Test automation;
+* Progressive & reactive; (but no two-way binding)
 * APIs, Tokens & Permissions for Users & Groups
 * Simpler dev stack through Sails.js
+* Piplining dev process through brunch
 * ...
 
 optional:

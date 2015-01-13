@@ -35,7 +35,8 @@ module.exports = {
 				default: {
 					diagram: 'static/resource/default/diagram',
 					download: 'static/resource/default/download'
-				}
+				},
+				'en-US': 'static/resource/en-US'
 			}
 		},		
 		'index.html': true,
