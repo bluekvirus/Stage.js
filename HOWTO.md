@@ -1742,7 +1742,7 @@ Remember to use the `data-i18n-key` attribute to identify the content of a tag f
 ###Translation file
 The translation files are needed to complete the i18n mechanism. We use a simple opt-in way of loading resource file for a given locale:
 ```
-http(s)://your host'n'app/?locale=xx_XX
+http(s)://your host'n'app/?locale=xx-XX
 ```
 The query param **locale** in the url will tell the i18n mechanism to load a specific resource file.
 
@@ -1750,7 +1750,7 @@ The query param **locale** in the url will tell the i18n mechanism to load a spe
 Your translation file should be in the [JSON](http://json.org/) format, like this:
 ```
 {
-    locale: 'xx_XX',
+    locale: 'xx-XX',
     trans: {
         "string": "translation", 
         //or 
@@ -1943,7 +1943,7 @@ stagejs update [--edge --packages]
 Read more about this cli tool [here](https://github.com/bluekvirus/Stage-devtools).
 
 ###What should I put in `/static`?
-`/resource` should contain static resources per locale. (per xx_XX folder, `/default` for locale independent)
+`/resource` should contain static resources per locale. (per xx-XX folder, `/default` for locale independent)
 
 ###Developing for Full-Screen?
 To develop your app to be full-screen, first setup the application to be in full-screen mode:
