@@ -36,15 +36,13 @@ What's next?
 * Refine the navigation and layout region concepts;
 * Introduce state into views;
 * Give view action listeners a choice to go background;
-* Remove deps on Marionette.js, jQuery UI Core/Widget;
-* Websocket support;
-* Breaking basic editors into individual ones
-* Solid lightweight core;
+* Remove deps on Marionette.js, jQuery UI Core to have a lightweight core;
+* Websocket support for messaging/notification;
+* Support progressive & reactive app building concept; (but no two-way binding)
+* Breaking basic editors implementation;
 * Test automation;
-* Progressive & reactive; (but no two-way binding)
-* APIs, Tokens & Permissions for Users & Groups
-* Simpler dev stack through Sails.js
-* Piplining dev process through brunch
+* Simpler server stack through Loopback;
+* Piplining dev process through Brunch;
 * ...
 
 optional:

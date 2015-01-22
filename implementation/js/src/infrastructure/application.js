@@ -148,6 +148,7 @@ _.each(['Core', 'Util'], function(coreModule){
 	        viewTemplates: 'static/template', //this is assisted by the build tool, combining all the *.html handlebars templates into one big json.
 			i18nResources: 'static/resource', //this the the default location where our I18N plugin looks for locale translations.
 			i18nTransFile: 'i18n.json', //can be {locale}.json
+			i18nLocale: '', //if you really want to force the app to certain locale other than browser preference. (Still override-able by ?locale=.. in url)
 			timeout: 5 * 60 * 1000,
 			/*Global CROSSDOMAIN Settings - Deprecated: set this in a per-request base or use server side proxy*/
 			//see MDN - https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS
@@ -264,6 +265,7 @@ _.each(['Core', 'Util'], function(coreModule){
 			Application.inject.tpl('all.json');
 
 		I18N.configure({
+			locale: Application.config.i18nLocale,
 			resourcePath: Application.config.i18nResources,
 			translationFile: Application.config.i18nTransFile
 		});

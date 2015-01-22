@@ -149,6 +149,7 @@ _.each(['Core', 'Util'], function(coreModule){
 	        viewTemplates: 'static/template', //this is assisted by the build tool, combining all the *.html handlebars templates into one big json.
 			i18nResources: 'static/resource', //this the the default location where our I18N plugin looks for locale translations.
 			i18nTransFile: 'i18n.json', //can be {locale}.json
+			i18nLocale: '', //if you really want to force the app to certain locale other than browser preference. (Still override-able by ?locale=.. in url)
 			timeout: 5 * 60 * 1000,
 			/*Global CROSSDOMAIN Settings - Deprecated: set this in a per-request base or use server side proxy*/
 			//see MDN - https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS
@@ -265,6 +266,7 @@ _.each(['Core', 'Util'], function(coreModule){
 			Application.inject.tpl('all.json');
 
 		I18N.configure({
+			locale: Application.config.i18nLocale,
 			resourcePath: Application.config.i18nResources,
 			translationFile: Application.config.i18nTransFile
 		});
@@ -2211,14 +2213,13 @@ var I18N = {};
 		resourcePath: 'static/resource',
 		translationFile: 'i18n.json'
 	};
-
-	var params = URI(window.location.toString()).search(true);
-	var locale = I18N.locale = params.locale || Detectizr.browser.language;
-
 	
-	var resources;	
+	var locale, resources;	
 	I18N.configure = function(options){
 		_.extend(configure, options);
+		var params = URI(window.location.toString()).search(true);
+		locale = I18N.locale = params.locale || configure.locale || Detectizr.browser.language;
+
 		if (locale) {
 			// load resources from file
 			/**
@@ -3929,4 +3930,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.7.7-812 build 1421117846054";
+;;app.stagejs = "1.7.7-814 build 1421895707471";

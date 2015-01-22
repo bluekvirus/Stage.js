@@ -293,7 +293,9 @@ Application.setup({
     baseAjaxURI: //your base url for using with Application.remote(),
     viewTemplates: //remote view templates folder, if using template:@**/*.html in views,
     i18nResources: //where to load i18n related data (e.g translations),
-    i18nTransFile: //the translation file name/pattern under i18nResources
+    i18nTransFile: //the translation file name/pattern under i18nResources,
+    i18nLocale: //force the app to certain locale,
+    timeout: //default data (ajax) operation timeout in ms,
 }).run();
 ```
 The configure variables have sensible defaults, you can safely skip configuring them here, however, there is one you might want to change now -- `template`.
@@ -2011,7 +2013,7 @@ $.ajax({
 
 //the same applys to Application.remote() calls.
 ```
-Besides configuring your `Application` with crossdomain setups, your web services must support crossdomain in the first place by replying the ajax calls with additional access control headers. Read more in **Appendix.B.MDN - CORS**.
+Your web services must support crossdomain in the first place by replying the ajax calls with additional access control headers. Read more in **Appendix.B.MDN - CORS**.
 
 **Heads up:** Don't forget to include your credential headers in the `Access-Control-Allow-Headers` whitelist.
 

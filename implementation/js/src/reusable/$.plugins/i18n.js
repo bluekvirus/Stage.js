@@ -40,14 +40,13 @@ var I18N = {};
 		resourcePath: 'static/resource',
 		translationFile: 'i18n.json'
 	};
-
-	var params = URI(window.location.toString()).search(true);
-	var locale = I18N.locale = params.locale || Detectizr.browser.language;
-
 	
-	var resources;	
+	var locale, resources;	
 	I18N.configure = function(options){
 		_.extend(configure, options);
+		var params = URI(window.location.toString()).search(true);
+		locale = I18N.locale = params.locale || configure.locale || Detectizr.browser.language;
+
 		if (locale) {
 			// load resources from file
 			/**
