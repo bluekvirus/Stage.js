@@ -1,5 +1,15 @@
 Notes
 =====
+Framework basics
+----------------
+Before you start, here is our guideline to solving web application building problem:
+
+1. OOP your infrastructure with minimum libraries.
+2. Flatten your application structure for better maintainability.
+3. Pipelining your data processing & build.
+4. Be explicit & separate your configurations with code.
+
+
 Continuous Integration
 ----------------------
 ###gitlab_ci fix: trouble shooting

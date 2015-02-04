@@ -2,7 +2,15 @@ Stage.js
 ===================
 <img src="http://img.shields.io/bower/v/stage.js.svg?style=flat" alt="Current Version"></img> <img src="http://img.shields.io/badge/supports-Cordova-3B4854.svg?style=flat" alt="Supports Cordova"></img>
 
-**Announcement**: Please note that 1.7.8 will be the last stable release of the 1.x branch, I am now working on the 2.x branch site and development preparation. A complete feature listing in terms of user stories will be available soon.
+[Change Log](CHANGELOG.md) -
+```
+app.stagejs ==> 1.7.7-814 build 1421895707471
+```
+
+**Announcement**: Please note that next release (v1.7.8) will be the last stable release of the 1.x branch. The coming 1.7.8 release is also an LTS* (long term support - 18-month) version of this framework. We are now working on the 2.x branch site and development preparation. A complete feature listing in terms of user stories will be available soon. [Preview the plan](#whats-next)
+
+*LTS - Given that ECMAScript6 is coming and our goal of making a lightweight, time-saving and most importantly **easy** framework for both desktop web and hybrid application development. Further improvements and simplifications will be made directly into the v2 codebase through es6 without disturbing the v1.7 branch. 
+The LTS version also serves as a benchmark for creating tests and for feature-list and feedback gathering. We have now successfully released 2 security products with complex configure panels/dashboards and excellent user flows & localizations through the v1.7 branch. More will come after we improve & finalize the charting and testing workflow in v2. 
 
 This project produces **Stage.js** - an infrastructure for building modern web application client with many contexts (e.g a data-heavy administration app). In other words, we solve this problem for you:
 
@@ -37,12 +45,12 @@ What's next?
 * Introduce state into views;
 * Give view action listeners a choice to go background;
 * Remove deps on Marionette.js, jQuery UI Core to have a lightweight core;
-* Websocket support for messaging/notification;
+* Websocket support for messaging/notification through Primus;
 * Support progressive & reactive app building concept; (but no two-way binding)
 * Breaking basic editors implementation;
-* Test automation;
 * Simpler server stack through Loopback;
-* Piplining dev process through Brunch;
+* Pipelining dev process through Brunch;
+* Test automation through Mocha + Chai (BDD);
 * ...
 
 optional:
