@@ -6,10 +6,11 @@ Stage.js
 
 To get version, type `app.stagejs` in the console:
 ```
-app.stagejs (1.7.7-814 build 1421895707471)
+app.stagejs (1.7.x-<commits> build <timestamp>)
 ```
+You can compare this version number with the one you see on the [documentation site](http://bluekvirus.github.io/Stage.js/#navigate/Document) and see if an upgrade is recommended.
 
-**Announcement**: Please note that next release (v1.7.8) will be the last stable release of the 1.x branch. The coming 1.7.8 release is also an LTS* (long term support - 18-month) version of this framework. We are now working on the 2.x branch site and development preparation. A complete feature listing in terms of user stories will be available soon. [Preview the plan](#whats-next)
+**Announcement**: Please note that next release (v1.7.8) will be the last stable release of the 1.x branch. The coming 1.7.8 release (including tests) is also an LTS* (long term support - 18-month) version of this framework. We are now working on the 2.x branch site and development preparation. A complete feature listing in terms of user stories will be available soon. [Preview the plan](#whats-next)
 
 > <sup>\*</sup>LTS - Given that ECMAScript6 is coming and our goal of making a lightweight, time-saving and most importantly **easy** framework for both desktop web and hybrid application development, further improvements and simplifications will be made directly into the v2 codebase through es6 without disturbing the v1.7 branch. 
 The LTS version also serves as a benchmark for creating tests and for feature-list and feedback gathering. We have now successfully released 2 security products with complex configure panels/dashboards and excellent user flows & localizations through the v1.7 branch. More will come after we improve & finalize the charting and testing workflow in v2. 

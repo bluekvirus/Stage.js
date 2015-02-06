@@ -97,7 +97,7 @@ if(!fs.existsSync(themeFolder)){
 }
 else {
 	console.log('Theme already there, creating _ref from'.yellow, baseTheme);
-	fs.copySync(path.join(baseThemeFolder, 'less'), path.join(themeFolder, 'less', '_ref'));
+	//fs.copySync(path.join(baseThemeFolder, 'less'), path.join(themeFolder, 'less', '_ref'));
 }
 
 
