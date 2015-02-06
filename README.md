@@ -12,8 +12,8 @@ You can compare this version number with the one you see on the [documentation s
 
 **Announcement**: Please note that next release (v1.8.0) will be the last stable release of the 1.x branch. The coming release (including tests) is also an LTS* (long term support - 18-month) version of this framework. We are now working on the 2.x branch site and development preparation. A complete feature listing in terms of user stories will be available soon. [Preview the plan](#whats-next)
 
-> <sup>\*</sup>LTS - Given that ECMAScript6 is coming and our goal of making a lightweight, time-saving and most importantly **easy** framework for both desktop web and hybrid application development, further improvements and simplifications will be made directly into the v2 codebase through es6 without disturbing the v1.7 branch. 
-The LTS version also serves as a benchmark for creating tests and for feature-list and feedback gathering. We have now successfully released 2 security products with complex configure panels/dashboards and excellent user flows & localizations through the v1.7 branch. More will come after we improve & finalize the charting and testing workflow in v2. 
+> <sup>\*</sup>LTS - Given that ECMAScript6 is coming and our goal of making a lightweight, time-saving and most importantly **easy** framework for both desktop web and hybrid application development, further improvements and simplifications will be made directly into the v2 codebase through es6 without disturbing the v1.8 branch. 
+The LTS version also serves as a benchmark for creating tests and for feature-list and feedback gathering. We have now successfully released 2 security products with complex configure panels/dashboards and excellent user flows & localizations through the v1.7 branch. More will come after we improve & finalize the charting workflow in v2. 
 
 This project produces **Stage.js** - an infrastructure for building modern web application client with many contexts (e.g a data-heavy administration app). In other words, we solve this problem for you:
 
