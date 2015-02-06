@@ -1,11 +1,12 @@
 Change Log
 ==========
-1.7.8 (2015-01-21)
+1.7.8 (2015-02-06)
 ------------------
 1. Fixed i18n plugin bugs and refined view/editor/grid/tree auto support to i18n labels.
 2. Auto detect browser locale in i18n process.
 3. Added i18n locale config in app to be able to force on certain locale.
 4. Stop creating '_ref' folder in the theme tool upon upgrading.
+5. Removed yepnope from dependencies since Modernizr already has it.
 
 
 1.7.7 (2014-12-08)
