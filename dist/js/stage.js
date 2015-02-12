@@ -852,8 +852,10 @@ _.each(['Core', 'Util'], function(coreModule){
  * app:ajax - change global ajax options here
  * app:success - notify
  * app:error - notify
- * app:ajax-start - progress
- * app:ajax-stop - progress
+ * app:ajax-start - single progress
+ * app:ajax-stop - single progress
+ * app:ajax-active - overall
+ * app:ajax-inactive - overall
  * app:remote-pre-get - fine grind op stub
  * app:remote-pre-change - fine grind op stub
  * 
@@ -905,20 +907,22 @@ _.each(['Core', 'Util'], function(coreModule){
 		return options;
 	}
 
-	function notify(jqXHR){
+	function notify(jqXHR, options){
 		jqXHR
 		.done(function(data, textStatus, jqXHR){
 			app.trigger('app:success', {
 				data: data, 
 				textStatus: textStatus,
 				jqXHR: jqXHR,
+				ajaxOptions: options
 			});
 		})
 		.fail(function(jqXHR, textStatus, errorThrown){
 			app.trigger('app:error', {
 				errorThrown: errorThrown,
 				textStatus: textStatus,
-				jqXHR: jqXHR
+				jqXHR: jqXHR,
+				ajaxOptions: options
 			});
 		});
 		return jqXHR;
@@ -931,7 +935,7 @@ _.each(['Core', 'Util'], function(coreModule){
 			options = fixOptions(options);
 			options.type = 'GET';
 			app.trigger('app:remote-pre-get', options);
-			return notify($.ajax(options));
+			return notify($.ajax(options), options);
 		},
 
 		//POST(no payload._id)/PUT/DELETE(payload = {_id: ...})
@@ -951,17 +955,27 @@ _.each(['Core', 'Util'], function(coreModule){
 			}
 
 			app.trigger('app:remote-pre-change', options);
-			return notify($.ajax(options));
+			return notify($.ajax(options), options);
 		}
 
 	});
 
 	//Global ajax event triggers
-	$document.ajaxStart(function() {
-		app.trigger('app:ajax-start');
+	//swapped!
+	$document.ajaxSend(function(e, jqXHR, ajaxOptions) {
+		app.trigger('app:ajax-start', e, jqXHR, ajaxOptions);
 	});
+	//swapped!
+	$document.ajaxComplete(function(e, jqXHR, ajaxOptions) {
+		app.trigger('app:ajax-stop', e, jqXHR, ajaxOptions);
+	});
+	//new name!
+	$document.ajaxStart(function() {
+		app.trigger('app:ajax-active');
+	});
+	//new name!
 	$document.ajaxStop(function() {
-		app.trigger('app:ajax-stop');
+		app.trigger('app:ajax-inactive');
 	});
 	
 
@@ -3931,4 +3945,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.7.8-822 build 1423702718743";
+;;app.stagejs = "1.7.8-823 build 1423707352361";

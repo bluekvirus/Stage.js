@@ -83,7 +83,7 @@
     "highlightjs": "*",
     "socket.io-client": "*",
     "jquery-serializeForm": "*",
-    "raphael": "~2.x.x",
+    "raphael": "2.1.2",
     "flot": "*",
     "Chart.js": "*",
     "peity": "*",
