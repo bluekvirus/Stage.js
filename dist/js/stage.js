@@ -3423,9 +3423,6 @@ var I18N = {};
 				options = options || {};
 				//1. reconfigure data and columns into this._options
 				this._options.data = options.data || this._options.data;
-				_.each(options.columns, function(column){
-					//TBI column ['name' or {}, '-name']
-				}, this);
 
 				//2. rebuild header cells - let it rerender with new column array
 				_.each(this._options.columns, function(column){
@@ -3438,10 +3435,14 @@ var I18N = {};
 				//3. rebuild body rows - let it rerender with new data array
 				this.body.currentView._options = this._options;
 				this.body.currentView.trigger('view:render-data', this._options.data);
+
+				//4. trigger overall view:data-rendered
+				this.trigger('view:data-rendered');
 			},
 			onRenderData: function(data){
 				//override the default data rendering meta-event responder
 				this.trigger('view:reconfigure', {data: data});
+				//this is just to answer the 'view:render-data' event
 			}
 		});
 
@@ -3930,4 +3931,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.7.7-819 build 1423253832916";
+;;app.stagejs = "1.7.8-822 build 1423702718743";
