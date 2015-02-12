@@ -752,9 +752,11 @@ app:navigate (string) or ({context:..., module:...}, silent) - Application.onNav
 app:context-guard-error (error, contextName) - [pre-defined]
 app:context-switched (contextName)  - [empty stub]
 //the followings are triggered by Application.remote():
-app:ajax - Application.onAjax [pre-defined]
-app:ajax-start - Application.onAjaxStart [pre-defined]
-app:ajax-stop - Application.onAjaxStop [pre-defined]
+app:ajax - before ajax sent
+app:ajax-start - single progress
+app:ajax-stop - single progress
+app:ajax-active - overall
+app:ajax-inactive - overall
 //triggered by window
 app:resized - [empty stub]
 app:scroll - [empty stub]

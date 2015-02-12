@@ -15,6 +15,7 @@ b. Simplifying /tools (build/libprep and devserver)
 4. Stop creating '_ref' folder in the theme tool upon upgrading.
 5. Removed yepnope from dependencies since Modernizr already has it.
 6. Fixed 'data-rendered' event bug in Datagrid.
+7. Fixed 'app:ajax*' event bugs.
 
 
 1.7.7 (2014-12-08)
