@@ -14,6 +14,16 @@ NProgress.configure({showSpinner: false});
 
     }).run();
 
+    //Ajax Progress -- Configure NProgress as global progress indicator.
+    if(window.NProgress){
+        app.onAjaxStart = function() {
+            NProgress.start();
+        };
+        app.onAjaxStop = function() {
+            NProgress.done();
+        };  
+    }    
+
     //Shared - Regionals
     app.area('Banner', {
         // effect: {

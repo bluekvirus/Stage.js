@@ -94,7 +94,8 @@
 				initialize: function(){
 					this.collection = app.collection([
 						{name: 'Edge Build', href:'static/resource/default/download/stagejs-edge.tar.gz'},
-						{name: 'Download Starter Kit', href:'static/resource/default/download/stagejs-starter-kit.tar.gz'},
+						{name: 'Starter Kit', href:'static/resource/default/download/stagejs-starter-kit.tar.gz'},
+						{name: 'Change Log', href:'https://github.com/bluekvirus/Stage.js/releases'},
 						{name: 'Document', href:'#navigate/Document'},
 						{name: 'Demo', href:'#navigate/Demo'}
 					]);

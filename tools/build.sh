@@ -1,4 +1,5 @@
 #!/bin/bash
+cd ./build
 #prepare version number with build number (commit count @HEAD -- current branch)
 node tag.js
 #build framework

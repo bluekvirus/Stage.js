@@ -43,7 +43,7 @@
  * view:render-data (data)
  * ...(see more in documentations)
  * 
- * Suggested events are: [not included, but you define, you fire to use]
+ * Suggested events are: [not included]
  * app:prompt (options) - app.onPrompt [not-defined]
  * app:error/info/success/warning (options) - app.onError [not-defined] //window.onerror is now rewired into this event as well.
  * app:login (options) - app.onLogin [not-defined]
@@ -213,17 +213,7 @@ _.each(['Core', 'Util'], function(coreModule){
 				margin: 0,
 				padding: 0					
 			});
-		}		
-		
-		//Ajax Progress -- Configure NProgress as global progress indicator.
-		if(window.NProgress){
-			Application.onAjaxStart = function() {
-				NProgress.start();
-			};
-			Application.onAjaxStop = function() {
-				NProgress.done();
-			};	
-		}		
+		}				
 
 		//Ajax Options Fix: (baseAjaxURI, CORS and cache)
 		Application.onAjax = function(options){
@@ -431,9 +421,9 @@ _.each(['Core', 'Util'], function(coreModule){
 		if(hybridEvent){
 			//Mobile development
 			Application.hybridEvent = hybridEvent; //window.cordova is probably true.
-		    Application.onError = function(err){
+		    Application.onError = function(eMsg, target, lineNum){
 		    	//override this to have remote debugging assistant
-		        console.error(err, err.target);
+		        console.error(eMsg, target, lineNum);
 		    };
 			//!!VERY IMPORTANT!! Disable 'touchmove' on non .scrollable elements
 			document.addEventListener("touchmove", function(e) {

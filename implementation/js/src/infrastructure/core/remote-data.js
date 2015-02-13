@@ -15,8 +15,8 @@
  * events:
  * -------
  * app:ajax - change global ajax options here
- * app:success - notify
- * app:error - notify
+ * app:ajax-success - single progress
+ * app:ajax-error - single progress
  * app:ajax-start - single progress
  * app:ajax-stop - single progress
  * app:ajax-active - overall
@@ -72,27 +72,6 @@
 		return options;
 	}
 
-	function notify(jqXHR, options){
-		jqXHR
-		.done(function(data, textStatus, jqXHR){
-			app.trigger('app:success', {
-				data: data, 
-				textStatus: textStatus,
-				jqXHR: jqXHR,
-				ajaxOptions: options
-			});
-		})
-		.fail(function(jqXHR, textStatus, errorThrown){
-			app.trigger('app:error', {
-				errorThrown: errorThrown,
-				textStatus: textStatus,
-				jqXHR: jqXHR,
-				ajaxOptions: options
-			});
-		});
-		return jqXHR;
-	}
-
 	_.extend(definition, {
 
 		//GET
@@ -100,7 +79,7 @@
 			options = fixOptions(options);
 			options.type = 'GET';
 			app.trigger('app:remote-pre-get', options);
-			return notify($.ajax(options), options);
+			return $.ajax(options);
 		},
 
 		//POST(no payload._id)/PUT/DELETE(payload = {_id: ...})
@@ -120,12 +99,12 @@
 			}
 
 			app.trigger('app:remote-pre-change', options);
-			return notify($.ajax(options), options);
+			return $.ajax(options);
 		}
 
 	});
 
-	//Global ajax event triggers
+	//Global jQuery ajax event mappings to app:ajax-* events.
 	//swapped!
 	$document.ajaxSend(function(e, jqXHR, ajaxOptions) {
 		app.trigger('app:ajax-start', e, jqXHR, ajaxOptions);
@@ -133,6 +112,14 @@
 	//swapped!
 	$document.ajaxComplete(function(e, jqXHR, ajaxOptions) {
 		app.trigger('app:ajax-stop', e, jqXHR, ajaxOptions);
+	});
+	//same
+	$document.ajaxSuccess(function(e, jqXHR, ajaxOptions, data){
+		app.trigger('app:ajax-success', e, jqXHR, ajaxOptions, data);
+	});
+	//same
+	$document.ajaxError(function(e, jqXHR, ajaxOptions, error){
+		app.trigger('app:ajax-error', e, jqXHR, ajaxOptions, error);
 	});
 	//new name!
 	$document.ajaxStart(function() {

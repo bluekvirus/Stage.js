@@ -44,7 +44,7 @@
  * view:render-data (data)
  * ...(see more in documentations)
  * 
- * Suggested events are: [not included, but you define, you fire to use]
+ * Suggested events are: [not included]
  * app:prompt (options) - app.onPrompt [not-defined]
  * app:error/info/success/warning (options) - app.onError [not-defined] //window.onerror is now rewired into this event as well.
  * app:login (options) - app.onLogin [not-defined]
@@ -214,17 +214,7 @@ _.each(['Core', 'Util'], function(coreModule){
 				margin: 0,
 				padding: 0					
 			});
-		}		
-		
-		//Ajax Progress -- Configure NProgress as global progress indicator.
-		if(window.NProgress){
-			Application.onAjaxStart = function() {
-				NProgress.start();
-			};
-			Application.onAjaxStop = function() {
-				NProgress.done();
-			};	
-		}		
+		}				
 
 		//Ajax Options Fix: (baseAjaxURI, CORS and cache)
 		Application.onAjax = function(options){
@@ -432,9 +422,9 @@ _.each(['Core', 'Util'], function(coreModule){
 		if(hybridEvent){
 			//Mobile development
 			Application.hybridEvent = hybridEvent; //window.cordova is probably true.
-		    Application.onError = function(err){
+		    Application.onError = function(eMsg, target, lineNum){
 		    	//override this to have remote debugging assistant
-		        console.error(err, err.target);
+		        console.error(eMsg, target, lineNum);
 		    };
 			//!!VERY IMPORTANT!! Disable 'touchmove' on non .scrollable elements
 			document.addEventListener("touchmove", function(e) {
@@ -850,8 +840,8 @@ _.each(['Core', 'Util'], function(coreModule){
  * events:
  * -------
  * app:ajax - change global ajax options here
- * app:success - notify
- * app:error - notify
+ * app:ajax-success - single progress
+ * app:ajax-error - single progress
  * app:ajax-start - single progress
  * app:ajax-stop - single progress
  * app:ajax-active - overall
@@ -907,27 +897,6 @@ _.each(['Core', 'Util'], function(coreModule){
 		return options;
 	}
 
-	function notify(jqXHR, options){
-		jqXHR
-		.done(function(data, textStatus, jqXHR){
-			app.trigger('app:success', {
-				data: data, 
-				textStatus: textStatus,
-				jqXHR: jqXHR,
-				ajaxOptions: options
-			});
-		})
-		.fail(function(jqXHR, textStatus, errorThrown){
-			app.trigger('app:error', {
-				errorThrown: errorThrown,
-				textStatus: textStatus,
-				jqXHR: jqXHR,
-				ajaxOptions: options
-			});
-		});
-		return jqXHR;
-	}
-
 	_.extend(definition, {
 
 		//GET
@@ -935,7 +904,7 @@ _.each(['Core', 'Util'], function(coreModule){
 			options = fixOptions(options);
 			options.type = 'GET';
 			app.trigger('app:remote-pre-get', options);
-			return notify($.ajax(options), options);
+			return $.ajax(options);
 		},
 
 		//POST(no payload._id)/PUT/DELETE(payload = {_id: ...})
@@ -955,12 +924,12 @@ _.each(['Core', 'Util'], function(coreModule){
 			}
 
 			app.trigger('app:remote-pre-change', options);
-			return notify($.ajax(options), options);
+			return $.ajax(options);
 		}
 
 	});
 
-	//Global ajax event triggers
+	//Global jQuery ajax event mappings to app:ajax-* events.
 	//swapped!
 	$document.ajaxSend(function(e, jqXHR, ajaxOptions) {
 		app.trigger('app:ajax-start', e, jqXHR, ajaxOptions);
@@ -968,6 +937,14 @@ _.each(['Core', 'Util'], function(coreModule){
 	//swapped!
 	$document.ajaxComplete(function(e, jqXHR, ajaxOptions) {
 		app.trigger('app:ajax-stop', e, jqXHR, ajaxOptions);
+	});
+	//same
+	$document.ajaxSuccess(function(e, jqXHR, ajaxOptions, data){
+		app.trigger('app:ajax-success', e, jqXHR, ajaxOptions, data);
+	});
+	//same
+	$document.ajaxError(function(e, jqXHR, ajaxOptions, error){
+		app.trigger('app:ajax-error', e, jqXHR, ajaxOptions, error);
 	});
 	//new name!
 	$document.ajaxStart(function() {
@@ -3945,4 +3922,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.7.8-823 build 1423707352361";
+;;app.stagejs = "1.7.8-824 build 1423860017062";
