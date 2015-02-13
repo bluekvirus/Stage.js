@@ -1,10 +1,12 @@
 Change Log
 ==========
-1.8.0 (2015-02-11*)
+1.8.0 (2015-02-13*)
 -------------------
+1. Refined $.ajaxEvents to app:ajax* events mapping.
+
 Working on...
 a. Adding /tests
-b. Simplifying /tools (build/libprep and devserver)
+b. Simplifying /tools + cli.js (build/libprep and devserver)
 
 
 1.7.8 (2015-02-11)
