@@ -45,15 +45,15 @@ What's next?
 2.0.0 Roadmap:
 * Merge Context, Regional, Widget, Editor and Canvas to be generic named Views;
 * Refine the navigation and layout region concepts;
-* Introduce state into views;
+* Introduce state machine into views;
 * Give view action listeners a choice to go background;
 * Remove deps on Marionette.js, jQuery UI Core to have a lightweight core;
 * Websocket support for messaging/notification;
-* Support progressive & reactive app building concept; (but no two-way binding)
-* Breaking basic editors implementation;
-* Pipelining dev process through Brunch;
-* Test automation through BDD;
-* Simpler (optional) devserver stack;
+* Support progressive & reactive app building concept; (with optional two-way binding on forms)
+* Breaking down basic editors implementation;
+* Put self-made dev process pipeline onto Brunch;
+* Test automation in BDD;
+* Even more simpler devserver stack;
 * ...
 
 optional:
