@@ -51,7 +51,7 @@ What's next?
 * Websocket support for messaging/notification;
 * Support progressive & reactive app building concept; (with optional two-way binding on forms)
 * Breaking down basic editors implementation;
-* Put self-made dev process pipeline onto Brunch;
+* Put self-made dev process pipeline onto Gulp;
 * Test automation in BDD;
 * Even more simpler devserver stack;
 * ...
