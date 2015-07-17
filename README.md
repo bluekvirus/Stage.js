@@ -42,25 +42,29 @@ Again, as an application developer you are encouraged read this [documentation](
 
 What's next?
 ------------
-2.0.0 Roadmap:
-* Merge Context, Regional, Widget, Editor and Canvas to be generic named Views;
-* Refine the navigation and layout region concepts;
-* Introduce state machine into views;
-* Give view action listeners a choice to go background;
-* Remove deps on Marionette.js, jQuery UI Core to have a lightweight core;
-* Websocket support for messaging/notification;
-* Support progressive & reactive app building concept; (with optional two-way binding on forms)
-* Breaking down basic editors implementation;
-* Put self-made dev process pipeline onto Gulp;
+2.0.0 Roadmap: [preview](https://github.com/bluekvirus/skeleton-webui)
+* AMD support; (:heavy_check_mark:)
+* Global co-op events; (:heavy_check_mark:)
+* Support reactive app building concept; (optional two-way bindings, MVVM) (:heavy_check_mark:)
+* Merge Context, Regional, Widget, Editor and Canvas to be generic named Views; (:heavy_check_mark:)
+* Refine the navigation and layout region concepts; (:heavy_check_mark:)
+* Remove deps on Backbone.js, Marionette.js, jQuery UI Core to have a lightweight core; (:heavy_check_mark:)
+* Remove theming/templating deps on Bootstrap; (:heavy_check_mark:)
+* Put self-made dev process pipeline onto Gulp; (:heavy_check_mark:)
 * Test automation in BDD;
-* Even more simpler devserver stack;
+* Introduce state machine into Views;
+* Give View action listeners a choice to go background (Web Worker);
+* Websocket integration for messaging/notification;
+* WebRTC integration for peer-to-peer data/stream sharing;
 * ...
 
-optional:
-* local filter/sorter mech into list views; 
-* local pagination mech into list views (in addition to the remote one we already have);
-* Datagrid+ : select-all header/cell, details row;
-* Editor+ : Spinner/Range, Switches, DnD Listing;
+Optional:
+* filter/sorter/pager in views (most likely through MVVM, v1 has remote version only);
+* form & input wrappers (already in v1);
+* ui prompts (already in v1);
+* view swapping effects (already in v1);
+* grid and cells (already in v1);
+* devserver stack; (already in v1);
 
 
 Contribute
