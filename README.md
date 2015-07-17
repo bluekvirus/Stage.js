@@ -10,7 +10,7 @@ app.stagejs (1.7.x-<commits> build <timestamp>)
 ```
 You can compare this version number with the one you see on the [documentation site](http://bluekvirus.github.io/Stage.js/#navigate/Document) and see if an upgrade is recommended.
 
-**Announcement**: Please note that next release (v1.8.0) will be the last stable release of the 1.x branch. The coming release (including tests) is also an LTS* (long term support - 18-month) version of this framework. We are now working on the 2.x branch site and development preparation. A complete feature listing in terms of user stories will be available soon. [Preview the plan](#whats-next)
+**Announcement**: Please note that next release (v1.8.0) will be the last stable release of the 1.x branch. The coming release (including tests) is also an LTS* (long term support - 18-month) version of this framework. We are now working on the 2.x branch site and development preparation. A complete feature listing in terms of user stories will be available soon. ([v2 plan](#whats-next))
 
 > <sup>\*</sup>LTS - Given that ECMAScript6 is coming and our goal of making a lightweight, time-saving and most importantly **easy** framework for both desktop web and hybrid application development, further improvements and simplifications will be made directly into the v2 codebase through es6 without disturbing the v1.8 branch. 
 The LTS version also serves as a benchmark for creating tests and for feature-list and feedback gathering. We have now successfully released 2 security products with complex configure panels/dashboards and excellent user flows & localizations through the v1.7 branch. More will come after we improve & finalize the charting workflow in v2. 
@@ -42,14 +42,19 @@ Again, as an application developer you are encouraged read this [documentation](
 
 What's next?
 ------------
-2.0.0 Roadmap: [preview](https://github.com/bluekvirus/skeleton-webui)
+[:crystal_ball: Preview the work](https://github.com/bluekvirus/skeleton-webui).
+
+2.0.0 Roadmap:
 * AMD support; (:heavy_check_mark:)
+* ECMAScript 5 & 6 support; (:heavy_check_mark:)
 * Global co-op events; (:heavy_check_mark:)
 * Support reactive app building concept; (optional two-way bindings, MVVM) (:heavy_check_mark:)
 * Merge Context, Regional, Widget, Editor and Canvas to be generic named Views; (:heavy_check_mark:)
 * Refine the navigation and layout region concepts; (:heavy_check_mark:)
 * Remove deps on Backbone.js, Marionette.js, jQuery UI Core to have a lightweight core; (:heavy_check_mark:)
 * Remove theming/templating deps on Bootstrap; (:heavy_check_mark:)
+* Keep [Cordova](https://cordova.apache.org/) hybrid HTML5 mobile app support (touch, gestures, ready-e); (:heavy_check_mark:)
+* Keep i18n, data validators, async coordination support; (:heavy_check_mark:) 
 * Put self-made dev process pipeline onto Gulp; (:heavy_check_mark:)
 * Test automation in BDD;
 * Introduce state machine into Views;
