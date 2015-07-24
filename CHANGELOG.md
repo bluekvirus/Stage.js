@@ -5,8 +5,9 @@ Change Log
 1. Refined $.ajaxEvents to app:ajax* events mapping.
 
 Working on...
-a. Adding /tests
-b. Simplifying /tools + cli.js (build/libprep and devserver)
+
+- Adding /tests
+- Simplifying 3rd party lib deps
 
 
 1.7.8 (2015-02-11)
