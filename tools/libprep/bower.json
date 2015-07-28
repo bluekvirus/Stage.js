@@ -1,6 +1,6 @@
 {
   "name": "stage.js",
-  "version": "1.7.8",
+  "version": "1.7.9",
   "homepage": "http://bluekvirus.github.io/Stage.js/",
   "authors": [
     "Tim Liu <bluekvirus@gmail.com>"
@@ -9,18 +9,13 @@
   "main": "dist/js/stage.js",
   "keywords": [
     "backbone",
-    "marionette",
-    "pro",
     "rich",
     "front-end",
     "application",
     "framework",
-    "client",
     "multiple",
     "context",
     "page",
-    "regional",
-    "area",
     "layout"
   ],
   "license": "MIT",
@@ -30,7 +25,7 @@
     "bower_components",
     "test",
     "tests",
-    "guideline",
+    "docs",
     "implementation",
     "tools",
     "README.md"
@@ -48,7 +43,6 @@
     "underscore": "~1.x.x",
     "underscore.string": "~2.x.x",
     "selectn": "~0.9.x",
-    "hammerjs": "~2.x.x",
     "validator-js": "~3.x.x",
     "backbone": "~1.x.x",
     "marionette": "~1.8.x",
@@ -75,16 +69,10 @@
   "dependencies": {
     "spin.js": "*",
     "nprogress": "*",
-    "progress.js": "*",
     "colorbox": "*",
-    "flexslider": "*",
-    "jquery.terminal": "*",
     "codemirror": "*",
     "highlightjs": "*",
-    "socket.io-client": "*",
-    "jquery-serializeForm": "*",
     "raphael": "2.1.2",
-    "flot": "*",
     "Chart.js": "*",
     "peity": "*",
     "d3": "*",
@@ -98,12 +86,9 @@
     "html5-boilerplate": "*",
     "mockjs": "*",
     "crossfilter": "*",
-    "ratchet": "*",
-    "pure": "*",
-    "foundation": "*",
     "animate.css": "*",
     "lesshat": "*",
-    "bootswatch": "~3.x.x",
+    "bootswatch": "*",
     "open-sans-fontface": "*",
     "roboto-fontface": "*",
     "ubuntu-fontface": "*",
@@ -111,16 +96,15 @@
     "iCheck": "*",
     "switchery": "*",
     "powerange": "*",
-    "knex": "*",
     "pickadate": "*",
-    "veinjs": "*",
-    "victor": "~0.2.6",
+    "victor": "*",
     "soundmanager": "*",
-    "video.js": "~4.9.1"
+    "video.js": "*"
   },
   "resolutions": {
     "modernizr": "~2.x.x",
     "fastclick": "~1.0.3",
-    "handlebars": "~2.x.x"
+    "handlebars": "~2.x.x",
+    "underscore": "~1.x.x"
   }
 }

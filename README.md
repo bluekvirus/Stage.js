@@ -125,19 +125,18 @@ Distribute
 ###Build
 ```
 //0. change version numbers
-a. CHANGELOG.md and libprep/bower.json
+a. CHANGELOG.md and tools/libprep/bower.json
 b. README.md, HOWTO.md (optional, can be through http://shields.io/)
 
-//1. update libs through tools/libprep/
-bower update
-node run all
+//1. update libs
+tools/lib-update.sh
 
-//2. [optional] update themes through tools/themeprep/
+//2. [optional] update themes (under tools/themeprep/)
 node run 
 node run site
 
-//3. build all distributions through tools/build
-./shortcut.sh
+//3. build distributions & doc site
+tools/build.sh
 ```
 
 ###Deploy

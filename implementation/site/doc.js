@@ -95,27 +95,38 @@
         },
         onShow: function(){
 
-            this.libinfo.show(app.regional({
+            this.libinfo.show(app.view({
                 tagName: 'ul',
                 className: 'list-group',
                 template:[ 
                     '<div class="text-muted">Included Libraries</div><hr/>',    
-                    '{{#each list}}',
+                    '{{#list}}',
                         '<li class="list-group-item" ui="libitem">',
                             '{{#if url}}<a href="{{url}}">{{name}}</a>',
                             '{{else}}{{name}}',
                             '{{/if}}',
                             '<span class="badge">{{version}}</span></li>',
-                    '{{/each}}',
+                    '{{/list}}',
                     '<li class="list-group-item text-center panel-footer"><small>{{created}}</small></li>',
                     '<h5 class="text-center"><small>Package manager: <a href="http://bower.io/">bower</a></small></h5>',
                 ],
                 onShow: function(){
                     var that = this;
                     $.get('js/lib/dependencies.json').done(function(data){
+                        //add update timestamp
                         _.extend(data, {
                             created: moment(data.created).fromNow()
                         });
+                        //rename
+                        var renamed = {
+                            'jquery-ui': 'jquery-ui-core',
+                            'marionette': 'marionette-core'
+                        };
+                        _.each(data.list, function(lib){
+                            if(renamed[lib.name])
+                                lib.name = renamed[lib.name];
+                        });
+                        //render
                         that.trigger('view:render-data', data);
                         that.$el.css({
                             padding: '0 6px'
@@ -129,7 +140,7 @@
                         //console.log(that.ui.libitem);
                     });                
                 }
-            }));
+            }, true));
 
             this.doc.$el.data('md', store.get('doc'));
             this.trigger('view:reload-doc'); 

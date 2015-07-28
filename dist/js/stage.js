@@ -124,6 +124,7 @@ _.each(['Core', 'Util'], function(coreModule){
 
 			//Defaults:
 			theme: 'default', //to disable theme rolling use false or '' and add your css in the index.html
+			//------------------------------------------mainView-------------------------------------------
 			template: '',
 			//e.g:: have a unified layout template.
 			/**
@@ -143,6 +144,7 @@ _.each(['Core', 'Util'], function(coreModule){
 			 */		
 			contextRegion: 'app', //alias: navRegion, preferred: navRegion
 			defaultContext: 'Default', //This is the context (name) the application will sit on upon loading.
+			//---------------------------------------------------------------------------------------------
 			fullScreen: false, //This will put <body> to be full screen sized (window.innerHeight).
 	        rapidEventDelay: 200, //in ms this is the rapid event delay control value shared within the application (e.g window resize).
 	        baseAjaxURI: '', //Modify this to fit your own backend apis. e.g index.php?q= or '/api',
@@ -343,7 +345,7 @@ _.each(['Core', 'Util'], function(coreModule){
 
 		//5 Activate Routing AFTER running all the initializers user has defined
 		//Context Switching by Routes (can use href = #navigate/... to trigger them)
-		Application.on("initialize:after", function(options){
+		Application.on("initialize:before", function(options){
 			//init client page router and history:
 			var Router = Backbone.Marionette.AppRouter.extend({
 				appRoutes: {
@@ -396,26 +398,25 @@ _.each(['Core', 'Util'], function(coreModule){
 			});
 			//Warning: calling ensureEl() on the app region will not work like regions in layouts. (Bug??)
 			//the additional <div> under the app region is somehow inevitable atm...
-			Application.trigger('app:before-template-ready');
+			Application.trigger('app:before-mainview-ready');
 			Application.mainView = Application.mainView || Application.view({
-				type: 'Layout',
 				template: Application.config.template
 			}, true);
 			Application.getRegion('app').show(Application.mainView);
-			Application.trigger('app:template-ready');
+			Application.trigger('app:mainview-ready');
 
-			//3.Auto-detect and init context (view that replaces the body region)
-			if(!window.location.hash){
-				if(!Application.Core.Context.get(Application.config.defaultContext))
-					console.warn('DEV::Application::You might want to define a Default context using app.create(\'Context Name\', {...})');
-				else
-					Application.navigate(Application.config.defaultContext);
-			}
-
-			//4. Start the app --> pre init --> initializers --> post init(router setup)
+			//3. Start the app --> pre init --> initializers --> post init(router setup)
 			Application._ensureScreenSize(function(){
 				Application.start();
 			});
+
+			//4.Auto-detect and init context (view that replaces the body region)
+			if(!window.location.hash){
+				if(!Application.Core.Context.get(Application.config.defaultContext))
+					console.warn('DEV::Application::You might want to define a Default context using app.context(\'Context Name\', {...})');
+				else
+					Application.navigate(Application.config.defaultContext);
+			}
 
 		}
 
@@ -473,13 +474,25 @@ _.each(['Core', 'Util'], function(coreModule){
 
 			var Def;
 			if(!options.name){
-				Def = Backbone.Marionette[options.type || 'ItemView'].extend(options);
+				Def = Backbone.Marionette[options.type || 'Layout'].extend(options);
 				if(instant) return new Def();
 			}
 			else //named views should be regionals in concept
 				Def = Application.Core.Regional.create(options);
 			
 			return Def;
+		},
+
+		regional: function(name, options){
+			options = options || {};
+			
+			if(_.isString(name))
+				_.extend(options, {name: name});
+			else
+				_.extend(options, name);
+
+			console.warn('DEV::Application::regional() method is deprecated, use .view() instead for', options.name);
+			return Application.view(options, !options.name);
 		},
 
 		context: function(name, options){
@@ -493,26 +506,6 @@ _.each(['Core', 'Util'], function(coreModule){
 			options = options || {};
 			_.extend(options, {name: name});
 			return Application.Core.Context.create(options);
-		},
-
-		regional: function(name, options){
-			if(!_.isString(name)) {
-				if(!name) return Application.Core.Regional.get();
-				options = name;
-				name = '';
-			}else {
-				if(!options) return Application.Core.Regional.get(name);
-			}			
-			options = options || {};
-			_.extend(options, {name: name});
-
-			if(!options.name){
-				options.type = options.type || 'Layout';
-				//no name means to use a view on a region anonymously, which in turn creates it right away.
-				return Application.view(options, true);
-			}
-
-			return Application.Core.Regional.create(options);
 		},
 
 		widget: function(name, options){
@@ -1999,8 +1992,7 @@ _.each(['Core', 'Util'], function(coreModule){
 							}, true));
 							return;
 						}
-						//throw new Error('DEV::Layout::View required ' + name + ' can NOT be found...use app.create(\'Regional\', {name: ..., ...}).');
-						console.warn('DEV::Layout::View required ' + name + ' can NOT be found...use app.create(\'Regional\', {name: ..., ...}).');
+						console.warn('DEV::Layout::View required ' + name + ' can NOT be found...use app.view({name: ..., ...}).');
 					});
 					
 				},this);
@@ -3922,4 +3914,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.7.8-824 build 1423860017062";
+;;app.stagejs = "1.7.9-834 build 1438055368111";

@@ -1,9 +1,9 @@
 {
-  "Chart.js": "../../implementation/bower_components/Chart.js/Chart.min.js",
+  "Chart.js": "../../implementation/bower_components/Chart.js/Chart.js",
   "animate.css": "../../implementation/bower_components/animate.css/animate.css",
   "backbone.babysitter": "../../implementation/bower_components/backbone.babysitter/lib/backbone.babysitter.js",
-  "backbone.wreqr": "../../implementation/bower_components/backbone.wreqr/lib/backbone.wreqr.js",
   "backbone": "../../implementation/bower_components/backbone/backbone.js",
+  "backbone.wreqr": "../../implementation/bower_components/backbone.wreqr/lib/backbone.wreqr.js",
   "blueimp-canvas-to-blob": "../../implementation/bower_components/blueimp-canvas-to-blob/js/canvas-to-blob.js",
   "blueimp-load-image": [
     "../../implementation/bower_components/blueimp-load-image/js/load-image.js",
@@ -16,12 +16,7 @@
   "blueimp-tmpl": "../../implementation/bower_components/blueimp-tmpl/js/tmpl.js",
   "bootstrap": [
     "../../implementation/bower_components/bootstrap/less/bootstrap.less",
-    "../../implementation/bower_components/bootstrap/dist/css/bootstrap.css",
-    "../../implementation/bower_components/bootstrap/dist/js/bootstrap.js",
-    "../../implementation/bower_components/bootstrap/dist/fonts/glyphicons-halflings-regular.eot",
-    "../../implementation/bower_components/bootstrap/dist/fonts/glyphicons-halflings-regular.svg",
-    "../../implementation/bower_components/bootstrap/dist/fonts/glyphicons-halflings-regular.ttf",
-    "../../implementation/bower_components/bootstrap/dist/fonts/glyphicons-halflings-regular.woff"
+    "../../implementation/bower_components/bootstrap/dist/js/bootstrap.js"
   ],
   "bootswatch": "../../implementation/bower_components/bootswatch",
   "codemirror": [
@@ -29,24 +24,16 @@
     "../../implementation/bower_components/codemirror/lib/codemirror.css"
   ],
   "colorbox": "../../implementation/bower_components/colorbox/jquery.colorbox.js",
-  "createjs-tweenjs": "../../implementation/bower_components/createjs-tweenjs/lib/tweenjs-0.5.1.combined.js",
+  "createjs-tweenjs": "../../implementation/bower_components/createjs-tweenjs/lib/tweenjs-0.6.1.combined.js",
   "crossfilter": "../../implementation/bower_components/crossfilter",
   "d3": "../../implementation/bower_components/d3/d3.js",
   "detectizr": "../../implementation/bower_components/detectizr/dist/detectizr.js",
-  "easeljs": "../../implementation/bower_components/easeljs/lib/easeljs-0.7.1.combined.js",
+  "easeljs": "../../implementation/bower_components/easeljs/lib/easeljs-0.8.1.combined.js",
   "fastclick": "../../implementation/bower_components/fastclick/lib/fastclick.js",
-  "flexslider": "../../implementation/bower_components/flexslider",
-  "flot": "../../implementation/bower_components/flot/jquery.flot.js",
-  "foundation": [
-    "../../implementation/bower_components/foundation/css/foundation.css",
-    "../../implementation/bower_components/foundation/css/foundation.css.map",
-    "../../implementation/bower_components/foundation/js/foundation.js"
-  ],
   "fontawesome": [
     "../../implementation/bower_components/fontawesome/css/font-awesome.css",
     "../../implementation/bower_components/fontawesome/fonts/*"
   ],
-  "hammerjs": "../../implementation/bower_components/hammerjs/hammer.js",
   "handlebars": "../../implementation/bower_components/handlebars/handlebars.js",
   "highcharts-release": [
     "../../implementation/bower_components/highcharts-release/highcharts.js",
@@ -83,132 +70,134 @@
     "../../implementation/bower_components/jquery-file-upload/js/jquery.fileupload-angular.js",
     "../../implementation/bower_components/jquery-file-upload/js/jquery.iframe-transport.js"
   ],
-  "jquery-placeholder": "../../implementation/bower_components/jquery-placeholder/jquery.placeholder.js",
-  "jquery-serializeForm": "../../implementation/bower_components/jquery-serializeForm",
   "jquery-ui": "../../implementation/bower_components/jquery-ui/ui/jquery-ui.js",
   "jquery.cookie": "../../implementation/bower_components/jquery.cookie/jquery.cookie.js",
-  "jquery.terminal": "../../implementation/bower_components/jquery.terminal",
   "jquery.transit": "../../implementation/bower_components/jquery.transit/jquery.transit.js",
   "jquery": "../../implementation/bower_components/jquery/dist/jquery.js",
   "jvectormap": "../../implementation/bower_components/jvectormap",
-  "knex": "../../implementation/bower_components/knex",
   "lesshat": [
     "../../implementation/bower_components/lesshat/build/lesshat.less",
     "../../implementation/bower_components/lesshat/build/lesshat-prefixed.less"
   ],
-  "loadcss": "../../implementation/bower_components/loadcss",
+  "loadcss": "../../implementation/bower_components/loadcss/loadCSS.js",
   "marionette": [
     "../../implementation/bower_components/marionette/lib/backbone.marionette.js",
     "../../implementation/bower_components/marionette/lib/core/amd/backbone.marionette.js"
   ],
-  "marked": "../../implementation/bower_components/marked",
-  "mockjs": "../../implementation/bower_components/mockjs",
+  "marked": "../../implementation/bower_components/marked/lib/marked.js",
   "modernizr": "../../implementation/bower_components/modernizr",
+  "mockjs": "../../implementation/bower_components/mockjs/dist/mock.js",
   "momentjs": "../../implementation/bower_components/momentjs/moment.js",
   "nprogress": [
     "../../implementation/bower_components/nprogress/nprogress.js",
     "../../implementation/bower_components/nprogress/nprogress.css"
   ],
-  "open-sans-fontface": "../../implementation/bower_components/open-sans-fontface/open-sans.css",
+  "open-sans-fontface": [
+    "../../implementation/bower_components/open-sans-fontface/open-sans.css",
+    "../../implementation/bower_components/open-sans-fontface/fonts/**/*"
+  ],
   "peity": "../../implementation/bower_components/peity/jquery.peity.js",
   "pickadate": [
     "../../implementation/bower_components/pickadate/lib/picker.js",
     "../../implementation/bower_components/pickadate/lib/picker.date.js",
-    "../../implementation/bower_components/pickadate/lib/picker.time.js"
+    "../../implementation/bower_components/pickadate/lib/picker.time.js",
+    "../../implementation/bower_components/pickadate/lib/themes/default.css",
+    "../../implementation/bower_components/pickadate/lib/themes/default.date.css",
+    "../../implementation/bower_components/pickadate/lib/themes/default.time.css"
   ],
   "powerange": "../../implementation/bower_components/powerange/dist/powerange.js",
-  "progress.js": [
-    "../../implementation/bower_components/progress.js/src/progress.js",
-    "../../implementation/bower_components/progress.js/src/progressjs.css"
-  ],
-  "pure": "../../implementation/bower_components/pure/pure.css",
   "raphael": "../../implementation/bower_components/raphael/raphael.js",
-  "ratchet": [
-    "../../implementation/bower_components/ratchet/dist/css/ratchet.css",
-    "../../implementation/bower_components/ratchet/dist/js/ratchet.js"
-  ],
   "roboto-fontface": [
-    "../../implementation/bower_components/roboto-fontface/roboto-fontface.css",
+    "../../implementation/bower_components/roboto-fontface/css/roboto-fontface.css",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-Black.eot",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-Black.svg",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-Black.ttf",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-Black.woff",
+    "../../implementation/bower_components/roboto-fontface/fonts/Roboto-Black.woff2",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-BlackItalic.eot",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-BlackItalic.svg",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-BlackItalic.ttf",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-BlackItalic.woff",
+    "../../implementation/bower_components/roboto-fontface/fonts/Roboto-BlackItalic.woff2",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-Bold.eot",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-Bold.svg",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-Bold.ttf",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-Bold.woff",
+    "../../implementation/bower_components/roboto-fontface/fonts/Roboto-Bold.woff2",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-BoldItalic.eot",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-BoldItalic.svg",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-BoldItalic.ttf",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-BoldItalic.woff",
+    "../../implementation/bower_components/roboto-fontface/fonts/Roboto-BoldItalic.woff2",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-Light.eot",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-Light.svg",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-Light.ttf",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-Light.woff",
+    "../../implementation/bower_components/roboto-fontface/fonts/Roboto-Light.woff2",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-LightItalic.eot",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-LightItalic.svg",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-LightItalic.ttf",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-LightItalic.woff",
+    "../../implementation/bower_components/roboto-fontface/fonts/Roboto-LightItalic.woff2",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-Medium.eot",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-Medium.svg",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-Medium.ttf",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-Medium.woff",
+    "../../implementation/bower_components/roboto-fontface/fonts/Roboto-Medium.woff2",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-MediumItalic.eot",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-MediumItalic.svg",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-MediumItalic.ttf",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-MediumItalic.woff",
+    "../../implementation/bower_components/roboto-fontface/fonts/Roboto-MediumItalic.woff2",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-Regular.eot",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-Regular.svg",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-Regular.ttf",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-Regular.woff",
+    "../../implementation/bower_components/roboto-fontface/fonts/Roboto-Regular.woff2",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-RegularItalic.eot",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-RegularItalic.svg",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-RegularItalic.ttf",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-RegularItalic.woff",
+    "../../implementation/bower_components/roboto-fontface/fonts/Roboto-RegularItalic.woff2",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-Thin.eot",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-Thin.svg",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-Thin.ttf",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-Thin.woff",
+    "../../implementation/bower_components/roboto-fontface/fonts/Roboto-Thin.woff2",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-ThinItalic.eot",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-ThinItalic.svg",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-ThinItalic.ttf",
-    "../../implementation/bower_components/roboto-fontface/fonts/Roboto-ThinItalic.woff"
+    "../../implementation/bower_components/roboto-fontface/fonts/Roboto-ThinItalic.woff",
+    "../../implementation/bower_components/roboto-fontface/fonts/Roboto-ThinItalic.woff2"
   ],
-  "scroll-reveal": "../../implementation/bower_components/scroll-reveal/scrollReveal.js",
+  "scroll-reveal": "../../implementation/bower_components/scroll-reveal/dist/scrollReveal.js",
   "selectn": "../../implementation/bower_components/selectn",
-  "socket.io-client": "../../implementation/bower_components/socket.io-client",
-  "soundmanager": "../../implementation/bower_components/soundmanager",
+  "soundmanager": [
+    "../../implementation/bower_components/soundmanager/script/soundmanager2.js",
+    "../../implementation/bower_components/soundmanager/swf/soundmanager2.swf",
+    "../../implementation/bower_components/soundmanager/swf/soundmanager2_flash9.swf"
+  ],
   "spin.js": "../../implementation/bower_components/spin.js/spin.js",
   "store.js": "../../implementation/bower_components/store.js/store.js",
   "swag": "../../implementation/bower_components/swag/lib/swag.js",
-  "switchery": "../../implementation/bower_components/switchery/dist/switchery.js",
+  "switchery": [
+    "../../implementation/bower_components/switchery/dist/switchery.js",
+    "../../implementation/bower_components/switchery/dist/switchery.css"
+  ],
   "togetherjs": "../../implementation/bower_components/togetherjs",
   "transitionize": "../../implementation/bower_components/transitionize/dist/transitionize.js",
   "ubuntu-fontface": "../../implementation/bower_components/ubuntu-fontface",
-  "underscore.string": "../../implementation/bower_components/underscore.string",
+  "underscore.string": "../../implementation/bower_components/underscore.string/lib/underscore.string.js",
   "underscore": "../../implementation/bower_components/underscore/underscore.js",
-  "uri.js": [
-    "../../implementation/bower_components/uri.js/src/URI.js",
-    "../../implementation/bower_components/uri.js/src/IPv6.js",
-    "../../implementation/bower_components/uri.js/src/SecondLevelDomains.js",
-    "../../implementation/bower_components/uri.js/src/punycode.js",
-    "../../implementation/bower_components/uri.js/src/URITemplate.js",
-    "../../implementation/bower_components/uri.js/src/jquery.URI.js",
-    "../../implementation/bower_components/uri.js/src/URI.min.js",
-    "../../implementation/bower_components/uri.js/src/jquery.URI.min.js",
-    "../../implementation/bower_components/uri.js/src/URI.fragmentQuery.js",
-    "../../implementation/bower_components/uri.js/src/URI.fragmentURI.js"
-  ],
+  "uri.js": "../../implementation/bower_components/uri.js/src/URI.js",
   "validator-js": "../../implementation/bower_components/validator-js/validator.js",
-  "veinjs": "../../implementation/bower_components/veinjs/vein.js",
   "victor": "../../implementation/bower_components/victor/build/victor.js",
   "video.js": [
     "../../implementation/bower_components/video.js/dist/video-js/video.js",
-    "../../implementation/bower_components/video.js/dist/video-js/video-js.css"
-  ],
-  "yepnope": "../../implementation/bower_components/yepnope"
+    "../../implementation/bower_components/video.js/dist/video-js/video-js.css",
+    "../../implementation/bower_components/video.js/dist/video-js/font/vjs.eot",
+    "../../implementation/bower_components/video.js/dist/video-js/font/vjs.svg",
+    "../../implementation/bower_components/video.js/dist/video-js/font/vjs.ttf",
+    "../../implementation/bower_components/video.js/dist/video-js/font/vjs.woff"
+  ]
 }

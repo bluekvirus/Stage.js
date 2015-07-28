@@ -6,6 +6,5 @@
 	"uri.js": "dist",
 	"jquery-ui": "dist/jquery-no-widget-ui.js",
 	"fontawesome": "fontawesome.js",
-	"loadcss": "loadCSS.js",
-	"yepnope": "dist/yepnope-2.0.0.js"
+	"loadcss": "loadCSS.js"
 }

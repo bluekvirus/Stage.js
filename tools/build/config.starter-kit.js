@@ -3,10 +3,6 @@ module.exports = {
 		root: '../../implementation', //path relative to this config.js
 	},
 	structure : { //path are relative to the distFolder and src.root above
-		design: {
-			assets: {},
-			docs: {}
-		},
 		implementation: {
 			js: {},
 			static: {
