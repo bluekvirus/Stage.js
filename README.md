@@ -46,6 +46,7 @@ What's next?
 2.0.0 Roadmap:
 * AMD support; (:heavy_check_mark:)
 * ECMAScript 5 & 6 support; (:heavy_check_mark:)
+* Handshake mode support in app init,load & view init; (:heavy_check_mark:)
 * Global co-op events; (:heavy_check_mark:)
 * Support reactive app building concept; (optional two-way bindings, MVVM) (:heavy_check_mark:)
 * Merge Context, Regional, Widget, Editor and Canvas to be generic named Views; (:heavy_check_mark:)
