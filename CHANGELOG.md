@@ -1,12 +1,16 @@
 Change Log
 ==========
-1.8.0 (2015-02-13*)
+1.7.9 (2015-07-27*)
 -------------------
 1. Refined $.ajaxEvents to app:ajax* events mapping.
+2. Deprecated app.regional API.
+3. Refined app.kickstart sequence. (app initializers can now call app.navigate)
+4. Cleaned up code repository and monitored libs.
+5. Updated documentation.
 
 Working on...
-a. Adding /tests
-b. Simplifying /tools + cli.js (build/libprep and devserver)
+
+- Adding /tests
 
 
 1.7.8 (2015-02-11)
