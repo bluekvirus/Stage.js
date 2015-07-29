@@ -60,26 +60,6 @@ Script(s)/Template(s)/CSS Injection:
 
 **Keep your JavaScript codes flat and HTML dynamic, style through CSS class.**
 
-
-###Why not using...
-Why not using AngularJS/EmberJS/Meteor or YUI/ExtJS? Yes you can, but, if you can, **always favor libraries over frameworks**. Given that *Stage.js* is also a framework. The advise here should be extended to: 
-> If you can *NOT* agree with the workflow/abstraction, always favor libraries over frameworks.
-
-We choose what we choose when designing this framework simply because we want total control over our product. There are often 2 types of framework to choose from when developing a web application:
-* Development Framework - AngularJS/EmberJS/Meteor (infrastructure only)
-* Application Framework (All-in-One) - YUI/ExtJS (infrastructure plus widgets and tools)
-
-**The Backbone library can implement them all** (Yes, any client side framework). (Not 100% for Meteor though, since Meteor combines its server into a full-stack solution. You need nodejs in the picture, and we do have a dev-server package called **ajax-box-lite** in the toolset for just that based on the [express.js](http://expressjs.com/4x/) framework). And, if you need more evidence, YUI3 has the exact same concepts from Backbone implemented as its infrastructure. (Why did we mention YUI here? Because of Yahoo!'s JavaScript [Architect](http://www.crockford.com/))
-
-In order to accomplish more with less code using Backbone, we extended **Backbone.Marionette** as our pattern library base and mainly using its *module* and *region* concepts. We also removed the needs to work with the Model/Collection sync methods in the original *Backbone* library. The resulting framework accomplishes all the big frameworks have promised but with **a thiner and flatter structure**. We believe scripting languages are always going to be the perfect thin glue layer between mechanisms and policies. The JavaScript language were picked to glue HTML/CSS and UX but nothing more, it should not be overdosed and attempt to mimic Java. In other words, **only the burger is important**:
-
-<img src="static/resource/default/diagram/Diagram-6.png" alt="HTML is the burger" class="center-block"></img>
-
-**Note**: Although the **Marionette** library offers many cool concepts for building large JavaScript front-end projects, we felt that the core value it offers lies within its region (for better view life-cycle management) and module managers. Thus only those are included and supported throughout the framework. We also extended the base view classes to enable remote templating, ui and region detection, action listeners, navigation hooks, svg canvas and faster **Cordova** development. 
-
-**Note**: The **JQuery UI** library contained in this framework is a custom build (Core, Interaction and Effect). It is sufficient for you to create plugins and widgets and to use the `$.fn.position()` and `$.fn.animation()` methods. However, you will *NOT* be able to use any UIs in the original library.
-
-
 ###Core concepts
 <img src="static/resource/default/diagram/Diagram-3.png" alt="Stage.js Architecture" class="center-block"></img>
 
@@ -113,7 +93,7 @@ Since most of the application state comes from the server, try **NOT** to use *M
 ####Reuse view definitions?
 For views that you need to use again and again but with different configuration (e.g a Datagrid). Register it as a *Widget* or, in case of a basic input, an *Editor*. These reusable view definitions are call *Reusable*s in the framework. Think in terms of the **List and Container** technique as much as possible when creating them.
 
-####Glue through events
+####Co-op through events
 We encourage event programming in this framework. We glue views into a functioning whole by using meta-events. Whenever an interaction or transition happens (e.g navigation, context-swap, login, error, data-ready...), instead of calling the actual *doer*s, **fire/trigger an event first and provide a default listener**, so that later the actual behavior triggered by this event can be changed without affecting the glue/interfacing logic. Read carefully through the **Events** subsection in **Quick steps** below so you understand how to implement and extend application behaviors mainly through events. 
 
 ####Application locking
@@ -122,9 +102,26 @@ Sometimes, with Ajax or other asynchronized operations (like timer related ones)
 ####Seems complicated...
 To focus, think of your application in terms of *Context*s and *Views*s (pages and areas). Like drawing a series of pictures, each page is a *Context* and you lay things out by sketching out regions (areas) first on each page then refine the details. Each *Context* can also be made state-aware through the same navigation mechanism that powers *Context* switching in the application container.
 
+###Why not using...
+Why not using AngularJS/EmberJS/Meteor or YUI/ExtJS? Yes you can, but, if you can, **always favor libraries over frameworks**. Given that *Stage.js* is also a framework. The advise here should be extended to: 
+> If you can *NOT* agree with the workflow/abstraction, always favor libraries over frameworks.
 
-Getting started
------------
+We choose what we choose when designing this framework simply because we want total control over our product. There are often 2 types of framework to choose from when developing a web application:
+* Development Framework - AngularJS/EmberJS/Meteor (infrastructure only)
+* Application Framework (All-in-One) - YUI/ExtJS (infrastructure plus widgets and tools)
+
+**The Backbone library can implement them all** (Yes, any client side framework). (Not 100% for Meteor though, since Meteor combines its server into a full-stack solution. You need nodejs in the picture, and we do have a dev-server package called **ajax-box-lite** in the toolset for just that based on the [express.js](http://expressjs.com/4x/) framework). And, if you need more evidence, YUI3 has the exact same concepts from Backbone implemented as its infrastructure. (Why did we mention YUI here? Because of Yahoo!'s JavaScript [Architect](http://www.crockford.com/))
+
+In order to accomplish more with less code using Backbone, we extended **Backbone.Marionette** as our pattern library base and mainly using its *module* and *region* concepts. We also removed the needs to work with the Model/Collection sync methods in the original *Backbone* library. The resulting framework accomplishes all the big frameworks have promised but with **a thiner and flatter structure**. We believe scripting languages are always going to be the perfect thin glue layer between mechanisms and policies. The JavaScript language were picked to glue HTML/CSS and UX but nothing more, it should not be overdosed and attempt to mimic Java. In other words, **only the burger is important**:
+
+<img src="static/resource/default/diagram/Diagram-6.png" alt="HTML is the burger" class="center-block"></img>
+
+**Note**: Although the **Marionette** library offers many cool concepts for building large JavaScript front-end projects, we felt that the core value it offers lies within its region (for better view life-cycle management) and module managers. Thus only those are included and supported throughout the framework. We also extended the base view classes to enable remote templating, ui and region detection, action listeners, navigation hooks, svg canvas and faster **Cordova** development. 
+
+**Note**: The **JQuery UI** library contained in this framework is a custom build (Core, Interaction and Effect). It is sufficient for you to create plugins and widgets and to use the `$.fn.position()` and `$.fn.animation()` methods. However, you will *NOT* be able to use any UIs in the original library.
+
+Basics
+------
 You are assumed to have programed with:
 
 * Underscore.js or Lo-Dash 
@@ -184,7 +181,7 @@ bower install/update stage
 ```
 
 
-###Quick steps
+###Quickstart steps
 Here is the recommended **workflow**. You should follow the steps each time you want to start a new project with *Stage.js*.
 
 
@@ -200,7 +197,7 @@ stagejs init
 ```
 3. [optional] Update everything with the latest edge version:
 ```
-stagejs update --edge --packages
+stagejs update --edge
 ```
 4. Start the development server
 ```
@@ -337,7 +334,7 @@ onShow: function(){
 
 If your application is a single-context application, you don't need to assign the application template. There will always be a region that wraps the whole application -- the *app* region. The **Default** *Context* will automatically show on region *app* if you did not specify `contextRegion` and `defaultContext`.
 
-#####Start up
+#####Run
 ```
 Application.setup({...}).run();
 ```
@@ -353,19 +350,14 @@ Application.setup({...}).run('deviceready'); //hook on specified ready event
 Note that the ready event may vary in different hybrid app development package.
 
 #####Customized bootstrapping
-The application bootstrapping sequence can be modified, since we are simply using the Marionette.Application object, you can add your own environment preparation code in one of the 4 ways that Marionette offers:
+The application bootstrapping sequence can be modified, since we are simply using the Marionette.Application object, you can add your own environment preparation code as initializers:
 ```
-//0. "initialize:before" / onInitializeBefore:
-// - fired (on Application) just before the initializers kick off
-
-//1. add more initializers
+//"initialize:before" / onInitializeBefore;
 Application.addInitializer(function(options){...});
-
-//2. "initialize:after" / onInitializeAfter: 
-// - fires (on Application) just after the initializers have finished
-
-//3. "start" / onStart: 
-// - fires (on Application) after all initializers and after the initializer events
+Application.addInitializer(function(options){...});
+...
+//"initialize:after" / onInitializeBefore;
+//"start" / onStart;
 
 Application.setup({...}).run();
 ```
@@ -379,7 +371,7 @@ app:mainview-ready //fired after the application is shown
 
 **Tip**: You can swap application template using the `Application.setup()` call upon receiving the `app:before-mainview-ready` event to layout your application differently on different platforms. (Use the `Modernizr` global variable for platform/feature detections.)
 
-You can also make good use of the `app:navigate` event and the `app:context-switched` event for per-context preparation.
+You can also make good use of the `app:navigate` event for context preparation.
 
 Let's proceed to define your contexts so you have something to show after the application starts.
 
@@ -627,36 +619,7 @@ Data returned should be in the [JSON](http://json.org/) format and with `Content
 
 Modify (paginate/filter/sort) the data before passing to the `view:render-data` event. *Do NOT* bind pagination/filtering/sorting operations with model/collection instances.
 
-
-####Step 5. Adding UX
-UX stands for user experience, it is not just about look'n'feel and clickings but also transitions/animations that links between interactions and state change. UX is hard to design, without a clear think-through over the purposes and targeted user tasks, it can be a total chaos... Make sure you have had your plan/sketch reviewed by targeted audience/friends or colleagues before implementation. Employ the *Goal-Directed Design* technique as much as you can.
-
-#####Enter/Leave Effects
-Both *region* and *View* can have an `effect` configure to control the effect through which it will be entering/leaving on a region:
-```
-//myRegionalA.js
-(function(app) {
-    app.view({
-        name: 'MyRegionalA', 
-        ...,
-        effect: 'string' or
-        {
-            enter: '...',
-            exit: '...'
-        },
-        ...
-    });
-})(Application);
-
-//Or in the template
-<div region="..." data-effect="..."></div>
-<div region="..." data-effect-enter="..."></div>
-```
-Use the css animation class name you build or from the included *Animate.css* library.
-
-Use `view.effect` to override region effects and `view.effect = false` to disable region effects.
-
-#####Actions
+###Actions
 Actions are click-ables marked by `action=""` attribute in your view template. The original way of registering events and listeners introduced by *Backbone.View* are flexible but tedious and repetitive. We offer you the *Action Tags for speeding things up.
 
 Any *View* can have its actions configure block activated like this (2 easy steps):
@@ -697,7 +660,7 @@ If you have locked the application with `Application.lock()` then the actions wi
 
 **Tip**: You can also use `unlock="..."` attribute to unlock the app or certain topic/action, this is in case that you want a pair of *Start/Stop* controls with app locking/unlocking splited into the 2 actions. 
 
-#####Events
+###Events
 Some interactions demand **collaboration** between view objects, this is why we introduce the concept of meta-event programming. It is like coding through just interfaces in a object-oriented programming language but much more flexible. The goal is to let the developer code with events instead of APIs so the implementation can be delayed as much as possible. The underlying principle is very simple:
 ```
 //event format : namespace:worda-wordb-...
@@ -787,8 +750,7 @@ If you want also to control the overflow css style of a region's `currentView`, 
 ```
 Note that for the overflow settings to show effect, you need to first use the region's `resize()` method call to size the region. 
 
-
-######Use parentCt/Ctx/Region?
+####Use parentCt/Ctx/Region?
 Before you move on, there is one more thing in this event section we want to clarify. If you use `region=""` in your template to define regions in a *Context*/*View*, your sub-view instances within those regions will receive a `parentCt` property upon showing which should help you find its parent container view instance.
 
 This is helpful when you want to achieve **collaborations** between sub-views by using event managed by the parent.
@@ -817,7 +779,7 @@ subViewA {
 
 Besides `parentCt`, views shown in regions will also get a ref to `parentCtx` and `parentRegion`.
 
-#####Locks
+###Locks
 You can use a global lock to lock all UIs of your application, like this
 ```
 //global lock
@@ -849,7 +811,7 @@ Application.available('anything'); //false, since global lock is unavailable.
 ```
 You can't acquire topic locks if the global lock is currently unavailable.
 
-#####Graphs
+###Graphs
 We support graphs through SVG. An **optional** basic SVG library (Raphaël.js) is included in the framework's starter-kit distribution. You can use it in any *View* through:
 ```
 Application.view({
@@ -877,6 +839,34 @@ view.onPaperResized(){
 If you require charts to be drawn, look through our monitored libraries under `/bower_components` there should be **d3.js** and **highcharts.js** for exactly that.
 
 **Note:** HTML5 *Canvas* libraries are also included in the bower registry.
+
+###UX
+UX stands for user experience, it is not just about look'n'feel and clickings but also transitions/animations that links between interactions and state change. UX is hard to design, without a clear think-through over the purposes and targeted user tasks, it can be a total chaos... Make sure you have had your plan/sketch reviewed by targeted audience/friends or colleagues before implementation. Employ the *Goal-Directed Design* technique as much as you can.
+
+####Enter/Leave Effects
+Both *region* and *View* can have an `effect` configure to control the effect through which it will be entering/leaving on a region:
+```
+//myRegionalA.js
+(function(app) {
+    app.view({
+        name: 'MyRegionalA', 
+        ...,
+        effect: 'string' or
+        {
+            enter: '...',
+            exit: '...'
+        },
+        ...
+    });
+})(Application);
+
+//Or in the template
+<div region="..." data-effect="..."></div>
+<div region="..." data-effect-enter="..."></div>
+```
+Use the css animation class name you build or from the included *Animate.css* library.
+
+Use `view.effect` to override region effects and `view.effect = false` to disable region effects.
 
 
 Inputs/Editors

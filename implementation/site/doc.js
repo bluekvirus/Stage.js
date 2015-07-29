@@ -119,12 +119,18 @@
                         });
                         //rename
                         var renamed = {
-                            'jquery-ui': 'jquery-ui-core',
-                            'marionette': 'marionette-core'
+                            'jquery-ui': {
+                                name: 'jquery-ui-core',
+                                url: 'http://jqueryui.com/download/#!version=1.10.4&components=1111111110000000000011111111111111'
+                            },
+                            'marionette': {
+                                name: 'marionette-core',
+                                url: 'https://github.com/bluekvirus/marionette-core'
+                            }
                         };
                         _.each(data.list, function(lib){
                             if(renamed[lib.name])
-                                lib.name = renamed[lib.name];
+                                _.extend(lib, renamed[lib.name]);
                         });
                         //render
                         that.trigger('view:render-data', data);
@@ -156,7 +162,10 @@
         tagName: 'ol',
         className: 'breadcrumb',
         template: [
-            '<li><i class="btn btn-primary btn-xs fa fa-arrow-up" action="goTop"></i> <i class="btn btn-warning btn-xs fa fa-refresh" action="refresh"></i></li>',
+            '<li>',
+                '<i class="btn btn-primary btn-xs fa fa-arrow-up" action="goTop"></i> ',
+                '<i class="btn btn-warning btn-xs fa fa-refresh" action="refresh"></i> ',
+            '</li>',
             '{{#each path}}',
                 '<li class="breadcrumb-item" ui="breadcrumb-item">',
                     '<a href="#" action="goTo" data-id="{{id}}">{{ title }}</a>',
@@ -172,6 +181,7 @@
                     
                 '</li>',
             '{{/each}}',
+            '<li><i class="fa fa-hand-pointer-o"></i> '
         ],
         actions: {
             _bubble: true,
