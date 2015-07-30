@@ -51,75 +51,75 @@
                 2. include > exclude > build cfg name if you use these attributes together on a single <script/>
         -->
 
-    <!--========Infrastructure Space: the engine======================================================-->
+    <!--========Infrastructure Space: the framework======================================================-->
     <!--Deps-->
-    <script  src="js/lib/dependencies.min.js" exclude="starter-kit, framework-only" persist="true"></script>
-    <!--APP-->
-    <script  src="js/src/infrastructure/application.js"></script>
-    <!--APP Util-->
-    <script  src="js/src/infrastructure/util/meta-event.js"></script>
-    <script  src="js/src/infrastructure/util/downloader.js"></script>
-    <script  src="js/src/infrastructure/util/template-builder.js"></script>
-    <script  src="js/src/infrastructure/util/script-inject.js"></script>
-    <!--APP Core-->
-    <script  src="js/src/infrastructure/core/remote-data.js"></script>
-    <script  src="js/src/infrastructure/core/reusable.js"></script>
-    <script  src="js/src/infrastructure/core/context.js"></script>
-    <script  src="js/src/infrastructure/core/regional.js"></script>
-    <script  src="js/src/infrastructure/core/lock.js"></script>
-    <!--Marionette.js Enhancement-/+-->
-    <script  src="js/src/infrastructure/lib+-/marionette/template-cache.js"></script>
-    <script  src="js/src/infrastructure/lib+-/marionette/region.js"></script>
-    <script  src="js/src/infrastructure/lib+-/marionette/view.js"></script>
-    <script  src="js/src/infrastructure/lib+-/marionette/item-view.js"></script>
-    <script  src="js/src/infrastructure/lib+-/marionette/layout.js"></script>
-    <script  src="js/src/infrastructure/lib+-/marionette/collection-view.js"></script>
+    <script src="js/lib/dependencies.min.js" exclude="starter-kit, framework-only" persist="true"></script>
+    <!--Infrastructure-->
+    <script src="js/src/infrastructure/env.js"></script>
+    <script src="js/src/infrastructure/index.js"></script>
+    <script src="js/src/infrastructure/api.js"></script>
+    <!--Util sub-modules-->
+    <script src="js/src/infrastructure/util/meta-event.js"></script>
+    <script src="js/src/infrastructure/util/downloader.js"></script>
+    <script src="js/src/infrastructure/util/template-builder.js"></script>
+    <script src="js/src/infrastructure/util/script-inject.js"></script>
+    <!--Core Modules-->
+    <script src="js/src/infrastructure/core/remote-data.js"></script>
+    <script src="js/src/infrastructure/core/lock.js"></script>
+    <script src="js/src/infrastructure/core/reusable.js"></script>
 
+    <!--View Enhancement-/+-->
+    <script src="js/src/infrastructure/lib+-/marionette/template-cache.js"></script>
+    <script src="js/src/infrastructure/lib+-/marionette/region.js"></script>
+    <script src="js/src/infrastructure/lib+-/marionette/view.js"></script>
+    <script src="js/src/infrastructure/lib+-/marionette/item-view.js"></script>
+    <script src="js/src/infrastructure/lib+-/marionette/layout.js"></script>
+    <script src="js/src/infrastructure/lib+-/marionette/collection-view.js"></script>
 
     <!--Predefined Goods(UI policy)-->
     <!--Basic (i18n, Table/Pager, Form/Editors, Overlay, MD, [Notification?])-->
-    <script  src="js/src/reusable/$.plugins/i18n.js"></script>
-    <script  src="js/src/reusable/$.plugins/md-content.js"></script>
-    <script  src="js/src/reusable/$.plugins/toc.js"></script>
-    <script  src="js/src/reusable/$.plugins/overlay.js"></script>
-    <script  src="js/src/reusable/editors/index.js" target="stage-editors.js"></script>
-    <script  src="js/src/reusable/editors/validations.js" target="stage-editors.js"></script>
-    <script  src="js/src/reusable/widgets/datagrid-lite/index.js" target="stage-widgets.js"></script>
-    <script  src="js/src/reusable/widgets/datagrid-lite/headers/string.js" target="stage-widgets.js"></script>
-    <script  src="js/src/reusable/widgets/datagrid-lite/cells/string.js" target="stage-widgets.js"></script>
-    <script  src="js/src/reusable/widgets/datagrid-lite/cells/seq.js" target="stage-widgets.js"></script>
-    <script  src="js/src/reusable/widgets/datagrid-lite/cells/action.js" target="stage-widgets.js"></script>
-    <script  src="js/src/reusable/widgets/tree/index.js" target="stage-widgets.js"></script>
-    <script  src="js/src/reusable/widgets/paginator/index.js" target="stage-widgets.js"></script>
+    <script src="js/src/reusable/$.plugins/i18n.js"></script>
+    <script src="js/src/reusable/$.plugins/md-content.js"></script>
+    <script src="js/src/reusable/$.plugins/toc.js"></script>
+    <script src="js/src/reusable/$.plugins/overlay.js"></script>
+    <script src="js/src/reusable/editors/index.js" target="stage-editors.js"></script>
+    <script src="js/src/reusable/editors/validations.js" target="stage-editors.js"></script>
+    <script src="js/src/reusable/widgets/datagrid-lite/index.js" target="stage-widgets.js"></script>
+    <script src="js/src/reusable/widgets/datagrid-lite/headers/string.js" target="stage-widgets.js"></script>
+    <script src="js/src/reusable/widgets/datagrid-lite/cells/string.js" target="stage-widgets.js"></script>
+    <script src="js/src/reusable/widgets/datagrid-lite/cells/seq.js" target="stage-widgets.js"></script>
+    <script src="js/src/reusable/widgets/datagrid-lite/cells/action.js" target="stage-widgets.js"></script>
+    <script src="js/src/reusable/widgets/tree/index.js" target="stage-widgets.js"></script>
+    <script src="js/src/reusable/widgets/paginator/index.js" target="stage-widgets.js"></script>
     
     <!--Build tag (automatically generated)-->
     <script src="js/tag.js"></script>
-    <!--==============End of the engine===============================================================-->
+    <!--=================================================================================================-->
 
     <!--User/Programmer Space: the web application dev-->
 
     <!--Project Spec Libs: e.g
             <script  src="bower_components/highcharts-release/highcharts.src.js"></script>
             <script  src="bower_components/highcharts-release/highcharts-more.src.js"></script>
-        -->
-    <script  src="bower_components/mockjs/dist/mock.js" include="site"></script>
-    <script  src="bower_components/highlightjs/highlight.pack.js" include="site"></script>
-    <script  src="bower_components/nprogress/nprogress.js" include="site"></script>
-    <script  src="bower_components/iCheck/icheck.js" include="site"></script>
-    <script  src="bower_components/raphael/raphael.js" include="site"></script>
+    -->
+    <script src="bower_components/mockjs/dist/mock.js" include="site"></script>
+    <script src="bower_components/highlightjs/highlight.pack.js" include="site"></script>
+    <script src="bower_components/nprogress/nprogress.js" include="site"></script>
+    <script src="bower_components/iCheck/icheck.js" include="site"></script>
+    <script src="bower_components/raphael/raphael.js" include="site"></script>
 
     <!--Widgets/Editors-->
     <!--Contexts/Regionals-->
-    <script  src="site/theme-mockups.js" include="site"></script>
-    <script  src="site/home.js" include="site"></script>
-    <script  src="site/doc.js" include="site"></script>
-    <script  src="site/acc-deny.js" include="site"></script>
-    <script  src="site/demo/index.js" include="site"></script>
-    <script  src="site/demo/editors.js" include="site"></script>
-    <script  src="site/demo/datatable.js" include="site"></script>
-    <script  src="site/demo/trees.js" include="site"></script>
-    <script  src="site/demo/notification.js" include="site"></script>
-    <script  src="site/demo/remote-tpl.js" include="site"></script>
+    <script src="site/theme-mockups.js" include="site"></script>
+    <script src="site/home.js" include="site"></script>
+    <script src="site/doc.js" include="site"></script>
+    <script src="site/acc-deny.js" include="site"></script>
+    <script src="site/demo/index.js" include="site"></script>
+    <script src="site/demo/editors.js" include="site"></script>
+    <script src="site/demo/datatable.js" include="site"></script>
+    <script src="site/demo/trees.js" include="site"></script>
+    <script src="site/demo/notification.js" include="site"></script>
+    <script src="site/demo/remote-tpl.js" include="site"></script>
 
     <!--main.js-->
     <script  src="site/main.js" include="site"></script>

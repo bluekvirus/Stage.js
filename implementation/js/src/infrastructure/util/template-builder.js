@@ -91,7 +91,7 @@
 						}
 						result = that.map[name] = tpl;
 					}).fail(function(){
-						throw new Error('DEV::View Template::Can not load template...' + url + ', re-check your app.config.viewTemplates setting');
+						throw new Error('DEV::View Template:: Can not load template...' + url + ', re-check your app.config.viewTemplates setting');
 					});
 					return result;
 				}

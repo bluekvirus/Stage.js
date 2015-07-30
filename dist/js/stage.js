@@ -1,4 +1,47 @@
 ;
+;;(function($, _, Swag, Marionette){
+
+	/**
+	 * Global shortcuts
+	 * ----------------
+	 * $document
+	 * $window
+	 */
+	_.each(['document', 'window'], function(coreDomObj){
+		window['$' + coreDomObj] = $(window[coreDomObj]);
+	});	
+
+	/**
+	 * 3rd party lib init
+	 * ---------------------------------
+	 */
+	Swag.registerHelpers();
+
+	/**
+	 * Define top level module containers
+	 * ----------------------------------
+	 * 				App
+	 * 				 |
+	 * 			   -----
+	 * 			  /     \
+	 * 			Core    Util
+	 * 			 |       |
+	 * 			 |      ...
+	 * 		Resuable
+	 * 		  |Context
+	 * 		  |Regional
+	 * 		  |Widget
+	 * 		  |Editor
+	 * 		Remote (RESTful)
+	 * 		Lock
+	 */
+	window.app = window.Application = new Marionette.Application();
+	_.each(['Core', 'Util'], function(coreModule){
+		Application.module(coreModule);
+	});
+
+})(jQuery, _, Swag, Marionette);
+
 ;/*
  * Main application definition.
  *
@@ -84,30 +127,8 @@
  *
  * @author Tim.Liu
  * @create 2014.02.17
- 
-
-/**
- * Setup Global vars and Config Libs
- * ---------------------------------
+ * 
  */
-Swag.registerHelpers();
-_.each(['document', 'window'], function(coreDomObj){
-	window['$' + coreDomObj] = $(window[coreDomObj]);
-});	
-
-/**
- * Define Application & Core Modules
- * ---------------------------------
- * Modules: API, Context(regional-views as sub-modules), Widget, Editor, Util
- * Methods:
- * 	setup();
- * 	run();
- * 	create(); - universal object (model/collection/views[context/regional-view/widget/editor]) creation point [hierarchy flattened to enhance transparency]. 
- */
-window.app = window.Application = new Backbone.Marionette.Application();
-_.each(['Core', 'Util'], function(coreModule){
-	Application.module(coreModule);
-});
 
 ;(function(){
 
@@ -345,7 +366,7 @@ _.each(['Core', 'Util'], function(coreModule){
 
 		//5 Activate Routing AFTER running all the initializers user has defined
 		//Context Switching by Routes (can use href = #navigate/... to trigger them)
-		Application.on("initialize:before", function(options){
+		Application.on("initialize:after", function(options){
 			//init client page router and history:
 			var Router = Backbone.Marionette.AppRouter.extend({
 				appRoutes: {
@@ -444,6 +465,13 @@ _.each(['Core', 'Util'], function(coreModule){
 
 	};
 
+})();
+
+
+
+
+;;(function(){
+
 	/**
 	 * Universal app object creation api entry point
 	 * ----------------------------------------------------
@@ -478,7 +506,7 @@ _.each(['Core', 'Util'], function(coreModule){
 				if(instant) return new Def();
 			}
 			else //named views should be regionals in concept
-				Def = Application.Core.Regional.create(options);
+				Def = Application.Core.Regional.register(options);
 			
 			return Def;
 		},
@@ -505,7 +533,7 @@ _.each(['Core', 'Util'], function(coreModule){
 			}
 			options = options || {};
 			_.extend(options, {name: name});
-			return Application.Core.Context.create(options);
+			return Application.Core.Context.register(options);
 		},
 
 		widget: function(name, options){
@@ -604,10 +632,6 @@ _.each(['Core', 'Util'], function(coreModule){
 	];
 
 })();
-
-
-
-
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -758,7 +782,7 @@ _.each(['Core', 'Util'], function(coreModule){
 						}
 						result = that.map[name] = tpl;
 					}).fail(function(){
-						throw new Error('DEV::View Template::Can not load template...' + url + ', re-check your app.config.viewTemplates setting');
+						throw new Error('DEV::View Template:: Can not load template...' + url + ', re-check your app.config.viewTemplates setting');
 					});
 					return result;
 				}
@@ -951,174 +975,6 @@ _.each(['Core', 'Util'], function(coreModule){
 
 })(Application, _, jQuery);
 ;/**
- * Widget/Editor registry. With a regFacotry to control the registry mech.
- *
- * Important
- * =========
- * Use create() at all times if possible, use get()[deprecated...] definition with caution, instantiate only 1 instance per definition.
- * There is something fishy about the initialize() function (Backbone introduced), events binding only get to execute once with this.listenTo(), if multiple instances of a part
- * listens to a same object's events in their initialize(), only one copy of the group of listeners are active.
- * 
- *
- * @author Tim.Liu
- * @create 2013.11.10
- * @update 2014.03.03
- */
-
-(function(app){
-
-	function makeRegistry(regName){
-		regName = _.string.classify(regName);
-		var manager = app.module('Core.' + regName);
-		_.extend(manager, {
-
-			map: {},
-			has: function(name){
-				if(!_.isString(name) || !name) throw new Error('DEV::Application.editor::You must specify the name of the ' + regName + ' to look for.');
-				if(this.map[name]) return true;
-				return false;
-			},
-			register: function(name, factory){
-				if(!_.isString(name) || !name) throw new Error('DEV::Application.editor::You must specify a ' + regName + ' name to register.');
-				if(this.has(name))
-					console.warn('DEV::Overriden::' + regName + '.' + name);
-				this.map[name] = factory();
-				this.map[name].prototype.name = name;
-			},
-
-			create: function(name, options){
-				if(!_.isString(name) || !name) throw new Error('DEV::Application.editor::You must specify the name of the ' + regName + ' to create.');
-				if(this.has(name))
-					return new (this.map[name])(options);
-				throw new Error('DEV::' + regName + '.Registry:: required definition [' + name + '] not found...');
-			},
-
-			get: function(name){
-				if(!name) return _.keys(this.map);
-				return this.map[name];
-			}
-
-		});
-
-		return manager;
-
-	}
-
-	makeRegistry('Widget');
-	makeRegistry('Editor');
-
-})(Application);
-;/**
- * This is the Application context registry. 
- * A context defines the scope of a group of modules that represent a phase/mode/page of the Application. 
- * (e.g. Login, Admin, AppUser, AppPublic(can be the same thing as Login) ...etc.)
- *
- * 
- * Design
- * ------
- * Context switch can be triggered by 
- * 	a. use event on app app:navigate (path);
- *  b. click <a href="#/navigate/[contextName][/subPath]"/> tag;
- *
- * 
- * Usage
- * -----
- * ###How to define one? 
- * app.Core.Context.create({
- * 		name: 'name of the context',
- * 		template: 'html template of the view as in Marionette.Layout',
- * 							- region=[] attribute --- mark a tag to be a region container
- * 							- view=[] attribute --- mark this region to show an new instance of specified view definition (in context.Views, see context.create below)
- *      guard: function(){
- *      	return undefined/''/false for pass
- *      	return error msg/object for blocking - triggers app:context-guard-error on app with the error returned
- *      }
- * });
- * or
- * app.context('name', {config});
- *
- * ###How to swap regional view on a region?
- * use this.[region name].show()
- * or
- * use this.[region name].trigger('region:load-view', [view name])
- *
- * **Note** that this refers to the context module not the layout view instance.
- * 
- * @author Tim.Liu
- * @created 2013.09.21
- * @updated 2014.02.21 (1.0.0-rc1)
- * @updated 2014.07.18 (1.5.0)
- */
-
-;(function(app, _){
-
-	var def = app.module('Core.Context');
-	var map = {};
-
-	_.extend(def, {
-		create: function(config){
-			_.extend(config, {
-				name: config.name || 'Default',
-				className: 'context context-' + _.string.slugify(config.name) + ' ' + (config.className || ''),
-				isContext: true
-			});
-
-			return this.set(config.name, Backbone.Marionette.Layout.extend(config));
-		},
-
-		set: function(name, Layout){
-			if(map[name]) console.warn('DEV::Core.Context::You have overriden context \'', name, '\'');
-			map[name] = Layout;
-			return Layout;
-		},
-
-		get: function(name){
-			if(!name) return _.keys(map);
-			return map[name];
-		}
-
-	});
-
-})(Application, _);
-
-
-
-;/**
- * This is a registry for saving 'named' view definitions.
- * 
- * [We moved the static regional view listing from the Marionette.Layout class]
- *
- * @author Tim.Liu
- * @create 2014.03.11
- */
-;(function(app, _, M){
-
-	var definition = app.module('Core.Regional');
-	var map = {};
-
-	_.extend(definition, {
-
-		create: function(config){
-			if(!config.name) throw new Error('DEV::Core.Regional::You must give this regional view a name...');
-			if(map[config.name]) console.warn('DEV::Core.Regional::You have overriden regional view \'', config.name, '\'');
-			
-			map[config.name] = M[config.type || 'Layout'].extend(config);
-			return map[config.name];
-			
-		},
-
-		get: function(name, options){
-			if(!name) return _.keys(map);
-			
-			var Def = map[name];
-			if(options) return new Def(options);
-			return Def;
-		}
-
-	});
-
-})(Application, _, Marionette);
-;/**
  * Application locking mech for actions, events and <a href> navigations ...
  *
  * Usage
@@ -1221,6 +1077,85 @@ _.each(['Core', 'Util'], function(coreModule){
 
 
 })(Application);
+;/**
+ * Widget/Editor registry. With a regFacotry to control the registry mech.
+ *
+ * Important
+ * =========
+ * Use create() at all times if possible, use get()[deprecated...] definition with caution, instantiate only 1 instance per definition.
+ * There is something fishy about the initialize() function (Backbone introduced), events binding only get to execute once with this.listenTo(), if multiple instances of a part
+ * listens to a same object's events in their initialize(), only one copy of the group of listeners are active.
+ * 
+ *
+ * @author Tim.Liu
+ * @create 2013.11.10
+ * @update 2014.03.03
+ * @update 2015.07.29 (merged Regional, Context)
+ */
+
+(function(_, app, Marionette){
+
+	function makeRegistry(regName){
+		regName = _.string.classify(regName);
+		var manager = app.module('Core.' + regName);
+		_.extend(manager, {
+
+			map: {},
+			has: function(name){
+				if(!_.isString(name) || !name) throw new Error('DEV::Reusable:: You must specify the name of the ' + regName + ' to look for.');
+				if(this.map[name]) return true;
+				return false;
+			},
+			register: function(name /*or options*/, factory){
+
+				//options
+				if(!factory){
+					var options = name;
+					name = options.name;
+					_.extend(/*{
+						...
+					},*/ options, {
+						className: regName.toLowerCase() + ' ' + _.string.slugify(regName + '-' + options.name) + ' ' + (options.className || ''),
+						category: regName
+					});
+					factory = function(){
+						return Marionette[options.type || 'Layout'].extend(options);
+					};
+				}
+
+				//name and a factory func (won't have preset className & category)
+				if(!_.isString(name) || !name) throw new Error('DEV::Reusable:: You must specify a ' + regName + ' name to register.');
+				if(this.has(name))
+					console.warn('DEV::Overriden::Reusable ' + regName + '.' + name);
+				this.map[name] = factory();
+				this.map[name].prototype.name = name;
+
+			},
+
+			create: function(name, options){
+				if(!_.isString(name) || !name) throw new Error('DEV::Reusable:: You must specify the name of the ' + regName + ' to create.');
+				if(this.has(name))
+					return new (this.map[name])(options);
+				throw new Error('DEV::Reusable:: Required definition [' + name + '] in ' + regName + ' not found...');
+			},
+
+			get: function(name){
+				if(!name) return _.keys(this.map);
+				return this.map[name];
+			}
+
+		});
+
+		return manager;
+
+	}
+
+	makeRegistry('Context'); //top level views (see infrastructure: navigation worker)
+	makeRegistry('Regional'); //general named views (e.g a form, a chart, a list, a customized detail)
+	makeRegistry('Widget'); //specialized named views (e.g a datagrid, a menu, ..., see reusable/widgets)
+	makeRegistry('Editor'); //specialized small views used in form views (see reusable/editors, lib+-/marionette/item-view,layout)
+
+})(_, Application, Marionette);
 ;;(function(app){
 
 	//1 Override the default raw-template retrieving method
@@ -1308,7 +1243,7 @@ _.each(['Core', 'Util'], function(coreModule){
 			if(this._parentLayout){
 				view.parentCt = this._parentLayout;
 				//also passing down the name of the outter-most context container.
-				if(this._parentLayout.isContext) view.parentCtx = this._parentLayout;
+				if(this._parentLayout.category === 'Context') view.parentCtx = this._parentLayout;
 				else if (this._parentLayout.parentCtx) view.parentCtx = this._parentLayout.parentCtx;
 			}
 
@@ -3914,4 +3849,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.7.9-836 build 1438129506613";
+;;app.stagejs = "1.7.9-837 build 1438223637468";

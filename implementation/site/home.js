@@ -53,10 +53,10 @@
 					'<i class="project-title" style="margin-bottom:20px;"></i>',
 					marked.parse([
 						/////////////////Intro/////////////////
-						'Learned Backbone? Tried Marionette? Still searching for a complete solution? ',
+						'Learned Backbone? Tried Marionette? Still searching for a complete application **workflow**? ',
 						'Look no further...\n',
-						'With our intuitive workflow, a thiner and flatter architecture and advanced tooling,',
-						'you can direct your next web application front-end like a play on stage with multiple scenes and elements right away.\n',
+						'With this thiner and flatter **architecture** and our intuitive **tools**,',
+						'you can direct your next web application like a play on stage.\n',
 						'Enjoy!',
 						/////////////////Intro/////////////////
 					].join('\n')),

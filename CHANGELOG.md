@@ -1,16 +1,24 @@
 Change Log
 ==========
-1.7.9 (2015-07-27*)
+1.8.0 (2015-07-29*)
+-------------------
+
+Working on...
+
+- Back-porting global co-op e
+- Back-porting dynamic view injection 
+- Adding /tests
+
+
+1.7.9 (2015-07-29)
 -------------------
 1. Refined $.ajaxEvents to app:ajax* events mapping.
 2. Deprecated app.regional API.
 3. Refined app.kickstart sequence. (app initializers can now call app.navigate)
-4. Cleaned up code repository and monitored libs.
-5. Updated documentation.
-
-Working on...
-
-- Adding /tests
+4. Merged context and regionl into resuable.
+5. Sharded infrastructure src.
+6. Cleaned up code repository and monitored libs.
+7. Updated documentation.
 
 
 1.7.8 (2015-02-11)
