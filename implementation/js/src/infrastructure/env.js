@@ -15,6 +15,9 @@
 	 * ---------------------------------
 	 */
 	Swag.registerHelpers();
+	_.isPlainObject = function(o){
+		return _.isObject(o) && !_.isFunction(o) && !_.isArray();
+	};
 
 	/**
 	 * Define top level module containers

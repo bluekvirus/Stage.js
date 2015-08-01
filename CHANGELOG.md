@@ -2,6 +2,8 @@ Change Log
 ==========
 1.8.0 (2015-07-29*)
 -------------------
+1. Refined Reusable module method register().
+2. Added _.isPlainObject() to underscore.
 
 Working on...
 

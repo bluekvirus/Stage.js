@@ -18,8 +18,8 @@ Initialize:
 * Application.run ()
 
 Structure:
-* Application.context (name, options) - alias: page()
-* Application.view (options, instant)
+* Application.context ([name,] options) - alias: page()
+* Application.view (name/options, options/instance)
 
 Reuse:
 * Application.widget (name, options/factory)

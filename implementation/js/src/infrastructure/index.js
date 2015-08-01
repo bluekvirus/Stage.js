@@ -356,15 +356,6 @@
 
 		function kickstart(){
 
-			//0. rewire general error.
-			window.onerror = function(errorMsg, target, lineNum){
-				Application.trigger('app:error', {
-					errorMsg: errorMsg,
-					target: target,
-					lineNum: lineNum
-				});
-			};
-
 			//1. check if we need 'fast-click' on mobile plateforms
 			if(Modernizr.mobile)
 				FastClick.attach(document.body);
@@ -400,6 +391,13 @@
 		if(hybridEvent){
 			//Mobile development
 			Application.hybridEvent = hybridEvent; //window.cordova is probably true.
+			window.onerror = function(errorMsg, target, lineNum){
+				Application.trigger('app:error', {
+					errorMsg: errorMsg,
+					target: target,
+					lineNum: lineNum
+				});
+			};
 		    Application.onError = function(eMsg, target, lineNum){
 		    	//override this to have remote debugging assistant
 		        console.error(eMsg, target, lineNum);

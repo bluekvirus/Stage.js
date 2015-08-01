@@ -16,6 +16,9 @@
 	 * ---------------------------------
 	 */
 	Swag.registerHelpers();
+	_.isPlainObject = function(o){
+		return _.isObject(o) && !_.isFunction(o) && !_.isArray();
+	};
 
 	/**
 	 * Define top level module containers
@@ -400,15 +403,6 @@
 
 		function kickstart(){
 
-			//0. rewire general error.
-			window.onerror = function(errorMsg, target, lineNum){
-				Application.trigger('app:error', {
-					errorMsg: errorMsg,
-					target: target,
-					lineNum: lineNum
-				});
-			};
-
 			//1. check if we need 'fast-click' on mobile plateforms
 			if(Modernizr.mobile)
 				FastClick.attach(document.body);
@@ -444,6 +438,13 @@
 		if(hybridEvent){
 			//Mobile development
 			Application.hybridEvent = hybridEvent; //window.cordova is probably true.
+			window.onerror = function(errorMsg, target, lineNum){
+				Application.trigger('app:error', {
+					errorMsg: errorMsg,
+					target: target,
+					lineNum: lineNum
+				});
+			};
 		    Application.onError = function(eMsg, target, lineNum){
 		    	//override this to have remote debugging assistant
 		        console.error(eMsg, target, lineNum);
@@ -496,67 +497,76 @@
 			return new Backbone.Collection(data);
 		},
 
-		view: function(options /*or name*/, instant){
-			if(_.isBoolean(options)) throw new Error('DEV::Application.view::pass in {options} or a name string...');
-			if(_.isString(options) || !options) return Application.Core.Regional.get(options);
-
-			var Def;
-			if(!options.name){
-				Def = Backbone.Marionette[options.type || 'Layout'].extend(options);
-				if(instant) return new Def();
+		//pass in [name,] options to define (named will be registered)
+		//pass in [name] to get
+		//pass in [name,] options, instance to create (named will be registered again)
+		view: function(name /*or options*/, options /*or instance*/){
+			if(_.isString(name)){
+				if(_.isBoolean(options) && options) return Application.Core.Regional.create(name);
+				if(_.isPlainObject(options)) return Application.Core.Regional.register(name, options);
 			}
-			else //named views should be regionals in concept
-				Def = Application.Core.Regional.register(options);
-			
-			return Def;
+
+			if(_.isPlainObject(name)){
+				var instance = options;
+				options = name;
+				var Def = options.name ? Application.Core.Regional.register(options) : Backbone.Marionette[options.type || 'Layout'].extend(options);
+
+				if(_.isBoolean(instance) && instance) return new Def();
+				return Def;
+			}
+
+			return Application.Core.Regional.get(name);
 		},
 
+		//pass in [name,] options to register (always requires a name)
+		//pass in [name] to get
+		context: function(name /*or options*/, options){
+			if(!options) {
+				if(_.isString(name) || !name)
+					return Application.Core.Context.get(name);
+				else
+					options = name;
+			}
+			else
+				_.extend(options, {name: name});
+			return Application.Core.Context.register(options);
+		},
+
+		//pass in name, factory to register
+		//pass in name, options to create
+		//pass in [name] to get
+		widget: function(name, options /*or factory*/){
+			if(!options) return Application.Core.Widget.get(name);
+			if(_.isFunction(options))
+				//register
+				return Application.Core.Widget.register(name, options);
+			return Application.Core.Widget.create(name, options);
+			//you can not register the definition when providing name, options.
+		},
+
+		//pass in name, factory to register
+		//pass in name, options to create
+		//pass in [name] to get
+		editor: function(name, options /*or factory*/){
+			if(!options) return Application.Core.Editor.get(name);
+			if(_.isFunction(options))
+				//register
+				return Application.Core.Editor.register(name, options);
+			return Application.Core.Editor.create(name, options);
+			//you can not register the definition when providing name, options.
+		},
+
+		//@deprecated---------------------
 		regional: function(name, options){
 			options = options || {};
-			
 			if(_.isString(name))
 				_.extend(options, {name: name});
 			else
 				_.extend(options, name);
-
 			console.warn('DEV::Application::regional() method is deprecated, use .view() instead for', options.name);
 			return Application.view(options, !options.name);
 		},
-
-		context: function(name, options){
-			if(!_.isString(name)) {
-				if(!name) return Application.Core.Context.get();
-				options = name;
-				name = '';
-			}else {
-				if(!options) return Application.Core.Context.get(name);
-			}
-			options = options || {};
-			_.extend(options, {name: name});
-			return Application.Core.Context.register(options);
-		},
-
-		widget: function(name, options){
-			if(!options) return Application.Core.Widget.get(name);
-			if(_.isFunction(options)){
-				//register
-				Application.Core.Widget.register(name, options);
-				return;
-			}
-			return Application.Core.Widget.create(name, options);
-			//you can not get the definition returned.
-		},
-
-		editor: function(name, options){
-			if(!options) return Application.Core.Editor.get(name);
-			if(_.isFunction(options)){
-				//register
-				Application.Core.Editor.register(name, options);
-				return;
-			}
-			return Application.Core.Editor.create(name, options);
-			//you can not get the definition returned.
-		},
+		//--------------------------------
 
 		lock: function(topic){
 			return Application.Core.Lock.lock(topic);
@@ -1106,11 +1116,13 @@
 				if(this.map[name]) return true;
 				return false;
 			},
-			register: function(name /*or options*/, factory){
 
-				//options
-				if(!factory){
-					var options = name;
+			register: function(name /*or options*/, factory /*or options or none*/){
+
+				//type 1: options only
+				var options;
+				if(_.isPlainObject(name)){
+					options = name;
 					name = options.name;
 					_.extend(/*{
 						...
@@ -1123,25 +1135,45 @@
 					};
 				}
 
-				//name and a factory func (won't have preset className & category)
+				//type 2: name and options
+				else if(_.isPlainObject(factory)){
+					options = _.extend({name: name}, factory);
+					factory = function(){
+						return Marionette[options.type || 'Layout'].extend(options);
+					};
+				}
+
+				//type 3: name and a factory func (won't have preset className & category)
 				if(!_.isString(name) || !name) throw new Error('DEV::Reusable:: You must specify a ' + regName + ' name to register.');
+				if(!_.isFunction(factory)) throw new Error('DEV::Reusable:: You must specify a ' + regName + ' factory function to register ' + name + ' !');
+
 				if(this.has(name))
 					console.warn('DEV::Overriden::Reusable ' + regName + '.' + name);
 				this.map[name] = factory();
 				this.map[name].prototype.name = name;
+				return this.map[name];
 
 			},
 
 			create: function(name, options){
 				if(!_.isString(name) || !name) throw new Error('DEV::Reusable:: You must specify the name of the ' + regName + ' to create.');
 				if(this.has(name))
-					return new (this.map[name])(options);
+					return new (this.map[name])(options || {});
 				throw new Error('DEV::Reusable:: Required definition [' + name + '] in ' + regName + ' not found...');
 			},
 
 			get: function(name){
 				if(!name) return _.keys(this.map);
-				return this.map[name];
+				if(this.has(name))
+					return this.map[name];
+			},
+
+			alter: function(name, options){
+				if(this.has(name)){
+					this.map[name] = this.map[name].extend(options);
+					return this.map[name];
+				}
+				throw new Error('DEV::Reusable:: Required definition [' + name + '] in ' + regName + ' not found...');
 			}
 
 		});
@@ -3849,4 +3881,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.7.9-837 build 1438223637468";
+;;app.stagejs = "1.7.9-840 build 1438399590044";

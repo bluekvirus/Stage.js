@@ -27,11 +27,13 @@
 				if(this.map[name]) return true;
 				return false;
 			},
-			register: function(name /*or options*/, factory){
 
-				//options
-				if(!factory){
-					var options = name;
+			register: function(name /*or options*/, factory /*or options or none*/){
+
+				//type 1: options only
+				var options;
+				if(_.isPlainObject(name)){
+					options = name;
 					name = options.name;
 					_.extend(/*{
 						...
@@ -44,25 +46,45 @@
 					};
 				}
 
-				//name and a factory func (won't have preset className & category)
+				//type 2: name and options
+				else if(_.isPlainObject(factory)){
+					options = _.extend({name: name}, factory);
+					factory = function(){
+						return Marionette[options.type || 'Layout'].extend(options);
+					};
+				}
+
+				//type 3: name and a factory func (won't have preset className & category)
 				if(!_.isString(name) || !name) throw new Error('DEV::Reusable:: You must specify a ' + regName + ' name to register.');
+				if(!_.isFunction(factory)) throw new Error('DEV::Reusable:: You must specify a ' + regName + ' factory function to register ' + name + ' !');
+
 				if(this.has(name))
 					console.warn('DEV::Overriden::Reusable ' + regName + '.' + name);
 				this.map[name] = factory();
 				this.map[name].prototype.name = name;
+				return this.map[name];
 
 			},
 
 			create: function(name, options){
 				if(!_.isString(name) || !name) throw new Error('DEV::Reusable:: You must specify the name of the ' + regName + ' to create.');
 				if(this.has(name))
-					return new (this.map[name])(options);
+					return new (this.map[name])(options || {});
 				throw new Error('DEV::Reusable:: Required definition [' + name + '] in ' + regName + ' not found...');
 			},
 
 			get: function(name){
 				if(!name) return _.keys(this.map);
-				return this.map[name];
+				if(this.has(name))
+					return this.map[name];
+			},
+
+			alter: function(name, options){
+				if(this.has(name)){
+					this.map[name] = this.map[name].extend(options);
+					return this.map[name];
+				}
+				throw new Error('DEV::Reusable:: Required definition [' + name + '] in ' + regName + ' not found...');
 			}
 
 		});
