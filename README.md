@@ -80,24 +80,18 @@ Fork/Clone the project and tweak the code locally, then contribute by making a p
 ###Prepare
 After cloning the project, you should go to `/tools` and run these commands:
 ```
-//1. prepare bower packages
-//under /tools/libprep
-bower install
-bower update
-node run all
+//1. prepare npm packages
+npm install
 
-//2. prepare default theme pack
-//under /tools/themeprep
+//2. prepare bower packages
+./lib-update.sh
+
+//3. prepare default & doc site theme packs (under ./themeprep)
 node run default
 node run site
 
-//3. prepare npm packages
-//under /tools
-npm install
-
 //4. fire up dev server
-//under /tools
-[sudo] npm start
+./start.sh
 ```
 This should fire-up the development server. It will serve the `/implementation` folder as web root on the port define by `/tools/devserver/profile/default`. Please go check the content of this profile config file before starting. It has some nice middlewares and auto-change-detectors there you can switch on/off to make the development a lot easier.
 
