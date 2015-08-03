@@ -339,6 +339,14 @@
 			if(Backbone.history)
 				Backbone.history.start();
 
+			//Auto-detect and init context (view that replaces the body region)
+			if(!window.location.hash){
+				if(!Application.Core.Context.get(Application.config.defaultContext))
+					console.warn('DEV::Application::You might want to define a Default context using app.context(\'Context Name\', {...})');
+				else
+					Application.navigate(Application.config.defaultContext);
+			}			
+
 		});
 
 		return Application;
@@ -375,16 +383,8 @@
 
 			//3. Start the app --> pre init --> initializers --> post init(router setup)
 			Application._ensureScreenSize(function(){
-				Application.start();
+				Application.start();				
 			});
-
-			//4.Auto-detect and init context (view that replaces the body region)
-			if(!window.location.hash){
-				if(!Application.Core.Context.get(Application.config.defaultContext))
-					console.warn('DEV::Application::You might want to define a Default context using app.context(\'Context Name\', {...})');
-				else
-					Application.navigate(Application.config.defaultContext);
-			}
 
 		}
 
