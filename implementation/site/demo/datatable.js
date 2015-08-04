@@ -57,11 +57,11 @@
 	    		console.log('selected/focused on', row);
 	    	});
 	    	this.footer.trigger('region:load-view', 'Paginator', {
-	    		target: table,
+	    		target: table.getBody(),
 	    		className: 'pagination pagination-sm pull-right',
 	    		pageWindowSize: 3
 	    	});
-	    	table.trigger('view:load-page', {
+	    	table.getBody().trigger('view:load-page', {
 	    		url: 'sample/user',
 	    		page: 1,
 	    		querys: {

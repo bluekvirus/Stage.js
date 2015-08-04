@@ -4,7 +4,7 @@
  * Usage (General)
  * ----------------------------
  * ###How to start my app?
- * 1. Application.setup({config});
+ * 1. app.setup({config});
  * config:
 		* theme,
 		* template,
@@ -16,10 +16,10 @@
 		* i18nResources
 		* i18nTransFile
 		* timeout (ms) - for app.remote and $.fileupload only, not for general $.ajax.
- * 2. Application.run();
+ * 2. app.run();
  *
  * ###How to interface with remote data?
- * 3. Application.remote(options); see core/remote-data.js
+ * 3. app.remote(options); see core/remote-data.js
  *
  * ###How to create app elements?
  * 4. see Application apis down at the bottom
@@ -82,22 +82,22 @@
  * 
  *
  * @author Tim.Liu
- * @create 2014.02.17
- * 
+ * @created 2014.02.17
+ * @updated 2015.08.03
  */
 
-;(function(){
+;(function(app){
 
-	Application.setup = function(config){
+	app.setup = function(config){
 		
 		//0. Re-run app.setup will only affect app.config variable.
-		if(Application.config) {
-			_.extend(Application.config, config);
+		if(app.config) {
+			_.extend(app.config, config);
 			return;
 		}
 
 		//1. Configure.
-		Application.config = _.extend({
+		app.config = _.extend({
 
 			//Defaults:
 			theme: 'default', //to disable theme rolling use false or '' and add your css in the index.html
@@ -126,6 +126,7 @@
 	        rapidEventDelay: 200, //in ms this is the rapid event delay control value shared within the application (e.g window resize).
 	        baseAjaxURI: '', //Modify this to fit your own backend apis. e.g index.php?q= or '/api',
 	        viewTemplates: 'static/template', //this is assisted by the build tool, combining all the *.html handlebars templates into one big json.
+			viewSrcs: undefined, //set this to enable reusable view dynamic loading.
 			i18nResources: 'static/resource', //this the the default location where our I18N plugin looks for locale translations.
 			i18nTransFile: 'i18n.json', //can be {locale}.json
 			i18nLocale: '', //if you really want to force the app to certain locale other than browser preference. (Still override-able by ?locale=.. in url)
@@ -146,11 +147,10 @@
 			//Again, it is always better to use server side proxy/forwarding instead of client side x-domain.
 
 		}, config);
-
 		
 		//2 Global settings. (events & ajax)
 		//Global App Events Listener Dispatcher
-		Application.Util.addMetaEvent(Application, 'app');
+		app.Util.addMetaEvent(app, 'app');
 
 		//Track window resize
 		var $body = $('body');
@@ -159,35 +159,35 @@
 			if(!validScreenSize(screenSize)) return;
 
 			////////////////cache the screen size/////////////
-			Application.screenSize = screenSize;
+			app.screenSize = screenSize;
 			//////////////////////////////////////////////////
-			if(Application.config.fullScreen){
+			if(app.config.fullScreen){
 				$body.height(screenSize.h);
 				$body.width(screenSize.w);
 			}
 			if(!silent)
-				Application.trigger('app:resized', screenSize);
+				app.trigger('app:resized', screenSize);
 		}
 		function validScreenSize(size){
 			return size.h > 0 && size.w > 0;
 		}
-		$window.on('resize', _.debounce(trackScreenSize, Application.config.rapidEventDelay));
+		$window.on('resize', _.debounce(trackScreenSize, app.config.rapidEventDelay));
 		//check screen size, trigger app:resized and get app.screenSize ready.
-		Application._ensureScreenSize = function(done){
+		app._ensureScreenSize = function(done){
 			trackScreenSize(); 
-			if(!Application.screenSize) _.delay(Application._ensureScreenSize, Application.config.rapidEventDelay/4, done);
+			if(!app.screenSize) _.delay(app._ensureScreenSize, app.config.rapidEventDelay/4, done);
 			else done();
 		};
 
 		//Track window scroll
 		function trackScroll(){
 			var top = $window.scrollTop();
-			Application.trigger('app:scroll', top);
+			app.trigger('app:scroll', top);
 		}
-		$window.on('scroll', _.throttle(trackScroll, Application.config.rapidEventDelay));
+		$window.on('scroll', _.throttle(trackScroll, app.config.rapidEventDelay));
 		
-		//apply application.config.fullScreen = true
-		if(Application.config.fullScreen){
+		//apply app.config.fullScreen = true
+		if(app.config.fullScreen){
 			$body.css({
 				overflow: 'hidden',
 				margin: 0,
@@ -196,11 +196,11 @@
 		}				
 
 		//Ajax Options Fix: (baseAjaxURI, CORS and cache)
-		Application.onAjax = function(options){
+		app.onAjax = function(options){
 
 			//app.config.baseAjaxURI
-			if(Application.config.baseAjaxURI)
-				options.url = [Application.config.baseAjaxURI, options.url].join('/');	
+			if(app.config.baseAjaxURI)
+				options.url = [app.config.baseAjaxURI, options.url].join('/');	
 
 			//crossdomain:
 			var crossdomain = options.xdomain;
@@ -223,36 +223,49 @@
 		
 		};
 
-
 		//3 Load Theme css & View templates & i18n translations
-		var theme = URI(window.location.toString()).search(true).theme || Application.config.theme;
+		var theme = URI(window.location.toString()).search(true).theme || app.config.theme;
 		if(theme){
-			Application.inject.css('themes/'+theme+'/css/main.css', $('#theme-roller')[0]);
-			Application.currentTheme = theme;
+			app.inject.css('themes/'+theme+'/css/main.css', $('#theme-roller')[0]);
+			app.currentTheme = theme;
 		}
 
-		if(Application.config.viewTemplates)
-			Application.inject.tpl('all.json');
+		if(app.config.viewTemplates)
+			app.inject.tpl('all.json');
 
 		I18N.configure({
-			locale: Application.config.i18nLocale,
-			resourcePath: Application.config.i18nResources,
-			translationFile: Application.config.i18nTransFile
+			locale: app.config.i18nLocale,
+			resourcePath: app.config.i18nResources,
+			translationFile: app.config.i18nTransFile
 		});
 
-		//4 Add Navigation workers
-		/**
-		 * Setup the application with content routing (navigation). 
-		 * 
-		 * @author Tim.Liu
-		 * @update 2013.09.11
-		 * @update 2014.01.28
-		 * @update 2014.07.15
-		 * - refined/simplified the router handler and context-switch navigation support
-		 * - use app:navigate (path) at all times when navigate between contexts & views.
-		 */
+		//4 Add Navigation
+		// Setup the application with content routing (navigation).
+		// - use app:navigate (path) at all times when navigate between contexts & views.
+		app.onNavigate = function(options, silent){
+			if(!app.available()) {
+				app.trigger('app:blocked', options);
+				return;
+			}
 
-			//1. Prepare context switching utility
+			var path = '';
+			if(_.isString(options)){
+				path = options;
+			}else {
+				//backward compatibility 
+				path = _.string.rtrim([options.context || app.currentContext.name, options.module || options.subpath].join('/'), '/');
+			}
+			if(silent || app.hybridEvent)
+				navigate(path);//hybrid app will navigate using the silent mode.
+			else
+				window.location.hash = 'navigate/' + path;
+		};
+
+		app.onContextGuardError = function(error, ctxName){
+			console.error('DEV:Context-Guard-Error:', ctxName, error);
+		};
+
+		//---navigation worker---
 			function navigate(path){
 				path = _.compact(String(path).split('/'));
 				if(path.length <= 0) throw new Error('DEV::Application::Navigation path error');
@@ -260,9 +273,9 @@
 				var context = path.shift();
 
 				if(!context) throw new Error('DEV::Application::Empty context name...');
-				var TargetContext = Application.Core.Context.get(context);
+				var TargetContext = app.Core.Context.get(context);
 				if(!TargetContext) throw new Error('DEV::Application::You must have the required context ' + context + ' defined...'); //see - special/registry/context.js			
-				if(!Application.currentContext || Application.currentContext.name !== context) {
+				if(!app.currentContext || app.currentContext.name !== context) {
 					
 					//re-create target context upon switching
 					var targetCtx = new TargetContext(), guardError;
@@ -270,59 +283,37 @@
 					//allow context to guard itself (e.g for user authentication)
 					if(targetCtx.guard) guardError = targetCtx.guard();
 					if(guardError) {
-						Application.trigger('app:context-guard-error', guardError, targetCtx.name);
+						app.trigger('app:context-guard-error', guardError, targetCtx.name);
 						return;
 					}
 					//allow context to check/do certain stuff before navigated to (similar to guard() above)
 					if(targetCtx.onBeforeNavigateTo &&  !targetCtx.onBeforeNavigateTo()){
-						Application.trigger('app:navigation-aborted', targetCtx.name);
+						app.trigger('app:navigation-aborted', targetCtx.name);
 						return;
 					}
 
 					//save your context state within onNavigateAway()
-					if(Application.currentContext) Application.currentContext.trigger('context:navigate-away'); 
+					if(app.currentContext) app.currentContext.trigger('context:navigate-away'); 
 					//prepare and show this new context					
-					Application.Util.addMetaEvent(targetCtx, 'context');
-					var navRegion = Application.config.navRegion || Application.config.contextRegion;
-					var targetRegion = Application.mainView.getRegion(navRegion) || Application.getRegion(navRegion);
+					app.Util.addMetaEvent(targetCtx, 'context');
+					var navRegion = app.config.navRegion || app.config.contextRegion;
+					var targetRegion = app.mainView.getRegion(navRegion) || app.getRegion(navRegion);
 					if(!targetRegion) throw new Error('DEV::Application::You don\'t have region \'' + navRegion + '\' defined');		
 					targetRegion.show(targetCtx);
-					Application.currentContext =  targetCtx;
+					app.currentContext =  targetCtx;
 
 					//fire a notification round to the sky.
-					Application.trigger('app:context-switched', Application.currentContext.name);
+					app.trigger('app:context-switched', app.currentContext.name);
 				}
 
-				Application.currentContext.trigger('context:navigate-chain', path);
+				app.currentContext.trigger('context:navigate-chain', path);
 
 			}
-			
-			Application.onNavigate = function(options, silent){
-				if(!Application.available()) {
-					Application.trigger('app:blocked', options);
-					return;
-				}
-
-				var path = '';
-				if(_.isString(options)){
-					path = options;
-				}else {
-					//backward compatibility 
-					path = _.string.rtrim([options.context || Application.currentContext.name, options.module || options.subpath].join('/'), '/');
-				}
-				if(silent || Application.hybridEvent)
-					navigate(path);//hybrid app will navigate using the silent mode.
-				else
-					window.location.hash = 'navigate/' + path;
-			};
-
-			Application.onContextGuardError = function(error, ctxName){
-				console.error('DEV:Context-Guard-Error:', ctxName, error);
-			};			
+		//-----------------------
 
 		//5 Activate Routing AFTER running all the initializers user has defined
 		//Context Switching by Routes (can use href = #navigate/... to trigger them)
-		Application.on("initialize:after", function(options){
+		app.on("initialize:after", function(options){
 			//init client page router and history:
 			var Router = Backbone.Marionette.AppRouter.extend({
 				appRoutes: {
@@ -330,26 +321,26 @@
 				},
 				controller: {
 					navigateTo: function(path){
-						Application.navigate(path || Application.config.defaultContext, true); //will skip updating #hash since the router is triggered by #hash change.
+						app.navigate(path || app.config.defaultContext, true); //will skip updating #hash since the router is triggered by #hash change.
 					},
 				}
 			});
 
-			Application.router = new Router();
+			app.router = new Router();
 			if(Backbone.history)
 				Backbone.history.start();
 
 			//Auto-detect and init context (view that replaces the body region)
 			if(!window.location.hash){
-				if(!Application.Core.Context.get(Application.config.defaultContext))
+				if(!app.Core.Context.get(app.config.defaultContext))
 					console.warn('DEV::Application::You might want to define a Default context using app.context(\'Context Name\', {...})');
 				else
-					Application.navigate(Application.config.defaultContext);
+					app.navigate(app.config.defaultContext);
 			}			
 
 		});
 
-		return Application;
+		return app;
 	};
 
 	/**
@@ -358,7 +349,7 @@
 	 * We support using stage.js in a hybrid app
 	 * 
 	 */
-	Application.run = function(hybridEvent){
+	app.run = function(hybridEvent){
 
 		hybridEvent = (hybridEvent === true) ? 'deviceready' : hybridEvent;
 
@@ -369,36 +360,36 @@
 				FastClick.attach(document.body);
 
 			//2. Put main template into position.
-			Application.addRegions({
+			app.addRegions({
 				app: '[region="app"]'
 			});
 			//Warning: calling ensureEl() on the app region will not work like regions in layouts. (Bug??)
 			//the additional <div> under the app region is somehow inevitable atm...
-			Application.trigger('app:before-mainview-ready');
-			Application.mainView = Application.mainView || Application.view({
-				template: Application.config.template
+			app.trigger('app:before-mainview-ready');
+			app.mainView = app.mainView || app.view({
+				template: app.config.template
 			}, true);
-			Application.getRegion('app').show(Application.mainView);
-			Application.trigger('app:mainview-ready');
+			app.getRegion('app').show(app.mainView);
+			app.trigger('app:mainview-ready');
 
 			//3. Start the app --> pre init --> initializers --> post init(router setup)
-			Application._ensureScreenSize(function(){
-				Application.start();				
+			app._ensureScreenSize(function(){
+				app.start();				
 			});
 
 		}
 
 		if(hybridEvent){
 			//Mobile development
-			Application.hybridEvent = hybridEvent; //window.cordova is probably true.
+			app.hybridEvent = hybridEvent; //window.cordova is probably true.
 			window.onerror = function(errorMsg, target, lineNum){
-				Application.trigger('app:error', {
+				app.trigger('app:error', {
 					errorMsg: errorMsg,
 					target: target,
 					lineNum: lineNum
 				});
 			};
-		    Application.onError = function(eMsg, target, lineNum){
+		    app.onError = function(eMsg, target, lineNum){
 		    	//override this to have remote debugging assistant
 		        console.error(eMsg, target, lineNum);
 		    };
@@ -415,11 +406,11 @@
 		}else
 			$document.ready(kickstart);
 
-		return Application;
+		return app;
 
 	};
 
-})();
+})(Application);
 
 
 

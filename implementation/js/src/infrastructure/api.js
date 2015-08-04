@@ -1,12 +1,12 @@
-;(function(){
+;(function(app){
 
 	/**
 	 * Universal app object creation api entry point
 	 * ----------------------------------------------------
 	 * @deprecated Use the detailed apis instead.
 	 */
-	Application.create = function(type, config){
-		console.warn('DEV::Application::create() method is deprecated, use methods listed in ', Application._apis, ' for alternatives');
+	app.create = function(type, config){
+		console.warn('DEV::Application::create() method is deprecated, use methods listed in ', app._apis, ' for alternatives');
 	};
 
 	/**
@@ -14,7 +14,7 @@
 	 * ------------------------
 	 * If you don't want to use .create() there you go:
 	 */
-	_.extend(Application, {
+	_.extend(app, {
 
 		model: function(data){
 			return new Backbone.Model(data);
@@ -29,20 +29,20 @@
 		//pass in [name,] options, instance to create (named will be registered again)
 		view: function(name /*or options*/, options /*or instance*/){
 			if(_.isString(name)){
-				if(_.isBoolean(options) && options) return Application.Core.Regional.create(name);
-				if(_.isPlainObject(options)) return Application.Core.Regional.register(name, options);
+				if(_.isBoolean(options) && options) return app.Core.Regional.create(name);
+				if(_.isPlainObject(options)) return app.Core.Regional.register(name, options);
 			}
 
 			if(_.isPlainObject(name)){
 				var instance = options;
 				options = name;
-				var Def = options.name ? Application.Core.Regional.register(options) : Backbone.Marionette[options.type || 'Layout'].extend(options);
+				var Def = options.name ? app.Core.Regional.register(options) : Backbone.Marionette[options.type || 'Layout'].extend(options);
 
 				if(_.isBoolean(instance) && instance) return new Def();
 				return Def;
 			}
 
-			return Application.Core.Regional.get(name);
+			return app.Core.Regional.get(name);
 		},
 
 		//pass in [name,] options to register (always requires a name)
@@ -50,24 +50,24 @@
 		context: function(name /*or options*/, options){
 			if(!options) {
 				if(_.isString(name) || !name)
-					return Application.Core.Context.get(name);
+					return app.Core.Context.get(name);
 				else
 					options = name;
 			}
 			else
 				_.extend(options, {name: name});
-			return Application.Core.Context.register(options);
+			return app.Core.Context.register(options);
 		},
 
 		//pass in name, factory to register
 		//pass in name, options to create
 		//pass in [name] to get
 		widget: function(name, options /*or factory*/){
-			if(!options) return Application.Core.Widget.get(name);
+			if(!options) return app.Core.Widget.get(name);
 			if(_.isFunction(options))
 				//register
-				return Application.Core.Widget.register(name, options);
-			return Application.Core.Widget.create(name, options);
+				return app.Core.Widget.register(name, options);
+			return app.Core.Widget.create(name, options);
 			//you can not register the definition when providing name, options.
 		},
 
@@ -75,11 +75,11 @@
 		//pass in name, options to create
 		//pass in [name] to get
 		editor: function(name, options /*or factory*/){
-			if(!options) return Application.Core.Editor.get(name);
+			if(!options) return app.Core.Editor.get(name);
 			if(_.isFunction(options))
 				//register
-				return Application.Core.Editor.register(name, options);
-			return Application.Core.Editor.create(name, options);
+				return app.Core.Editor.register(name, options);
+			return app.Core.Editor.create(name, options);
 			//you can not register the definition when providing name, options.
 		},
 
@@ -91,33 +91,95 @@
 			else
 				_.extend(options, name);
 			console.warn('DEV::Application::regional() method is deprecated, use .view() instead for', options.name);
-			return Application.view(options, !options.name);
+			return app.view(options, !options.name);
 		},
 		//--------------------------------
+		
+		has: function(name, type){
+			if(type)
+				return app.Core[type] && app.Core[type].has(name);
+
+			_.each(['Context', 'Regional', 'Widget', 'Editor'], function(t){
+				if(!type && app.Core[t].has(name))
+					type = t;
+			});
+
+			return type;
+		},
+
+		get: function(name, type){
+			if(!name)
+				return {
+					'Context': app.Core.Context.get(),
+					'View': app.Core.Regional.get(),
+					'Widget': app.Core.Widget.get(),
+					'Editor': app.Core.Editor.get()
+				};
+
+			if(type)
+				return app.Core[type] && app.Core[type].get(name);
+
+			var Reusable;
+			_.each(['Context', 'Regional', 'Widget', 'Editor'], function(t){
+				if(!Reusable)
+					Reusable = app.Core[t].get(name);
+			});
+
+			if(Reusable)
+				return Reusable;
+			else {
+				//see if we have app.viewSrcs set to load the View def dynamically
+				if(app.config && app.config.viewSrcs){
+					var path = name.split('/');
+					name = path.pop();
+					if(path.length) path = path.join('/');
+					else path = null;
+					$.ajax({
+						url: _.compact([app.config.viewSrcs, path, _.string.slugify(name)]).join('/') + '.js',
+						dataType: 'script',
+						async: false
+					}).done(function(){
+						//console.log('View injected', name, 'from', app.viewSrcs, path);
+						Reusable = true;
+					}).fail(function(jqXHR, settings, e){
+						console.warn('DEV::Application::get() Can NOT load View definition for', name, '[', e, ']');
+					});
+				}
+			}
+			if(Reusable)
+				return this.get(name, type);
+			return Reusable;
+		},
+
+		coop: function(event, options){
+			app.trigger('app:coop', event, options);
+			app.trigger('app:coop:' + event, options);
+			return app;
+		},
 
 		lock: function(topic){
-			return Application.Core.Lock.lock(topic);
+			return app.Core.Lock.lock(topic);
 		},
 
 		unlock: function(topic){
-			return Application.Core.Lock.unlock(topic);
+			return app.Core.Lock.unlock(topic);
 		},
 
 		available: function(topic){
-			return Application.Core.Lock.available(topic);
+			return app.Core.Lock.available(topic);
 		},
 
 		download: function(ticket){
-			return Application.Util.download(ticket);
+			return app.Util.download(ticket);
 		},
 
 		inject: {
 			js: function(){
-				return Application.Util.inject.apply(null, arguments);
+				return app.Util.inject.apply(null, arguments);
 			},
 
 			tpl: function(){
-				return Application.Util.Tpl.remote.load.apply(Application.Util.Tpl.remote, arguments);
+				return app.Util.Tpl.remote.load.apply(app.Util.Tpl.remote, arguments);
 			},
 
 			css: function(){
@@ -126,38 +188,38 @@
 		},
 
 		navigate: function(options, silent){
-			return Application.trigger('app:navigate', options || Application.config.defaultContext, silent);
+			return app.trigger('app:navigate', options || app.config.defaultContext, silent);
 		}	
 
 	});
 
 	//editor rules
-	Application.editor.validator = Application.editor.rule = function(name, fn){
-		if(!_.isString(name)) throw new Error('DEV::Application.editor.validator::You must specify a validator/rule name to use.');
-		return Application.Core.Editor.addRule(name, fn);
+	app.editor.validator = app.editor.rule = function(name, fn){
+		if(!_.isString(name)) throw new Error('DEV::Validator:: You must specify a validator/rule name to use.');
+		return app.Core.Editor.addRule(name, fn);
 	};
 
 	//alias
-	Application.page = Application.context;
-	Application.area = Application.regional;
+	app.page = app.context;
+	app.area = app.regional;
 
 	/**
 	 * Universal remote data interfacing api entry point
 	 * -------------------------------------------------
 	 * @returns jqXHR object (use promise pls)
 	 */
-	Application.remote = function(options){
+	app.remote = function(options){
 		options = options || {};
 		if(options.payload)
-			return Application.Core.Remote.change(options);
+			return app.Core.Remote.change(options);
 		else
-			return Application.Core.Remote.get(options);
+			return app.Core.Remote.get(options);
 	};
 
 	/**
 	 * API summary
 	 */
-	Application._apis = [
+	app._apis = [
 		'model', 'collection',
 		'context - @alias:page', 'regional - @alias:area',
 		'view',
@@ -168,4 +230,4 @@
 		'create - @deprecated'
 	];
 
-})();
+})(Application);

@@ -156,25 +156,21 @@
 				_.each(this.regions, function(selector, r){
 					this[r].listenTo(this[r], 'region:load-view', function(name, options){ //can load both view and widget.
 						if(!name) return;
-						//Widget?
-						if(app.Core.Widget.has(name)) {
-							this.show(app.Core.Widget.create(name, options));
+
+						var Reusable = app.get(name);
+						if(Reusable){
+							this.show(new Reusable(options));
 							return;
 						}
-						//Named View?
-						var View = app.Core.Regional.get(name);
-						if(View){
-							this.show(new View(options));
-							return;
-						}
+
 						//Template mockups?
 						if(_.string.startsWith(name, '@')){
 							this.show(app.view({
 								template: name,
-								type: 'Layout'
 							}, true));
 							return;
 						}
+
 						console.warn('DEV::Layout::View required ' + name + ' can NOT be found...use app.view({name: ..., ...}).');
 					});
 					
@@ -207,7 +203,7 @@
 					}
 					
 					var targetViewName = pathArray.shift();
-					var TargetView = app.Core.Regional.get(targetViewName);
+					var TargetView = app.get(targetViewName);
 
 					if(TargetView){
 						var navRegion = this.getRegion(this.navRegion);

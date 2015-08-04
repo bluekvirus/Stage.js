@@ -21,7 +21,7 @@
 	 * view:render-data
 	 * view:load-page
 	 */
-	_.extend(Backbone.Marionette.View.prototype, {
+	_.extend(Backbone.Marionette.CollectionView.prototype, {
 
 		/////////////////////////////
 		onRenderData: function(data){

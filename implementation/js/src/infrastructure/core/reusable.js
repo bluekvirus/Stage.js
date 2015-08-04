@@ -68,8 +68,9 @@
 
 			create: function(name, options){
 				if(!_.isString(name) || !name) throw new Error('DEV::Reusable:: You must specify the name of the ' + regName + ' to create.');
-				if(this.has(name))
-					return new (this.map[name])(options || {});
+				var Reusable = this.get(name);
+				if(Reusable)
+					return new Reusable(options || {});
 				throw new Error('DEV::Reusable:: Required definition [' + name + '] in ' + regName + ' not found...');
 			},
 

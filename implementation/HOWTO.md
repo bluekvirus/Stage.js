@@ -17,14 +17,14 @@ Initialize:
 * Application.setup (options)
 * Application.run ()
 
-Structure:
+View:
 * Application.context ([name,] options) - alias: page()
 * Application.view (name/options, options/instance)
-
-Reuse:
 * Application.widget (name, options/factory)
 * Application.editor (name, options/factory)
 * Application.editor.validator (name, fn) - alias: editor.rule()
+* Application.has (name, [type])
+* Application.get (name, [type])
 
 Handling Data:
 * Application.remote (options)
@@ -661,7 +661,23 @@ If you have locked the application with `Application.lock()` then the actions wi
 **Tip**: You can also use `unlock="..."` attribute to unlock the app or certain topic/action, this is in case that you want a pair of *Start/Stop* controls with app locking/unlocking splited into the 2 actions. 
 
 ###Events
-Some interactions demand **collaboration** between view objects, this is why we introduce the concept of meta-event programming. It is like coding through just interfaces in a object-oriented programming language but much more flexible. The goal is to let the developer code with events instead of APIs so the implementation can be delayed as much as possible. The underlying principle is very simple:
+Some interactions demand **collaboration** between view objects, this is why we introduce the concept of meta-event programming. 
+```
+//register
+app.view([Optional Name], {
+    //...
+    coop: ['eventA', 'eventB'],
+    //...
+    onEventA: function(options){
+
+    }
+})
+
+//later to trigger the collaboration
+app.coop('eventA', options);
+```
+
+It is like coding through interfaces in a object-oriented programming language but much more flexible. The goal is to let the developer code with events instead of APIs so the implementation can be delayed as much as possible. The underlying principle is very simple:
 ```
 //event format : namespace:worda-wordb-...
 object.trigger('object:meta-event', arguments);
@@ -705,11 +721,11 @@ view:render-data (data) - onRenderData [pre-defined]
 view:data-rendered
 view:resized - fired when parent region's .resize() method gets called
 
-//Layout with navRegion only
+//View with navRegion
 view:navigate-to
 view:navigate-away (if parentCt persists)
 
-//ItemView only (SVG)
+//SVG enabled
 view:fit-paper
 view:paper-resized
 view:paper-ready
@@ -1470,7 +1486,7 @@ pageWindowSize: //visible number of page indices (default to 5)
 ...
 var table = tableRegion.currentView;
 this.footer.trigger('region:load-view', 'Paginator', {
-    target: table,
+    target: table.getBody(),
     className: 'pagination pagination-sm pull-right'
 });
 ...
@@ -1478,7 +1494,7 @@ this.footer.trigger('region:load-view', 'Paginator', {
 Activate pagination through the `view:load-page` meta-event in a *CollectionView*:
 ```
 //continue
-table.trigger('view:load-page', {
+table.getBody().trigger('view:load-page', {
     url: '/sample1/user',
     page: 1,
     querys: {
@@ -1492,7 +1508,7 @@ The `view:page-changed` event emitted by the table will bring `currentPage` and 
 
 This event can start a pagination enabled data loading process in any *CollectionView* instance.
 ```
-collectionView.trigger('view:load-page', {
+CollectionView.trigger('view:load-page', {
     page: 1,
     pageSize: 15,
     dataKey: 'payload',

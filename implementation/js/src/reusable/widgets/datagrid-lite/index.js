@@ -94,6 +94,12 @@
 				//override the default data rendering meta-event responder
 				this.trigger('view:reconfigure', {data: data});
 				//this is just to answer the 'view:render-data' event
+			},
+			getBody: function(){
+				return this.body.currentView;
+			},
+			getHeader: function(){
+				return this.header.currentView;
 			}
 		});
 

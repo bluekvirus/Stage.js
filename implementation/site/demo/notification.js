@@ -5,6 +5,7 @@
 	var MsgBus = app.view({
 		type: 'CollectionView',
 		itemView: '#dynamic#',
+		coop: ['test-coop'],
 		buildItemView: function(item, ItemViewType, itemViewOptions){
 			// build the final list of options for the item view type
 			var options = _.extend({model: item}, itemViewOptions);
@@ -31,6 +32,9 @@
 		onMsg: function(msg){
 			if(!this.collection) this.trigger('view:render-data', []);
 			this.collection.add(msg);
+		},
+		onTestCoop: function(options){
+			console.log(this.isInDOM(), options);
 		}	
 	});
 
