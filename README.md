@@ -47,9 +47,9 @@ What's next?
 * AMD support; (:heavy_check_mark:)
 * ECMAScript 5 & 6 support; (:heavy_check_mark:)
 * Handshake mode support in app init,load & view init; (:heavy_check_mark:)
-* Global co-op events; (:heavy_check_mark:)
 * Support reactive app building concept; (optional two-way bindings, MVVM) (:heavy_check_mark:)
-* Merge Context, Regional, Widget, Editor and Canvas to be generic named Views; (:heavy_check_mark:)
+* Global co-op events; (:heavy_check_mark:, back-ported)
+* Merge Context, Regional, Widget, Editor and Canvas to be generic named Views; (:heavy_check_mark:, back-ported)
 * Refine the navigation and layout region concepts; (:heavy_check_mark:)
 * Remove deps on Backbone.js, Marionette.js, jQuery UI Core to have a lightweight core; (:heavy_check_mark:)
 * Remove theming/templating deps on Bootstrap (free to choose your own); (:heavy_check_mark:)
@@ -133,6 +133,7 @@ node run site
 //3. build distributions & doc site
 tools/build.sh
 ```
+**Important**: If you see any of the `*.less` file contains `@import url("...")` remove them before you compile the theme. Try to bring that piece to local code base. (e.g Host the web font yourself.)
 
 ###Deploy
 See in `tools/build/dist` and `dist` for details. The shortcut command also builds the project site (as its github page).

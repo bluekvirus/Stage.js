@@ -51,7 +51,7 @@
  * Usage (General)
  * ----------------------------
  * ###How to start my app?
- * 1. Application.setup({config});
+ * 1. app.setup({config});
  * config:
 		* theme,
 		* template,
@@ -63,10 +63,10 @@
 		* i18nResources
 		* i18nTransFile
 		* timeout (ms) - for app.remote and $.fileupload only, not for general $.ajax.
- * 2. Application.run();
+ * 2. app.run();
  *
  * ###How to interface with remote data?
- * 3. Application.remote(options); see core/remote-data.js
+ * 3. app.remote(options); see core/remote-data.js
  *
  * ###How to create app elements?
  * 4. see Application apis down at the bottom
@@ -129,22 +129,22 @@
  * 
  *
  * @author Tim.Liu
- * @create 2014.02.17
- * 
+ * @created 2014.02.17
+ * @updated 2015.08.03
  */
 
-;(function(){
+;(function(app){
 
-	Application.setup = function(config){
+	app.setup = function(config){
 		
 		//0. Re-run app.setup will only affect app.config variable.
-		if(Application.config) {
-			_.extend(Application.config, config);
+		if(app.config) {
+			_.extend(app.config, config);
 			return;
 		}
 
 		//1. Configure.
-		Application.config = _.extend({
+		app.config = _.extend({
 
 			//Defaults:
 			theme: 'default', //to disable theme rolling use false or '' and add your css in the index.html
@@ -173,6 +173,7 @@
 	        rapidEventDelay: 200, //in ms this is the rapid event delay control value shared within the application (e.g window resize).
 	        baseAjaxURI: '', //Modify this to fit your own backend apis. e.g index.php?q= or '/api',
 	        viewTemplates: 'static/template', //this is assisted by the build tool, combining all the *.html handlebars templates into one big json.
+			viewSrcs: undefined, //set this to enable reusable view dynamic loading.
 			i18nResources: 'static/resource', //this the the default location where our I18N plugin looks for locale translations.
 			i18nTransFile: 'i18n.json', //can be {locale}.json
 			i18nLocale: '', //if you really want to force the app to certain locale other than browser preference. (Still override-able by ?locale=.. in url)
@@ -193,11 +194,10 @@
 			//Again, it is always better to use server side proxy/forwarding instead of client side x-domain.
 
 		}, config);
-
 		
 		//2 Global settings. (events & ajax)
 		//Global App Events Listener Dispatcher
-		Application.Util.addMetaEvent(Application, 'app');
+		app.Util.addMetaEvent(app, 'app');
 
 		//Track window resize
 		var $body = $('body');
@@ -206,35 +206,35 @@
 			if(!validScreenSize(screenSize)) return;
 
 			////////////////cache the screen size/////////////
-			Application.screenSize = screenSize;
+			app.screenSize = screenSize;
 			//////////////////////////////////////////////////
-			if(Application.config.fullScreen){
+			if(app.config.fullScreen){
 				$body.height(screenSize.h);
 				$body.width(screenSize.w);
 			}
 			if(!silent)
-				Application.trigger('app:resized', screenSize);
+				app.trigger('app:resized', screenSize);
 		}
 		function validScreenSize(size){
 			return size.h > 0 && size.w > 0;
 		}
-		$window.on('resize', _.debounce(trackScreenSize, Application.config.rapidEventDelay));
+		$window.on('resize', _.debounce(trackScreenSize, app.config.rapidEventDelay));
 		//check screen size, trigger app:resized and get app.screenSize ready.
-		Application._ensureScreenSize = function(done){
+		app._ensureScreenSize = function(done){
 			trackScreenSize(); 
-			if(!Application.screenSize) _.delay(Application._ensureScreenSize, Application.config.rapidEventDelay/4, done);
+			if(!app.screenSize) _.delay(app._ensureScreenSize, app.config.rapidEventDelay/4, done);
 			else done();
 		};
 
 		//Track window scroll
 		function trackScroll(){
 			var top = $window.scrollTop();
-			Application.trigger('app:scroll', top);
+			app.trigger('app:scroll', top);
 		}
-		$window.on('scroll', _.throttle(trackScroll, Application.config.rapidEventDelay));
+		$window.on('scroll', _.throttle(trackScroll, app.config.rapidEventDelay));
 		
-		//apply application.config.fullScreen = true
-		if(Application.config.fullScreen){
+		//apply app.config.fullScreen = true
+		if(app.config.fullScreen){
 			$body.css({
 				overflow: 'hidden',
 				margin: 0,
@@ -243,11 +243,11 @@
 		}				
 
 		//Ajax Options Fix: (baseAjaxURI, CORS and cache)
-		Application.onAjax = function(options){
+		app.onAjax = function(options){
 
 			//app.config.baseAjaxURI
-			if(Application.config.baseAjaxURI)
-				options.url = [Application.config.baseAjaxURI, options.url].join('/');	
+			if(app.config.baseAjaxURI)
+				options.url = [app.config.baseAjaxURI, options.url].join('/');	
 
 			//crossdomain:
 			var crossdomain = options.xdomain;
@@ -270,36 +270,49 @@
 		
 		};
 
-
 		//3 Load Theme css & View templates & i18n translations
-		var theme = URI(window.location.toString()).search(true).theme || Application.config.theme;
+		var theme = URI(window.location.toString()).search(true).theme || app.config.theme;
 		if(theme){
-			Application.inject.css('themes/'+theme+'/css/main.css', $('#theme-roller')[0]);
-			Application.currentTheme = theme;
+			app.inject.css('themes/'+theme+'/css/main.css', $('#theme-roller')[0]);
+			app.currentTheme = theme;
 		}
 
-		if(Application.config.viewTemplates)
-			Application.inject.tpl('all.json');
+		if(app.config.viewTemplates)
+			app.inject.tpl('all.json');
 
 		I18N.configure({
-			locale: Application.config.i18nLocale,
-			resourcePath: Application.config.i18nResources,
-			translationFile: Application.config.i18nTransFile
+			locale: app.config.i18nLocale,
+			resourcePath: app.config.i18nResources,
+			translationFile: app.config.i18nTransFile
 		});
 
-		//4 Add Navigation workers
-		/**
-		 * Setup the application with content routing (navigation). 
-		 * 
-		 * @author Tim.Liu
-		 * @update 2013.09.11
-		 * @update 2014.01.28
-		 * @update 2014.07.15
-		 * - refined/simplified the router handler and context-switch navigation support
-		 * - use app:navigate (path) at all times when navigate between contexts & views.
-		 */
+		//4 Add Navigation
+		// Setup the application with content routing (navigation).
+		// - use app:navigate (path) at all times when navigate between contexts & views.
+		app.onNavigate = function(options, silent){
+			if(!app.available()) {
+				app.trigger('app:blocked', options);
+				return;
+			}
 
-			//1. Prepare context switching utility
+			var path = '';
+			if(_.isString(options)){
+				path = options;
+			}else {
+				//backward compatibility 
+				path = _.string.rtrim([options.context || app.currentContext.name, options.module || options.subpath].join('/'), '/');
+			}
+			if(silent || app.hybridEvent)
+				navigate(path);//hybrid app will navigate using the silent mode.
+			else
+				window.location.hash = 'navigate/' + path;
+		};
+
+		app.onContextGuardError = function(error, ctxName){
+			console.error('DEV:Context-Guard-Error:', ctxName, error);
+		};
+
+		//---navigation worker---
 			function navigate(path){
 				path = _.compact(String(path).split('/'));
 				if(path.length <= 0) throw new Error('DEV::Application::Navigation path error');
@@ -307,9 +320,9 @@
 				var context = path.shift();
 
 				if(!context) throw new Error('DEV::Application::Empty context name...');
-				var TargetContext = Application.Core.Context.get(context);
+				var TargetContext = app.Core.Context.get(context);
 				if(!TargetContext) throw new Error('DEV::Application::You must have the required context ' + context + ' defined...'); //see - special/registry/context.js			
-				if(!Application.currentContext || Application.currentContext.name !== context) {
+				if(!app.currentContext || app.currentContext.name !== context) {
 					
 					//re-create target context upon switching
 					var targetCtx = new TargetContext(), guardError;
@@ -317,59 +330,37 @@
 					//allow context to guard itself (e.g for user authentication)
 					if(targetCtx.guard) guardError = targetCtx.guard();
 					if(guardError) {
-						Application.trigger('app:context-guard-error', guardError, targetCtx.name);
+						app.trigger('app:context-guard-error', guardError, targetCtx.name);
 						return;
 					}
 					//allow context to check/do certain stuff before navigated to (similar to guard() above)
 					if(targetCtx.onBeforeNavigateTo &&  !targetCtx.onBeforeNavigateTo()){
-						Application.trigger('app:navigation-aborted', targetCtx.name);
+						app.trigger('app:navigation-aborted', targetCtx.name);
 						return;
 					}
 
 					//save your context state within onNavigateAway()
-					if(Application.currentContext) Application.currentContext.trigger('context:navigate-away'); 
+					if(app.currentContext) app.currentContext.trigger('context:navigate-away'); 
 					//prepare and show this new context					
-					Application.Util.addMetaEvent(targetCtx, 'context');
-					var navRegion = Application.config.navRegion || Application.config.contextRegion;
-					var targetRegion = Application.mainView.getRegion(navRegion) || Application.getRegion(navRegion);
+					app.Util.addMetaEvent(targetCtx, 'context');
+					var navRegion = app.config.navRegion || app.config.contextRegion;
+					var targetRegion = app.mainView.getRegion(navRegion) || app.getRegion(navRegion);
 					if(!targetRegion) throw new Error('DEV::Application::You don\'t have region \'' + navRegion + '\' defined');		
 					targetRegion.show(targetCtx);
-					Application.currentContext =  targetCtx;
+					app.currentContext =  targetCtx;
 
 					//fire a notification round to the sky.
-					Application.trigger('app:context-switched', Application.currentContext.name);
+					app.trigger('app:context-switched', app.currentContext.name);
 				}
 
-				Application.currentContext.trigger('context:navigate-chain', path);
+				app.currentContext.trigger('context:navigate-chain', path);
 
 			}
-			
-			Application.onNavigate = function(options, silent){
-				if(!Application.available()) {
-					Application.trigger('app:blocked', options);
-					return;
-				}
-
-				var path = '';
-				if(_.isString(options)){
-					path = options;
-				}else {
-					//backward compatibility 
-					path = _.string.rtrim([options.context || Application.currentContext.name, options.module || options.subpath].join('/'), '/');
-				}
-				if(silent || Application.hybridEvent)
-					navigate(path);//hybrid app will navigate using the silent mode.
-				else
-					window.location.hash = 'navigate/' + path;
-			};
-
-			Application.onContextGuardError = function(error, ctxName){
-				console.error('DEV:Context-Guard-Error:', ctxName, error);
-			};			
+		//-----------------------
 
 		//5 Activate Routing AFTER running all the initializers user has defined
 		//Context Switching by Routes (can use href = #navigate/... to trigger them)
-		Application.on("initialize:after", function(options){
+		app.on("initialize:after", function(options){
 			//init client page router and history:
 			var Router = Backbone.Marionette.AppRouter.extend({
 				appRoutes: {
@@ -377,18 +368,26 @@
 				},
 				controller: {
 					navigateTo: function(path){
-						Application.navigate(path || Application.config.defaultContext, true); //will skip updating #hash since the router is triggered by #hash change.
+						app.navigate(path || app.config.defaultContext, true); //will skip updating #hash since the router is triggered by #hash change.
 					},
 				}
 			});
 
-			Application.router = new Router();
+			app.router = new Router();
 			if(Backbone.history)
 				Backbone.history.start();
 
+			//Auto-detect and init context (view that replaces the body region)
+			if(!window.location.hash){
+				if(!app.Core.Context.get(app.config.defaultContext))
+					console.warn('DEV::Application::You might want to define a Default context using app.context(\'Context Name\', {...})');
+				else
+					app.navigate(app.config.defaultContext);
+			}			
+
 		});
 
-		return Application;
+		return app;
 	};
 
 	/**
@@ -397,7 +396,7 @@
 	 * We support using stage.js in a hybrid app
 	 * 
 	 */
-	Application.run = function(hybridEvent){
+	app.run = function(hybridEvent){
 
 		hybridEvent = (hybridEvent === true) ? 'deviceready' : hybridEvent;
 
@@ -408,44 +407,36 @@
 				FastClick.attach(document.body);
 
 			//2. Put main template into position.
-			Application.addRegions({
+			app.addRegions({
 				app: '[region="app"]'
 			});
 			//Warning: calling ensureEl() on the app region will not work like regions in layouts. (Bug??)
 			//the additional <div> under the app region is somehow inevitable atm...
-			Application.trigger('app:before-mainview-ready');
-			Application.mainView = Application.mainView || Application.view({
-				template: Application.config.template
+			app.trigger('app:before-mainview-ready');
+			app.mainView = app.mainView || app.view({
+				template: app.config.template
 			}, true);
-			Application.getRegion('app').show(Application.mainView);
-			Application.trigger('app:mainview-ready');
+			app.getRegion('app').show(app.mainView);
+			app.trigger('app:mainview-ready');
 
 			//3. Start the app --> pre init --> initializers --> post init(router setup)
-			Application._ensureScreenSize(function(){
-				Application.start();
+			app._ensureScreenSize(function(){
+				app.start();				
 			});
-
-			//4.Auto-detect and init context (view that replaces the body region)
-			if(!window.location.hash){
-				if(!Application.Core.Context.get(Application.config.defaultContext))
-					console.warn('DEV::Application::You might want to define a Default context using app.context(\'Context Name\', {...})');
-				else
-					Application.navigate(Application.config.defaultContext);
-			}
 
 		}
 
 		if(hybridEvent){
 			//Mobile development
-			Application.hybridEvent = hybridEvent; //window.cordova is probably true.
+			app.hybridEvent = hybridEvent; //window.cordova is probably true.
 			window.onerror = function(errorMsg, target, lineNum){
-				Application.trigger('app:error', {
+				app.trigger('app:error', {
 					errorMsg: errorMsg,
 					target: target,
 					lineNum: lineNum
 				});
 			};
-		    Application.onError = function(eMsg, target, lineNum){
+		    app.onError = function(eMsg, target, lineNum){
 		    	//override this to have remote debugging assistant
 		        console.error(eMsg, target, lineNum);
 		    };
@@ -462,24 +453,24 @@
 		}else
 			$document.ready(kickstart);
 
-		return Application;
+		return app;
 
 	};
 
-})();
+})(Application);
 
 
 
 
-;;(function(){
+;;(function(app){
 
 	/**
 	 * Universal app object creation api entry point
 	 * ----------------------------------------------------
 	 * @deprecated Use the detailed apis instead.
 	 */
-	Application.create = function(type, config){
-		console.warn('DEV::Application::create() method is deprecated, use methods listed in ', Application._apis, ' for alternatives');
+	app.create = function(type, config){
+		console.warn('DEV::Application::create() method is deprecated, use methods listed in ', app._apis, ' for alternatives');
 	};
 
 	/**
@@ -487,7 +478,7 @@
 	 * ------------------------
 	 * If you don't want to use .create() there you go:
 	 */
-	_.extend(Application, {
+	_.extend(app, {
 
 		model: function(data){
 			return new Backbone.Model(data);
@@ -502,20 +493,20 @@
 		//pass in [name,] options, instance to create (named will be registered again)
 		view: function(name /*or options*/, options /*or instance*/){
 			if(_.isString(name)){
-				if(_.isBoolean(options) && options) return Application.Core.Regional.create(name);
-				if(_.isPlainObject(options)) return Application.Core.Regional.register(name, options);
+				if(_.isBoolean(options) && options) return app.Core.Regional.create(name);
+				if(_.isPlainObject(options)) return app.Core.Regional.register(name, options);
 			}
 
 			if(_.isPlainObject(name)){
 				var instance = options;
 				options = name;
-				var Def = options.name ? Application.Core.Regional.register(options) : Backbone.Marionette[options.type || 'Layout'].extend(options);
+				var Def = options.name ? app.Core.Regional.register(options) : Backbone.Marionette[options.type || 'Layout'].extend(options);
 
 				if(_.isBoolean(instance) && instance) return new Def();
 				return Def;
 			}
 
-			return Application.Core.Regional.get(name);
+			return app.Core.Regional.get(name);
 		},
 
 		//pass in [name,] options to register (always requires a name)
@@ -523,24 +514,24 @@
 		context: function(name /*or options*/, options){
 			if(!options) {
 				if(_.isString(name) || !name)
-					return Application.Core.Context.get(name);
+					return app.Core.Context.get(name);
 				else
 					options = name;
 			}
 			else
 				_.extend(options, {name: name});
-			return Application.Core.Context.register(options);
+			return app.Core.Context.register(options);
 		},
 
 		//pass in name, factory to register
 		//pass in name, options to create
 		//pass in [name] to get
 		widget: function(name, options /*or factory*/){
-			if(!options) return Application.Core.Widget.get(name);
+			if(!options) return app.Core.Widget.get(name);
 			if(_.isFunction(options))
 				//register
-				return Application.Core.Widget.register(name, options);
-			return Application.Core.Widget.create(name, options);
+				return app.Core.Widget.register(name, options);
+			return app.Core.Widget.create(name, options);
 			//you can not register the definition when providing name, options.
 		},
 
@@ -548,11 +539,11 @@
 		//pass in name, options to create
 		//pass in [name] to get
 		editor: function(name, options /*or factory*/){
-			if(!options) return Application.Core.Editor.get(name);
+			if(!options) return app.Core.Editor.get(name);
 			if(_.isFunction(options))
 				//register
-				return Application.Core.Editor.register(name, options);
-			return Application.Core.Editor.create(name, options);
+				return app.Core.Editor.register(name, options);
+			return app.Core.Editor.create(name, options);
 			//you can not register the definition when providing name, options.
 		},
 
@@ -564,33 +555,95 @@
 			else
 				_.extend(options, name);
 			console.warn('DEV::Application::regional() method is deprecated, use .view() instead for', options.name);
-			return Application.view(options, !options.name);
+			return app.view(options, !options.name);
 		},
 		//--------------------------------
+		
+		has: function(name, type){
+			if(type)
+				return app.Core[type] && app.Core[type].has(name);
+
+			_.each(['Context', 'Regional', 'Widget', 'Editor'], function(t){
+				if(!type && app.Core[t].has(name))
+					type = t;
+			});
+
+			return type;
+		},
+
+		get: function(name, type){
+			if(!name)
+				return {
+					'Context': app.Core.Context.get(),
+					'View': app.Core.Regional.get(),
+					'Widget': app.Core.Widget.get(),
+					'Editor': app.Core.Editor.get()
+				};
+
+			if(type)
+				return app.Core[type] && app.Core[type].get(name);
+
+			var Reusable;
+			_.each(['Context', 'Regional', 'Widget', 'Editor'], function(t){
+				if(!Reusable)
+					Reusable = app.Core[t].get(name);
+			});
+
+			if(Reusable)
+				return Reusable;
+			else {
+				//see if we have app.viewSrcs set to load the View def dynamically
+				if(app.config && app.config.viewSrcs){
+					var path = name.split('/');
+					name = path.pop();
+					if(path.length) path = path.join('/');
+					else path = null;
+					$.ajax({
+						url: _.compact([app.config.viewSrcs, path, _.string.slugify(name)]).join('/') + '.js',
+						dataType: 'script',
+						async: false
+					}).done(function(){
+						//console.log('View injected', name, 'from', app.viewSrcs, path);
+						Reusable = true;
+					}).fail(function(jqXHR, settings, e){
+						console.warn('DEV::Application::get() Can NOT load View definition for', name, '[', e, ']');
+					});
+				}
+			}
+			if(Reusable)
+				return this.get(name, type);
+			return Reusable;
+		},
+
+		coop: function(event, options){
+			app.trigger('app:coop', event, options);
+			app.trigger('app:coop:' + event, options);
+			return app;
+		},
 
 		lock: function(topic){
-			return Application.Core.Lock.lock(topic);
+			return app.Core.Lock.lock(topic);
 		},
 
 		unlock: function(topic){
-			return Application.Core.Lock.unlock(topic);
+			return app.Core.Lock.unlock(topic);
 		},
 
 		available: function(topic){
-			return Application.Core.Lock.available(topic);
+			return app.Core.Lock.available(topic);
 		},
 
 		download: function(ticket){
-			return Application.Util.download(ticket);
+			return app.Util.download(ticket);
 		},
 
 		inject: {
 			js: function(){
-				return Application.Util.inject.apply(null, arguments);
+				return app.Util.inject.apply(null, arguments);
 			},
 
 			tpl: function(){
-				return Application.Util.Tpl.remote.load.apply(Application.Util.Tpl.remote, arguments);
+				return app.Util.Tpl.remote.load.apply(app.Util.Tpl.remote, arguments);
 			},
 
 			css: function(){
@@ -599,38 +652,38 @@
 		},
 
 		navigate: function(options, silent){
-			return Application.trigger('app:navigate', options || Application.config.defaultContext, silent);
+			return app.trigger('app:navigate', options || app.config.defaultContext, silent);
 		}	
 
 	});
 
 	//editor rules
-	Application.editor.validator = Application.editor.rule = function(name, fn){
-		if(!_.isString(name)) throw new Error('DEV::Application.editor.validator::You must specify a validator/rule name to use.');
-		return Application.Core.Editor.addRule(name, fn);
+	app.editor.validator = app.editor.rule = function(name, fn){
+		if(!_.isString(name)) throw new Error('DEV::Validator:: You must specify a validator/rule name to use.');
+		return app.Core.Editor.addRule(name, fn);
 	};
 
 	//alias
-	Application.page = Application.context;
-	Application.area = Application.regional;
+	app.page = app.context;
+	app.area = app.regional;
 
 	/**
 	 * Universal remote data interfacing api entry point
 	 * -------------------------------------------------
 	 * @returns jqXHR object (use promise pls)
 	 */
-	Application.remote = function(options){
+	app.remote = function(options){
 		options = options || {};
 		if(options.payload)
-			return Application.Core.Remote.change(options);
+			return app.Core.Remote.change(options);
 		else
-			return Application.Core.Remote.get(options);
+			return app.Core.Remote.get(options);
 	};
 
 	/**
 	 * API summary
 	 */
-	Application._apis = [
+	app._apis = [
 		'model', 'collection',
 		'context - @alias:page', 'regional - @alias:area',
 		'view',
@@ -641,7 +694,7 @@
 		'create - @deprecated'
 	];
 
-})();
+})(Application);
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -1157,8 +1210,9 @@
 
 			create: function(name, options){
 				if(!_.isString(name) || !name) throw new Error('DEV::Reusable:: You must specify the name of the ' + regName + ' to create.');
-				if(this.has(name))
-					return new (this.map[name])(options || {});
+				var Reusable = this.get(name);
+				if(Reusable)
+					return new Reusable(options || {});
 				throw new Error('DEV::Reusable:: Required definition [' + name + '] in ' + regName + ' not found...');
 			},
 
@@ -1326,51 +1380,162 @@
  * Here we extend the html tag attributes to be auto-recognized by a Marionette.View.
  * This simplifies the view creation by indicating added functionality through template string. (like angular.js?)
  *
- * Optional
- * --------
- * 1. action tags auto listener hookup with mutex-locking
- * 2. tooltip
- * 3. overlay - use this view as an overlay
- * 
- *
  * Fixed
  * -----
- * auto ui tags detect and register.
- * +meta event programming
- * 	view:* (event-name) - on* (camelized)
+ * 0. shiv empty template.
+ * 1. auto ui tags detection in template.
+ * 2. +meta event programming
+ * 	view:* (event-name) <--> on* (camelized)
+ * 3. global coop events.
  *
  * 
  * @author Tim.Liu
- * @create 2014.02.25 
+ * @created 2014.02.25
+ * @updated 2015.08.03
  */
 
 
 ;(function(app){
 
-
-/**
- * Action Tag listener hookups +actions{} (do it in initialize())
- * + event forwarding ability to action tags
- * Usage:
- * 		1. add action tags to html template -> e.g <div ... action="method name or *:event name"></div> 
- * 		2. implement the action method name in UI definition body's actions{} object. 
- * 		functions under actions{} are invoked with 'this' as scope (the view object).
- * 		functions under actions{} are called with a 2 params ($action, e) which is a jQuery object referencing the action tag and the jQuery prepared event object, use e.originalEvent to get the DOM one.
- *
- * Options
- * -------
- * 1. uiName - [UNKNOWN.View] this is optional, mainly for better debugging msg;
- * 2. passOn - [false] this is to let the clicking event of action tags bubble up if an action listener is not found. 
- *
- * Note:
- * A. We removed _.bind() altogether from the enableActionTags() function and use Function.apply(scope, args) instead for listener invocation to avoid actions{} methods binding problem.
- * Functions under actions will only be bound ONCE to the first instance of the view definition, since _.bind() can not rebind functions that were already bound, other instances of
- * the view prototype will have all the action listeners bound to the wrong view object. This holds true to all nested functions, if you assign the bound version of the function back to itself
- * e.g. this.nest.func = _.bind(this.nest.func, this); - Do NOT do this in initialize()/constructor()!! Use Function.apply() for invocation instead!!!
- *
- * B. We only do e.stopPropagation for you, if you need e.preventDefault(), do it yourself in the action impl;
- */
 	_.extend(Backbone.Marionette.View.prototype, {
+		isInDOM: function(){
+			if(!this.$el) return false;
+			return $.contains(document.documentElement, this.$el[0]);
+		}
+	});
+
+	/**
+	 * Fixed enhancement
+	 * +auto ui tags detection and register
+	 * +meta event programming
+	 * 	view:* (event-name) - on* (camelized)
+	 *
+	 * Override View.constructor to affect only decendents, e.g ItemView and CollectionView... 
+	 * (This is the Backbone way of extend...)
+	 * 
+	 */
+	Backbone.Marionette.View.prototype.constructor = function(options){
+		options = options || {};
+
+		//----------------------fixed enhancements--------------------------
+		//fix default tpl to be ' '.
+		this.template = options.template || this.template || ' ';
+
+		//auto ui pick-up after render (to support dynamic template)
+		this._ui = _.extend({}, this.ui, options.ui);
+		this.listenTo(this, 'render', function(){
+			var that = this;
+			this.unbindUIElements();
+			this.ui = this._ui;
+			$(this.el.outerHTML).find('[ui]').each(function(index, el){
+				var ui = $(this).attr('ui');
+				that.ui[ui] = '[ui="' + ui + '"]';
+			});
+			this.bindUIElements();
+		});
+
+		//meta-event programming ability
+		app.Util.addMetaEvent(this, 'view');
+
+		//global co-op (global events forwarding through app)
+		if(this.coop) {
+			this._postman = {};
+			//register
+			_.each(this.coop, function(e){
+				var self = this;
+				this._postman[e] = function(options){
+					self.trigger('view:' + e, options);
+					//considering the parent-DOM-removed edge case
+					if(!self.isInDOM())
+						app.off('app:coop:' + e, self._postman[e]);
+				};
+				app.on('app:coop:' + e, this._postman[e]);
+			}, this);
+			//cleanup
+			this.listenTo(this, 'close', function(){
+				_.each(this._postman, function(fn, e){
+					app.off('app:coop:' + e, fn);
+				});
+			});
+		}		
+		
+		//---------------------optional view enhancements-------------------
+		//actions (1-click uis)
+		if(this.actions && this.enableActionTags) 
+			this.enableActionTags(this.actions._bubble);
+		
+		//editors
+		if(this.editors && this.activateEditors) this.listenTo(this, 'render', function(){
+			this.activateEditors(this.editors);
+		});
+
+		//svg (if rapheal.js is present)
+		if(this.svg && this.enableSVG) {
+			this.listenTo(this, 'render', this.enableSVG);
+		}
+
+		//tooltip
+		if(this.tooltips && this.enableTooltips) {
+			this.enableTooltips(this.tooltips);
+		}
+
+		//overlay (use this view as overlay)
+		if(this.overlay && this.enableOverlay){
+			this.enableOverlay();
+		}
+
+		//auto-enable i18n
+		if(I18N.locale) {
+			this.listenTo(this, 'render', function(){
+				this.$el.i18n({search: true});
+			});
+		}
+
+		return Backbone.Marionette.View.apply(this, arguments);
+	};
+
+
+})(Application);
+;/**
+ * Marionette.ItemView Enhancements (can be used in Layout as well) - Note that you can NOT use these in a CompositeView.
+ *
+ * 0. actions
+ * 1. svg (view:fit-paper, view:paper-resized, view:paper-ready)
+ * 2. basic Editors (view as form piece)
+ * 3. tooltips
+ * 4. overlay
+ * 5. data event listener (view:render-data, view:data-rendered)
+ *
+ * @author Tim.Liu
+ * @created 2014.02.26
+ * @updated 2015.08.03
+ */
+
+;(function(app){
+
+	/**
+	 * Action Tag listener hookups +actions{} (do it in initialize())
+	 * + event forwarding ability to action tags
+	 * Usage:
+	 * 		1. add action tags to html template -> e.g <div ... action="method name or *:event name"></div> 
+	 * 		2. implement the action method name in UI definition body's actions{} object. 
+	 * 		functions under actions{} are invoked with 'this' as scope (the view object).
+	 * 		functions under actions{} are called with a 2 params ($action, e) which is a jQuery object referencing the action tag and the jQuery prepared event object, use e.originalEvent to get the DOM one.
+	 *
+	 * Options
+	 * -------
+	 * 1. uiName - [UNKNOWN.View] this is optional, mainly for better debugging msg;
+	 * 2. passOn - [false] this is to let the clicking event of action tags bubble up if an action listener is not found. 
+	 *
+	 * Note:
+	 * A. We removed _.bind() altogether from the enableActionTags() function and use Function.apply(scope, args) instead for listener invocation to avoid actions{} methods binding problem.
+	 * Functions under actions will only be bound ONCE to the first instance of the view definition, since _.bind() can not rebind functions that were already bound, other instances of
+	 * the view prototype will have all the action listeners bound to the wrong view object. This holds true to all nested functions, if you assign the bound version of the function back to itself
+	 * e.g. this.nest.func = _.bind(this.nest.func, this); - Do NOT do this in initialize()/constructor()!! Use Function.apply() for invocation instead!!!
+	 *
+	 * B. We only do e.stopPropagation for you, if you need e.preventDefault(), do it yourself in the action impl;
+	 */
+	_.extend(Backbone.Marionette.ItemView.prototype, {
 
 		enableActionTags: function(uiName, passOn){ //the uiName is just there to output meaningful dev msg if some actions haven't been implemented.
 
@@ -1431,126 +1596,8 @@
 				}
 			};		
 		},
-
 			
 	});
-
-
-	/**
-	 * Enable Tooltips (do it in initialize())
-	 * This is used for automatically activate tooltips after render
-	 *
-	 * Options
-	 * -------
-	 * bootstrap tooltip config
-	 */
-
-	_.extend(Backbone.Marionette.View.prototype, {
-
-		enableTooltips: function(options){
-			this.listenTo(this, 'render', function(){
-				//will activate tooltip with specific options object - see /libs/bower_components/bootstrap[x]/docs/javascript.html#tooltips
-				this.$('[data-toggle="tooltip"]').tooltip(options);
-			});
-		}
-
-	});
-
-
-	/**
-	 * Fixed enhancement
-	 * +auto ui tags detection and register
-	 * +meta event programming
-	 * 	view:* (event-name) - on* (camelized)
-	 *
-	 * Override View.constructor to affect only decendents, e.g ItemView and CollectionView... (This is the Backbone way of extend...)
-	 * 
-	 */
-	Backbone.Marionette.View.prototype.constructor = function(options){
-		options = options || {};
-
-		//fix default tpl to be ' '.
-		this.template = options.template || this.template || ' ';
-
-		//auto ui pick-up after render (to support dynamic template)
-		this._ui = _.extend({}, this.ui, options.ui);
-		this.listenTo(this, 'render', function(){
-			var that = this;
-			this.unbindUIElements();
-			this.ui = this._ui;
-			$(this.el.outerHTML).find('[ui]').each(function(index, el){
-				var ui = $(this).attr('ui');
-				that.ui[ui] = '[ui="' + ui + '"]';
-			});
-			this.bindUIElements();
-		});
-
-		//meta-event programming ability
-		app.Util.addMetaEvent(this, 'view');
-		//auto detect and enable view enhancements: actions, [paper(SVG), editors - in item-view enhancement]
-		if(this.actions) this.enableActionTags(this.actions._bubble);
-		if(this.editors && this.activateEditors) this.listenTo(this, 'render', function(){
-			this.activateEditors(this.editors);
-		});
-		if(this.svg && this.enableSVG) {
-			this.listenTo(this, 'render', this.enableSVG);
-		}
-		if(this.tooltips) {
-			this.enableTooltips(this.tooltips);
-		}
-		if(this.overlay){ //give this view the overlaying ability
-			this._overlayConfig = _.isBoolean(this.overlay)? {}: this.overlay;
-			this.overlay = function(options){
-				/**
-				 * options:
-				 * 1. anchor - css selector of parent html el
-				 * 2. rest of the $.overlay plugin options without content and onClose
-				 */
-				options = options || {};
-				var $anchor = $(options.anchor || 'body');
-				var that = this;
-				this.listenTo(this, 'close', function(){
-					$anchor.overlay();//close the overlay if this.close() is called.
-				});
-				$anchor.overlay(_.extend(this._overlayConfig, options, {
-					content: function(){
-						return that.render().el;
-					},
-					onShow: function(){
-						//that.trigger('show'); //Trigger 'show' doesn't invoke onShow, use triggerMethod the Marionette way!
-						that.triggerMethod('show'); //trigger event while invoking on{Event};
-					},
-					onClose: function(){
-						that.close(); //closed by overlay x
-					}
-				}));
-				return this;
-			};
-		}
-		//auto-enable i18n
-		if(I18N.locale) {
-			this.listenTo(this, 'render', function(){
-				this.$el.i18n({search: true});
-			});
-		}
-
-		return Backbone.Marionette.View.apply(this, arguments);
-	};
-
-
-})(Application);
-;/**
- * Marionette.ItemView Enhancements (can be used in Layout as well) - Note that you can NOT use these in a CompositeView.
- *
- * 1. SVG (view:fit-paper, view:paper-resized, view:paper-ready)
- * 2. Basic Editors (view as form piece)
- * 3. Render with data (view:render-data, view:data-rendered)
- *
- * @author Tim.Liu
- * @create 2014.02.26
- */
-
-;(function(app){
 
 	/**
 	 * Inject a svg canvas within view. - note that 'this' in cb means paper.
@@ -1762,6 +1809,61 @@
 	});
 
 	/**
+	 * Enable Tooltips (do it in initialize())
+	 * This is used for automatically activate tooltips after render
+	 *
+	 * Options
+	 * -------
+	 * bootstrap tooltip config
+	 */
+
+	_.extend(Backbone.Marionette.ItemView.prototype, {
+
+		enableTooltips: function(options){
+			this.listenTo(this, 'render', function(){
+				//will activate tooltip with specific options object - see /libs/bower_components/bootstrap[x]/docs/javascript.html#tooltips
+				this.$('[data-toggle="tooltip"]').tooltip(options);
+			});
+		}
+
+	});
+
+	/**
+	 * Overlay
+	 * options:
+	 * 1. anchor - css selector of parent html el
+	 * 2. rest of the $.overlay plugin options without content and onClose
+	 */
+	_.extend(Backbone.Marionette.ItemView.prototype, {
+
+		enableOverlay: function(){
+			this._overlayConfig = _.isBoolean(this.overlay)? {}: this.overlay;
+			this.overlay = function(options){
+				options = options || {};
+				var $anchor = $(options.anchor || 'body');
+				var that = this;
+				this.listenTo(this, 'close', function(){
+					$anchor.overlay();//close the overlay if this.close() is called.
+				});
+				$anchor.overlay(_.extend(this._overlayConfig, options, {
+					content: function(){
+						return that.render().el;
+					},
+					onShow: function(){
+						//that.trigger('show'); //Trigger 'show' doesn't invoke onShow, use triggerMethod the Marionette way!
+						that.triggerMethod('show'); //trigger event while invoking on{Event};
+					},
+					onClose: function(){
+						that.close(); //closed by overlay x
+					}
+				}));
+				return this;
+			};			
+		}
+
+	});
+
+	/**
 	 * Meta-event Listeners (pre-defined)
 	 * view:render-data
 	 */
@@ -1940,25 +2042,21 @@
 				_.each(this.regions, function(selector, r){
 					this[r].listenTo(this[r], 'region:load-view', function(name, options){ //can load both view and widget.
 						if(!name) return;
-						//Widget?
-						if(app.Core.Widget.has(name)) {
-							this.show(app.Core.Widget.create(name, options));
+
+						var Reusable = app.get(name);
+						if(Reusable){
+							this.show(new Reusable(options));
 							return;
 						}
-						//Named View?
-						var View = app.Core.Regional.get(name);
-						if(View){
-							this.show(new View(options));
-							return;
-						}
+
 						//Template mockups?
 						if(_.string.startsWith(name, '@')){
 							this.show(app.view({
 								template: name,
-								type: 'Layout'
 							}, true));
 							return;
 						}
+
 						console.warn('DEV::Layout::View required ' + name + ' can NOT be found...use app.view({name: ..., ...}).');
 					});
 					
@@ -1991,7 +2089,7 @@
 					}
 					
 					var targetViewName = pathArray.shift();
-					var TargetView = app.Core.Regional.get(targetViewName);
+					var TargetView = app.get(targetViewName);
 
 					if(TargetView){
 						var navRegion = this.getRegion(this.navRegion);
@@ -2044,7 +2142,7 @@
 	 * view:render-data
 	 * view:load-page
 	 */
-	_.extend(Backbone.Marionette.View.prototype, {
+	_.extend(Backbone.Marionette.CollectionView.prototype, {
 
 		/////////////////////////////
 		onRenderData: function(data){
@@ -3393,6 +3491,12 @@ var I18N = {};
 				//override the default data rendering meta-event responder
 				this.trigger('view:reconfigure', {data: data});
 				//this is just to answer the 'view:render-data' event
+			},
+			getBody: function(){
+				return this.body.currentView;
+			},
+			getHeader: function(){
+				return this.header.currentView;
 			}
 		});
 
@@ -3881,4 +3985,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.7.9-840 build 1438399590044";
+;;app.stagejs = "1.7.9-844 build 1438728355808";
