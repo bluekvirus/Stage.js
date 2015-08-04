@@ -118,12 +118,13 @@ git rev-list HEAD --count
 Distribute
 ----------
 ###Build
+**Stop the devserver by using `./stop.sh` under `tools` first!**
 ```
 //0. change version numbers
 a. CHANGELOG.md and tools/libprep/bower.json
 b. README.md, HOWTO.md (optional, can be through http://shields.io/)
 
-//1. update libs
+//1. update libs (this will also update the version tag)
 tools/lib-update.sh
 
 //2. [optional] update themes (under tools/themeprep/)
