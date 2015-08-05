@@ -2516,6 +2516,11 @@ var I18N = {};
 		var that = this;
 		if(_.isString(options)) options = { url: options };
 		options = options || {};
+		options.marked = _.extend({
+			gfm: true,
+			tables: true,
+			breaks: false
+		}, options.marked);
 
 		return this.each(function(index, el){
 			var $el = $(el);
@@ -2523,17 +2528,9 @@ var I18N = {};
 			var url = options.url || config.url;
 			$.get(url).done(function(res){
 				var content;
-				if(config.md && config.md.data === res) {
-					content = config.md.content;
-				}else {
-					content = marked(res, options.marked);
-					//cache the md data and calculation
-					$el.data('md', {
-						data: res,
-						content: content
-					});
-				}
+				content = marked(res, options.marked);
 
+				//delay rendering big chunk of md data till next tick.
 				_.defer(function(){
 					$el.html(content).addClass('md-content');
 					theme($el, options);
@@ -3985,4 +3982,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.7.9-846 build 1438731722176";
+;;app.stagejs = "1.7.9-847 build 1438736431711";
