@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.8.0 (2015-08-03*)
+1.8.0 (2015-08-04*)
 -------------------
 1. Refined Reusable module method register().
 2. Added _.isPlainObject() to underscore.
@@ -8,6 +8,7 @@ Change Log
 4. Added view.isInDOM() check.
 5. Back-ported dynamic view injection (synced).
 6. Added app.has/get apis.
+7. Removed caching ability from $.md plugin.
 
 Working on...
 
