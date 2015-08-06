@@ -1,9 +1,10 @@
 {
   "Chart.js": "../../implementation/bower_components/Chart.js/Chart.js",
+  "ace": "../../implementation/bower_components/ace",
   "animate.css": "../../implementation/bower_components/animate.css/animate.css",
   "backbone.babysitter": "../../implementation/bower_components/backbone.babysitter/lib/backbone.babysitter.js",
-  "backbone": "../../implementation/bower_components/backbone/backbone.js",
   "backbone.wreqr": "../../implementation/bower_components/backbone.wreqr/lib/backbone.wreqr.js",
+  "backbone": "../../implementation/bower_components/backbone/backbone.js",
   "blueimp-canvas-to-blob": "../../implementation/bower_components/blueimp-canvas-to-blob/js/canvas-to-blob.js",
   "blueimp-load-image": [
     "../../implementation/bower_components/blueimp-load-image/js/load-image.js",
@@ -19,20 +20,14 @@
     "../../implementation/bower_components/bootstrap/dist/js/bootstrap.js"
   ],
   "bootswatch": "../../implementation/bower_components/bootswatch",
-  "codemirror": [
-    "../../implementation/bower_components/codemirror/lib/codemirror.js",
-    "../../implementation/bower_components/codemirror/lib/codemirror.css"
-  ],
   "colorbox": "../../implementation/bower_components/colorbox/jquery.colorbox.js",
-  "createjs-tweenjs": "../../implementation/bower_components/createjs-tweenjs/lib/tweenjs-0.6.1.combined.js",
   "crossfilter": "../../implementation/bower_components/crossfilter",
   "d3": "../../implementation/bower_components/d3/d3.js",
   "detectizr": "../../implementation/bower_components/detectizr/dist/detectizr.js",
-  "easeljs": "../../implementation/bower_components/easeljs/lib/easeljs-0.8.1.combined.js",
   "fastclick": "../../implementation/bower_components/fastclick/lib/fastclick.js",
   "fontawesome": [
-    "../../implementation/bower_components/fontawesome/css/font-awesome.css",
-    "../../implementation/bower_components/fontawesome/fonts/*"
+    "../../implementation/bower_components/fontawesome/less/font-awesome.less",
+    "../../implementation/bower_components/fontawesome/scss/font-awesome.scss"
   ],
   "handlebars": "../../implementation/bower_components/handlebars/handlebars.js",
   "highcharts-release": [
@@ -41,39 +36,15 @@
     "../../implementation/bower_components/highcharts-release/modules/exporting.js"
   ],
   "highlightjs": [
-    "../../implementation/bower_components/highlightjs/highlight.pack.js",
+    "../../implementation/bower_components/highlightjs/highlight.pack.min.js",
     "../../implementation/bower_components/highlightjs/styles/default.css"
-  ],
-  "highstock-release": [
-    "../../implementation/bower_components/highstock-release/highstock.js",
-    "../../implementation/bower_components/highstock-release/highcharts-more.js",
-    "../../implementation/bower_components/highstock-release/modules/exporting.js"
   ],
   "html5-boilerplate": "../../implementation/bower_components/html5-boilerplate",
   "iCheck": "../../implementation/bower_components/iCheck/icheck.min.js",
-  "jquery-file-upload": [
-    "../../implementation/bower_components/jquery-file-upload/css/jquery.fileupload.css",
-    "../../implementation/bower_components/jquery-file-upload/css/jquery.fileupload-ui.css",
-    "../../implementation/bower_components/jquery-file-upload/css/jquery.fileupload-noscript.css",
-    "../../implementation/bower_components/jquery-file-upload/css/jquery.fileupload-ui-noscript.css",
-    "../../implementation/bower_components/jquery-file-upload/js/cors/jquery.postmessage-transport.js",
-    "../../implementation/bower_components/jquery-file-upload/js/cors/jquery.xdr-transport.js",
-    "../../implementation/bower_components/jquery-file-upload/js/vendor/jquery.ui.widget.js",
-    "../../implementation/bower_components/jquery-file-upload/js/jquery.fileupload.js",
-    "../../implementation/bower_components/jquery-file-upload/js/jquery.fileupload-process.js",
-    "../../implementation/bower_components/jquery-file-upload/js/jquery.fileupload-validate.js",
-    "../../implementation/bower_components/jquery-file-upload/js/jquery.fileupload-image.js",
-    "../../implementation/bower_components/jquery-file-upload/js/jquery.fileupload-audio.js",
-    "../../implementation/bower_components/jquery-file-upload/js/jquery.fileupload-video.js",
-    "../../implementation/bower_components/jquery-file-upload/js/jquery.fileupload-ui.js",
-    "../../implementation/bower_components/jquery-file-upload/js/jquery.fileupload-jquery-ui.js",
-    "../../implementation/bower_components/jquery-file-upload/js/jquery.fileupload-angular.js",
-    "../../implementation/bower_components/jquery-file-upload/js/jquery.iframe-transport.js"
-  ],
+  "jquery-file-upload": "../../implementation/bower_components/jquery-file-upload/js/jquery.fileupload.js",
   "jquery-ui": "../../implementation/bower_components/jquery-ui/ui/jquery-ui.js",
-  "jquery.cookie": "../../implementation/bower_components/jquery.cookie/jquery.cookie.js",
-  "jquery.transit": "../../implementation/bower_components/jquery.transit/jquery.transit.js",
   "jquery": "../../implementation/bower_components/jquery/dist/jquery.js",
+  "js-cookie": "../../implementation/bower_components/js-cookie/src/js.cookie.js",
   "jvectormap": "../../implementation/bower_components/jvectormap",
   "lesshat": [
     "../../implementation/bower_components/lesshat/build/lesshat.less",
@@ -85,8 +56,8 @@
     "../../implementation/bower_components/marionette/lib/core/amd/backbone.marionette.js"
   ],
   "marked": "../../implementation/bower_components/marked/lib/marked.js",
-  "modernizr": "../../implementation/bower_components/modernizr",
   "mockjs": "../../implementation/bower_components/mockjs/dist/mock.js",
+  "modernizr": "../../implementation/bower_components/modernizr",
   "momentjs": "../../implementation/bower_components/momentjs/moment.js",
   "nprogress": [
     "../../implementation/bower_components/nprogress/nprogress.js",

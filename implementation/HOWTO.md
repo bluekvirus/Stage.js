@@ -27,16 +27,24 @@ View:
 
 Handling Data:
 * Application.remote (options)
+* Application.cookie
+* Application.store
 * Application.model ({data}) - shortcut for new Backbone.Model(data)
 * Application.collection ([data]) - shortcut for new Backbone.Collection(data)
+* Application.extract (keypath, obj)
+
+Download:
+* Application.download (url or +params)
+
+Utils:
+* Application.moment
+* Application.uri
+* Application.validator
 
 Mutual Exclusion:
 * Application.lock ([topic/lock])
 * Application.unlock ([topic/lock])
 * Application.available ([topic/lock])
-
-Download:
-* Application.download (url or +params)
 
 Script(s)/Template(s)/CSS Injection:
 * Application.inject.js ([path to js/json]) - util/script-inject.js
@@ -892,6 +900,8 @@ UX stands for user experience, it is not just about look'n'feel and clickings bu
 
 ####Enter/Leave Effects
 
+**Note that this is experimental and going to change in v1.8+**
+
 Both *region* and *View* can have an `effect` configure to control the effect through which it will be entering/leaving on a region:
 ```
 //myRegionalA.js
@@ -1577,7 +1587,7 @@ Use the additional events or override the default implementations to customize y
 
 **Options**:
 ```
-effect: //'jquery ui effects string', or specifically:
+effect: //'jquery ui effects string', can be specifics:
     openEffect: ...,
     closeEffect: ...,
 content: //'text'/html or el or a function($el, $overlay) that returns one of the three.

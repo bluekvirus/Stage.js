@@ -16,14 +16,7 @@
 	 */
 	_.extend(app, {
 
-		model: function(data){
-			return new Backbone.Model(data);
-		},
-
-		collection: function(data){
-			return new Backbone.Collection(data);
-		},
-
+		//----------------view------------------
 		//pass in [name,] options to define (named will be registered)
 		//pass in [name] to get
 		//pass in [name,] options, instance to create (named will be registered again)
@@ -83,17 +76,17 @@
 			//you can not register the definition when providing name, options.
 		},
 
-		//@deprecated---------------------
-		regional: function(name, options){
-			options = options || {};
-			if(_.isString(name))
-				_.extend(options, {name: name});
-			else
-				_.extend(options, name);
-			console.warn('DEV::Application::regional() method is deprecated, use .view() instead for', options.name);
-			return app.view(options, !options.name);
-		},
-		//--------------------------------
+			//@deprecated---------------------
+			regional: function(name, options){
+				options = options || {};
+				if(_.isString(name))
+					_.extend(options, {name: name});
+				else
+					_.extend(options, name);
+				console.warn('DEV::Application::regional() method is deprecated, use .view() instead for', options.name);
+				return app.view(options, !options.name);
+			},
+			//--------------------------------
 		
 		has: function(name, type){
 			if(type)
@@ -157,6 +150,12 @@
 			return app;
 		},
 
+		//----------------navigation-----------
+		navigate: function(options, silent){
+			return app.trigger('app:navigate', options || app.config.defaultContext, silent);
+		},	
+
+		//-----------------mutex---------------
 		lock: function(topic){
 			return app.Core.Lock.lock(topic);
 		},
@@ -169,6 +168,17 @@
 			return app.Core.Lock.available(topic);
 		},
 
+		//-----------------remote data------------
+		
+		//returns jqXHR object (use promise pls)
+		remote: function(options){
+			options = options || {};
+			if(options.payload)
+				return app.Core.Remote.change(options);
+			else
+				return app.Core.Remote.get(options);
+		},
+		
 		download: function(ticket){
 			return app.Util.download(ticket);
 		},
@@ -187,9 +197,41 @@
 			}
 		},
 
-		navigate: function(options, silent){
-			return app.trigger('app:navigate', options || app.config.defaultContext, silent);
-		}	
+		//-----------------local data----------------
+		model: function(data){
+			return new Backbone.Model(data);
+		},
+
+		collection: function(data){
+			return new Backbone.Collection(data);
+		},
+
+		//selectn
+		extract: function(keypath, from){
+			return selectn(keypath, from);
+		},
+
+		//js-cookie (former jquery-cookie)
+		//.set()
+		//.get()
+		//.remove()
+		cookie: Cookies,
+
+		//store.js 
+		//.set()
+		//.get(), .getAll()
+		//.remove()
+		//.clear()
+		store: store.enabled && store,
+
+		//----------------validation-----------------
+		validator: validator,
+
+		//----------------time-----------------------
+		moment: moment,
+
+		//----------------url------------------------
+		uri: URI
 
 	});
 
@@ -202,19 +244,6 @@
 	//alias
 	app.page = app.context;
 	app.area = app.regional;
-
-	/**
-	 * Universal remote data interfacing api entry point
-	 * -------------------------------------------------
-	 * @returns jqXHR object (use promise pls)
-	 */
-	app.remote = function(options){
-		options = options || {};
-		if(options.payload)
-			return app.Core.Remote.change(options);
-		else
-			return app.Core.Remote.get(options);
-	};
 
 	/**
 	 * API summary

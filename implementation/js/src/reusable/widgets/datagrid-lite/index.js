@@ -159,7 +159,7 @@
 				return {
 					collection: app.collection(_.map(this._options.columns, function(column){
 						return _.extend({
-							value: selectn(column.name || '', model.attributes),
+							value: app.extract(column.name || '', model.attributes),
 							index: index
 						}, column);
 					}, this)),

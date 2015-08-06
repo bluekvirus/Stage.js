@@ -224,7 +224,7 @@
 		};
 
 		//3 Load Theme css & View templates & i18n translations
-		var theme = URI(window.location.toString()).search(true).theme || app.config.theme;
+		var theme = app.uri(window.location.toString()).search(true).theme || app.config.theme;
 		if(theme){
 			app.inject.css('themes/'+theme+'/css/main.css', $('#theme-roller')[0]);
 			app.currentTheme = theme;

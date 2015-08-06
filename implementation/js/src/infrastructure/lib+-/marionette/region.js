@@ -3,7 +3,7 @@
  *
  * 1. open()+
  * --------------
- * a. consult view.effect animation names (from Animate.css or your own) when showing a view;
+ * a. consult view.effect animation names (from Animate.css or your own, not from jQuery ui) when showing a view;
  * b. inject parent view as parentCt to sub-regional view;
  * c. store sub view as parent view's _fieldsets[member];
  * 
@@ -18,12 +18,15 @@
 		open: function(view){
 
 			/**
-			 * Effect config in view & region
+			 * Effect config in view & region **(only enter effect is implemented pre 1.8)**
+			 * 
 			 * use the css animation name as enter & exit effect name.
 			 * e.g 'lightSpeedIn' or {enter: 'lightSpeedIn', exit: '...'}
 			 * e.g data-effect="lightSpeedIn" or data-effect-enter="lightSpeedIn" data-effect-exit="..."
 			 *
 			 * animationName:defer means calling view.enter() to animate out the effect instead of right after 'show' event.
+			 *
+			 * https://daneden.github.io/animate.css/
 			 * 
 			 */
 			if(view.effect !== false)

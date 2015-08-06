@@ -26,7 +26,7 @@
 	    }
 	    
 	    if(_.isString(ticket)) ticket = { url: ticket };
-	    drone.attr('src', (new URI(ticket.url || '/').addQuery(_.omit(ticket, 'url'))).toString());
+	    drone.attr('src', (app.uri(ticket.url || '/').addQuery(_.omit(ticket, 'url'))).toString());
 	}
 
 	app.Util.download = downloader;

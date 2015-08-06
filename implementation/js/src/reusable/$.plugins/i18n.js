@@ -1,6 +1,6 @@
 /**
  * i18n loading file
- * dependencies: jQuery, underscore, store.js, [Handlebars]
+ * dependencies: jQuery, underscore, [Handlebars]
  *
  * ======
  * Config
@@ -33,7 +33,7 @@
  * 
  */
 var I18N = {};
-;(function($, _, URI) {
+;(function($, _) {
 	
 	//----------------configure utils------------------
 	var configure = {
@@ -44,7 +44,7 @@ var I18N = {};
 	var locale, resources;	
 	I18N.configure = function(options){
 		_.extend(configure, options);
-		var params = URI(window.location.toString()).search(true);
+		var params = app.uri(window.location.toString()).search(true);
 		locale = I18N.locale = params.locale || configure.locale || Detectizr.browser.language;
 
 		if (locale) {
@@ -236,4 +236,4 @@ var I18N = {};
 	};
 
 
-})(jQuery, _, URI);
+})(jQuery, _);

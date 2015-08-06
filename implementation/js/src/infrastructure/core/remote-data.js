@@ -60,12 +60,12 @@
 				options._id = options.payload._id;
 			}
 			if(options._id || options._method){
-				var url = new URI(options.url);
+				var url = app.uri(options.url);
 				options.url = url.path(_.compact([url.path(), options._id, options._method]).join('/')).toString();
 			}
 			options.params = options.querys || options.params;
 			if(options.params){
-				options.url = (new URI(options.url)).search(options.params).toString();
+				options.url = (app.uri(options.url)).search(options.params).toString();
 			}
 		}
 		app.trigger('app:ajax', options);		

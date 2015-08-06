@@ -271,7 +271,7 @@
 		};
 
 		//3 Load Theme css & View templates & i18n translations
-		var theme = URI(window.location.toString()).search(true).theme || app.config.theme;
+		var theme = app.uri(window.location.toString()).search(true).theme || app.config.theme;
 		if(theme){
 			app.inject.css('themes/'+theme+'/css/main.css', $('#theme-roller')[0]);
 			app.currentTheme = theme;
@@ -480,14 +480,7 @@
 	 */
 	_.extend(app, {
 
-		model: function(data){
-			return new Backbone.Model(data);
-		},
-
-		collection: function(data){
-			return new Backbone.Collection(data);
-		},
-
+		//----------------view------------------
 		//pass in [name,] options to define (named will be registered)
 		//pass in [name] to get
 		//pass in [name,] options, instance to create (named will be registered again)
@@ -547,17 +540,17 @@
 			//you can not register the definition when providing name, options.
 		},
 
-		//@deprecated---------------------
-		regional: function(name, options){
-			options = options || {};
-			if(_.isString(name))
-				_.extend(options, {name: name});
-			else
-				_.extend(options, name);
-			console.warn('DEV::Application::regional() method is deprecated, use .view() instead for', options.name);
-			return app.view(options, !options.name);
-		},
-		//--------------------------------
+			//@deprecated---------------------
+			regional: function(name, options){
+				options = options || {};
+				if(_.isString(name))
+					_.extend(options, {name: name});
+				else
+					_.extend(options, name);
+				console.warn('DEV::Application::regional() method is deprecated, use .view() instead for', options.name);
+				return app.view(options, !options.name);
+			},
+			//--------------------------------
 		
 		has: function(name, type){
 			if(type)
@@ -621,6 +614,12 @@
 			return app;
 		},
 
+		//----------------navigation-----------
+		navigate: function(options, silent){
+			return app.trigger('app:navigate', options || app.config.defaultContext, silent);
+		},	
+
+		//-----------------mutex---------------
 		lock: function(topic){
 			return app.Core.Lock.lock(topic);
 		},
@@ -633,6 +632,17 @@
 			return app.Core.Lock.available(topic);
 		},
 
+		//-----------------remote data------------
+		
+		//returns jqXHR object (use promise pls)
+		remote: function(options){
+			options = options || {};
+			if(options.payload)
+				return app.Core.Remote.change(options);
+			else
+				return app.Core.Remote.get(options);
+		},
+		
 		download: function(ticket){
 			return app.Util.download(ticket);
 		},
@@ -651,9 +661,41 @@
 			}
 		},
 
-		navigate: function(options, silent){
-			return app.trigger('app:navigate', options || app.config.defaultContext, silent);
-		}	
+		//-----------------local data----------------
+		model: function(data){
+			return new Backbone.Model(data);
+		},
+
+		collection: function(data){
+			return new Backbone.Collection(data);
+		},
+
+		//selectn
+		extract: function(keypath, from){
+			return selectn(keypath, from);
+		},
+
+		//js-cookie (former jquery-cookie)
+		//.set()
+		//.get()
+		//.remove()
+		cookie: Cookies,
+
+		//store.js 
+		//.set()
+		//.get(), .getAll()
+		//.remove()
+		//.clear()
+		store: store.enabled && store,
+
+		//----------------validation-----------------
+		validator: validator,
+
+		//----------------time-----------------------
+		moment: moment,
+
+		//----------------url------------------------
+		uri: URI
 
 	});
 
@@ -666,19 +708,6 @@
 	//alias
 	app.page = app.context;
 	app.area = app.regional;
-
-	/**
-	 * Universal remote data interfacing api entry point
-	 * -------------------------------------------------
-	 * @returns jqXHR object (use promise pls)
-	 */
-	app.remote = function(options){
-		options = options || {};
-		if(options.payload)
-			return app.Core.Remote.change(options);
-		else
-			return app.Core.Remote.get(options);
-	};
 
 	/**
 	 * API summary
@@ -746,7 +775,7 @@
 	    }
 	    
 	    if(_.isString(ticket)) ticket = { url: ticket };
-	    drone.attr('src', (new URI(ticket.url || '/').addQuery(_.omit(ticket, 'url'))).toString());
+	    drone.attr('src', (app.uri(ticket.url || '/').addQuery(_.omit(ticket, 'url'))).toString());
 	}
 
 	app.Util.download = downloader;
@@ -965,12 +994,12 @@
 				options._id = options.payload._id;
 			}
 			if(options._id || options._method){
-				var url = new URI(options.url);
+				var url = app.uri(options.url);
 				options.url = url.path(_.compact([url.path(), options._id, options._method]).join('/')).toString();
 			}
 			options.params = options.querys || options.params;
 			if(options.params){
-				options.url = (new URI(options.url)).search(options.params).toString();
+				options.url = (app.uri(options.url)).search(options.params).toString();
 			}
 		}
 		app.trigger('app:ajax', options);		
@@ -1276,7 +1305,7 @@
  *
  * 1. open()+
  * --------------
- * a. consult view.effect animation names (from Animate.css or your own) when showing a view;
+ * a. consult view.effect animation names (from Animate.css or your own, not from jQuery ui) when showing a view;
  * b. inject parent view as parentCt to sub-regional view;
  * c. store sub view as parent view's _fieldsets[member];
  * 
@@ -1291,12 +1320,15 @@
 		open: function(view){
 
 			/**
-			 * Effect config in view & region
+			 * Effect config in view & region **(only enter effect is implemented pre 1.8)**
+			 * 
 			 * use the css animation name as enter & exit effect name.
 			 * e.g 'lightSpeedIn' or {enter: 'lightSpeedIn', exit: '...'}
 			 * e.g data-effect="lightSpeedIn" or data-effect-enter="lightSpeedIn" data-effect-exit="..."
 			 *
 			 * animationName:defer means calling view.enter() to animate out the effect instead of right after 'show' event.
+			 *
+			 * https://daneden.github.io/animate.css/
 			 * 
 			 */
 			if(view.effect !== false)
@@ -2221,7 +2253,7 @@
 })(Application);
 ;/**
  * i18n loading file
- * dependencies: jQuery, underscore, store.js, [Handlebars]
+ * dependencies: jQuery, underscore, [Handlebars]
  *
  * ======
  * Config
@@ -2254,7 +2286,7 @@
  * 
  */
 var I18N = {};
-;(function($, _, URI) {
+;(function($, _) {
 	
 	//----------------configure utils------------------
 	var configure = {
@@ -2265,7 +2297,7 @@ var I18N = {};
 	var locale, resources;	
 	I18N.configure = function(options){
 		_.extend(configure, options);
-		var params = URI(window.location.toString()).search(true);
+		var params = app.uri(window.location.toString()).search(true);
 		locale = I18N.locale = params.locale || configure.locale || Detectizr.browser.language;
 
 		if (locale) {
@@ -2457,7 +2489,7 @@ var I18N = {};
 	};
 
 
-})(jQuery, _, URI);
+})(jQuery, _);
 
 ;/**
  * This is the jquery plugin that fetch and show static .md contents through markd js lib
@@ -3553,7 +3585,7 @@ var I18N = {};
 				return {
 					collection: app.collection(_.map(this._options.columns, function(column){
 						return _.extend({
-							value: selectn(column.name || '', model.attributes),
+							value: app.extract(column.name || '', model.attributes),
 							index: index
 						}, column);
 					}, this)),
@@ -3982,4 +4014,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.7.9-847 build 1438736431711";
+;;app.stagejs = "1.7.9-849 build 1438829568833";
