@@ -134,6 +134,8 @@ hammer.createFolderStructure({
 	imageFolder = path.join(themeFolder, 'img'),
 	registry = [], //remember the sprite image elements
 	lessFilePath = path.join(imageFolder, 'img.less');
+	jsonFilePath = path.join(imageFolder, 'img.json');
+	examplesFilePath = path.join(imageFolder, 'index.html');
 	
 	var imgFolderGlobs = _.map(program.sprites, function(folder){ return path.join(imageFolder, folder, '**/*.png'); });
 	if(_.every(imgFolderGlobs, function(g){
@@ -158,8 +160,8 @@ hammer.createFolderStructure({
 	        prefix: iconClassPrefix,
 	        spritePath: '../img/sprite.png',
 	        nameMapping: function(fpath){
-	        	if(os.type() === 'Windows_NT')
-	        		fpath = fpath.split('/').join(path.sep);
+	        	// if(os.type() === 'Windows_NT')
+	        	// 	fpath = fpath.split('/').join(path.sep);
 	        	var name = fpath.replace(imageFolder, '').split(breakNameRegex).join('-');
 	        	name = path.basename(name, '.png');
 	        	registry.push(iconClassPrefix + name);
@@ -183,7 +185,7 @@ hammer.createFolderStructure({
 				t = path.sep + t;
 				var name = ['-texture', path.basename(t.split(breakNameRegex).join('-'), '.png')].join('');
 				fs.appendFileSync(lessFilePath, [
-					'','//texture',
+					'','/*texture*/',
 					['.', iconClassPrefix, name].join('') + ' {',
 					'\tbackground-image: url(\'../img/texture' + t + '\');',
 					'}'
@@ -193,8 +195,16 @@ hammer.createFolderStructure({
 			});
 
 			//2.3 produce img.json to describe img.less for demo purposes
-			//console.log(registry);
-			//[TBI]	
+			fs.writeFile(jsonFilePath, JSON.stringify(registry));
+
+			//2.4 produce img.html to demo icon usage examples (a table)
+			var html = '<head><link rel="stylesheet" type="text/css" href="img.less"></head>';
+			html += '<body style="background: #DDD;"><h1>Sprite Icons & Textures</h1><table><tr style="text-align:left;"><th>CSS class</th><th>Preview</th><th>Usage <small>(i must be display:block/inline)</small></th></tr>';
+			_.each(registry, function(icon){
+				html += '<tr><td>' + icon + '</td><td style="padding:0.5em;"><i style="display:block;' + (/-texture-/.test(icon)?'width: 200px; height: 64px;':'') + '" class="' + icon + '"></td><td>' + _.escape('<i class="'+ icon +'"></i>') + '</td></tr>';
+			});
+			html += '</table></body>';
+			fs.writeFile(examplesFilePath, html);
 
 			//3. build the /css/main.css from /less/main.less
 			lessc(themeFolder);
