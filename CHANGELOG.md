@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.8.0 (2015-08-03*)
+1.8.0 (2015-08-04*)
 -------------------
 1. Refined Reusable module method register().
 2. Added _.isPlainObject() to underscore.
@@ -8,9 +8,18 @@ Change Log
 4. Added view.isInDOM() check.
 5. Back-ported dynamic view injection (synced).
 6. Added app.has/get apis.
+7. Removed caching ability from $.md plugin.
+8. Added app.extract for deep-key value extraction from any object.
+9. Added app.cookie for quick cookie reading/writing.
+10. Added app.validator for using validators.js
+11. Removed jquery.transition. (leaving only jQ.fx and animate.css)
+12. Added app.store for using store.js
+13. Added app.uri for using URI.js
+14. Updated documentation.
 
 Working on...
 
+- Leaving effects in regions
 - Adding /tests
 
 
