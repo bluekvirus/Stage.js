@@ -1,5 +1,5 @@
 {
-  "site.html": "<div region=\"banner\" view=\"Banner\"></div><div region=\"center\"></div><div region=\"footer\" view=\"demo/Footer\"></div>",
+  "site.html": "<div region=\"banner\" view=\"Banner\"></div><div region=\"center\"></div><!-- <div region=\"footer\" view=\"demo/Footer\"></div> -->",
   "test-ct.html": "<div class=\"row\"><div region=\"left\" class=\"col-md-6\"></div><div region=\"right\" class=\"col-md-6\"></div></div><div class=\"row\"><div region=\"nav\" class=\"col-md-12\"></div></div><div class=\"row\"><div region=\"left2\" class=\"col-md-6\"></div><div region=\"right2\" class=\"col-md-6 wrapper\" view=\"@test2.html\"></div></div>",
   "test.html": "<h1>Hello World</h1>",
   "test2.html": "<div  class=\"alert alert-info\"><h2>This template might not be compiled yet!</h2></div>",

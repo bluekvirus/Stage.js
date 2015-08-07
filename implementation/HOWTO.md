@@ -24,6 +24,7 @@ View:
 * Application.editor.validator (name, fn) - alias: editor.rule()
 * Application.has (name, [type])
 * Application.get (name, [type])
+* Application.coop (e, [args])
 
 Handling Data:
 * Application.remote (options)

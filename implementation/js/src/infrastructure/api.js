@@ -109,6 +109,12 @@
 					'Editor': app.Core.Editor.get()
 				};
 
+			//remove path prior to view name (!! abc/efg/ViewA is the same as efg/abc/ViewA if it's already loaded !!)
+			var path = name.split('/');
+			name = path.pop();
+			if(path.length) path = path.join('/');
+			else path = null;
+
 			if(type)
 				return app.Core[type] && app.Core[type].get(name);
 
@@ -123,12 +129,8 @@
 			else {
 				//see if we have app.viewSrcs set to load the View def dynamically
 				if(app.config && app.config.viewSrcs){
-					var path = name.split('/');
-					name = path.pop();
-					if(path.length) path = path.join('/');
-					else path = null;
 					$.ajax({
-						url: _.compact([app.config.viewSrcs, path, _.string.slugify(name)]).join('/') + '.js',
+						url: _.compact([app.config.viewSrcs, path, _.string.slugify(_.string.humanize(name))]).join('/') + '.js',
 						dataType: 'script',
 						async: false
 					}).done(function(){

@@ -11,7 +11,7 @@ NProgress.configure({showSpinner: false});
         contextRegion: 'center',
         defaultContext: 'Home',
         baseAjaxURI: '',
-        //viewSrcs: 'site/demo'
+        viewSrcs: 'site/demo'
 
     }).run();
 
