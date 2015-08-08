@@ -157,12 +157,6 @@
 					this[r].listenTo(this[r], 'region:load-view', function(name, options){ //can load both view and widget.
 						if(!name) return;
 
-						var Reusable = app.get(name);
-						if(Reusable){
-							this.show(new Reusable(options));
-							return;
-						}
-
 						//Template mockups?
 						if(_.string.startsWith(name, '@')){
 							this.show(app.view({
@@ -170,6 +164,13 @@
 							}, true));
 							return;
 						}
+
+						//Reusable view?
+						var Reusable = app.get(name);
+						if(Reusable){
+							this.show(new Reusable(options));
+							return;
+						}						
 
 						console.warn('DEV::Layout::View required ' + name + ' can NOT be found...use app.view({name: ..., ...}).');
 					});

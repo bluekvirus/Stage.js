@@ -62,6 +62,9 @@
 					console.warn('DEV::Overriden::Reusable ' + regName + '.' + name);
 				this.map[name] = factory();
 				this.map[name].prototype.name = name;
+
+				//fire the coop event (e.g for auto menu entry injection)
+				app.coop('reusable-registered', this.map[name], regName);
 				return this.map[name];
 
 			},
