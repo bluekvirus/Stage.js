@@ -299,13 +299,17 @@
 					var navRegion = app.config.navRegion || app.config.contextRegion;
 					var targetRegion = app.mainView.getRegion(navRegion) || app.getRegion(navRegion);
 					if(!targetRegion) throw new Error('DEV::Application::You don\'t have region \'' + navRegion + '\' defined');		
+					
+					//note that .show() might be async due to region enter/exit effects
+					targetCtx.once('show', function(){
+						app.currentContext =  targetCtx;
+						//fire a notification to app as meta-event.
+						app.trigger('app:context-switched', app.currentContext.name);
+					});
 					targetRegion.show(targetCtx);
-					app.currentContext =  targetCtx;
-
-					//fire a notification round to the sky.
-					app.trigger('app:context-switched', app.currentContext.name);
 				}
 
+				//notify regional views in the context (views further down in the nav chain)
 				app.currentContext.trigger('context:navigate-chain', path);
 
 			}

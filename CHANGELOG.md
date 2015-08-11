@@ -16,7 +16,8 @@ Change Log
 12. Added app.store for using store.js
 13. Added app.uri for using URI.js
 14. Added icon sprite & texture preview in theme-prep tool
-15. Updated documentation.
+15. Added exit effect configure to region & view
+16. Updated documentation.
 
 Working on...
 

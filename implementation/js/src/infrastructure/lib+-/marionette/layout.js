@@ -212,8 +212,12 @@
 							//new
 							var view = new TargetView();
 							if(navRegion.currentView) navRegion.currentView.trigger('view:navigate-away');
+							
+							//note that .show() might be async due to region enter/exit effects
+							view.once('show', function(){
+								view.trigger('view:navigate-chain', pathArray);
+							});							
 							navRegion.show(view);
-							view.trigger('view:navigate-chain', pathArray);
 							return;
 						}else{
 							//old

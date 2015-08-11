@@ -27,10 +27,6 @@ NProgress.configure({showSpinner: false});
 
     //Shared - Regionals
     app.area('Banner', {
-        // effect: {
-        //     name: 'fade',
-        //     duration: 500
-        // },
         initialize: function(){
             this.listenTo(app, 'app:context-switched', function(name){
                 this.$el.find('[context]').each(function(index, el){

@@ -6,7 +6,8 @@
 		className: 'wrapper-full-2x border border-full',
 		navRegion: 'nav',
 		effect: {
-			enter: 'fadeInDown'
+			enter: 'fadeInDown',
+			exit: 'fadeOutDown'
 		},
 		onShow: function(){
 			this.getRegion('left').show(app.view({

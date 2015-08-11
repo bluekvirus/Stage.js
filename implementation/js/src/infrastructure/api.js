@@ -261,4 +261,10 @@
 		'create - @deprecated'
 	];
 
+	/**
+	 * Statics
+	 */
+	//animation done events used in Animate.css
+	app.ADE = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+
 })(Application);
