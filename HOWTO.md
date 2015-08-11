@@ -899,11 +899,9 @@ If you require charts to be drawn, look through our monitored libraries under `/
 
 UX stands for user experience, it is not just about look'n'feel and clickings but also transitions/animations that links between interactions and state change. UX is hard to design, without a clear think-through over the purposes and targeted user tasks, it can be a total chaos... Make sure you have had your plan/sketch reviewed by targeted audience/friends or colleagues before implementation. Employ the *Goal-Directed Design* technique as much as you can.
 
-####Enter/Leave Effects
+####Enter/Exit Effects
 
-**Note that this is experimental and going to change in v1.8+**
-
-Both *region* and *View* can have an `effect` configure to control the effect through which it will be entering/leaving on a region:
+Both *region* and *View* can have an `effect` configure to control the effect through which it will be entering/exiting on a region:
 ```
 //myRegionalA.js
 (function(app) {
@@ -921,9 +919,11 @@ Both *region* and *View* can have an `effect` configure to control the effect th
 
 //Or in the template
 <div region="..." data-effect="..."></div>
-<div region="..." data-effect-enter="..."></div>
+<div region="..." data-effect-enter="..." data-effect-exit="..."></div>
 ```
 Use the css animation class name you build or from the included *Animate.css* library.
+
+**Note**: If you are using a single effect name for both entering and exiting effects, do **NOT** write `In` and `Out` at the end of the name as they will be added automatically for you.
 
 Use `view.effect` to override region effects and `view.effect = false` to disable region effects.
 
