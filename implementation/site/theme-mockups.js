@@ -1,6 +1,6 @@
 (function(app){
 
-	app.context('_Mockups', {
+	app.context('Mockups', {
 		
 		className: 'wrapper-full container-fluid',
 

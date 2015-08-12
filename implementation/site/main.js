@@ -66,7 +66,7 @@ NProgress.configure({showSpinner: false});
                 '<li context="Demo" class="dropdown">',
                   '<a data-toggle="dropdown" class="dropdown-toggle" href="#">DEMO <b class="caret"></b></a>',
                   '<ul class="dropdown-menu">',
-                    '<li><a href="#navigate/_Mockups">Theme Preview</a></li>',
+                    '<li><a href="#navigate/Mockups">Theme Preview</a></li>',
                     '<li class="divider"></li>',
                     '<li class="dropdown-header">View Plus</li>',
                     '<li><a href="#navigate/Demo/RemoteTpl">Remote Templates</a></li>',

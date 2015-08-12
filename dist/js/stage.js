@@ -486,7 +486,7 @@
 
 		//----------------view------------------
 		//pass in [name,] options to define (named will be registered)
-		//pass in [name] to get
+		//pass in [name] to get (name can be of path form)
 		//pass in [name,] options, instance to create (named will be registered again)
 		view: function(name /*or options*/, options /*or instance*/){
 			if(_.isString(name)){
@@ -507,7 +507,7 @@
 		},
 
 		//pass in [name,] options to register (always requires a name)
-		//pass in [name] to get
+		//pass in [name] to get (name can be of path form)
 		context: function(name /*or options*/, options){
 			if(!options) {
 				if(_.isString(name) || !name)
@@ -522,7 +522,7 @@
 
 		//pass in name, factory to register
 		//pass in name, options to create
-		//pass in [name] to get
+		//pass in [name] to get (name can be of path form)
 		widget: function(name, options /*or factory*/){
 			if(!options) return app.Core.Widget.get(name);
 			if(_.isFunction(options))
@@ -534,7 +534,7 @@
 
 		//pass in name, factory to register
 		//pass in name, options to create
-		//pass in [name] to get
+		//pass in [name] to get (name can be of path form)
 		editor: function(name, options /*or factory*/){
 			if(!options) return app.Core.Editor.get(name);
 			if(_.isFunction(options))
@@ -556,6 +556,7 @@
 			},
 			//--------------------------------
 		
+		//(name can be of path form)
 		has: function(name, type){
 			if(type)
 				return app.Core[type] && app.Core[type].has(name);
@@ -568,6 +569,7 @@
 			return type;
 		},
 
+		//(name can be of path form)
 		get: function(name, type){
 			if(!name)
 				return {
@@ -576,12 +578,6 @@
 					'Widget': app.Core.Widget.get(),
 					'Editor': app.Core.Editor.get()
 				};
-
-			//remove path prior to view name (!! abc/efg/ViewA is the same as efg/abc/ViewA if it's already loaded !!)
-			var path = name.split('/');
-			name = path.pop();
-			if(path.length) path = path.join('/');
-			else path = null;
 
 			if(type)
 				return app.Core[type] && app.Core[type].get(name);
@@ -598,11 +594,11 @@
 				//see if we have app.viewSrcs set to load the View def dynamically
 				if(app.config && app.config.viewSrcs){
 					$.ajax({
-						url: _.compact([app.config.viewSrcs, path, _.string.slugify(_.string.humanize(name))]).join('/') + '.js',
+						url: _.compact([app.config.viewSrcs, app.nameToPath(name)]).join('/') + '.js',
 						dataType: 'script',
 						async: false
 					}).done(function(){
-						//console.log('View injected', name, 'from', app.viewSrcs, path);
+						//console.log('View injected', name, 'from', app.viewSrcs);
 						Reusable = true;
 					}).fail(function(jqXHR, settings, e){
 						console.warn('DEV::Application::get() Can NOT load View definition for', name, '[', e, ']');
@@ -618,6 +614,18 @@
 			app.trigger('app:coop', event, options);
 			app.trigger('app:coop:' + event, options);
 			return app;
+		},
+
+		pathToName: function(path){
+			if(!_.isString(path)) throw new Error('DEV::Application::pathToName You must pass in a valid path string.');
+			if(_.contains(path, '.')) return path;
+			return path.split('/').map(_.string.humanize).map(_.string.classify).join('.');
+		},
+
+		nameToPath: function(name){
+			if(!_.isString(name)) throw new Error('DEV::Application::nameToPath You must pass in a Reusable view name.');
+			if(_.contains(name, '/')) return name;
+			return name.split('.').map(_.str.humanize).map(_.str.slugify).join('/');
 		},
 
 		//----------------navigation-----------
@@ -1205,12 +1213,14 @@
 		_.extend(manager, {
 
 			map: {},
-			has: function(name){
+			has: function(name /*or path*/){
 				if(!_.isString(name) || !name) throw new Error('DEV::Reusable:: You must specify the name of the ' + regName + ' to look for.');
-				if(this.map[name]) return true;
-				return false;
+				name = app.pathToName(name);
+				if(this.map[name]) return name;
+				return undefined;
 			},
 
+			//no auto pathToName conversion
 			register: function(name /*or options*/, factory /*or options or none*/){
 
 				//type 1: options only
@@ -1252,7 +1262,7 @@
 
 			},
 
-			create: function(name, options){
+			create: function(name /*or path*/, options){
 				if(!_.isString(name) || !name) throw new Error('DEV::Reusable:: You must specify the name of the ' + regName + ' to create.');
 				var Reusable = this.get(name);
 				if(Reusable)
@@ -1260,16 +1270,17 @@
 				throw new Error('DEV::Reusable:: Required definition [' + name + '] in ' + regName + ' not found...');
 			},
 
-			get: function(name){
+			get: function(name /*or path*/){
 				if(!name) return _.keys(this.map);
-				if(this.has(name))
+				if(name = this.has(name))
 					return this.map[name];
 			},
 
-			alter: function(name, options){
-				if(this.has(name)){
-					this.map[name] = this.map[name].extend(options);
-					return this.map[name];
+			alter: function(name /*or path*/, options){
+				var Reusable = this.get(name);
+				if(Reusable){
+					Reusable = Reusable.extend(options);
+					return Reusable;
 				}
 				throw new Error('DEV::Reusable:: Required definition [' + name + '] in ' + regName + ' not found...');
 			}
@@ -4090,4 +4101,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.7.9-853 build 1439266739573";
+;;app.stagejs = "1.7.9-855 build 1439357945324";

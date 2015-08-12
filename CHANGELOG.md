@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.8.0 (2015-08-04*)
+1.8.0 (2015-08-11*)
 -------------------
 1. Refined Reusable module method register().
 2. Added _.isPlainObject() to underscore.
@@ -15,13 +15,14 @@ Change Log
 11. Removed jquery.transition. (leaving only jQ.fx and animate.css)
 12. Added app.store for using store.js
 13. Added app.uri for using URI.js
-14. Added icon sprite & texture preview in theme-prep tool
-15. Added exit effect configure to region & view
-16. Updated documentation.
+14. Added icon sprite & texture preview in theme-prep tool.
+15. Added exit effect configure to region & view.
+16. Now path and name can be used interchangeably when checking/getting/creating/altering any reusable view.
+17. Updated documentation.
 
 Working on...
 
-- Leaving effects in regions
+- Refine build script (to care for dynamically injected views)
 - Adding /tests
 
 

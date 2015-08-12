@@ -22,12 +22,14 @@
 		_.extend(manager, {
 
 			map: {},
-			has: function(name){
+			has: function(name /*or path*/){
 				if(!_.isString(name) || !name) throw new Error('DEV::Reusable:: You must specify the name of the ' + regName + ' to look for.');
-				if(this.map[name]) return true;
-				return false;
+				name = app.pathToName(name);
+				if(this.map[name]) return name;
+				return undefined;
 			},
 
+			//no auto pathToName conversion
 			register: function(name /*or options*/, factory /*or options or none*/){
 
 				//type 1: options only
@@ -69,7 +71,7 @@
 
 			},
 
-			create: function(name, options){
+			create: function(name /*or path*/, options){
 				if(!_.isString(name) || !name) throw new Error('DEV::Reusable:: You must specify the name of the ' + regName + ' to create.');
 				var Reusable = this.get(name);
 				if(Reusable)
@@ -77,16 +79,17 @@
 				throw new Error('DEV::Reusable:: Required definition [' + name + '] in ' + regName + ' not found...');
 			},
 
-			get: function(name){
+			get: function(name /*or path*/){
 				if(!name) return _.keys(this.map);
-				if(this.has(name))
+				if(name = this.has(name))
 					return this.map[name];
 			},
 
-			alter: function(name, options){
-				if(this.has(name)){
-					this.map[name] = this.map[name].extend(options);
-					return this.map[name];
+			alter: function(name /*or path*/, options){
+				var Reusable = this.get(name);
+				if(Reusable){
+					Reusable = Reusable.extend(options);
+					return Reusable;
 				}
 				throw new Error('DEV::Reusable:: Required definition [' + name + '] in ' + regName + ' not found...');
 			}
