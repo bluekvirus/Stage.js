@@ -76,6 +76,7 @@
     "peity": "*",
     "d3": "*",
     "highcharts-release": "*",
+    "highstock-release": "*",
     "jvectormap": "*",
     "scroll-reveal": "*",
     "html5-boilerplate": "*",
