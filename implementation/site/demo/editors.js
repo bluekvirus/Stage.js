@@ -201,7 +201,7 @@
     });
 
     //////////Form/////////
-    app.area('Editors', {
+    app.area('Demo.Editors', {
         template: [
             '<div class="row">',
                 '<div class="form form-horizontal">',

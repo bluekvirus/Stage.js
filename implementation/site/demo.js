@@ -4,12 +4,10 @@ Application.page('Demo', {
     template: [
         '<div region="center" data-effect="fade"></div>',
     ],
-    navRegion: 'center',
     onNavigateTo: function(path){
-        if(path)
-            console.log('Not Found:', path);
-        else
-            Application.trigger('app:navigate', 'Demo/Editors');
+    	path = path || 'Trees';
+        var View = app.get(this.name + '.' + path) || app.get('AccessDenied');
+        this.getRegion('center').show(new View());
     }
 
 });

@@ -1,6 +1,6 @@
 ;(function(app){
 
-	app.area('Datatable', {
+	app.area('Demo.Datatable', {
 	    template: [
 	    	'<div region="header"></div>',
 	    	'<div region="table"></div>',

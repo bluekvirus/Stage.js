@@ -5,6 +5,7 @@ module.exports = {
 		templates: 'static/template', //path relative to root
 	},
 	js: {
+		dynamic: 'site',
 		targets: false
 	},
 	structure : { //path are relative to the distFolder and src.root above

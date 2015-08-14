@@ -105,6 +105,3 @@ hammer.createFolderStructure(_.extend({cachedFiles: result, output: outputFolder
 	console.log('Build Task [app] Complete'.rainbow, '-', moment.utc(new Date().getTime() - startTime.getTime()).format('HH:mm:ss.SSS').underline, '@', startTime);
 });
 
-
-
-

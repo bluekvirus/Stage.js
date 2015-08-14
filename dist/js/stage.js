@@ -320,7 +320,7 @@
 				var context = path.shift();
 
 				if(!context) throw new Error('DEV::Application::Empty context name...');
-				var TargetContext = app.Core.Context.get(context);
+				var TargetContext = app.get(context, 'Context');
 				if(!TargetContext) throw new Error('DEV::Application::You must have the required context ' + context + ' defined...'); //see - special/registry/context.js			
 				if(!app.currentContext || app.currentContext.name !== context) {
 					
@@ -383,7 +383,7 @@
 
 			//Auto-detect and init context (view that replaces the body region)
 			if(!window.location.hash){
-				if(!app.Core.Context.get(app.config.defaultContext))
+				if(!app.get(app.config.defaultContext, 'Context'))
 					console.warn('DEV::Application::You might want to define a Default context using app.context(\'Context Name\', {...})');
 				else
 					app.navigate(app.config.defaultContext);
@@ -570,7 +570,7 @@
 		},
 
 		//(name can be of path form)
-		get: function(name, type){
+		get: function(name, type, tryAgain){
 			if(!name)
 				return {
 					'Context': app.Core.Context.get(),
@@ -579,18 +579,18 @@
 					'Editor': app.Core.Editor.get()
 				};
 
-			if(type)
-				return app.Core[type] && app.Core[type].get(name);
-
 			var Reusable;
 			_.each(['Context', 'Regional', 'Widget', 'Editor'], function(t){
 				if(!Reusable)
-					Reusable = app.Core[t].get(name);
+					Reusable = app.Core[type || t].get(name);
 			});
 
 			if(Reusable)
 				return Reusable;
 			else {
+				//prevent infinite loading when View name is not defined using app.pathToName() rules.
+				if(tryAgain) throw new Error('Application::get() Double check your view name defined in ' + app.nameToPath(name) + ' for ' + app.pathToName(name));
+
 				//see if we have app.viewSrcs set to load the View def dynamically
 				if(app.config && app.config.viewSrcs){
 					$.ajax({
@@ -605,14 +605,14 @@
 					});
 				}
 			}
-			if(Reusable)
-				return this.get(name, type);
+			if(Reusable === true)
+				return this.get(name, type, true);
 			return Reusable;
 		},
 
 		coop: function(event, options){
 			app.trigger('app:coop', event, options);
-			app.trigger('app:coop:' + event, options);
+			app.trigger('app:coop-' + event, options);
 			return app;
 		},
 
@@ -1257,6 +1257,7 @@
 				this.map[name].prototype.name = name;
 
 				//fire the coop event (e.g for auto menu entry injection)
+				app.trigger('app:reusable-registered', this.map[name], regName);
 				app.coop('reusable-registered', this.map[name], regName);
 				return this.map[name];
 
@@ -4101,4 +4102,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.7.9-855 build 1439357945324";
+;;app.stagejs = "1.8.0-856 build 1439537985826";

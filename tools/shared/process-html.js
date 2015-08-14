@@ -37,7 +37,8 @@ cheerio = require('cheerio'), //as server side jquery
 colors = require('colors'),
 path = require('path'),
 os = require('os'),
-fs = require('fs-extra');
+fs = require('fs-extra'),
+globule = require('globule');
 _.str = require('underscore.string');
 
 module.exports = {
@@ -124,6 +125,16 @@ module.exports = {
 			};
 		}
 
+		//inject dynamically loaded scripts into the html
+		if(options.js.dynamic){
+			var $i = $('body > script').last();
+			_.each(globule.find(path.join(options.js.dynamic, '**/*.js'), {cwd: options.root}), function(jsFile){
+				if($('script[src="' + jsFile + '"]').length) return; //skipped
+				$i.after('<script src="' + jsFile + '"></script>');
+				console.log('[dynamically loaded script]'.grey, jsFile);
+			});
+		}
+
 		//go through script tags in the .html file.
 		var $script;
 		$('body > script').each(function(index, el){
@@ -150,7 +161,7 @@ module.exports = {
 			}
 			
 		});
-
+		
 		//append combined target back according to the js config block
 		var $prev;
 		_.each(options.js.targets, function(setting, name){
@@ -186,7 +197,6 @@ module.exports = {
 		});
 
 		return result;
-
 	}
 
 };

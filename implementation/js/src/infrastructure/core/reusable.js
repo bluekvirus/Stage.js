@@ -66,6 +66,7 @@
 				this.map[name].prototype.name = name;
 
 				//fire the coop event (e.g for auto menu entry injection)
+				app.trigger('app:reusable-registered', this.map[name], regName);
 				app.coop('reusable-registered', this.map[name], regName);
 				return this.map[name];
 

@@ -117,7 +117,7 @@
 		template: '<p>One fine body…</p>' 
 	});
 
-	app.regional('Notify', {
+	app.regional('Demo.Notify', {
 		template: [
 			'<h1>Notification Examples</h1>',
 			'<hr/>',

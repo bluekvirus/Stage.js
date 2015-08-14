@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.8.0 (2015-08-11*)
+1.8.0 (2015-08-14)
 -------------------
 1. Refined Reusable module method register().
 2. Added _.isPlainObject() to underscore.
@@ -17,13 +17,10 @@ Change Log
 13. Added app.uri for using URI.js
 14. Added icon sprite & texture preview in theme-prep tool.
 15. Added exit effect configure to region & view.
-16. Now path and name can be used interchangeably when checking/getting/creating/altering any reusable view.
-17. Updated documentation.
-
-Working on...
-
-- Refine build script (to care for dynamically injected views)
-- Adding /tests
+16. Now path and name can be used interchangeably when checking/getting/creating/altering any reusable view (but not registering).
+17. Now css & less files in bower_components can be referenced directly.
+18. The build process now fully supports dynamically injected scripts.
+19. Updated documentation.
 
 
 1.7.9 (2015-07-29)

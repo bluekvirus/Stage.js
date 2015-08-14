@@ -20,7 +20,7 @@
 
 	var data = Mock.mock(treeDataTpl).data;
 
-	app.regional('Trees', {
+	app.regional('Demo.Trees', {
 
 		className: 'container',
 	    template: [

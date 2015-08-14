@@ -102,7 +102,7 @@
 		},
 
 		//(name can be of path form)
-		get: function(name, type){
+		get: function(name, type, tryAgain){
 			if(!name)
 				return {
 					'Context': app.Core.Context.get(),
@@ -111,18 +111,18 @@
 					'Editor': app.Core.Editor.get()
 				};
 
-			if(type)
-				return app.Core[type] && app.Core[type].get(name);
-
 			var Reusable;
 			_.each(['Context', 'Regional', 'Widget', 'Editor'], function(t){
 				if(!Reusable)
-					Reusable = app.Core[t].get(name);
+					Reusable = app.Core[type || t].get(name);
 			});
 
 			if(Reusable)
 				return Reusable;
 			else {
+				//prevent infinite loading when View name is not defined using app.pathToName() rules.
+				if(tryAgain) throw new Error('Application::get() Double check your view name defined in ' + app.nameToPath(name) + ' for ' + app.pathToName(name));
+
 				//see if we have app.viewSrcs set to load the View def dynamically
 				if(app.config && app.config.viewSrcs){
 					$.ajax({
@@ -137,14 +137,14 @@
 					});
 				}
 			}
-			if(Reusable)
-				return this.get(name, type);
+			if(Reusable === true)
+				return this.get(name, type, true);
 			return Reusable;
 		},
 
 		coop: function(event, options){
 			app.trigger('app:coop', event, options);
-			app.trigger('app:coop:' + event, options);
+			app.trigger('app:coop-' + event, options);
 			return app;
 		},
 

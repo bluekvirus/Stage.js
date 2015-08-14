@@ -273,7 +273,7 @@
 				var context = path.shift();
 
 				if(!context) throw new Error('DEV::Application::Empty context name...');
-				var TargetContext = app.Core.Context.get(context);
+				var TargetContext = app.get(context, 'Context');
 				if(!TargetContext) throw new Error('DEV::Application::You must have the required context ' + context + ' defined...'); //see - special/registry/context.js			
 				if(!app.currentContext || app.currentContext.name !== context) {
 					
@@ -336,7 +336,7 @@
 
 			//Auto-detect and init context (view that replaces the body region)
 			if(!window.location.hash){
-				if(!app.Core.Context.get(app.config.defaultContext))
+				if(!app.get(app.config.defaultContext, 'Context'))
 					console.warn('DEV::Application::You might want to define a Default context using app.context(\'Context Name\', {...})');
 				else
 					app.navigate(app.config.defaultContext);
