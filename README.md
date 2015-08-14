@@ -123,7 +123,7 @@ Distribute
 a. CHANGELOG.md and tools/libprep/bower.json
 b. README.md, HOWTO.md (optional, can be through http://shields.io/)
 
-//1. [optional] update libs
+//1. [optional] update libs & bower release version
 tools/lib-update.sh
 
 //2. [optional] update themes (under tools/themeprep/)
