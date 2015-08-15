@@ -31,7 +31,7 @@ cd project
 stagejs init
 stagejs serve [--port <number>]
 ```
-You can now start developing your app with Stage.js. Read the [documentation](http://bluekvirus.github.io/Stage.js/#navigate/Document) for more.
+You can now start developing your app with Stage.js. Read the [command-line tool](https://www.npmjs.com/package/stage-devtools) for more.
 
 
 Documentation

@@ -52,7 +52,7 @@ module.exports = function(server) {
     }
 
     // watch the selected client themes folders that exist.
-    var validThemes = []
+    var validThemes = [];
     var globs = _.map(profile.lesswatch, function(tname){
         if(fs.existsSync(path.join(themesFolder, tname))){
             validThemes.push(tname);
