@@ -226,11 +226,13 @@ stagejs update --edge
 stagejs serve [--port <number>]
 ```
 
-**Tip**: You can now use the `stage-devtools` cli to create all the element needed in your application. Use the following cmd to see what you can create from the command-line:
+**Tip**: You can now use the `stagejs` command-line to create all the element needed in your application. Use the following cmd to see what you can create from the command-line:
 ```
 stagejs create -l
 ```
-Read more about the dev tool [here](https://github.com/bluekvirus/Stage-devtools).
+Read more about the `stagejs` [cli tool](https://github.com/bluekvirus/Stage-devtools).
+
+**Tip**: Use our development [VM through `vagrant`](https://github.com/bluekvirus/vm-webdev) if you don't want to bother with setting up your own environment. Run the `stagejs` command-line tool inside this VM once it is up and running.
 
 #####Manually
 
