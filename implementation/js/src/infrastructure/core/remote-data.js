@@ -129,6 +129,12 @@
 	$document.ajaxStop(function() {
 		app.trigger('app:ajax-inactive');
 	});
+
+
+	//Global ajax fail handler (common)
+	app.ajaxFailed = function(jqXHR, settings, e){
+		throw new Error('DEV::Ajax::' + e + ' ' + settings.url);
+	};
 	
 
 })(Application, _, jQuery);

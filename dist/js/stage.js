@@ -601,7 +601,7 @@
 						//console.log('View injected', name, 'from', app.viewSrcs);
 						Reusable = true;
 					}).fail(function(jqXHR, settings, e){
-						console.warn('DEV::Application::get() Can NOT load View definition for', name, '[', e, ']');
+						throw new Error('DEV::Application::get() Can NOT load View definition for', name, '[', e, ']');
 					});
 				}
 			}
@@ -1083,6 +1083,12 @@
 	$document.ajaxStop(function() {
 		app.trigger('app:ajax-inactive');
 	});
+
+
+	//Global ajax fail handler (common)
+	app.ajaxFailed = function(jqXHR, settings, e){
+		throw new Error('DEV::Ajax::' + e + ' ' + settings.url);
+	};
 	
 
 })(Application, _, jQuery);
@@ -1575,6 +1581,17 @@
 		}		
 		
 		//---------------------optional view enhancements-------------------
+		//data (GET only)
+		if(this.data){
+			var self = this;
+			if(_.isString(this.data)) 
+				app.remote(this.data).done(function(d){
+					self.set(d);
+				}).fail(app.ajaxFailed);
+			else if (_.isPlainObject(this.data))
+				self.set(this.data);
+		}
+
 		//actions (1-click uis)
 		if(this.actions && this.enableActionTags) 
 			this.enableActionTags(this.actions._bubble);
@@ -1984,15 +2001,32 @@
 	 */
 	_.extend(Backbone.Marionette.ItemView.prototype, {
 
-		onRenderData: function(data){
+		set: function(){
 			if(!this.model){
 				this.model = new Backbone.Model();
-				this.listenTo(this.model, 'change', this.render);
 			}
+
+			if(!this._oneWayBinded && this.isInDOM()){
+				this.listenTo(this.model, 'change', this.render);
+				this._oneWayBinded = true;			
+			}
+
+			return this.model.set.apply(this.model, arguments);
+		},
+
+		get: function(){
+			if(!this.model) throw new Error('DEV::ItemView:: You have not yet setup data in this view');
+			
+			if(arguments.length)
+				return this.model.get.apply(this.model, arguments);
+			return this.model.toJSON();
+		},
+
+		onRenderData: function(data){
 			if(_.isArray(data))
-				this.model.set('items', data); //conform to original Backbone/Marionette settings
+				this.set('items', data); //conform to original Backbone/Marionette settings
 			else
-				this.model.set(data);
+				this.set(data);
 
 			this.trigger('view:data-rendered');
 		}
@@ -4102,4 +4136,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.0-858 build 1439605945590";
+;;app.stagejs = "1.8.1-859 build 1439709554718";

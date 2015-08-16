@@ -371,15 +371,32 @@
 	 */
 	_.extend(Backbone.Marionette.ItemView.prototype, {
 
-		onRenderData: function(data){
+		set: function(){
 			if(!this.model){
 				this.model = new Backbone.Model();
-				this.listenTo(this.model, 'change', this.render);
 			}
+
+			if(!this._oneWayBinded && this.isInDOM()){
+				this.listenTo(this.model, 'change', this.render);
+				this._oneWayBinded = true;			
+			}
+
+			return this.model.set.apply(this.model, arguments);
+		},
+
+		get: function(){
+			if(!this.model) throw new Error('DEV::ItemView:: You have not yet setup data in this view');
+			
+			if(arguments.length)
+				return this.model.get.apply(this.model, arguments);
+			return this.model.toJSON();
+		},
+
+		onRenderData: function(data){
 			if(_.isArray(data))
-				this.model.set('items', data); //conform to original Backbone/Marionette settings
+				this.set('items', data); //conform to original Backbone/Marionette settings
 			else
-				this.model.set(data);
+				this.set(data);
 
 			this.trigger('view:data-rendered');
 		}

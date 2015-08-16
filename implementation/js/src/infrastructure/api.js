@@ -133,7 +133,7 @@
 						//console.log('View injected', name, 'from', app.viewSrcs);
 						Reusable = true;
 					}).fail(function(jqXHR, settings, e){
-						console.warn('DEV::Application::get() Can NOT load View definition for', name, '[', e, ']');
+						throw new Error('DEV::Application::get() Can NOT load View definition for', name, '[', e, ']');
 					});
 				}
 			}

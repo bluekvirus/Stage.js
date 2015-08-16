@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.8.0 (2015-08-14)
+1.8.1 (2015-08-16)
 -------------------
 1. Refined Reusable module method register().
 2. Added _.isPlainObject() to underscore.
@@ -20,7 +20,8 @@ Change Log
 16. Now path and name can be used interchangeably when checking/getting/creating/altering any reusable view (but not registering).
 17. Now css & less files in bower_components can be referenced directly.
 18. The build process now fully supports dynamically injected scripts.
-19. Updated documentation.
+19. Added data config (string or obj), set()/get() shortcuts to views.
+20. Updated documentation.
 
 
 1.7.9 (2015-07-29)

@@ -50,7 +50,7 @@ module.exports = function(server){
 	////////////////services/////////////////
 
 	router.get('/', router.token('read'), function(req, res, next){
-		res.json({hello: true});
+		res.json({hello: true, content: 'world!'});
 	});
 
 	router.get('/user', function(req, res, next){

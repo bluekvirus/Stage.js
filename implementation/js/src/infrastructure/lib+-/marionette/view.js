@@ -82,6 +82,17 @@
 		}		
 		
 		//---------------------optional view enhancements-------------------
+		//data (GET only)
+		if(this.data){
+			var self = this;
+			if(_.isString(this.data)) 
+				app.remote(this.data).done(function(d){
+					self.set(d);
+				}).fail(app.ajaxFailed);
+			else if (_.isPlainObject(this.data))
+				self.set(this.data);
+		}
+
 		//actions (1-click uis)
 		if(this.actions && this.enableActionTags) 
 			this.enableActionTags(this.actions._bubble);
