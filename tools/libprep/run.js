@@ -198,15 +198,17 @@ function combine(bowerInfo, name){
 	//dump selected lib name, version to dependencies.json
 	buildify().setContent(json.stringify(versions)).setDir(distFolder).save('dependencies.json');
 	//produce project bower.json
-	buildify().setContent(json.stringify(_.extend({}, bowerInfo, {dependencies: {}}, {monitored: bowerInfo.dependencies}))).setDir(implFolder + '/../').save('bower.json');
+	buildify().setContent(json.stringify(
+		_.extend(_.omit(bowerInfo, 'themeDependencies', 'dependencies', 'monitored', 'resolutions'))
+	)).setDir(implFolder + '/../').save('bower.json');
 	//produce starter-kit bower.json
 	buildify().setContent(json.stringify(_.extend({
 		name: 'keep name here to use bower install, change if you prefer',
 		private: true,
-		devDependencies: _.extend({
+		dependencies: _.extend({
 			stage: '^' + bowerInfo.version
 		}, bowerInfo.themeDependencies),
-		dependencies: bowerInfo.dependencies
+		'open-source-libs': bowerInfo.monitored
 	}))).setDir(implFolder).save('starter-kit.bower.json');
 	target.setDir(distFolder).save(name + '.js').uglify().save(name + '.min.js');
 	_.each(['.js', '.min.js'], function(v){

@@ -1,6 +1,4 @@
 {
-  "Chart.js": "../../implementation/bower_components/Chart.js/Chart.js",
-  "ace": "../../implementation/bower_components/ace",
   "animate.css": "../../implementation/bower_components/animate.css/animate.css",
   "backbone.babysitter": "../../implementation/bower_components/backbone.babysitter/lib/backbone.babysitter.js",
   "backbone.wreqr": "../../implementation/bower_components/backbone.wreqr/lib/backbone.wreqr.js",
@@ -20,9 +18,6 @@
     "../../implementation/bower_components/bootstrap/dist/js/bootstrap.js"
   ],
   "bootswatch": "../../implementation/bower_components/bootswatch",
-  "colorbox": "../../implementation/bower_components/colorbox/jquery.colorbox.js",
-  "crossfilter": "../../implementation/bower_components/crossfilter",
-  "d3": "../../implementation/bower_components/d3/d3.js",
   "detectizr": "../../implementation/bower_components/detectizr/dist/detectizr.js",
   "fastclick": "../../implementation/bower_components/fastclick/lib/fastclick.js",
   "fontawesome": [
@@ -30,35 +25,29 @@
     "../../implementation/bower_components/fontawesome/scss/font-awesome.scss"
   ],
   "handlebars": "../../implementation/bower_components/handlebars/handlebars.js",
-  "highcharts-release": [
-    "../../implementation/bower_components/highcharts-release/highcharts.js",
-    "../../implementation/bower_components/highcharts-release/highcharts-more.js",
-    "../../implementation/bower_components/highcharts-release/modules/exporting.js"
-  ],
   "highlightjs": [
     "../../implementation/bower_components/highlightjs/highlight.pack.min.js",
     "../../implementation/bower_components/highlightjs/styles/default.css"
   ],
-  "html5-boilerplate": "../../implementation/bower_components/html5-boilerplate",
   "iCheck": "../../implementation/bower_components/iCheck/icheck.min.js",
+  "interact": "../../implementation/bower_components/interact/interact.js",
   "jquery-file-upload": "../../implementation/bower_components/jquery-file-upload/js/jquery.fileupload.js",
   "jquery-ui": "../../implementation/bower_components/jquery-ui/ui/jquery-ui.js",
   "jquery": "../../implementation/bower_components/jquery/dist/jquery.js",
   "js-cookie": "../../implementation/bower_components/js-cookie/src/js.cookie.js",
-  "jvectormap": "../../implementation/bower_components/jvectormap",
   "lesshat": [
     "../../implementation/bower_components/lesshat/build/lesshat.less",
     "../../implementation/bower_components/lesshat/build/lesshat-prefixed.less"
   ],
-  "loadcss": "../../implementation/bower_components/loadcss/loadCSS.js",
   "marionette": [
     "../../implementation/bower_components/marionette/lib/backbone.marionette.js",
     "../../implementation/bower_components/marionette/lib/core/amd/backbone.marionette.js"
   ],
+  "loadcss": "../../implementation/bower_components/loadcss/loadCSS.js",
   "marked": "../../implementation/bower_components/marked/lib/marked.js",
   "mockjs": "../../implementation/bower_components/mockjs/dist/mock.js",
-  "modernizr": "../../implementation/bower_components/modernizr",
   "momentjs": "../../implementation/bower_components/momentjs/moment.js",
+  "modernizr": "../../implementation/bower_components/modernizr",
   "nprogress": [
     "../../implementation/bower_components/nprogress/nprogress.js",
     "../../implementation/bower_components/nprogress/nprogress.css"
@@ -67,16 +56,6 @@
     "../../implementation/bower_components/open-sans-fontface/open-sans.css",
     "../../implementation/bower_components/open-sans-fontface/fonts/**/*"
   ],
-  "peity": "../../implementation/bower_components/peity/jquery.peity.js",
-  "pickadate": [
-    "../../implementation/bower_components/pickadate/lib/picker.js",
-    "../../implementation/bower_components/pickadate/lib/picker.date.js",
-    "../../implementation/bower_components/pickadate/lib/picker.time.js",
-    "../../implementation/bower_components/pickadate/lib/themes/default.css",
-    "../../implementation/bower_components/pickadate/lib/themes/default.date.css",
-    "../../implementation/bower_components/pickadate/lib/themes/default.time.css"
-  ],
-  "powerange": "../../implementation/bower_components/powerange/dist/powerange.js",
   "raphael": "../../implementation/bower_components/raphael/raphael.js",
   "roboto-fontface": [
     "../../implementation/bower_components/roboto-fontface/css/roboto-fontface.css",
@@ -141,34 +120,12 @@
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-ThinItalic.woff",
     "../../implementation/bower_components/roboto-fontface/fonts/Roboto-ThinItalic.woff2"
   ],
-  "scroll-reveal": "../../implementation/bower_components/scroll-reveal/dist/scrollReveal.js",
   "selectn": "../../implementation/bower_components/selectn",
-  "soundmanager": [
-    "../../implementation/bower_components/soundmanager/script/soundmanager2.js",
-    "../../implementation/bower_components/soundmanager/swf/soundmanager2.swf",
-    "../../implementation/bower_components/soundmanager/swf/soundmanager2_flash9.swf"
-  ],
-  "spin.js": "../../implementation/bower_components/spin.js/spin.js",
   "store.js": "../../implementation/bower_components/store.js/store.js",
   "swag": "../../implementation/bower_components/swag/lib/swag.js",
-  "switchery": [
-    "../../implementation/bower_components/switchery/dist/switchery.js",
-    "../../implementation/bower_components/switchery/dist/switchery.css"
-  ],
-  "togetherjs": "../../implementation/bower_components/togetherjs",
-  "transitionize": "../../implementation/bower_components/transitionize/dist/transitionize.js",
   "ubuntu-fontface": "../../implementation/bower_components/ubuntu-fontface",
   "underscore.string": "../../implementation/bower_components/underscore.string/lib/underscore.string.js",
   "underscore": "../../implementation/bower_components/underscore/underscore.js",
   "uri.js": "../../implementation/bower_components/uri.js/src/URI.js",
-  "validator-js": "../../implementation/bower_components/validator-js/validator.js",
-  "victor": "../../implementation/bower_components/victor/build/victor.js",
-  "video.js": [
-    "../../implementation/bower_components/video.js/dist/video-js/video.js",
-    "../../implementation/bower_components/video.js/dist/video-js/video-js.css",
-    "../../implementation/bower_components/video.js/dist/video-js/font/vjs.eot",
-    "../../implementation/bower_components/video.js/dist/video-js/font/vjs.svg",
-    "../../implementation/bower_components/video.js/dist/video-js/font/vjs.ttf",
-    "../../implementation/bower_components/video.js/dist/video-js/font/vjs.woff"
-  ]
+  "validator-js": "../../implementation/bower_components/validator-js/validator.js"
 }

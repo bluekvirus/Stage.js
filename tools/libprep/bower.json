@@ -16,7 +16,10 @@
     "multiple",
     "context",
     "page",
-    "layout"
+    "layout",
+    "view",
+    "widget",
+    "editor"
   ],
   "license": "MIT",
   "ignore": [
@@ -35,6 +38,7 @@
     "detectizr": "~2.x.x",
     "loadcss": "~0.1.1",
     "fastclick": "~1.x.x",
+    "interact": "~1.2.x",
     "jquery": "~2.1.x",
     "js-cookie": "2.0.x",
     "jquery-ui": "1.10.4",
@@ -54,6 +58,12 @@
     "bootstrap": "~3.x.x",
     "fontawesome": "~4.x.x"
   },
+  "resolutions": {
+    "modernizr": "~2.x.x",
+    "fastclick": "~1.0.3",
+    "handlebars": "~2.x.x",
+    "underscore": "~1.x.x"
+  },
   "themeDependencies": {
     "bootstrap": "~3.x.x",
     "bootswatch": "~3.x.x",
@@ -62,15 +72,30 @@
     "open-sans-fontface": "*",
     "roboto-fontface": "*",
     "ubuntu-fontface": "*",
-    "animate.css": "*",
-    "lesshat": "*"
+    "animate.css": "~3.x.x",
+    "lesshat": "~3.x.x"
   },
-  "dependencies": {
+  "monitored": {
+
+    "gridster": "*",
+    "MasonJS": "*",
+    "scroll-reveal": "*",
+    "crossfilter": "*",
+    "victor": "*",
+    "togetherjs": "*",
+
+    "please-wait": "*",
     "spin.js": "*",
     "nprogress": "*",
+    "owl.carousel": "*",
     "colorbox": "*",
+    "iCheck": "*",
+    "switchery": "*",
+    "powerange": "*",
+    "pickadate": "*",
     "ace": "*",
     "highlightjs": "*",
+    
     "raphael": "2.1.2",
     "Chart.js": "*",
     "peity": "*",
@@ -78,29 +103,23 @@
     "highcharts-release": "*",
     "highstock-release": "*",
     "jvectormap": "*",
-    "scroll-reveal": "*",
-    "html5-boilerplate": "*",
-    "mockjs": "*",
-    "crossfilter": "*",
-    "animate.css": "*",
-    "lesshat": "*",
-    "bootswatch": "*",
+
+    "soundmanager": "*",
+    "video.js": "*",
+
+    "mockjs": "*"
+  },
+  "dependencies": {
+    "nprogress": "0.2.x",
+    "iCheck": "1.x.x",
+    "highlightjs": "8.x.x",
+    "raphael": "2.1.2",
+    "bootswatch": "~3.x.x",
     "open-sans-fontface": "*",
     "roboto-fontface": "*",
     "ubuntu-fontface": "*",
-    "togetherjs": "*",
-    "iCheck": "*",
-    "switchery": "*",
-    "powerange": "*",
-    "pickadate": "*",
-    "victor": "*",
-    "soundmanager": "*",
-    "video.js": "*"
-  },
-  "resolutions": {
-    "modernizr": "~2.x.x",
-    "fastclick": "~1.0.3",
-    "handlebars": "~2.x.x",
-    "underscore": "~1.x.x"
+    "animate.css": "~3.x.x",
+    "lesshat": "~3.x.x",
+    "mockjs": "0.1.x"
   }
 }
