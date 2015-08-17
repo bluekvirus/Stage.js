@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.8.1 (2015-08-16)
+1.8.2 (2015-08-16)
 -------------------
 1. Refined Reusable module method register().
 2. Added _.isPlainObject() to underscore.
@@ -21,7 +21,8 @@ Change Log
 17. Now css & less files in bower_components can be referenced directly.
 18. The build process now fully supports dynamically injected scripts.
 19. Added data config (string or obj), set()/get() shortcuts to views.
-20. Updated documentation.
+20. Deprecated view.type configure.
+21. Updated documentation.
 
 
 1.7.9 (2015-07-29)

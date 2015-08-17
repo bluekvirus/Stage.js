@@ -39,6 +39,10 @@
 	Backbone.Marionette.View.prototype.constructor = function(options){
 		options = options || {};
 
+		//----------------------deprecated config---------------------------
+		if(this.type || options.type)
+			console.warn('DEV::View::type is deprecated, please do not specify ' + (this.name?'in ' + this.name:''));
+
 		//----------------------fixed enhancements--------------------------
 		//fix default tpl to be ' '.
 		this.template = options.template || this.template || ' ';
@@ -69,14 +73,14 @@
 					self.trigger('view:' + e, options);
 					//considering the parent-DOM-removed edge case
 					if(!self.isInDOM())
-						app.off('app:coop:' + e, self._postman[e]);
+						app.off('app:coop-' + e, self._postman[e]);
 				};
-				app.on('app:coop:' + e, this._postman[e]);
+				app.on('app:coop-' + e, this._postman[e]);
 			}, this);
 			//cleanup
 			this.listenTo(this, 'close', function(){
 				_.each(this._postman, function(fn, e){
-					app.off('app:coop:' + e, fn);
+					app.off('app:coop-' + e, fn);
 				});
 			});
 		}		
