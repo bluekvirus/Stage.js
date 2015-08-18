@@ -2224,6 +2224,7 @@
 					if(this.debug) this[r].$el.html('<p class="alert alert-info">Region <strong>' + r + '</strong></p>'); //give it a fake one.
 					this[r].trigger('region:load-view', this[r].$el.attr('view')); //found corresponding View def.
 				}, this);
+				this.trigger('view:all-region-shown');
 			});
 
 			//supporting the navigation chain if it is a named layout view with valid navRegion (context, regional, ...)
@@ -4141,4 +4142,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.2-863 build 1439866073139";
+;;app.stagejs = "1.8.2-865 build 1439872182233";
