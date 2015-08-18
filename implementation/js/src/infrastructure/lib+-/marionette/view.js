@@ -21,7 +21,7 @@
 
 	_.extend(Backbone.Marionette.View.prototype, {
 		isInDOM: function(){
-			if(!this.$el) return false;
+			if(!this.$el) return undefined;
 			return $.contains(document.documentElement, this.$el[0]);
 		}
 	});
@@ -72,7 +72,7 @@
 				this._postman[e] = function(options){
 					self.trigger('view:' + e, options);
 					//considering the parent-DOM-removed edge case
-					if(!self.isInDOM())
+					if(self.isInDOM() === false)
 						app.off('app:coop-' + e, self._postman[e]);
 				};
 				app.on('app:coop-' + e, this._postman[e]);

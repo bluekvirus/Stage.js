@@ -1521,7 +1521,7 @@
 
 	_.extend(Backbone.Marionette.View.prototype, {
 		isInDOM: function(){
-			if(!this.$el) return false;
+			if(!this.$el) return undefined;
 			return $.contains(document.documentElement, this.$el[0]);
 		}
 	});
@@ -1572,7 +1572,7 @@
 				this._postman[e] = function(options){
 					self.trigger('view:' + e, options);
 					//considering the parent-DOM-removed edge case
-					if(!self.isInDOM())
+					if(self.isInDOM() === false)
 						app.off('app:coop-' + e, self._postman[e]);
 				};
 				app.on('app:coop-' + e, this._postman[e]);
@@ -2010,7 +2010,7 @@
 				this.model = new Backbone.Model();
 			}
 
-			if(!this._oneWayBinded && this.isInDOM()){
+			if(!this._oneWayBinded){
 				this.listenTo(this.model, 'change', this.render);
 				this._oneWayBinded = true;			
 			}
@@ -4153,4 +4153,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.2-866 build 1439932023088";
+;;app.stagejs = "1.8.2-867 build 1439933192305";

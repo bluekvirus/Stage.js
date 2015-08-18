@@ -376,7 +376,7 @@
 				this.model = new Backbone.Model();
 			}
 
-			if(!this._oneWayBinded && this.isInDOM()){
+			if(!this._oneWayBinded){
 				this.listenTo(this.model, 'change', this.render);
 				this._oneWayBinded = true;			
 			}
