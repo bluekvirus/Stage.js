@@ -392,6 +392,18 @@
 			return this.model.toJSON();
 		},
 
+		refresh: function(){
+			if(!_.isString(this.data)) {
+				console.log('DEV::ItemView::refresh Define a url data configure or override this method...');
+				return;
+			}
+
+			var self = this;
+			app.remote(this.data).done(function(d){
+				self.trigger('view:render-data', d);
+			}).fail(app.ajaxFailed);
+		},
+
 		onRenderData: function(data){
 			if(_.isArray(data))
 				this.set('items', data); //conform to original Backbone/Marionette settings
