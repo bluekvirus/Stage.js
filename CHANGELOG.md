@@ -3,6 +3,8 @@ Change Log
 1.8.3 (2015-08-17*)
 -------------------
 1. Added view:all-region-shown event.
+2. Refined view.data configure load timing.
+3. Added view.refresh method.
 
 
 1.8.2 (2015-08-16)
