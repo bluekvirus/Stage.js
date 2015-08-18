@@ -82,7 +82,8 @@
 
 			get: function(name /*or path*/){
 				if(!name) return _.keys(this.map);
-				if(name = this.has(name))
+				name = this.has(name);
+				if(name)
 					return this.map[name];
 			},
 

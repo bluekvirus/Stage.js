@@ -1279,7 +1279,8 @@
 
 			get: function(name /*or path*/){
 				if(!name) return _.keys(this.map);
-				if(name = this.has(name))
+				name = this.has(name);
+				if(name)
 					return this.map[name];
 			},
 
@@ -4140,4 +4141,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.2-861 build 1439840288748";
+;;app.stagejs = "1.8.2-863 build 1439866073139";
