@@ -1,5 +1,10 @@
 Change Log
 ==========
+1.8.3 (2015-08-17*)
+-------------------
+1. Added view:all-region-shown event.
+
+
 1.8.2 (2015-08-16)
 -------------------
 1. Refined Reusable module method register().
