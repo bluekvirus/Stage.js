@@ -273,6 +273,7 @@
 		//3 Load Theme css & View templates & i18n translations
 		var theme = app.uri(window.location.toString()).search(true).theme || app.config.theme;
 		if(theme){
+			console.warn('DEV::Application::theme If your application flashes, set theme to false and use css directly in <head>');
 			app.inject.css('themes/'+theme+'/css/main.css', $('#theme-roller')[0]);
 			app.currentTheme = theme;
 		}
@@ -1589,7 +1590,7 @@
 		//data (GET only)
 		if(this.data){
 			if(_.isString(this.data)) 
-				this.listenToOnce(this, 'before:render', this.refresh);
+				this.listenToOnce(this, 'render', this.refresh);
 			else if (_.isArray(this.data))
 				this.set('items', this.data);
 			else if (_isPlainObject(this.data))
@@ -4153,4 +4154,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.2-867 build 1439933192305";
+;;app.stagejs = "1.8.2-868 build 1439962393146";

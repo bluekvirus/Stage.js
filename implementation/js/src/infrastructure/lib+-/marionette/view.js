@@ -89,7 +89,7 @@
 		//data (GET only)
 		if(this.data){
 			if(_.isString(this.data)) 
-				this.listenToOnce(this, 'before:render', this.refresh);
+				this.listenToOnce(this, 'render', this.refresh);
 			else if (_.isArray(this.data))
 				this.set('items', this.data);
 			else if (_isPlainObject(this.data))
