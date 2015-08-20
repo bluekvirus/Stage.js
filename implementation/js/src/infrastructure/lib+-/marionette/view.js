@@ -86,16 +86,6 @@
 		}		
 		
 		//---------------------optional view enhancements-------------------
-		//data (GET only)
-		if(this.data){
-			if(_.isString(this.data)) 
-				this.listenToOnce(this, 'render', this.refresh);
-			else if (_.isArray(this.data))
-				this.set('items', this.data);
-			else if (_isPlainObject(this.data))
-				this.set(this.data);
-		}
-
 		//actions (1-click uis)
 		if(this.actions && this.enableActionTags) 
 			this.enableActionTags(this.actions._bubble);
@@ -125,6 +115,16 @@
 			this.listenTo(this, 'render', function(){
 				this.$el.i18n({search: true});
 			});
+		}
+
+		//data (GET only)
+		if(this.data){
+			if(_.isString(this.data)) 
+				this.listenToOnce(this, 'render', this.refresh);
+			else if (_.isArray(this.data))
+				this.set('items', this.data);
+			else if (_.isPlainObject(this.data))
+				this.set(this.data);
 		}
 
 		return Backbone.Marionette.View.apply(this, arguments);

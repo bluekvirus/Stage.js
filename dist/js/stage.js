@@ -1582,16 +1582,6 @@
 		}		
 		
 		//---------------------optional view enhancements-------------------
-		//data (GET only)
-		if(this.data){
-			if(_.isString(this.data)) 
-				this.listenToOnce(this, 'render', this.refresh);
-			else if (_.isArray(this.data))
-				this.set('items', this.data);
-			else if (_isPlainObject(this.data))
-				this.set(this.data);
-		}
-
 		//actions (1-click uis)
 		if(this.actions && this.enableActionTags) 
 			this.enableActionTags(this.actions._bubble);
@@ -1621,6 +1611,16 @@
 			this.listenTo(this, 'render', function(){
 				this.$el.i18n({search: true});
 			});
+		}
+
+		//data (GET only)
+		if(this.data){
+			if(_.isString(this.data)) 
+				this.listenToOnce(this, 'render', this.refresh);
+			else if (_.isArray(this.data))
+				this.set('items', this.data);
+			else if (_.isPlainObject(this.data))
+				this.set(this.data);
 		}
 
 		return Backbone.Marionette.View.apply(this, arguments);
@@ -2006,9 +2006,23 @@
 				this.model = new Backbone.Model();
 			}
 
-			if(!this._oneWayBinded){
-				this.listenTo(this.model, 'change', this.render);
-				this._oneWayBinded = true;			
+			if(!this._oneWayBound){
+				var self = this;
+				function renderTplOrResetEditors(){
+					if(self._editors)
+						self.setValues(self.model.toJSON());
+					else
+						self.render();
+				};
+				this.listenTo(this.model, 'change', function(){
+					if(self.isInDOM() === undefined) {
+						//first time, do nothing & wait for render()
+						self.listenToOnce(self, 'render', renderTplOrResetEditors);
+						return;
+					}
+					renderTplOrResetEditors();
+				});
+				self._oneWayBound = true;			
 			}
 
 			return this.model.set.apply(this.model, arguments);
@@ -4149,4 +4163,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.2-869 build 1440032761754";
+;;app.stagejs = "1.8.2-870 build 1440058591338";

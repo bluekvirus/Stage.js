@@ -376,9 +376,23 @@
 				this.model = new Backbone.Model();
 			}
 
-			if(!this._oneWayBinded){
-				this.listenTo(this.model, 'change', this.render);
-				this._oneWayBinded = true;			
+			if(!this._oneWayBound){
+				var self = this;
+				function renderTplOrResetEditors(){
+					if(self._editors)
+						self.setValues(self.model.toJSON());
+					else
+						self.render();
+				};
+				this.listenTo(this.model, 'change', function(){
+					if(self.isInDOM() === undefined) {
+						//first time, do nothing & wait for render()
+						self.listenToOnce(self, 'render', renderTplOrResetEditors);
+						return;
+					}
+					renderTplOrResetEditors();
+				});
+				self._oneWayBound = true;			
 			}
 
 			return this.model.set.apply(this.model, arguments);
