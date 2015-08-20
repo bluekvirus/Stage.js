@@ -1848,6 +1848,8 @@ Themes
 ------
 Dynamic Theme rolling is now deprecated. Please specify your theme css in `index.html`.
 
+Please use the `themeprep` tool to create and refresh your themes.
+
 ###Theme structure
 
 Themes are located at `/implementation/themes/[your theme name]/` with the following structure:
@@ -1881,15 +1883,15 @@ One perk of using LESS is that you can define each .less to do only one thing, e
 * component.less - use styles loaded/defined in static.less/vars.less to define new css styles in a nested class format;
 * main.less - glue(@include) the above .less files and let the compiler compile into main.css;
 
-###Assets preparation
+###Create image CSS-Sprite
 
-Fonts, logos, icons and textures are the 4 major types of asset you will need when it comes to making themes. There is a theme preparation script that we prepared for you to get started quickly when building a new theme.
+If you put images (e.g *.png icon files) into the `img` folder, the `themeprep` tool will create an image CSS-Sprite for you together with a .less ready to use. A demo page is also generated to display all the images/icons.
 
-Read the **Theme Preparation** section below (under **Tools** ) for more details. Please run this script whenever you want to create a new theme or update an existing one.
+###Change to other Fonts
 
-###Preview
-
-There is a theme mockup elements preview context at `#navigate/_Mockups`.
+* Manually or use the `-F` or `--fonts` option in the `themeprep` tool to copy the fonts into `/fonts`.
+* Change `main.less` to include the related font style .less file.
+* Change `vars.less` to override the font base path if needed and change `@font-family-base` to include prefered font-family names.
 
 
 Tools

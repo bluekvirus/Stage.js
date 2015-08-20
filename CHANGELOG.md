@@ -1,11 +1,12 @@
 Change Log
 ==========
-1.8.3 (2015-08-17*)
+1.8.3 (2015-08-20)
 -------------------
 1. Added view:all-region-shown event.
 2. Refined view.data configure load timing.
 3. Added view.refresh method.
 4. Refined one-way-bind criteria in view.set().
+5. app.config.theme is now deprecated.
 
 
 1.8.2 (2015-08-16)
