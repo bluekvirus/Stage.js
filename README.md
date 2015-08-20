@@ -6,7 +6,7 @@ Stage.js
 
 To get version, type `app.stagejs` in the console:
 ```
-app.stagejs (1.7.x-<commits> build <timestamp>)
+app.stagejs (1.8.x-<commits> build <timestamp>)
 ```
 You can compare this version number with the one you see on the [documentation site](http://bluekvirus.github.io/Stage.js/#navigate/Document) and see if an upgrade is recommended.
 

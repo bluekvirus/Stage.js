@@ -6,7 +6,6 @@
  * ###How to start my app?
  * 1. app.setup({config});
  * config:
-		* theme,
 		* template,
 		* navRegion/contextRegion,
 		* defaultContext,
@@ -99,8 +98,6 @@
 		//1. Configure.
 		app.config = _.extend({
 
-			//Defaults:
-			theme: 'default', //to disable theme rolling use false or '' and add your css in the index.html
 			//------------------------------------------mainView-------------------------------------------
 			template: '',
 			//e.g:: have a unified layout template.
@@ -226,9 +223,7 @@
 		//3 Load Theme css & View templates & i18n translations
 		var theme = app.uri(window.location.toString()).search(true).theme || app.config.theme;
 		if(theme){
-			console.warn('DEV::Application::theme If your application flashes, set theme to false and use css directly in <head>');
-			app.inject.css('themes/'+theme+'/css/main.css', $('#theme-roller')[0]);
-			app.currentTheme = theme;
+			console.warn('DEV::Application::theme is now deprecated, please use theme css directly in <head>');
 		}
 
 		if(app.config.viewTemplates)

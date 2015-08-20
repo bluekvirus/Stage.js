@@ -293,11 +293,10 @@
             this.getRegion('fieldset-a').show(new FieldsetA());
             this.getRegion('fieldset-b').show(new FieldsetB());
 
-            if(app.currentTheme === 'site')
-                $('input').iCheck({
-                    checkboxClass: 'icheckbox_square',
-                    radioClass: 'iradio_square',
-                });
+            $('input').iCheck({
+                checkboxClass: 'icheckbox_square',
+                radioClass: 'iradio_square',
+            });
 
         },
         actions: {
