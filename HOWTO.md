@@ -209,7 +209,7 @@ Here is the recommended **workflow**. You should follow the steps each time you 
 
 #####Automatically
 
-1. Install the `stage-devtools` from `npm`:
+1. Install the [`stage-devtools`](https://www.npmjs.com/package/stage-devtools) from `npm`:
 ```
 npm -g install stage-devtools
 ```
@@ -303,7 +303,6 @@ Go to your `main.js` and setup the application by using `Application.setup()`:
 ``` 
 //main.js
 Application.setup({
-    theme: //your theme name, use false or '' to disable dynamic theme loading,
     fullScreen: //false | true,
     template: //'#id', '@**/*.html', [html string array] or 'html string',
     contextRegion/navRegion: //your navRegion name marked in template,
@@ -1847,13 +1846,7 @@ You can use `flag = true` in the above functions if you only want to get un-tran
 
 Themes
 ------
-You can have multiple themes for an application and switch between them. The default theme will be the one that you set during `Application.setup()`. However, you can force the application to pickup other themes by:
-```
-http(s)://your host'n'app/?theme=xyz
-```
-
-You can also use the `loadCSS()` function included in the our `dependencies.js` to load additional stylesheets at runtime. There is also `veinjs` to use for dynamically adding CSS rules into your application.
-
+Dynamic Theme rolling is now deprecated. Please specify your theme css in `index.html`.
 
 ###Theme structure
 
@@ -1901,6 +1894,8 @@ There is a theme mockup elements preview context at `#navigate/_Mockups`.
 
 Tools
 -----
+It is recommended to install the [Stagejs-devtools](https://www.npmjs.com/package/stage-devtools) and use the command-line for building, serving and theming your project instead of calling them manually.
+
 ###Build & Deploy
 
 Under `/tools/build/`, type in this command in console/terminal to build:
@@ -1976,10 +1971,10 @@ After installation, you can start using the tool with a globally available comma
 ```
 stagejs env
 stagejs init
-stagejs update [--edge --packages]
+stagejs update [--edge]
 ...
 ```
-Read more about this cli tool [here](https://github.com/bluekvirus/Stage-devtools).
+Read more about this cli tool [here](https://www.npmjs.com/package/stage-devtools).
 
 ###What should I put in `/static`?
 
@@ -2015,16 +2010,11 @@ The `region.resize()` api will automatically trigger `view:resized` event on the
 
 ###View size measurement error?
 
-Our dynamic theme loading mechanism is currently racing with el size measuring in views' `onShow()` functions. This is mainly caused by modern browser's ability to multi-threading CSS rendering and JavaScript execution. Here is a quick & dirty solution:
+The dynamic theme loading mechanism (deprecated) is currently racing with el size measuring in views' `onShow()` functions. This is mainly caused by modern browser's ability to multi-threading CSS rendering and JavaScript execution. Make sure you specify theme css in your `index.html`.
 ```
 //index.html
-
-//replace
-<link rel="stylesheet" id="theme-roller">
-//with
 <link rel="stylesheet" type="text/css" href="themes/[your theme]/main.css">
 ```
-You will be giving up the dynamic theme loading ability.
 
 ###Need tabs in the UI?
 
@@ -2032,6 +2022,9 @@ Tabs are not widgets, they may contain widget(s). This is why we didn't include 
 
 Remember, use tabs as last resort and only in templates, do *NOT* use dynamic tabs and manage them using Javascript.
 
+###Need recursively rendered tree-like View?
+
+You can always use **CompositeView** as the view type and use this *Marionette* way of building recursively rendered views. It is recommended to use the built-in **Tree** widget rather than building recursive views yourself. The `type` configure should not be needed in any occasions when building your application.
 
 ###Supporting crossdomain ajax?
 
