@@ -311,6 +311,7 @@ Application.setup({
     defaultContext: //your default context name to show in navRegion,
     baseAjaxURI: //your base url for using with Application.remote(),
     viewTemplates: //remote view templates folder, if using template:@**/*.html in views,
+    viewSrcs: //view dynamic loading base path.
     i18nResources: //where to load i18n related data (e.g translations),
     i18nTransFile: //the translation file name/pattern under i18nResources,
     i18nLocale: //force the app to certain locale,

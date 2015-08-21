@@ -2042,6 +2042,11 @@
 
 		//Use this instead of this.model.attributes to get the underlying data of the view.
 		get: function(){
+			if(this._editors){
+				if(arguments.length) return this.getEditor.apply(this, arguments).getVal();
+				return this.getValues();
+			}
+
 			if(!this.model) throw new Error('DEV::ItemView:: You have not yet setup data in this view');
 			
 			if(arguments.length)
@@ -4176,4 +4181,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.3-872 build 1440120517297";
+;;app.stagejs = "1.8.3-873 build 1440130530011";

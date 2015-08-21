@@ -414,6 +414,11 @@
 
 		//Use this instead of this.model.attributes to get the underlying data of the view.
 		get: function(){
+			if(this._editors){
+				if(arguments.length) return this.getEditor.apply(this, arguments).getVal();
+				return this.getValues();
+			}
+
 			if(!this.model) throw new Error('DEV::ItemView:: You have not yet setup data in this view');
 			
 			if(arguments.length)
