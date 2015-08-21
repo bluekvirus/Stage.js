@@ -195,11 +195,13 @@ function combine(bowerInfo, name){
 		target.concat(libMap[lib], os.EOL + ';');
 	});
 	console.log('libs (selected/available):', (_.size(list) + '/' + String(_.size(libMap))).green, '[', ((_.size(list)/_.size(libMap)*100).toFixed(2) + '%').yellow, ']');
+	var indents = '\t';
 	//dump selected lib name, version to dependencies.json
-	buildify().setContent(json.stringify(versions)).setDir(distFolder).save('dependencies.json');
+	buildify().setContent(json.stringify(versions, null, indents)).setDir(distFolder).save('dependencies.json');
 	//produce project bower.json
 	buildify().setContent(json.stringify(
-		_.extend(_.omit(bowerInfo, 'themeDependencies', 'dependencies', 'monitored', 'resolutions'))
+		_.extend(_.omit(bowerInfo, 'themeDependencies', 'dependencies', 'monitored', 'resolutions')),
+		null, indents
 	)).setDir(implFolder + '/../').save('bower.json');
 	//produce starter-kit bower.json
 	buildify().setContent(json.stringify(_.extend({
@@ -210,7 +212,7 @@ function combine(bowerInfo, name){
 		}, bowerInfo.themeDependencies),
 		dependencies: {},
 		'open-source-libs': bowerInfo.monitored
-	}))).setDir(implFolder).save('starter-kit.bower.json');
+	}), null, indents)).setDir(implFolder).save('starter-kit.bower.json');
 	target.setDir(distFolder).save(name + '.js').uglify().save(name + '.min.js');
 	_.each(['.js', '.min.js'], function(v){
 		console.log((name + v).yellow, _.str.numberFormat(fs.statSync(path.join(distFolder, name + v)).size/1024, 1).grey, 'KB');

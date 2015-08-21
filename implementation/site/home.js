@@ -55,7 +55,7 @@
 						/////////////////Intro/////////////////
 						'Learned Backbone? Tried Marionette? Still searching for a complete application **workflow**? ',
 						'Look no further...\n',
-						'With this thiner and flatter **architecture** and our intuitive **tools**,',
+						'With our thiner and flatter **architecture** and intuitive **tools**,',
 						'you can direct your next web application like a play on stage.\n',
 						'Enjoy!',
 						/////////////////Intro/////////////////
@@ -86,20 +86,21 @@
 
 			//navi links
 			this.menu.show(app.area({
-				type: 'CollectionView',
-				className: 'text-right',
-				itemView: app.view({
-					template: '<a href={{href}} class="home-navi-link">{{uppercase name}}</a>'
-				}),
-				initialize: function(){
-					this.collection = app.collection([
-						{name: 'Edge Build', href:'static/resource/default/download/stagejs-edge.tar.gz'},
-						{name: 'Starter Kit', href:'static/resource/default/download/stagejs-starter-kit.tar.gz'},
-						{name: 'Change Log', href:'https://github.com/bluekvirus/Stage.js/releases'},
-						{name: 'Document', href:'#navigate/Document'},
-						{name: 'Demo', href:'#navigate/Demo'}
-					]);
-				}
+				tagName: 'ul',
+				className: 'text-right list-unstyled',
+				template: [
+					'{{#each items}}',
+						'<li><a href={{href}} class="home-navi-link">{{#icon}}<i class="{{.}}"></i> {{/icon}}{{uppercase name}}</a></li>',
+					'{{/each}}'
+				],
+				data:[
+					{name: 'Edge Build', icon: 'fa fa-download', href:'static/resource/default/download/stagejs-edge.tar.gz'},
+					{name: 'Starter Kit', icon: 'fa fa-download', href:'static/resource/default/download/stagejs-starter-kit.tar.gz'},
+					{name: 'Change Log', href:'https://github.com/bluekvirus/Stage.js/releases'},
+					{name: 'Document', href:'#navigate/Document'},
+					{name: 'Templates', href:'#navigate/Mockups'},
+					{name: 'Demo', href:'#navigate/Demo'}
+				]
 			}));
 		}
 

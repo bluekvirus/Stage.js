@@ -366,11 +366,29 @@
 	});
 
 	/**
-	 * Meta-event Listeners (pre-defined)
-	 * view:render-data
+	 * Data handling enhancements.
+	 * 1. View as normal tpl + data
+	 * 2. view as form with editors (tpl = layout, data = values)
 	 */
 	_.extend(Backbone.Marionette.ItemView.prototype, {
 
+		//Editors don't render according to the underlying backbone model.
+		_renderTplOrResetEditors: function(){
+			if(this._editors)
+				this.setValues(this.model.toJSON());
+			else
+				this.render();
+		},
+
+		//Bypassing Model/Collection setup in Backbone.
+		_setData: function(data){
+			if(_.isArray(data))
+				this.set('items', data); //conform to original Backbone/Marionette settings
+			else if (_.isPlainObject(data))
+				this.set(data);
+		},	
+
+		//Set & change the underlying data of the view.
 		set: function(){
 			if(!this.model){
 				this.model = new Backbone.Model();
@@ -378,19 +396,15 @@
 
 			if(!this._oneWayBound){
 				var self = this;
-				function renderTplOrResetEditors(){
-					if(self._editors)
-						self.setValues(self.model.toJSON());
-					else
-						self.render();
-				};
 				this.listenTo(this.model, 'change', function(){
 					if(self.isInDOM() === undefined) {
 						//first time, do nothing & wait for render()
-						self.listenToOnce(self, 'render', renderTplOrResetEditors);
+						self.listenToOnce(self, 'render', function(){
+							self.setValues(self.model.toJSON());
+						});
 						return;
 					}
-					renderTplOrResetEditors();
+					self._renderTplOrResetEditors();
 				});
 				self._oneWayBound = true;			
 			}
@@ -398,6 +412,7 @@
 			return this.model.set.apply(this.model, arguments);
 		},
 
+		//Use this instead of this.model.attributes to get the underlying data of the view.
 		get: function(){
 			if(!this.model) throw new Error('DEV::ItemView:: You have not yet setup data in this view');
 			
@@ -406,24 +421,24 @@
 			return this.model.toJSON();
 		},
 
+		//Reload (if data: url) and re-render the view, or resetting the editors.
 		refresh: function(){
 			if(!_.isString(this.data)) {
-				console.log('DEV::ItemView::refresh Define a url data configure or override this method...');
+				console.log('DEV::ItemView::refresh using non remote url data...');
+				this._renderTplOrResetEditors();
 				return;
 			}
 
 			var self = this;
 			app.remote(this.data).done(function(d){
+				self.model.clear({silent: true});
 				self.trigger('view:render-data', d);
 			}).fail(app.ajaxFailed);
 		},
 
+		//Meta-event view:render-data for exposing _setData()
 		onRenderData: function(data){
-			if(_.isArray(data))
-				this.set('items', data); //conform to original Backbone/Marionette settings
-			else
-				this.set(data);
-
+			this._setData(data);
 			this.trigger('view:data-rendered');
 		}
 	});

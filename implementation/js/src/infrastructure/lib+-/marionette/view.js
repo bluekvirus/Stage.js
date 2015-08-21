@@ -121,10 +121,8 @@
 		if(this.data){
 			if(_.isString(this.data)) 
 				this.listenToOnce(this, 'render', this.refresh);
-			else if (_.isArray(this.data))
-				this.set('items', this.data);
-			else if (_.isPlainObject(this.data))
-				this.set(this.data);
+			else
+				this._setData(this.data);
 		}
 
 		return Backbone.Marionette.View.apply(this, arguments);

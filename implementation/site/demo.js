@@ -5,7 +5,7 @@ Application.page('Demo', {
         '<div region="center" data-effect="fade"></div>',
     ],
     onNavigateTo: function(path){
-    	path = path || 'Trees';
+    	path = path || 'Notify';
         var View = app.get(this.name + '.' + path) || app.get('AccessDenied');
         this.getRegion('center').show(new View());
     }
