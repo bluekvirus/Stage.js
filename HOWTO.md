@@ -27,12 +27,14 @@ View:
 * Application.coop (e, [args])
 
 Handling Data:
+* View.data - 'url string', {} or []
+* View.set() and View.setValues()
+* View.get() and View.getValues()
+* View.refresh()
 * Application.remote (options)
+* Application.extract (keypath, obj)
 * Application.cookie
 * Application.store
-* Application.model ({data}) - shortcut for new Backbone.Model(data)
-* Application.collection ([data]) - shortcut for new Backbone.Collection(data)
-* Application.extract (keypath, obj)
 
 Download:
 * Application.download (url or +params)
