@@ -5,11 +5,12 @@ Change Log
 1. Added view:all-region-shown event.
 2. Refined view.data configure load timing.
 3. Added view.refresh method.
-4. Refined one-way-bind criteria in view.set().
+4. Refined one-way-bind criteria in view.set() & fully support form views.
 5. app.config.theme is now deprecated.
 6. view.data configure & view.refresh now fully support form views.
 7. bower.json in all distributions are now in pretty-print format.
-8. Updated documentation.
+8. view.get() now fully supports form views.
+9. Updated documentation.
 
 
 1.8.2 (2015-08-16)
