@@ -400,7 +400,7 @@
 					if(self.isInDOM() === undefined) {
 						//first time, do nothing & wait for render()
 						self.listenToOnce(self, 'render', function(){
-							self.setValues(self.model.toJSON());
+							self.setValues && self.setValues(self.model.toJSON());
 						});
 						return;
 					}
