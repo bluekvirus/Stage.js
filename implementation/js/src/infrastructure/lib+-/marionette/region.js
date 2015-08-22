@@ -88,6 +88,7 @@
                     _.defer(function() {
                         view.$el.addClass('animated').one(app.ADE, function() {
                             view.$el.removeClass('animated', enterEffect);
+                            view.trigger('view:animated');
                         });
                         _.defer(function() {
                             //end state: display block/inline & opacity 1

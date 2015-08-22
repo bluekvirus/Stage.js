@@ -31,7 +31,7 @@
 	 * 			 |      ...
 	 * 		Resuable
 	 * 		  |Context
-	 * 		  |Regional
+	 * 		  |Regional (View)
 	 * 		  |Widget
 	 * 		  |Editor
 	 * 		Remote (RESTful)

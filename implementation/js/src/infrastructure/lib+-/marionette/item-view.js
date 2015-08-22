@@ -436,6 +436,7 @@
 
 			var self = this;
 			app.remote(this.data).done(function(d){
+				if(!self.model) throw new Error('DEV::ItemView:: You have not yet setup data in this view');
 				self.model.clear({silent: true});
 				self.trigger('view:render-data', d);
 			}).fail(app.ajaxFailed);

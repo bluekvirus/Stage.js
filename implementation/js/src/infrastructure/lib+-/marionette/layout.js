@@ -166,7 +166,7 @@
 						}
 
 						//Reusable view?
-						var Reusable = app.get(name);
+						var Reusable = app.get(name, _.isPlainObject(options)?'Widget':'View');
 						if(Reusable){
 							this.show(new Reusable(options));
 							return;
@@ -178,7 +178,7 @@
 				},this);
 			});
 
-			//Automatically shows the region's view="" attr indicated View/Widget or @remote.tpl.html
+			//Automatically shows the region's view="" attr indicated View or @remote.tpl.html
 			this.listenTo(this, 'show', function(){
 				_.each(this.regions, function(selector, r){
 					if(this.debug) this[r].$el.html('<p class="alert alert-info">Region <strong>' + r + '</strong></p>'); //give it a fake one.
@@ -200,12 +200,12 @@
 					if(!this.navRegion) return this.trigger('view:navigate-to', pathArray.join('/'));
 
 					if(!this.regions[this.navRegion]){
-						console.warn('DEV::Layout::View', 'invalid navRegion', this.navRegion, 'in', this.name || options.name);
+						console.warn('DEV::Layout::', 'invalid navRegion', this.navRegion, 'in', this.name || options.name);
 						return;
 					}
 					
 					var targetViewName = pathArray.shift();
-					var TargetView = app.get(targetViewName);
+					var TargetView = app.get(targetViewName, 'View');
 
 					if(TargetView){
 						var navRegion = this.getRegion(this.navRegion);
@@ -217,7 +217,7 @@
 							//note that .show() might be async due to region enter/exit effects
 							view.once('show', function(){
 								view.trigger('view:navigate-chain', pathArray);
-							});							
+							});	
 							navRegion.show(view);
 							return;
 						}else{

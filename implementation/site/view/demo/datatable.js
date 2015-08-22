@@ -2,12 +2,12 @@
 
 	app.area('Demo.Datatable', {
 	    template: [
-	    	'<div region="header"></div>',
+	    	'<div ui="spin"><i class="fa fa-cog fa-spin"></i> Loading...</div>',
 	    	'<div region="table"></div>',
 	    	'<div region="footer"></div>'
 	    ],
 
-	    onShow: function(){
+	    onAnimated: function(){
 	    	this.table.trigger('region:load-view', 'Datagrid', {
 	    		className: 'table table-hover',
 
@@ -61,6 +61,11 @@
 	    		className: 'pagination pagination-sm pull-right',
 	    		pageWindowSize: 3
 	    	});
+
+	    	var self = this;
+	    	table.getBody().onPageChanged = function(){
+	    		self.ui.spin.hide();
+	    	};
 	    	table.getBody().trigger('view:load-page', {
 	    		url: 'sample/user',
 	    		page: 1,

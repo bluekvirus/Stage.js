@@ -104,6 +104,7 @@
 
 	makeRegistry('Context'); //top level views (see infrastructure: navigation worker)
 	makeRegistry('Regional'); //general named views (e.g a form, a chart, a list, a customized detail)
+	app.Core.View = app.Core.Regional; //alias
 	makeRegistry('Widget'); //specialized named views (e.g a datagrid, a menu, ..., see reusable/widgets)
 	makeRegistry('Editor'); //specialized small views used in form views (see reusable/editors, lib+-/marionette/item-view,layout)
 

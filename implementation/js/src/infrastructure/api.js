@@ -22,20 +22,20 @@
 		//pass in [name,] options, instance to create (named will be registered again)
 		view: function(name /*or options*/, options /*or instance*/){
 			if(_.isString(name)){
-				if(_.isBoolean(options) && options) return app.Core.Regional.create(name);
-				if(_.isPlainObject(options)) return app.Core.Regional.register(name, options);
+				if(_.isBoolean(options) && options) return app.Core.View.create(name);
+				if(_.isPlainObject(options)) return app.Core.View.register(name, options);
 			}
 
 			if(_.isPlainObject(name)){
 				var instance = options;
 				options = name;
-				var Def = options.name ? app.Core.Regional.register(options) : Backbone.Marionette[options.type || 'Layout'].extend(options);
+				var Def = options.name ? app.Core.View.register(options) : Backbone.Marionette[options.type || 'Layout'].extend(options);
 
 				if(_.isBoolean(instance) && instance) return new Def();
 				return Def;
 			}
 
-			return app.Core.Regional.get(name);
+			return app.Core.View.get(name);
 		},
 
 		//pass in [name,] options to register (always requires a name)
@@ -93,7 +93,7 @@
 			if(type)
 				return app.Core[type] && app.Core[type].has(name);
 
-			_.each(['Context', 'Regional', 'Widget', 'Editor'], function(t){
+			_.each(['Context', 'View', 'Widget', 'Editor'], function(t){
 				if(!type && app.Core[t].has(name))
 					type = t;
 			});
@@ -106,17 +106,13 @@
 			if(!name)
 				return {
 					'Context': app.Core.Context.get(),
-					'View': app.Core.Regional.get(),
+					'View': app.Core.View.get(),
 					'Widget': app.Core.Widget.get(),
 					'Editor': app.Core.Editor.get()
 				};
 
-			var Reusable;
-			_.each(['Context', 'Regional', 'Widget', 'Editor'], function(t){
-				if(!Reusable)
-					Reusable = app.Core[type || t].get(name);
-			});
-
+			type = type || 'View';
+			var Reusable = app.Core[type] && app.Core[type].get(name);
 			if(Reusable)
 				return Reusable;
 			else {
@@ -126,7 +122,7 @@
 				//see if we have app.viewSrcs set to load the View def dynamically
 				if(app.config && app.config.viewSrcs){
 					$.ajax({
-						url: _.compact([app.config.viewSrcs, app.nameToPath(name)]).join('/') + '.js',
+						url: _.compact([app.config.viewSrcs, type.toLowerCase(), app.nameToPath(name)]).join('/') + '.js',
 						dataType: 'script',
 						async: false
 					}).done(function(){
@@ -157,7 +153,7 @@
 		nameToPath: function(name){
 			if(!_.isString(name)) throw new Error('DEV::Application::nameToPath You must pass in a Reusable view name.');
 			if(_.contains(name, '/')) return name;
-			return name.split('.').map(_.str.humanize).map(_.str.slugify).join('/');
+			return name.split('.').map(_.string.humanize).map(_.string.slugify).join('/');
 		},
 
 		//----------------navigation-----------

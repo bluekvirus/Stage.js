@@ -1,5 +1,11 @@
 Change Log
 ==========
+1.8.4 (2015-08-21*)
+-------------------
+1. Added view:animated event for effect enabled view.
+2. Dynamic view loading path now includes view category (devtool v0.2.2).
+
+
 1.8.3 (2015-08-20)
 -------------------
 1. Added view:all-region-shown event.
