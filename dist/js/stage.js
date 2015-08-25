@@ -1611,13 +1611,11 @@
 			});
 		}
 
-		//data (GET only)
-		if(this.data){
-			if(_.isString(this.data)) 
-				this.listenToOnce(this, 'render', this.refresh);
-			else
-				this._setData(this.data);
-		}
+		//data ({}, [] or url for GET only)
+		this.listenToOnce(this, 'show', function(){
+			if(this.data)
+				this.set(this.data);
+		});
 
 		return Backbone.Marionette.View.apply(this, arguments);
 	};
@@ -2004,35 +2002,37 @@
 				this.setValues(this.model.toJSON());
 			else
 				this.render();
+			this.trigger('view:data-rendered');
 		},
 
 		//Bypassing Model/Collection setup in Backbone.
-		_setData: function(data){
-			if(_.isArray(data))
-				this.set('items', data); //conform to original Backbone/Marionette settings
-			else if (_.isPlainObject(data))
-				this.set(data);
+		set: function(){
+			if(arguments.length === 1){
+				this.data = arguments[0];
+				if(_.isString(this.data))
+					//to prevent from calling refresh() in initialize()
+					return this.isInDOM() && this.refresh();
+				else if(_.isArray(this.data))
+					return this._setData('items', this.data); 
+					//conform to original Backbone/Marionette settings
+			}
+			this._setData.apply(this, arguments);
 		},	
 
 		//Set & change the underlying data of the view.
-		set: function(){
+		_setData: function(){
 			if(!this.model){
-				this.model = new Backbone.Model();
+				this.model = app.model();
 			}
 
+			var self = this;
+
+			//check one-way binding
 			if(!this._oneWayBound){
-				var self = this;
 				this.listenTo(this.model, 'change', function(){
-					if(self.isInDOM() === undefined) {
-						//first time, do nothing & wait for render()
-						self.listenToOnce(self, 'render', function(){
-							self.setValues && self.setValues(self.model.toJSON());
-						});
-						return;
-					}
 					self._renderTplOrResetEditors();
 				});
-				self._oneWayBound = true;			
+				this._oneWayBound = true;			
 			}
 
 			return this.model.set.apply(this.model, arguments);
@@ -2054,24 +2054,22 @@
 
 		//Reload (if data: url) and re-render the view, or resetting the editors.
 		refresh: function(){
-			if(!_.isString(this.data)) {
-				console.log('DEV::ItemView::refresh using non remote url data...');
-				this._renderTplOrResetEditors();
-				return;
+			if(!this.data) return console.warn('DEV::ItemView::refresh You must set view.data to use this method.');
+			
+			this.model && this.model.clear({silent: true});
+			if(_.isString(this.data)){
+				var self = this;
+				return app.remote(this.data).done(function(d){
+					self.set(d);
+				}).fail(app.ajaxFailed);
 			}
-
-			var self = this;
-			app.remote(this.data).done(function(d){
-				if(!self.model) throw new Error('DEV::ItemView:: You have not yet setup data in this view');
-				self.model.clear({silent: true});
-				self.trigger('view:render-data', d);
-			}).fail(app.ajaxFailed);
+			else
+				return this.set(this.data);
 		},
 
-		//Meta-event view:render-data for exposing _setData()
+		//Meta-event view:render-data
 		onRenderData: function(data){
-			this._setData(data);
-			this.trigger('view:data-rendered');
+			this.set(data);
 		}
 	});
 
@@ -4180,4 +4178,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.4-874 build 1440212932948";
+;;app.stagejs = "1.8.4-875 build 1440487515632";

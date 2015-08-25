@@ -117,13 +117,11 @@
 			});
 		}
 
-		//data (GET only)
-		if(this.data){
-			if(_.isString(this.data)) 
-				this.listenToOnce(this, 'render', this.refresh);
-			else
-				this._setData(this.data);
-		}
+		//data ({}, [] or url for GET only)
+		this.listenToOnce(this, 'show', function(){
+			if(this.data)
+				this.set(this.data);
+		});
 
 		return Backbone.Marionette.View.apply(this, arguments);
 	};
