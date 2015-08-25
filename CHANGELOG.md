@@ -1,9 +1,11 @@
 Change Log
 ==========
-1.8.4 (2015-08-21*)
+1.8.4 (2015-08-25*)
 -------------------
 1. Added view:animated event for effect enabled view.
 2. Dynamic view loading path now includes view category (devtool v0.2.2).
+3. Refined view.data configure processing.
+4. Refined view.set/refresh timing & conditions.
 
 
 1.8.3 (2015-08-20)
