@@ -384,12 +384,14 @@
 		//Bypassing Model/Collection setup in Backbone.
 		set: function(){
 			if(arguments.length === 1){
-				this.data = arguments[0];
-				if(_.isString(this.data))
+				var data = arguments[0];
+				if(_.isString(data)){
+					this.data = data;
 					//to prevent from calling refresh() in initialize()
 					return this.isInDOM() && this.refresh();
-				else if(_.isArray(this.data))
-					return this._setData('items', this.data); 
+				}
+				else if(_.isArray(data))
+					return this._setData('items', data); 
 					//conform to original Backbone/Marionette settings
 			}
 			this._setData.apply(this, arguments);
@@ -440,7 +442,7 @@
 				}).fail(app.ajaxFailed);
 			}
 			else
-				return this.set(this.data);
+				return this.model && this.set(this.model.toJSON());
 		},
 
 		//Meta-event view:render-data

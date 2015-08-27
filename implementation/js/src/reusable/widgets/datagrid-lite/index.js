@@ -73,7 +73,7 @@
 			onReconfigure: function(options){
 				options = options || {};
 				//1. reconfigure data and columns into this._options
-				this._options.data = options.data || this._options.data;
+				this._options = _.extend(this._options, options);
 
 				//2. rebuild header cells - let it rerender with new column array
 				_.each(this._options.columns, function(column){
@@ -81,19 +81,22 @@
 					column.cell = column.cell || column.header || 'string';
 					column.label = column.label || _.string.titleize(column.name);
 				});				
-				this.header.currentView.trigger('view:render-data', this._options.columns);
+				this.header.currentView.set(this._options.columns);
 
 				//3. rebuild body rows - let it rerender with new data array
 				this.body.currentView._options = this._options;
-				this.body.currentView.trigger('view:render-data', this._options.data);
+				this.body.currentView.set(this._options.data);
 
 				//4. trigger overall view:data-rendered
 				this.trigger('view:data-rendered');
 			},
-			onRenderData: function(data){
+			set: function(data){
 				//override the default data rendering meta-event responder
 				this.trigger('view:reconfigure', {data: data});
 				//this is just to answer the 'view:render-data' event
+			},
+			get: function(){
+				return this.getBody().get();
 			},
 			getBody: function(){
 				return this.body.currentView;

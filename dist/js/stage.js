@@ -2008,12 +2008,14 @@
 		//Bypassing Model/Collection setup in Backbone.
 		set: function(){
 			if(arguments.length === 1){
-				this.data = arguments[0];
-				if(_.isString(this.data))
+				var data = arguments[0];
+				if(_.isString(data)){
+					this.data = data;
 					//to prevent from calling refresh() in initialize()
 					return this.isInDOM() && this.refresh();
-				else if(_.isArray(this.data))
-					return this._setData('items', this.data); 
+				}
+				else if(_.isArray(data))
+					return this._setData('items', data); 
 					//conform to original Backbone/Marionette settings
 			}
 			this._setData.apply(this, arguments);
@@ -2064,7 +2066,7 @@
 				}).fail(app.ajaxFailed);
 			}
 			else
-				return this.set(this.data);
+				return this.model && this.set(this.model.toJSON());
 		},
 
 		//Meta-event view:render-data
@@ -2342,7 +2344,12 @@
 
 		/////////////////////////////
 		onRenderData: function(data){
+			this.set(data);
+			this.trigger('view:data-rendered');
+		},
 
+		//no refresh() yet (auto data-url fetch in item-view.js)
+		set: function(data, options){
 			if(!_.isArray(data)) throw new Error('DEV::CollectionView+::You need to have an array passed in as data...');
 			
 			if(!this.collection){
@@ -2351,12 +2358,16 @@
 				this.listenTo(this.collection, 'remove', this.removeItemView);
 				this.listenTo(this.collection, 'reset', this.render);
 			}
-			this.collection.reset(data);
-
-			this.trigger('view:data-rendered');
+			if(!options)
+				return this.collection.reset(data);
+			return this.collection.set(data, options);
 		},
 
-
+		get: function(idCidOrModel){
+			if(!idCidOrModel)
+				return this.collection && this.collection.toJSON();
+			return this.collection && this.collection.get(idCidOrModel);
+		},
 		///////////////////////////////////////////////////////////////////////////
 		/**
 		 * Note that view:load-page will have its options cached in this._remote
@@ -3663,7 +3674,7 @@ var I18N = {};
 			onReconfigure: function(options){
 				options = options || {};
 				//1. reconfigure data and columns into this._options
-				this._options.data = options.data || this._options.data;
+				this._options = _.extend(this._options, options);
 
 				//2. rebuild header cells - let it rerender with new column array
 				_.each(this._options.columns, function(column){
@@ -3671,19 +3682,22 @@ var I18N = {};
 					column.cell = column.cell || column.header || 'string';
 					column.label = column.label || _.string.titleize(column.name);
 				});				
-				this.header.currentView.trigger('view:render-data', this._options.columns);
+				this.header.currentView.set(this._options.columns);
 
 				//3. rebuild body rows - let it rerender with new data array
 				this.body.currentView._options = this._options;
-				this.body.currentView.trigger('view:render-data', this._options.data);
+				this.body.currentView.set(this._options.data);
 
 				//4. trigger overall view:data-rendered
 				this.trigger('view:data-rendered');
 			},
-			onRenderData: function(data){
+			set: function(data){
 				//override the default data rendering meta-event responder
 				this.trigger('view:reconfigure', {data: data});
 				//this is just to answer the 'view:render-data' event
+			},
+			get: function(){
+				return this.getBody().get();
 			},
 			getBody: function(){
 				return this.body.currentView;
@@ -4178,4 +4192,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.4-875 build 1440487515632";
+;;app.stagejs = "1.8.4-876 build 1440708391487";

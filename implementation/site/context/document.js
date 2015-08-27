@@ -10,6 +10,9 @@
                 '</div>',
                 '<div class="col-sm-7">',
                     '<div region="breadcrumbs" view="Doc.Breadcrumbs" style="background-color:#eee; padding: 0 1em;position: fixed; top: 0; right: 0; display:none"></div>',
+                    '<i class="project-title"></i><hr/>',
+                    '<span class="label label-primary h6">'+ app.stagejs + '</span> ',
+                    '<a href="http://semver.org/">(Why is it version-ed like this?)</a>',
                     '<div region="doc" data-url="HOWTO.md"></div>',
                 '</div>',
             '</div>'
@@ -74,7 +77,7 @@
                         ignoreRoot: true,
                         headerHTML: '<div class="text-muted">Table of Content</div><hr/>'
                     });
-                    that.toc.show(app.regional({
+                    that.toc.show(app.view({
                         //no name means to use it anonymously, which in turn creates it right away. 
                         template: $el.data('toc').html,
                         actions: {
@@ -83,7 +86,7 @@
                                 that.trigger('view:go-to-topic', $btn.data('id'));
                             }
                         }
-                    }));
+                    }, true));
                     that.$headers = that.doc.$el.data('toc').$headers;
                 }
             });
@@ -148,12 +151,7 @@
                 }
             }, true));
 
-            this.doc.$el.data('md', store.get('doc'));
             this.trigger('view:reload-doc'); 
-        },
-
-        onNavigateAway: function(){
-            store.set('doc', this.doc.$el.data('md')); //use localStorage to cache the context state;
         }
     });
 

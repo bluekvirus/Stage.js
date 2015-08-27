@@ -25,7 +25,12 @@
 
 		/////////////////////////////
 		onRenderData: function(data){
+			this.set(data);
+			this.trigger('view:data-rendered');
+		},
 
+		//no refresh() yet (auto data-url fetch in item-view.js)
+		set: function(data, options){
 			if(!_.isArray(data)) throw new Error('DEV::CollectionView+::You need to have an array passed in as data...');
 			
 			if(!this.collection){
@@ -34,12 +39,16 @@
 				this.listenTo(this.collection, 'remove', this.removeItemView);
 				this.listenTo(this.collection, 'reset', this.render);
 			}
-			this.collection.reset(data);
-
-			this.trigger('view:data-rendered');
+			if(!options)
+				return this.collection.reset(data);
+			return this.collection.set(data, options);
 		},
 
-
+		get: function(idCidOrModel){
+			if(!idCidOrModel)
+				return this.collection && this.collection.toJSON();
+			return this.collection && this.collection.get(idCidOrModel);
+		},
 		///////////////////////////////////////////////////////////////////////////
 		/**
 		 * Note that view:load-page will have its options cached in this._remote
