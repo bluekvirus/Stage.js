@@ -7,6 +7,10 @@ Change Log
 3. Refined view.data configure processing.
 4. Refined view.set/refresh timing & conditions.
 
+working on ...
+* Rethinking on set()/refresh() impl. (separate one-way-bind?)
+* Updated doc (around data handling & coop).
+
 
 1.8.3 (2015-08-20)
 -------------------

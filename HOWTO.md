@@ -1,11 +1,3 @@
-<i class="project-title"></i><hr/>
-<a href="mailto:bluekvirus@gmail.com"><img src="http://img.shields.io/badge/author-Tim (Zhiyuan) Liu-green.svg?style=flat-square" alt="Tim Liu"></a> 
-<img src="http://img.shields.io/bower/v/stage.js.svg?style=flat-square" alt="Current Version"></img> 
-([Why is it version-ed like this?](http://semver.org/))
-
-Building multi-context rich-client web application front-end in the modern way.
-
-
 Introduction
 ------------
 This lightweight framework is made on top of **Backbone** and **Bootstrap**. The goal is to maximize developer efficiency by introducing an intuitive workflow on top of a solid front-end architecture. You will be focusing on user interaction building without distraction. We even give you a web server to start the development right away! Theming and packaging deployments are also a breeze through our tools.
@@ -28,8 +20,8 @@ View:
 
 Handling Data:
 * View.data - 'url string', {} or []
-* View.set() and View.setValues()
-* View.get() and View.getValues()
+* View.set() (infer View.setValues())
+* View.get() (infer View.getValues())
 * View.refresh()
 * Application.remote (options)
 * Application.extract (keypath, obj)
@@ -90,7 +82,7 @@ alias: Page
 
 ####What's a View?
 
-A *View* is a template with data, interactions and optionally a name. it is to be shown on a region in template of your application or another view instance (both contexts and normal views). Only named views can be used as template shortcuts (through tag attributes).
+A *View* is a template with data, interactions and optionally a name. it is to be shown on a region in template of your application or another view instance (both contexts and normal views). Only named views can be used as template shortcuts (through region tag attributes `region="" view="..."`).
 
 **Note**: We have merged the old *Regional* concept with *View* in general. Future releases will not distinguish between *Regional*s and named *View*s.
 
@@ -100,13 +92,15 @@ alias: Area, named View
 
 Modern web application generates views according to user data dynamically. This is why we picked *Backbone* as our view engine. However, the way we handle remote data in our framework is a bit different than the original design in *Backbone*.
 
-Since most of the application state comes from the server, try **NOT** to use *Model*/*Collection* directly in views. Managing locally cached data can backfire badly if your design requirement is vague. You are advised to make the data interfacing/manipulation layer as thin as possible. Operate on plain data object/array as much as possible. (e.g Bind pagination, sorting and filtering as view actions/listeners instead of *Collection* methods, unless you have a requirement to operate on locally cached data)
+Since most of the application state comes from the server, try **NOT** to use Model/Collection directly in views. Managing locally cached data can backfire badly if your design requirement is vague (like in most of the prototyping phase, right?). You are advised to make the data interfacing/manipulation layer as thin as possible. Operate on plain data object/array as much as possible. (e.g Bind pagination, sorting and filtering as view actions/listeners instead of Collection methods, unless you have a requirement to operate on locally cached data)
 
-**Important:** We introduce a unified *DATA API* for handling all the in/out of remote server data, skipping the *Model/Collection* centered way of data manipulation. *Model/Collection* are only used as dumb data snapshot object on the client side to support views. The goal is to make the data interfacing layer *as thin as possible*. You will find more details in the **Quickstart/Handling Data** section.
+**Important:** We introduce a unified *DATA API* for handling all the in/out of remote server data, skipping the *Model/Collection* centered way of data manipulation. They are still created internally for you however. But *you will only need `view.set()/get()/refresh()` and the `view.data` attribute* to use them. 
+
+Remember, Model/Collection are only used as dumb data snapshot object on the client side to support views. The goal is to make the data interfacing layer *as thin as possible*. You will find more details in the **Quickstart/Handling Data** section.
 
 ####Reuse view definitions?
 
-For views that you need to use again and again but with different configuration (e.g a Datagrid). Register it as a *Widget* or, in case of a basic input, an *Editor*. These reusable view definitions are call *Reusable*s in the framework. Think in terms of the **List and Container** technique as much as possible when creating them.
+For views that you need to use again and again but with different configuration/options (e.g a Datagrid), register it as a *Widget* or, in case of a basic input, an *Editor*. These reusable view definitions are called *Reusable*s in the framework. Think in terms of the **List and Container** (further down this document) technique as much as possible when creating them.
 
 ####Co-op through events
 
@@ -352,7 +346,9 @@ A `region=""` attribute on any html tag marks a pre-defined region in the templa
 Tag marked with `region=""` can use an additional `view=""` attribute to load up a *View* / *Widget* or *@remote.template.html* by name:
 ```
 '<div region="banner" view="Banner"></div>'
+
 //is equivalent to
+
 onShow: function(){
     this.getRegion('banner').trigger('region:load-view', 'Banner');
     //or
@@ -384,9 +380,14 @@ Note that the ready event may vary in different hybrid app development package.
 The application bootstrapping sequence can be modified, since we are simply using the Marionette.Application object, you can add your own environment preparation code as initializers:
 ```
 //"initialize:before" / onInitializeBefore;
-Application.addInitializer(function(options){...});
+
+Application.addInitializer(function(options){
+    //go to check user's session
+    app.navigate(...);
+});
 Application.addInitializer(function(options){...});
 ...
+
 //"initialize:after" / onInitializeBefore;
 //"start" / onStart;
 
@@ -534,8 +535,14 @@ Create `/context-a/myRegionalA.js` like this:
     app.view({
         name: 'MyRegionalA',
         template: '...',
-        navRegion: '...', 
-        //..., normal Backbone View options
+        [navRegion: '...',] 
+        data: '...',
+        coop: '...',
+        actions: '...',
+        [events: ...],
+        onShow(): function(){
+            //...
+        }
     });
 })(Application);
 ```
@@ -546,7 +553,7 @@ You can define non-regional (un-named) views through the `Application.view()` AP
 ```
 var CustomView = app.view({
     template: '...',
-    //..., normal Backbone View options
+    //...
 });
 ```
 The above call to `app.view()` returns a **definition**. If you want an **instance** to be returned, do it like this:
@@ -570,6 +577,30 @@ Now, we've sketched the layout of our application, you might want more contexts 
 ####Step 4. Handling data
 
 Though we do not agree with *Backbone*'s way of loading and persisting data through *Model/Collection*s. We do agree that **data** should be the central part of every computer program. In our case, the remote data from server are still used to power the dynamic views. We use *Backbone.Model/Collection* only when there is a *View*. In other words, *data* and *View*s are centric in our framework paradigm, *Model/Collection*s are not. Try to think of them as a integrated part of *View*s. 
+
+#####Within a View
+
+Use the `data` property and `.set()/get()/refresh()` methods.
+```
+(function(app) {
+    app.view({
+
+        data: '...', //can be 'url', {} or []
+
+    });
+})(Application);
+```
+If you put in an url, `app.remote()` will be called internally. The view will be shown with data rendered.
+
+Note that in your template, if your data is an array, it is referenced by `{{items}}``.
+
+```
+view.set() - will always re-render the view if data changes;
+view.get() - get all data or per key
+view.refresh() - re-fetch data if needed and re-render;
+```
+
+#####With app.remote()
 
 **Note:** Use normal `$.ajax()` calls for **NON-API** resources such as static `.json` files. You don't want to pick up `Application.config.baseAjaxURI` in these situations. Further, you should specify `dataType: 'json'` in your `$.ajax()` call configure explicitly for loading `*.json` files so that the data can be returned as expected locally on mobile platforms. (When there isn't a web server, `$.ajax()` get `*.json` files into text strings instead of parsed Javascript object due to incorrect MIME type.)
 
@@ -632,30 +663,9 @@ Application.remote(...)
     .fail(function(){...})
     .always(...);
 ```
-Render remote data in a view without mentioning *Model/Collection* like this:
-```
-//myRegionalA.js
-(function(app) {
-    app.view({
-        name: 'MyRegionalA',
-        template: '...',
-        onShow: function(){
-            //load data and render through it:
-            var that = this;
-            app.remote({...}).done(function(data){
-                that.trigger('view:render-data', data);
-            });
-        }
-    });
-})(Application);
-```
-By using an event `view:render-data`, we eliminate the need of handling data rendering through *Model/Collection* in a view. Override `onRenderData()` if you want the data rendering process to be different. 
 
-Data returned should be in the [JSON](http://json.org/) format and with `Content-Type: application/json` in its response headers. An JSON Array will be converted into a *Collection* (Object into a *Model*) before given to the view. You can trigger `view:render-data` whenever you want to change the underlying model and collection in a view instance. The `reset`, `change`, `add` and `remove` events are listened by the view and it will re-render accordingly.
+Data returned should be in the [JSON](http://json.org/) format and with `Content-Type: application/json` in its response headers. 
 
-**Note:** If you use `view:render-data` and pass in an `Array`, it will **reset** the collection of that view. 
-
-Modify (paginate/filter/sort) the data before passing to the `view:render-data` event. *Do NOT* bind pagination/filtering/sorting operations with model/collection instances.
 
 ###Actions
 
@@ -731,27 +741,33 @@ We have `Application (app:)`, `Context (context:)` and all the `View (view:)` en
 //bootstraping
 app:before-mainview-ready //fired before the application is shown
 app:mainview-ready //fired after the application is shown
+
 //navigation
 app:navigate (string) or ({context:..., module:...}, silent) - Application.onNavigate [pre-defined]
 app:context-guard-error (error, contextName) - [pre-defined]
 app:context-switched (contextName)  - [empty stub]
+
 //the followings are triggered by Application.remote():
 app:ajax - before ajax sent
 app:ajax-start - single progress
 app:ajax-stop - single progress
 app:ajax-active - overall
 app:ajax-inactive - overall
+
 //triggered by window
 app:resized - [empty stub]
 app:scroll - [empty stub]
+
 //global - for alerts and prompts
 app:success - [empty stub]
 app:error - [empty stub]
+
 //lock related
 app:blocked - [empty stub] (action/options, lock/(n/a))
 ```
 **Context** -- context:meta-event
 ```
+context:navigate-chain 
 context:navigate-away - [empty stub] - triggered before app:navigate
 ```
 **View** -- view:meta-event
@@ -761,7 +777,11 @@ view:render-data (data) - onRenderData [pre-defined]
 view:data-rendered
 view:resized - fired when parent region's .resize() method gets called
 
+//View with effect
+view:animated
+
 //View with navRegion
+view:navigate-chain
 view:navigate-to
 view:navigate-away (if parentCt persists)
 
@@ -1024,8 +1044,8 @@ template: [
 You will also get the following APIs attached to the **view** instance object once you have configured the `editors:{}` block:
 ```
 this.getEditor(name); 
-this.getValues(); 
-this.setValues(vals, loud); 
+this.getValues(); //or this.get()
+this.setValues(vals, loud); //or this.set()
 this.validate(true|false); //true for showing the validation errors.
 this.status(status, messages); //for highlighting status per editor. no arguments means to clear.
 ```
@@ -1277,7 +1297,7 @@ The *List'n'Container* technique is the golden technique to use when planning yo
 You can always nest another layer of container-list-item into an item of parent layer to form even more complex views. Make sure you use the `Application.view(options)` API when defining the list item views.
 
 **Suggestions**: 
-* Always implement the `view:reconfigure` meta event listeners in a widget for swapping data and configuration after the widget is shown. Make sure the `view:render-data` event is working as expected as well. 
+* Always implement the `view:reconfigure` meta event listeners in a widget for swapping data and configuration after the widget is shown.
 * Keep widgets reconfigurable in display and dumb in functionality, don't put *policy* code as logic into them. 
 * Leave space to accommodate real case usages by keeping options minimum. Don't turn into an *all-in-one* thing and force other developers to *configure* the widget.
 * Fire event whenever an action is triggered, provide a default listener so that later it can be rewired.
@@ -1353,7 +1373,7 @@ this.region.trigger('region:load-view', 'Datagrid', {
 
 //Scenario 2. feed data into the grid after it is shown:
 var datagrid = this.region.currentView;
-datagrid.trigger('view:render-data', [...data...]);
+datagrid.set([...data...]);
 
 //Scenario 3. re-configure the columns and cells:
 datagrid.trigger('view:reconfigure', {...new config options...});
