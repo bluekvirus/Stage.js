@@ -76,16 +76,14 @@
     "lesshat": "~3.x.x"
   },
   "monitored": {
-
+    "velocity": "*",
     "gridster": "*",
     "MasonJS": "*",
     "scroll-reveal": "*",
     "crossfilter": "*",
     "victor": "*",
     "togetherjs": "*",
-
-    "please-wait": "*",
-    "spin.js": "*",
+    "spinkit": "*",
     "nprogress": "*",
     "owl.carousel": "*",
     "colorbox": "*",
@@ -95,7 +93,6 @@
     "pickadate": "*",
     "ace": "*",
     "highlightjs": "*",
-    
     "raphael": "2.1.2",
     "Chart.js": "*",
     "peity": "*",
@@ -103,11 +100,11 @@
     "highcharts-release": "*",
     "highstock-release": "*",
     "jvectormap": "*",
-
     "soundmanager": "*",
     "video.js": "*",
-
-    "mockjs": "*"
+    "mockjs": "*",
+    "mocha": "*",
+    "chai": "*"
   },
   "dependencies": {
     "nprogress": "0.2.x",
@@ -120,6 +117,8 @@
     "ubuntu-fontface": "*",
     "animate.css": "~3.x.x",
     "lesshat": "~3.x.x",
-    "mockjs": "0.1.x"
+    "mockjs": "0.1.x",
+    "mocha": "~2.2.5",
+    "chai": "~3.2.0"
   }
 }
