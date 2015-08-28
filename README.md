@@ -10,7 +10,7 @@ app.stagejs (1.8.x-<commits> build <timestamp>)
 ```
 You can compare this version number with the one you see on the [documentation site](http://bluekvirus.github.io/Stage.js/#navigate/Document) and see if an upgrade is recommended.
 
-**Announcement**: Please note that next release (v1.8.0) will be the last stable release of the 1.x branch. The coming release (including tests) is also an LTS* (long term support - 18-month) version of this framework. We are now working on the 2.x branch development. A complete feature listing is available. ([v2 plan](#whats-next))
+**Announcement**: Please note that release (v1.8.x) will be the last stable release of the 1.x branch. The coming release (including tests) is also an LTS* (long term support - 18-month) version of this framework. We are now working on the 2.x branch development. A complete feature listing is available. ([v2 plan](#whats-next))
 
 > <sup>\*</sup>LTS - Given that ECMAScript6 is coming and our goal of making a lightweight, time-saving and most importantly **easy** framework for both desktop web and hybrid application development, further improvements and simplifications will be made directly into the v2 codebase without disturbing the v1.8 branch (You can expect global co-op events, AMD and MVVM support in v2!) . The LTS version also serves as a benchmark for creating tests and for feature-list and feedback gathering. We have now successfully released 2 security products with complex configure panels/dashboards and excellent user flows & localizations through the v1.7 branch. More will come. 
 
@@ -57,19 +57,21 @@ What's next?
 * Keep [Cordova](https://cordova.apache.org/) hybrid HTML5 mobile app support (touch, gestures, ready-e); (:heavy_check_mark:)
 * Keep i18n, data validators, async coordination support; (:heavy_check_mark:) 
 * Put self-made dev process pipeline onto Gulp; (:heavy_check_mark:)
-* Test automation in BDD;
+* Test automation in BDD; (in progress)
+* Data handling shortcuts (data property, set()/get()/refresh());
+* Websocket integration for messaging/notification & peer discovery;
+* WebRTC integration for peer-to-peer data/stream sharing;
 * Introduce state machine into Views;
 * Give View action listeners a choice to go background (Web Worker);
-* Websocket integration for messaging/notification;
-* WebRTC integration for peer-to-peer data/stream sharing;
 * ...
 
 Optional:
 * filter/sorter/pager in views (most likely through MVVM, v1 has remote version only);
 * form & input wrappers (already in v1);
 * ui prompts (already in v1);
-* view swapping effects (already in v1);
+* view transition effects (already in v1);
 * grid and cells (already in v1);
+* tree and recursive views (already in v1);
 * devserver stack; (already in v1);
 
 
@@ -121,7 +123,7 @@ Distribute
 ```
 //0. change version numbers
 a. CHANGELOG.md and tools/libprep/bower.json
-b. README.md, HOWTO.md (optional, can be through http://shields.io/)
+//numbers in README.md, HOWTO.md are updated automatically.
 
 //1. [optional] update libs & bower release version
 tools/lib-update.sh
