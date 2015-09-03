@@ -423,7 +423,10 @@
 				return this.getValues();
 			}
 
-			if(!this.model) throw new Error('DEV::ItemView:: You have not yet setup data in this view');
+			if(!this.model) {
+				console.warn('DEV::ItemView:: You have not yet setup data in view ' + this.name);
+				return;
+			}
 			
 			if(arguments.length)
 				return this.model.get.apply(this.model, arguments);

@@ -40,12 +40,14 @@
 		options = options || {};
 
 		//----------------------deprecated config---------------------------
-		if(this.type || options.type)
+		if((this.type || options.type) && !this.forceViewType)
 			console.warn('DEV::View::type is deprecated, please do not specify ' + (this.name?'in ' + this.name:''));
 
 		//----------------------fixed enhancements--------------------------
 		//fix default tpl to be ' '.
 		this.template = options.template || this.template || ' ';
+		//replace data configure (also support getting parent data from useParentData)
+		this.data = options.data || this.data || (this.parentCt && this.useParentData && this.parentCt.get(this.useParentData));
 
 		//auto ui pick-up after render (to support dynamic template)
 		this._ui = _.extend({}, this.ui, options.ui);

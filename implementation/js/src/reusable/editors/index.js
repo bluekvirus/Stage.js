@@ -74,10 +74,12 @@
 
 	app.Core.Editor.register('Basic', function(){
 
-		var UI = Backbone.Marionette.ItemView.extend({
+		var UI = app.view({
 
 			template: '#editor-basic-tpl',
 			className: 'form-group', //this class is suggested to be removed if there is no label in this editor options.
+			type: 'ItemView',
+			forceViewType: true, //supress ItemView type warning by framework.
 
 			events: {
 				//fired on both parentCt and this editor

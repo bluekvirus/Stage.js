@@ -75,6 +75,7 @@
 	    	//3. accordion (with nodes collapsed first)
 	    	this.right.show(app.area({
 	    		type: 'CollectionView',
+	    		forceViewType: true,
 	    		initialize: function(){
 	    			this.activeClass = 'panel-primary';
 	    			this.collection = app.collection(data);
@@ -86,7 +87,6 @@
 	    			});
 	    		},
 	    		itemView: app.view({
-	    			type: 'Layout',
 	    			className: 'panel panel-default',
 	    			template: [
 	    				'<div class="panel-heading" action="toggle">',

@@ -1,15 +1,23 @@
 Change Log
 ==========
-1.8.4 (2015-08-25*)
+1.8.5 (2015-09-02*)
+------------------
+1. Added view.useParentData for picking up parent data.
+2. Added backbone-deep-model for 'x.y.z' change/get.
+3. view.data can now be specified in options when initialize a view.
+
+working on ...
+* Rethinking on set()/refresh() impl.
+* Adding unit tests.
+* Updated doc (around data handling & coop).
+
+
+1.8.4 (2015-08-25)
 -------------------
 1. Added view:animated event for effect enabled view.
 2. Dynamic view loading path now includes view category (devtool v0.2.2).
 3. Refined view.data configure processing.
 4. Refined view.set/refresh timing & conditions.
-
-working on ...
-* Rethinking on set()/refresh() impl. (separate one-way-bind?)
-* Updated doc (around data handling & coop).
 
 
 1.8.3 (2015-08-20)

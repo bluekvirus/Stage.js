@@ -48,7 +48,6 @@
 	app.widget('Datagrid', function(){
 
 		var UI = app.view({
-			type: 'Layout',
 			tagName: 'table',
 			template: [
 				'<thead region="header"></thead>',
@@ -108,6 +107,7 @@
 
 		var HeaderRow = app.view({
 			type: 'CollectionView',
+			forceViewType: true,
 			itemView: 'dynamic',
 			itemViewEventPrefix: 'headercell',
 			tagName: 'tr',
@@ -127,6 +127,7 @@
 
 		var Row = app.view({
 			type: 'CollectionView',
+			forceViewType: true,
 			itemView: 'dynamic',
 			itemViewEventPrefix: 'cell',
 			tagName: 'tr',
@@ -156,6 +157,7 @@
 
 		var Body = app.view({
 			type: 'CollectionView',
+			forceViewType: true,
 			itemView: Row,
 			itemViewEventPrefix: 'row',
 			itemViewOptions: function(model, index){

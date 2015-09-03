@@ -48,6 +48,7 @@
 
 		var nodeViewConfig = {
 			type: 'CompositeView',
+			forceViewType: true,
 			tagName: 'li',
 			itemViewContainer: 'ul',
 			itemViewOptions: function(){
@@ -79,6 +80,7 @@
 
 		var Root = app.view({
 			type: 'CollectionView',
+			forceViewType: true,
 			className: 'tree tree-root',
 			tagName: 'ul',
 			initialize: function(options){
