@@ -128,20 +128,6 @@
 			i18nTransFile: 'i18n.json', //can be {locale}.json
 			i18nLocale: '', //if you really want to force the app to certain locale other than browser preference. (Still override-able by ?locale=.. in url)
 			timeout: 5 * 60 * 1000,
-			/*Global CROSSDOMAIN Settings - Deprecated: set this in a per-request base or use server side proxy*/
-			//see MDN - https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS
-			//If you ever need crossdomain in development, we recommend that you TURN OFF local server's auth layer/middleware. 
-			//To use crossdomain ajax, in any of your request, add this option:
-			// xdomain: {
-			//     protocol: '', //https or not? default: '' -> http
-			//     host: '127.0.0.1', 
-			//     port: '5000',
-			//     headers: {
-			//     		'Credential': 'user:pwd'/'token',
-			//     		...
-			//     }
-			// }
-			//Again, it is always better to use server side proxy/forwarding instead of client side x-domain.
 
 		}, config);
 		
@@ -190,35 +176,7 @@
 				margin: 0,
 				padding: 0					
 			});
-		}				
-
-		//Ajax Options Fix: (baseAjaxURI, CORS and cache)
-		app.onAjax = function(options){
-
-			//app.config.baseAjaxURI
-			if(app.config.baseAjaxURI)
-				options.url = _.string.startsWith(options.url, '/')? options.url : [app.config.baseAjaxURI, options.url].join('/');	
-
-			//crossdomain:
-			var crossdomain = options.xdomain;
-			if(crossdomain){
-				options.url = (crossdomain.protocol || 'http') + '://' + (crossdomain.host || 'localhost') + ((crossdomain.port && (':'+crossdomain.port)) || '') + (/^\//.test(options.url)?options.url:('/'+options.url));
-				options.crossDomain = true;
-				options.xhrFields = _.extend(options.xhrFields || {}, {
-					withCredentials: true //persists session cookies.
-				});
-				options.headers = _.extend(options.headers || {}, crossdomain.headers);
-				// Using another way of setting withCredentials flag to skip FF error in sycned CORS ajax - no cookies tho...:(
-				// options.beforeSend = function(xhr) {
-				// 	xhr.withCredentials = true;
-				// };
-			}
-
-			//cache:[disable it for IE only]
-			// if(Modernizr.ie)
-			// 	options.cache = false;
-		
-		};
+		}
 
 		//3 Load Theme css & View templates & i18n translations
 		var theme = app.uri(window.location.toString()).search(true).theme || app.config.theme;

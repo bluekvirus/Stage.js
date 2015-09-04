@@ -1,4 +1,4 @@
-/**
+/*
  * This is the Remote data interfacing core module of this application framework.
  * (Replacing the old Data API module)
  *
@@ -11,6 +11,20 @@
  *  2. + params(alias:querys) - object
  *  3. + payload - object (payload._id overrides _id)
  *  4. $.ajax options (without -data, -type, -processData, -contentType)
+ *
+ *  Global CROSSDOMAIN Settings - *Deprecated*: set this in a per-request base or use server side proxy
+ *  see MDN - https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS
+ *  If you ever need crossdomain in development, we recommend that you TURN OFF local server's auth layer/middleware. 
+ *  To use crossdomain ajax, in any of your request, add this option:
+ *  xdomain: {
+ *  	protocol: '', //https or not? default: '' -> http
+ *   	host: '127.0.0.1', 
+ *   	port: '5000',
+ *   	headers: {
+ *   		'Credential': 'user:pwd'/'token',
+ *   		...
+ *  }
+ *  Again, it is always better to use server side proxy/forwarding instead of client side x-domain.
  *
  * events:
  * -------
@@ -26,7 +40,7 @@
  * 
  * @author Tim.Liu
  * @created 2014.03.24
- */
+ */ 
 
 ;(function(app, _, $){
 
@@ -134,6 +148,34 @@
 	//Global ajax fail handler (common)
 	app.ajaxFailed = function(jqXHR, settings, e){
 		throw new Error('DEV::Ajax::' + e + ' ' + settings.url);
+	};
+
+	//Ajax Options Fix: (baseAjaxURI, CORS and cache)
+	app.onAjax = function(options){
+
+		//app.config.baseAjaxURI
+		if(app.config.baseAjaxURI)
+			options.url = options.url.match(/^[\/\.]/)? options.url : [app.config.baseAjaxURI, options.url].join('/');	
+
+		//crossdomain:
+		var crossdomain = options.xdomain;
+		if(crossdomain){
+			options.url = (crossdomain.protocol || 'http') + '://' + (crossdomain.host || 'localhost') + ((crossdomain.port && (':'+crossdomain.port)) || '') + (/^\//.test(options.url)?options.url:('/'+options.url));
+			options.crossDomain = true;
+			options.xhrFields = _.extend(options.xhrFields || {}, {
+				withCredentials: true //persists session cookies.
+			});
+			options.headers = _.extend(options.headers || {}, crossdomain.headers);
+			// Using another way of setting withCredentials flag to skip FF error in sycned CORS ajax - no cookies tho...:(
+			// options.beforeSend = function(xhr) {
+			// 	xhr.withCredentials = true;
+			// };
+		}
+
+		//cache:[disable it for IE only]
+		// if(Modernizr.ie)
+		// 	options.cache = false;
+	
 	};
 	
 
