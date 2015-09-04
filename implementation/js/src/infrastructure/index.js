@@ -197,7 +197,7 @@
 
 			//app.config.baseAjaxURI
 			if(app.config.baseAjaxURI)
-				options.url = [app.config.baseAjaxURI, options.url].join('/');	
+				options.url = _.string.startsWith(options.url, '/')? options.url : [app.config.baseAjaxURI, options.url].join('/');	
 
 			//crossdomain:
 			var crossdomain = options.xdomain;

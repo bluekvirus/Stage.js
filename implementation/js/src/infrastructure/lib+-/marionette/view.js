@@ -46,8 +46,8 @@
 		//----------------------fixed enhancements--------------------------
 		//fix default tpl to be ' '.
 		this.template = options.template || this.template || ' ';
-		//replace data configure (also support getting parent data from useParentData)
-		this.data = options.data || this.data || (this.parentCt && this.useParentData && this.parentCt.get(this.useParentData));
+		//replace data configure
+		this.data = options.data || this.data;
 
 		//auto ui pick-up after render (to support dynamic template)
 		this._ui = _.extend({}, this.ui, options.ui);
@@ -121,6 +121,8 @@
 
 		//data ({}, [] or url for GET only)
 		this.listenToOnce(this, 'show', function(){
+			//supports getting parent data from useParentData.
+			this.data = this.data || (this.parentCt && this.useParentData && this.parentCt.get(this.useParentData));
 			if(this.data)
 				this.set(this.data);
 		});

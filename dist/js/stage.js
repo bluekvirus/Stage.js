@@ -244,7 +244,7 @@
 
 			//app.config.baseAjaxURI
 			if(app.config.baseAjaxURI)
-				options.url = [app.config.baseAjaxURI, options.url].join('/');	
+				options.url = _.string.startsWith(options.url, '/')? options.url : [app.config.baseAjaxURI, options.url].join('/');	
 
 			//crossdomain:
 			var crossdomain = options.xdomain;
@@ -3576,8 +3576,8 @@ module.exports = DeepModel;
 		//----------------------fixed enhancements--------------------------
 		//fix default tpl to be ' '.
 		this.template = options.template || this.template || ' ';
-		//replace data configure (also support getting parent data from useParentData)
-		this.data = options.data || this.data || (this.parentCt && this.useParentData && this.parentCt.get(this.useParentData));
+		//replace data configure
+		this.data = options.data || this.data;
 
 		//auto ui pick-up after render (to support dynamic template)
 		this._ui = _.extend({}, this.ui, options.ui);
@@ -3651,6 +3651,8 @@ module.exports = DeepModel;
 
 		//data ({}, [] or url for GET only)
 		this.listenToOnce(this, 'show', function(){
+			//supports getting parent data from useParentData.
+			this.data = this.data || (this.parentCt && this.useParentData && this.parentCt.get(this.useParentData));
 			if(this.data)
 				this.set(this.data);
 		});
@@ -4042,25 +4044,10 @@ module.exports = DeepModel;
 				this.render();
 			this.trigger('view:data-rendered');
 		},
-
-		//Bypassing Model/Collection setup in Backbone.
-		set: function(){
-			if(arguments.length === 1){
-				var data = arguments[0];
-				if(_.isString(data)){
-					this.data = data;
-					//to prevent from calling refresh() in initialize()
-					return this.isInDOM() && this.refresh();
-				}
-				else if(_.isArray(data))
-					return this._setData('items', data); 
-					//conform to original Backbone/Marionette settings
-			}
-			this._setData.apply(this, arguments);
-		},	
-
+		
 		//Set & change the underlying data of the view.
-		_setData: function(){
+		set: function(){
+
 			if(!this.model){
 				this.model = app.model();
 			}
@@ -4075,6 +4062,18 @@ module.exports = DeepModel;
 				this._oneWayBound = true;			
 			}
 
+			//bypassing Model/Collection setup in Backbone.
+			if(arguments.length === 1){
+				var data = arguments[0];
+				if(_.isString(data)){
+					this.data = data;
+					//to prevent from calling refresh() in initialize()
+					return this.isInDOM() && this.refresh();
+				}
+				else if(_.isArray(data))
+					return this.model.set('items', data); 
+					//conform to original Backbone/Marionette settings
+			}
 			return this.model.set.apply(this.model, arguments);
 		},
 
@@ -4298,7 +4297,8 @@ module.exports = DeepModel;
 			});
 
 			//Automatically shows the region's view="" attr indicated View or @remote.tpl.html
-			this.listenTo(this, 'show', function(){
+			//Note: re-render a view will not re-render the regions. use data change or .show() will.
+			this.listenTo(this, 'show view:data-rendered', function(){
 				_.each(this.regions, function(selector, r){
 					if(this.debug) this[r].$el.html('<p class="alert alert-info">Region <strong>' + r + '</strong></p>'); //give it a fake one.
 					this[r].trigger('region:load-view', this[r].$el.attr('view')); //found corresponding View def.
@@ -6239,4 +6239,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.4-880 build 1441251669619";
+;;app.stagejs = "1.8.4-881 build 1441333976411";

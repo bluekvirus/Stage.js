@@ -380,25 +380,10 @@
 				this.render();
 			this.trigger('view:data-rendered');
 		},
-
-		//Bypassing Model/Collection setup in Backbone.
-		set: function(){
-			if(arguments.length === 1){
-				var data = arguments[0];
-				if(_.isString(data)){
-					this.data = data;
-					//to prevent from calling refresh() in initialize()
-					return this.isInDOM() && this.refresh();
-				}
-				else if(_.isArray(data))
-					return this._setData('items', data); 
-					//conform to original Backbone/Marionette settings
-			}
-			this._setData.apply(this, arguments);
-		},	
-
+		
 		//Set & change the underlying data of the view.
-		_setData: function(){
+		set: function(){
+
 			if(!this.model){
 				this.model = app.model();
 			}
@@ -413,6 +398,18 @@
 				this._oneWayBound = true;			
 			}
 
+			//bypassing Model/Collection setup in Backbone.
+			if(arguments.length === 1){
+				var data = arguments[0];
+				if(_.isString(data)){
+					this.data = data;
+					//to prevent from calling refresh() in initialize()
+					return this.isInDOM() && this.refresh();
+				}
+				else if(_.isArray(data))
+					return this.model.set('items', data); 
+					//conform to original Backbone/Marionette settings
+			}
 			return this.model.set.apply(this.model, arguments);
 		},
 

@@ -179,7 +179,8 @@
 			});
 
 			//Automatically shows the region's view="" attr indicated View or @remote.tpl.html
-			this.listenTo(this, 'show', function(){
+			//Note: re-render a view will not re-render the regions. use data change or .show() will.
+			this.listenTo(this, 'show view:data-rendered', function(){
 				_.each(this.regions, function(selector, r){
 					if(this.debug) this[r].$el.html('<p class="alert alert-info">Region <strong>' + r + '</strong></p>'); //give it a fake one.
 					this[r].trigger('region:load-view', this[r].$el.attr('view')); //found corresponding View def.
