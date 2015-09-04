@@ -1,13 +1,15 @@
 Change Log
 ==========
-1.8.5 (2015-09-02*)
+1.8.5 (2015-09-03*)
 ------------------
-1. Added view.useParentData for picking up parent data.
+1. Fixed view.useParentData for using subset of parent data in child view.
 2. Added backbone-deep-model for 'x.y.z' change/get.
 3. view.data can now be specified in options when initialize a view.
+4. Refined set()/refresh() implementation in views.
+5. Non-form parent view data change will now correctly refresh regions.
+6. app.remote now honor '/' leading urls as they were.
 
 working on ...
-* Rethinking on set()/refresh() impl.
 * Adding unit tests.
 * Updated doc (around data handling & coop).
 
