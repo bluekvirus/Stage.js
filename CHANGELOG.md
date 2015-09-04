@@ -7,7 +7,7 @@ Change Log
 3. view.data can now be specified in options when initialize a view.
 4. Refined set()/refresh() implementation in views.
 5. Non-form parent view data change will now correctly refresh regions.
-6. app.remote now honor '/' leading urls as they were.
+6. app.remote now honor '/' & './' leading urls as they were (skipping app.config.baseAjaxURI).
 
 working on ...
 * Adding unit tests.
