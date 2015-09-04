@@ -10,7 +10,7 @@ Change Log
 6. app.remote now honor '/' & './' leading urls as they were (skipping app.config.baseAjaxURI).
 
 working on ...
-* Adding unit tests.
+* Adding more unit tests.
 * Updated doc (around data handling & coop).
 
 
