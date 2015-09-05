@@ -24,13 +24,13 @@
 		],
 
 		onBeforeNavigateTo:function(){
-			console.log('before navi to', this.name);
+			app.debug('before navi to', this.name);
 			$('body').css('overflow', 'hidden');
 			return true;
 		},
 
 		onNavigateAway: function(){
-			console.log('before navi away from', this.name);
+			app.debug('before navi away from', this.name);
 			$('body').css({
 				'overflowX': 'hidden',
 				'overflowY': 'auto'

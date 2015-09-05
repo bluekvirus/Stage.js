@@ -237,8 +237,20 @@
 		moment: moment,
 
 		//----------------url------------------------
-		uri: URI
+		uri: URI,
 
+		param: function(key, defaultVal){
+			var params = URI.parseQuery(app.uri(window.location.href).search()) || {};
+			if(key) return params[key] || defaultVal;
+			return params;
+		},
+		
+		//----------------debug----------------------
+		debug: function(){
+			var fn = console.debug || console.log;
+			if(app.param('debug') === 'true')
+				fn.apply(null, arguments);
+		}
 	});
 
 	//editor rules

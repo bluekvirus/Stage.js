@@ -41,7 +41,7 @@
 	    					edit: {
 	    						fn: function(){
 	    							//record, columns since action listeners are bound to the current row view
-	    							console.log(this.model, this.collection, this.grid);
+	    							app.debug(this.model, this.collection, this.grid);
 	    						}
 	    					}, 
 	    					delete: {}
@@ -54,7 +54,7 @@
 	    	//load data grid page from server
 	    	var table = this.table.currentView;
 	    	table.on('row:clicked row:dblclicked', function(row){
-	    		console.log('selected/focused on', row);
+	    		app.debug('selected/focused on', row);
 	    	});
 	    	this.footer.trigger('region:load-view', 'Paginator', {
 	    		target: table.getBody(),
@@ -76,12 +76,12 @@
 	    },
 
 	    onNavigateTo: function(path){
-	    	console.log('Datatable nav to', path);
+	    	app.debug('Datatable nav to', path);
 	    },
 
 	    //can only be detected if parentCt is still present.
 	    onNavigateAway: function(){
-	    	console.log('Datatable nav away', this);
+	    	app.debug('Datatable nav away', this);
 	    }
 	});	
 

@@ -44,7 +44,7 @@
 					//override
 					$tag.html(tpl);
 					this.cache.clear('#' + name);
-					console.log('DEV::APP.Util.Template::', name, 'overriden');
+					console.warn('DEV::APP.Util.Template::', name, 'overriden');
 				}
 				else $('head').append(['<script type="text/tpl" id="', id, '">', tpl, '</script>'].join(''));
 			}
@@ -71,7 +71,7 @@
 							if(that.map[name]){
 								//override
 								Template.cache.clear('@' + name);
-								console.log('DEV::APP.Util.Template::', name, 'overriden');	
+								console.warn('DEV::APP.Util.Template::', name, 'overriden');	
 							}
 							that.map[name] = tpl;
 						});
@@ -87,7 +87,7 @@
 						if(that.map[name]){
 							//override
 							Template.cache.clear('@' + name);
-							console.log('DEV::APP.Util.Template::', name, 'overriden');	
+							console.warn('DEV::APP.Util.Template::', name, 'overriden');	
 						}
 						result = that.map[name] = tpl;
 					}).fail(function(){

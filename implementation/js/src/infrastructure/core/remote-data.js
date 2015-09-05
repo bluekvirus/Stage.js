@@ -173,8 +173,8 @@
 		}
 
 		//cache:[disable it for IE only]
-		// if(Modernizr.ie)
-		// 	options.cache = false;
+		if(Modernizr.ie)
+			options.cache = false;
 	
 	};
 	

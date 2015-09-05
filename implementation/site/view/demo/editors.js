@@ -35,7 +35,7 @@
                 placeholder: 'abc...',
                 value: 'default',
                 validate: function(val, parentCt){
-                    console.log(val);
+                    app.debug(val);
                     if(val !== '123') return 'You must enter 123';
                 }
             },
@@ -95,7 +95,7 @@
                     url: 'file/Blog2/',
                     callbacks: {
                         always: function(e, info){
-                            console.log(e, info);
+                            app.debug(e, info);
                         }
                     }
                 }
@@ -116,7 +116,7 @@
                     url: 'sample/file/',
                     callbacks: {
                         always: function(e, info){
-                            console.log(e, info);
+                            app.debug(e, info);
                         }
                     }
                 }
@@ -301,14 +301,14 @@
         },
         actions: {
             validate: function($btn){
-                console.log('error', this.validate(true));
+                app.debug('error', this.validate(true));
             },
             submit: function(){
                 // var f = this.getEditor('fieldset-b.xyz');
                 // f.upload({
                 //     fileInput: this.$el.find('input[name="files[]"]')
                 // });
-                console.log(this.getValues());
+                app.debug(this.getValues());
             },
             test: function(){
                 this.setValues({

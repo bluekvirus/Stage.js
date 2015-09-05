@@ -659,8 +659,20 @@
 		moment: moment,
 
 		//----------------url------------------------
-		uri: URI
+		uri: URI,
 
+		param: function(key, defaultVal){
+			var params = URI.parseQuery(app.uri(window.location.href).search()) || {};
+			if(key) return params[key] || defaultVal;
+			return params;
+		},
+		
+		//----------------debug----------------------
+		debug: function(){
+			var fn = console.debug || console.log;
+			if(app.param('debug') === 'true')
+				fn.apply(null, arguments);
+		}
 	});
 
 	//editor rules
@@ -797,7 +809,7 @@
 					//override
 					$tag.html(tpl);
 					this.cache.clear('#' + name);
-					console.log('DEV::APP.Util.Template::', name, 'overriden');
+					console.warn('DEV::APP.Util.Template::', name, 'overriden');
 				}
 				else $('head').append(['<script type="text/tpl" id="', id, '">', tpl, '</script>'].join(''));
 			}
@@ -824,7 +836,7 @@
 							if(that.map[name]){
 								//override
 								Template.cache.clear('@' + name);
-								console.log('DEV::APP.Util.Template::', name, 'overriden');	
+								console.warn('DEV::APP.Util.Template::', name, 'overriden');	
 							}
 							that.map[name] = tpl;
 						});
@@ -840,7 +852,7 @@
 						if(that.map[name]){
 							//override
 							Template.cache.clear('@' + name);
-							console.log('DEV::APP.Util.Template::', name, 'overriden');	
+							console.warn('DEV::APP.Util.Template::', name, 'overriden');	
 						}
 						result = that.map[name] = tpl;
 					}).fail(function(){
@@ -1077,8 +1089,8 @@
 		}
 
 		//cache:[disable it for IE only]
-		// if(Modernizr.ie)
-		// 	options.cache = false;
+		if(Modernizr.ie)
+			options.cache = false;
 	
 	};
 	
@@ -6239,4 +6251,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.4-882 build 1441335162098";
+;;app.stagejs = "1.8.4-884 build 1441414261233";

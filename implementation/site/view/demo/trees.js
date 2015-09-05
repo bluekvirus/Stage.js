@@ -40,7 +40,7 @@
 	    		data: data,
 	    		onSelected: function(meta, $el, e){
 	    			e.preventDefault();
-	    			console.debug(meta);
+	    			app.debug(meta);
 	    		}
 	    	});
 
@@ -66,7 +66,7 @@
 			    		}
   					});
   					// tree.onDataRendered = function(){
-  					// 	console.log('ready');
+  					// 	app.debug('ready');
   					// }
   					this.tree.show(tree);
   				}
@@ -103,7 +103,7 @@
 	    					data: this.model.get('children'),
 	    					onSelected: function(meta, $el, e){
 								e.preventDefault();
-								console.debug(meta.view.model, $el);
+								app.debug(meta.view.model, $el);
 	    					}
 	    				}).$el.hide();
 	    			},

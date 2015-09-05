@@ -25,7 +25,7 @@
 			_.each(['error', 'success', 'info', 'warning'], function(type){
 				app['on' + _.string.classify(type)] = function(msg){
 					that.trigger('view:msg', {type: type, msg: msg});
-					console.log(msg);
+					app.debug(msg);
 				};
 			});
 		},
@@ -34,7 +34,7 @@
 			this.collection.add(msg);
 		},
 		onTestCoop: function(options){
-			console.log(this.isInDOM(), options);
+			app.debug(this.isInDOM(), options);
 		}	
 	});
 

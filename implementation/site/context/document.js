@@ -57,7 +57,7 @@
                 }
                 this.breadcrumbs.$el.show();
                 this.breadcrumbs.currentView.trigger('view:render-data', {path: path});
-                //console.log(path);
+                //app.debug(path);
             });
         },
         actions: {
@@ -146,7 +146,7 @@
                             color: versionBadges.css('backgroundColor'),
                             border: '1px solid'
                         });
-                        //console.log(that.ui.libitem);
+                        //app.debug(that.ui.libitem);
                     });                
                 }
             }, true));
