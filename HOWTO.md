@@ -34,7 +34,9 @@ Download:
 Utils:
 * Application.moment
 * Application.uri
+* Application.param()
 * Application.validator
+* Application.debug()
 
 Mutual Exclusion:
 * Application.lock ([topic/lock])
