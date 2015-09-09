@@ -667,6 +667,10 @@
 			return params;
 		},
 		
+		reload: function(){
+			window.location.reload();
+		},
+
 		//----------------debug----------------------
 		debug: function(){
 			var fn = console.debug || console.log;
@@ -6251,4 +6255,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.4-884 build 1441414261233";
+;;app.stagejs = "1.8.4-887 build 1441764234278";

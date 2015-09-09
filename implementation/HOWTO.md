@@ -37,6 +37,7 @@ Utils:
 * Application.param()
 * Application.validator
 * Application.debug()
+* Application.reload ()
 
 Mutual Exclusion:
 * Application.lock ([topic/lock])

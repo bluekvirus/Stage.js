@@ -30,5 +30,3 @@ distFolder = cli.args[1];
 
 //WIP (globule + gm)
 
-
-

@@ -245,6 +245,10 @@
 			return params;
 		},
 		
+		reload: function(){
+			window.location.reload();
+		},
+
 		//----------------debug----------------------
 		debug: function(){
 			var fn = console.debug || console.log;
