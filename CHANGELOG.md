@@ -8,8 +8,9 @@ Change Log
 4. Refined set()/refresh() implementation in views.
 5. Non-form parent view data change will now correctly refresh regions.
 6. app.remote now honor '/' & './' leading urls as they were (skipping app.config.baseAjaxURI).
-7. added app.param() for getting url query params;
-8. added app.debug() to replace console.log during development;
+7. Added app.param() for getting url query params;
+8. Added app.debug() to replace console.log during development;
+9. Added app.reload() to force a location.reload();
 
 working on ...
 * Adding more unit tests.
