@@ -201,15 +201,14 @@
 
 					//1. instantiate
 					config.type = config.type || 'text'; 
-					Editor = app.Core.Editor.map[config.type] || app.Core.Editor.map.Basic;
+					Editor = (app.Core.Editor.map.Basic.supported[config.type] && app.Core.Editor.map.Basic) || app.get(config.type, 'Editor');
 					editor = new Editor(config);					
 				}else {
 					//if config is a view definition use it directly 
 					//(compound editor, e.g: app.view({template: ..., editors: ..., getVal: ..., setVal: ...}))
 					Editor = config;
-					config = _.extend({}, global);
-					editor = new Editor();
-					editor.name = name;
+					config = _.extend({name: name, parentCt: this}, global);
+					editor = new Editor(config); //you need to implement event forwarding to parentCt like Basic.
 					editor.isCompound = true;
 				}
 				

@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.8.5 (2015-09-04*)
+1.8.5 (2015-09-09*)
 ------------------
 1. Fixed view.useParentData for using subset of parent data in child view.
 2. Added backbone-deep-model for 'x.y.z' change/get.
@@ -11,6 +11,9 @@ Change Log
 7. Added app.param() for getting url query params;
 8. Added app.debug() to replace console.log during development;
 9. Added app.reload() to force a location.reload();
+10. Auto view injection now supports editors;
+11. Updated user router for default login/logout/touch apis;
+12. Added supported Basic editor types; (wip: dynamically through Modernizr)
 
 working on ...
 * Adding more unit tests.

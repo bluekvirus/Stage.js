@@ -3881,15 +3881,14 @@ module.exports = DeepModel;
 
 					//1. instantiate
 					config.type = config.type || 'text'; 
-					Editor = app.Core.Editor.map[config.type] || app.Core.Editor.map.Basic;
+					Editor = (app.Core.Editor.map.Basic.supported[config.type] && app.Core.Editor.map.Basic) || app.get(config.type, 'Editor');
 					editor = new Editor(config);					
 				}else {
 					//if config is a view definition use it directly 
 					//(compound editor, e.g: app.view({template: ..., editors: ..., getVal: ..., setVal: ...}))
 					Editor = config;
-					config = _.extend({}, global);
-					editor = new Editor();
-					editor.name = name;
+					config = _.extend({name: name, parentCt: this}, global);
+					editor = new Editor(config); //you need to implement event forwarding to parentCt like Basic.
 					editor.isCompound = true;
 				}
 				
@@ -5164,9 +5163,23 @@ var I18N = {};
 				'focusin': '_triggerEvent' 
 			},
 
+			//need to forward events if has this.parentCt
+			_triggerEvent: function(e){
+				var host = this;
+				host.trigger('editor:' + e.type, this.model.get('name'), this);
+				//host.trigger('editor:' + e.type + ':' + this.model.get('name'), this);
+
+				if(this.parentCt){
+					host = this.parentCt;
+				}
+				host.trigger('editor:' + e.type, this.model.get('name'), this);
+				//host.trigger('editor:' + e.type + ':' + this.model.get('name'), this);
+		
+			},
+
 			initialize: function(options){
 				//[parentCt](to fire events on) as delegate
-				this.parentCt = options.parentCt;
+				this.parentCt = options.parentCt || this.parentCt;
 				
 				//prep the choices data for select/radios/checkboxes
 				if(options.type in {'select': true, 'radios': true, 'checkboxes': true}){
@@ -5500,23 +5513,35 @@ var I18N = {};
 						.removeData('type-class');
 					this.ui.msg.empty();
 				}
-			},
-
-			//need to forward events if has this.parentCt
-			_triggerEvent: function(e){
-				var host = this;
-				host.trigger('editor:' + e.type, this.model.get('name'), this);
-				//host.trigger('editor:' + e.type + ':' + this.model.get('name'), this);
-
-				if(this.parentCt){
-					host = this.parentCt;
-				}
-				host.trigger('editor:' + e.type, this.model.get('name'), this);
-				//host.trigger('editor:' + e.type + ':' + this.model.get('name'), this);
-		
 			}
 
 		});
+
+		UI.supported = {
+			'ro': true,
+			'text': true,
+			'textarea': true,
+			'select': true,
+			'file': true,
+			'checkboxes': true,
+			'checkbox': true,
+			'radios': true,
+			'hidden': true,
+			'password': true,
+			//h5 only (wip use Modernizr checks)
+			'number': true,
+			'range': true,
+			'email': true,
+			'tel': true,
+			'search': true,
+			'url': true,
+			'color': true,
+			'time': true,
+			'data': true,
+			'datetime': true,
+			'month': true,
+			'week': true,
+		};
 
 		return UI;
 
@@ -6255,4 +6280,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.4-887 build 1441764234278";
+;;app.stagejs = "1.8.4-888 build 1441856137857";

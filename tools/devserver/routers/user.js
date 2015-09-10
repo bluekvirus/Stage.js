@@ -20,9 +20,15 @@ module.exports = function(server){
 		if(!req.session) return next();
 		if(!req.session.username){
 
+			var pass = false;
 			//TBI: go into db find record and compare hash
+			
+			if(pass){
+				req.session.username = pass;
+				return res.json({msg: 'user logged in', username: req.session.username});
+			}
+			return res.status(401).json({msg: 'user id or password incorrect...'});
 
-			return res.json({msg: 'user logged in', username: req.session.username});
 		}
 		return res.json({msg: 'user already logged in', username: req.session.username});
 
@@ -30,22 +36,19 @@ module.exports = function(server){
 	
 	//logout
 	router.post('/logout', function(req, res, next){
-		if(!req.session) return next();
-		var username;
-		if(req.session.username) {
-			username = req.session.username;
-			req.session.destroy();
+		if(!req.session || !req.session.username) return next();
 
-			//TBI: go into db update record - last logged in
-			
-		}
+		var username = req.session.username;
+		req.session.destroy();
+		//TBI: go into db update record - last logged in
+
 		return res.json({msg: 'user logged out', username: username});
 	});
 	
-	//session (data + cookie)
-	router.get('/session', router.token('debug'), function(req, res, next){
+	//touch (data + cookie)
+	router.get('/touch', router.token('debug'), function(req, res, next){
 		if(!req.session) return next();
-		return req.session.username ? res.json(req.session) : res.json({});
+		return req.session.username ? res.json(req.session) : res.status(401).json({msg: 'no user session yet...'});
 	});
 
 	//override basic crud 

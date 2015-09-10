@@ -89,9 +89,23 @@
 				'focusin': '_triggerEvent' 
 			},
 
+			//need to forward events if has this.parentCt
+			_triggerEvent: function(e){
+				var host = this;
+				host.trigger('editor:' + e.type, this.model.get('name'), this);
+				//host.trigger('editor:' + e.type + ':' + this.model.get('name'), this);
+
+				if(this.parentCt){
+					host = this.parentCt;
+				}
+				host.trigger('editor:' + e.type, this.model.get('name'), this);
+				//host.trigger('editor:' + e.type + ':' + this.model.get('name'), this);
+		
+			},
+
 			initialize: function(options){
 				//[parentCt](to fire events on) as delegate
-				this.parentCt = options.parentCt;
+				this.parentCt = options.parentCt || this.parentCt;
 				
 				//prep the choices data for select/radios/checkboxes
 				if(options.type in {'select': true, 'radios': true, 'checkboxes': true}){
@@ -425,23 +439,35 @@
 						.removeData('type-class');
 					this.ui.msg.empty();
 				}
-			},
-
-			//need to forward events if has this.parentCt
-			_triggerEvent: function(e){
-				var host = this;
-				host.trigger('editor:' + e.type, this.model.get('name'), this);
-				//host.trigger('editor:' + e.type + ':' + this.model.get('name'), this);
-
-				if(this.parentCt){
-					host = this.parentCt;
-				}
-				host.trigger('editor:' + e.type, this.model.get('name'), this);
-				//host.trigger('editor:' + e.type + ':' + this.model.get('name'), this);
-		
 			}
 
 		});
+
+		UI.supported = {
+			'ro': true,
+			'text': true,
+			'textarea': true,
+			'select': true,
+			'file': true,
+			'checkboxes': true,
+			'checkbox': true,
+			'radios': true,
+			'hidden': true,
+			'password': true,
+			//h5 only (wip use Modernizr checks)
+			'number': true,
+			'range': true,
+			'email': true,
+			'tel': true,
+			'search': true,
+			'url': true,
+			'color': true,
+			'time': true,
+			'data': true,
+			'datetime': true,
+			'month': true,
+			'week': true,
+		};
 
 		return UI;
 
