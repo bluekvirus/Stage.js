@@ -38,6 +38,7 @@ module.exports = {
 	
 	js: {
 		default: 'app.js',
+		dynamic: 'js', //path relative to root, auto include dynamically loaded scripts.
 	// 	after: '[region="app"]', or after: '[persist=true]:last-of-type',
 	// 	min: false, //use false to indicate you want app.js instead of app.min.js in the final index.html
 
