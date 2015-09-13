@@ -67,7 +67,7 @@
  * The ACTUAL mutex enforcing mech needs to be implemented in the api route by you. (e.g mutex(record, req.session))
  * 
  * @author Tim Liu
- * @created 2014.10.25 (based on 0.13.x)
+ * @created 2013.10.25 (based on 0.13.x)
  */
 
 var express = require('express'),

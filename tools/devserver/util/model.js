@@ -7,7 +7,7 @@
  * we assume the schema param has a function called .validate()
  *
  * @author Tim Liu
- * @created 2014.11.05
+ * @created 2013.11.05
  */
 
 var EventEmitter = require('events').EventEmitter,

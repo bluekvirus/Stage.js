@@ -7,10 +7,11 @@
  *
  * [Exclusive to the api-box (local dev api engine), use the full/platform version if want the following features]
  * 5. DB support
- * 6. Users/Session/Roles
+ * 6. User/Session/Group
  *
  * @author Tim.Liu
  * @created 2014.4.18
+ * @updated 2015.09.12
  */
 
 var express = require('express'),

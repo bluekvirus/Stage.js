@@ -19,7 +19,7 @@
  * routers.user
  * 
  * @author Tim Liu
- * @created 2014.10.30
+ * @created 2013.10.30
  */
 
 var joi = require('joi');

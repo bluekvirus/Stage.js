@@ -454,19 +454,20 @@
 			'radios': true,
 			'hidden': true,
 			'password': true,
-			//h5 only (wip use Modernizr checks)
-			'number': true,
-			'range': true,
-			'email': true,
-			'tel': true,
-			'search': true,
-			'url': true,
-			'color': true,
-			'time': true,
-			'data': true,
-			'datetime': true,
-			'month': true,
-			'week': true,
+			//h5 only (use Modernizr checks)
+			'number': Modernizr.inputtypes.number,
+			'range': Modernizr.inputtypes.range,
+			'email': Modernizr.inputtypes.email,
+			'tel': Modernizr.inputtypes.tel,
+			'search': Modernizr.inputtypes.search,
+			'url': Modernizr.inputtypes.url,
+			'color': Modernizr.inputtypes.color,
+			'time': Modernizr.inputtypes.time,
+			'date': Modernizr.inputtypes.date,
+			'datetime': Modernizr.inputtypes.datetime,
+			'datetime-local': Modernizr.inputtypes['datetime-local'],
+			'month': Modernizr.inputtypes.month,
+			'week': Modernizr.inputtypes.week,
 		};
 
 		return UI;

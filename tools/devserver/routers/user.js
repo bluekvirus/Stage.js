@@ -5,7 +5,7 @@
  * +mutex rules
  *
  * @author Tim Liu
- * @created 2014.10.26
+ * @created 2013.10.26
  */
 
 module.exports = function(server){

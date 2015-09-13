@@ -10,10 +10,10 @@ Change Log
 6. app.remote now honor '/' & './' leading urls as they were (skipping app.config.baseAjaxURI).
 7. Added app.param() for getting url query params;
 8. Added app.debug() to replace console.log during development;
-9. Added app.reload() to force a location.reload();
+9. Added app.reload() to force an easy location.reload();
 10. Auto view injection now supports editors;
 11. Updated user router for default login/logout/touch apis;
-12. Added supported Basic editor types; (wip: dynamically through Modernizr)
+12. Explicit about supported Basic editor types; (dynamically through Modernizr if H5)
 
 working on ...
 * Adding more unit tests.
