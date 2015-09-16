@@ -14,6 +14,7 @@ Change Log
 10. Auto view injection now supports editors;
 11. Updated user router for default login/logout/touch apis;
 12. Explicit about supported Basic editor types; (dynamically through Modernizr if H5)
+13. Fixed theme prep tool font/icon params;
 
 working on ...
 * Adding more unit tests.
