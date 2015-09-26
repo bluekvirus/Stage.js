@@ -159,6 +159,7 @@ hammer.createFolderStructure({
 	    src: imgFolderGlobs,
 	    spritePath: path.join(imageFolder, 'sprite.png'),
 	    stylesheetPath: lessFilePath,
+	    layout: 'packed', //> 0.9.0
 	    layoutOptions: {
 	        padding: 5
 	    },

@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.8.5 (2015-09-09*)
+1.8.5 (2015-09-25*)
 ------------------
 1. Fixed view.useParentData for using subset of parent data in child view.
 2. Added backbone-deep-model for 'x.y.z' change/get.
@@ -15,6 +15,7 @@ Change Log
 11. Updated user router for default login/logout/touch apis;
 12. Explicit about supported Basic editor types; (dynamically through Modernizr if H5)
 13. Fixed theme prep tool font/icon params;
+14. Updated themerep tool with icon resizing support;
 
 working on ...
 * Adding more unit tests.
