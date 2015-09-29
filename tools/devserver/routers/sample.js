@@ -53,7 +53,7 @@ module.exports = function(server){
 		res.json({hello: true, content: 'world!'});
 	});
 
-	router.get('/user', function(req, res, next){
+	router.get('/user', router.token('read'), function(req, res, next){
 		res.json(Mock.mock(mockTpl.users));
 	});
 

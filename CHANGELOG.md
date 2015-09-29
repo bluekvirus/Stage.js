@@ -18,6 +18,7 @@ Change Log
 14. Updated themerep tool with icon resizing support;
 
 working on ...
+* Simplify devserver (-model/db, +channel).
 * Adding more unit tests.
 * Updated doc (around data handling & coop).
 

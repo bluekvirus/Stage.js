@@ -34,7 +34,6 @@ module.exports = function(server){
 		server.use(bodyParser.json());
 		server.use(busboy({limits:{fileSize: profile.upload.size * 1024 * 1024}})); //multipart form & file upload
 		server.use(session(profile.session || {secret: 'unknown...'}));
-		server.use(server.middlewares.db.tingo);
 		//+server.use...
 		//server.use(server.middlewares.your-middleware-factory())
 		//...

@@ -77,19 +77,11 @@ _.str = require('underscore.string');
 
 module.exports = function(server){
 
-	var apiTokenMap = server.set('api-token-map', {}).get('api-token-map'),
 	profile = server.get('profile');
 
 	//by calling this, the router (entity) tokens will appear in the global access token map
-	server.secure = function(router /*, and token1, token2, ...*/){
-		
-		apiTokenMap[router.meta.entity] = apiTokenMap[router.meta.entity] || {};
-		var atm = apiTokenMap[router.meta.entity];
-
-		var tokens = _.toArray(arguments).slice(1).concat(['create', 'list', 'read', 'modify']);
-		_.each(tokens, function(t){
-			atm[t] = false;
-		});
+	server.secure = function(router, interpretations){
+		interpretations = interpretations || {}; //allow { 'token': fn(req){ return true/false; }, ...} customized checking.
 
 		//give router a token checker to be used when defining the routes (apis)
 		//e.g router.get('url..', router.token(...), function(req, res, next){...});
@@ -99,29 +91,26 @@ module.exports = function(server){
 			var tokens = _.toArray(arguments);
 			return function(req, res, next){
 				if(req.session && req.session.username){
-					if(req.session.userspace === 'superadmin') return next();
-					//within the user & admin space, check api-access-token first
+					if(req.session.permissions === 'all') return next();
+					if(req.session.permissions === 'none' || !req.session.permissions || _.isEmpty(req.session.permissions)) return res.status(403).json({msg: 'Unauthorized'});
+
 					var pass = true;
-					var map = req.session['api-token-map'] && req.session['api-token-map'][router.meta.entity];
-					if(map){
-						for(var t in tokens){
-							if(!map[tokens[t]]) {
-								pass = false;
-								break;
-							}
+					if(_.isArray(req.session.permissions))
+						req.session.permissions = _.object(req.session.permissions, req.session.permissions);
+					for(var t in tokens){
+						if(!req.session.permissions[tokens[t]]) {
+							pass = false;
+							break;
 						}
-				    }else
-				    	pass = false;
-					if(pass) {
-						if(req.session.userspace === 'user') req.mutex = true;
-						return next();
-					/////////////////////////////////////////////////////////////////////
-					//Don't forget to apply the space, mutex rule(s) in the guarded api//
-					/////////////////////////////////////////////////////////////////////
+						if(interpretations[tokens[t]] && !interpretations[tokens[t]](req)) {
+							pass = false;
+							break;
+						}
 					}
-					return res.status(403).json({error: 'Authorization'}); 
+					if(pass) return next();
+					return res.status(403).json({msg: 'Unauthorized'}); 
 				}else {
-					return res.status(401).json({error: 'Authentication'});
+					return res.status(401).json({msg: 'Unauthenticated'});
 				}
 			};
 		};

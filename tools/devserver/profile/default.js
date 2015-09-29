@@ -26,17 +26,29 @@ module.exports = {
 		//store: [your customized session store (on top of db, k-v, file or memory) here]
 	},
 
-	db: {
-		tingo: { path: '../tmp/db/dev.tingo' }
-	},
-
-	store: {
-		//k-v stores	
-	},
-
+	//authentication & authorization 
+	//(note that permissions are subject to interpretation in routers)
 	auth: {
 		enabled: false, //whether or not server.secure(router) will take effect
-		superadmin: 'pwd123'
+		users: {
+			admin: {
+				password: 'admin',
+				permissions: 'all' //'all', 'none', [ ...specific... ]
+			},
+
+			user: {
+				password: 'user',
+				permissions: [
+					'read',
+					'update:self'
+				]
+			},
+
+			guest: {
+				password: '',
+				permissions: 'none'
+			}
+		}
 	},
 
 	//optional file upload path and size limit configz

@@ -14,7 +14,6 @@ os = require('os'),
 ncp = require('ncp').ncp,
 colors = require('colors'),
 _ = require('underscore'),
-json = require('json3');
 _.str = require('underscore.string');
 
 ncp.limit = 16;
@@ -197,14 +196,14 @@ function combine(bowerInfo, name){
 	console.log('libs (selected/available):', (_.size(list) + '/' + String(_.size(libMap))).green, '[', ((_.size(list)/_.size(libMap)*100).toFixed(2) + '%').yellow, ']');
 	var indents = '\t';
 	//dump selected lib name, version to dependencies.json
-	buildify().setContent(json.stringify(versions, null, indents)).setDir(distFolder).save('dependencies.json');
+	buildify().setContent(JSON.stringify(versions, null, indents)).setDir(distFolder).save('dependencies.json');
 	//produce project bower.json
-	buildify().setContent(json.stringify(
+	buildify().setContent(JSON.stringify(
 		_.extend(_.omit(bowerInfo, 'themeDependencies', 'dependencies', 'monitored', 'resolutions')),
 		null, indents
 	)).setDir(implFolder + '/../').save('bower.json');
 	//produce starter-kit bower.json
-	buildify().setContent(json.stringify(_.extend({
+	buildify().setContent(JSON.stringify(_.extend({
 		name: 'keep name here to use bower install, change if you prefer',
 		private: true,
 		devDependencies: _.extend({
@@ -239,7 +238,7 @@ buildify.task({
 // 	name: 'extjs', //for extjs projects enchancement.
 // 	depends: ['load-lib-map'],
 // 	task: function(){
-// 		var list = ['json3', 'store.js', 'uri.js', 'handlebars.js', 'template-builder', 'spin.js', 'mask', 'i18n'];
+// 		var list = ['store.js', 'uri.js', 'handlebars.js', 'template-builder', 'spin.js', 'mask', 'i18n'];
 // 		combine(list, 'extjs-patch');
 // 	}
 
