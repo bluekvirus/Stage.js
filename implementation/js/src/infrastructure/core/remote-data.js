@@ -7,7 +7,7 @@
  * a. url string
  * or 
  * b. object:
- * 	1. + entity[_id][_method] - string
+ * 	1. + _entity[_id][_method] - string
  *  2. + params(alias:querys) - object
  *  3. + payload - object (payload._id overrides _id)
  *  4. $.ajax options (without -data, -type, -processData, -contentType)
@@ -46,42 +46,40 @@
 
 	var definition = app.module('Core.Remote');
 
-	function fixOptions(options){
+	function fixOptions(options, restOpt){
 		if(!options) throw new Error('DEV::Core.Remote::options empty, you need to pass in at least a url string');
 		if(_.isString(options)) 
-			options	= { 
-				url: options,
-				timeout: app.config.timeout,
-				type: 'GET'
-			};
-		else {
-			//default options
-			_.extend(options, {
-				type: undefined,
-				data: undefined,
-				processData: false,
-				contentType: 'application/json; charset=UTF-8', // req format
-				dataType: 'json', //res format
-				timeout: app.config.timeout,
+			options	= _.extend(restOpt || {}, { 
+				url: options
 			});
-			//process entity[_id] and strip off options.querys(alias:params)
-			if(options.entity){
-				var entity = options.entity;
-				options.url = entity;
-			}
-			if(options.payload && options.payload._id){
-				if(options._id) console.warn('DEV::Core.Remote::options.payload._id', options.payload._id,'overriding options._id', options._id);
-				options._id = options.payload._id;
-			}
-			if(options._id || options._method){
-				var url = app.uri(options.url);
-				options.url = url.path(_.compact([url.path(), options._id, options._method]).join('/')).toString();
-			}
-			options.params = options.querys || options.params;
-			if(options.params){
-				options.url = (app.uri(options.url)).search(options.params).toString();
-			}
+
+		//default options
+		_.extend(options, restOpt || {}, {
+			type: undefined,
+			data: undefined,
+			processData: false,
+			contentType: 'application/json; charset=UTF-8', // req format
+			dataType: 'json', //res format
+			timeout: app.config.timeout,
+		});
+
+		//process _entity[_id][_method] and strip off options.querys(alias:params)
+		if(options.entity || options._entity){
+			var entity = options.entity || options._entity;
+			options.url = entity;
 		}
+		if(options.payload && options.payload._id){
+			options._id = options.payload._id;
+		}
+		if(options._id || options._method){
+			var url = app.uri(options.url);
+			options.url = url.path(_.compact([url.path(), options._id, options._method]).join('/')).toString();
+		}
+		options.params = options.querys || options.params;
+		if(options.params){
+			options.url = (app.uri(options.url)).search(options.params).toString();
+		}
+
 		app.trigger('app:ajax', options);		
 		return options;
 	}
@@ -89,16 +87,16 @@
 	_.extend(definition, {
 
 		//GET
-		get: function(options){
-			options = fixOptions(options);
+		get: function(options, restOpt){
+			options = fixOptions(options, restOpt);
 			options.type = 'GET';
 			app.trigger('app:remote-pre-get', options);
 			return $.ajax(options);
 		},
 
 		//POST(no payload._id)/PUT/DELETE(payload = {_id: ...})
-		change: function(options){
-			options = fixOptions(options);
+		change: function(options, restOpt){
+			options = fixOptions(options, restOpt);
 			if(!options.payload) throw new Error('DEV::Core.Remote::payload empty, please use GET');
 			if(options.payload._id && _.size(options.payload) === 1) options.type = 'DELETE';
 			else {

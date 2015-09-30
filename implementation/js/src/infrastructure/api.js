@@ -177,12 +177,14 @@
 		//-----------------remote data------------
 		
 		//returns jqXHR object (use promise pls)
-		remote: function(options){
+		remote: function(options /*or url*/, payload, restOpt){
 			options = options || {};
-			if(options.payload)
-				return app.Core.Remote.change(options);
+			if(options.payload || payload){
+				payload = options.payload || payload;
+				return app.Core.Remote.change(options, _.extend({payload: payload}, restOpt));
+			}
 			else
-				return app.Core.Remote.get(options);
+				return app.Core.Remote.get(options, restOpt);
 		},
 		
 		download: function(ticket){

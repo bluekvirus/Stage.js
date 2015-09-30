@@ -77,7 +77,7 @@ _.str = require('underscore.string');
 
 module.exports = function(server){
 
-	profile = server.get('profile');
+	var profile = server.get('profile');
 
 	//by calling this, the router (entity) tokens will appear in the global access token map
 	server.secure = function(router, interpretations){

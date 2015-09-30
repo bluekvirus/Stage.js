@@ -610,23 +610,21 @@ view.refresh() - re-fetch data if needed and re-render;
 Our recommended way of loading/persisting remote data is through:
 ```
 //returns the $.ajax() object - jqXHR for using promises.
-Application.remote('...' or {
-    entity: '',//entity name of resource
+Application.remote('...url...' or {
+    url: '...'
     params/querys: {...}, //converts to request parameters in header e.g ?a=1&b=2
-    _id: '',
-    _method: '',
     payload: {...}, //data to send to the server
-    ..., //normal $.ajax options without (type, data, processData, contentType)
+    ..., //normal $.ajax options excluding `type`, `data`, `processData` and `contentType`
 });
 ```
 This method will intelligently guess which of the four HTTP method to use for each request according to the options passed. Here is some examples:
 ```
 //GET: /abc
-Application.remote('/abc');
+Application.remote('abc');
 
 //GET: /abc?x=1&y=2
 Application.remote({
-    url: '/abc',
+    url: 'abc',
     params/querys: {
         x: 1,
         y: 2
@@ -635,26 +633,24 @@ Application.remote({
 
 //GET: /user/1/details
 Application.remote({
-    entity: 'user',
-    _id: 1,
-    _method: 'details'
+    url: 'user/1/details'
 });
 
 //POST: /user
 Application.remote({
-    entity: 'user',
+    url: 'user',
     payload: {...} //without _id
 });
 
 //PUT: /user/1
 Application.remote({
-    entity: 'user',
+    url: 'user',
     payload: { _id: 1, ...} //non-empty + _id
 });
 
 //DELETE: /user/1
 Application.remote({
-    entity: 'user',
+    url: 'user',
     payload: { _id: 1 } //just _id
 });
 
