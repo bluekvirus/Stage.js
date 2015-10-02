@@ -21,6 +21,7 @@ module.exports = {
 	session: {
 		name: 'stagejs',
 		secret: 'stagejs dev server session',
+		cookie: {maxAge: null}, //or 24 * 60 * 60 * 1000 (ms)
 		resave: true,
 		saveUninitialized: true
 		//store: [your customized session store (on top of db, k-v, file or memory) here]
