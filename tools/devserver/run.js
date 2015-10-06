@@ -46,20 +46,17 @@ profile = server.set('profile', _.extend({
 }
 )).get('profile');
 
-//fix web root(s)' path(s)
-if(!profile.clients['/']) profile.clients['/'] = '../../implementation';
-_.each(profile.clients, function(filePath, uriName){
-	profile.clients[uriName] = profile.resolve(filePath);
-});
 
 //loading...
 var options = {verbose:false, cwd: profile.root};
 load('util', options)
-.then('middlewares', options) //not yet injected
-.then('models', options)
-.then('routers', options) //not yet injected
-.then('bot', options) //1. build the server stack with the above loaded objects
-					  //2. start the watcherz
+//.then('models', options) //omitted for simplicity in the devserver (Model = ORM schema, validations, pre/post hooks)
+.then('channels', options)
+.then('middlewares', options) //order specified in inject.js
+.then('routers', options)
+.then('bot', options)
+//bot.builder: build the server stack with channels, middlewares, routes
+//bot.watchers.*: start the watcherz
 .into(server);
 
 
@@ -68,7 +65,3 @@ profile.port = args[1] || profile.port;
 server.listen(profile.port, function(){
 	console.log('Server started on', profile.port.yellow);
 });
-
-
-
-

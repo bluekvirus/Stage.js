@@ -1,7 +1,7 @@
 /**
  * Sample express.router() code
  *
- * uri base: /sample1
+ * uri base: /sample
  *
  * @author Tim.Liu
  * @created 2014.04.18
@@ -49,11 +49,11 @@ module.exports = function(server){
 
 	////////////////services/////////////////
 
-	router.get('/', router.token('read'), function(req, res, next){
+	router.get('/', router.permission('read'), function(req, res, next){
 		res.json({hello: true, content: 'world!'});
 	});
 
-	router.get('/user', router.token('read:users'), function(req, res, next){
+	router.get('/user', router.permission('read:users'), function(req, res, next){
 		res.json(Mock.mock(mockTpl.users));
 	});
 

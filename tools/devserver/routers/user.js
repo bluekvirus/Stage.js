@@ -1,11 +1,9 @@
 /**
- * The User router, depends on a specific db middleware(req.db).
- * 
- * +space rule
- * +mutex rules
+ * The User router
  *
  * @author Tim Liu
  * @created 2013.10.26
+ * @updated 2015.09.29
  */
 
 module.exports = function(server){

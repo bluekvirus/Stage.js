@@ -34,6 +34,8 @@ module.exports = function(server){
 		router.meta = _.extend({entity: entity}, routerFile);
 		//empty non-secured router .token() stub
 		router.token = function(){ return function(req, res, next){ next(); };};
+		//alias: router.permission()
+		router.permission = router.token;
 
 		return router;
 	};

@@ -21,11 +21,12 @@ module.exports = function(server){
 
 	var profile = server.get('profile');
 
-	//compression, logger
-	//not used in this simple version of api-box
-
 	//mount different clients (static web.roots)
 	console.log('[web roots]', 'processing...');
+	//fix web root(s)' path(s)
+	_.each(profile.clients, function(filePath, uriName){
+		profile.clients[uriName] = profile.resolve(filePath);
+	});
 	_.each(profile.clients, function(filePath, uriName){
 		server.use(uriName, express.static(profile.clients[uriName]));
 		console.log('[www root]', uriName.yellow, '[', profile.clients[uriName], ']');

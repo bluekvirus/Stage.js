@@ -60,8 +60,7 @@ module.exports = {
 
 	//mount the client webroot folders
 	clients: {
-		//format - uri:webroot path
-		//normally if you don't put '/' path here, '/': '../../implementation' will be added for you.
+		//format - uri : webroot path
 		'/': '../build/dist/site', 
 		'/dev': '../../implementation', //this will be available under uri /dev
 		//'/devmobile': '../build/dist/mobile'

@@ -3,7 +3,7 @@
  * 
  * [Suggestion: you might also need csrf and bot blocking middlewares]
  *
- * user spaces: (supported)
+ * System security levels:
  * ------------
  * 	| void (system) -- 3 (single)
  *  | superadmin -- 2 (single)
@@ -11,63 +11,37 @@
  *  - - - - - - - - - - -
  *  | user -- 0 (multiple)
  *
- * [The Space Rule - object only sees data/doc on or below its level.] - (not implemented)
+ * [The Space Rule - object only sees data/doc on or below its level.]
  * 
- * user session format: (supported)
+ * user session format:
  * --------------------
  * {
  * 		username,
- * 		userspace, -- (string)
- * 		api-token-map,
- * 		expire/refresh,
+ * 		permissions, (tokens, honored in routes)
+ * 		expire,
  * 		
- * 		data (everything else)
+ * 		[data] (everything else)
  * }
  *
- * mutex rules: (when userspace === 'user' under the same api token) - (not implemented)
- * ------
- * user level mutex 1: (simple version: owner and others)
- * private - owner only
- * public - others can see, owner can modify
- *
- * user level mutex 2: (complicated: owner, others, collaborators, subscribers)
- * ... (omitted)
- *
- * api tokens (supported)
- * -----------
- * possible tokens:
- * create -> record +owner, +(userspace or userspace - 1) => space
- * list/read -> userspace >(=) record space, consult mutex
- * modify -> update/delete, consult mutex, 
- * comment -> ...
- * execute -> ...
- * ...
- *
- * entity-record - (not implemented)
+ * data record fields: - (for supporting permission implementations)
  * -------------
  *  (besides data)
- * 	+owner
- *  +collaborator
- *  +subscriber/watcher
- *  +space -- the record space (number)
- *  +timestamps
+ * 	+owner (= created_by)
+ *  +collaborator (+ updated_by)
+ *  +subscriber
+ *  +timestamps (= created_at, updated_at)
  *
- * overall
+ * overall (in User router)
  * --------
- * user (api-token-map + userspace) + entity-record ([mutex rules] + space) = authorization
- * 4 important bits in this design
  * a. login (get session established);
- * b. api hit, access token check;
- * c. query, space (user) - space (record) (space rule apply to all spaces)
- * d. query or post-query, mutex rules (user space only)
+ * b. api hit, access token check, extend session expire time (with exceptions);
+ * c. logout (destroy session);
+ * d. touch (check session info);
  *
- * warning:
- * --------
- * Only api-token checker and userspace is implemented. We will set `req.mutex = true` for you to indicate that mutex is required.
- * The ACTUAL mutex enforcing mech needs to be implemented in the api route by you. (e.g mutex(record, req.session))
  * 
  * @author Tim Liu
  * @created 2013.10.25 (based on 0.13.x)
+ * @updated 2015.10.06
  */
 
 var express = require('express'),
@@ -114,6 +88,8 @@ module.exports = function(server){
 				}
 			};
 		};
+		//alias: router.permission()
+		router.permission = router.token;
 
 		return router;
 

@@ -20,7 +20,7 @@ Change Log
 16. Enhanced app.remote();
 
 working on ...
-* Realtime COM support to devserver (+channel).
+* Realtime COM support to devserver (+socket & channels).
 * Adding more unit tests.
 * Updated doc (around data handling & coop).
 
