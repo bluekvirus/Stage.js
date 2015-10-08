@@ -13,7 +13,7 @@ fs = require('fs-extra'),
 os = require('os'),
 ncp = require('ncp').ncp,
 colors = require('colors'),
-_ = require('underscore'),
+_ = require('underscore');
 _.str = require('underscore.string');
 
 ncp.limit = 16;
