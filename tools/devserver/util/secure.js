@@ -44,8 +44,7 @@
  * @updated 2015.10.06
  */
 
-var express = require('express'),
-path = require('path'),
+var path = require('path'),
 _ = require('underscore');
 _.str = require('underscore.string');
 

@@ -66,6 +66,12 @@ module.exports = {
 		//'/devmobile': '../build/dist/mobile'
 	},
 
+	//websockets for soft real-time coms, each can have multiple channels
+	websockets: [
+		'/ws',
+		'/dev/ws'
+	],
+
 	//use enabled: false to turn off LESS monitor.
 	lesswatch: {
 		//default client: '/'.

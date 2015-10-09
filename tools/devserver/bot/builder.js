@@ -12,6 +12,7 @@
 var express = require('express'),
 path = require('path'),
 _ = require('underscore'),
+http = require('http'),
 cors = require('cors'),
 httpProxy = require('http-proxy'),
 errorhandler = require('errorhandler'),
@@ -86,11 +87,52 @@ module.exports = function(server){
 	console.log('[middlewares]', 'injected.');
 
 	//mount routers
-	_.each(server.get('routers'), function(router, mountpath){
-		server.use(mountpath, router);
-		console.log('[router]', mountpath.yellow);
+	_.each(server.get('routers'), function(router, mountPath){
+		server.use(mountPath, router);
+		console.log('[router]', mountPath.yellow);
 	});
 	console.log('[routers]', 'mounted.');
+
+	//mount websockets, client msg = {channel: '..:..', payload: {...}};
+	server.websockets = {};
+	///////////////work-around////////////////
+	serverPlus = http.createServer(server);
+	server.listen = function(){
+		return serverPlus.listen.apply(serverPlus, arguments);
+	};
+	//////////////////////////////////////////
+	var channels = server.get('channels');
+	_.each(profile.websockets, function(socketPath){
+		server.websockets[socketPath] = new (require('ws').Server)({
+			server: serverPlus, //use the work-around http wrapper (*required!*)
+			path: socketPath
+		});
+		//serverSock events: 'listening', 'error', 'connection', 'headers'
+		server.websockets[socketPath].on('connection', function sockHandler(clientSock){
+			//+clientSock.json(obj)
+			clientSock.json = function(data){
+				this.send(JSON.stringify(data));
+			};
+			//clientSock events: 'open', 'error', 'close', 'message'
+			clientSock.on('message', function(msg){
+				var data = JSON.parse(msg);
+				//use handlers registered by server.turnTo(), under /channels
+				if(channels[socketPath][data.channel]) //no wild-card channel support yet.
+					channels[socketPath][data.channel](data.channel, data.payload, clientSock, server.websockets[socketPath]);
+			});
+			//give this clientSock an ID? serverSock.clients is an Array atm.
+		});
+		//+serverSock.broadcast(obj)
+		server.websockets[socketPath].broadcast = function(data){
+			server.websockets[socketPath].clients.forEach(function(clientSock){
+				clientSock.json(data);
+			});
+		};
+		server.websockets[socketPath].once('listening', function(){
+			console.log('[websocket]', socketPath.yellow);
+		});
+	});
+	console.log('[websockets]', 'processed.');
 
 	//overall error errorhandler
 	if(profile.errorpage){

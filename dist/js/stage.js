@@ -599,16 +599,61 @@
 		//-----------------remote data------------
 		
 		//returns jqXHR object (use promise pls)
-		remote: function(options){
+		remote: function(options /*or url*/, payload, restOpt){
 			options = options || {};
-			if(options.payload)
-				return app.Core.Remote.change(options);
+			if(options.payload || payload){
+				payload = options.payload || payload;
+				return app.Core.Remote.change(options, _.extend({payload: payload}, restOpt));
+			}
 			else
-				return app.Core.Remote.get(options);
+				return app.Core.Remote.get(options, restOpt);
 		},
 		
 		download: function(ticket){
 			return app.Util.download(ticket);
+		},
+
+		_websockets: {},
+		ws: function(socketPath){ //returns a promise, use app.ws().then(function(ws){...});
+			if(!Modernizr.websockets) throw new Error('DEV::Application::ws() Websocket is not supported by your browser!');
+			socketPath = socketPath || '/ws';
+			var d = $.Deferred();
+			if(!app._websockets[socketPath]) { 
+
+				app._websockets[socketPath] = new WebSocket("ws://" + location.host + socketPath);
+				//events: 'open', 'error', 'close', 'message' = e.data
+				//apis: send(), *json(), *channel().payload(), close()
+
+				app._websockets[socketPath].json = function(data){
+					app._websockets[socketPath].send(JSON.stringify(data));
+				};
+				app._websockets[socketPath].channel = function(channel){
+					return {
+						payload: function(data){
+							app._websockets[socketPath].json({
+								channel: channel,
+								payload: data
+							});
+						}
+					};
+				};
+				app._websockets[socketPath].onclose = function(){
+					app._websockets[socketPath] = undefined;
+				};
+				app._websockets[socketPath].onopen = function(){
+					return d.resolve(app._websockets[socketPath]);
+				};
+
+				//empty stub, override this .onmessage
+				//Server will always send json string {"channel": "...", "payload": "..."}
+				app._websockets[socketPath].onmessage = function(e){
+					var data = JSON.parse(e.data);
+					app.debug('websocket', socketPath, 'channel', data.channel, 'payload', data.payload);
+				};
+				
+			}else
+				d.resolve(app._websockets[socketPath]);
+			return d.promise();
 		},
 
 		inject: {
@@ -927,7 +972,7 @@
  * a. url string
  * or 
  * b. object:
- * 	1. + entity[_id][_method] - string
+ * 	1. + _entity[_id][_method] - string
  *  2. + params(alias:querys) - object
  *  3. + payload - object (payload._id overrides _id)
  *  4. $.ajax options (without -data, -type, -processData, -contentType)
@@ -966,42 +1011,40 @@
 
 	var definition = app.module('Core.Remote');
 
-	function fixOptions(options){
+	function fixOptions(options, restOpt){
 		if(!options) throw new Error('DEV::Core.Remote::options empty, you need to pass in at least a url string');
 		if(_.isString(options)) 
-			options	= { 
-				url: options,
-				timeout: app.config.timeout,
-				type: 'GET'
-			};
-		else {
-			//default options
-			_.extend(options, {
-				type: undefined,
-				data: undefined,
-				processData: false,
-				contentType: 'application/json; charset=UTF-8', // req format
-				dataType: 'json', //res format
-				timeout: app.config.timeout,
+			options	= _.extend(restOpt || {}, { 
+				url: options
 			});
-			//process entity[_id] and strip off options.querys(alias:params)
-			if(options.entity){
-				var entity = options.entity;
-				options.url = entity;
-			}
-			if(options.payload && options.payload._id){
-				if(options._id) console.warn('DEV::Core.Remote::options.payload._id', options.payload._id,'overriding options._id', options._id);
-				options._id = options.payload._id;
-			}
-			if(options._id || options._method){
-				var url = app.uri(options.url);
-				options.url = url.path(_.compact([url.path(), options._id, options._method]).join('/')).toString();
-			}
-			options.params = options.querys || options.params;
-			if(options.params){
-				options.url = (app.uri(options.url)).search(options.params).toString();
-			}
+
+		//default options
+		_.extend(options, restOpt || {}, {
+			type: undefined,
+			data: undefined,
+			processData: false,
+			contentType: 'application/json; charset=UTF-8', // req format
+			dataType: 'json', //res format
+			timeout: app.config.timeout,
+		});
+
+		//process _entity[_id][_method] and strip off options.querys(alias:params)
+		if(options.entity || options._entity){
+			var entity = options.entity || options._entity;
+			options.url = entity;
 		}
+		if(options.payload && options.payload._id){
+			options._id = options.payload._id;
+		}
+		if(options._id || options._method){
+			var url = app.uri(options.url);
+			options.url = url.path(_.compact([url.path(), options._id, options._method]).join('/')).toString();
+		}
+		options.params = options.querys || options.params;
+		if(options.params){
+			options.url = (app.uri(options.url)).search(options.params).toString();
+		}
+
 		app.trigger('app:ajax', options);		
 		return options;
 	}
@@ -1009,16 +1052,16 @@
 	_.extend(definition, {
 
 		//GET
-		get: function(options){
-			options = fixOptions(options);
+		get: function(options, restOpt){
+			options = fixOptions(options, restOpt);
 			options.type = 'GET';
 			app.trigger('app:remote-pre-get', options);
 			return $.ajax(options);
 		},
 
 		//POST(no payload._id)/PUT/DELETE(payload = {_id: ...})
-		change: function(options){
-			options = fixOptions(options);
+		change: function(options, restOpt){
+			options = fixOptions(options, restOpt);
 			if(!options.payload) throw new Error('DEV::Core.Remote::payload empty, please use GET');
 			if(options.payload._id && _.size(options.payload) === 1) options.type = 'DELETE';
 			else {
@@ -5528,19 +5571,20 @@ var I18N = {};
 			'radios': true,
 			'hidden': true,
 			'password': true,
-			//h5 only (wip use Modernizr checks)
-			'number': true,
-			'range': true,
-			'email': true,
-			'tel': true,
-			'search': true,
-			'url': true,
-			'color': true,
-			'time': true,
-			'data': true,
-			'datetime': true,
-			'month': true,
-			'week': true,
+			//h5 only (use Modernizr checks)
+			'number': Modernizr.inputtypes.number,
+			'range': Modernizr.inputtypes.range,
+			'email': Modernizr.inputtypes.email,
+			'tel': Modernizr.inputtypes.tel,
+			'search': Modernizr.inputtypes.search,
+			'url': Modernizr.inputtypes.url,
+			'color': Modernizr.inputtypes.color,
+			'time': Modernizr.inputtypes.time,
+			'date': Modernizr.inputtypes.date,
+			'datetime': Modernizr.inputtypes.datetime,
+			'datetime-local': Modernizr.inputtypes['datetime-local'],
+			'month': Modernizr.inputtypes.month,
+			'week': Modernizr.inputtypes.week,
 		};
 
 		return UI;
@@ -6280,4 +6324,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.4-888 build 1441856137857";
+;;app.stagejs = "1.8.5-898 build 1444373971400";

@@ -1,6 +1,18 @@
 Change Log
 ==========
-1.8.5 (2015-09-29*)
+1.8.6 (2015-10-08*)
+-------------------
+
+working on ...
+* Breaking down 'Basic' editors;
+* Enhance Form view nesting;
+* Adding $.hsplit/vsplit plugins; 
+* Adding more unit tests.
+* Adding interactive tutorial site;
+* Updated doc (around data handling, coop, remote, ws, form).
+
+
+1.8.5 (2015-10-08)
 ------------------
 1. Fixed view.useParentData for using subset of parent data in child view.
 2. Added backbone-deep-model for 'x.y.z' change/get.
@@ -18,11 +30,8 @@ Change Log
 14. Updated themerep tool with icon resizing support;
 15. Simplified devserver (-models, groups, +permissions);
 16. Enhanced app.remote();
-
-working on ...
-* Realtime COM support to devserver (+socket & channels).
-* Adding more unit tests.
-* Updated doc (around data handling & coop).
+17. Enhanced server.mount() with custom URI;
+18. Added soft realtime messaging support; (websocket & channels)
 
 
 1.8.4 (2015-08-25)

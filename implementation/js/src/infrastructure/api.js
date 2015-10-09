@@ -191,6 +191,49 @@
 			return app.Util.download(ticket);
 		},
 
+		_websockets: {},
+		ws: function(socketPath){ //returns a promise, use app.ws().then(function(ws){...});
+			if(!Modernizr.websockets) throw new Error('DEV::Application::ws() Websocket is not supported by your browser!');
+			socketPath = socketPath || '/ws';
+			var d = $.Deferred();
+			if(!app._websockets[socketPath]) { 
+
+				app._websockets[socketPath] = new WebSocket("ws://" + location.host + socketPath);
+				//events: 'open', 'error', 'close', 'message' = e.data
+				//apis: send(), *json(), *channel().payload(), close()
+
+				app._websockets[socketPath].json = function(data){
+					app._websockets[socketPath].send(JSON.stringify(data));
+				};
+				app._websockets[socketPath].channel = function(channel){
+					return {
+						payload: function(data){
+							app._websockets[socketPath].json({
+								channel: channel,
+								payload: data
+							});
+						}
+					};
+				};
+				app._websockets[socketPath].onclose = function(){
+					app._websockets[socketPath] = undefined;
+				};
+				app._websockets[socketPath].onopen = function(){
+					return d.resolve(app._websockets[socketPath]);
+				};
+
+				//empty stub, override this .onmessage
+				//Server will always send json string {"channel": "...", "payload": "..."}
+				app._websockets[socketPath].onmessage = function(e){
+					var data = JSON.parse(e.data);
+					app.debug('websocket', socketPath, 'channel', data.channel, 'payload', data.payload);
+				};
+				
+			}else
+				d.resolve(app._websockets[socketPath]);
+			return d.promise();
+		},
+
 		inject: {
 			js: function(){
 				return app.Util.inject.apply(null, arguments);
