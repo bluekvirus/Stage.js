@@ -1,6 +1,18 @@
 Change Log
 ==========
-1.8.5 (2015-09-04*)
+1.8.6 (2015-10-08*)
+-------------------
+
+working on ...
+* Breaking down 'Basic' editors;
+* Enhance Form view nesting;
+* Adding $.hsplit/vsplit plugins; 
+* Adding more unit tests.
+* Adding interactive tutorial site;
+* Updated doc (around data handling, coop, remote, ws, form).
+
+
+1.8.5 (2015-10-08)
 ------------------
 1. Fixed view.useParentData for using subset of parent data in child view.
 2. Added backbone-deep-model for 'x.y.z' change/get.
@@ -10,14 +22,16 @@ Change Log
 6. app.remote now honor '/' & './' leading urls as they were (skipping app.config.baseAjaxURI).
 7. Added app.param() for getting url query params;
 8. Added app.debug() to replace console.log during development;
-9. Added app.reload() to force a location.reload();
+9. Added app.reload() to force an easy location.reload();
 10. Auto view injection now supports editors;
 11. Updated user router for default login/logout/touch apis;
-12. Added supported Basic editor types; (wip: dynamically through Modernizr)
-
-working on ...
-* Adding more unit tests.
-* Updated doc (around data handling & coop).
+12. Explicit about supported Basic editor types; (dynamically through Modernizr if H5)
+13. Fixed theme prep tool font/icon params;
+14. Updated themerep tool with icon resizing support;
+15. Simplified devserver (-models, groups, +permissions);
+16. Enhanced app.remote();
+17. Enhanced server.mount() with custom URI;
+18. Added soft realtime messaging support; (websocket & channels)
 
 
 1.8.4 (2015-08-25)
