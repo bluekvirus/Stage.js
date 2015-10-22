@@ -1,12 +1,14 @@
 Change Log
 ==========
-1.8.6 (2015-10-08*)
+1.8.6 (2015-10-21*)
 -------------------
+Added $.hsplit/vsplit plugins (beta);
+Fixed dynamically loaded script position in build;
+Aligned DEV:: and RUNTIME:: exception formats;
 
 working on ...
 * Breaking down 'Basic' editors;
-* Enhance Form view nesting;
-* Adding $.hsplit/vsplit plugins; 
+* Enhance Form view nesting mech;
 * Adding more unit tests.
 * Adding interactive tutorial site;
 * Updated doc (around data handling, coop, remote, ws, form).
