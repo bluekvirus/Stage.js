@@ -21,7 +21,6 @@
 
 		if(_.string.endsWith(url, '.js')) {
 			$.getScript(url);
-			app.trigger('app:script-injected', url);
 		}
 		else
 			$.getJSON(url).done(function(list){

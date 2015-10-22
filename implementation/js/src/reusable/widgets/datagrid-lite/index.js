@@ -9,7 +9,7 @@
  * 			...
  * 			<tr> ... </tr>
  *
- * options
+ * Options
  * -------
  * 1. data []: rows of data
  * 2. columns [
@@ -23,15 +23,15 @@
  * 3. details: false or datum name in data row or a view definition (render with row.model) - TBI
  * 
  *
- * events
+ * Events
  * ------
  * 1. row:clicked
  * 2. row:dblclicked
  * 
  * 
- * note
+ * Note
  * ----
- * the details row appears under each normal data row;
+ * The details row appears under each normal data row;
  *
  * TBI
  * ---

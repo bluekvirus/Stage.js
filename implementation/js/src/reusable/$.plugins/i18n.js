@@ -1,30 +1,33 @@
 /**
- * i18n loading file
- * dependencies: jQuery, underscore, [Handlebars]
+ * i18n plug-in for loading & using localization resource files.
  *
- * ======
  * Config
- * ======
+ * ------
  * I18N.configure(options) - change the resource folder path or key-trans file name per locale.
  * 	options:
  * 		resourcePath: ... - resource folder path without locale
  * 		translationFile: ... - the file name that holds the key trans pairs for a certain locale.
  *
- * =====
+ * 
  * APIs
- * =====
+ * ----
  * .getResourceProperties(flag) -- get all i18n keys and trans rendered in the app in "key" = "val" format;
  * .getResourceJSON(flag) -- get the above listing in JSON format;
  *
  * use flag = true in the above functions if you only want to get un-translated entries;
  * 
- * =====
+ * 
  * Usage
- * =====
+ * -----
  * 1. load this i18n.js before any of your modules/widgets
  * 2. use '...string...'.i18n() instead of just '...string...',
  * 3. use {{i18n vars/paths or '...string...'}} in templates, {{{...}}} for un-escaped.
  * 4. use $.i18n(options) to translate html tags with [data-i18n-key] [data-i18n-module] data attributes. 
+ *
+ *
+ * Dependencies
+ * ------------
+ * jQuery, underscore, [Handlebars] 
  *
  * 
  * @author Yan Zhu, Tim Liu

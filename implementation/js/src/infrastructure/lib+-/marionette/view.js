@@ -41,7 +41,7 @@
 
 		//----------------------deprecated config---------------------------
 		if((this.type || options.type) && !this.forceViewType)
-			console.warn('DEV::View::type is deprecated, please do not specify ' + (this.name?'in ' + this.name:''));
+			console.warn('DEV::View+::type is deprecated, please do not specify ' + (this.name?'in ' + this.name:''));
 
 		//----------------------fixed enhancements--------------------------
 		//fix default tpl to be ' '.

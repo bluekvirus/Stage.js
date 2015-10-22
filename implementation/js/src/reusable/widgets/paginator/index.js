@@ -72,7 +72,7 @@
 							memo.push({
 								number: pNum,
 								isCurrent: pNum === this._options.currentPage
-							})
+							});
 						return memo;
 					}, [], this)
 				};
@@ -112,7 +112,7 @@
 				// },
 				/////////////////////////////////////////
 				goToAdjacentWindow: function($btn, e){
-					e.preventDefault()
+					e.preventDefault();
 					var pWin = this._options.currentWindow;
 					var op = $btn.data('window');
 					if(op === '+')
@@ -124,12 +124,17 @@
 					this.trigger('view:change-page', (pWin == 1) ? 1 : (pWin-1) * this._options.pageWindowSize + 1);
 				}
 			},
-			//////can be overriden///////
+			//////Can be overriden in options to add extra params///////
 			onChangePage: function(pNum){
-				//just a default stub implementation
+				//use the overriden version (see the stub impl below for what to override)
+				if(this._options.onChangePage)
+					return this._options.onChangePage.call(this, pNum);
+
+				//use just a default stub implementation
 				if(this._options.target) 
 					this._options.target.trigger('view:load-page', {
 						page: pNum
+						//add more params/querys
 					});
 			}
 

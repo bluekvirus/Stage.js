@@ -269,13 +269,13 @@
 		//---navigation worker---
 			function navigate(path){
 				path = _.compact(String(path).split('/'));
-				if(path.length <= 0) throw new Error('DEV::Application::Navigation path error');
+				if(path.length <= 0) throw new Error('DEV::Application::navigate() Navigation path error');
 
 				var context = path.shift();
 
-				if(!context) throw new Error('DEV::Application::Empty context name...');
+				if(!context) throw new Error('DEV::Application::navigate() Empty context name...');
 				var TargetContext = app.get(context, 'Context');
-				if(!TargetContext) throw new Error('DEV::Application::You must have the required context ' + context + ' defined...'); //see - special/registry/context.js			
+				if(!TargetContext) throw new Error('DEV::Application::navigate() You must have the required context ' + context + ' defined...'); //see - special/registry/context.js			
 				if(!app.currentContext || app.currentContext.name !== context) {
 					
 					//re-create target context upon switching
@@ -299,7 +299,7 @@
 					app.Util.addMetaEvent(targetCtx, 'context');
 					var navRegion = app.config.navRegion || app.config.contextRegion;
 					var targetRegion = app.mainView.getRegion(navRegion) || app.getRegion(navRegion);
-					if(!targetRegion) throw new Error('DEV::Application::You don\'t have region \'' + navRegion + '\' defined');		
+					if(!targetRegion) throw new Error('DEV::Application::navigate() You don\'t have region \'' + navRegion + '\' defined');		
 					
 					//note that .show() might be async due to region enter/exit effects
 					targetCtx.once('show', function(){
@@ -338,7 +338,7 @@
 			//Auto-detect and init context (view that replaces the body region)
 			if(!window.location.hash){
 				if(!app.get(app.config.defaultContext, 'Context'))
-					console.warn('DEV::Application::You might want to define a Default context using app.context(\'Context Name\', {...})');
+					console.warn('DEV::Application:: You might want to define a Default context using app.context(\'Context Name\', {...})');
 				else
 					app.navigate(app.config.defaultContext);
 			}			
@@ -551,7 +551,7 @@
 						//console.log('View injected', name, 'from', app.viewSrcs);
 						Reusable = true;
 					}).fail(function(jqXHR, settings, e){
-						throw new Error('DEV::Application::get() Can NOT load View definition for', name, '[', e, ']');
+						throw new Error('DEV::Application::get() can NOT load View definition for', name, '[', e, ']');
 					});
 				}
 			}
@@ -567,13 +567,13 @@
 		},
 
 		pathToName: function(path){
-			if(!_.isString(path)) throw new Error('DEV::Application::pathToName You must pass in a valid path string.');
+			if(!_.isString(path)) throw new Error('DEV::Application::pathToName() You must pass in a valid path string.');
 			if(_.contains(path, '.')) return path;
 			return path.split('/').map(_.string.humanize).map(_.string.classify).join('.');
 		},
 
 		nameToPath: function(name){
-			if(!_.isString(name)) throw new Error('DEV::Application::nameToPath You must pass in a Reusable view name.');
+			if(!_.isString(name)) throw new Error('DEV::Application::nameToPath() You must pass in a Reusable view name.');
 			if(_.contains(name, '/')) return name;
 			return name.split('.').map(_.string.humanize).map(_.string.slugify).join('/');
 		},
@@ -858,7 +858,7 @@
 					//override
 					$tag.html(tpl);
 					this.cache.clear('#' + name);
-					console.warn('DEV::APP.Util.Template::', name, 'overriden');
+					console.warn('DEV::Overriden::Template::', name);
 				}
 				else $('head').append(['<script type="text/tpl" id="', id, '">', tpl, '</script>'].join(''));
 			}
@@ -885,7 +885,7 @@
 							if(that.map[name]){
 								//override
 								Template.cache.clear('@' + name);
-								console.warn('DEV::APP.Util.Template::', name, 'overriden');	
+								console.warn('DEV::Overriden::Template::', name);
 							}
 							that.map[name] = tpl;
 						});
@@ -901,11 +901,11 @@
 						if(that.map[name]){
 							//override
 							Template.cache.clear('@' + name);
-							console.warn('DEV::APP.Util.Template::', name, 'overriden');	
+							console.warn('DEV::Overriden::Template::', name);
 						}
 						result = that.map[name] = tpl;
 					}).fail(function(){
-						throw new Error('DEV::View Template:: Can not load template...' + url + ', re-check your app.config.viewTemplates setting');
+						throw new Error('DEV::Util.Tpl::load() Can not load template...' + url + ', re-check your app.config.viewTemplates setting');
 					});
 					return result;
 				}
@@ -946,7 +946,6 @@
 
 		if(_.string.endsWith(url, '.js')) {
 			$.getScript(url);
-			app.trigger('app:script-injected', url);
 		}
 		else
 			$.getJSON(url).done(function(list){
@@ -1169,7 +1168,7 @@
 
 	_.extend(definition, {
 		create: function(topic, allowance){
-			if(!_.isString(topic) || !topic) throw new Error('DEV::Core.Lock::You must give this lock a name/topic ...');
+			if(!_.isString(topic) || !topic) throw new Error('DEV::Core.Lock::create() You must give this lock a name/topic ...');
 			if(locks[topic]) return false;
 
 			allowance = _.isNumber(allowance)? (allowance || 1) : 1;
@@ -1271,7 +1270,7 @@
 
 			map: {},
 			has: function(name /*or path*/){
-				if(!_.isString(name) || !name) throw new Error('DEV::Reusable:: You must specify the name of the ' + regName + ' to look for.');
+				if(!_.isString(name) || !name) throw new Error('DEV::Reusable::has() You must specify the name of the ' + regName + ' to look for.');
 				name = app.pathToName(name);
 				if(this.map[name]) return name;
 				return undefined;
@@ -1305,8 +1304,8 @@
 				}
 
 				//type 3: name and a factory func (won't have preset className & category)
-				if(!_.isString(name) || !name) throw new Error('DEV::Reusable:: You must specify a ' + regName + ' name to register.');
-				if(!_.isFunction(factory)) throw new Error('DEV::Reusable:: You must specify a ' + regName + ' factory function to register ' + name + ' !');
+				if(!_.isString(name) || !name) throw new Error('DEV::Reusable::register() You must specify a ' + regName + ' name to register.');
+				if(!_.isFunction(factory)) throw new Error('DEV::Reusable::register() You must specify a ' + regName + ' factory function to register ' + name + ' !');
 
 				if(this.has(name))
 					console.warn('DEV::Overriden::Reusable ' + regName + '.' + name);
@@ -1321,11 +1320,11 @@
 			},
 
 			create: function(name /*or path*/, options){
-				if(!_.isString(name) || !name) throw new Error('DEV::Reusable:: You must specify the name of the ' + regName + ' to create.');
+				if(!_.isString(name) || !name) throw new Error('DEV::Reusable::create() You must specify the name of the ' + regName + ' to create.');
 				var Reusable = this.get(name);
 				if(Reusable)
 					return new Reusable(options || {});
-				throw new Error('DEV::Reusable:: Required definition [' + name + '] in ' + regName + ' not found...');
+				throw new Error('DEV::Reusable::create() Required definition [' + name + '] in ' + regName + ' not found...');
 			},
 
 			get: function(name /*or path*/){
@@ -1341,7 +1340,7 @@
 					Reusable = Reusable.extend(options);
 					return Reusable;
 				}
-				throw new Error('DEV::Reusable:: Required definition [' + name + '] in ' + regName + ' not found...');
+				throw new Error('DEV::Reusable::alter() Required definition [' + name + '] in ' + regName + ' not found...');
 			}
 
 		});
@@ -3630,7 +3629,7 @@ module.exports = DeepModel;
 
 		//----------------------deprecated config---------------------------
 		if((this.type || options.type) && !this.forceViewType)
-			console.warn('DEV::View::type is deprecated, please do not specify ' + (this.name?'in ' + this.name:''));
+			console.warn('DEV::View+::type is deprecated, please do not specify ' + (this.name?'in ' + this.name:''));
 
 		//----------------------fixed enhancements--------------------------
 		//fix default tpl to be ' '.
@@ -3817,7 +3816,7 @@ module.exports = DeepModel;
 					}else {
 						e.stopPropagation(); //Important::This is to prevent confusing the parent view's action tag listeners.
 					}
-					throw new Error('DEV::' + (uiName || 'UI Component') + '::You have not yet implemented this action - [' + action + ']');
+					throw new Error('DEV::' + (uiName || 'UI Component') + '::enableActionTags() You have not yet implemented this action - [' + action + ']');
 				}
 			};		
 		},
@@ -3830,7 +3829,7 @@ module.exports = DeepModel;
 	 */
 	_.extend(Backbone.Marionette.ItemView.prototype, {
 		enableSVG: function(){
-			if(!Raphael) throw new Error('DEV::View::You did NOT have Raphael.js included...');
+			if(!Raphael) throw new Error('DEV::ItemView+::enableSVG() You did NOT have Raphael.js included...');
 			var that = this;
 
 			Raphael(this.el, this.$el.width(), this.$el.height(), function(){
@@ -3909,7 +3908,7 @@ module.exports = DeepModel;
 
 		activateEditors: function(options){
 			this._editors = this._editors || {};
-			if(this._editors.attachView) throw new Error('DEV::ItemView::activateEditors enhancements will need this._editors object, it is now a Region!');
+			if(this._editors.attachView) throw new Error('DEV::ItemView+::activateEditors() will need this._editors object, it is now a Region!');
 
 			var global = options._global || {};
 			_.each(options, function(config, name){
@@ -4007,7 +4006,7 @@ module.exports = DeepModel;
 			//4. highlight status msg - linking to individual editor's status method
 			this.status = function(options){
 				if(_.isString(options)) {
-					throw new Error('DEV::ItemView::activateEditors - You need to pass in messages object instead of ' + options);
+					throw new Error('DEV::ItemView+::activateEditors() You need to pass in messages object instead of ' + options);
 				}
 
 				if(savedLayoutFns.status)
@@ -4143,7 +4142,7 @@ module.exports = DeepModel;
 			}
 
 			if(!this.model) {
-				console.warn('DEV::ItemView:: You have not yet setup data in view ' + this.name);
+				console.warn('DEV::ItemView+::get() You have not yet setup data in view ' + this.name);
 				return;
 			}
 			
@@ -4154,7 +4153,7 @@ module.exports = DeepModel;
 
 		//Reload (if data: url) and re-render the view, or resetting the editors.
 		refresh: function(){
-			if(!this.data) return console.warn('DEV::ItemView::refresh You must set view.data to use this method.');
+			if(!this.data) return console.warn('DEV::ItemView+::refresh() You must set view.data to use this method.');
 			
 			this.model && this.model.clear({silent: true});
 			if(_.isString(this.data)){
@@ -4344,11 +4343,12 @@ module.exports = DeepModel;
 						//Reusable view?
 						var Reusable = app.get(name, _.isPlainObject(options)?'Widget':'View');
 						if(Reusable){
+							//Caveat: don't forget to pick up overridable func & properties from options in your Widget.
 							this.show(new Reusable(options));
 							return;
 						}						
 
-						console.warn('DEV::Layout::View required ' + name + ' can NOT be found...use app.view({name: ..., ...}).');
+						console.warn('DEV::Layout+::region:load-view View required ' + name + ' can NOT be found...use app.view({name: ..., ...}).');
 					});
 					
 				},this);
@@ -4377,7 +4377,7 @@ module.exports = DeepModel;
 					if(!this.navRegion) return this.trigger('view:navigate-to', pathArray.join('/'));
 
 					if(!this.regions[this.navRegion]){
-						console.warn('DEV::Layout::', 'invalid navRegion', this.navRegion, 'in', this.name || options.name);
+						console.warn('DEV::Layout+::onNavigateChain()', 'invalid navRegion', this.navRegion, 'in', this.name || options.name);
 						return;
 					}
 					
@@ -4449,7 +4449,7 @@ module.exports = DeepModel;
 
 		//no refresh() yet (auto data-url fetch in item-view.js)
 		set: function(data, options){
-			if(!_.isArray(data)) throw new Error('DEV::CollectionView+::You need to have an array passed in as data...');
+			if(!_.isArray(data)) throw new Error('DEV::CollectionView+::set() You need to have an array passed in as data...');
 			
 			if(!this.collection){
 				this.collection = new Backbone.Collection();
@@ -4526,32 +4526,35 @@ module.exports = DeepModel;
 
 })(Application);
 ;/**
- * i18n loading file
- * dependencies: jQuery, underscore, [Handlebars]
+ * i18n plug-in for loading & using localization resource files.
  *
- * ======
  * Config
- * ======
+ * ------
  * I18N.configure(options) - change the resource folder path or key-trans file name per locale.
  * 	options:
  * 		resourcePath: ... - resource folder path without locale
  * 		translationFile: ... - the file name that holds the key trans pairs for a certain locale.
  *
- * =====
+ * 
  * APIs
- * =====
+ * ----
  * .getResourceProperties(flag) -- get all i18n keys and trans rendered in the app in "key" = "val" format;
  * .getResourceJSON(flag) -- get the above listing in JSON format;
  *
  * use flag = true in the above functions if you only want to get un-translated entries;
  * 
- * =====
+ * 
  * Usage
- * =====
+ * -----
  * 1. load this i18n.js before any of your modules/widgets
  * 2. use '...string...'.i18n() instead of just '...string...',
  * 3. use {{i18n vars/paths or '...string...'}} in templates, {{{...}}} for un-escaped.
  * 4. use $.i18n(options) to translate html tags with [data-i18n-key] [data-i18n-module] data attributes. 
+ *
+ *
+ * Dependencies
+ * ------------
+ * jQuery, underscore, [Handlebars] 
  *
  * 
  * @author Yan Zhu, Tim Liu
@@ -4770,7 +4773,7 @@ var I18N = {};
  * (If you have highlight.js, the code block will be themed for you...)
  *
  * Usage
- * =====
+ * -----
  * ```
  * $.md({
  * 	url: ...
@@ -4783,7 +4786,7 @@ var I18N = {};
  * ```
  *
  * Note
- * ====
+ * ----
  * Use $.load() if you just want to load html content instead of md coded content into $(tag)
  *
  * Dependency
@@ -5113,6 +5116,394 @@ var I18N = {};
 
 		});
 	};
+
+})(jQuery);
+;/**
+*
+* This is the pulg-in that horizontally/vertically spread the children of an div according to the parameter given by user. 
+* Additionally, "sub-div"s can freely change their height by dragging a bar inserted by this plug-in. 
+* In order to achieve such function, there must be at least two "sub-div"s in the given div.
+*
+* Usage
+* ---------
+* someDiv.hsplit(integer or array or NULL, {options});
+* someDiv.vsplit(integer or array or NULL, {options});
+* 
+* Arguments
+* ---------
+* Three kinds of arugments are allowed for the plugin.
+* 
+* 1). No argument: if user does not provide any arguments, then this plug-in only inserts divide bars according to the current height of "sub-divs". 
+* 					Those divide bars can be dragged to change the size of "sub-div"s.
+* 
+* 2). Array: user can give an array as an argument, which indicates the height ratio of the "sub-div"s. 
+* 		For example: [1,3.5,2] means the three "sub-div"s has height/width ratio of 1:3.5:2. Additionally:
+* 		 
+* 	i). if the length of the array given by user is less than the number "sub-div"s the requesting div has,
+* 		then the "sub-div"s are not assigned a ratio, will be marked as ratio 1. 
+* 		For example: if the requesting div has 5 "sub-div"s, and user gives array [1,3,2] as argument, then the plug-in fills given as [1,3,2,1,1].
+* 		
+* 	ii). if the length of the array given by user is greater than the number "sub-div"s the requesting div has, 
+* 		then this plug-in returns an error.
+*
+* 3). A positive number: user can give a single number as an argument, this plug-in will treat it as the first number of the array mentioned before.
+* 		For example: if user give 1 as argument, then all the "sub-div"s will be spread evenly. Because the plug-in will fill the ratio array as [1,1,1.....]
+*
+* Additionally, this plug-in privides options for custmizing div-bar style.
+* 
+* Options: {
+* 	hBarClass/vBarClass: string; defines the css class name for divide bars
+* }
+* 
+* Dependencies
+* ------------
+* _, $
+*
+* @author Patrick Zhu
+* @create 2015.10.20 
+*/
+
+
+
+(function($){
+
+	/*===============the hsplit plugin================*/
+	$.fn.hsplit = function(args, options){
+		var $this = $(this),
+			that = this,
+			length = $this.children().filter('div').length,
+			tempArr;
+		options = options || {};
+		//get the class name for the divider bars
+		var tempClass = options.hBarClass || 'split-hbar';
+		//get the height of divide bars by adding an element then remove it
+		var tempElem = '<div class = "' + tempClass + '"></div>';
+		$this.before(tempElem);
+		var barWidth = $this.prev().height();
+		$this.prev().remove();
+
+		//check whether the requesting div has at least two "sub-div"s
+		if( !length || length < 2 ){
+			throw new Error("RUNTIME::hsplit:: You need at least two 'sub-div's");
+		}else{
+			//check validation of arguments
+			if(!args){//no arguments, spread evenly
+				//no arguments, only insert bars
+				tempArr = [];
+				//get the height of each current div, then calculate the ratio, and put it into ratio array
+				_.each($this.children().filter('div'), function(data, index){
+					tempArr[index] = $(data).height() ;
+				});
+				//pass the ratio array to setLayout, to set the layout :P
+				setLayout(this, tempArr);
+			}else{
+				//array
+				if( _.isArray(args) ){
+					//error
+					if(args.length > length)
+						throw new Error("RUNTIME::hsplit:: Arugment length is greater than the number of 'sub-div's");
+					//length are equal
+					else if(args.length === length){
+						setLayout(this, args);
+					}
+					//fillup the ratios
+					else if(args.length > 0){
+						tempArr = args;
+						fillOnes(tempArr, length);
+						setLayout(this, tempArr);
+					}
+					else{
+						throw new Error("RUNTIME::hsplit:: Arugment length is ZERO!");
+					}
+				}
+				//number
+				else if( _.isNumber(args) && !_.isNaN(args) ){
+					//check whether number is positive
+					if( args <= 0){
+						throw new Error("RUNTIME::hsplit:: Single number must be a positive number");
+					}else{
+						tempArr = [];
+						tempArr[0] = args;
+						fillOnes(tempArr, length);
+						setLayout(this, tempArr);
+					}
+				}
+				else{
+					options = args;
+					tempClass = options.vBarClass || 'split-vbar';
+					//no arguments, only insert bars
+					tempArr = [];
+					//get the height of each current div, then calculate the ratio, and put it into ratio array
+					_.each($this.children().filter('div'), function(data, index){
+						tempArr[index] = $(data).height() ;
+					});
+					//pass the ratio array to setLayout, to set the layout :P
+					setLayout(this, tempArr);
+				}//else for object
+			}
+		}//else
+
+		//this function takes an array of ratios of "sub-div"s, and
+		//set the layout accordingly
+		function setLayout(target, ratioArr){
+			var length = ratioArr.length,
+				conHeight = $(target).height() - ( length - 1 ) * barWidth,
+			//calculate height for each "sub-div" in terms of percentage
+				sum = 0;
+			_.each(ratioArr, function(data, index){
+				sum += data;
+			});
+			var perHeight = [];
+			_.each(ratioArr, function(data, index){
+				perHeight[index] = ( ( conHeight / sum * data ) / ( $(target).height() ) ) * 100;//in percentage
+			});
+			//draw the layout
+			//set up the position attribute for the parent div
+			if($(target).css('position') !== 'absolute' && $(target).css('position') !== 'relative')
+				$(target).css({'position':'relative'});
+			//
+			var top = 0;
+			$(target).children().filter('div').each(function(index, elem){
+				var $elem = $(this);
+				//barwidth in percentage
+				var barPercentage = barWidth/($(target).height())*100;
+				//set up css for current "sub-div" in terms of percentage
+				$elem.css({'position':'absolute', 'top':top+'%','left':'0','width':'100%','height':perHeight[index]+'%'});
+
+				top += perHeight[index];
+				//draw the divide bars, last "sub-div" does not need divde bar
+				if( index < length-1 ){
+					var temp = '<div class="'+tempClass+'" style="position:absolute;width:100%;left:0;top:'+top+'%;"></div>';
+					$elem.after(temp);
+					//add mouseover and resize event
+					$elem.next()
+					.mouseover(function(){
+						$(this).css({'cursor':'ns-resize'});
+					})
+					.mousedown(function(){
+						var that = this;
+						$(target).bind('mousemove', function(event){
+							//get relative postion
+							var relY = event.pageY - $(this).offset().top,
+								preTop = $(that).prev().position().top,
+								nextBottom = $(that).next().position().top + $(that).next().height();
+							if(relY > ( preTop + barWidth ) && relY < ( nextBottom - barWidth ) ){
+								$(that).css({'top':(relY/$(target).height())*100+'%'});
+								//resize "sub-div"s next to the current divider
+								resetDiv(that);
+							}
+						}).mouseup(function(){
+							$(target).unbind('mousemove');
+						});
+						//track window mouseup 
+						$(window).mouseup(function(){
+							$(target).unbind('mousemove');
+						});
+					});
+					//accumulate the top
+					top += barPercentage;
+				}
+			});
+		}
+
+		//this function expand the "sub-divs" according to the position of divide bars
+		function resetDiv(divider){
+			var $divider = $(divider),
+				preHeight = $divider.prev().height(),
+				preTop = $divider.prev().position().top,
+				nextTop = $divider.next().position().top,
+				nextBottom = nextTop + $divider.next().height(),
+				divTop = $divider.position().top,
+				divHeight = $divider.height(),
+				height = $divider.parent().height();
+			$divider.prev().css({'height': (( divTop - preTop ) / height) * 100 + '%'});
+			$divider.next().css({'top':(( divTop + divHeight ) / height) * 100 + '%', 'height': (( nextBottom - ( divTop + divHeight )) / height ) * 100 + '%'});
+
+		}
+
+		//this function fills given array 1s,
+		//the total number of "sub-div"s is given by total
+		function fillOnes(array, total){
+			var length = array.length;
+			array.length = total; //"ie?"
+			for( length; length < total; length++ ){
+				array[length] = 1;
+			}
+		}
+		return this;
+	};
+
+
+	/*===============the vsplit plugin================*/
+	$.fn.vsplit = function(args, options){
+		var $this = $(this),
+			that = this,
+			length = $(this).children().filter('div').length,
+			tempArr;
+		options = options || {};
+		//get the class name for the divider bars
+		var tempClass = options.vBarClass || 'split-vbar';
+
+		//get the height of divide bars by adding an element then remove it
+		var tempElem = '<div class="'+tempClass+'"></div>';
+		$this.after(tempElem);
+		var barWidth = $(this).next().width();
+		$this.next().remove();
+
+		//check whether the requesting div has at least two "sub-div"s
+		if( !length || length < 2 ){
+			throw new Error("RUNTIME::vsplit:: You need at least two 'sub-div's");
+		}else{
+			//check validation of arguments
+			if( !args ){
+				//no arguments, only insert bars
+				tempArr = [];
+				//get the height of each current div, then calculate the ratio, and put it into ratio array
+				_.each($this.children().filter('div'), function(data, index){
+					tempArr[index] = $(data).width() ;
+				});
+				//pass the ratio array to setLayout, to set the layout :P
+				setLayout(this, tempArr);
+			}else{
+				//array
+				if( _.isArray(args) ){
+					//error
+					if(args.length > length)
+						throw new Error("RUNTIME::vsplit:: Arugment length is greater than the number of 'sub-div's");
+					//length are equal
+					else if(args.length === length){
+						setLayout(this, args);
+					}
+					//fillup the ratios
+					else if(args.length > 0){
+						tempArr = args;
+						fillOnes(tempArr, length);
+						setLayout(this, tempArr);
+					}
+					else{
+						throw new Error("RUNTIME::vsplit:: Arugment length is ZERO!");
+					}
+				}//if
+				//number
+				else if( _.isNumber(args) && !_.isNaN(args) ){
+					//check whether number is positive
+					if( args <= 0){
+						throw new Error('RUNTIME::vsplit:: Single number must be a positive number');
+					}else{
+						tempArr = [];
+						tempArr[0] = args;
+						fillOnes(tempArr, length);
+						setLayout(this, tempArr);
+					}
+				}//else if number
+				else{
+					options = args;
+					tempClass = options.vBarClass || 'split-vbar';
+					//no arguments, only insert bars
+					tempArr = [];
+					//get the height of each current div, then calculate the ratio, and put it into ratio array
+					_.each($this.children().filter('div'), function(data, index){
+						tempArr[index] = $(data).width() ;
+					});
+					//pass the ratio array to setLayout, to set the layout :P
+					setLayout(this, tempArr);
+				}//else for object
+
+			}//else
+		}//else
+
+		//this function takes an array of ratios of "sub-div"s, and
+		//set the layout accordingly
+		function setLayout(target, ratioArr){
+			var length = ratioArr.length,
+				conWidth = $(target).width() - ( length-1 ) * barWidth,
+			//calculate height for each "sub-div" in terms of percentage
+				sum = 0;
+			_.each(ratioArr, function(data, index){
+				sum += data;
+			});
+			var perWidth = [];
+			_.each(ratioArr, function(data, index){
+				perWidth[index] = ( ( conWidth / sum * data ) / ( $(target).width() ) ) * 100;//in percentage
+			});
+			//draw the layout
+			//set up the position attribute for the parent div
+			if($(target).css('position') !== 'absolute' && $(target).css('position') !== 'relative'){
+				$(target).css({'position':'relative'});
+			}
+				
+			//
+			var left = 0;
+			$(target).children().filter('div').each(function(index, elem){
+				var $elem = $(this);
+				//barwidth in percentage
+				var barPercentage = barWidth / ( $(target).width() ) * 100;
+				//set up css for current "sub-div" in terms of percentage
+				$elem.css({'position':'absolute', 'top':0,'left':left+'%','height':'100%','width':perWidth[index]+'%'});
+
+				left += perWidth[index];
+				//draw the divide bars, last "sub-div" does not need divde bar
+				if( index < length-1 ){
+					var temp = '<div class="'+tempClass+'" style="position:absolute;height:100%;top:0;left:'+left+'%;"></div>';
+					$elem.after(temp);
+					//add mouseover and resize event
+					$elem.next()
+					.mouseover(function(){
+						$(this).css({'cursor':'ew-resize'});
+					})
+					.mousedown(function(){
+						var that = this;
+						$(target).bind('mousemove', function(event){
+							//get relative postion
+							var relX = event.pageX - $(this).offset().left,
+								preLeft = $(that).prev().position().left,
+								nextRight = $(that).next().position().left + $(that).next().width();
+							if(relX > ( preLeft + barWidth ) && relX < ( nextRight - barWidth ) ){
+								$(that).css({'left':( relX / $(target).width() ) * 100 + '%'});
+								//resize "sub-div"s next to the current divider
+								resetDiv(that);
+							}
+						}).mouseup(function(){
+							$(target).unbind('mousemove');
+						});
+						//track window mouseup 
+						$(window).mouseup(function(){
+							$(target).unbind('mousemove');
+						});
+					});
+					//accumulate the left
+					left += barPercentage;
+				}
+			});
+		}
+
+		//this function expand the "sub-divs" according to the position of divide bars
+		function resetDiv(divider){
+			var $divider = $(divider),
+				preWidth = $divider.prev().width(),
+				preLeft = $divider.prev().position().left,
+				nextLeft = $divider.next().position().left,
+				nextRight = nextLeft + $divider.next().width(),
+				divLeft = $divider.position().left,
+				divWidth = $divider.width(),
+				width = $divider.parent().width();
+			$divider.prev().css({'width': (( divLeft - preLeft) / width ) * 100 + '%'} );
+			$divider.next().css({'left':(( divLeft + divWidth) / width) * 100 + '%', 'width': (( nextRight - ( divLeft + divWidth )) / width) * 100 + '%'});
+
+		}
+
+		//this function fills given array 1s,
+		//the total number of "sub-div"s is given by total
+		function fillOnes(array, total){
+			var length = array.length;
+			array.length = total;
+			for( length; length < total; length++ ){
+				array[length] = 1;
+			}
+		}
+		return this;
+	};
+
 
 })(jQuery);
 ;/**
@@ -5738,7 +6129,7 @@ var I18N = {};
  * 			...
  * 			<tr> ... </tr>
  *
- * options
+ * Options
  * -------
  * 1. data []: rows of data
  * 2. columns [
@@ -5752,15 +6143,15 @@ var I18N = {};
  * 3. details: false or datum name in data row or a view definition (render with row.model) - TBI
  * 
  *
- * events
+ * Events
  * ------
  * 1. row:clicked
  * 2. row:dblclicked
  * 
  * 
- * note
+ * Note
  * ----
- * the details row appears under each normal data row;
+ * The details row appears under each normal data row;
  *
  * TBI
  * ---
@@ -6257,7 +6648,7 @@ var I18N = {};
 							memo.push({
 								number: pNum,
 								isCurrent: pNum === this._options.currentPage
-							})
+							});
 						return memo;
 					}, [], this)
 				};
@@ -6297,7 +6688,7 @@ var I18N = {};
 				// },
 				/////////////////////////////////////////
 				goToAdjacentWindow: function($btn, e){
-					e.preventDefault()
+					e.preventDefault();
 					var pWin = this._options.currentWindow;
 					var op = $btn.data('window');
 					if(op === '+')
@@ -6309,12 +6700,17 @@ var I18N = {};
 					this.trigger('view:change-page', (pWin == 1) ? 1 : (pWin-1) * this._options.pageWindowSize + 1);
 				}
 			},
-			//////can be overriden///////
+			//////Can be overriden in options to add extra params///////
 			onChangePage: function(pNum){
-				//just a default stub implementation
+				//use the overriden version (see the stub impl below for what to override)
+				if(this._options.onChangePage)
+					return this._options.onChangePage.call(this, pNum);
+
+				//use just a default stub implementation
 				if(this._options.target) 
 					this._options.target.trigger('view:load-page', {
 						page: pNum
+						//add more params/querys
 					});
 			}
 
@@ -6324,4 +6720,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.5-898 build 1444373971400";
+;;app.stagejs = "1.8.5-902 build 1445479068737";

@@ -129,7 +129,7 @@
 						//console.log('View injected', name, 'from', app.viewSrcs);
 						Reusable = true;
 					}).fail(function(jqXHR, settings, e){
-						throw new Error('DEV::Application::get() Can NOT load View definition for', name, '[', e, ']');
+						throw new Error('DEV::Application::get() can NOT load View definition for', name, '[', e, ']');
 					});
 				}
 			}
@@ -145,13 +145,13 @@
 		},
 
 		pathToName: function(path){
-			if(!_.isString(path)) throw new Error('DEV::Application::pathToName You must pass in a valid path string.');
+			if(!_.isString(path)) throw new Error('DEV::Application::pathToName() You must pass in a valid path string.');
 			if(_.contains(path, '.')) return path;
 			return path.split('/').map(_.string.humanize).map(_.string.classify).join('.');
 		},
 
 		nameToPath: function(name){
-			if(!_.isString(name)) throw new Error('DEV::Application::nameToPath You must pass in a Reusable view name.');
+			if(!_.isString(name)) throw new Error('DEV::Application::nameToPath() You must pass in a Reusable view name.');
 			if(_.contains(name, '/')) return name;
 			return name.split('.').map(_.string.humanize).map(_.string.slugify).join('/');
 		},

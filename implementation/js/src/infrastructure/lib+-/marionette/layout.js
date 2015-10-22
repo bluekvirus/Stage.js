@@ -168,11 +168,12 @@
 						//Reusable view?
 						var Reusable = app.get(name, _.isPlainObject(options)?'Widget':'View');
 						if(Reusable){
+							//Caveat: don't forget to pick up overridable func & properties from options in your Widget.
 							this.show(new Reusable(options));
 							return;
 						}						
 
-						console.warn('DEV::Layout::View required ' + name + ' can NOT be found...use app.view({name: ..., ...}).');
+						console.warn('DEV::Layout+::region:load-view View required ' + name + ' can NOT be found...use app.view({name: ..., ...}).');
 					});
 					
 				},this);
@@ -201,7 +202,7 @@
 					if(!this.navRegion) return this.trigger('view:navigate-to', pathArray.join('/'));
 
 					if(!this.regions[this.navRegion]){
-						console.warn('DEV::Layout::', 'invalid navRegion', this.navRegion, 'in', this.name || options.name);
+						console.warn('DEV::Layout+::onNavigateChain()', 'invalid navRegion', this.navRegion, 'in', this.name || options.name);
 						return;
 					}
 					

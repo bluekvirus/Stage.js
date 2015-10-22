@@ -39,8 +39,8 @@
 * ------------
 * _, $
 *
-* @author: Patrick Zhu
-* @create: 2015.10.20 
+* @author Patrick Zhu
+* @create 2015.10.20 
 */
 
 
@@ -64,7 +64,7 @@
 
 		//check whether the requesting div has at least two "sub-div"s
 		if( !length || length < 2 ){
-			throw new Error("pulg-in::hsplit::bad requesting div => you need at least two 'sub-div's");
+			throw new Error("RUNTIME::hsplit:: You need at least two 'sub-div's");
 		}else{
 			//check validation of arguments
 			if(!args){//no arguments, spread evenly
@@ -81,7 +81,7 @@
 				if( _.isArray(args) ){
 					//error
 					if(args.length > length)
-						throw new Error("pulg-in::hsplit::bad argument => arugment length is greater than the number of 'sub-div's");
+						throw new Error("RUNTIME::hsplit:: Arugment length is greater than the number of 'sub-div's");
 					//length are equal
 					else if(args.length === length){
 						setLayout(this, args);
@@ -93,14 +93,14 @@
 						setLayout(this, tempArr);
 					}
 					else{
-						throw new Error("pulg-in::hsplit::bad argument => arugment length is Zero");
+						throw new Error("RUNTIME::hsplit:: Arugment length is ZERO!");
 					}
 				}
 				//number
 				else if( _.isNumber(args) && !_.isNaN(args) ){
 					//check whether number is positive
 					if( args <= 0){
-						throw new Error("pulg-in::hsplit::bad argument => single number must be a positive number");
+						throw new Error("RUNTIME::hsplit:: Single number must be a positive number");
 					}else{
 						tempArr = [];
 						tempArr[0] = args;
@@ -232,7 +232,7 @@
 
 		//check whether the requesting div has at least two "sub-div"s
 		if( !length || length < 2 ){
-			throw new Error("pulg-in::vsplit::bad requesting div => you need at least two 'sub-div's");
+			throw new Error("RUNTIME::vsplit:: You need at least two 'sub-div's");
 		}else{
 			//check validation of arguments
 			if( !args ){
@@ -249,7 +249,7 @@
 				if( _.isArray(args) ){
 					//error
 					if(args.length > length)
-						throw new Error("pulg-in::vsplit::bad argument => arugment length is greater than the number of 'sub-div's");
+						throw new Error("RUNTIME::vsplit:: Arugment length is greater than the number of 'sub-div's");
 					//length are equal
 					else if(args.length === length){
 						setLayout(this, args);
@@ -261,14 +261,14 @@
 						setLayout(this, tempArr);
 					}
 					else{
-						throw new Error("pulg-in::vsplit::bad argument => arugment length is Zero");
+						throw new Error("RUNTIME::vsplit:: Arugment length is ZERO!");
 					}
 				}//if
 				//number
 				else if( _.isNumber(args) && !_.isNaN(args) ){
 					//check whether number is positive
 					if( args <= 0){
-						throw new Error('pulg-in::vsplit::bad argument => single number must be a positive number');
+						throw new Error('RUNTIME::vsplit:: Single number must be a positive number');
 					}else{
 						tempArr = [];
 						tempArr[0] = args;

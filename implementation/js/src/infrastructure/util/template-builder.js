@@ -44,7 +44,7 @@
 					//override
 					$tag.html(tpl);
 					this.cache.clear('#' + name);
-					console.warn('DEV::APP.Util.Template::', name, 'overriden');
+					console.warn('DEV::Overriden::Template::', name);
 				}
 				else $('head').append(['<script type="text/tpl" id="', id, '">', tpl, '</script>'].join(''));
 			}
@@ -71,7 +71,7 @@
 							if(that.map[name]){
 								//override
 								Template.cache.clear('@' + name);
-								console.warn('DEV::APP.Util.Template::', name, 'overriden');	
+								console.warn('DEV::Overriden::Template::', name);
 							}
 							that.map[name] = tpl;
 						});
@@ -87,11 +87,11 @@
 						if(that.map[name]){
 							//override
 							Template.cache.clear('@' + name);
-							console.warn('DEV::APP.Util.Template::', name, 'overriden');	
+							console.warn('DEV::Overriden::Template::', name);
 						}
 						result = that.map[name] = tpl;
 					}).fail(function(){
-						throw new Error('DEV::View Template:: Can not load template...' + url + ', re-check your app.config.viewTemplates setting');
+						throw new Error('DEV::Util.Tpl::load() Can not load template...' + url + ', re-check your app.config.viewTemplates setting');
 					});
 					return result;
 				}

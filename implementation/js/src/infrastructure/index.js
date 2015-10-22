@@ -222,13 +222,13 @@
 		//---navigation worker---
 			function navigate(path){
 				path = _.compact(String(path).split('/'));
-				if(path.length <= 0) throw new Error('DEV::Application::Navigation path error');
+				if(path.length <= 0) throw new Error('DEV::Application::navigate() Navigation path error');
 
 				var context = path.shift();
 
-				if(!context) throw new Error('DEV::Application::Empty context name...');
+				if(!context) throw new Error('DEV::Application::navigate() Empty context name...');
 				var TargetContext = app.get(context, 'Context');
-				if(!TargetContext) throw new Error('DEV::Application::You must have the required context ' + context + ' defined...'); //see - special/registry/context.js			
+				if(!TargetContext) throw new Error('DEV::Application::navigate() You must have the required context ' + context + ' defined...'); //see - special/registry/context.js			
 				if(!app.currentContext || app.currentContext.name !== context) {
 					
 					//re-create target context upon switching
@@ -252,7 +252,7 @@
 					app.Util.addMetaEvent(targetCtx, 'context');
 					var navRegion = app.config.navRegion || app.config.contextRegion;
 					var targetRegion = app.mainView.getRegion(navRegion) || app.getRegion(navRegion);
-					if(!targetRegion) throw new Error('DEV::Application::You don\'t have region \'' + navRegion + '\' defined');		
+					if(!targetRegion) throw new Error('DEV::Application::navigate() You don\'t have region \'' + navRegion + '\' defined');		
 					
 					//note that .show() might be async due to region enter/exit effects
 					targetCtx.once('show', function(){
@@ -291,7 +291,7 @@
 			//Auto-detect and init context (view that replaces the body region)
 			if(!window.location.hash){
 				if(!app.get(app.config.defaultContext, 'Context'))
-					console.warn('DEV::Application::You might want to define a Default context using app.context(\'Context Name\', {...})');
+					console.warn('DEV::Application:: You might want to define a Default context using app.context(\'Context Name\', {...})');
 				else
 					app.navigate(app.config.defaultContext);
 			}			

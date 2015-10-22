@@ -23,7 +23,7 @@
 
 			map: {},
 			has: function(name /*or path*/){
-				if(!_.isString(name) || !name) throw new Error('DEV::Reusable:: You must specify the name of the ' + regName + ' to look for.');
+				if(!_.isString(name) || !name) throw new Error('DEV::Reusable::has() You must specify the name of the ' + regName + ' to look for.');
 				name = app.pathToName(name);
 				if(this.map[name]) return name;
 				return undefined;
@@ -57,8 +57,8 @@
 				}
 
 				//type 3: name and a factory func (won't have preset className & category)
-				if(!_.isString(name) || !name) throw new Error('DEV::Reusable:: You must specify a ' + regName + ' name to register.');
-				if(!_.isFunction(factory)) throw new Error('DEV::Reusable:: You must specify a ' + regName + ' factory function to register ' + name + ' !');
+				if(!_.isString(name) || !name) throw new Error('DEV::Reusable::register() You must specify a ' + regName + ' name to register.');
+				if(!_.isFunction(factory)) throw new Error('DEV::Reusable::register() You must specify a ' + regName + ' factory function to register ' + name + ' !');
 
 				if(this.has(name))
 					console.warn('DEV::Overriden::Reusable ' + regName + '.' + name);
@@ -73,11 +73,11 @@
 			},
 
 			create: function(name /*or path*/, options){
-				if(!_.isString(name) || !name) throw new Error('DEV::Reusable:: You must specify the name of the ' + regName + ' to create.');
+				if(!_.isString(name) || !name) throw new Error('DEV::Reusable::create() You must specify the name of the ' + regName + ' to create.');
 				var Reusable = this.get(name);
 				if(Reusable)
 					return new Reusable(options || {});
-				throw new Error('DEV::Reusable:: Required definition [' + name + '] in ' + regName + ' not found...');
+				throw new Error('DEV::Reusable::create() Required definition [' + name + '] in ' + regName + ' not found...');
 			},
 
 			get: function(name /*or path*/){
@@ -93,7 +93,7 @@
 					Reusable = Reusable.extend(options);
 					return Reusable;
 				}
-				throw new Error('DEV::Reusable:: Required definition [' + name + '] in ' + regName + ' not found...');
+				throw new Error('DEV::Reusable::alter() Required definition [' + name + '] in ' + regName + ' not found...');
 			}
 
 		});

@@ -94,7 +94,7 @@
 					}else {
 						e.stopPropagation(); //Important::This is to prevent confusing the parent view's action tag listeners.
 					}
-					throw new Error('DEV::' + (uiName || 'UI Component') + '::You have not yet implemented this action - [' + action + ']');
+					throw new Error('DEV::' + (uiName || 'UI Component') + '::enableActionTags() You have not yet implemented this action - [' + action + ']');
 				}
 			};		
 		},
@@ -107,7 +107,7 @@
 	 */
 	_.extend(Backbone.Marionette.ItemView.prototype, {
 		enableSVG: function(){
-			if(!Raphael) throw new Error('DEV::View::You did NOT have Raphael.js included...');
+			if(!Raphael) throw new Error('DEV::ItemView+::enableSVG() You did NOT have Raphael.js included...');
 			var that = this;
 
 			Raphael(this.el, this.$el.width(), this.$el.height(), function(){
@@ -186,7 +186,7 @@
 
 		activateEditors: function(options){
 			this._editors = this._editors || {};
-			if(this._editors.attachView) throw new Error('DEV::ItemView::activateEditors enhancements will need this._editors object, it is now a Region!');
+			if(this._editors.attachView) throw new Error('DEV::ItemView+::activateEditors() will need this._editors object, it is now a Region!');
 
 			var global = options._global || {};
 			_.each(options, function(config, name){
@@ -284,7 +284,7 @@
 			//4. highlight status msg - linking to individual editor's status method
 			this.status = function(options){
 				if(_.isString(options)) {
-					throw new Error('DEV::ItemView::activateEditors - You need to pass in messages object instead of ' + options);
+					throw new Error('DEV::ItemView+::activateEditors() You need to pass in messages object instead of ' + options);
 				}
 
 				if(savedLayoutFns.status)
@@ -420,7 +420,7 @@
 			}
 
 			if(!this.model) {
-				console.warn('DEV::ItemView:: You have not yet setup data in view ' + this.name);
+				console.warn('DEV::ItemView+::get() You have not yet setup data in view ' + this.name);
 				return;
 			}
 			
@@ -431,7 +431,7 @@
 
 		//Reload (if data: url) and re-render the view, or resetting the editors.
 		refresh: function(){
-			if(!this.data) return console.warn('DEV::ItemView::refresh You must set view.data to use this method.');
+			if(!this.data) return console.warn('DEV::ItemView+::refresh() You must set view.data to use this method.');
 			
 			this.model && this.model.clear({silent: true});
 			if(_.isString(this.data)){

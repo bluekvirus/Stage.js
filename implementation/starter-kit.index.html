@@ -55,18 +55,19 @@
         <script type="text/javascript" src="bower_components/highcharts-release/highcharts-more.src.js"></script>
     -->
 
-    <!--main.js-->
+    <!--main.js: Make sure you replace this script with your main.js!!!-->
     <script type="text/javascript">
-    //!!!make sure you replace this script with your main.js!!!
         Application.setup({
             //your configures here...
-        }).run().context('Default', {
+        }).context('Default', {
             template: '<h1>Hello World</h1>'
         });
     </script>
 
-    <!--Widgets/Editors-->
-    <!--Contexts/Regionals-->
+    <!--Make sure this is the last script tag!!!-->
+    <script type="text/javascript">
+        Application.run(/*deviceready - Cordova*/);
+    </script>
 
 </body>
 

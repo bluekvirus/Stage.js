@@ -31,7 +31,7 @@
 
 		//no refresh() yet (auto data-url fetch in item-view.js)
 		set: function(data, options){
-			if(!_.isArray(data)) throw new Error('DEV::CollectionView+::You need to have an array passed in as data...');
+			if(!_.isArray(data)) throw new Error('DEV::CollectionView+::set() You need to have an array passed in as data...');
 			
 			if(!this.collection){
 				this.collection = new Backbone.Collection();

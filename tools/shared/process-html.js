@@ -125,12 +125,12 @@ module.exports = {
 			};
 		}
 
-		//inject dynamically loaded scripts into the html
+		//inject dynamically loaded scripts into the html (before last script tag which has app.run())
 		if(options.js.dynamic){
 			var $i = $('body > script').last();
 			_.each(globule.find(path.join(options.js.dynamic, '**/*.js'), {cwd: options.root}), function(jsFile){
 				if($('script[src="' + jsFile + '"]').length) return; //skipped
-				$i.after('<script src="' + jsFile + '"></script>');
+				$i.before('<script src="' + jsFile + '"></script>');
 				console.log('[dynamically loaded script]'.grey, jsFile);
 			});
 		}

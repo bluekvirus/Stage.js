@@ -3,7 +3,7 @@
  * (If you have highlight.js, the code block will be themed for you...)
  *
  * Usage
- * =====
+ * -----
  * ```
  * $.md({
  * 	url: ...
@@ -16,7 +16,7 @@
  * ```
  *
  * Note
- * ====
+ * ----
  * Use $.load() if you just want to load html content instead of md coded content into $(tag)
  *
  * Dependency

@@ -24,7 +24,7 @@
 
 	_.extend(definition, {
 		create: function(topic, allowance){
-			if(!_.isString(topic) || !topic) throw new Error('DEV::Core.Lock::You must give this lock a name/topic ...');
+			if(!_.isString(topic) || !topic) throw new Error('DEV::Core.Lock::create() You must give this lock a name/topic ...');
 			if(locks[topic]) return false;
 
 			allowance = _.isNumber(allowance)? (allowance || 1) : 1;
