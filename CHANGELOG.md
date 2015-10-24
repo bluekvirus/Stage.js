@@ -1,10 +1,11 @@
 Change Log
 ==========
-1.8.6 (2015-10-21*)
+1.8.6 (2015-10-23*)
 -------------------
 Added $.hsplit/vsplit plugins (beta);
 Fixed dynamically loaded script position in build;
 Aligned DEV:: and RUNTIME:: exception formats;
+Refined params/querys option processing in app.remote;
 
 working on ...
 * Breaking down 'Basic' editors;

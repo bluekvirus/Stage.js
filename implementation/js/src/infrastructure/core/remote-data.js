@@ -75,7 +75,7 @@
 			var url = app.uri(options.url);
 			options.url = url.path(_.compact([url.path(), options._id, options._method]).join('/')).toString();
 		}
-		options.params = options.querys || options.params;
+		options.params = _.extend(options.params || {}, options.querys);
 		if(options.params){
 			options.url = (app.uri(options.url)).search(options.params).toString();
 		}
