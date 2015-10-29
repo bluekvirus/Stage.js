@@ -63,7 +63,7 @@
  * Do addon/transform stuff in onRender() *Do NOT* use onShow() it won't be invoked by enableEditors() enhancement in ItemView/Layout.
  * 
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @contributor Yan.Zhu
  * @created 2013.11.10
  * @updated 2014.02.26 [Bootstrap 3.1]

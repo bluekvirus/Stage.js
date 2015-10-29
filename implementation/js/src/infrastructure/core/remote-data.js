@@ -38,7 +38,7 @@
  * app:remote-pre-get - fine grind op stub
  * app:remote-pre-change - fine grind op stub
  * 
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2014.03.24
  */ 
 

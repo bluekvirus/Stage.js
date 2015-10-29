@@ -25,7 +25,7 @@
  * .show();
  * .hide();
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2013.07.08
  */
 

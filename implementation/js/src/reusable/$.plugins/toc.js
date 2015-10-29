@@ -20,7 +20,7 @@
  * jQuery, Underscore
  *
  * 
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2014.03.02
  */
 

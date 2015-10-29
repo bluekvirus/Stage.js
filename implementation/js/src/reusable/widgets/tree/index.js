@@ -38,7 +38,7 @@
  * ----
  * support search and expand a path (use $parent in node/leaf onSelected()'s first argument)
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2014.04.24
  */
 

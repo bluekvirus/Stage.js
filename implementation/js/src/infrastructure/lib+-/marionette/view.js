@@ -11,7 +11,7 @@
  * 3. global coop events.
  *
  * 
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2014.02.25
  * @updated 2015.08.03
  */

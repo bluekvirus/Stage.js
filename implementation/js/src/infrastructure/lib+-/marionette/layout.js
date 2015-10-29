@@ -14,7 +14,7 @@
  * default getValues/setValues and validate() method supporting editors value collection and verification
  *
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @create 2014.02.25
  * @update 2014.07.15 (+chainable nav region support)
  * @update 2014.07.28 (+view="@mockup.html" support)

@@ -24,7 +24,7 @@
  * jQuery, Underscore [, Highlight.js]
  *
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2013.11.05
  * @updated 2014.03.02
  * @updated 2014.05.27 (added md data caching)

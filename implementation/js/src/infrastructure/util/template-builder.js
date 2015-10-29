@@ -8,7 +8,7 @@
  * app.Util.Tpl.build (name, [</>, </>, ...]) / ([</>, </>, ...]) / ('</></>...</>')
  * app.Util.Tpl.remote(name, base) - default on using app.config.viewTemplates as base
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @create 2013.12.20
  * @updated 2014.10.25
  */

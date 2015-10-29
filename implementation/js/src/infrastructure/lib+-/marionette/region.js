@@ -23,7 +23,7 @@
  * https://daneden.github.io/animate.css/
  * 
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @updated 2014.03.03
  * @updated 2015.08.10
  */

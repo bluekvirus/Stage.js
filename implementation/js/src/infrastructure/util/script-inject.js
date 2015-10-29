@@ -9,7 +9,7 @@
  * 		"list": [ ... ] //same as 1
  * }
  *
- * @author Tim Liu
+ * @author Tim Lauv
  * @created 2014.10.08
  */
 

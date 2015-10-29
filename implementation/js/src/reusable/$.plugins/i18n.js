@@ -30,7 +30,7 @@
  * jQuery, underscore, [Handlebars] 
  *
  * 
- * @author Yan Zhu, Tim Liu
+ * @author Yan Zhu, Tim Lauv
  * @created 2013-08-26
  * @updated 2014-08-06
  * 

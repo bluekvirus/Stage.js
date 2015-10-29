@@ -39,7 +39,7 @@
  * details row is still in TBI status (extra tr stub, view close clean up)
  * 
  * 
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2014.04.22
  */
 

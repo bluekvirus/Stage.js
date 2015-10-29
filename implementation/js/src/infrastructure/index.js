@@ -80,7 +80,7 @@
  * app:scroll
  * 
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2014.02.17
  * @updated 2015.08.03
  */

@@ -1,7 +1,7 @@
 /**
  * The Default String Column Header Definition.
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2013.11.25
  * @updated 2014.04.22
  */

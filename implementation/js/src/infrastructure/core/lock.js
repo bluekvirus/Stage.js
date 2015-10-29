@@ -12,7 +12,7 @@
  * get(name) -- get specific lock topic info;
  * 				no name means to return all info;
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2014.08.21
  */
 

@@ -1,7 +1,7 @@
 /**
  * jQuery plugin simple template
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2013.11.08
  */
 (function($){

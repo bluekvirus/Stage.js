@@ -8,7 +8,7 @@
  * listens to a same object's events in their initialize(), only one copy of the group of listeners are active.
  * 
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @create 2013.11.10
  * @update 2014.03.03
  * @update 2015.07.29 (merged Regional, Context)

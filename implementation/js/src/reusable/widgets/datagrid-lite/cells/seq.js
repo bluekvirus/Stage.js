@@ -1,7 +1,7 @@
 /**
  * Cell that shows the seq number of record
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2014.04.23
  */
 

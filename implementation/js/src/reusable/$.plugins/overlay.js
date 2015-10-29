@@ -28,7 +28,7 @@
  * ------------
  * Handlebars, _, $window, $
  * 
- * @author Tim.Liu
+ * @author Tim Lauv
  * @create 2013.12.26
  */
 

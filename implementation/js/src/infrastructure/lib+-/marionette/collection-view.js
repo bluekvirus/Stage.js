@@ -10,7 +10,7 @@
  * 		TBI: 
  * 		view:sort-by, view:filter-by
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2014.04.30
  */
 

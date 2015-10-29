@@ -8,7 +8,7 @@
  * 4. overlay
  * 5. data event listener (view:render-data, view:data-rendered)
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2014.02.26
  * @updated 2015.08.03
  */

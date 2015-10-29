@@ -19,7 +19,7 @@
  * [listenTo(target, 'view:page-changed')] - if target is passed in through init options
  * [listenTo(this, 'view:change-page')] - if target is passed in through init options
  * 
- * @author Tim.Liu
+ * @author Tim Lauv
  * @create 2014.05.05
  * @update 2014.12.01 (+pageWindowSize)
  */

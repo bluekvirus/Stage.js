@@ -10,7 +10,7 @@
  * 	 ... (rest as url? query strings)
  * }
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2013.04.01
  * @updated 2013.11.08
  * @updated 2014.03.04

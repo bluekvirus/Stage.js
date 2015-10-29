@@ -32,7 +32,7 @@
  * -------------
  * We use the Application.Core.Editor module to register our validation rules, the enhanced editors or total customized editors might use them through the underlying basic editor(s) involved.
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2013.11.13
  */
 
