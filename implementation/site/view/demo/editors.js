@@ -321,6 +321,8 @@
             },
             test2: function(){
                 var editor = this.getEditor('fieldset-b.checkboxes');
+                if(!editor) return app.debug('Can not find editor:', 'fieldset-b.checkboxes');
+
                 if(editor.isEnabled()) {
                     editor.disable(true);
                     this.getEditor('fieldset-a.ab').disable();
@@ -333,15 +335,16 @@
                 }
             },
 
-            // info: function(){
-            //     this.status('success', {
-            //         singlecheckbox: 'passed!',
-            //         efg: {
-            //             status: 'error',
-            //             message: 'another server error!'
-            //         }
-            //     });
-            // },
+            info: function(){
+                this.status({
+                    singlecheckbox: 'passed!',
+                    efg: {
+                        status: 'error',
+                        message: 'another server error!'
+                    }
+                });
+            },
+
             clearinfo: function(){
                 this.status();
             }

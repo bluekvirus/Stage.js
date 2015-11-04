@@ -76,6 +76,7 @@ NProgress.configure({showSpinner: false});
                     '<li><a href="#navigate/Demo/WIP">Data handling</a></li>',
                     '<li><a href="#navigate/Demo/WIP">Coop events</a></li>',
                     '<li><a href="#navigate/Demo/Editors">Editors</a></li>',
+                    '<li><a href="#navigate/Demo/WIP">Nesting with Regions</a></li>',
                     // '<li><a href="#">Terminal</a></li>',
                   '</ul>',
                 '</li>',

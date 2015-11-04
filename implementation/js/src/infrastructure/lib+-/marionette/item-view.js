@@ -161,13 +161,13 @@
 	 * 	//compound (use another view as wrapper)
 	 * 	name: app.view({
 	 * 		template: ...,
-	 * 		editors: ...,
 	 * 		getVal: ...,
 	 * 		setVal: ...,
-	 * 		disable: ...,
-	 * 		isEnabled: ...,
-	 * 		status: ...
-	 * 		//you don't need to implement validate() though.
+	 * 		validate: ...,
+	 * 		status: ...,
+	 * 		[editors: ...,]
+	 * 		[disable: ...,]
+	 * 		[isEnabled: ...,]
 	 * 	}),
 	 * }
 	 *
@@ -202,6 +202,12 @@
 					//1. instantiate
 					config.type = config.type || 'text'; 
 					Editor = (app.Core.Editor.map.Basic.supported[config.type] && app.Core.Editor.map.Basic) || app.get(config.type, 'Editor');
+					
+					//Tempo Fix: remove type so it won't confuse View init with Item/Collection/CompositeView types.
+					if(Editor !== app.Core.Editor.map.Basic)
+						delete config.type;
+					////////////////////////////////////////////////////////////////////////////////////////////////
+
 					editor = new Editor(config);					
 				}else {
 					//if config is a view definition use it directly 
@@ -233,17 +239,14 @@
 				});
 			});
 
-			//If this view (as a Layout instance) enables editors as well, we need to save the layout version of the form fns and invoke them as well.
-			//so that fieldsets nested in this Layout works properly.
-			var savedLayoutFns = _.pick(this, 'getEditor', 'getValues', 'setValues', 'validate', 'status');
 			//0. getEditor(name)
 			this.getEditor = function(name){
-				return this._editors[name] || (savedLayoutFns.getEditor && savedLayoutFns.getEditor.call(this, name));
+				return this._editors[name];
 			};
 
 			//1. getValues (O(n) - n is the total number of editors on this form)
 			this.getValues = function(){
-				var vals = (savedLayoutFns.getValues && savedLayoutFns.getValues.call(this)) || {};
+				var vals = {};
 				_.each(this._editors, function(editor, name){
 					var v = editor.getVal();
 					if(v !== undefined && v !== null) vals[name] = v;
@@ -258,13 +261,11 @@
 					if(vals[name] !== null && vals[name] !== undefined)
 						editor.setVal(vals[name], loud);
 				});
-				if(savedLayoutFns.setValues) 
-					savedLayoutFns.setValues.call(this, vals, loud);
 			};
 
 			//3. validate
 			this.validate = function(show){
-				var errors = (savedLayoutFns.validate && savedLayoutFns.validate.call(this, show)) || {};
+				var errors = {};
 
 				_.each(this._editors, function(editor, name){
 					var e;
@@ -286,9 +287,6 @@
 				if(_.isString(options)) {
 					throw new Error('DEV::ItemView+::activateEditors() You need to pass in messages object instead of ' + options);
 				}
-
-				if(savedLayoutFns.status)
-					savedLayoutFns.status.call(this, options);
 
 				//clear status
 				if(!options || _.isEmpty(options)) {

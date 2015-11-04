@@ -9,7 +9,7 @@
  * change a region's view by trigger 'region:load-view' on that region, then give it a view name. (registered through B.M.Layout.regional() or say app.create('Regional', ...))
  * 
  * 
- * Experimental
+ * Experimental (removed)
  * ------------
  * default getValues/setValues and validate() method supporting editors value collection and verification
  *
@@ -18,6 +18,7 @@
  * @create 2014.02.25
  * @update 2014.07.15 (+chainable nav region support)
  * @update 2014.07.28 (+view="@mockup.html" support)
+ * @update 2015.11.03
  */
 
 ;(function(app){
@@ -41,7 +42,7 @@
 	 * ----------------
 	 * Use getEditor(a.b.c).set/getVal()
 	 *
-	 */
+
 
 	_.extend(Backbone.Marionette.Layout.prototype, {
 
@@ -113,7 +114,7 @@
 		}
 
 	});
-
+	 */
 
 	/**
 	 * Fixed behavior overridden. 
