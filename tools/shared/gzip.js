@@ -1,7 +1,7 @@
 /**
  * The gzip util using zlib in nodejs.
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2013.09.25
  */
 

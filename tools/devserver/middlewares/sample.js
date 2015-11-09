@@ -1,7 +1,7 @@
 /**
  * Sample custom middleware script, expressjs 4.0+
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2014.06.11
  */
 

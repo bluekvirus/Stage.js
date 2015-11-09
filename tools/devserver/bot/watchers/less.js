@@ -8,7 +8,7 @@
  * Only themes specified in the lesswatch list will be monitored
  * server.get('profile').lesswatch
  *
- * @author Tim Liu
+ * @author Tim Lauv
  * @created 2013.10.27
  * @updated 2014.04.18
  * @updated 2014.07.31 (Yan.Zhu + Windows support)

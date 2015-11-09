@@ -20,7 +20,7 @@
  * (If you omit the js config block, the default combine target will be all.js and all.min.js)
  * (If js.targets is falsey, the multi-js mode processing will be disabled, regardless of the [target="...js"] attributes on <script/> tags)
  * 
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2013.09.25
  * @updated 2014.03.04 (minimum output)
  * @updated 2014.08.12 (empty file, multi-folder merge, multi-js combine targets)

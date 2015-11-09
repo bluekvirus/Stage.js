@@ -1,7 +1,7 @@
 /**
  * The router creation helper method
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2014.04.20
  */
 

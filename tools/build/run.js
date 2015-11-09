@@ -5,7 +5,7 @@
  * 2. load target html and process libs on it; (we also support patching in the autoloaded scripts)
  * 3. output all-in-one.js and index.html and web client structure (resources, themes, config and statics...)
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2013.09.26
  * @updated 2014.03.13
  */

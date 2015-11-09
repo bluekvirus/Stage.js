@@ -39,7 +39,7 @@
  * d. touch (check session info);
  *
  * 
- * @author Tim Liu
+ * @author Tim Lauv
  * @created 2013.10.25 (based on 0.13.x)
  * @updated 2015.10.06
  */

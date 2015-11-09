@@ -1,7 +1,7 @@
 /**
  * Watching template (e.g static/template/***.html)
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2014.07.26
  * @updated 2014.07.31 (Yan.Zhu + Windows support)
  */

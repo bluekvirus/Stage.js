@@ -12,7 +12,7 @@
  * optional:
  * 		cachedFiles - in memory file content
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2013.09.25
  */
 

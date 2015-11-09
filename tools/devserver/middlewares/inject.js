@@ -12,7 +12,7 @@
  * gzip, favicon, logger, cookie, session, csrf, body-parser[urlencoded, json], method-override, multiparty...
  * 
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2014.05.30
  */
 

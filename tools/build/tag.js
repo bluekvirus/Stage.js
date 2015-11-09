@@ -3,7 +3,7 @@
  *
  * (Warning: this script is not compatible with folder path changes on `implementation` and `libprep`)
  * 
- * @author Tim Liu
+ * @author Tim Lauv
  * @created 2014.11.11
  */
 

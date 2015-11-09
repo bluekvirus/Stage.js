@@ -25,7 +25,7 @@
  * 	}
  * }
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2013.09.26
  * @updated 2014.03.13
  * @updated 2014.08.12 (+ exclude, include and target attr to <script/> tags)

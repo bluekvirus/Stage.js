@@ -3,7 +3,7 @@
   "version": "1.8.5",
   "homepage": "http://bluekvirus.github.io/Stage.js/",
   "authors": [
-    "Tim Liu <bluekvirus@gmail.com>"
+    "Tim Lauv <bluekvirus@gmail.com>"
   ],
   "description": "Building multi-context rich-client web applications in the modern way.",
   "main": "dist/js/stage.js",

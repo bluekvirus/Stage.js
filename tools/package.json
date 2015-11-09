@@ -49,6 +49,6 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": "",
-  "author": "Tim.Liu (bluekvirus@gmail.com)",
+  "author": "Tim Lauv (bluekvirus@gmail.com)",
   "license": "MIT"
 }

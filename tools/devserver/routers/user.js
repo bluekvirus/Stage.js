@@ -1,7 +1,7 @@
 /**
  * The User router
  *
- * @author Tim Liu
+ * @author Tim Lauv
  * @created 2013.10.26
  * @updated 2015.09.29
  */

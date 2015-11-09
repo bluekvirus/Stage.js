@@ -9,7 +9,7 @@
  * 5. DB support
  * 6. User/Session/Group
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2014.4.18
  * @updated 2015.09.12
  */

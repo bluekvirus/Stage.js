@@ -35,7 +35,7 @@
  *
  * Make sure you follow the sequence when changing theme designs.
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2014.07.21
  * @updated 2014.07.31
  * 

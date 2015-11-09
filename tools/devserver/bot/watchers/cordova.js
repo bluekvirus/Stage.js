@@ -17,7 +17,7 @@
  * 2. bower_components folder in mirrored www will only change when index (mobile.html) changes.
  * 3. mirror folder will be init-ed using files and index settings if doesn't exist during server boot-up.
  * 
- * @author Tim Liu
+ * @author Tim Lauv
  * @created 2013.11.12 (Unix-like only)
  */
 

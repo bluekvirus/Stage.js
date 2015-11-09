@@ -5,7 +5,7 @@
  * -------
  * Make sure the middlewares are built with their factory methods before use...
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2014.04.20
  * @updated 2014.07.31
  */

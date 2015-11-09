@@ -5,7 +5,7 @@
  * ------
  * root: path to the theme folder which contains /less
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2014.04.18
  */
 

@@ -3,7 +3,7 @@
  *
  * uri base: /sample
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2014.04.18
  */
 var Mock = require('mockjs'),
