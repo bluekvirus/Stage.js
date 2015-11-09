@@ -76,4 +76,14 @@ Start with user requirements/stories and focus on serving the customers' need. U
 * Script-ability - batch-able, automate-able
 
 ####Product design
-(Goal-Driven)...
+Goal-Driven! Design through the api-interaction-transition tuples.
+
+           interaction (UI)
+          /           \
+(Data) api             transition, visual (UX)
+
+* Match a list of goals with a list of UIs (flow)
+* Serve the list of UIs with a list of apis (read)
+* Link the UI actions with more apis (create, update, delete, execute)
+* Guard UI actions with validation, prompts and help
+* Enhance UI with transitions and color/type/scale/layer/texture/image & icon
