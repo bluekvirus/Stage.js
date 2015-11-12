@@ -59,7 +59,7 @@ What's next?
 * Put self-made dev process pipeline onto Gulp; (:heavy_check_mark:)
 * Test automation in BDD; (in progress)
 * Data handling shortcuts (data property, set()/get()/refresh());
-* Websocket integration for messaging/notification & peer discovery;
+* Websocket integration for messaging/notification & peer discovery; (:heavy_check_mark:)
 * WebRTC integration for peer-to-peer data/stream sharing;
 * Introduce state machine into Views;
 * Give View action listeners a choice to go background (Web Worker);
