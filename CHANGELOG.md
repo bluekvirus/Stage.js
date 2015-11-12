@@ -1,17 +1,21 @@
 Change Log
 ==========
-1.8.6 (2015-10-21*)
+1.8.6 (2015-11-11*)
 -------------------
 Added $.hsplit/vsplit plugins (beta);
 Fixed dynamically loaded script position in build;
 Aligned DEV:: and RUNTIME:: exception formats;
+Refined params/querys option processing in app.remote;
+Removed form/editor nesting through regions;
+Added backbone-deep-model for 'x.y.z' change/get.
+Flattened form editor <-> data mapping (deep key);
+Added view.getViewIn('region') method;
 
 working on ...
 * Breaking down 'Basic' editors;
-* Enhance Form view nesting mech;
 * Adding more unit tests.
 * Adding interactive tutorial site;
-* Updated doc (around data handling, coop, remote, ws, form).
+* Updating doc (around data handling, coop, remote, ws, form).
 
 
 1.8.5 (2015-10-08)
