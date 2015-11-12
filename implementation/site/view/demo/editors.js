@@ -1,8 +1,7 @@
 //Demo - Regionals
 ;(function(app){
 
-    var FieldsetA = app.view({
-        fieldset: 'fieldset-a',
+    app.view('FieldsetA', {
         editors: {
 
             _global: {
@@ -49,9 +48,8 @@
         }        
     });
 
-    var FieldsetB = app.view({
+    app.view('FieldsetB', {
         className: 'well well-sm',
-        fieldset: 'fieldset-b',
         editors: {
 
             _global: {
@@ -146,7 +144,7 @@
                 type: 'checkboxes',
                 help: 'choose more than you like',
                 fieldname: 'haha',
-                value: [1231, 1234],
+                value: ['1232', '1234'],
                 options: {
                     //inline: true,
                     //data: ['a', 'b', 'c', 'd']
@@ -205,8 +203,8 @@
         template: [
             '<div class="row">',
                 '<div class="form form-horizontal">',
-                    '<div region="fieldset-a"></div>',
-                    '<div region="fieldset-b"></div>',
+                    '<div region="fieldset-a" view="FieldsetA"></div>',
+                    '<div region="fieldset-b" view="FieldsetB"></div>',
                 '</div>',
             '</div>', //the class form form-horizontal is required for the editor layout class config to work in bootstrap 3
             '<div class="row">',
@@ -228,7 +226,7 @@
                 },
                 appendTo: 'div.form',
             },            
-            selectgroup: {
+            'main.selectgroup': {
                 label: 'Group',
                 type: 'select',
                 options: {
@@ -239,7 +237,7 @@
                 }
             },
             //compond editor
-            duration: Application.view({
+            duration: app.view({
                 className: 'form-group',
                 template: [
                     '<label class="control-label col-sm-2">Duration (compond)</label>',
@@ -281,7 +279,7 @@
                     }
                 },
                 getVal: function() {
-                    var vals = this.getValues();
+                    var vals = this.get();
                     return vals.time + vals.unit;
                 },
                 setVal: function(val, loud) {
@@ -290,10 +288,8 @@
             })
         },
         onShow: function(){
-            this.getRegion('fieldset-a').show(new FieldsetA());
-            this.getRegion('fieldset-b').show(new FieldsetB());
 
-            $('input').iCheck({
+            this.$('input').iCheck({
                 checkboxClass: 'icheckbox_square',
                 radioClass: 'iradio_square',
             });
@@ -308,16 +304,26 @@
                 // f.upload({
                 //     fileInput: this.$el.find('input[name="files[]"]')
                 // });
-                app.debug(this.getValues());
+                app.debug(_.extend(this.get(), {
+                    'fieldset-a': this.getViewIn('fieldset-a').get(),
+                    'fieldset-b': this.getViewIn('fieldset-b').get()
+                }));
             },
             test: function(){
-                this.setValues({
-                    'fieldset-b': {
-                        checkboxes: [1231, 1233],
-                        readonly2: 'Hello!',
-                        singlecheckbox: 'enabled',
+                this.set({
+                    main: {
+                        selectgroup: '1111x'
                     }
                 });
+
+                this.getViewIn('fieldset-b').set({
+                    checkboxes: ['1231', '1233'],
+                    readonly2: 'Hello!',
+                    singlecheckbox: 'enabled',
+                });
+
+                //since we changed the inputs outside of iCheck plugin api.
+                this.$('input').iCheck('update');
             },
             test2: function(){
                 var editor = this.getEditor('fieldset-b.checkboxes');

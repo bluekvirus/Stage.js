@@ -251,15 +251,19 @@
 					var v = editor.getVal();
 					if(v !== undefined && v !== null) vals[name] = v;
 				});
-				return vals;
+				//Warning: Possible performance impact...
+				return app.model(vals).toJSON(); //construct a deep model for editor 'a.b.c' getVal();
+				/////////////////////////////////////////
 			};
 
 			//2. setValues (O(n) - n is the total number of editors on this form)
 			this.setValues = function(vals, loud){
 				if(!vals) return;
 				_.each(this._editors, function(editor, name){
-					if(vals[name] !== null && vals[name] !== undefined)
-						editor.setVal(vals[name], loud);
+					var v = vals[name] || selectn(name, vals);
+					if(v !== null && v !== undefined){
+						editor.setVal(v, loud);
+					}
 				});
 			};
 
@@ -373,9 +377,12 @@
 		_renderTplOrResetEditors: function(){
 			if(this._editors)
 				this.setValues(this.model.toJSON());
-			else
+				//note that as a form view, updating data does NOT refresh sub-regional views...
+			else {
 				this.render();
-			this.trigger('view:data-rendered');
+				//note that this will re-render the sub-regional views.
+				this.trigger('view:data-rendered');
+			}
 		},
 		
 		//Set & change the underlying data of the view.
@@ -413,7 +420,12 @@
 		//Use this instead of this.model.attributes to get the underlying data of the view.
 		get: function(){
 			if(this._editors){
-				if(arguments.length) return this.getEditor.apply(this, arguments).getVal();
+				if(arguments.length) {
+					var editor = this.getEditor.apply(this, arguments);
+					if(editor)
+						return editor.getVal();
+					return;
+				}
 				return this.getValues();
 			}
 

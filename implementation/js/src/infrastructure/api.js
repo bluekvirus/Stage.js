@@ -126,7 +126,7 @@
 						dataType: 'script',
 						async: false
 					}).done(function(){
-						//console.log('View injected', name, 'from', app.viewSrcs);
+						app.debug('View injected', name, 'from', app.viewSrcs);
 						Reusable = true;
 					}).fail(function(jqXHR, settings, e){
 						throw new Error('DEV::Application::get() can NOT load View definition for', name, '[', e, ']');
@@ -250,7 +250,10 @@
 
 		//-----------------local data----------------
 		model: function(data){
-			return new Backbone.Model(data);
+			//return new Backbone.Model(data);
+			//Warning: Possible performance impact...
+			return new Backbone.DeepModel(data);
+			/////////////////////////////////////////
 		},
 
 		collection: function(data){

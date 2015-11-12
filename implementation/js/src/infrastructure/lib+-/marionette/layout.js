@@ -18,10 +18,19 @@
  * @create 2014.02.25
  * @update 2014.07.15 (+chainable nav region support)
  * @update 2014.07.28 (+view="@mockup.html" support)
- * @update 2015.11.03
+ * @update 2015.11.03 (-form nesting on regions)
+ * @update 2015.11.11 (+getViewIn('region'))
  */
 
 ;(function(app){
+
+	//+ api view.getViewIn('region')
+	_.extend(Backbone.Marionette.Layout.prototype, {
+		getViewIn: function(region){
+			region = this.getRegion(region);
+			return region && region.currentView;
+		}
+	});
 
 	/**
 	 * Instrument this Layout in case it is used as a Form container.

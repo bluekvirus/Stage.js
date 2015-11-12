@@ -112,7 +112,7 @@
 					$overlay.height($window.height());
 					$overlay.data('onResize', function(){
 						$overlay.height($window.height());
-						//console.log('test if listener still there...');
+						//console.log('test to see if the listener is still there...');
 					});
 					$window.on('resize', $overlay.data('onResize'));
 				}

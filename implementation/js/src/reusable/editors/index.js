@@ -307,7 +307,7 @@
 									that.ui.result.html(_.isString(reply)?reply.i18n():JSON.stringify(reply));
 									_.delay(function(){
 										that.ui.result.empty();
-									}, 6000)
+									}, 6000);
 								}
 							}, options.upload));
 						}

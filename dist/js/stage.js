@@ -127,7 +127,7 @@
  * app:scroll
  * 
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2014.02.17
  * @updated 2015.08.03
  */
@@ -548,7 +548,7 @@
 						dataType: 'script',
 						async: false
 					}).done(function(){
-						//console.log('View injected', name, 'from', app.viewSrcs);
+						app.debug('View injected', name, 'from', app.viewSrcs);
 						Reusable = true;
 					}).fail(function(jqXHR, settings, e){
 						throw new Error('DEV::Application::get() can NOT load View definition for', name, '[', e, ']');
@@ -672,7 +672,10 @@
 
 		//-----------------local data----------------
 		model: function(data){
-			return new Backbone.Model(data);
+			//return new Backbone.Model(data);
+			//Warning: Possible performance impact...
+			return new Backbone.DeepModel(data);
+			/////////////////////////////////////////
 		},
 
 		collection: function(data){
@@ -760,7 +763,7 @@
  *
  * Currently applied to: Application, Context and View.
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2014.03.22
  */
 
@@ -790,7 +793,7 @@
  * 	 ... (rest as url? query strings)
  * }
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2013.04.01
  * @updated 2013.11.08
  * @updated 2014.03.04
@@ -822,7 +825,7 @@
  * app.Util.Tpl.build (name, [</>, </>, ...]) / ([</>, </>, ...]) / ('</></>...</>')
  * app.Util.Tpl.remote(name, base) - default on using app.config.viewTemplates as base
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @create 2013.12.20
  * @updated 2014.10.25
  */
@@ -934,7 +937,7 @@
  * 		"list": [ ... ] //same as 1
  * }
  *
- * @author Tim Liu
+ * @author Tim Lauv
  * @created 2014.10.08
  */
 
@@ -1002,7 +1005,7 @@
  * app:remote-pre-get - fine grind op stub
  * app:remote-pre-change - fine grind op stub
  * 
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2014.03.24
  */ 
 
@@ -1039,7 +1042,7 @@
 			var url = app.uri(options.url);
 			options.url = url.path(_.compact([url.path(), options._id, options._method]).join('/')).toString();
 		}
-		options.params = options.querys || options.params;
+		options.params = _.extend(options.params || {}, options.querys);
 		if(options.params){
 			options.url = (app.uri(options.url)).search(options.params).toString();
 		}
@@ -1156,7 +1159,7 @@
  * get(name) -- get specific lock topic info;
  * 				no name means to return all info;
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2014.08.21
  */
 
@@ -1255,7 +1258,7 @@
  * listens to a same object's events in their initialize(), only one copy of the group of listeners are active.
  * 
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @create 2013.11.10
  * @update 2014.03.03
  * @update 2015.07.29 (merged Regional, Context)
@@ -3446,7 +3449,7 @@ module.exports = DeepModel;
  * https://daneden.github.io/animate.css/
  * 
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @updated 2014.03.03
  * @updated 2015.08.10
  */
@@ -3599,7 +3602,7 @@ module.exports = DeepModel;
  * 3. global coop events.
  *
  * 
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2014.02.25
  * @updated 2015.08.03
  */
@@ -3730,7 +3733,7 @@ module.exports = DeepModel;
  * 4. overlay
  * 5. data event listener (view:render-data, view:data-rendered)
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2014.02.26
  * @updated 2015.08.03
  */
@@ -3883,13 +3886,13 @@ module.exports = DeepModel;
 	 * 	//compound (use another view as wrapper)
 	 * 	name: app.view({
 	 * 		template: ...,
-	 * 		editors: ...,
 	 * 		getVal: ...,
 	 * 		setVal: ...,
-	 * 		disable: ...,
-	 * 		isEnabled: ...,
-	 * 		status: ...
-	 * 		//you don't need to implement validate() though.
+	 * 		validate: ...,
+	 * 		status: ...,
+	 * 		[editors: ...,]
+	 * 		[disable: ...,]
+	 * 		[isEnabled: ...,]
 	 * 	}),
 	 * }
 	 *
@@ -3924,6 +3927,12 @@ module.exports = DeepModel;
 					//1. instantiate
 					config.type = config.type || 'text'; 
 					Editor = (app.Core.Editor.map.Basic.supported[config.type] && app.Core.Editor.map.Basic) || app.get(config.type, 'Editor');
+					
+					//Tempo Fix: remove type so it won't confuse View init with Item/Collection/CompositeView types.
+					if(Editor !== app.Core.Editor.map.Basic)
+						delete config.type;
+					////////////////////////////////////////////////////////////////////////////////////////////////
+
 					editor = new Editor(config);					
 				}else {
 					//if config is a view definition use it directly 
@@ -3955,38 +3964,37 @@ module.exports = DeepModel;
 				});
 			});
 
-			//If this view (as a Layout instance) enables editors as well, we need to save the layout version of the form fns and invoke them as well.
-			//so that fieldsets nested in this Layout works properly.
-			var savedLayoutFns = _.pick(this, 'getEditor', 'getValues', 'setValues', 'validate', 'status');
 			//0. getEditor(name)
 			this.getEditor = function(name){
-				return this._editors[name] || (savedLayoutFns.getEditor && savedLayoutFns.getEditor.call(this, name));
+				return this._editors[name];
 			};
 
 			//1. getValues (O(n) - n is the total number of editors on this form)
 			this.getValues = function(){
-				var vals = (savedLayoutFns.getValues && savedLayoutFns.getValues.call(this)) || {};
+				var vals = {};
 				_.each(this._editors, function(editor, name){
 					var v = editor.getVal();
 					if(v !== undefined && v !== null) vals[name] = v;
 				});
-				return vals;
+				//Warning: Possible performance impact...
+				return app.model(vals).toJSON(); //construct a deep model for editor 'a.b.c' getVal();
+				/////////////////////////////////////////
 			};
 
 			//2. setValues (O(n) - n is the total number of editors on this form)
 			this.setValues = function(vals, loud){
 				if(!vals) return;
 				_.each(this._editors, function(editor, name){
-					if(vals[name] !== null && vals[name] !== undefined)
-						editor.setVal(vals[name], loud);
+					var v = vals[name] || selectn(name, vals);
+					if(v !== null && v !== undefined){
+						editor.setVal(v, loud);
+					}
 				});
-				if(savedLayoutFns.setValues) 
-					savedLayoutFns.setValues.call(this, vals, loud);
 			};
 
 			//3. validate
 			this.validate = function(show){
-				var errors = (savedLayoutFns.validate && savedLayoutFns.validate.call(this, show)) || {};
+				var errors = {};
 
 				_.each(this._editors, function(editor, name){
 					var e;
@@ -4008,9 +4016,6 @@ module.exports = DeepModel;
 				if(_.isString(options)) {
 					throw new Error('DEV::ItemView+::activateEditors() You need to pass in messages object instead of ' + options);
 				}
-
-				if(savedLayoutFns.status)
-					savedLayoutFns.status.call(this, options);
 
 				//clear status
 				if(!options || _.isEmpty(options)) {
@@ -4097,9 +4102,12 @@ module.exports = DeepModel;
 		_renderTplOrResetEditors: function(){
 			if(this._editors)
 				this.setValues(this.model.toJSON());
-			else
+				//note that as a form view, updating data does NOT refresh sub-regional views...
+			else {
 				this.render();
-			this.trigger('view:data-rendered');
+				//note that this will re-render the sub-regional views.
+				this.trigger('view:data-rendered');
+			}
 		},
 		
 		//Set & change the underlying data of the view.
@@ -4137,7 +4145,12 @@ module.exports = DeepModel;
 		//Use this instead of this.model.attributes to get the underlying data of the view.
 		get: function(){
 			if(this._editors){
-				if(arguments.length) return this.getEditor.apply(this, arguments).getVal();
+				if(arguments.length) {
+					var editor = this.getEditor.apply(this, arguments);
+					if(editor)
+						return editor.getVal();
+					return;
+				}
 				return this.getValues();
 			}
 
@@ -4184,18 +4197,28 @@ module.exports = DeepModel;
  * change a region's view by trigger 'region:load-view' on that region, then give it a view name. (registered through B.M.Layout.regional() or say app.create('Regional', ...))
  * 
  * 
- * Experimental
+ * Experimental (removed)
  * ------------
  * default getValues/setValues and validate() method supporting editors value collection and verification
  *
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @create 2014.02.25
  * @update 2014.07.15 (+chainable nav region support)
  * @update 2014.07.28 (+view="@mockup.html" support)
+ * @update 2015.11.03 (-form nesting on regions)
+ * @update 2015.11.11 (+getViewIn('region'))
  */
 
 ;(function(app){
+
+	//+ api view.getViewIn('region')
+	_.extend(Backbone.Marionette.Layout.prototype, {
+		getViewIn: function(region){
+			region = this.getRegion(region);
+			return region && region.currentView;
+		}
+	});
 
 	/**
 	 * Instrument this Layout in case it is used as a Form container.
@@ -4216,7 +4239,7 @@ module.exports = DeepModel;
 	 * ----------------
 	 * Use getEditor(a.b.c).set/getVal()
 	 *
-	 */
+
 
 	_.extend(Backbone.Marionette.Layout.prototype, {
 
@@ -4288,7 +4311,7 @@ module.exports = DeepModel;
 		}
 
 	});
-
+	 */
 
 	/**
 	 * Fixed behavior overridden. 
@@ -4428,7 +4451,7 @@ module.exports = DeepModel;
  * 		TBI: 
  * 		view:sort-by, view:filter-by
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2014.04.30
  */
 
@@ -4557,7 +4580,7 @@ module.exports = DeepModel;
  * jQuery, underscore, [Handlebars] 
  *
  * 
- * @author Yan Zhu, Tim Liu
+ * @author Yan Zhu, Tim Lauv
  * @created 2013-08-26
  * @updated 2014-08-06
  * 
@@ -4794,7 +4817,7 @@ var I18N = {};
  * jQuery, Underscore [, Highlight.js]
  *
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2013.11.05
  * @updated 2014.03.02
  * @updated 2014.05.27 (added md data caching)
@@ -4875,7 +4898,7 @@ var I18N = {};
  * jQuery, Underscore
  *
  * 
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2014.03.02
  */
 
@@ -5005,7 +5028,7 @@ var I18N = {};
  * ------------
  * Handlebars, _, $window, $
  * 
- * @author Tim.Liu
+ * @author Tim Lauv
  * @create 2013.12.26
  */
 
@@ -5089,7 +5112,7 @@ var I18N = {};
 					$overlay.height($window.height());
 					$overlay.data('onResize', function(){
 						$overlay.height($window.height());
-						//console.log('test if listener still there...');
+						//console.log('test to see if the listener is still there...');
 					});
 					$window.on('resize', $overlay.data('onResize'));
 				}
@@ -5571,7 +5594,7 @@ var I18N = {};
  * Do addon/transform stuff in onRender() *Do NOT* use onShow() it won't be invoked by enableEditors() enhancement in ItemView/Layout.
  * 
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @contributor Yan.Zhu
  * @created 2013.11.10
  * @updated 2014.02.26 [Bootstrap 3.1]
@@ -5815,7 +5838,7 @@ var I18N = {};
 									that.ui.result.html(_.isString(reply)?reply.i18n():JSON.stringify(reply));
 									_.delay(function(){
 										that.ui.result.empty();
-									}, 6000)
+									}, 6000);
 								}
 							}, options.upload));
 						}
@@ -6093,7 +6116,7 @@ var I18N = {};
  * -------------
  * We use the Application.Core.Editor module to register our validation rules, the enhanced editors or total customized editors might use them through the underlying basic editor(s) involved.
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2013.11.13
  */
 
@@ -6159,7 +6182,7 @@ var I18N = {};
  * details row is still in TBI status (extra tr stub, view close clean up)
  * 
  * 
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2014.04.22
  */
 
@@ -6309,7 +6332,7 @@ var I18N = {};
 ;/**
  * The Default String Column Header Definition.
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2013.11.25
  * @updated 2014.04.22
  */
@@ -6330,7 +6353,7 @@ var I18N = {};
 ;/**
  * The Default String Column Cell Definition.
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2013.11.25
  * @updated 2014.04.22
  */
@@ -6351,7 +6374,7 @@ var I18N = {};
 ;/**
  * Cell that shows the seq number of record
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2014.04.23
  */
 
@@ -6385,7 +6408,7 @@ var I18N = {};
  * 		...
  * }
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2013.11.27
  * @updated 2014.04.22
  */
@@ -6490,7 +6513,7 @@ var I18N = {};
  * ----
  * support search and expand a path (use $parent in node/leaf onSelected()'s first argument)
  *
- * @author Tim.Liu
+ * @author Tim Lauv
  * @created 2014.04.24
  */
 
@@ -6595,7 +6618,7 @@ var I18N = {};
  * [listenTo(target, 'view:page-changed')] - if target is passed in through init options
  * [listenTo(this, 'view:change-page')] - if target is passed in through init options
  * 
- * @author Tim.Liu
+ * @author Tim Lauv
  * @create 2014.05.05
  * @update 2014.12.01 (+pageWindowSize)
  */
@@ -6720,4 +6743,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.5-902 build 1445479068737";
+;;app.stagejs = "1.8.5-908 build 1447304323636";
