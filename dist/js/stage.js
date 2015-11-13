@@ -723,7 +723,7 @@
 		debug: function(){
 			var fn = console.debug || console.log;
 			if(app.param('debug') === 'true')
-				fn.apply(null, arguments);
+				fn.apply(console, arguments);
 		}
 	});
 
@@ -6743,4 +6743,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.5-908 build 1447304323636";
+;;app.stagejs = "1.8.5-911 build 1447381254654";

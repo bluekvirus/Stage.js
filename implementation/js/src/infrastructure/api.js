@@ -301,7 +301,7 @@
 		debug: function(){
 			var fn = console.debug || console.log;
 			if(app.param('debug') === 'true')
-				fn.apply(null, arguments);
+				fn.apply(console, arguments);
 		}
 	});
 
