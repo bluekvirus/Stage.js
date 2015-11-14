@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.8.6 (2015-11-11*)
+1.8.6 (2015-11-13*)
 -------------------
 1. Added $.hsplit/vsplit plugins (beta);
 2. Fixed dynamically loaded script position in build;
@@ -10,6 +10,7 @@ Change Log
 6. Added backbone-deep-model for 'x.y.z' change/get.
 7. Flattened form editor <-> data mapping (deep key);
 8. Added view.getViewIn('region') method;
+9. Added app.dispatcher() api;
 
 working on ...
 * Breaking down 'Basic' editors;

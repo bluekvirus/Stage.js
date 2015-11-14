@@ -1,22 +1,22 @@
 {
-	"created": "Fri, 09 Oct 2015 06:58:59 GMT",
+	"created": "Sat, 14 Nov 2015 03:45:08 GMT",
 	"list": [
 		{
 			"name": "modernizr",
-			"size": "50.2",
-			"version": "2.7.1",
+			"size": "50.1",
+			"version": "2.8.3",
 			"url": "https://github.com/Modernizr/Modernizr"
 		},
 		{
 			"name": "detectizr",
-			"size": "16.4",
-			"version": "2.0.0",
+			"size": "17.3",
+			"version": "2.2.0",
 			"url": "https://github.com/barisaydinoglu/Detectizr"
 		},
 		{
 			"name": "loadcss",
-			"size": "1.8",
-			"version": "0.1.7",
+			"size": "2.3",
+			"version": "0.2.4",
 			"url": "https://github.com/filamentgroup/loadCSS"
 		},
 		{
@@ -24,12 +24,6 @@
 			"size": "25.4",
 			"version": "1.0.6",
 			"url": "https://github.com/ftlabs/fastclick"
-		},
-		{
-			"name": "interact",
-			"size": "209.4",
-			"version": "1.2.4",
-			"url": "http://interactjs.io"
 		},
 		{
 			"name": "jquery",
@@ -40,7 +34,7 @@
 		{
 			"name": "js-cookie",
 			"size": "3.2",
-			"version": "2.0.3",
+			"version": "2.0.4",
 			"url": "https://github.com/js-cookie/js-cookie"
 		},
 		{
@@ -51,32 +45,32 @@
 		},
 		{
 			"name": "jquery-file-upload",
-			"size": "72.4",
-			"version": "9.10.6",
+			"size": "72.6",
+			"version": "9.11.2",
 			"url": "https://github.com/blueimp/jQuery-File-Upload"
 		},
 		{
 			"name": "underscore",
-			"size": "44.4",
-			"version": "1.6.0",
+			"size": "51.7",
+			"version": "1.8.3",
 			"url": "https://github.com/jashkenas/underscore"
 		},
 		{
 			"name": "underscore.string",
-			"size": "20.4",
-			"version": "2.4.0",
+			"size": "36.4",
+			"version": "3.2.2",
 			"url": "http://epeli.github.com/underscore.string/"
 		},
 		{
 			"name": "selectn",
 			"size": "2.2",
-			"version": "0.9.6",
+			"version": "0.10.0",
 			"url": "https://github.com/wilmoore/selectn"
 		},
 		{
 			"name": "validator-js",
-			"size": "26.5",
-			"version": "4.0.2",
+			"size": "29.2",
+			"version": "4.2.0",
 			"url": "https://github.com/chriso/validator.js"
 		},
 		{
@@ -93,8 +87,8 @@
 		},
 		{
 			"name": "handlebars",
-			"size": "98.5",
-			"version": "2.0.0",
+			"size": "156.0",
+			"version": "4.0.4",
 			"url": "https://github.com/components/handlebars.js"
 		},
 		{
@@ -105,8 +99,8 @@
 		},
 		{
 			"name": "uri.js",
-			"size": "112.8",
-			"version": "1.16.0",
+			"size": "113.5",
+			"version": "1.17.0",
 			"url": "https://github.com/medialize/URI.js"
 		},
 		{

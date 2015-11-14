@@ -248,7 +248,13 @@
 			}
 		},
 
-		//-----------------local data----------------
+		//-----------------dispatcher/observer/cache----------------
+		dispatcher: function(obj){ //+on/once, off; +listenTo/Once, stopListening; +trigger;
+			if(_.isPlainObject(obj))
+				return _.extend(obj, Backbone.Events);
+			return _.clone(Backbone.Events);
+		},
+
 		model: function(data){
 			//return new Backbone.Model(data);
 			//Warning: Possible performance impact...

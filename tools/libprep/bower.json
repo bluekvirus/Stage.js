@@ -34,22 +34,21 @@
     "README.md"
   ],
   "devDependencies": {
-    "modernizr": "~2.x.x",
+    "modernizr": "~2.8.x",
     "detectizr": "~2.x.x",
-    "loadcss": "~0.1.1",
+    "loadcss": "~0.2.x",
     "fastclick": "~1.x.x",
-    "interact": "~1.2.x",
     "jquery": "~2.1.x",
     "js-cookie": "2.0.x",
     "jquery-ui": "1.10.4",
     "jquery-file-upload": "~9.x.x",
-    "underscore": "~1.x.x",
-    "underscore.string": "~2.x.x",
-    "selectn": "~0.9.x",
+    "underscore": "~1.8.x",
+    "underscore.string": "~3.x.x",
+    "selectn": "~0.10.x",
     "validator-js": "~4.x.x",
     "backbone": "~1.x.x",
     "marionette": "~1.8.x",
-    "handlebars": "~2.x.x",
+    "handlebars": "~4.x.x",
     "swag": "~0.7.x",
     "uri.js": "~1.x.x",
     "store.js": "~1.x.x",
@@ -57,12 +56,6 @@
     "marked": "0.3.3",
     "bootstrap": "~3.x.x",
     "fontawesome": "~4.x.x"
-  },
-  "resolutions": {
-    "modernizr": "~2.x.x",
-    "fastclick": "~1.0.3",
-    "handlebars": "~2.x.x",
-    "underscore": "~1.x.x"
   },
   "themeDependencies": {
     "bootstrap": "~3.x.x",
@@ -74,6 +67,7 @@
   },
   "monitored": {
     "velocity": "*",
+    "interact": "*",
     "gridster": "*",
     "MasonJS": "*",
     "scroll-reveal": "*",
@@ -110,12 +104,13 @@
     "raphael": "2.1.2",
     "bootswatch": "~3.x.x",
     "open-sans-fontface": "*",
-    "roboto-fontface": "*",
-    "ubuntu-fontface": "*",
     "animate.css": "~3.x.x",
-    "lesshat": "~3.x.x",
     "mockjs": "0.1.x",
     "mocha": "~2.2.5",
     "chai": "~3.2.0"
+  },
+  "resolutions": {
+    "underscore": "~1.8.x",
+    "handlebars": "~4.x.x"
   }
 }

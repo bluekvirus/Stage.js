@@ -1,4 +1,4 @@
-;(function($, _, Swag, Marionette){
+;(function($, _, Swag, underscoreString, Marionette){
 
 	/**
 	 * Global shortcuts
@@ -15,9 +15,11 @@
 	 * ---------------------------------
 	 */
 	Swag.registerHelpers();
+	
 	_.isPlainObject = function(o){
 		return _.isObject(o) && !_.isFunction(o) && !_.isArray();
 	};
+	_.string = underscoreString;
 
 	/**
 	 * Define top level module containers
@@ -42,4 +44,4 @@
 		Application.module(coreModule);
 	});
 
-})(jQuery, _, Swag, Marionette);
+})(jQuery, _, Swag, s, Marionette);
