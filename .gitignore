@@ -232,4 +232,4 @@ implementation/themes/**/fonts/
 implementation/static/resource/default/download/
 
 #un-minified deps
-**/js/lib/dependencies.js
+#**/js/lib/dependencies.js

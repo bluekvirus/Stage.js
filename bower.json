@@ -13,13 +13,16 @@
 		"front-end",
 		"application",
 		"framework",
-		"multiple",
+		"navigation",
 		"context",
 		"page",
 		"layout",
 		"view",
 		"widget",
-		"editor"
+		"editor",
+		"real-time",
+		"co-op",
+		"restful"
 	],
 	"license": "MIT",
 	"ignore": [
