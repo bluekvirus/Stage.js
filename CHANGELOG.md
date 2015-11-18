@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.8.6 (2015-11-13*)
+1.8.6 (2015-11-17*)
 -------------------
 1. Added $.hsplit/vsplit plugins (beta);
 2. Fixed dynamically loaded script position in build;
@@ -11,6 +11,7 @@ Change Log
 7. Flattened form editor <-> data mapping (deep key);
 8. Added view.getViewIn('region') method;
 9. Added app.dispatcher() api;
+10. Disabled 'array.0.property' shredding in models;
 
 working on ...
 * Breaking down 'Basic' editors;
