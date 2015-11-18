@@ -1721,16 +1721,16 @@ var merge = require('lodash.merge');
  * @param  {Object}      Nested object e.g. { level1: { level2: 'value' } }
  * @return {Object}      Shallow object with path names e.g. { 'level1.level2': 'value' }
  */
-function objToPaths(obj) {
+function objToPaths(obj, ignoreArray) { //Tim's Hack: added ignoreArray option!
 	var ret = {},
 		separator = DeepModel.keyPathSeparator;
 
 	for (var key in obj) {
 		var val = obj[key];
 
-		if (val && (val.constructor === Object || val.constructor === Array) && !_.isEmpty(val)) {
+		if (val && (val.constructor === Object || (!ignoreArray && val.constructor === Array)) && !_.isEmpty(val)) {
 			//Recursion for embedded objects
-			var obj2 = objToPaths(val);
+			var obj2 = objToPaths(val, ignoreArray);
 
 			for (var key2 in obj2) {
 				var val2 = obj2[key2];
@@ -1893,7 +1893,10 @@ var DeepModel = Backbone.Model.extend({
 		if (this.idAttribute in attrs) this.id = attrs[this.idAttribute];
 
 		//<custom code>
-		attrs = objToPaths(attrs);
+		attrs = objToPaths(attrs, true);//Tim's Hack: activate ignoreArray option! no more array.0.xyz
+                                    //This is to fix the array 'shrink' problem with 'change':
+                                    //set('array', [1, 2, 3])
+                                    //set('array', [1]) will give no 'change' event.
 		//</custom code>
 
 		// For each `set` attribute, update or delete the current value.

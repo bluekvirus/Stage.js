@@ -1,5 +1,5 @@
 ;
-;;(function($, _, Swag, Marionette){
+;;(function($, _, Swag, underscoreString, Marionette){
 
 	/**
 	 * Global shortcuts
@@ -16,9 +16,11 @@
 	 * ---------------------------------
 	 */
 	Swag.registerHelpers();
+	
 	_.isPlainObject = function(o){
 		return _.isObject(o) && !_.isFunction(o) && !_.isArray();
 	};
+	_.string = underscoreString;
 
 	/**
 	 * Define top level module containers
@@ -43,7 +45,7 @@
 		Application.module(coreModule);
 	});
 
-})(jQuery, _, Swag, Marionette);
+})(jQuery, _, Swag, s, Marionette);
 
 ;/*
  * Main application definition.
@@ -670,7 +672,13 @@
 			}
 		},
 
-		//-----------------local data----------------
+		//-----------------dispatcher/observer/cache----------------
+		dispatcher: function(obj){ //+on/once, off; +listenTo/Once, stopListening; +trigger;
+			if(_.isPlainObject(obj))
+				return _.extend(obj, Backbone.Events);
+			return _.clone(Backbone.Events);
+		},
+
 		model: function(data){
 			//return new Backbone.Model(data);
 			//Warning: Possible performance impact...
@@ -3082,16 +3090,16 @@ var merge = require('lodash.merge');
  * @param  {Object}      Nested object e.g. { level1: { level2: 'value' } }
  * @return {Object}      Shallow object with path names e.g. { 'level1.level2': 'value' }
  */
-function objToPaths(obj) {
+function objToPaths(obj, ignoreArray) { //Tim's Hack: added ignoreArray option!
 	var ret = {},
 		separator = DeepModel.keyPathSeparator;
 
 	for (var key in obj) {
 		var val = obj[key];
 
-		if (val && (val.constructor === Object || val.constructor === Array) && !_.isEmpty(val)) {
+		if (val && (val.constructor === Object || (!ignoreArray && val.constructor === Array)) && !_.isEmpty(val)) {
 			//Recursion for embedded objects
-			var obj2 = objToPaths(val);
+			var obj2 = objToPaths(val, ignoreArray);
 
 			for (var key2 in obj2) {
 				var val2 = obj2[key2];
@@ -3254,7 +3262,10 @@ var DeepModel = Backbone.Model.extend({
 		if (this.idAttribute in attrs) this.id = attrs[this.idAttribute];
 
 		//<custom code>
-		attrs = objToPaths(attrs);
+		attrs = objToPaths(attrs, true);//Tim's Hack: activate ignoreArray option! no more array.0.xyz
+                                    //This is to fix the array 'shrink' problem with 'change':
+                                    //set('array', [1, 2, 3])
+                                    //set('array', [1]) will give no 'change' event.
 		//</custom code>
 
 		// For each `set` attribute, update or delete the current value.
@@ -6743,4 +6754,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.5-911 build 1447381254654";
+;;app.stagejs = "1.8.5-913 build 1447817688588";
