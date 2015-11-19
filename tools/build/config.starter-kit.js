@@ -11,7 +11,7 @@ module.exports = {
 				},
 				resource: {
 					'en-US': 'static/resource/en-US',
-					'en-ES': 'static/resource/en-ES',
+					'es-ES': 'static/resource/es-ES',
 					'zh-CN': 'static/resource/zh-CN',
 					'zh-TW': 'static/resource/zh-TW',
 				}
