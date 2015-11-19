@@ -26,7 +26,7 @@ libBase = path.join(implFolder, 'bower_components');
 
 buildify.task({
 	name: 'fix-libs',
-	depends: ['uri-js', 'jquery-file-upload', 'jquery-ui', 'fake', 'min'],
+	depends: ['uri-js', 'jquery-color', 'jquery-file-upload', 'jquery-ui', 'fake', 'min'],
 	task: function(){}
 });
 
@@ -45,6 +45,18 @@ buildify.task({
 			.save('../dist/uri.js');
 			// .uglify()
 			// .save('../dist/uri.min.js');
+	}
+});
+
+buildify.task({
+	name: 'jquery-color',
+	task: function(){
+		buildify()
+			.setDir(libBase + '/jquery-color')
+			.concat(['jquery.color.js', 'jquery.color.svg-names.js'], os.EOL + ';')
+			.save('dist/jquery-color.js');
+			// .uglify()
+			// .save('dist/jquery-color.js');
 	}
 });
 

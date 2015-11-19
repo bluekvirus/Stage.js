@@ -545,11 +545,10 @@
 
 				//see if we have app.viewSrcs set to load the View def dynamically
 				if(app.config && app.config.viewSrcs){
-					$.ajax({
-						url: _.compact([app.config.viewSrcs, type.toLowerCase(), app.nameToPath(name)]).join('/') + '.js',
-						dataType: 'script',
-						async: false
-					}).done(function(){
+					app.inject.js(
+						_.compact([app.config.viewSrcs, type.toLowerCase(), app.nameToPath(name)]).join('/') + '.js',
+						true //sync
+					).done(function(){
 						app.debug('View injected', name, 'from', app.viewSrcs);
 						Reusable = true;
 					}).fail(function(jqXHR, settings, e){
@@ -674,9 +673,16 @@
 
 		//-----------------dispatcher/observer/cache----------------
 		dispatcher: function(obj){ //+on/once, off; +listenTo/Once, stopListening; +trigger;
+			var dispatcher;
 			if(_.isPlainObject(obj))
-				return _.extend(obj, Backbone.Events);
-			return _.clone(Backbone.Events);
+				dispatcher = _.extend(obj, Backbone.Events);
+			else
+				dispatcher = _.clone(Backbone.Events);
+			dispatcher.dispose = function(){
+				this.off();
+				this.stopListening();
+			};
+			return dispatcher;
 		},
 
 		model: function(data){
@@ -727,6 +733,10 @@
 			window.location.reload();
 		},
 
+		//----------------fx animation---------------
+		nextFrame: window.requestAnimationFrame/*(next-step updater fn(t))*/,
+		cancelFrame: window.cancelAnimationFrame/*(frame id returned by nextFrame(fn))*/,
+
 		//----------------debug----------------------
 		debug: function(){
 			var fn = console.debug || console.log;
@@ -749,14 +759,16 @@
 	 * API summary
 	 */
 	app._apis = [
-		'model', 'collection',
-		'context - @alias:page', 'regional - @alias:area',
-		'view',
-		'widget', 'editor', 'editor.validator - @alias:editor.rule',
-		'remote',
-		'lock', 'unlock', 'available',
-		'download',
-		'create - @deprecated'
+		'dispatcher', 'model', 'collection',
+		'context - @alias:page', 'view', 'widget', 'editor', 'editor.validator - @alias:editor.rule', //view
+		'lock', 'unlock', 'available', //global action locks
+		'coop', 'navigate', 'reload', 'param', 'nextFrame', 'cancelFrame',
+		'remote', 'ws', 'download', //com
+		'extract', 'cookie', 'store', 'moment', 'uri', 'validator', //3rd-party lib short-cut
+		//@supportive
+		'debug', 'has', 'get', 'nameToPath', 'pathToName', 'inject.js', 'inject.tpl', 'inject.css',
+		//@deprecated
+		'create - @deprecated', 'regional - @deprecated'
 	];
 
 	/**
@@ -951,25 +963,27 @@
 
 ;(function(app){
 
-	app.Util.inject = function(url){
+	app.Util.inject = function(url, sync){
 
 		url = url || 'patch.json';
 
-		if(_.string.endsWith(url, '.js')) {
-			$.getScript(url);
-		}
+		if(_.string.endsWith(url, '.js'))
+			return $.ajax({
+				url: url,
+				async: !sync,
+				dataType: 'script'
+			});
 		else
-			$.getJSON(url).done(function(list){
+			return $.getJSON(url, function(list){
 				var base = '';
 				if(!_.isArray(list)) {
 					base = list.base;
 					list = list.list;
 				}
 				_.each(list, function(js){
-					app.Util.inject((_.string.endsWith(base, '/')?base: (!base?'':(base + '/'))) + js);
+					app.Util.inject((_.string.endsWith(base, '/')?base: (!base?'':(base + '/'))) + js, sync);
 				});
 			});
-
 	};
 
 })(Application);
@@ -6754,4 +6768,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.5-914 build 1447821707086";
+;;app.stagejs = "1.8.6-916 build 1447906694674";

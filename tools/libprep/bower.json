@@ -1,6 +1,6 @@
 {
   "name": "stage.js",
-  "version": "1.8.5",
+  "version": "1.8.6",
   "homepage": "http://bluekvirus.github.io/Stage.js/",
   "authors": [
     "Tim Lauv <bluekvirus@gmail.com>"
@@ -42,7 +42,8 @@
     "loadcss": "~0.2.x",
     "fastclick": "~1.x.x",
     "jquery": "~2.1.x",
-    "js-cookie": "2.0.x",
+    "jquery-color": "~2.1.x",
+    "js-cookie": "~2.0.x",
     "jquery-ui": "1.10.4",
     "jquery-file-upload": "~9.x.x",
     "underscore": "~1.8.x",

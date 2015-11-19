@@ -1,5 +1,5 @@
 {
-	"created": "Wed, 18 Nov 2015 04:40:06 GMT",
+	"created": "Thu, 19 Nov 2015 04:17:57 GMT",
 	"list": [
 		{
 			"name": "modernizr",
@@ -30,6 +30,12 @@
 			"size": "241.8",
 			"version": "2.1.4",
 			"url": "https://github.com/jquery/jquery"
+		},
+		{
+			"name": "jquery-color",
+			"size": "19.3",
+			"version": "2.1.2",
+			"url": "https://github.com/jquery/jquery-color"
 		},
 		{
 			"name": "js-cookie",
