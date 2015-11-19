@@ -1,0 +1,16 @@
+{
+	"locale": "zh-TW",
+	"trans": {
+		"System": "系統",
+		"Dashboard": {
+			"_default":"狀態監控板",
+			"menu": "儀表板"
+		},
+		"Status": "狀態",
+		"Permissions": "權限",
+		"Users": "用戶管理",
+		"Log & Report": "系統記錄及報告",
+		"Miscellaneous": "其他設置",
+		"Logout":"退出"
+	}
+}

@@ -1,0 +1,16 @@
+{
+	"locale": "es-ES",
+	"trans": {
+		"System": "Sistema",
+		"Dashboard": {
+			"_default":"Tablero",
+			"menu": "Tablero"
+		},
+		"Status": "Estado",
+		"Permissions": "Permisos",
+		"Users": "Usuarios",
+		"Log & Report": "Log & Informe",
+		"Miscellaneous": "Diverso",
+		"Logout":"Cerrar sesión"
+	}
+}

@@ -9,7 +9,12 @@ module.exports = {
 				template: {
 					'all.json': ''
 				},
-				resource: {}
+				resource: {
+					'en-US': 'static/resource/en-US',
+					'en-ES': 'static/resource/en-ES',
+					'zh-CN': 'static/resource/zh-CN',
+					'zh-TW': 'static/resource/zh-TW',
+				}
 			},
 			themes: {
 				'default': {
