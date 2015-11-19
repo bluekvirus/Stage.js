@@ -15,25 +15,27 @@
 
 ;(function(app){
 
-	app.Util.inject = function(url){
+	app.Util.inject = function(url, sync){
 
 		url = url || 'patch.json';
 
-		if(_.string.endsWith(url, '.js')) {
-			$.getScript(url);
-		}
+		if(_.string.endsWith(url, '.js'))
+			return $.ajax({
+				url: url,
+				async: !sync,
+				dataType: 'script'
+			});
 		else
-			$.getJSON(url).done(function(list){
+			return $.getJSON(url, function(list){
 				var base = '';
 				if(!_.isArray(list)) {
 					base = list.base;
 					list = list.list;
 				}
 				_.each(list, function(js){
-					app.Util.inject((_.string.endsWith(base, '/')?base: (!base?'':(base + '/'))) + js);
+					app.Util.inject((_.string.endsWith(base, '/')?base: (!base?'':(base + '/'))) + js, sync);
 				});
 			});
-
 	};
 
 })(Application);

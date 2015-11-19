@@ -12,6 +12,7 @@ Change Log
 8. Added view.getViewIn('region') method;
 9. Added app.dispatcher() api;
 10. Disabled 'array.0.property' shredding in models;
+11. Added app.nextFrame()/cancelFrame() apis;
 
 working on ...
 * Breaking down 'Basic' editors;
