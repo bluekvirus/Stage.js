@@ -1,23 +1,30 @@
 Change Log
 ==========
-1.8.6 (2015-11-17*)
+1.9.0 (2015-11-18*)
 -------------------
 1. Added $.hsplit/vsplit plugins (beta);
-2. Fixed dynamically loaded script position in build;
-3. Aligned DEV:: and RUNTIME:: exception formats;
-4. Refined params/querys option processing in app.remote;
-5. Removed form/editor nesting through regions;
-6. Added backbone-deep-model for 'x.y.z' change/get.
-7. Flattened form editor <-> data mapping (deep key);
-8. Added view.getViewIn('region') method;
-9. Added app.dispatcher() api;
-10. Disabled 'array.0.property' shredding in models;
 
 working on ...
 * Breaking down 'Basic' editors;
 * Adding more unit tests.
 * Adding interactive tutorial site;
 * Updating doc (around data handling, coop, remote, ws, form).
+
+
+1.8.6 (2015-11-18)
+-------------------
+1. Fixed dynamically loaded script position in build;
+2. Aligned DEV:: and RUNTIME:: exception formats;
+3. Refined params/querys option processing in app.remote;
+4. Removed form/editor nesting through regions;
+5. Added backbone-deep-model for 'x.y.z' change/get.
+6. Flattened form editor <-> data mapping (deep key);
+7. Added view.getViewIn('region') method;
+8. Added app.dispatcher() api;
+9. Disabled 'array.0.property' shredding in models;
+10. Added app.nextFrame()/cancelFrame() apis;
+11. Added jquery-color for color in $.animate();
+12. Updated handlebars to v4 (mind the 'context' change);
 
 
 1.8.5 (2015-10-08)
