@@ -14,7 +14,7 @@
 		* baseAjaxURI
 		* i18nResources
 		* i18nTransFile
-		* timeout (ms) - for app.remote and $.fileupload only, not for general $.ajax.
+		* timeout (ms)
  * 2. app.run();
  *
  * ###How to interface with remote data?
@@ -127,7 +127,7 @@
 			i18nResources: 'static/resource', //this the the default location where our I18N plugin looks for locale translations.
 			i18nTransFile: 'i18n.json', //can be {locale}.json
 			i18nLocale: '', //if you really want to force the app to certain locale other than browser preference. (Still override-able by ?locale=.. in url)
-			timeout: 5 * 60 * 1000,
+			timeout: 5 * 60 * 1000, //general communication timeout (ms). for app.remote and $.fileupload atm.
 
 		}, config);
 		
