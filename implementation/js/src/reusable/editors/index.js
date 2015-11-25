@@ -509,10 +509,10 @@
 					'{{#if options}}',
 						'<div ui="inputs" id={{uiId}}>',
 						'{{#each options.data}}',
-							'{{#unless ../options.inline}}<div class="{{../../type}}">{{/unless}}',
-							'<label class="{{#if ../options.inline}}{{../../type}}-inline{{/if}}">',
-								//note that the {{if}} within a {{each}} will impose +1 level down in the content scope.  
-								'<input ui="input" name="{{#if ../fieldname}}{{../../fieldname}}{{else}}{{../../name}}{{/if}}{{#is ../type "checkbox"}}[]{{/is}}" type="{{../type}}" value={{value}}> {{i18n label}}',
+							'{{#unless ../options.inline}}<div class="{{../type}}">{{/unless}}',
+							'<label class="{{#if ../options.inline}}{{../type}}-inline{{/if}}">',
+								//note that the {{if}} within a {{each}} will no longer impose +1 level down in the content scope. (after Handlebars v4)
+								'<input ui="input" name="{{#if ../fieldname}}{{../fieldname}}{{else}}{{../name}}{{/if}}{{#is ../type "checkbox"}}[]{{/is}}" type="{{../type}}" value={{value}}> {{i18n label}}',
 							'</label>',
 							'{{#unless ../options.inline}}</div>{{/unless}}',
 						'{{/each}}',
@@ -523,7 +523,6 @@
 						'{{#is type "checkbox"}}',
 							//single checkbox
 							'<label>',
-								//note that the {{if}} within a {{each}} will impose +1 level down in the content scope.  
 								'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" type="checkbox" value="{{value}}"> {{i18n boxLabel}}',
 							'</label>',
 						'{{else}}',
