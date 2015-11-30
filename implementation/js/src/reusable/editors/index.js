@@ -57,6 +57,7 @@
  * editor:change
  * editor:keyup
  * editor:focusin/out
+ * view:editor-changed (parentCt)
  *
  * Constrain
  * =========
@@ -96,11 +97,11 @@
 				//host.trigger('editor:' + e.type + ':' + this.model.get('name'), this);
 
 				if(this.parentCt){
-					host = this.parentCt;
+					this.parentCt.trigger('editor:' + e.type, this.model.get('name'), this);
+					//this.parentCt.trigger('editor:' + e.type + ':' + this.model.get('name'), this);
+					if(e.type == 'change')
+						this.parentCt.trigger('view:editor-changed', this.model.get('name'), this);
 				}
-				host.trigger('editor:' + e.type, this.model.get('name'), this);
-				//host.trigger('editor:' + e.type + ':' + this.model.get('name'), this);
-		
 			},
 
 			initialize: function(options){

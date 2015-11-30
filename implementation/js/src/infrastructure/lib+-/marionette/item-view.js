@@ -375,9 +375,11 @@
 
 		//Editors don't render according to the underlying backbone model.
 		_renderTplOrResetEditors: function(){
-			if(this._editors)
+			if(this._editors){
 				this.setValues(this.model.toJSON());
 				//note that as a form view, updating data does NOT refresh sub-regional views...
+				this.trigger('view:editors-updated');
+			}
 			else {
 				this.render();
 				//note that this will re-render the sub-regional views.

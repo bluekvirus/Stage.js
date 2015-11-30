@@ -4125,9 +4125,11 @@ module.exports = DeepModel;
 
 		//Editors don't render according to the underlying backbone model.
 		_renderTplOrResetEditors: function(){
-			if(this._editors)
+			if(this._editors){
 				this.setValues(this.model.toJSON());
 				//note that as a form view, updating data does NOT refresh sub-regional views...
+				this.trigger('view:editors-updated');
+			}
 			else {
 				this.render();
 				//note that this will re-render the sub-regional views.
@@ -5613,6 +5615,7 @@ var I18N = {};
  * editor:change
  * editor:keyup
  * editor:focusin/out
+ * view:editor-changed (parentCt)
  *
  * Constrain
  * =========
@@ -5652,11 +5655,11 @@ var I18N = {};
 				//host.trigger('editor:' + e.type + ':' + this.model.get('name'), this);
 
 				if(this.parentCt){
-					host = this.parentCt;
+					this.parentCt.trigger('editor:' + e.type, this.model.get('name'), this);
+					//this.parentCt.trigger('editor:' + e.type + ':' + this.model.get('name'), this);
+					if(e.type == 'change')
+						this.parentCt.trigger('view:editor-changed', this.model.get('name'), this);
 				}
-				host.trigger('editor:' + e.type, this.model.get('name'), this);
-				//host.trigger('editor:' + e.type + ':' + this.model.get('name'), this);
-		
 			},
 
 			initialize: function(options){
@@ -6767,4 +6770,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.6-920 build 1448477881372";
+;;app.stagejs = "1.8.6-921 build 1448868607497";
