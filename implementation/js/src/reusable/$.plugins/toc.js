@@ -37,7 +37,7 @@
 		options = _.extend({
 
 			ignoreRoot: false,
-			headerHTML: '', //'<h3><i class="fa fa-book"></i> Table of Content</h3>'
+			headerHTML: '', //'<h3><i class="glyphicon glyphicon-book"></i> Table of Content</h3>'
 
 		}, options);
 

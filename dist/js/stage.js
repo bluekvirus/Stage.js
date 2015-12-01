@@ -4942,7 +4942,7 @@ var I18N = {};
 		options = _.extend({
 
 			ignoreRoot: false,
-			headerHTML: '', //'<h3><i class="fa fa-book"></i> Table of Content</h3>'
+			headerHTML: '', //'<h3><i class="glyphicon glyphicon-book"></i> Table of Content</h3>'
 
 		}, options);
 
@@ -6459,15 +6459,15 @@ var I18N = {};
 					//default
 					_.each({
 						preview: {
-							icon: 'fa fa-eye',
+							icon: 'glyphicon glyphicon-eye-open',
 							tooltip: 'Preview'
 						},
 						edit: {
-							icon: 'fa fa-pencil',
+							icon: 'glyphicon glyphicon-pencil',
 							tooltip: 'Edit'
 						},
 						'delete': {
-							icon: 'fa fa-times',
+							icon: 'glyphicon glyphicon-remove',
 							tooltip: 'Delete'
 						}
 					}, function(def, name){
@@ -6770,4 +6770,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.6-923 build 1449000936109";
+;;app.stagejs = "1.8.6-924 build 1449004315327";

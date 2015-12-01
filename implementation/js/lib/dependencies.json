@@ -1,5 +1,5 @@
 {
-	"created": "Thu, 19 Nov 2015 04:17:57 GMT",
+	"created": "Tue, 01 Dec 2015 21:10:05 GMT",
 	"list": [
 		{
 			"name": "modernizr",
@@ -75,8 +75,8 @@
 		},
 		{
 			"name": "validator-js",
-			"size": "29.2",
-			"version": "4.2.0",
+			"size": "29.8",
+			"version": "4.3.0",
 			"url": "https://github.com/chriso/validator.js"
 		},
 		{
@@ -93,8 +93,8 @@
 		},
 		{
 			"name": "handlebars",
-			"size": "156.0",
-			"version": "4.0.4",
+			"size": "155.8",
+			"version": "4.0.5",
 			"url": "https://github.com/components/handlebars.js"
 		},
 		{
@@ -130,14 +130,8 @@
 		{
 			"name": "bootstrap",
 			"size": "67.3",
-			"version": "3.3.5",
+			"version": "3.3.6",
 			"url": "http://getbootstrap.com"
-		},
-		{
-			"name": "fontawesome",
-			"size": "0.0",
-			"version": "4.4.0",
-			"url": "http://fontawesome.io"
 		}
 	]
 }

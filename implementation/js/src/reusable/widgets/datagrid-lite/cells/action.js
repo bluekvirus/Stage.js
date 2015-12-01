@@ -41,15 +41,15 @@
 					//default
 					_.each({
 						preview: {
-							icon: 'fa fa-eye',
+							icon: 'glyphicon glyphicon-eye-open',
 							tooltip: 'Preview'
 						},
 						edit: {
-							icon: 'fa fa-pencil',
+							icon: 'glyphicon glyphicon-pencil',
 							tooltip: 'Edit'
 						},
 						'delete': {
-							icon: 'fa fa-times',
+							icon: 'glyphicon glyphicon-remove',
 							tooltip: 'Delete'
 						}
 					}, function(def, name){

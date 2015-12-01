@@ -26,7 +26,7 @@ libBase = path.join(implFolder, 'bower_components');
 
 buildify.task({
 	name: 'fix-libs',
-	depends: ['uri-js', 'jquery-color', 'jquery-file-upload', 'jquery-ui', 'fake', 'min'],
+	depends: ['uri-js', 'jquery-color', 'jquery-file-upload', 'jquery-ui', /*'fake'*/, 'min'],
 	task: function(){}
 });
 
@@ -87,15 +87,15 @@ buildify.task({
 
 });
 
-buildify.task({
-	name: 'fake',
-	task: function(){
-		var config = ['fontawesome'];
-		_.each(config, function(lib){
-			buildify().setDir(path.join(libBase, lib)).setContent(';').save(lib + '.js');
-		});
-	}
-});
+// buildify.task({
+// 	name: 'fake',
+// 	task: function(){
+// 		var config = ['fontawesome'];
+// 		_.each(config, function(lib){
+// 			buildify().setDir(path.join(libBase, lib)).setContent(';').save(lib + '.js');
+// 		});
+// 	}
+// });
 
 buildify.task({
 	name: 'min',

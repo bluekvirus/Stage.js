@@ -5,7 +5,6 @@
 	"uri.js": "dist",
 	"jquery-color": "dist",
 	"jquery-ui": "dist/jquery-no-widget-ui.js",
-	"fontawesome": "fontawesome.js",
 	"loadcss": "loadCSS.js",
 	"detectizr": "dist"
 }

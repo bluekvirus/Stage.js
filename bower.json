@@ -58,7 +58,6 @@
 		"store.js": "~1.x.x",
 		"momentjs": "~2.x.x",
 		"marked": "0.3.3",
-		"bootstrap": "~3.x.x",
-		"fontawesome": "~4.x.x"
+		"bootstrap": "~3.x.x"
 	}
 }

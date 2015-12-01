@@ -12,11 +12,11 @@
     "../../implementation/bower_components/blueimp-load-image/js/load-image-exif.js",
     "../../implementation/bower_components/blueimp-load-image/js/load-image-exif-map.js"
   ],
-  "blueimp-tmpl": "../../implementation/bower_components/blueimp-tmpl/js/tmpl.js",
   "bootstrap": [
     "../../implementation/bower_components/bootstrap/less/bootstrap.less",
     "../../implementation/bower_components/bootstrap/dist/js/bootstrap.js"
   ],
+  "blueimp-tmpl": "../../implementation/bower_components/blueimp-tmpl",
   "bootswatch": "../../implementation/bower_components/bootswatch",
   "chai": "../../implementation/bower_components/chai/chai.js",
   "detectizr": "../../implementation/bower_components/detectizr",
@@ -25,11 +25,11 @@
     "../../implementation/bower_components/fontawesome/less/font-awesome.less",
     "../../implementation/bower_components/fontawesome/scss/font-awesome.scss"
   ],
+  "handlebars": "../../implementation/bower_components/handlebars/handlebars.js",
   "highlightjs": [
     "../../implementation/bower_components/highlightjs/highlight.pack.js",
     "../../implementation/bower_components/highlightjs/styles/default.css"
   ],
-  "handlebars": "../../implementation/bower_components/handlebars/handlebars.js",
   "iCheck": "../../implementation/bower_components/iCheck/icheck.min.js",
   "jquery-color": "../../implementation/bower_components/jquery-color",
   "jquery-file-upload": "../../implementation/bower_components/jquery-file-upload/js/jquery.fileupload.js",
@@ -46,9 +46,9 @@
     "../../implementation/bower_components/mocha/mocha.js",
     "../../implementation/bower_components/mocha/mocha.css"
   ],
+  "modernizr": "../../implementation/bower_components/modernizr",
   "mockjs": "../../implementation/bower_components/mockjs/dist/mock.js",
   "momentjs": "../../implementation/bower_components/momentjs/moment.js",
-  "modernizr": "../../implementation/bower_components/modernizr",
   "nprogress": [
     "../../implementation/bower_components/nprogress/nprogress.js",
     "../../implementation/bower_components/nprogress/nprogress.css"
