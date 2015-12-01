@@ -15,131 +15,110 @@
 
 // Wrapper --------------------------
 .wrapper {
-  padding-top: @line-height-computed/2;
-  padding-bottom: @line-height-computed/2;
+    padding-top: @line-height-computed/2;
+    padding-bottom: @line-height-computed/2;
 }
 
 .wrapper-2x {
-  padding-top: @line-height-computed;
-  padding-bottom: @line-height-computed;
+    padding-top: @line-height-computed;
+    padding-bottom: @line-height-computed;
 }
 
 .wrapper-horizontal {
-  padding-left: @line-height-computed/2;
-  padding-right: @line-height-computed/2;
+    padding-left: @line-height-computed/2;
+    padding-right: @line-height-computed/2;
 }
 
 .wrapper-horizontal-2x {
-  padding-left: @line-height-computed;
-  padding-right: @line-height-computed;
+    padding-left: @line-height-computed;
+    padding-right: @line-height-computed;
 }
 
 .wrapper-full {
-  padding: @line-height-computed/2 @line-height-computed/2;
+    padding: @line-height-computed/2 @line-height-computed/2;
 }
 
 .wrapper-full-2x {
-  padding: @line-height-computed @line-height-computed;
+    padding: @line-height-computed @line-height-computed;
 }
 
 // Bordered -------------------------
 .border {
-  border-style: solid;
-  border-width: 0;
-  border-color: @base-border-color;
-  
-  &-top {
-    border-top-width: 1px;
-
-    &-lg {
-      border-top-width: 4px;
+    border-style: solid;
+    border-width: 0;
+    border-color: @base-border-color;
+    &-top {
+        border-top-width: 1px;
+        &-lg {
+            border-top-width: 4px;
+        }
     }
-  }
-
-  &-left {
-    border-left-width: 1px;
-
-    &-lg {
-      border-left-width: 4px;
+    &-left {
+        border-left-width: 1px;
+        &-lg {
+            border-left-width: 4px;
+        }
     }
-  }
-  
-  &-right {
-    border-right-width: 1px;
-
-    &-lg {
-      border-right-width: 4px;
+    &-right {
+        border-right-width: 1px;
+        &-lg {
+            border-right-width: 4px;
+        }
     }
-  }
-
-  &-bottom {
-    border-bottom-width: 1px;
-
-    &-lg {
-      border-bottom-width: 4px;
+    &-bottom {
+        border-bottom-width: 1px;
+        &-lg {
+            border-bottom-width: 4px;
+        }
     }
-  }  
-
-  &-full {
-    border-width: 1px;
-
-    &-lg {
-      border-width: 4px;
+    &-full {
+        border-width: 1px;
+        &-lg {
+            border-width: 4px;
+        }
     }
-  }
-
 }
 
 // Rounded -----------------------
 .rounded {
-  border-radius: 15px;
-
-  &-xs {
-    border-radius: 3px;
-  }
-
-  &-sm {
-    border-radius: 6px;
-  }
-
-  &-lg {
-    border-radius: 25px;
-  }
-
-  &-upper {
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-  }
-
-  &-lower {
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-  }
-
-  &-left {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-  }
-
-  &-right {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-  }
-
+    border-radius: 15px;
+    &-xs {
+        border-radius: 3px;
+    }
+    &-sm {
+        border-radius: 6px;
+    }
+    &-lg {
+        border-radius: 25px;
+    }
+    &-upper {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+    &-lower {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+    }
+    &-left {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+    &-right {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
 }
 
 // Circle --------------------------
-
 .circle(@size: 5em) {
-  border-radius: 50%;
-  text-align: center;
-  line-height: .6 * @size;
-  .square(@size);
-  //use font-size, line-height and padding to center the content.
+    border-radius: 50%;
+    text-align: center;
+    line-height: .6 * @size;
+    .square(@size);
+    //use font-size, line-height and padding to center the content.
 }
 
 // Center (mixin) ------------------
-
 // .center-box(@width, @height) {
 //   .center-block();
 //   position: absolute;
@@ -147,139 +126,136 @@
 //   margin-top: -@heigth;
 //   .size(@width, @height);
 // }
-
-
 // Heading ----------------------
 .heading {
-  padding-left: 1.5em;
-  padding-right: 1.5em;
-  padding-bottom: 0.75em;
-  border-bottom: 1px solid @base-border-color;
+    padding-left: 1.5em;
+    padding-right: 1.5em;
+    padding-bottom: 0.75em;
+    border-bottom: 1px solid @base-border-color;
 }
 
 // Box --------------------------
 .box {
-
-  .heading {
-    padding-top: 1.25em;
-    
-    h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
-      margin-top: 0;
-      margin-bottom: 0.5em;
-      display: inline-block !important;
+    .heading {
+        padding-top: 1.25em;
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        .h1,
+        .h2,
+        .h3,
+        .h4,
+        .h5,
+        .h6 {
+            margin-top: 0;
+            margin-bottom: 0.5em;
+            display: inline-block !important;
+        }
+        .tools {
+            //add .pull-right in class="" if want to float right in heading 
+            //!BUG! -- (currently Chrome has a float bug that breaks floaded items into the next line...)
+            display: inline-block !important;
+            .dropdown-menu {
+                left: auto;
+                right: 0;
+                top: auto;
+            }
+        }
     }
-
-    .tools { 
-      //add .pull-right in class="" if want to float right in heading 
-      //!BUG! -- (currently Chrome has a float bug that breaks floaded items into the next line...)
-      display: inline-block !important;
-
-      .dropdown-menu {
-        left: auto;
-        right: 0;
-        top: auto;
-      }
+    .body {
+        .wrapper-full-2x;
     }
-  }
-
-  .body {
-    .wrapper-full-2x;
-  }
-
 }
 
 // Fieldset ---------------------
 .fieldset {
-  margin-top: 1.5em;
-  .border;
-  border-width: 1px;
-  .wrapper-full-2x;
-
-  legend, .legend {
-    font-size: @font-size-base;
-    border: none;
-    width: auto;
-    margin: 0;
-  }
-
-  &-shadowed {
-    position: relative;
-    box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
-    border-width: 0;
-    padding-top: @line-height-computed * 3;
-
-    legend, .legend {
-      width: 100%;
-      position: absolute;
-      top: 0;
-      left: 0;
-      padding: 0.5em 1em;
-      background-color: @btn-default-bg; //borrow btn default colors here
-      color: @btn-default-color;
+    margin-top: 1.5em;
+    .border;
+    border-width: 1px;
+    .wrapper-full-2x;
+    legend,
+    .legend {
+        font-size: @font-size-base;
+        border: none;
+        width: auto;
+        margin: 0;
     }
-  }
-
+    &-shadowed {
+        position: relative;
+        box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
+        border-width: 0;
+        padding-top: @line-height-computed * 3;
+        legend,
+        .legend {
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            padding: 0.5em 1em;
+            background-color: @btn-default-bg; //borrow btn default colors here
+            color: @btn-default-color;
+        }
+    }
 }
 
 // Segmented tab-like controls ------
-
 .segmented-control {
-  position: relative;
-  display: table;
-  overflow: hidden;
-  font-size: @font-size-base * 0.8;
-  font-weight: 400;
-  background-color: @body-bg;
-  color: @base-border-color;
-  border: 1px solid @base-border-color;
-  border-radius: 3px;
-  margin: 1em auto;
-
-  .control-item {
-    display: table-cell;
-    width: 1%;
-    padding-top: 0.5em;
-    padding-bottom: 0.6em;
+    position: relative;
+    display: table;
     overflow: hidden;
-    line-height: 1;
-    text-align: center;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    border-left: 1px solid; //inherits 'color' attr
-    color: inherit;
-
-    &:first-child {
-      border-left-width: 0;
-    }
-
-    &:active, &.active {
-      color: @body-bg;
-      background-color: @base-border-color;
-    }
-  }
-
-  //5 major coloring types
-  .segmented-control(@type) {
-    @color: 'brand-@{type}';
-
-    &-@{type} {
-      color: @@color;
-      border-color: @@color;
-
-      .control-item {
-        &:active, &.active {
-          background-color: @@color;
+    font-size: @font-size-base * 0.8;
+    font-weight: 400;
+    background-color: @body-bg;
+    color: @base-border-color;
+    border: 1px solid @base-border-color;
+    border-radius: 3px;
+    margin: 1em auto;
+    .control-item {
+        display: table-cell;
+        width: 1%;
+        padding-top: 0.5em;
+        padding-bottom: 0.6em;
+        overflow: hidden;
+        line-height: 1;
+        text-align: center;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        border-left: 1px solid; //inherits 'color' attr
+        color: inherit;
+        &:first-child {
+            border-left-width: 0;
         }
-      }
+        &:active,
+        &.active {
+            color: @body-bg;
+            background-color: @base-border-color;
+        }
     }
-  }
-
-  .segmented-control(primary);
-  .segmented-control(success);
-  .segmented-control(info);
-  .segmented-control(warning);
-  .segmented-control(danger);
-
+    //5 major coloring types
+    .segmented-control(@type) {
+        @color: 'brand-@{type}';
+        &-@ {
+            type
+        }
+        {
+            color: @@color;
+            border-color: @@color;
+            .control-item {
+                &:active,
+                &.active {
+                    background-color: @@color;
+                }
+            }
+        }
+    }
+    .segmented-control(primary);
+    .segmented-control(success);
+    .segmented-control(info);
+    .segmented-control(warning);
+    .segmented-control(danger);
 }
 
 
@@ -288,10 +264,15 @@
  * Editors
  * =================================================
  */
+
 .has-error {
-  label, .checkbox, .radio, .radio-inline, .checkbox-inline {
-    color: @brand-danger;
-  }
+    label,
+    .checkbox,
+    .radio,
+    .radio-inline,
+    .checkbox-inline {
+        color: @brand-danger;
+    }
 }
 
 
@@ -303,114 +284,113 @@
 
 // Tree ---------------------------------------------------
 .tree {
-  list-style: none;
-
-  .node {
     list-style: none;
-    .type-indicator {
-      .fa;
-      &:before{
-        content: @fa-var-plus-square-o; //[+]
-      }
+    .node {
+        list-style: none;
+        .type-indicator {
+            .glyphicon;
+            .glyphicon-plus;
+        }
+        &.expanded {
+            & > .item .type-indicator {
+                .glyphicon;
+                .glyphicon-minus;
+            }
+        }
     }
-
-    &.expanded {
-      & > .item .type-indicator {
-        .fa;
-        &:before{
-          content: @fa-var-minus-square-o; //[-]
-        }  
-      }
+    .leaf {
+        list-style: none;
+        .type-indicator {
+            .hidden
+        }
     }
-
-  }
-
-  .leaf {
-    list-style: none;
-    .type-indicator {
-      .hidden
-    }
-  }
 }
 
 // MD ------------------------------------------------------
 .md-content {
-  
-  h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
-    margin: @font-size-h1 0 @font-size-h6;
-  }
-
-  h1, h2, h3, .h1, .h2, .h3 {
-    border-bottom: 1px solid @hr-border;
-    line-height: 1.4;
-    padding-bottom: @font-size-h6/2;
-  }
-
-  h4, h5, h6, .h4, .h5, .h6 {
-    color: @gray-light;
-  }
-
-  blockquote {
-    font-size: @blockquote-font-size * 0.75;
-
-    ul {
-      .list-unstyled;
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    .h1,
+    .h2,
+    .h3,
+    .h4,
+    .h5,
+    .h6 {
+        margin: @font-size-h1 0 @font-size-h6;
     }
-
-    li > ul {
-      padding-left: @font-size-base * 2.15;
+    h1,
+    h2,
+    h3,
+    .h1,
+    .h2,
+    .h3 {
+        border-bottom: 1px solid @hr-border;
+        line-height: 1.4;
+        padding-bottom: @font-size-h6/2;
     }
-
-  }
-
-  pre {
-    padding: 4px;
-  }
-
-  hr {
-    border-style: dashed;
-  }
-
+    h4,
+    h5,
+    h6,
+    .h4,
+    .h5,
+    .h6 {
+        color: @gray-light;
+    }
+    blockquote {
+        font-size: @blockquote-font-size * 0.75;
+        ul {
+            .list-unstyled;
+        }
+        li > ul {
+            padding-left: @font-size-base * 2.15;
+        }
+    }
+    pre {
+        padding: 4px;
+    }
+    hr {
+        border-style: dashed;
+    }
 }
 
 .md-toc {
-
-  .md-content;
-  
-  ul {
-    .list-unstyled;
-  }
-
-  .chapter { //h2
-    a {
-      color: @gray-darker;
-    }
+    .md-content;
     ul {
-      padding-left: @font-size-base * 2.15;
+        .list-unstyled;
     }
-    
-    .section {
-      a {
-        color: @gray;
-      }
-      ul {
+    .chapter {
+        //h2
         a {
-          color: @gray-light;
+            color: @gray-darker;
         }
-      }
+        ul {
+            padding-left: @font-size-base * 2.15;
+        }
+        .section {
+            a {
+                color: @gray;
+            }
+            ul {
+                a {
+                    color: @gray-light;
+                }
+            }
+        }
     }
-  }
-
 }
 
-.split-hbar{
-  background: darkGrey;
-  height: 3px;
+.split-hbar {
+    background: darkGrey;
+    height: 3px;
 }
 
-.split-vbar{
-  background: darkGrey;
-  width: 3px; 
+.split-vbar {
+    background: darkGrey;
+    width: 3px;
 }
 
 
@@ -421,59 +401,49 @@
  */
 
 //Margins Reset -----------------
-.breadcrumb, .alert {
-  margin: 0;
+.breadcrumb,
+.alert {
+    margin: 0;
 }
 
 //Button White ------------------
 .btn-white {
-  background: none;
-  border: 1px solid @gray-lighter;
-
-  &:hover, &:focus, &:active {
-    color: @text-color;
-    border: 1px solid darken(@gray-lighter, 20%);
-  }
+    background: none;
+    border: 1px solid @gray-lighter;
+    &:hover,
+    &:focus,
+    &:active {
+        color: @text-color;
+        border: 1px solid darken(@gray-lighter, 20%);
+    }
 }
 
 //Button Outlined ---------------
-
 .btn-outline {
-  background-color: transparent;
-  transition: all 0.5s ease 0s;
-
-  &.btn-link {
-    color: @link-color;
-  }
-
-  &.btn-default {
-    color: @btn-default-bg;
-  }
-
-  &.btn-primary {
-    color: @btn-primary-bg;
-  }
-
-  &.btn-info {
-    color: @btn-info-bg;
-  }
-
-  &.btn-warning {
-    color: @btn-warning-bg;
-  }
-
-  &.btn-success {
-    color: @btn-success-bg;
-  }
-
-  &.btn-danger {
-    color: @btn-danger-bg;
-  }
-
-  &:hover {
-    color: @btn-default-color;
-  }
+    background-color: transparent;
+    transition: all 0.5s ease 0s;
+    &.btn-link {
+        color: @link-color;
+    }
+    &.btn-default {
+        color: @btn-default-bg;
+    }
+    &.btn-primary {
+        color: @btn-primary-bg;
+    }
+    &.btn-info {
+        color: @btn-info-bg;
+    }
+    &.btn-warning {
+        color: @btn-warning-bg;
+    }
+    &.btn-success {
+        color: @btn-success-bg;
+    }
+    &.btn-danger {
+        color: @btn-danger-bg;
+    }
+    &:hover {
+        color: @btn-default-color;
+    }
 }
-
-
-

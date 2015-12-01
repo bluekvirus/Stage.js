@@ -1,11 +1,12 @@
 Change Log
 ==========
-1.9.0 (2015-11-25*)
+1.9.0 (2015-12-01*)
 -------------------
 1. Added $.hsplit/vsplit plugins (beta);
 2. Aligned editor templates to handlbars v4;
 3. Added 'view:editor-changed' event;
 4. Added 'view:editors-updated' event;
+5. Removed theme dependency on .fa;
 
 working on ...
 * Breaking down 'Basic' editors;
