@@ -6770,4 +6770,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.6-924 build 1449004315327";
+;;app.stagejs = "1.8.6-925 build 1449028347767";

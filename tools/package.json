@@ -1,9 +1,9 @@
 {
   "name": "web-client-tools",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "client development tooling",
   "main": "devserver/run.js",
-  "dependencies": {
+  "devDependencies": {
     "adm-zip": "~0.4.4",
     "autoprefixer": "~1.x.x",
     "body-parser": "^1.7.0",
@@ -43,7 +43,7 @@
     "wrench": "^1.5.8",
     "ws": "^0.8.0"
   },
-  "devDependencies": {},
+  "dependencies": {},
   "scripts": {
     "start": "nodemon devserver/run.js",
     "test": "echo \"Error: no test specified\" && exit 1"
