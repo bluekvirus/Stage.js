@@ -237,10 +237,7 @@
     //5 major coloring types
     .segmented-control(@type) {
         @color: 'brand-@{type}';
-        &-@ {
-            type
-        }
-        {
+        &-@{type} {
             color: @@color;
             border-color: @@color;
             .control-item {
