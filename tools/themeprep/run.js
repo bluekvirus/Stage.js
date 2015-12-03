@@ -62,11 +62,11 @@ program
 	.version('0.1.0')
 	.usage('[options] <theme name> or ls')
 	.option('-B --base <path>', 'implementation base folder, default to ' + implFolder, implFolder)
-	.option('-F --fonts [package,package,...]', 'font packages to collect /fonts from, default to bootstrap, fontawesome, open-sans-fontface', function(v){
+	.option('-F --fonts [package,package,...]', 'Bower packages to collect /fonts from, default to bootstrap, open-sans-fontface', function(v){
 		return v.split(',').map(function(p){
 			return _.string.trim(p);
 		});
-	}, ['bootstrap', 'fontawesome', 'open-sans-fontface'])
+	}, ['bootstrap', 'open-sans-fontface'])
 	.option('-S --sprites [folder,folder,...]', '/img/? folders to include in the sprite.png, default to icons, logo, pics', function(v){
 		return v.split(',').map(function(f){
 			return _.string.trim(f);
