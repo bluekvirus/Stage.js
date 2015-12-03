@@ -12,7 +12,7 @@ You can compare this version number with the one you see on the [documentation s
 
 **Announcement**: Please note that release (v1.8.x) will be the last stable release of the 1.x branch. The coming release (including tests) is also an LTS* (long term support - 18-month) version of this framework. We are now working on the 2.x branch development. A complete feature listing is available. ([v2 plan](#whats-next))
 
-> <sup>\*</sup>LTS - Given that ECMAScript6 is coming and our goal of making a lightweight, time-saving and most importantly **easy** framework for both desktop web and hybrid application development, further improvements and simplifications will be made directly into the v2 codebase without disturbing the v1.8 branch (You can expect global co-op events, AMD and MVVM support in v2!) . The LTS version also serves as a benchmark for creating tests and for feature-list and feedback gathering. We have now successfully released 2 security products with complex configure panels/dashboards and excellent user flows & localizations through the v1.7 branch. More will come. 
+> <sup>\*</sup>LTS - Given that ECMAScript6 is coming and our goal of making a lightweight, time-saving and most importantly **easy** framework for both desktop web and hybrid application development, further improvements and simplifications will be made directly into the v2 codebase without disturbing the v1.8 branch. The LTS version also serves as a benchmark for creating tests and for feature-list and feedback gathering. We have now successfully released 2 security products with complex configure panels/dashboards and excellent user flows & localizations through the v1.7 branch. More will come. 
 
 This project produces **Stage.js** - an infrastructure for building modern web application client with many contexts (e.g a data-heavy administration app). In other words, we solve this problem for you:
 
@@ -56,23 +56,24 @@ What's next?
 * Remove optional charting deps on Raphael (free to choose your own); (:heavy_check_mark:)
 * Keep [Cordova](https://cordova.apache.org/) hybrid HTML5 mobile app support (touch, gestures, ready-e); (:heavy_check_mark:)
 * Keep i18n, data validators, async coordination support; (:heavy_check_mark:) 
-* Put self-made dev process pipeline onto Gulp; (:heavy_check_mark:)
+* Put custom-made dev process pipeline onto Gulp; (:heavy_check_mark:)
 * Test automation in BDD; (in progress)
-* Data handling shortcuts (data property, set()/get()/refresh());
-* Websocket integration for messaging/notification & peer discovery; (:heavy_check_mark:)
+* Data handling shortcuts in Views (data property, set()/get()/refresh());
+* Websocket integration for messaging/notification & peer discovery; (:heavy_check_mark:, from v1)
 * WebRTC integration for peer-to-peer data/stream sharing;
 * Introduce state machine into Views;
+* Introduce engine into App;
 * Give View action listeners a choice to go background (Web Worker);
-* ...
+
 
 Optional:
-* filter/sorter/pager in views (most likely through MVVM, v1 has remote version only);
+* complete filter/sorter/pager in views (v1 has remote version only);
 * form & input wrappers (already in v1);
-* ui prompts (already in v1);
+* ui prompts (overlay already in v1);
 * view transition effects (already in v1);
 * grid and cells (already in v1);
 * tree and recursive views (already in v1);
-* devserver stack; (already in v1);
+* dev-server stack; (already in v1);
 
 
 Contribute
