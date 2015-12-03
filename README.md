@@ -41,7 +41,7 @@ Again, as an application developer you are encouraged read this [documentation](
 
 What's next?
 ------------
-[:crystal_ball: Preview the work](https://github.com/bluekvirus/skeleton-webui).
+[:crystal_ball: Preview current progress](https://github.com/bluekvirus/skeleton-webui).
 
 2.0.0 Roadmap:
 * AMD support; (:heavy_check_mark:)
@@ -69,7 +69,7 @@ What's next?
 Optional:
 * complete filter/sorter/pager in views (v1 has remote version only);
 * form & input wrappers (already in v1);
-* ui prompts (overlay already in v1, need notification, popover);
+* view to ui prompts (overlay already in v1, need notification, popover);
 * view transition effects (already in v1);
 * grid and cells (already in v1);
 * tree and recursive views (already in v1);
@@ -101,7 +101,7 @@ This should fire-up the development server. It will serve the `/implementation` 
 ###Develop, Demo & Tryout
 Change code under `/implementation/js/src` to test and contribute your ideas to this framework.
 
-The `/implementation` folder is also the product intro & download page of **Stage.js** releases. You can go change the code under `/implementation/site`, it is the application for **Stage.js**'s documentation site.
+You can also change the code under `/implementation/site`, it is the application for **Stage.js**'s documentation site.
 
 Look closely to the `/implementation/index.html` file, it not only defines the loading sequence of all the src files but also defines which one goes to which build target in the build process.
 
