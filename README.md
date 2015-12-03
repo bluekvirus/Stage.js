@@ -4,17 +4,17 @@ Stage.js
 
 [Change Log](CHANGELOG.md) - What's changed?
 
-To get version, type `app.stagejs` in the console:
+To get version, type `app.stagejs` in the console. Example output:
 ```
 app.stagejs (1.8.x-<commits> build <timestamp>)
 ```
 You can compare this version number with the one you see on the [documentation site](http://bluekvirus.github.io/Stage.js/#navigate/Document) and see if an upgrade is recommended.
 
-**Announcement**: Please note that release (v1.8.x) will be the last stable release of the 1.x branch. The coming release (including tests) is also an LTS* (long term support - 18-month) version of this framework. We are now working on the 2.x branch development. A complete feature listing is available. ([v2 plan](#whats-next))
+**Announcement**: We are working on a fully upgraded live demo site and updated version of documents for the v1 branch. We are also working on the v2 branch development. A complete feature listing is available. ([v2 plan](#whats-next)). Please note that v1 will not be abandoned even if v2 is released, they are different tech directions. v2 will be called `-ng`.
 
-> <sup>\*</sup>LTS - Given that ECMAScript6 is coming and our goal of making a lightweight, time-saving and most importantly **easy** framework for both desktop web and hybrid application development, further improvements and simplifications will be made directly into the v2 codebase without disturbing the v1.8 branch. The LTS version also serves as a benchmark for creating tests and for feature-list and feedback gathering. We have now successfully released 2 security products with complex configure panels/dashboards and excellent user flows & localizations through the v1.7 branch. More will come. 
+> <sup>\*</sup>LTS - Given that ECMAScript6 is coming and our goal of making a lightweight, time-saving and most importantly **easy** framework for both desktop web and hybrid application development, further improvements will be made directly into the v2 codebase without disturbing the v1 branch. The LTS version also serves as a benchmark for creating tests and for feature-list and feedback gathering. We have now successfully released 6 security products with complex configure panels/dashboards and excellent user flows & localizations through the v1 branch. More will come. 
 
-This project produces **Stage.js** - an infrastructure for building modern web application client with many contexts (e.g a data-heavy administration app). In other words, we solve this problem for you:
+This project produces **Stage.js** - an infrastructure for building modern web application client with different contexts (e.g a data-heavy administration app). In other words, we solve this problem for you:
 
 <img src="implementation/static/resource/default/diagram/Diagram-1.png" alt="UI/UX Problems" class="center-block"></img>
 
@@ -69,7 +69,7 @@ What's next?
 Optional:
 * complete filter/sorter/pager in views (v1 has remote version only);
 * form & input wrappers (already in v1);
-* ui prompts (overlay already in v1);
+* ui prompts (overlay already in v1, need notification, popover);
 * view transition effects (already in v1);
 * grid and cells (already in v1);
 * tree and recursive views (already in v1);
