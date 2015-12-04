@@ -4,9 +4,14 @@ module.exports = {
 	},
 	structure : { //path are relative to the distFolder and src.root above
 		implementation: {
-			js: {},
+			js: {
+				context: {
+					'mockups.js': 'site/context/mockups.js'
+				}
+			},
 			static: {
 				template: {
+					'mockups': 'static/template/mockups',
 					'all.json': ''
 				},
 				resource: {

@@ -4,6 +4,7 @@
  *
  * @author Tim Lauv
  * @updated 2014.07.24
+ * @updated 2015.12.03
  */
 
 
@@ -195,7 +196,8 @@
             top: 0;
             left: 0;
             padding: 0.5em 1em;
-            background-color: @btn-default-bg; //borrow btn default colors here
+            border-bottom: 1px solid @base-border-color;
+            background-color: @btn-default-bg;
             color: @btn-default-color;
         }
     }
@@ -223,10 +225,15 @@
         text-align: center;
         text-overflow: ellipsis;
         white-space: nowrap;
-        border-left: 1px solid;
+        border-left: 1px solid; //inherits 'color' attr
         color: inherit;
+        cursor: pointer;
         &:first-child {
             border-left-width: 0;
+        }
+        &:hover,
+        &.hover {
+            background-color: lighten(@base-border-color, 18%);
         }
         &:active,
         &.active {
@@ -241,6 +248,10 @@
             color: @@color;
             border-color: @@color;
             .control-item {
+                &:hover,
+                &.hover {
+                    background-color: lighten(@@color, 35%);
+                }
                 &:active,
                 &.active {
                     background-color: @@color;
@@ -423,7 +434,7 @@
         color: @link-color;
     }
     &.btn-default {
-        color: @btn-default-bg;
+        color: darken(@btn-default-bg, 20%);
     }
     &.btn-primary {
         color: @btn-primary-bg;
@@ -441,6 +452,6 @@
         color: @btn-danger-bg;
     }
     &:hover {
-        color: @btn-default-color;
+        color: lighten(@btn-default-color, 60%);
     }
 }
