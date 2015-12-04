@@ -137,6 +137,7 @@
 
 // Box --------------------------
 .box {
+    background-color: @panel-bg;
     .heading {
         padding-top: 1.25em;
         h1,
@@ -177,6 +178,7 @@
     .border;
     border-width: 1px;
     .wrapper-full-2x;
+    background-color: @panel-bg;
     legend,
     .legend {
         font-size: @font-size-base;
@@ -213,7 +215,7 @@
     background-color: @body-bg;
     color: @base-border-color;
     border: 1px solid @base-border-color;
-    border-radius: 3px;
+    border-radius: @border-radius-base;
     margin: 1em auto;
     .control-item {
         display: table-cell;
@@ -454,4 +456,9 @@
     &:hover {
         color: lighten(@btn-default-color, 60%);
     }
+}
+
+//Label -------------------------
+.label {
+    border-radius: @border-radius-base; //reset
 }
