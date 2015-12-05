@@ -309,9 +309,37 @@
 			window.location.reload();
 		},
 
-		//----------------fx animation---------------
-		nextFrame: window.requestAnimationFrame/*(next-step updater fn(t))*/,
-		cancelFrame: window.cancelAnimationFrame/*(frame id returned by nextFrame(fn))*/,
+		//----------------raw animation (DON'T mix with jQuery fx)---------------
+		//(specifically, don't call $.animate(), use $.css() instead if you must)
+		animation: function(update, condition, ctx){
+			var id;
+			var step = function(t){
+				update.call(ctx);//...update...(1 tick)
+				if(!condition || (condition && condition.call(ctx)))//...condition...(to continue)
+					move();
+			};
+			var move = function(){
+				if(id === undefined) return;
+				id = app.nextFrame(step);
+			};
+			var stop = function(){
+				app.cancelFrame(id);
+				id = undefined;
+			};
+			return {
+				start: function(){id = -1; move();},
+				stop: stop
+			};
+		},
+
+		nextFrame: function(step){
+			//return request id
+			return window.requestAnimationFrame(step);
+		},
+
+		cancelFrame: function(id){
+			return window.cancelAnimationFrame(id);
+		},
 
 		//----------------debug----------------------
 		debug: function(){
@@ -338,7 +366,7 @@
 		'dispatcher', 'model', 'collection',
 		'context - @alias:page', 'view', 'widget', 'editor', 'editor.validator - @alias:editor.rule', //view
 		'lock', 'unlock', 'available', //global action locks
-		'coop', 'navigate', 'reload', 'param', 'nextFrame', 'cancelFrame',
+		'coop', 'navigate', 'reload', 'param', 'animation', 'nextFrame', 'cancelFrame',
 		'remote', 'ws', 'download', //com
 		'extract', 'cookie', 'store', 'moment', 'uri', 'validator', //3rd-party lib short-cut
 		//@supportive
