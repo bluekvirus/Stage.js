@@ -148,8 +148,10 @@
 				$body.height(screenSize.h);
 				$body.width(screenSize.w);
 			}
-			if(!silent)
+			if(!silent){
 				app.trigger('app:resized', screenSize);
+				app.coop('window-resized', screenSize);
+			}
 		}
 		function validScreenSize(size){
 			return size.h > 0 && size.w > 0;

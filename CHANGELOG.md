@@ -8,6 +8,7 @@ Change Log
 4. Added 'view:editors-updated' event;
 5. Removed theme dependency on .fa;
 6. Added app.animation() raw fx api;
+7. Added 'window-resized' to global coop event;
 
 working on ...
 * Breaking down 'Basic' editors;
