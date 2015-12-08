@@ -25,16 +25,16 @@
  * 	remote: app.remote() options for fetching the options.data
  * }
  *
+ * //single checkbox only
+ * boxLabel: (single checkbox label other than field label.)
+ * checked: '...' - checked value
+ * unchecked: '...' - unchecked value
+ *
  * //select only
  * multiple
  * 
  * //textarea only 
  * rows
- * 
- * //single checkbox only
- * boxLabel: (single checkbox label other than field label.)
- * checked: '...' - checked value
- * unchecked: '...' - unchecked value
  *
  * //specifically for file only (see also fileeditor.upload(options))
  * upload: {
@@ -67,8 +67,9 @@
  * @author Tim Lauv
  * @contributor Yan.Zhu
  * @created 2013.11.10
- * @updated 2014.02.26 [Bootstrap 3.1]
- * @version 1.2.0
+ * @updated 2014.02.26 [Bootstrap 3.1+]
+ * @updated 2015.12.07 [awesome-bootstrap-checkbox & radio]
+ * @version 1.2.1
  */
 
 ;(function(app){
@@ -508,14 +509,13 @@
 					//3. input
 					//checkboxes/radios
 					'{{#if options}}',
-						'<div ui="inputs" id={{uiId}}>',
+						'<div ui="inputs">',
 						'{{#each options.data}}',
-							'{{#unless ../options.inline}}<div class="{{../type}}">{{/unless}}',
-							'<label class="{{#if ../options.inline}}{{../type}}-inline{{/if}}">',
+							'<div class="{{../type}} {{#if ../options.inline}}{{../type}}-inline{{/if}}">',
 								//note that the {{if}} within a {{each}} will no longer impose +1 level down in the content scope. (after Handlebars v4)
-								'<input ui="input" name="{{#if ../fieldname}}{{../fieldname}}{{else}}{{../name}}{{/if}}{{#is ../type "checkbox"}}[]{{/is}}" type="{{../type}}" value={{value}}> {{i18n label}}',
-							'</label>',
-							'{{#unless ../options.inline}}</div>{{/unless}}',
+								'<input id="{{../uiId}}-{{@index}}" ui="input" name="{{#if ../fieldname}}{{../fieldname}}{{else}}{{../name}}{{/if}}{{#is ../type "checkbox"}}[]{{/is}}" type="{{../type}}" value={{value}}> ',
+								'<label for="{{../uiId}}-{{@index}}">{{i18n label}}</label>',
+							'</div>',
 						'{{/each}}',
 						'</div>',
 					//single field
@@ -523,9 +523,8 @@
 						'<div class="{{type}}">',
 						'{{#is type "checkbox"}}',
 							//single checkbox
-							'<label>',
-								'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" type="checkbox" value="{{value}}"> {{i18n boxLabel}}',
-							'</label>',
+							'<input id="{{uiId}}" ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" type="checkbox" value="{{value}}"> ',
+							'<label for="{{uiId}}">{{i18n boxLabel}}</label>',
 						'{{else}}',
 							//normal field
 							'{{#is type "ro"}}',//read-only

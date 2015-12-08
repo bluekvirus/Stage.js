@@ -2,7 +2,7 @@
 	"name": "keep name here to use bower install, change if you prefer",
 	"private": true,
 	"devDependencies": {
-		"stage": "^1.8.6",
+		"stage": "^1.8.7",
 		"bootstrap": "~3.x.x",
 		"jquery-ui": "1.10.4",
 		"animate.css": "~3.x.x",
@@ -21,7 +21,6 @@
 		"nprogress": "*",
 		"owl.carousel": "*",
 		"colorbox": "*",
-		"iCheck": "*",
 		"switchery": "*",
 		"powerange": "*",
 		"pickadate": "*",

@@ -124,10 +124,12 @@
             radios: {
                 label: 'Radios',
                 type: 'radios',
+                className: 'radio-success',
                 help: 'choose the one you like',
                 tooltip: {
                     title: 'hahahaha'
                 },
+                value: ['c'],
                 options: {
                     inline: true,
                     //data: ['a', 'b', 'c', 'd']
@@ -142,6 +144,7 @@
             checkboxes: {
                 label: 'Checkboxes',
                 type: 'checkboxes',
+                className: 'checkbox-info',
                 help: 'choose more than you like',
                 fieldname: 'haha',
                 value: ['1232', '1234'],
@@ -289,10 +292,10 @@
         },
         onShow: function(){
 
-            this.$('input').iCheck({
-                checkboxClass: 'icheckbox_square',
-                radioClass: 'iradio_square',
-            });
+            // this.$('input').iCheck({
+            //     checkboxClass: 'icheckbox_square',
+            //     radioClass: 'iradio_square',
+            // });
 
         },
         actions: {
@@ -323,7 +326,7 @@
                 });
 
                 //since we changed the inputs outside of iCheck plugin api.
-                this.$('input').iCheck('update');
+                //this.$('input').iCheck('update');
             },
             test2: function(){
                 var editor = this.getEditor('fieldset-b.checkboxes');

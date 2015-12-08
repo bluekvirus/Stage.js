@@ -1,6 +1,16 @@
 Change Log
 ==========
-1.9.0 (2015-12-04*)
+1.9.0 (2015-12-07*)
+-------------------
+
+working on ...
+* Breaking down 'Basic' editors;
+* Adding more unit tests.
+* Adding interactive tutorial site;
+* Updating doc (around data handling, coop, remote, ws, form).
+
+
+1.8.7 (2015-12-07)
 -------------------
 1. Added $.hsplit/vsplit plugins (beta);
 2. Aligned editor templates to handlbars v4;
@@ -9,12 +19,7 @@ Change Log
 5. Removed theme dependency on .fa;
 6. Added app.animation() raw fx api;
 7. Added 'window-resized' to global coop event;
-
-working on ...
-* Breaking down 'Basic' editors;
-* Adding more unit tests.
-* Adding interactive tutorial site;
-* Updating doc (around data handling, coop, remote, ws, form).
+8. Added icon-font powered checkboxs and radios;
 
 
 1.8.6 (2015-11-18)

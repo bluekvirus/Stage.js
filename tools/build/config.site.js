@@ -23,9 +23,7 @@ module.exports = {
 				},
 				img: { 
 					texture: 'themes/site/img/texture', 
-					'sprite.png': 'themes/site/img/sprite.png',
-					'square.png': 'themes/site/img/square.png',
-					'square@2x.png': 'themes/site/img/square@2x.png'
+					'sprite.png': 'themes/site/img/sprite.png'
 				},
 				fonts: 'themes/site/fonts'
 			}

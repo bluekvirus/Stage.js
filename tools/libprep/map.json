@@ -3,7 +3,7 @@
   "backbone.babysitter": "../../implementation/bower_components/backbone.babysitter/lib/backbone.babysitter.js",
   "backbone.wreqr": "../../implementation/bower_components/backbone.wreqr/lib/backbone.wreqr.js",
   "backbone": "../../implementation/bower_components/backbone/backbone.js",
-  "blueimp-canvas-to-blob": "../../implementation/bower_components/blueimp-canvas-to-blob/js/canvas-to-blob.js",
+  "blueimp-canvas-to-blob": "../../implementation/bower_components/blueimp-canvas-to-blob",
   "blueimp-load-image": [
     "../../implementation/bower_components/blueimp-load-image/js/load-image.js",
     "../../implementation/bower_components/blueimp-load-image/js/load-image-ios.js",
@@ -12,11 +12,11 @@
     "../../implementation/bower_components/blueimp-load-image/js/load-image-exif.js",
     "../../implementation/bower_components/blueimp-load-image/js/load-image-exif-map.js"
   ],
+  "blueimp-tmpl": "../../implementation/bower_components/blueimp-tmpl",
   "bootstrap": [
     "../../implementation/bower_components/bootstrap/less/bootstrap.less",
     "../../implementation/bower_components/bootstrap/dist/js/bootstrap.js"
   ],
-  "blueimp-tmpl": "../../implementation/bower_components/blueimp-tmpl",
   "bootswatch": "../../implementation/bower_components/bootswatch",
   "chai": "../../implementation/bower_components/chai/chai.js",
   "detectizr": "../../implementation/bower_components/detectizr",
@@ -25,12 +25,11 @@
     "../../implementation/bower_components/fontawesome/less/font-awesome.less",
     "../../implementation/bower_components/fontawesome/scss/font-awesome.scss"
   ],
-  "handlebars": "../../implementation/bower_components/handlebars/handlebars.js",
   "highlightjs": [
     "../../implementation/bower_components/highlightjs/highlight.pack.js",
     "../../implementation/bower_components/highlightjs/styles/default.css"
   ],
-  "iCheck": "../../implementation/bower_components/iCheck/icheck.min.js",
+  "handlebars": "../../implementation/bower_components/handlebars/handlebars.js",
   "jquery-color": "../../implementation/bower_components/jquery-color",
   "jquery-file-upload": "../../implementation/bower_components/jquery-file-upload/js/jquery.fileupload.js",
   "jquery-ui": "../../implementation/bower_components/jquery-ui/ui/jquery-ui.js",
@@ -46,8 +45,8 @@
     "../../implementation/bower_components/mocha/mocha.js",
     "../../implementation/bower_components/mocha/mocha.css"
   ],
-  "modernizr": "../../implementation/bower_components/modernizr",
   "mockjs": "../../implementation/bower_components/mockjs/dist/mock.js",
+  "modernizr": "../../implementation/bower_components/modernizr",
   "momentjs": "../../implementation/bower_components/momentjs/moment.js",
   "nprogress": [
     "../../implementation/bower_components/nprogress/nprogress.js",

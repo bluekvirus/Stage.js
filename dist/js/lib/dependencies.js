@@ -25401,7 +25401,7 @@ function selectn(query) {
 
     'use strict';
 
-    validator = { version: '4.3.0' };
+    validator = { version: '4.4.0' };
 
     var emailUserPart = /^[a-z\d!#\$%&'\*\+\-\/=\?\^_`{\|}~]+$/i;
     var quotedEmailUser = /^([\s\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e]|(\\[\x01-\x09\x0b\x0c\x0d-\x7f]))*$/i;
@@ -25417,6 +25417,8 @@ function selectn(query) {
 
     var isbn10Maybe = /^(?:[0-9]{9}X|[0-9]{10})$/
       , isbn13Maybe = /^(?:[0-9]{13})$/;
+
+    var macAddress = /^([0-9a-fA-F][0-9a-fA-F]:){5}([0-9a-fA-F][0-9a-fA-F])$/;
 
     var ipv4Maybe = /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/
       , ipv6Block = /^[0-9A-F]{1,4}$/i;
@@ -25461,7 +25463,8 @@ function selectn(query) {
       'ru-RU': /^(\+?7|8)?9\d{9}$/,
       'nb-NO': /^(\+?47)?[49]\d{7}$/,
       'nn-NO': /^(\+?47)?[49]\d{7}$/,
-      'vi-VN': /^(0|\+?84)?((1(2([0-9])|6([2-9])|88|99))|(9((?!5)[0-9])))([0-9]{7})$/
+      'vi-VN': /^(0|\+?84)?((1(2([0-9])|6([2-9])|88|99))|(9((?!5)[0-9])))([0-9]{7})$/,
+      'en-NZ': /^(\+?64|0)2\d{7,9}$/
     };
 
     // from http://goo.gl/0ejHHW
@@ -25658,6 +25661,10 @@ function selectn(query) {
             return false;
         }
         return true;
+    };
+
+    validator.isMACAddress = function (str) {
+        return macAddress.test(str);
     };
 
     validator.isIP = function (str, version) {
@@ -25941,6 +25948,16 @@ function selectn(query) {
         return false;
     };
 
+    validator.isWhitelisted = function (str, chars) {
+        for (var i = str.length - 1; i >= 0; i--) {
+            if (chars.indexOf(str[i]) === -1) {
+                return false;
+            }
+        }
+
+        return true;
+    };
+
     validator.isCreditCard = function (str) {
         var sanitized = str.replace(/[^0-9]+/g, '');
         if (!creditCard.test(sanitized)) {
@@ -26142,7 +26159,9 @@ function selectn(query) {
     };
 
     var default_normalize_email_options = {
-        lowercase: true
+        lowercase: true,
+        remove_dots: true,
+        remove_extension: true
     };
 
     validator.normalizeEmail = function (email, options) {
@@ -26153,11 +26172,16 @@ function selectn(query) {
         var parts = email.split('@', 2);
         parts[1] = parts[1].toLowerCase();
         if (parts[1] === 'gmail.com' || parts[1] === 'googlemail.com') {
-            parts[0] = parts[0].toLowerCase().replace(/\./g, '');
-            if (parts[0][0] === '+') {
+            if (options.remove_extension) {
+                parts[0] = parts[0].split('+')[0];
+            }
+            if (options.remove_dots) {
+                parts[0] = parts[0].replace(/\./g, '');
+            }
+            if (!parts[0].length) {
                 return false;
             }
-            parts[0] = parts[0].split('+')[0];
+            parts[0] = parts[0].toLowerCase();
             parts[1] = 'gmail.com';
         } else if (options.lowercase) {
             parts[0] = parts[0].toLowerCase();
