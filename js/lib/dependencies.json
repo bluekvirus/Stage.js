@@ -1,5 +1,5 @@
 {
-	"created": "Tue, 01 Dec 2015 21:10:05 GMT",
+	"created": "Tue, 08 Dec 2015 04:24:03 GMT",
 	"list": [
 		{
 			"name": "modernizr",
@@ -75,8 +75,8 @@
 		},
 		{
 			"name": "validator-js",
-			"size": "29.8",
-			"version": "4.3.0",
+			"size": "30.5",
+			"version": "4.4.0",
 			"url": "https://github.com/chriso/validator.js"
 		},
 		{
