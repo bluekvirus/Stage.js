@@ -168,6 +168,7 @@
 		function trackScroll(){
 			var top = $window.scrollTop();
 			app.trigger('app:scroll', top);
+			app.coop('window-scroll', top);
 		}
 		$window.on('scroll', _.throttle(trackScroll, app.config.rapidEventDelay));
 		
@@ -200,7 +201,7 @@
 		// - use app:navigate (path) at all times when navigate between contexts & views.
 		app.onNavigate = function(options, silent){
 			if(!app.available()) {
-				app.trigger('app:blocked', options);
+				app.trigger('app:locked', options);
 				return;
 			}
 
@@ -261,6 +262,7 @@
 						app.currentContext =  targetCtx;
 						//fire a notification to app as meta-event.
 						app.trigger('app:context-switched', app.currentContext.name);
+						app.coop('context-switched', app.currentContext.name);
 					});
 					targetRegion.show(targetCtx);
 				}

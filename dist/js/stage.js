@@ -217,6 +217,7 @@
 		function trackScroll(){
 			var top = $window.scrollTop();
 			app.trigger('app:scroll', top);
+			app.coop('window-scroll', top);
 		}
 		$window.on('scroll', _.throttle(trackScroll, app.config.rapidEventDelay));
 		
@@ -249,7 +250,7 @@
 		// - use app:navigate (path) at all times when navigate between contexts & views.
 		app.onNavigate = function(options, silent){
 			if(!app.available()) {
-				app.trigger('app:blocked', options);
+				app.trigger('app:locked', options);
 				return;
 			}
 
@@ -310,6 +311,7 @@
 						app.currentContext =  targetCtx;
 						//fire a notification to app as meta-event.
 						app.trigger('app:context-switched', app.currentContext.name);
+						app.coop('context-switched', app.currentContext.name);
 					});
 					targetRegion.show(targetCtx);
 				}
@@ -551,7 +553,7 @@
 						_.compact([app.config.viewSrcs, type.toLowerCase(), app.nameToPath(name)]).join('/') + '.js',
 						true //sync
 					).done(function(){
-						app.debug('View injected', name, 'from', app.viewSrcs);
+						app.debug('View injected', name, 'from', app.config.viewSrcs);
 						Reusable = true;
 					}).fail(function(jqXHR, settings, e){
 						throw new Error('DEV::Application::get() can NOT load View definition for', name, '[', e, ']');
@@ -1326,6 +1328,7 @@
 			map: {},
 			has: function(name /*or path*/){
 				if(!_.isString(name) || !name) throw new Error('DEV::Reusable::has() You must specify the name of the ' + regName + ' to look for.');
+				if(this.map[name]) return name;
 				name = app.pathToName(name);
 				if(this.map[name]) return name;
 				return undefined;
@@ -6799,4 +6802,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.7-938 build 1449548697270";
+;;app.stagejs = "1.8.7-939 build 1449558999685";

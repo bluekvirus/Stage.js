@@ -24,6 +24,7 @@
 			map: {},
 			has: function(name /*or path*/){
 				if(!_.isString(name) || !name) throw new Error('DEV::Reusable::has() You must specify the name of the ' + regName + ' to look for.');
+				if(this.map[name]) return name;
 				name = app.pathToName(name);
 				if(this.map[name]) return name;
 				return undefined;

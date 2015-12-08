@@ -141,6 +141,7 @@
     background-color: @panel-bg;
     .heading {
         padding-top: 1.25em;
+        .clearfix;
         h1,
         h2,
         h3,
@@ -410,6 +411,15 @@
  * UI Components
  * ===============================================
  */
+
+//Action tags
+[action] {
+    cursor: pointer;
+    &:hover,
+    &.hover {
+        text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.5);
+    }
+}
 
 //Margins Reset -----------------
 .breadcrumb,

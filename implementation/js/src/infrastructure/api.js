@@ -125,7 +125,7 @@
 						_.compact([app.config.viewSrcs, type.toLowerCase(), app.nameToPath(name)]).join('/') + '.js',
 						true //sync
 					).done(function(){
-						app.debug('View injected', name, 'from', app.viewSrcs);
+						app.debug('View injected', name, 'from', app.config.viewSrcs);
 						Reusable = true;
 					}).fail(function(jqXHR, settings, e){
 						throw new Error('DEV::Application::get() can NOT load View definition for', name, '[', e, ']');
