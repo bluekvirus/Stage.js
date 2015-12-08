@@ -20,6 +20,10 @@ working on ...
 6. Added app.animation() raw fx api;
 7. Added 'window-resized' to global coop event;
 8. Added icon-font powered checkboxs and radios;
+9. Added hand-cursor & text-shadow to [action] tags;
+10. Added 'window-scroll' to global coop event;
+11. Added 'context-switched' to global coop event;
+12. Fixed app.get() name recovery error;
 
 
 1.8.6 (2015-11-18)
