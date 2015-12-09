@@ -41,7 +41,7 @@ Again, as an application developer you are encouraged read this [documentation](
 
 What's next?
 ------------
-[:crystal_ball: Preview current progress](https://github.com/bluekvirus/skeleton-webui).
+[:crystal_ball: Preview current progress](https://github.com/bluekvirus/Stage.js-ng/tree/master/libs/vendor/stagejsv2).
 
 2.0.0 Roadmap:
 * AMD support; (:heavy_check_mark:)

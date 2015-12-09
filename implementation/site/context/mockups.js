@@ -6,8 +6,12 @@
 
 		mockups: [
 
-			//headings
-			{tpl: 'heading.html', className: 'heading'},
+			//breadcrumb
+			{tpl: 'breadcrumb.html'},
+
+			//navbars
+			{tpl: 'nav-bar.html', className: 'navbar-default'},
+			{tpl: 'nav-bar.html', className: 'navbar-inverse'},
 
 			//boxes
 			{tpl: 'boxes.html', onShow: function(){
@@ -18,10 +22,6 @@
 
 			//containers
 			{tpl: 'containers.html'},			
-
-			//navbars
-			{tpl: 'nav-bar.html', className: 'navbar-default'},
-			{tpl: 'nav-bar.html', className: 'navbar-inverse'},
 
 			//buttons
 			{tpl: 'buttons.html',},

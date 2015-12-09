@@ -74,7 +74,8 @@ module.exports = {
 				//img: { texture: 'themes/project/img/texture', 'sprite.png': 'themes/project/img/sprite.png' }
 			}
 		},
-		'index.html': true
+		'index.html': true,
+		//'favicon.ico': 'favicon.ico'
 
 	}
 };

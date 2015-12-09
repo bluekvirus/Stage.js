@@ -30,6 +30,8 @@ module.exports = {
 			devserver: {
 				middlewares: '../tools/devserver/middlewares',
 				routers: '../tools/devserver/routers',
+				channels: '../tools/devserver/channels',
+				profile: '../tools/devserver/profile',
 			},
 			'package.json': '../tools/package.json' //need to be merged with target project
 		}

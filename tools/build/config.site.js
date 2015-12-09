@@ -11,7 +11,7 @@ module.exports = {
 	structure : { //path are relative to the distFolder and src.root above
 
 		js: {
-			'all.min.js': true, //'all' is a hard coded name - see loadIndexHTML() in build.js
+			'all.min.js': true, //'all' is the default all-in-one js target name - see loadIndexHTML() in build.js
 			lib: {
 				'dependencies.json': 'js/lib/dependencies.json'
 			}

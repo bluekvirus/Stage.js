@@ -112,12 +112,22 @@
 }
 
 // Circle --------------------------
-.circle(@size: 5em) {
+//mixin
+.circle(@size: 2.4em) {
     border-radius: 50%;
     text-align: center;
-    line-height: .6 * @size;
+    line-height: @size;
+    padding: 0;
     .square(@size);
-    //use font-size, line-height and padding to center the content.
+
+    //Note: use font-size later in element to resize as a group;
+    //Note: if you have more than 3 chars as content, increase @size
+}
+
+//.circle applied to (icon-font) .btn
+.btn.circle {
+    .circle();
+    box-shadow: 1px 1px 1px rgba(127, 127, 127, 0.5);
 }
 
 // Center (mixin) ------------------
@@ -674,7 +684,7 @@ input[type="radio"] {
     font-family: @check-icon-family;
     content: @check-icon;
   }
-  & .styled:checked + label {
+  &.styled:checked + label {
     &::before {
       color: #fff;
     }
