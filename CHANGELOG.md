@@ -4,7 +4,7 @@ Change Log
 -------------------
 1. Added favicon support mock in starter-kit index page;
 2. Updated default mockups;
-3. Added .btn.circle in base theme;
+3. Added .btn.circle in base theme (also updated .circle mixin);
 4. Updated export to include /channels and /profile;
 
 working on ...
@@ -14,7 +14,7 @@ working on ...
 * Separate modernizr/detectizr shiv bundles from deps;
 * Adding more unit tests.
 * Adding interactive tutorial site;
-* Updating doc (around data handling, coop, remote, ws, form).
+* Updating doc (around data handling, coop, remote, ws, form);
 * Breaking down 'Basic' editors;
 * Adding optional 2-way binding to form editors;
 
