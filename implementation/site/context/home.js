@@ -99,7 +99,7 @@
 					{name: 'Change Log', href:'https://github.com/bluekvirus/Stage.js/releases'},
 					{name: 'Document', href:'#navigate/Document'},
 					{name: 'Templates', href:'#navigate/Mockups'},
-					{name: 'Demo', href:'#navigate/Demo'}
+					{name: 'Demo', href:'#navigate/Demo/Demo.Notify'}
 				]
 			}));
 		}

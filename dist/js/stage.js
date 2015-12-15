@@ -314,10 +314,11 @@
 						app.coop('context-switched', app.currentContext.name);
 					});
 					targetRegion.show(targetCtx);
-				}
-
-				//notify regional views in the context (views further down in the nav chain)
-				app.currentContext.trigger('context:navigate-chain', path);
+					//notify regional views in the context (views further down in the nav chain)
+					app.currentContext.trigger('context:navigate-chain', path);
+				}else
+					//notify regional views in the context (with old flag set to true)
+					app.currentContext.trigger('context:navigate-chain', path, true);
 
 			}
 		//-----------------------
@@ -4451,11 +4452,15 @@ module.exports = DeepModel;
 			if(options.name || this.name){
 				this.navRegion = options.navRegion || this.navRegion;
 				//if(this.navRegion)
-				this.onNavigateChain = function(pathArray){
+				this.onNavigateChain = function(pathArray, old){
 					if(!pathArray || pathArray.length === 0){
-						this.trigger('view:navigate-to');//use this to show the default view
+						if(!old)
+							this.trigger('view:navigate-to');//use this to show the default view
+						else {
+							if(this.navRegion) this.getRegion(this.navRegion).close();
+						}
 						return;	
-					} 
+					}
 
 					if(!this.navRegion) return this.trigger('view:navigate-to', pathArray.join('/'));
 
@@ -4475,6 +4480,7 @@ module.exports = DeepModel;
 							if(navRegion.currentView) navRegion.currentView.trigger('view:navigate-away');
 							
 							//note that .show() might be async due to region enter/exit effects
+							//Warning: DO NOT use region.show() in your onShow() within parent view, use view="" in its template instead.
 							view.once('show', function(){
 								view.trigger('view:navigate-chain', pathArray);
 							});	
@@ -4482,7 +4488,7 @@ module.exports = DeepModel;
 							return;
 						}else{
 							//old
-							navRegion.currentView.trigger('view:navigate-chain', pathArray);
+							navRegion.currentView.trigger('view:navigate-chain', pathArray, true);
 						}
 
 
@@ -6802,4 +6808,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.7-939 build 1449558999685";
+;;app.stagejs = "1.8.7-943 build 1450160106025";

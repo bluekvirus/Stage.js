@@ -265,10 +265,11 @@
 						app.coop('context-switched', app.currentContext.name);
 					});
 					targetRegion.show(targetCtx);
-				}
-
-				//notify regional views in the context (views further down in the nav chain)
-				app.currentContext.trigger('context:navigate-chain', path);
+					//notify regional views in the context (views further down in the nav chain)
+					app.currentContext.trigger('context:navigate-chain', path);
+				}else
+					//notify regional views in the context (with old flag set to true)
+					app.currentContext.trigger('context:navigate-chain', path, true);
 
 			}
 		//-----------------------

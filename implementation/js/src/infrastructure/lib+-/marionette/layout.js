@@ -203,11 +203,15 @@
 			if(options.name || this.name){
 				this.navRegion = options.navRegion || this.navRegion;
 				//if(this.navRegion)
-				this.onNavigateChain = function(pathArray){
+				this.onNavigateChain = function(pathArray, old){
 					if(!pathArray || pathArray.length === 0){
-						this.trigger('view:navigate-to');//use this to show the default view
+						if(!old)
+							this.trigger('view:navigate-to');//use this to show the default view
+						else {
+							if(this.navRegion) this.getRegion(this.navRegion).close();
+						}
 						return;	
-					} 
+					}
 
 					if(!this.navRegion) return this.trigger('view:navigate-to', pathArray.join('/'));
 
@@ -227,6 +231,7 @@
 							if(navRegion.currentView) navRegion.currentView.trigger('view:navigate-away');
 							
 							//note that .show() might be async due to region enter/exit effects
+							//Warning: DO NOT use region.show() in your onShow() within parent view, use view="" in its template instead.
 							view.once('show', function(){
 								view.trigger('view:navigate-chain', pathArray);
 							});	
@@ -234,7 +239,7 @@
 							return;
 						}else{
 							//old
-							navRegion.currentView.trigger('view:navigate-chain', pathArray);
+							navRegion.currentView.trigger('view:navigate-chain', pathArray, true);
 						}
 
 
