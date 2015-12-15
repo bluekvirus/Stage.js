@@ -1,11 +1,12 @@
 Change Log
 ==========
-1.9.0 (2015-12-07*)
+1.9.0 (2015-12-14*)
 -------------------
 1. Added favicon support mock in starter-kit index page;
 2. Updated default mockups;
 3. Added .btn.circle in base theme (also updated .circle mixin);
 4. Updated export to include /channels and /profile;
+5. Added navRegion chain cleanup;
 
 working on ...
 
