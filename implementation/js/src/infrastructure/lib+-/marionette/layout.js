@@ -20,6 +20,7 @@
  * @update 2014.07.28 (+view="@mockup.html" support)
  * @update 2015.11.03 (-form nesting on regions)
  * @update 2015.11.11 (+getViewIn('region'))
+ * @update 2015.12.15 (navRegion chaining on region:show instead)
  */
 
 ;(function(app){
@@ -230,9 +231,8 @@
 							var view = new TargetView();
 							if(navRegion.currentView) navRegion.currentView.trigger('view:navigate-away');
 							
-							//note that .show() might be async due to region enter/exit effects
-							//Warning: DO NOT use region.show() in your onShow() within parent view, use view="" in its template instead.
-							view.once('show', function(){
+							//chain on region:show (instead of view:show to let view use onShow() before chaining)
+							navRegion.once('show', function(){
 								view.trigger('view:navigate-chain', pathArray);
 							});	
 							navRegion.show(view);

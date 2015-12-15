@@ -3511,6 +3511,7 @@ module.exports = DeepModel;
  * @author Tim Lauv
  * @updated 2014.03.03
  * @updated 2015.08.10
+ * @updated 2015.12.15
  */
 
 ;
@@ -3552,13 +3553,16 @@ module.exports = DeepModel;
             this.open(view);
             this.currentView = view;
 
-            Marionette.triggerMethod.call(this, "show", view);
+            //Marionette.triggerMethod.call(this, "show", view);
 
             if (_.isFunction(view.triggerMethod)) {
                 view.triggerMethod("show");
             } else {
                 Marionette.triggerMethod.call(view, "show");
             }
+
+            //delay region:show till after view:show (to accommodate navRegion build up in Layout)
+            Marionette.triggerMethod.call(this, "show", view);
 
             return this;
         },
@@ -4269,6 +4273,7 @@ module.exports = DeepModel;
  * @update 2014.07.28 (+view="@mockup.html" support)
  * @update 2015.11.03 (-form nesting on regions)
  * @update 2015.11.11 (+getViewIn('region'))
+ * @update 2015.12.15 (navRegion chaining on region:show instead)
  */
 
 ;(function(app){
@@ -4479,9 +4484,8 @@ module.exports = DeepModel;
 							var view = new TargetView();
 							if(navRegion.currentView) navRegion.currentView.trigger('view:navigate-away');
 							
-							//note that .show() might be async due to region enter/exit effects
-							//Warning: DO NOT use region.show() in your onShow() within parent view, use view="" in its template instead.
-							view.once('show', function(){
+							//chain on region:show (instead of view:show to let view use onShow() before chaining)
+							navRegion.once('show', function(){
 								view.trigger('view:navigate-chain', pathArray);
 							});	
 							navRegion.show(view);
@@ -6808,4 +6812,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.7-943 build 1450160106025";
+;;app.stagejs = "1.8.7-944 build 1450221017490";

@@ -26,6 +26,7 @@
  * @author Tim Lauv
  * @updated 2014.03.03
  * @updated 2015.08.10
+ * @updated 2015.12.15
  */
 
 ;
@@ -67,13 +68,16 @@
             this.open(view);
             this.currentView = view;
 
-            Marionette.triggerMethod.call(this, "show", view);
+            //Marionette.triggerMethod.call(this, "show", view);
 
             if (_.isFunction(view.triggerMethod)) {
                 view.triggerMethod("show");
             } else {
                 Marionette.triggerMethod.call(view, "show");
             }
+
+            //delay region:show till after view:show (to accommodate navRegion build up in Layout)
+            Marionette.triggerMethod.call(this, "show", view);
 
             return this;
         },
