@@ -7,6 +7,7 @@ Change Log
 3. Added .btn.circle in base theme (also updated .circle mixin);
 4. Updated export to include /channels and /profile;
 5. Added navRegion chain cleanup;
+6. Refined navRegion chaining (through region:show instead);
 
 working on ...
 
