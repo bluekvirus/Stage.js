@@ -12,7 +12,7 @@
  *  cb: function($el)...
  * })
  *
- * the $(tag) you used to call .md() can have md="..." or data-md="..." attribute to indicate md file url.
+ * the $(tag) you used to call .md() can have data-url="..." attribute to indicate md file url.
  * ```
  *
  * Note
@@ -58,7 +58,11 @@
 		options.marked = _.extend({
 			gfm: true,
 			tables: true,
-			breaks: false
+			breaks: false,
+			pedantic: false,
+			sanitize: true,
+			smartLists: true,
+			smartypants: false
 		}, options.marked);
 
 		return this.each(function(index, el){

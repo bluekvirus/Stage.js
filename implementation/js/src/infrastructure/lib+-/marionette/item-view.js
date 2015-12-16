@@ -260,7 +260,7 @@
 			this.setValues = function(vals, loud){
 				if(!vals) return;
 				_.each(this._editors, function(editor, name){
-					var v = vals[name] || selectn(name, vals);
+					var v = vals[name] || app.extract(name, vals);
 					if(v !== null && v !== undefined){
 						editor.setVal(v, loud);
 					}

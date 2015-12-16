@@ -6,6 +6,7 @@
  * @updated 2014.07.24
  * @updated 2015.12.03
  * @updated 2015.12.07
+ * @updated 2015.12.15
  */
 
 
@@ -15,33 +16,72 @@
  * =================================
  */
 
+//Grid (1em gap on sides too)--------
+.container-fluid {
+    padding-left: @font-size-base;
+    padding-right: @font-size-base;
+
+    .row-expanded {
+        margin-left: -@font-size-base;
+        margin-right: -@font-size-base;
+    }
+}
+
 // Wrapper --------------------------
 .wrapper {
-    padding-top: @line-height-computed/2;
-    padding-bottom: @line-height-computed/2;
+    padding-top: @font-size-base / 2;
+    padding-bottom: @font-size-base / 2;
+
+    &:first-child {
+        padding-top: @font-size-base;
+    }
+    &:last-child {
+        padding-bottom: @font-size-base;
+    }
 }
 
 .wrapper-2x {
-    padding-top: @line-height-computed;
-    padding-bottom: @line-height-computed;
+    padding-top: @font-size-base;
+    padding-bottom: @font-size-base;
+
+    &:first-child {
+        padding-top: @font-size-base * 2;
+    }
+    &:last-child {
+        padding-bottom: @font-size-base * 2;
+    }
 }
 
 .wrapper-horizontal {
-    padding-left: @line-height-computed/2;
-    padding-right: @line-height-computed/2;
+    padding-left: @font-size-base / 2;
+    padding-right: @font-size-base / 2;
 }
 
 .wrapper-horizontal-2x {
-    padding-left: @line-height-computed;
-    padding-right: @line-height-computed;
+    padding-left: @font-size-base;
+    padding-right: @font-size-base;
 }
 
 .wrapper-full {
-    padding: @line-height-computed/2 @line-height-computed/2;
+    padding: @font-size-base / 2 @font-size-base / 2;
+
+    &:first-child {
+        padding-top: @font-size-base;
+    }
+    &:last-child {
+        padding-bottom: @font-size-base;
+    }
 }
 
 .wrapper-full-2x {
-    padding: @line-height-computed @line-height-computed;
+    padding: @font-size-base @font-size-base;
+
+    &:first-child {
+        padding-top: @font-size-base * 2;
+    }
+    &:last-child {
+        padding-bottom: @font-size-base * 2;
+    }
 }
 
 // Bordered -------------------------
@@ -125,12 +165,6 @@
     //Note: if you have more than 3 chars as content, increase @size
 }
 
-//.circle applied to (icon-font) .btn
-.btn.circle {
-    .circle();
-    box-shadow: 1px 1px 1px rgba(127, 127, 127, 0.5);
-}
-
 // Center (mixin) ------------------
 // .center-box(@width, @height) {
 //   .center-block();
@@ -204,7 +238,7 @@
         position: relative;
         box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
         border-width: 0;
-        padding-top: @line-height-computed * 3;
+        padding-top: @font-size-base * 3;
         legend,
         .legend {
             width: 100%;
@@ -417,6 +451,11 @@
     width: 3px;
 }
 
+.amaran.stagejs {
+    background: none;
+    border-radius: @border-radius-base;
+    width: auto;
+}
 
 /**
  * ===============================================
@@ -429,7 +468,9 @@
     cursor: pointer;
     &:hover,
     &.hover {
-        text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.5);
+        i {
+            text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.5);
+        }
     }
 }
 
@@ -479,6 +520,12 @@
     &:hover {
         color: lighten(@btn-default-color, 60%);
     }
+}
+
+//.circle applied to (icon-font) .btn
+.btn.circle {
+    .circle();
+    box-shadow: 1px 1px 1px rgba(127, 127, 127, 0.5);
 }
 
 //Label -------------------------

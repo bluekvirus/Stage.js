@@ -1,87 +1,5 @@
 ;(function(app){
 
-
-	//custom message bus view (a collection of the alerts)
-	var MsgBus = app.view({
-		type: 'CollectionView',
-		itemView: '#dynamic#',
-		coop: ['test-coop'],
-		buildItemView: function(item, ItemViewType, itemViewOptions){
-			// build the final list of options for the item view type
-			var options = _.extend({model: item}, itemViewOptions);
-			// create the item view instance
-			var MsgItem = MsgTypes[item.get('type')];
-			var view = new MsgItem(options);
-
-			view.onClose = function(){
-				//remove msg from bus? TBI
-			};
-			// return it
-			return view;
-		},
-		onShow: function(){
-			var that = this;
-			//rewire app:error, app:success, app:info, app:warning
-			_.each(['error', 'success', 'info', 'warning'], function(type){
-				app['on' + _.string.classify(type)] = function(msg){
-					that.trigger('view:msg', {type: type, msg: msg});
-					app.debug(msg);
-				};
-			});
-		},
-		onMsg: function(msg){
-			if(!this.collection) this.trigger('view:render-data', []);
-			this.collection.add(msg);
-		},
-		onTestCoop: function(options){
-			app.debug(this.isInDOM(), options);
-		}	
-	});
-
-	//custom view as error, success, info and warning alerts
-	var MsgTypes = {
-		error: app.view({
-			template: [
-				'<div class="alert alert-dismissable alert-danger">',
-				 	'<button type="button" class="close" data-dismiss="alert">×</button>',
-				 	'{{#unless msg}}',
-						'<strong>Oh snap!</strong> <a href="#" class="alert-link">Change a few things up</a> and try submitting again.',
-					'{{else}}',
-						'{{msg.errorThrown}}',
-					'{{/unless}}',
-				'</div>'
-			]
-		}),
-
-		success: app.view({
-			template: [
-				'<div class="alert alert-dismissable alert-success">',
-					'<button type="button" class="close" data-dismiss="alert">×</button>',
-					'<strong>Well done!</strong> You successfully read <a href="#" class="alert-link">this important alert message</a>.',
-				'</div>'
-			]
-		}),
-
-		info: app.view({
-			template: [
-				'<div class="alert alert-dismissable alert-info">',
-  					'<button type="button" class="close" data-dismiss="alert">×</button>',
-  					'<strong>Heads up!</strong> This <a href="#" class="alert-link">alert needs your attention</a>, but it\'s not super important.',
-				'</div>'
-			]
-		}),
-
-		warning: app.view({
-			template: [
-				'<div class="alert alert-dismissable alert-warning">',
-				'  <button type="button" class="close" data-dismiss="alert">×</button>',
-				'  <h4>Warning!</h4>',
-				'  <p>Best check yo self, you\'re not looking too good. <a href="#" class="alert-link">vel scelerisque nisl consectetur et</a>.</p>',
-				'</div>',
-			]
-		})
-	};
-
 	//custom view as overlay
 	var Overlay = app.view({
 		overlay: true,
@@ -123,16 +41,18 @@
 			'<hr/>',
 			'<div style="position:relative">',
 				'<span class="btn btn-small btn-primary" action="overlay">Overlay</span> ',
-				'<span class="btn btn-small btn-danger" action="msg" type="error">Critical</span> ',
-				'<span class="btn btn-small btn-success" action="msg" type="success">Success</span> ',
-				'<span class="btn btn-small btn-warning" action="msg" type="warning">Warning</span> ',
-				'<span class="btn btn-small btn-info" action="msg" type="info">Information</span> ',
-				'<div region="msg-bus" style="position:absolute;right:0;top:0;width:360px;"></div>',
+				'<span class="btn btn-small btn-danger" action="msg" data-type="danger">Critical</span> ',
+				'<span class="btn btn-small btn-success" action="msg" data-type="success">Success</span> ',
+				'<span class="btn btn-small btn-warning" action="msg" data-type="warning">Warning</span> ',
+				'<span class="btn btn-small btn-info" action="msg" data-type="info">Information</span> ',
 			'</div>'
 		],
 		effect: 'roll',
-		onShow: function(){
-			this.getRegion('msg-bus').show(new MsgBus());
+		data: {
+			danger: {title: 'Oh snap!', msg: '<a href="#" class="alert-link">Change a few things up</a> and try submitting again.'},
+			success: {title: 'Well done!', msg: 'You successfully read <a href="#" class="alert-link">this important alert message</a>.'},
+			warning: {title: 'Warning!', msg: 'Best check yo self, you\'re not looking too good. <a href="#" class="alert-link">vel scelerisque nisl consectetur et</a>.'},
+			info: {title: 'Heads up!', msg: 'This <a href="#" class="alert-link">alert needs your attention</a>, but it\'s not super important.'}
 		},
 		actions: {
 			overlay: function(){
@@ -140,7 +60,8 @@
 			},
 
 			msg: function($btn, e){
-				app.trigger('app:' + $btn.attr('type'));
+				var note = this.get($btn.data('type'));
+				app.notify(note.title, note.msg, $btn.data('type'));
 			}
 		}
 

@@ -4,11 +4,16 @@
  * @updated 2014.07.24
  */
 
-//Fonts
+//Icon Fonts [+ FontAwesome]
 @icon-font-path: "../fonts/bootstrap/";
 @fa-font-path: "../fonts/fontawesome";
+
+//Fonts
 @OpenSansPath: "../fonts/open-sans-fontface";
 @font-family-base: "Open Sans", @font-family-sans-serif;
+
+//Grid (1em gap)
+@grid-gutter-width: @font-size-base;
 
 //Navbar
 @navbar-margin-bottom: 0;
@@ -22,14 +27,10 @@
 //Border
 @base-border-color: lighten(@text-color, 60%);
 
-
-//===========================================================
-//** Global text color on `<body>`.
-@text-color:            @gray-darker; //@gray-dark;
-
-//** Global textual link color.
-@link-color:            @gray-light; //@brand-primary;
-
-//Code
-@code-color:                  @gray-light; //#c7254e;
-@code-bg:                     none;//@gray-lighter; //#f9f2f4;
+//Components (Pager, Badge, Label have their own separate radius values)
+@border-radius-base: 0;
+@border-radius-large: 0;
+@border-radius-small: 0;
+//@pager-border-radius: 15px;
+//@badge-border-radius: 10px;
+//.label {border-radius: .25em;} -- already reset to @border-radius-base in components.less

@@ -12055,957 +12055,6 @@ return jQuery;
 }));
 
 ;/*!
- * jQuery Color Animations v@VERSION
- * https://github.com/jquery/jquery-color
- *
- * Copyright 2013 jQuery Foundation and other contributors
- * Released under the MIT license.
- * http://jquery.org/license
- *
- * Date: @DATE
- */
-(function( jQuery, undefined ) {
-
-	var stepHooks = "backgroundColor borderBottomColor borderLeftColor borderRightColor borderTopColor color columnRuleColor outlineColor textDecorationColor textEmphasisColor",
-
-	// plusequals test for += 100 -= 100
-	rplusequals = /^([\-+])=\s*(\d+\.?\d*)/,
-	// a set of RE's that can match strings and generate color tuples.
-	stringParsers = [{
-			re: /rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*(?:,\s*(\d?(?:\.\d+)?)\s*)?\)/,
-			parse: function( execResult ) {
-				return [
-					execResult[ 1 ],
-					execResult[ 2 ],
-					execResult[ 3 ],
-					execResult[ 4 ]
-				];
-			}
-		}, {
-			re: /rgba?\(\s*(\d+(?:\.\d+)?)\%\s*,\s*(\d+(?:\.\d+)?)\%\s*,\s*(\d+(?:\.\d+)?)\%\s*(?:,\s*(\d?(?:\.\d+)?)\s*)?\)/,
-			parse: function( execResult ) {
-				return [
-					execResult[ 1 ] * 2.55,
-					execResult[ 2 ] * 2.55,
-					execResult[ 3 ] * 2.55,
-					execResult[ 4 ]
-				];
-			}
-		}, {
-			// this regex ignores A-F because it's compared against an already lowercased string
-			re: /#([a-f0-9]{2})([a-f0-9]{2})([a-f0-9]{2})/,
-			parse: function( execResult ) {
-				return [
-					parseInt( execResult[ 1 ], 16 ),
-					parseInt( execResult[ 2 ], 16 ),
-					parseInt( execResult[ 3 ], 16 )
-				];
-			}
-		}, {
-			// this regex ignores A-F because it's compared against an already lowercased string
-			re: /#([a-f0-9])([a-f0-9])([a-f0-9])/,
-			parse: function( execResult ) {
-				return [
-					parseInt( execResult[ 1 ] + execResult[ 1 ], 16 ),
-					parseInt( execResult[ 2 ] + execResult[ 2 ], 16 ),
-					parseInt( execResult[ 3 ] + execResult[ 3 ], 16 )
-				];
-			}
-		}, {
-			re: /hsla?\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\%\s*,\s*(\d+(?:\.\d+)?)\%\s*(?:,\s*(\d?(?:\.\d+)?)\s*)?\)/,
-			space: "hsla",
-			parse: function( execResult ) {
-				return [
-					execResult[ 1 ],
-					execResult[ 2 ] / 100,
-					execResult[ 3 ] / 100,
-					execResult[ 4 ]
-				];
-			}
-		}],
-
-	// jQuery.Color( )
-	color = jQuery.Color = function( color, green, blue, alpha ) {
-		return new jQuery.Color.fn.parse( color, green, blue, alpha );
-	},
-	spaces = {
-		rgba: {
-			props: {
-				red: {
-					idx: 0,
-					type: "byte"
-				},
-				green: {
-					idx: 1,
-					type: "byte"
-				},
-				blue: {
-					idx: 2,
-					type: "byte"
-				}
-			}
-		},
-
-		hsla: {
-			props: {
-				hue: {
-					idx: 0,
-					type: "degrees"
-				},
-				saturation: {
-					idx: 1,
-					type: "percent"
-				},
-				lightness: {
-					idx: 2,
-					type: "percent"
-				}
-			}
-		}
-	},
-	propTypes = {
-		"byte": {
-			floor: true,
-			max: 255
-		},
-		"percent": {
-			max: 1
-		},
-		"degrees": {
-			mod: 360,
-			floor: true
-		}
-	},
-	support = color.support = {},
-
-	// element for support tests
-	supportElem = jQuery( "<p>" )[ 0 ],
-
-	// colors = jQuery.Color.names
-	colors,
-
-	// local aliases of functions called often
-	each = jQuery.each;
-
-// determine rgba support immediately
-supportElem.style.cssText = "background-color:rgba(1,1,1,.5)";
-support.rgba = supportElem.style.backgroundColor.indexOf( "rgba" ) > -1;
-
-// define cache name and alpha properties
-// for rgba and hsla spaces
-each( spaces, function( spaceName, space ) {
-	space.cache = "_" + spaceName;
-	space.props.alpha = {
-		idx: 3,
-		type: "percent",
-		def: 1
-	};
-});
-
-function clamp( value, prop, allowEmpty ) {
-	var type = propTypes[ prop.type ] || {};
-
-	if ( value == null ) {
-		return (allowEmpty || !prop.def) ? null : prop.def;
-	}
-
-	// ~~ is an short way of doing floor for positive numbers
-	value = type.floor ? ~~value : parseFloat( value );
-
-	// IE will pass in empty strings as value for alpha,
-	// which will hit this case
-	if ( isNaN( value ) ) {
-		return prop.def;
-	}
-
-	if ( type.mod ) {
-		// we add mod before modding to make sure that negatives values
-		// get converted properly: -10 -> 350
-		return (value + type.mod) % type.mod;
-	}
-
-	// for now all property types without mod have min and max
-	return 0 > value ? 0 : type.max < value ? type.max : value;
-}
-
-function stringParse( string ) {
-	var inst = color(),
-		rgba = inst._rgba = [];
-
-	string = string.toLowerCase();
-
-	each( stringParsers, function( i, parser ) {
-		var parsed,
-			match = parser.re.exec( string ),
-			values = match && parser.parse( match ),
-			spaceName = parser.space || "rgba";
-
-		if ( values ) {
-			parsed = inst[ spaceName ]( values );
-
-			// if this was an rgba parse the assignment might happen twice
-			// oh well....
-			inst[ spaces[ spaceName ].cache ] = parsed[ spaces[ spaceName ].cache ];
-			rgba = inst._rgba = parsed._rgba;
-
-			// exit each( stringParsers ) here because we matched
-			return false;
-		}
-	});
-
-	// Found a stringParser that handled it
-	if ( rgba.length ) {
-
-		// if this came from a parsed string, force "transparent" when alpha is 0
-		// chrome, (and maybe others) return "transparent" as rgba(0,0,0,0)
-		if ( rgba.join() === "0,0,0,0" ) {
-			jQuery.extend( rgba, colors.transparent );
-		}
-		return inst;
-	}
-
-	// named colors
-	return colors[ string ];
-}
-
-color.fn = jQuery.extend( color.prototype, {
-	parse: function( red, green, blue, alpha ) {
-		if ( red === undefined ) {
-			this._rgba = [ null, null, null, null ];
-			return this;
-		}
-		if ( red.jquery || red.nodeType ) {
-			red = jQuery( red ).css( green );
-			green = undefined;
-		}
-
-		var inst = this,
-			type = jQuery.type( red ),
-			rgba = this._rgba = [];
-
-		// more than 1 argument specified - assume ( red, green, blue, alpha )
-		if ( green !== undefined ) {
-			red = [ red, green, blue, alpha ];
-			type = "array";
-		}
-
-		if ( type === "string" ) {
-			return this.parse( stringParse( red ) || colors._default );
-		}
-
-		if ( type === "array" ) {
-			each( spaces.rgba.props, function( key, prop ) {
-				rgba[ prop.idx ] = clamp( red[ prop.idx ], prop );
-			});
-			return this;
-		}
-
-		if ( type === "object" ) {
-			if ( red instanceof color ) {
-				each( spaces, function( spaceName, space ) {
-					if ( red[ space.cache ] ) {
-						inst[ space.cache ] = red[ space.cache ].slice();
-					}
-				});
-			} else {
-				each( spaces, function( spaceName, space ) {
-					var cache = space.cache;
-					each( space.props, function( key, prop ) {
-
-						// if the cache doesn't exist, and we know how to convert
-						if ( !inst[ cache ] && space.to ) {
-
-							// if the value was null, we don't need to copy it
-							// if the key was alpha, we don't need to copy it either
-							if ( key === "alpha" || red[ key ] == null ) {
-								return;
-							}
-							inst[ cache ] = space.to( inst._rgba );
-						}
-
-						// this is the only case where we allow nulls for ALL properties.
-						// call clamp with alwaysAllowEmpty
-						inst[ cache ][ prop.idx ] = clamp( red[ key ], prop, true );
-					});
-
-					// everything defined but alpha?
-					if ( inst[ cache ] && jQuery.inArray( null, inst[ cache ].slice( 0, 3 ) ) < 0 ) {
-						// use the default of 1
-						inst[ cache ][ 3 ] = 1;
-						if ( space.from ) {
-							inst._rgba = space.from( inst[ cache ] );
-						}
-					}
-				});
-			}
-			return this;
-		}
-	},
-	is: function( compare ) {
-		var is = color( compare ),
-			same = true,
-			inst = this;
-
-		each( spaces, function( _, space ) {
-			var localCache,
-				isCache = is[ space.cache ];
-			if (isCache) {
-				localCache = inst[ space.cache ] || space.to && space.to( inst._rgba ) || [];
-				each( space.props, function( _, prop ) {
-					if ( isCache[ prop.idx ] != null ) {
-						same = ( isCache[ prop.idx ] === localCache[ prop.idx ] );
-						return same;
-					}
-				});
-			}
-			return same;
-		});
-		return same;
-	},
-	_space: function() {
-		var used = [],
-			inst = this;
-		each( spaces, function( spaceName, space ) {
-			if ( inst[ space.cache ] ) {
-				used.push( spaceName );
-			}
-		});
-		return used.pop();
-	},
-	transition: function( other, distance ) {
-		var end = color( other ),
-			spaceName = end._space(),
-			space = spaces[ spaceName ],
-			startColor = this.alpha() === 0 ? color( "transparent" ) : this,
-			start = startColor[ space.cache ] || space.to( startColor._rgba ),
-			result = start.slice();
-
-		end = end[ space.cache ];
-		each( space.props, function( key, prop ) {
-			var index = prop.idx,
-				startValue = start[ index ],
-				endValue = end[ index ],
-				type = propTypes[ prop.type ] || {};
-
-			// if null, don't override start value
-			if ( endValue === null ) {
-				return;
-			}
-			// if null - use end
-			if ( startValue === null ) {
-				result[ index ] = endValue;
-			} else {
-				if ( type.mod ) {
-					if ( endValue - startValue > type.mod / 2 ) {
-						startValue += type.mod;
-					} else if ( startValue - endValue > type.mod / 2 ) {
-						startValue -= type.mod;
-					}
-				}
-				result[ index ] = clamp( ( endValue - startValue ) * distance + startValue, prop );
-			}
-		});
-		return this[ spaceName ]( result );
-	},
-	blend: function( opaque ) {
-		// if we are already opaque - return ourself
-		if ( this._rgba[ 3 ] === 1 ) {
-			return this;
-		}
-
-		var rgb = this._rgba.slice(),
-			a = rgb.pop(),
-			blend = color( opaque )._rgba;
-
-		return color( jQuery.map( rgb, function( v, i ) {
-			return ( 1 - a ) * blend[ i ] + a * v;
-		}));
-	},
-	toRgbaString: function() {
-		var prefix = "rgba(",
-			rgba = jQuery.map( this._rgba, function( v, i ) {
-				return v == null ? ( i > 2 ? 1 : 0 ) : v;
-			});
-
-		if ( rgba[ 3 ] === 1 ) {
-			rgba.pop();
-			prefix = "rgb(";
-		}
-
-		return prefix + rgba.join() + ")";
-	},
-	toHslaString: function() {
-		var prefix = "hsla(",
-			hsla = jQuery.map( this.hsla(), function( v, i ) {
-				if ( v == null ) {
-					v = i > 2 ? 1 : 0;
-				}
-
-				// catch 1 and 2
-				if ( i && i < 3 ) {
-					v = Math.round( v * 100 ) + "%";
-				}
-				return v;
-			});
-
-		if ( hsla[ 3 ] === 1 ) {
-			hsla.pop();
-			prefix = "hsl(";
-		}
-		return prefix + hsla.join() + ")";
-	},
-	toHexString: function( includeAlpha ) {
-		var rgba = this._rgba.slice(),
-			alpha = rgba.pop();
-
-		if ( includeAlpha ) {
-			rgba.push( ~~( alpha * 255 ) );
-		}
-
-		return "#" + jQuery.map( rgba, function( v ) {
-
-			// default to 0 when nulls exist
-			v = ( v || 0 ).toString( 16 );
-			return v.length === 1 ? "0" + v : v;
-		}).join("");
-	},
-	toString: function() {
-		return this._rgba[ 3 ] === 0 ? "transparent" : this.toRgbaString();
-	}
-});
-color.fn.parse.prototype = color.fn;
-
-// hsla conversions adapted from:
-// https://code.google.com/p/maashaack/source/browse/packages/graphics/trunk/src/graphics/colors/HUE2RGB.as?r=5021
-
-function hue2rgb( p, q, h ) {
-	h = ( h + 1 ) % 1;
-	if ( h * 6 < 1 ) {
-		return p + (q - p) * h * 6;
-	}
-	if ( h * 2 < 1) {
-		return q;
-	}
-	if ( h * 3 < 2 ) {
-		return p + (q - p) * ((2/3) - h) * 6;
-	}
-	return p;
-}
-
-spaces.hsla.to = function ( rgba ) {
-	if ( rgba[ 0 ] == null || rgba[ 1 ] == null || rgba[ 2 ] == null ) {
-		return [ null, null, null, rgba[ 3 ] ];
-	}
-	var r = rgba[ 0 ] / 255,
-		g = rgba[ 1 ] / 255,
-		b = rgba[ 2 ] / 255,
-		a = rgba[ 3 ],
-		max = Math.max( r, g, b ),
-		min = Math.min( r, g, b ),
-		diff = max - min,
-		add = max + min,
-		l = add * 0.5,
-		h, s;
-
-	if ( min === max ) {
-		h = 0;
-	} else if ( r === max ) {
-		h = ( 60 * ( g - b ) / diff ) + 360;
-	} else if ( g === max ) {
-		h = ( 60 * ( b - r ) / diff ) + 120;
-	} else {
-		h = ( 60 * ( r - g ) / diff ) + 240;
-	}
-
-	// chroma (diff) == 0 means greyscale which, by definition, saturation = 0%
-	// otherwise, saturation is based on the ratio of chroma (diff) to lightness (add)
-	if ( diff === 0 ) {
-		s = 0;
-	} else if ( l <= 0.5 ) {
-		s = diff / add;
-	} else {
-		s = diff / ( 2 - add );
-	}
-	return [ Math.round(h) % 360, s, l, a == null ? 1 : a ];
-};
-
-spaces.hsla.from = function ( hsla ) {
-	if ( hsla[ 0 ] == null || hsla[ 1 ] == null || hsla[ 2 ] == null ) {
-		return [ null, null, null, hsla[ 3 ] ];
-	}
-	var h = hsla[ 0 ] / 360,
-		s = hsla[ 1 ],
-		l = hsla[ 2 ],
-		a = hsla[ 3 ],
-		q = l <= 0.5 ? l * ( 1 + s ) : l + s - l * s,
-		p = 2 * l - q;
-
-	return [
-		Math.round( hue2rgb( p, q, h + ( 1 / 3 ) ) * 255 ),
-		Math.round( hue2rgb( p, q, h ) * 255 ),
-		Math.round( hue2rgb( p, q, h - ( 1 / 3 ) ) * 255 ),
-		a
-	];
-};
-
-
-each( spaces, function( spaceName, space ) {
-	var props = space.props,
-		cache = space.cache,
-		to = space.to,
-		from = space.from;
-
-	// makes rgba() and hsla()
-	color.fn[ spaceName ] = function( value ) {
-
-		// generate a cache for this space if it doesn't exist
-		if ( to && !this[ cache ] ) {
-			this[ cache ] = to( this._rgba );
-		}
-		if ( value === undefined ) {
-			return this[ cache ].slice();
-		}
-
-		var ret,
-			type = jQuery.type( value ),
-			arr = ( type === "array" || type === "object" ) ? value : arguments,
-			local = this[ cache ].slice();
-
-		each( props, function( key, prop ) {
-			var val = arr[ type === "object" ? key : prop.idx ];
-			if ( val == null ) {
-				val = local[ prop.idx ];
-			}
-			local[ prop.idx ] = clamp( val, prop );
-		});
-
-		if ( from ) {
-			ret = color( from( local ) );
-			ret[ cache ] = local;
-			return ret;
-		} else {
-			return color( local );
-		}
-	};
-
-	// makes red() green() blue() alpha() hue() saturation() lightness()
-	each( props, function( key, prop ) {
-		// alpha is included in more than one space
-		if ( color.fn[ key ] ) {
-			return;
-		}
-		color.fn[ key ] = function( value ) {
-			var vtype = jQuery.type( value ),
-				fn = ( key === "alpha" ? ( this._hsla ? "hsla" : "rgba" ) : spaceName ),
-				local = this[ fn ](),
-				cur = local[ prop.idx ],
-				match;
-
-			if ( vtype === "undefined" ) {
-				return cur;
-			}
-
-			if ( vtype === "function" ) {
-				value = value.call( this, cur );
-				vtype = jQuery.type( value );
-			}
-			if ( value == null && prop.empty ) {
-				return this;
-			}
-			if ( vtype === "string" ) {
-				match = rplusequals.exec( value );
-				if ( match ) {
-					value = cur + parseFloat( match[ 2 ] ) * ( match[ 1 ] === "+" ? 1 : -1 );
-				}
-			}
-			local[ prop.idx ] = value;
-			return this[ fn ]( local );
-		};
-	});
-});
-
-// add cssHook and .fx.step function for each named hook.
-// accept a space separated string of properties
-color.hook = function( hook ) {
-	var hooks = hook.split( " " );
-	each( hooks, function( i, hook ) {
-		jQuery.cssHooks[ hook ] = {
-			set: function( elem, value ) {
-				var parsed, curElem,
-					backgroundColor = "";
-
-				if ( value !== "transparent" && ( jQuery.type( value ) !== "string" || ( parsed = stringParse( value ) ) ) ) {
-					value = color( parsed || value );
-					if ( !support.rgba && value._rgba[ 3 ] !== 1 ) {
-						curElem = hook === "backgroundColor" ? elem.parentNode : elem;
-						while (
-							(backgroundColor === "" || backgroundColor === "transparent") &&
-							curElem && curElem.style
-						) {
-							try {
-								backgroundColor = jQuery.css( curElem, "backgroundColor" );
-								curElem = curElem.parentNode;
-							} catch ( e ) {
-							}
-						}
-
-						value = value.blend( backgroundColor && backgroundColor !== "transparent" ?
-							backgroundColor :
-							"_default" );
-					}
-
-					value = value.toRgbaString();
-				}
-				try {
-					elem.style[ hook ] = value;
-				} catch( e ) {
-					// wrapped to prevent IE from throwing errors on "invalid" values like 'auto' or 'inherit'
-				}
-			}
-		};
-		jQuery.fx.step[ hook ] = function( fx ) {
-			if ( !fx.colorInit ) {
-				fx.start = color( fx.elem, hook );
-				fx.end = color( fx.end );
-				fx.colorInit = true;
-			}
-			jQuery.cssHooks[ hook ].set( fx.elem, fx.start.transition( fx.end, fx.pos ) );
-		};
-	});
-
-};
-
-color.hook( stepHooks );
-
-jQuery.cssHooks.borderColor = {
-	expand: function( value ) {
-		var expanded = {};
-
-		each( [ "Top", "Right", "Bottom", "Left" ], function( i, part ) {
-			expanded[ "border" + part + "Color" ] = value;
-		});
-		return expanded;
-	}
-};
-
-// Basic color names only.
-// Usage of any of the other color names requires adding yourself or including
-// jquery.color.svg-names.js.
-colors = jQuery.Color.names = {
-	// 4.1. Basic color keywords
-	aqua: "#00ffff",
-	black: "#000000",
-	blue: "#0000ff",
-	fuchsia: "#ff00ff",
-	gray: "#808080",
-	green: "#008000",
-	lime: "#00ff00",
-	maroon: "#800000",
-	navy: "#000080",
-	olive: "#808000",
-	purple: "#800080",
-	red: "#ff0000",
-	silver: "#c0c0c0",
-	teal: "#008080",
-	white: "#ffffff",
-	yellow: "#ffff00",
-
-	// 4.2.3. "transparent" color keyword
-	transparent: [ null, null, null, 0 ],
-
-	_default: "#ffffff"
-};
-
-})( jQuery );
-
-;/*!
- * jQuery Color Animations v@VERSION - SVG Color Names
- * https://github.com/jquery/jquery-color
- *
- * Remaining HTML/CSS color names per W3C's CSS Color Module Level 3.
- * http://www.w3.org/TR/css3-color/#svg-color
- *
- * Copyright 2013 jQuery Foundation and other contributors
- * Released under the MIT license.
- * http://jquery.org/license
- *
- * Date: @DATE
- */
-jQuery.extend( jQuery.Color.names, {
-	// 4.3. Extended color keywords (minus the basic ones in core color plugin)
-	aliceblue: "#f0f8ff",
-	antiquewhite: "#faebd7",
-	aquamarine: "#7fffd4",
-	azure: "#f0ffff",
-	beige: "#f5f5dc",
-	bisque: "#ffe4c4",
-	blanchedalmond: "#ffebcd",
-	blueviolet: "#8a2be2",
-	brown: "#a52a2a",
-	burlywood: "#deb887",
-	cadetblue: "#5f9ea0",
-	chartreuse: "#7fff00",
-	chocolate: "#d2691e",
-	coral: "#ff7f50",
-	cornflowerblue: "#6495ed",
-	cornsilk: "#fff8dc",
-	crimson: "#dc143c",
-	cyan: "#00ffff",
-	darkblue: "#00008b",
-	darkcyan: "#008b8b",
-	darkgoldenrod: "#b8860b",
-	darkgray: "#a9a9a9",
-	darkgreen: "#006400",
-	darkgrey: "#a9a9a9",
-	darkkhaki: "#bdb76b",
-	darkmagenta: "#8b008b",
-	darkolivegreen: "#556b2f",
-	darkorange: "#ff8c00",
-	darkorchid: "#9932cc",
-	darkred: "#8b0000",
-	darksalmon: "#e9967a",
-	darkseagreen: "#8fbc8f",
-	darkslateblue: "#483d8b",
-	darkslategray: "#2f4f4f",
-	darkslategrey: "#2f4f4f",
-	darkturquoise: "#00ced1",
-	darkviolet: "#9400d3",
-	deeppink: "#ff1493",
-	deepskyblue: "#00bfff",
-	dimgray: "#696969",
-	dimgrey: "#696969",
-	dodgerblue: "#1e90ff",
-	firebrick: "#b22222",
-	floralwhite: "#fffaf0",
-	forestgreen: "#228b22",
-	gainsboro: "#dcdcdc",
-	ghostwhite: "#f8f8ff",
-	gold: "#ffd700",
-	goldenrod: "#daa520",
-	greenyellow: "#adff2f",
-	grey: "#808080",
-	honeydew: "#f0fff0",
-	hotpink: "#ff69b4",
-	indianred: "#cd5c5c",
-	indigo: "#4b0082",
-	ivory: "#fffff0",
-	khaki: "#f0e68c",
-	lavender: "#e6e6fa",
-	lavenderblush: "#fff0f5",
-	lawngreen: "#7cfc00",
-	lemonchiffon: "#fffacd",
-	lightblue: "#add8e6",
-	lightcoral: "#f08080",
-	lightcyan: "#e0ffff",
-	lightgoldenrodyellow: "#fafad2",
-	lightgray: "#d3d3d3",
-	lightgreen: "#90ee90",
-	lightgrey: "#d3d3d3",
-	lightpink: "#ffb6c1",
-	lightsalmon: "#ffa07a",
-	lightseagreen: "#20b2aa",
-	lightskyblue: "#87cefa",
-	lightslategray: "#778899",
-	lightslategrey: "#778899",
-	lightsteelblue: "#b0c4de",
-	lightyellow: "#ffffe0",
-	limegreen: "#32cd32",
-	linen: "#faf0e6",
-	mediumaquamarine: "#66cdaa",
-	mediumblue: "#0000cd",
-	mediumorchid: "#ba55d3",
-	mediumpurple: "#9370db",
-	mediumseagreen: "#3cb371",
-	mediumslateblue: "#7b68ee",
-	mediumspringgreen: "#00fa9a",
-	mediumturquoise: "#48d1cc",
-	mediumvioletred: "#c71585",
-	midnightblue: "#191970",
-	mintcream: "#f5fffa",
-	mistyrose: "#ffe4e1",
-	moccasin: "#ffe4b5",
-	navajowhite: "#ffdead",
-	oldlace: "#fdf5e6",
-	olivedrab: "#6b8e23",
-	orange: "#ffa500",
-	orangered: "#ff4500",
-	orchid: "#da70d6",
-	palegoldenrod: "#eee8aa",
-	palegreen: "#98fb98",
-	paleturquoise: "#afeeee",
-	palevioletred: "#db7093",
-	papayawhip: "#ffefd5",
-	peachpuff: "#ffdab9",
-	peru: "#cd853f",
-	pink: "#ffc0cb",
-	plum: "#dda0dd",
-	powderblue: "#b0e0e6",
-	rosybrown: "#bc8f8f",
-	royalblue: "#4169e1",
-	saddlebrown: "#8b4513",
-	salmon: "#fa8072",
-	sandybrown: "#f4a460",
-	seagreen: "#2e8b57",
-	seashell: "#fff5ee",
-	sienna: "#a0522d",
-	skyblue: "#87ceeb",
-	slateblue: "#6a5acd",
-	slategray: "#708090",
-	slategrey: "#708090",
-	snow: "#fffafa",
-	springgreen: "#00ff7f",
-	steelblue: "#4682b4",
-	tan: "#d2b48c",
-	thistle: "#d8bfd8",
-	tomato: "#ff6347",
-	turquoise: "#40e0d0",
-	violet: "#ee82ee",
-	wheat: "#f5deb3",
-	whitesmoke: "#f5f5f5",
-	yellowgreen: "#9acd32"
-});
-
-;/*!
- * JavaScript Cookie v2.0.4
- * https://github.com/js-cookie/js-cookie
- *
- * Copyright 2006, 2015 Klaus Hartl & Fagner Brack
- * Released under the MIT license
- */
-(function (factory) {
-	if (typeof define === 'function' && define.amd) {
-		define(factory);
-	} else if (typeof exports === 'object') {
-		module.exports = factory();
-	} else {
-		var _OldCookies = window.Cookies;
-		var api = window.Cookies = factory();
-		api.noConflict = function () {
-			window.Cookies = _OldCookies;
-			return api;
-		};
-	}
-}(function () {
-	function extend () {
-		var i = 0;
-		var result = {};
-		for (; i < arguments.length; i++) {
-			var attributes = arguments[ i ];
-			for (var key in attributes) {
-				result[key] = attributes[key];
-			}
-		}
-		return result;
-	}
-
-	function init (converter) {
-		function api (key, value, attributes) {
-			var result;
-
-			// Write
-
-			if (arguments.length > 1) {
-				attributes = extend({
-					path: '/'
-				}, api.defaults, attributes);
-
-				if (typeof attributes.expires === 'number') {
-					var expires = new Date();
-					expires.setMilliseconds(expires.getMilliseconds() + attributes.expires * 864e+5);
-					attributes.expires = expires;
-				}
-
-				try {
-					result = JSON.stringify(value);
-					if (/^[\{\[]/.test(result)) {
-						value = result;
-					}
-				} catch (e) {}
-
-				value = encodeURIComponent(String(value));
-				value = value.replace(/%(23|24|26|2B|3A|3C|3E|3D|2F|3F|40|5B|5D|5E|60|7B|7D|7C)/g, decodeURIComponent);
-
-				key = encodeURIComponent(String(key));
-				key = key.replace(/%(23|24|26|2B|5E|60|7C)/g, decodeURIComponent);
-				key = key.replace(/[\(\)]/g, escape);
-
-				return (document.cookie = [
-					key, '=', value,
-					attributes.expires && '; expires=' + attributes.expires.toUTCString(), // use expires attribute, max-age is not supported by IE
-					attributes.path    && '; path=' + attributes.path,
-					attributes.domain  && '; domain=' + attributes.domain,
-					attributes.secure ? '; secure' : ''
-				].join(''));
-			}
-
-			// Read
-
-			if (!key) {
-				result = {};
-			}
-
-			// To prevent the for loop in the first place assign an empty array
-			// in case there are no cookies at all. Also prevents odd result when
-			// calling "get()"
-			var cookies = document.cookie ? document.cookie.split('; ') : [];
-			var rdecode = /(%[0-9A-Z]{2})+/g;
-			var i = 0;
-
-			for (; i < cookies.length; i++) {
-				var parts = cookies[i].split('=');
-				var name = parts[0].replace(rdecode, decodeURIComponent);
-				var cookie = parts.slice(1).join('=');
-
-				if (cookie.charAt(0) === '"') {
-					cookie = cookie.slice(1, -1);
-				}
-
-				try {
-					cookie = converter && converter(cookie, name) || cookie.replace(rdecode, decodeURIComponent);
-
-					if (this.json) {
-						try {
-							cookie = JSON.parse(cookie);
-						} catch (e) {}
-					}
-
-					if (key === name) {
-						result = cookie;
-						break;
-					}
-
-					if (!key) {
-						result[name] = cookie;
-					}
-				} catch (e) {}
-			}
-
-			return result;
-		}
-
-		api.get = api.set = api;
-		api.getJSON = function () {
-			return api.apply({
-				json: true
-			}, [].slice.call(arguments));
-		};
-		api.defaults = {};
-
-		api.remove = function (key, attributes) {
-			api(key, '', extend(attributes, {
-				expires: -1
-			}));
-		};
-
-		api.withConverter = init;
-
-		return api;
-	}
-
-	return init();
-}));
-
-;/*!
  * jQuery UI Core 1.10.4
  * http://jqueryui.com
  *
@@ -20865,6 +19914,1291 @@ $.effects.effect.transfer = function( o, done ) {
 
 })(jQuery);
 
+;/*!
+ * jQuery Color Animations v@VERSION
+ * https://github.com/jquery/jquery-color
+ *
+ * Copyright 2013 jQuery Foundation and other contributors
+ * Released under the MIT license.
+ * http://jquery.org/license
+ *
+ * Date: @DATE
+ */
+(function( jQuery, undefined ) {
+
+	var stepHooks = "backgroundColor borderBottomColor borderLeftColor borderRightColor borderTopColor color columnRuleColor outlineColor textDecorationColor textEmphasisColor",
+
+	// plusequals test for += 100 -= 100
+	rplusequals = /^([\-+])=\s*(\d+\.?\d*)/,
+	// a set of RE's that can match strings and generate color tuples.
+	stringParsers = [{
+			re: /rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*(?:,\s*(\d?(?:\.\d+)?)\s*)?\)/,
+			parse: function( execResult ) {
+				return [
+					execResult[ 1 ],
+					execResult[ 2 ],
+					execResult[ 3 ],
+					execResult[ 4 ]
+				];
+			}
+		}, {
+			re: /rgba?\(\s*(\d+(?:\.\d+)?)\%\s*,\s*(\d+(?:\.\d+)?)\%\s*,\s*(\d+(?:\.\d+)?)\%\s*(?:,\s*(\d?(?:\.\d+)?)\s*)?\)/,
+			parse: function( execResult ) {
+				return [
+					execResult[ 1 ] * 2.55,
+					execResult[ 2 ] * 2.55,
+					execResult[ 3 ] * 2.55,
+					execResult[ 4 ]
+				];
+			}
+		}, {
+			// this regex ignores A-F because it's compared against an already lowercased string
+			re: /#([a-f0-9]{2})([a-f0-9]{2})([a-f0-9]{2})/,
+			parse: function( execResult ) {
+				return [
+					parseInt( execResult[ 1 ], 16 ),
+					parseInt( execResult[ 2 ], 16 ),
+					parseInt( execResult[ 3 ], 16 )
+				];
+			}
+		}, {
+			// this regex ignores A-F because it's compared against an already lowercased string
+			re: /#([a-f0-9])([a-f0-9])([a-f0-9])/,
+			parse: function( execResult ) {
+				return [
+					parseInt( execResult[ 1 ] + execResult[ 1 ], 16 ),
+					parseInt( execResult[ 2 ] + execResult[ 2 ], 16 ),
+					parseInt( execResult[ 3 ] + execResult[ 3 ], 16 )
+				];
+			}
+		}, {
+			re: /hsla?\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\%\s*,\s*(\d+(?:\.\d+)?)\%\s*(?:,\s*(\d?(?:\.\d+)?)\s*)?\)/,
+			space: "hsla",
+			parse: function( execResult ) {
+				return [
+					execResult[ 1 ],
+					execResult[ 2 ] / 100,
+					execResult[ 3 ] / 100,
+					execResult[ 4 ]
+				];
+			}
+		}],
+
+	// jQuery.Color( )
+	color = jQuery.Color = function( color, green, blue, alpha ) {
+		return new jQuery.Color.fn.parse( color, green, blue, alpha );
+	},
+	spaces = {
+		rgba: {
+			props: {
+				red: {
+					idx: 0,
+					type: "byte"
+				},
+				green: {
+					idx: 1,
+					type: "byte"
+				},
+				blue: {
+					idx: 2,
+					type: "byte"
+				}
+			}
+		},
+
+		hsla: {
+			props: {
+				hue: {
+					idx: 0,
+					type: "degrees"
+				},
+				saturation: {
+					idx: 1,
+					type: "percent"
+				},
+				lightness: {
+					idx: 2,
+					type: "percent"
+				}
+			}
+		}
+	},
+	propTypes = {
+		"byte": {
+			floor: true,
+			max: 255
+		},
+		"percent": {
+			max: 1
+		},
+		"degrees": {
+			mod: 360,
+			floor: true
+		}
+	},
+	support = color.support = {},
+
+	// element for support tests
+	supportElem = jQuery( "<p>" )[ 0 ],
+
+	// colors = jQuery.Color.names
+	colors,
+
+	// local aliases of functions called often
+	each = jQuery.each;
+
+// determine rgba support immediately
+supportElem.style.cssText = "background-color:rgba(1,1,1,.5)";
+support.rgba = supportElem.style.backgroundColor.indexOf( "rgba" ) > -1;
+
+// define cache name and alpha properties
+// for rgba and hsla spaces
+each( spaces, function( spaceName, space ) {
+	space.cache = "_" + spaceName;
+	space.props.alpha = {
+		idx: 3,
+		type: "percent",
+		def: 1
+	};
+});
+
+function clamp( value, prop, allowEmpty ) {
+	var type = propTypes[ prop.type ] || {};
+
+	if ( value == null ) {
+		return (allowEmpty || !prop.def) ? null : prop.def;
+	}
+
+	// ~~ is an short way of doing floor for positive numbers
+	value = type.floor ? ~~value : parseFloat( value );
+
+	// IE will pass in empty strings as value for alpha,
+	// which will hit this case
+	if ( isNaN( value ) ) {
+		return prop.def;
+	}
+
+	if ( type.mod ) {
+		// we add mod before modding to make sure that negatives values
+		// get converted properly: -10 -> 350
+		return (value + type.mod) % type.mod;
+	}
+
+	// for now all property types without mod have min and max
+	return 0 > value ? 0 : type.max < value ? type.max : value;
+}
+
+function stringParse( string ) {
+	var inst = color(),
+		rgba = inst._rgba = [];
+
+	string = string.toLowerCase();
+
+	each( stringParsers, function( i, parser ) {
+		var parsed,
+			match = parser.re.exec( string ),
+			values = match && parser.parse( match ),
+			spaceName = parser.space || "rgba";
+
+		if ( values ) {
+			parsed = inst[ spaceName ]( values );
+
+			// if this was an rgba parse the assignment might happen twice
+			// oh well....
+			inst[ spaces[ spaceName ].cache ] = parsed[ spaces[ spaceName ].cache ];
+			rgba = inst._rgba = parsed._rgba;
+
+			// exit each( stringParsers ) here because we matched
+			return false;
+		}
+	});
+
+	// Found a stringParser that handled it
+	if ( rgba.length ) {
+
+		// if this came from a parsed string, force "transparent" when alpha is 0
+		// chrome, (and maybe others) return "transparent" as rgba(0,0,0,0)
+		if ( rgba.join() === "0,0,0,0" ) {
+			jQuery.extend( rgba, colors.transparent );
+		}
+		return inst;
+	}
+
+	// named colors
+	return colors[ string ];
+}
+
+color.fn = jQuery.extend( color.prototype, {
+	parse: function( red, green, blue, alpha ) {
+		if ( red === undefined ) {
+			this._rgba = [ null, null, null, null ];
+			return this;
+		}
+		if ( red.jquery || red.nodeType ) {
+			red = jQuery( red ).css( green );
+			green = undefined;
+		}
+
+		var inst = this,
+			type = jQuery.type( red ),
+			rgba = this._rgba = [];
+
+		// more than 1 argument specified - assume ( red, green, blue, alpha )
+		if ( green !== undefined ) {
+			red = [ red, green, blue, alpha ];
+			type = "array";
+		}
+
+		if ( type === "string" ) {
+			return this.parse( stringParse( red ) || colors._default );
+		}
+
+		if ( type === "array" ) {
+			each( spaces.rgba.props, function( key, prop ) {
+				rgba[ prop.idx ] = clamp( red[ prop.idx ], prop );
+			});
+			return this;
+		}
+
+		if ( type === "object" ) {
+			if ( red instanceof color ) {
+				each( spaces, function( spaceName, space ) {
+					if ( red[ space.cache ] ) {
+						inst[ space.cache ] = red[ space.cache ].slice();
+					}
+				});
+			} else {
+				each( spaces, function( spaceName, space ) {
+					var cache = space.cache;
+					each( space.props, function( key, prop ) {
+
+						// if the cache doesn't exist, and we know how to convert
+						if ( !inst[ cache ] && space.to ) {
+
+							// if the value was null, we don't need to copy it
+							// if the key was alpha, we don't need to copy it either
+							if ( key === "alpha" || red[ key ] == null ) {
+								return;
+							}
+							inst[ cache ] = space.to( inst._rgba );
+						}
+
+						// this is the only case where we allow nulls for ALL properties.
+						// call clamp with alwaysAllowEmpty
+						inst[ cache ][ prop.idx ] = clamp( red[ key ], prop, true );
+					});
+
+					// everything defined but alpha?
+					if ( inst[ cache ] && jQuery.inArray( null, inst[ cache ].slice( 0, 3 ) ) < 0 ) {
+						// use the default of 1
+						inst[ cache ][ 3 ] = 1;
+						if ( space.from ) {
+							inst._rgba = space.from( inst[ cache ] );
+						}
+					}
+				});
+			}
+			return this;
+		}
+	},
+	is: function( compare ) {
+		var is = color( compare ),
+			same = true,
+			inst = this;
+
+		each( spaces, function( _, space ) {
+			var localCache,
+				isCache = is[ space.cache ];
+			if (isCache) {
+				localCache = inst[ space.cache ] || space.to && space.to( inst._rgba ) || [];
+				each( space.props, function( _, prop ) {
+					if ( isCache[ prop.idx ] != null ) {
+						same = ( isCache[ prop.idx ] === localCache[ prop.idx ] );
+						return same;
+					}
+				});
+			}
+			return same;
+		});
+		return same;
+	},
+	_space: function() {
+		var used = [],
+			inst = this;
+		each( spaces, function( spaceName, space ) {
+			if ( inst[ space.cache ] ) {
+				used.push( spaceName );
+			}
+		});
+		return used.pop();
+	},
+	transition: function( other, distance ) {
+		var end = color( other ),
+			spaceName = end._space(),
+			space = spaces[ spaceName ],
+			startColor = this.alpha() === 0 ? color( "transparent" ) : this,
+			start = startColor[ space.cache ] || space.to( startColor._rgba ),
+			result = start.slice();
+
+		end = end[ space.cache ];
+		each( space.props, function( key, prop ) {
+			var index = prop.idx,
+				startValue = start[ index ],
+				endValue = end[ index ],
+				type = propTypes[ prop.type ] || {};
+
+			// if null, don't override start value
+			if ( endValue === null ) {
+				return;
+			}
+			// if null - use end
+			if ( startValue === null ) {
+				result[ index ] = endValue;
+			} else {
+				if ( type.mod ) {
+					if ( endValue - startValue > type.mod / 2 ) {
+						startValue += type.mod;
+					} else if ( startValue - endValue > type.mod / 2 ) {
+						startValue -= type.mod;
+					}
+				}
+				result[ index ] = clamp( ( endValue - startValue ) * distance + startValue, prop );
+			}
+		});
+		return this[ spaceName ]( result );
+	},
+	blend: function( opaque ) {
+		// if we are already opaque - return ourself
+		if ( this._rgba[ 3 ] === 1 ) {
+			return this;
+		}
+
+		var rgb = this._rgba.slice(),
+			a = rgb.pop(),
+			blend = color( opaque )._rgba;
+
+		return color( jQuery.map( rgb, function( v, i ) {
+			return ( 1 - a ) * blend[ i ] + a * v;
+		}));
+	},
+	toRgbaString: function() {
+		var prefix = "rgba(",
+			rgba = jQuery.map( this._rgba, function( v, i ) {
+				return v == null ? ( i > 2 ? 1 : 0 ) : v;
+			});
+
+		if ( rgba[ 3 ] === 1 ) {
+			rgba.pop();
+			prefix = "rgb(";
+		}
+
+		return prefix + rgba.join() + ")";
+	},
+	toHslaString: function() {
+		var prefix = "hsla(",
+			hsla = jQuery.map( this.hsla(), function( v, i ) {
+				if ( v == null ) {
+					v = i > 2 ? 1 : 0;
+				}
+
+				// catch 1 and 2
+				if ( i && i < 3 ) {
+					v = Math.round( v * 100 ) + "%";
+				}
+				return v;
+			});
+
+		if ( hsla[ 3 ] === 1 ) {
+			hsla.pop();
+			prefix = "hsl(";
+		}
+		return prefix + hsla.join() + ")";
+	},
+	toHexString: function( includeAlpha ) {
+		var rgba = this._rgba.slice(),
+			alpha = rgba.pop();
+
+		if ( includeAlpha ) {
+			rgba.push( ~~( alpha * 255 ) );
+		}
+
+		return "#" + jQuery.map( rgba, function( v ) {
+
+			// default to 0 when nulls exist
+			v = ( v || 0 ).toString( 16 );
+			return v.length === 1 ? "0" + v : v;
+		}).join("");
+	},
+	toString: function() {
+		return this._rgba[ 3 ] === 0 ? "transparent" : this.toRgbaString();
+	}
+});
+color.fn.parse.prototype = color.fn;
+
+// hsla conversions adapted from:
+// https://code.google.com/p/maashaack/source/browse/packages/graphics/trunk/src/graphics/colors/HUE2RGB.as?r=5021
+
+function hue2rgb( p, q, h ) {
+	h = ( h + 1 ) % 1;
+	if ( h * 6 < 1 ) {
+		return p + (q - p) * h * 6;
+	}
+	if ( h * 2 < 1) {
+		return q;
+	}
+	if ( h * 3 < 2 ) {
+		return p + (q - p) * ((2/3) - h) * 6;
+	}
+	return p;
+}
+
+spaces.hsla.to = function ( rgba ) {
+	if ( rgba[ 0 ] == null || rgba[ 1 ] == null || rgba[ 2 ] == null ) {
+		return [ null, null, null, rgba[ 3 ] ];
+	}
+	var r = rgba[ 0 ] / 255,
+		g = rgba[ 1 ] / 255,
+		b = rgba[ 2 ] / 255,
+		a = rgba[ 3 ],
+		max = Math.max( r, g, b ),
+		min = Math.min( r, g, b ),
+		diff = max - min,
+		add = max + min,
+		l = add * 0.5,
+		h, s;
+
+	if ( min === max ) {
+		h = 0;
+	} else if ( r === max ) {
+		h = ( 60 * ( g - b ) / diff ) + 360;
+	} else if ( g === max ) {
+		h = ( 60 * ( b - r ) / diff ) + 120;
+	} else {
+		h = ( 60 * ( r - g ) / diff ) + 240;
+	}
+
+	// chroma (diff) == 0 means greyscale which, by definition, saturation = 0%
+	// otherwise, saturation is based on the ratio of chroma (diff) to lightness (add)
+	if ( diff === 0 ) {
+		s = 0;
+	} else if ( l <= 0.5 ) {
+		s = diff / add;
+	} else {
+		s = diff / ( 2 - add );
+	}
+	return [ Math.round(h) % 360, s, l, a == null ? 1 : a ];
+};
+
+spaces.hsla.from = function ( hsla ) {
+	if ( hsla[ 0 ] == null || hsla[ 1 ] == null || hsla[ 2 ] == null ) {
+		return [ null, null, null, hsla[ 3 ] ];
+	}
+	var h = hsla[ 0 ] / 360,
+		s = hsla[ 1 ],
+		l = hsla[ 2 ],
+		a = hsla[ 3 ],
+		q = l <= 0.5 ? l * ( 1 + s ) : l + s - l * s,
+		p = 2 * l - q;
+
+	return [
+		Math.round( hue2rgb( p, q, h + ( 1 / 3 ) ) * 255 ),
+		Math.round( hue2rgb( p, q, h ) * 255 ),
+		Math.round( hue2rgb( p, q, h - ( 1 / 3 ) ) * 255 ),
+		a
+	];
+};
+
+
+each( spaces, function( spaceName, space ) {
+	var props = space.props,
+		cache = space.cache,
+		to = space.to,
+		from = space.from;
+
+	// makes rgba() and hsla()
+	color.fn[ spaceName ] = function( value ) {
+
+		// generate a cache for this space if it doesn't exist
+		if ( to && !this[ cache ] ) {
+			this[ cache ] = to( this._rgba );
+		}
+		if ( value === undefined ) {
+			return this[ cache ].slice();
+		}
+
+		var ret,
+			type = jQuery.type( value ),
+			arr = ( type === "array" || type === "object" ) ? value : arguments,
+			local = this[ cache ].slice();
+
+		each( props, function( key, prop ) {
+			var val = arr[ type === "object" ? key : prop.idx ];
+			if ( val == null ) {
+				val = local[ prop.idx ];
+			}
+			local[ prop.idx ] = clamp( val, prop );
+		});
+
+		if ( from ) {
+			ret = color( from( local ) );
+			ret[ cache ] = local;
+			return ret;
+		} else {
+			return color( local );
+		}
+	};
+
+	// makes red() green() blue() alpha() hue() saturation() lightness()
+	each( props, function( key, prop ) {
+		// alpha is included in more than one space
+		if ( color.fn[ key ] ) {
+			return;
+		}
+		color.fn[ key ] = function( value ) {
+			var vtype = jQuery.type( value ),
+				fn = ( key === "alpha" ? ( this._hsla ? "hsla" : "rgba" ) : spaceName ),
+				local = this[ fn ](),
+				cur = local[ prop.idx ],
+				match;
+
+			if ( vtype === "undefined" ) {
+				return cur;
+			}
+
+			if ( vtype === "function" ) {
+				value = value.call( this, cur );
+				vtype = jQuery.type( value );
+			}
+			if ( value == null && prop.empty ) {
+				return this;
+			}
+			if ( vtype === "string" ) {
+				match = rplusequals.exec( value );
+				if ( match ) {
+					value = cur + parseFloat( match[ 2 ] ) * ( match[ 1 ] === "+" ? 1 : -1 );
+				}
+			}
+			local[ prop.idx ] = value;
+			return this[ fn ]( local );
+		};
+	});
+});
+
+// add cssHook and .fx.step function for each named hook.
+// accept a space separated string of properties
+color.hook = function( hook ) {
+	var hooks = hook.split( " " );
+	each( hooks, function( i, hook ) {
+		jQuery.cssHooks[ hook ] = {
+			set: function( elem, value ) {
+				var parsed, curElem,
+					backgroundColor = "";
+
+				if ( value !== "transparent" && ( jQuery.type( value ) !== "string" || ( parsed = stringParse( value ) ) ) ) {
+					value = color( parsed || value );
+					if ( !support.rgba && value._rgba[ 3 ] !== 1 ) {
+						curElem = hook === "backgroundColor" ? elem.parentNode : elem;
+						while (
+							(backgroundColor === "" || backgroundColor === "transparent") &&
+							curElem && curElem.style
+						) {
+							try {
+								backgroundColor = jQuery.css( curElem, "backgroundColor" );
+								curElem = curElem.parentNode;
+							} catch ( e ) {
+							}
+						}
+
+						value = value.blend( backgroundColor && backgroundColor !== "transparent" ?
+							backgroundColor :
+							"_default" );
+					}
+
+					value = value.toRgbaString();
+				}
+				try {
+					elem.style[ hook ] = value;
+				} catch( e ) {
+					// wrapped to prevent IE from throwing errors on "invalid" values like 'auto' or 'inherit'
+				}
+			}
+		};
+		jQuery.fx.step[ hook ] = function( fx ) {
+			if ( !fx.colorInit ) {
+				fx.start = color( fx.elem, hook );
+				fx.end = color( fx.end );
+				fx.colorInit = true;
+			}
+			jQuery.cssHooks[ hook ].set( fx.elem, fx.start.transition( fx.end, fx.pos ) );
+		};
+	});
+
+};
+
+color.hook( stepHooks );
+
+jQuery.cssHooks.borderColor = {
+	expand: function( value ) {
+		var expanded = {};
+
+		each( [ "Top", "Right", "Bottom", "Left" ], function( i, part ) {
+			expanded[ "border" + part + "Color" ] = value;
+		});
+		return expanded;
+	}
+};
+
+// Basic color names only.
+// Usage of any of the other color names requires adding yourself or including
+// jquery.color.svg-names.js.
+colors = jQuery.Color.names = {
+	// 4.1. Basic color keywords
+	aqua: "#00ffff",
+	black: "#000000",
+	blue: "#0000ff",
+	fuchsia: "#ff00ff",
+	gray: "#808080",
+	green: "#008000",
+	lime: "#00ff00",
+	maroon: "#800000",
+	navy: "#000080",
+	olive: "#808000",
+	purple: "#800080",
+	red: "#ff0000",
+	silver: "#c0c0c0",
+	teal: "#008080",
+	white: "#ffffff",
+	yellow: "#ffff00",
+
+	// 4.2.3. "transparent" color keyword
+	transparent: [ null, null, null, 0 ],
+
+	_default: "#ffffff"
+};
+
+})( jQuery );
+
+;/*!
+ * jQuery Color Animations v@VERSION - SVG Color Names
+ * https://github.com/jquery/jquery-color
+ *
+ * Remaining HTML/CSS color names per W3C's CSS Color Module Level 3.
+ * http://www.w3.org/TR/css3-color/#svg-color
+ *
+ * Copyright 2013 jQuery Foundation and other contributors
+ * Released under the MIT license.
+ * http://jquery.org/license
+ *
+ * Date: @DATE
+ */
+jQuery.extend( jQuery.Color.names, {
+	// 4.3. Extended color keywords (minus the basic ones in core color plugin)
+	aliceblue: "#f0f8ff",
+	antiquewhite: "#faebd7",
+	aquamarine: "#7fffd4",
+	azure: "#f0ffff",
+	beige: "#f5f5dc",
+	bisque: "#ffe4c4",
+	blanchedalmond: "#ffebcd",
+	blueviolet: "#8a2be2",
+	brown: "#a52a2a",
+	burlywood: "#deb887",
+	cadetblue: "#5f9ea0",
+	chartreuse: "#7fff00",
+	chocolate: "#d2691e",
+	coral: "#ff7f50",
+	cornflowerblue: "#6495ed",
+	cornsilk: "#fff8dc",
+	crimson: "#dc143c",
+	cyan: "#00ffff",
+	darkblue: "#00008b",
+	darkcyan: "#008b8b",
+	darkgoldenrod: "#b8860b",
+	darkgray: "#a9a9a9",
+	darkgreen: "#006400",
+	darkgrey: "#a9a9a9",
+	darkkhaki: "#bdb76b",
+	darkmagenta: "#8b008b",
+	darkolivegreen: "#556b2f",
+	darkorange: "#ff8c00",
+	darkorchid: "#9932cc",
+	darkred: "#8b0000",
+	darksalmon: "#e9967a",
+	darkseagreen: "#8fbc8f",
+	darkslateblue: "#483d8b",
+	darkslategray: "#2f4f4f",
+	darkslategrey: "#2f4f4f",
+	darkturquoise: "#00ced1",
+	darkviolet: "#9400d3",
+	deeppink: "#ff1493",
+	deepskyblue: "#00bfff",
+	dimgray: "#696969",
+	dimgrey: "#696969",
+	dodgerblue: "#1e90ff",
+	firebrick: "#b22222",
+	floralwhite: "#fffaf0",
+	forestgreen: "#228b22",
+	gainsboro: "#dcdcdc",
+	ghostwhite: "#f8f8ff",
+	gold: "#ffd700",
+	goldenrod: "#daa520",
+	greenyellow: "#adff2f",
+	grey: "#808080",
+	honeydew: "#f0fff0",
+	hotpink: "#ff69b4",
+	indianred: "#cd5c5c",
+	indigo: "#4b0082",
+	ivory: "#fffff0",
+	khaki: "#f0e68c",
+	lavender: "#e6e6fa",
+	lavenderblush: "#fff0f5",
+	lawngreen: "#7cfc00",
+	lemonchiffon: "#fffacd",
+	lightblue: "#add8e6",
+	lightcoral: "#f08080",
+	lightcyan: "#e0ffff",
+	lightgoldenrodyellow: "#fafad2",
+	lightgray: "#d3d3d3",
+	lightgreen: "#90ee90",
+	lightgrey: "#d3d3d3",
+	lightpink: "#ffb6c1",
+	lightsalmon: "#ffa07a",
+	lightseagreen: "#20b2aa",
+	lightskyblue: "#87cefa",
+	lightslategray: "#778899",
+	lightslategrey: "#778899",
+	lightsteelblue: "#b0c4de",
+	lightyellow: "#ffffe0",
+	limegreen: "#32cd32",
+	linen: "#faf0e6",
+	mediumaquamarine: "#66cdaa",
+	mediumblue: "#0000cd",
+	mediumorchid: "#ba55d3",
+	mediumpurple: "#9370db",
+	mediumseagreen: "#3cb371",
+	mediumslateblue: "#7b68ee",
+	mediumspringgreen: "#00fa9a",
+	mediumturquoise: "#48d1cc",
+	mediumvioletred: "#c71585",
+	midnightblue: "#191970",
+	mintcream: "#f5fffa",
+	mistyrose: "#ffe4e1",
+	moccasin: "#ffe4b5",
+	navajowhite: "#ffdead",
+	oldlace: "#fdf5e6",
+	olivedrab: "#6b8e23",
+	orange: "#ffa500",
+	orangered: "#ff4500",
+	orchid: "#da70d6",
+	palegoldenrod: "#eee8aa",
+	palegreen: "#98fb98",
+	paleturquoise: "#afeeee",
+	palevioletred: "#db7093",
+	papayawhip: "#ffefd5",
+	peachpuff: "#ffdab9",
+	peru: "#cd853f",
+	pink: "#ffc0cb",
+	plum: "#dda0dd",
+	powderblue: "#b0e0e6",
+	rosybrown: "#bc8f8f",
+	royalblue: "#4169e1",
+	saddlebrown: "#8b4513",
+	salmon: "#fa8072",
+	sandybrown: "#f4a460",
+	seagreen: "#2e8b57",
+	seashell: "#fff5ee",
+	sienna: "#a0522d",
+	skyblue: "#87ceeb",
+	slateblue: "#6a5acd",
+	slategray: "#708090",
+	slategrey: "#708090",
+	snow: "#fffafa",
+	springgreen: "#00ff7f",
+	steelblue: "#4682b4",
+	tan: "#d2b48c",
+	thistle: "#d8bfd8",
+	tomato: "#ff6347",
+	turquoise: "#40e0d0",
+	violet: "#ee82ee",
+	wheat: "#f5deb3",
+	whitesmoke: "#f5f5f5",
+	yellowgreen: "#9acd32"
+});
+
+;/*!
+ * JavaScript Cookie v2.0.4
+ * https://github.com/js-cookie/js-cookie
+ *
+ * Copyright 2006, 2015 Klaus Hartl & Fagner Brack
+ * Released under the MIT license
+ */
+(function (factory) {
+	if (typeof define === 'function' && define.amd) {
+		define(factory);
+	} else if (typeof exports === 'object') {
+		module.exports = factory();
+	} else {
+		var _OldCookies = window.Cookies;
+		var api = window.Cookies = factory();
+		api.noConflict = function () {
+			window.Cookies = _OldCookies;
+			return api;
+		};
+	}
+}(function () {
+	function extend () {
+		var i = 0;
+		var result = {};
+		for (; i < arguments.length; i++) {
+			var attributes = arguments[ i ];
+			for (var key in attributes) {
+				result[key] = attributes[key];
+			}
+		}
+		return result;
+	}
+
+	function init (converter) {
+		function api (key, value, attributes) {
+			var result;
+
+			// Write
+
+			if (arguments.length > 1) {
+				attributes = extend({
+					path: '/'
+				}, api.defaults, attributes);
+
+				if (typeof attributes.expires === 'number') {
+					var expires = new Date();
+					expires.setMilliseconds(expires.getMilliseconds() + attributes.expires * 864e+5);
+					attributes.expires = expires;
+				}
+
+				try {
+					result = JSON.stringify(value);
+					if (/^[\{\[]/.test(result)) {
+						value = result;
+					}
+				} catch (e) {}
+
+				value = encodeURIComponent(String(value));
+				value = value.replace(/%(23|24|26|2B|3A|3C|3E|3D|2F|3F|40|5B|5D|5E|60|7B|7D|7C)/g, decodeURIComponent);
+
+				key = encodeURIComponent(String(key));
+				key = key.replace(/%(23|24|26|2B|5E|60|7C)/g, decodeURIComponent);
+				key = key.replace(/[\(\)]/g, escape);
+
+				return (document.cookie = [
+					key, '=', value,
+					attributes.expires && '; expires=' + attributes.expires.toUTCString(), // use expires attribute, max-age is not supported by IE
+					attributes.path    && '; path=' + attributes.path,
+					attributes.domain  && '; domain=' + attributes.domain,
+					attributes.secure ? '; secure' : ''
+				].join(''));
+			}
+
+			// Read
+
+			if (!key) {
+				result = {};
+			}
+
+			// To prevent the for loop in the first place assign an empty array
+			// in case there are no cookies at all. Also prevents odd result when
+			// calling "get()"
+			var cookies = document.cookie ? document.cookie.split('; ') : [];
+			var rdecode = /(%[0-9A-Z]{2})+/g;
+			var i = 0;
+
+			for (; i < cookies.length; i++) {
+				var parts = cookies[i].split('=');
+				var name = parts[0].replace(rdecode, decodeURIComponent);
+				var cookie = parts.slice(1).join('=');
+
+				if (cookie.charAt(0) === '"') {
+					cookie = cookie.slice(1, -1);
+				}
+
+				try {
+					cookie = converter && converter(cookie, name) || cookie.replace(rdecode, decodeURIComponent);
+
+					if (this.json) {
+						try {
+							cookie = JSON.parse(cookie);
+						} catch (e) {}
+					}
+
+					if (key === name) {
+						result = cookie;
+						break;
+					}
+
+					if (!key) {
+						result[name] = cookie;
+					}
+				} catch (e) {}
+			}
+
+			return result;
+		}
+
+		api.get = api.set = api;
+		api.getJSON = function () {
+			return api.apply({
+				json: true
+			}, [].slice.call(arguments));
+		};
+		api.defaults = {};
+
+		api.remove = function (key, attributes) {
+			api(key, '', extend(attributes, {
+				expires: -1
+			}));
+		};
+
+		api.withConverter = init;
+
+		return api;
+	}
+
+	return init();
+}));
+
+;(function() {
+  (function($, window, document, undefined_) {
+    var Plugin, themes;
+    Plugin = function(options) {
+      var defaults;
+      defaults = {
+        position: "bottom right",
+        content: " ",
+        delay: 3000,
+        sticky: false,
+        inEffect: "fadeIn",
+        outEffect: "fadeOut",
+        theme: "default",
+        themeTemplate: null,
+        closeOnClick: true,
+        closeButton: false,
+        clearAll: false,
+        cssanimationIn: false,
+        cssanimationOut: false,
+        beforeStart: function() {},
+        afterEnd: function() {},
+        onClick: function() {},
+        wrapper: ".amaran-wrapper"
+      };
+      this.config = $.extend({}, defaults, options);
+      this.config.beforeStart();
+      this.init();
+      this.close();
+    };
+    Plugin.prototype = {
+      init: function() {
+        var amaranObject, bu, elClass, element, innerWrapper, message, wrapper, wrapperInner;
+        wrapper = null;
+        wrapperInner = null;
+        elClass = this.config.position.split(" ");
+        if (!$(this.config.wrapper).length) {
+          wrapper = $("<div>", {
+            "class": this.config.wrapper.substr(1, this.config.wrapper.length) + " " + this.config.position
+          }).appendTo("body");
+          innerWrapper = $("<div>", {
+            "class": "amaran-wrapper-inner"
+          }).appendTo(wrapper);
+        } else {
+          if (!$(this.config.wrapper).hasClass(this.config.position)) {
+            wrapper = $("<div>", {
+              "class": this.config.wrapper.substr(1, this.config.wrapper.length) + " " + this.config.position
+            }).appendTo("body");
+            innerWrapper = $("<div>", {
+              "class": "amaran-wrapper-inner"
+            }).appendTo(wrapper);
+          } else {
+            wrapper = $(this.config.wrapper + "." + elClass[0] + "." + elClass[1]);
+            innerWrapper = wrapper.find(".amaran-wrapper-inner");
+          }
+        }
+        if (typeof this.config.content === "object") {
+          if (this.config.themeTemplate != null) {
+            message = this.config.themeTemplate(this.config.content);
+          } else {
+            message = themes[this.config.theme.split(" ")[0] + "Theme"](this.config.content);
+          }
+        } else {
+          this.config.content = {};
+          this.config.content.message = this.config.message;
+          this.config.content.color = "#27ae60";
+          message = themes["defaultTheme"](this.config.content);
+        }
+        amaranObject = {
+          "class": (this.config.themeTemplate ? "amaran " + this.config.content.themeName : (this.config.theme && !this.config.themeTemplate ? "amaran " + this.config.theme : "amaran")),
+          html: (this.config.closeButton ? "<span class=\"amaran-close\" data-amaran-close=\"true\"></span>" + message : message)
+        };
+        if (this.config.clearAll) {
+          $(".amaran").remove();
+        }
+        element = $("<div>", amaranObject).appendTo(innerWrapper);
+        if (elClass[0] === "center") {
+          this.centerCalculate(wrapper, innerWrapper);
+        }
+        this.animation(this.config.inEffect, element, "show");
+        if (this.config.onClick) {
+          bu = this;
+          $(element).on("click", function(e) {
+            if ($(e.target).is(".amaran-close")) {
+              e.preventDefault();
+              return;
+            }
+            bu.config.onClick();
+          });
+        }
+        if (this.config.sticky !== true) {
+          this.hideDiv(element);
+        }
+      },
+      centerCalculate: function(wrapper, innerWrapper) {
+        var topAmaranMargin, totalAmarans, totalAmaransHeight;
+        totalAmarans = innerWrapper.find(".amaran").length;
+        totalAmaransHeight = innerWrapper.height();
+        topAmaranMargin = (wrapper.height() - totalAmaransHeight) / 2;
+        innerWrapper.find(".amaran:first-child").animate({
+          "margin-top": topAmaranMargin
+        }, 200);
+      },
+      animation: function(effect, element, work) {
+        if (effect === "fadeIn" || effect === "fadeOut") {
+          return this.fade(element, work);
+        }
+        if (effect === "show") {
+          return this.cssanimate(element, work);
+        }
+        return this.slide(effect, element, work);
+      },
+      fade: function(element, work) {
+        var bu;
+        bu = this;
+        if (work === "show") {
+          if (this.config.cssanimationIn) {
+            return element.addClass('animated ' + this.config.cssanimationIn).show();
+          } else {
+            return element.fadeIn();
+          }
+        } else {
+          if (this.config.cssanimationOut) {
+            element.addClass('animated ' + this.config.cssanimationOut);
+            element.css({
+              "min-height": 0,
+              "height": element.outerHeight()
+            });
+            element.animate({
+              opacity: 0
+            }, function() {
+              element.animate({
+                height: 0
+              }, function() {
+                bu.removeIt(element);
+              });
+            });
+            return;
+          } else {
+            element.css({
+              "min-height": 0,
+              "height": element.outerHeight()
+            });
+            element.animate({
+              opacity: 0
+            }, function() {
+              element.animate({
+                height: 0
+              }, function() {
+                bu.removeIt(element);
+              });
+            });
+            return;
+          }
+        }
+      },
+      removeIt: function(element) {
+        var innerWrapper, wrapper;
+        clearTimeout(this.timeout);
+        element.remove();
+        wrapper = $(this.config.wrapper + "." + this.config.position.split(" ")[0] + "." + this.config.position.split(" ")[1]);
+        innerWrapper = wrapper.find(".amaran-wrapper-inner");
+        if (this.config.position.split(" ")[0] === "center") {
+          this.centerCalculate(wrapper, innerWrapper);
+        }
+        this.config.afterEnd();
+      },
+      getWidth: function(el) {
+        var newEl, newElWidth;
+        newEl = el.clone().hide().appendTo("body");
+        newElWidth = newEl.outerWidth() + newEl.outerWidth() / 2;
+        newEl.remove();
+        return newElWidth;
+      },
+      getInfo: function(element) {
+        var offset, wrapperOffset;
+        offset = element.offset();
+        wrapperOffset = $(this.config.wrapper).offset();
+        return {
+          t: offset.top,
+          l: offset.left,
+          h: element.height(),
+          w: element.outerWidth(),
+          wT: wrapperOffset.top,
+          wL: wrapperOffset.left,
+          wH: $(this.config.wrapper).outerHeight(),
+          wW: $(this.config.wrapper).outerWidth()
+        };
+      },
+      getPosition: function(element, effect) {
+        var p, parca, v;
+        p = this.getInfo(element);
+        parca = this.config.position.split(" ")[1];
+        v = {
+          slideTop: {
+            start: {
+              top: -(p.wT + p.wH + p.h * 2)
+            },
+            move: {
+              top: 0
+            },
+            hide: {
+              top: -(p.t + (p.h * 2))
+            },
+            height: p.h
+          },
+          slideBottom: {
+            start: {
+              top: $(window).height() - p.wH + p.h * 2
+            },
+            move: {
+              top: 0
+            },
+            hide: {
+              top: $(window).height() - p.wH + p.h * 2
+            },
+            height: p.h
+          },
+          slideLeft: {
+            start: {
+              left: (parca === "left" ? -p.w * 1.5 : -$(window).width())
+            },
+            move: {
+              left: 0
+            },
+            hide: {
+              left: (parca === "left" ? -p.w * 1.5 : -$(window).width())
+            },
+            height: p.h
+          },
+          slideRight: {
+            start: {
+              left: (parca === "right" ? p.w * 1.5 : $(window).width())
+            },
+            move: {
+              left: 0
+            },
+            hide: {
+              left: (parca === "right" ? p.w * 1.5 : $(window).width())
+            },
+            height: p.h
+          }
+        };
+        if (v[effect]) {
+          return v[effect];
+        } else {
+          return 0;
+        }
+      },
+      slide: function(effect, element, work) {
+        var bu, position;
+        position = this.getPosition(element, effect);
+        if (work === "show") {
+          element.show().css(position.start).animate(position.move);
+        } else {
+          bu = this;
+          return element.animate(position.hide, function() {
+            element.css({
+              "min-height": 0,
+              "height": position.height
+            }, function() {
+              element.html(" ");
+            });
+          }).animate({
+            height: 0
+          }, function() {
+            return bu.removeIt(element);
+          });
+        }
+      },
+      close: function() {
+        var bu;
+        bu = this;
+        $("[data-amaran-close]").on("click", function() {
+          bu.animation(bu.config.outEffect, $(this).closest("div.amaran"), "hide");
+        });
+        if (!this.config.closeOnClick && this.config.closeButton) {
+          bu.animation(bu.config.outEffect, $(this).parent("div.amaran"), "hide");
+          return;
+        } else if (this.config.closeOnClick) {
+          $(".amaran").on("click", function() {
+            bu.animation(bu.config.outEffect, $(this), "hide");
+          });
+        }
+      },
+      hideDiv: function(element) {
+        var bu;
+        bu = this;
+        bu.timeout = setTimeout((function() {
+          bu.animation(bu.config.outEffect, element, "hide");
+        }), bu.config.delay);
+      }
+    };
+    themes = {
+      defaultTheme: function(data) {
+        var color;
+        color = "";
+        if (typeof data.color !== "undefined") {
+          color = data.color;
+        }
+        return "<div class='default-spinner'><span style='background-color:" + data.color + "'></span></div><div class='default-message'><span>" + data.message + "</span></div>";
+      },
+      awesomeTheme: function(data) {
+        return "<i class=\"icon " + data.icon + " icon-large\"></i><p class=\"bold\">" + data.title + "</p><p><span>" + data.message + "</span><span class=\"light\">" + data.info + "</span></p>";
+      },
+      userTheme: function(data) {
+        return "<div class=\"icon\"><img src=\"" + data.img + "\" alt=\"\" /></div><div class=\"info\"><b>" + data.user + "</b>" + data.message + "</div>";
+      },
+      colorfulTheme: function(data) {
+        var bgcolor, color;
+        if (typeof data.color !== "undefined") {
+          color = data.color;
+        }
+        if (typeof data.bgcolor !== "undefined") {
+          bgcolor = data.bgcolor;
+        }
+        return "<div class='colorful-inner' style='background-color:" + data.bgcolor + ";color:" + data.color + "'>" + data.message + "</div>";
+      },
+      tumblrTheme: function(data) {
+        return "<div class=\"title\">" + data.title + "</div><div class=\"content\">" + data.message + "</div>";
+      }
+    };
+    $.amaran = function(options) {
+      var amaran;
+      amaran = new Plugin(options);
+      return amaran;
+    };
+    return $.amaran.close = function() {
+      $(".amaran-wrapper").remove();
+      return false;
+    };
+  })(jQuery, window, document);
+
+}).call(this);
+
 ;/*
  * jQuery Iframe Transport Plugin
  * https://github.com/blueimp/jQuery-File-Upload
@@ -25401,7 +25735,7 @@ function selectn(query) {
 
     'use strict';
 
-    validator = { version: '4.4.0' };
+    validator = { version: '4.4.1' };
 
     var emailUserPart = /^[a-z\d!#\$%&'\*\+\-\/=\?\^_`{\|}~]+$/i;
     var quotedEmailUser = /^([\s\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e]|(\\[\x01-\x09\x0b\x0c\x0d-\x7f]))*$/i;
@@ -25765,8 +26099,10 @@ function selectn(query) {
                 // disallow full-width chars
                 return false;
             }
-            if (part[0] === '-' || part[part.length - 1] === '-' ||
-                    part.indexOf('---') >= 0) {
+            if (part[0] === '-' || part[part.length - 1] === '-') {
+                return false;
+            }
+            if (part.indexOf('---') >= 0 && part.slice(0, 4) !== 'xn--') {
                 return false;
             }
         }

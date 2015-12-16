@@ -6,5 +6,6 @@
 	"jquery-color": "dist",
 	"jquery-ui": "dist/jquery-no-widget-ui.js",
 	"loadcss": "loadCSS.js",
-	"detectizr": "dist"
+	"detectizr": "dist",
+	"amaranjs": "dist/js/jquery.amaran.js"
 }

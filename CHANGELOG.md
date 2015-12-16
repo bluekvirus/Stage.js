@@ -8,6 +8,9 @@ Change Log
 4. Updated export to include /channels and /profile;
 5. Added navRegion chain cleanup;
 6. Refined navRegion chaining (through region:show instead);
+7. Reset grid col gaps evenly (added .row-extended);
+8. Refined .wrapper class gaps;
+8. Added app.notify and app.markdown apis;
 
 working on ...
 
