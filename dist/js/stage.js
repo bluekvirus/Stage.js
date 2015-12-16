@@ -770,6 +770,30 @@
 			return window.cancelAnimationFrame(id);
 		},
 
+		//----------------markdown-------------------
+		markdown: function(md, $target, options){
+			if($target && ($target instanceof jQuery))
+				$target.html(marked(md, options));
+			else
+				return marked(md, options || $target);
+		},
+
+		//----------------notify---------------------
+		notify: function(title /*or options*/, msg, type /*or otherOptions*/, otherOptions){
+			if(_.isString(title))
+				$.amaran(_.extend({
+					content: {
+						themeName: 'stagejs',
+						title: title,
+						message: msg, 
+						type: (_.isString(type) && type) || 'info',
+					},
+					themeTemplate: app.NOTIFYTPL
+				}, otherOptions || type));
+			else
+				$.amaran(title);
+		},
+
 		//----------------debug----------------------
 		debug: function(){
 			var fn = console.debug || console.log;
@@ -797,7 +821,7 @@
 		'lock', 'unlock', 'available', //global action locks
 		'coop', 'navigate', 'reload', 'param', 'animation', 'nextFrame', 'cancelFrame',
 		'remote', 'ws', 'download', //com
-		'extract', 'cookie', 'store', 'moment', 'uri', 'validator', //3rd-party lib short-cut
+		'extract', 'cookie', 'store', 'moment', 'uri', 'validator', 'markdown', 'notify', //3rd-party lib short-cut
 		//@supportive
 		'debug', 'has', 'get', 'nameToPath', 'pathToName', 'inject.js', 'inject.tpl', 'inject.css',
 		//@deprecated
@@ -809,6 +833,8 @@
 	 */
 	//animation done events used in Animate.css
 	app.ADE = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+	//notification template
+	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
 ;/**
@@ -4048,7 +4074,7 @@ module.exports = DeepModel;
 			this.setValues = function(vals, loud){
 				if(!vals) return;
 				_.each(this._editors, function(editor, name){
-					var v = vals[name] || selectn(name, vals);
+					var v = vals[name] || app.extract(name, vals);
 					if(v !== null && v !== undefined){
 						editor.setVal(v, loud);
 					}
@@ -4875,7 +4901,7 @@ var I18N = {};
  *  cb: function($el)...
  * })
  *
- * the $(tag) you used to call .md() can have md="..." or data-md="..." attribute to indicate md file url.
+ * the $(tag) you used to call .md() can have data-url="..." attribute to indicate md file url.
  * ```
  *
  * Note
@@ -4921,7 +4947,11 @@ var I18N = {};
 		options.marked = _.extend({
 			gfm: true,
 			tables: true,
-			breaks: false
+			breaks: false,
+			pedantic: false,
+			sanitize: true,
+			smartLists: true,
+			smartypants: false
 		}, options.marked);
 
 		return this.each(function(index, el){
@@ -6812,4 +6842,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.7-944 build 1450221017490";
+;;app.stagejs = "1.8.7-946 build 1450250184589";
