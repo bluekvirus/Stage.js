@@ -308,14 +308,14 @@
 					
 					//note that .show() might be async due to region enter/exit effects
 					targetCtx.once('show', function(){
-						app.currentContext =  targetCtx;
+						app.currentContext = targetCtx;
 						//fire a notification to app as meta-event.
 						app.trigger('app:context-switched', app.currentContext.name);
 						app.coop('context-switched', app.currentContext.name);
+						//notify regional views in the context (views further down in the nav chain)
+						app.currentContext.trigger('context:navigate-chain', path);
 					});
 					targetRegion.show(targetCtx);
-					//notify regional views in the context (views further down in the nav chain)
-					app.currentContext.trigger('context:navigate-chain', path);
 				}else
 					//notify regional views in the context (with old flag set to true)
 					app.currentContext.trigger('context:navigate-chain', path, true);
@@ -6842,4 +6842,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.7-946 build 1450250184589";
+;;app.stagejs = "1.8.7-947 build 1450335625936";
