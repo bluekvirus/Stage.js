@@ -32,10 +32,10 @@
     padding-top: @font-size-base / 2;
     padding-bottom: @font-size-base / 2;
 
-    &:first-child {
+    &.first {
         padding-top: @font-size-base;
     }
-    &:last-child {
+    &.last {
         padding-bottom: @font-size-base;
     }
 }
@@ -44,10 +44,10 @@
     padding-top: @font-size-base;
     padding-bottom: @font-size-base;
 
-    &:first-child {
+    &.first {
         padding-top: @font-size-base * 2;
     }
-    &:last-child {
+    &.last {
         padding-bottom: @font-size-base * 2;
     }
 }
@@ -65,10 +65,10 @@
 .wrapper-full {
     padding: @font-size-base / 2 @font-size-base / 2;
 
-    &:first-child {
+    &.first {
         padding-top: @font-size-base;
     }
-    &:last-child {
+    &.last {
         padding-bottom: @font-size-base;
     }
 }
@@ -76,10 +76,10 @@
 .wrapper-full-2x {
     padding: @font-size-base @font-size-base;
 
-    &:first-child {
+    &.first {
         padding-top: @font-size-base * 2;
     }
-    &:last-child {
+    &.last {
         padding-bottom: @font-size-base * 2;
     }
 }
@@ -89,6 +89,7 @@
     border-style: solid;
     border-width: 0;
     border-color: @base-border-color;
+
     &-top {
         border-top-width: 1px;
         &-lg {
@@ -124,6 +125,7 @@
 // Rounded -----------------------
 .rounded {
     border-radius: 15px;
+
     &-xs {
         border-radius: 3px;
     }
@@ -184,8 +186,7 @@
 // Box --------------------------
 .box {
     background-color: @panel-bg;
-    .heading {
-        padding-top: 1.25em;
+    .heading, .header {
         .clearfix;
         h1,
         h2,
@@ -199,8 +200,7 @@
         .h4,
         .h5,
         .h6 {
-            margin-top: 0;
-            margin-bottom: 0.5em;
+            margin: 0;
             display: inline-block !important;
             font-weight: 700;
         }
@@ -214,9 +214,10 @@
                 top: auto;
             }
         }
+        padding: @font-size-base;
     }
     .body {
-        .wrapper-full-2x;
+        padding: @font-size-base;
     }
 }
 
@@ -225,7 +226,7 @@
     margin-top: 1.5em;
     .border;
     border-width: 1px;
-    .wrapper-full-2x;
+    padding: @font-size-base;
     background-color: @panel-bg;
     legend,
     .legend {
@@ -234,6 +235,7 @@
         width: auto;
         margin: 0;
     }
+
     &-shadowed {
         position: relative;
         box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
@@ -451,10 +453,20 @@
     width: 3px;
 }
 
-.amaran.stagejs {
-    background: none;
+.amaran {
     border-radius: @border-radius-base;
-    width: auto;
+    width: @notification-width-base;
+    min-width: 200px;
+
+    &.awesome {
+        box-shadow: none;
+        min-width: 300px;
+        width: @notification-width-base;
+        padding-right: @font-size-base;
+    }
+    &.stagejs {
+        background: none;
+    }
 }
 
 /**

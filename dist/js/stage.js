@@ -780,16 +780,36 @@
 
 		//----------------notify---------------------
 		notify: function(title /*or options*/, msg, type /*or otherOptions*/, otherOptions){
-			if(_.isString(title))
-				$.amaran(_.extend({
-					content: {
-						themeName: 'stagejs',
-						title: title,
-						message: msg, 
-						type: (_.isString(type) && type) || 'info',
-					},
-					themeTemplate: app.NOTIFYTPL
-				}, otherOptions || type));
+			if(_.isString(title)){
+				if(_.isPlainObject(type)){
+					otherOptions = type;
+					type = undefined;
+				}
+				if(otherOptions && otherOptions.icon){
+					//theme awesome ({.icon, .more})
+					$.amaran(_.extend({
+						theme: 'awesome ' + (type || 'ok'),
+						//see http://ersu.me/article/amaranjs/amaranjs-themes for types
+						content: {
+							title: title,
+							message: msg,
+							info: otherOptions.more || ' ',
+							icon: otherOptions.icon
+						}
+					}, otherOptions));
+				} else {
+					//custom theme
+					$.amaran(_.extend({
+						content: {
+							themeName: 'stagejs',
+							title: title,
+							message: msg, 
+							type: type || 'info',
+						},
+						themeTemplate: app.NOTIFYTPL
+					}, otherOptions));
+				}
+			}
 			else
 				$.amaran(title);
 		},
@@ -6842,4 +6862,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.7-947 build 1450335625936";
+;;app.stagejs = "1.8.7-948 build 1450400583756";
