@@ -668,7 +668,7 @@ Data returned should be in the [JSON](http://json.org/) format and with `Content
 
 ###Actions
 
-Actions are click-ables marked by `action=""` attribute in your view template. The original way of registering events and listeners introduced by *Backbone.View* are flexible but tedious and repetitive. We offer you the *Action Tags for speeding things up.
+Actions are click-ables marked by `action=""` attribute in your view template. The original way of registering events and listeners introduced by *Backbone.View* are flexible but tedious and repetitive. We offer you the **Action Tags** for speeding things up.
 
 Any *View* can have its actions configure block activated like this (2 easy steps):
 ```
