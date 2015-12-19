@@ -20,6 +20,7 @@ module.exports = {
 				}
 			},
 			'index.html': 'index.html',
+			//'favicon.ico': 'favicon.ico',
 			'bower.json': 'bower.json' //need to be merged with target project
 		},
 		tools: {

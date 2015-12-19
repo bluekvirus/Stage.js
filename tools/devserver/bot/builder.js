@@ -56,11 +56,12 @@ module.exports = function(server){
 		var proxy = httpProxy.createProxyServer({
 			target: target
 		});
-		///////////////NOT WORKING ATM (see work-around)///////////
+		//header injection
 		proxy.on('proxyReq', function(proxyReq, req, res, options){
-			console.log('???');
+			_.each(config.headers, function(val, key){
+				req.headers[key] = val;
+			});
 		});
-		///////////////////////////////////////////////////////////
 		proxy.on('proxyRes', function(res){
 			console.log('[Forwarding]'.yellow, res.req.path, '=>', target, config.path);
 		});
@@ -68,12 +69,6 @@ module.exports = function(server){
 			console.warn('[Forwarding Error]'.red, e);
 		});
 		server.all(uri + '/*', function(req, res){
-			///////////////work-around////////////////
-			_.each(config.headers, function(val, key){
-				req.headers[key] = val;
-			});
-			//////////////////////////////////////////
-			
 			//Warning: Don't use req.path here, it is read-only and will not contain query params.
 			req.url = req.url.replace(uri, config.path);
 			proxy.web(req, res);

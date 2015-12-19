@@ -64,7 +64,10 @@ module.exports = {
 			//'app.js': false,
 			'app.min.js': true, //'app' is the name you set in the js config above.
 		},
-		static: { template: { 'all.json': 'static/template/all.json' } },
+		static: { 
+			template: { 'all.json': 'static/template/all.json' },
+			resource: 'static/resource'
+		},
 		themes: {
 			'project': {
 				css: {
