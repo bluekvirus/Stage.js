@@ -18,69 +18,69 @@
 
 //Grid (1em gap on sides too)--------
 .container-fluid {
-    padding-left: @font-size-base;
-    padding-right: @font-size-base;
+    padding-left: @grid-gutter-width;
+    padding-right: @grid-gutter-width;
 
     .row-expanded {
-        margin-left: -@font-size-base;
-        margin-right: -@font-size-base;
+        margin-left: -@grid-gutter-width;
+        margin-right: -@grid-gutter-width;
     }
 }
 
 // Wrapper --------------------------
 .wrapper {
-    padding-top: @font-size-base / 2;
-    padding-bottom: @font-size-base / 2;
+    padding-top: @grid-gutter-width / 2;
+    padding-bottom: @grid-gutter-width / 2;
 
     &.first {
-        padding-top: @font-size-base;
+        padding-top: @grid-gutter-width;
     }
     &.last {
-        padding-bottom: @font-size-base;
+        padding-bottom: @grid-gutter-width;
     }
 }
 
 .wrapper-2x {
-    padding-top: @font-size-base;
-    padding-bottom: @font-size-base;
+    padding-top: @grid-gutter-width;
+    padding-bottom: @grid-gutter-width;
 
     &.first {
-        padding-top: @font-size-base * 2;
+        padding-top: @grid-gutter-width * 2;
     }
     &.last {
-        padding-bottom: @font-size-base * 2;
+        padding-bottom: @grid-gutter-width * 2;
     }
 }
 
 .wrapper-horizontal {
-    padding-left: @font-size-base / 2;
-    padding-right: @font-size-base / 2;
+    padding-left: @grid-gutter-width / 2;
+    padding-right: @grid-gutter-width / 2;
 }
 
 .wrapper-horizontal-2x {
-    padding-left: @font-size-base;
-    padding-right: @font-size-base;
+    padding-left: @grid-gutter-width;
+    padding-right: @grid-gutter-width;
 }
 
 .wrapper-full {
-    padding: @font-size-base / 2 @font-size-base / 2;
+    padding: @grid-gutter-width / 2 @grid-gutter-width / 2;
 
     &.first {
-        padding-top: @font-size-base;
+        padding-top: @grid-gutter-width;
     }
     &.last {
-        padding-bottom: @font-size-base;
+        padding-bottom: @grid-gutter-width;
     }
 }
 
 .wrapper-full-2x {
-    padding: @font-size-base @font-size-base;
+    padding: @grid-gutter-width @grid-gutter-width;
 
     &.first {
-        padding-top: @font-size-base * 2;
+        padding-top: @grid-gutter-width * 2;
     }
     &.last {
-        padding-bottom: @font-size-base * 2;
+        padding-bottom: @grid-gutter-width * 2;
     }
 }
 
@@ -88,7 +88,7 @@
 .border {
     border-style: solid;
     border-width: 0;
-    border-color: @base-border-color;
+    border-color: @border-color-base;
 
     &-top {
         border-top-width: 1px;
@@ -180,7 +180,7 @@
     padding-left: 1.5em;
     padding-right: 1.5em;
     padding-bottom: 0.75em;
-    border-bottom: 1px solid @base-border-color;
+    border-bottom: 1px solid @border-color-base;
 }
 
 // Box --------------------------
@@ -214,11 +214,13 @@
                 top: auto;
             }
         }
-        padding: @font-size-base;
+        padding: @grid-gutter-width;
     }
     .body {
-        padding: @font-size-base;
+        padding: @grid-gutter-width;
     }
+    margin-top: @grid-gutter-width / 2;
+    margin-bottom: @grid-gutter-width / 2;
 }
 
 // Fieldset ---------------------
@@ -226,7 +228,7 @@
     margin-top: 1.5em;
     .border;
     border-width: 1px;
-    padding: @font-size-base;
+    padding: @grid-gutter-width;
     background-color: @panel-bg;
     legend,
     .legend {
@@ -240,7 +242,7 @@
         position: relative;
         box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
         border-width: 0;
-        padding-top: @font-size-base * 3;
+        padding-top: @grid-gutter-width * 3;
         legend,
         .legend {
             width: 100%;
@@ -248,7 +250,7 @@
             top: 0;
             left: 0;
             padding: 0.5em 1em;
-            border-bottom: 1px solid @base-border-color;
+            border-bottom: 1px solid @border-color-base;
             background-color: @btn-default-bg;
             color: @btn-default-color;
         }
@@ -263,8 +265,8 @@
     font-size: @font-size-base * 0.8;
     font-weight: 400;
     background-color: @body-bg;
-    color: @base-border-color;
-    border: 1px solid @base-border-color;
+    color: @border-color-base;
+    border: 1px solid @border-color-base;
     border-radius: @border-radius-base;
     margin: 1em auto;
     .control-item {
@@ -285,12 +287,12 @@
         }
         &:hover,
         &.hover {
-            background-color: lighten(@base-border-color, 18%);
+            background-color: lighten(@border-color-base, 18%);
         }
         &:active,
         &.active {
             color: @body-bg;
-            background-color: @base-border-color;
+            background-color: @border-color-base;
         }
     }
     //5 major coloring types
@@ -406,7 +408,7 @@
             .list-unstyled;
         }
         li > ul {
-            padding-left: @font-size-base * 2.15;
+            padding-left: @grid-gutter-width * 2.15;
         }
     }
     pre {
@@ -428,7 +430,7 @@
             color: @gray-darker;
         }
         ul {
-            padding-left: @font-size-base * 2.15;
+            padding-left: @grid-gutter-width * 2.15;
         }
         .section {
             a {
@@ -462,7 +464,7 @@
         box-shadow: none;
         min-width: 300px;
         width: @notification-width-base;
-        padding-right: @font-size-base;
+        padding-right: @grid-gutter-width;
     }
     &.stagejs {
         background: none;
