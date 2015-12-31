@@ -19,6 +19,7 @@
  * 
  * @author Tim Lauv
  * @created 2013.11.12 (Unix-like only)
+ * @updated 2015.12.31
  */
 
 var path = require('path'),
@@ -33,7 +34,7 @@ _.str = require('underscore.string');
 module.exports = function(server) {
 
     var profile = server.get('profile');
-    if (!profile.cordovawatch || profile.cordovawatch.enabled === false) return;
+    if (!profile.clients || !profile.cordovawatch || profile.cordovawatch.enabled === false || !profile.clients[profile.cordovawatch.client]) return;
 
     //1. figure out client src root and add index into watch list
    	var root = profile.clients[profile.cordovawatch.client];

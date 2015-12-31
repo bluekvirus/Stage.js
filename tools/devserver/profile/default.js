@@ -2,15 +2,9 @@
  * All paths are relative to the devserver folder. (except below)
  * All paths that start with '/' will be treated as is, otherwise they will be resolved with __dirname (as the above dictates)
  *
- * simplest profile setting:
- * -------------------------
- * {
- * 	lesswatch: 'default'
- * }
- * which will serve '../../implementation' on 'localhost:4000/' with theme 'default' monitored
- *
  * @author Tim Lauv
  * @created 2014.4.18
+ * @updated 2015.12.31
  */
 
 module.exports = {
@@ -59,8 +53,8 @@ module.exports = {
 	},
 
 	//mount the client webroot folders
+	//format - uri : webroot
 	clients: {
-		//format - uri : webroot path
 		'/': '../build/dist/site', 
 		'/dev': '../../implementation', //this will be available under uri /dev
 		//'/devmobile': '../build/dist/mobile'
@@ -73,22 +67,23 @@ module.exports = {
 	],
 
 	//use enabled: false to turn off LESS monitor.
+	//only 1 webroot can be monitored
 	lesswatch: {
-		//default client: '/'.
-		//use client: '[path]' set in the clients config section above to change the monitored webroot.
-		//only 1 webroot can be monitored with its theme changes, which will, most likely always, be your development one.
+		//enabled: false,
 		client: '/dev',
-
 		//multiple themes can be monitored under the watched webroot.
 		themes: ['default', 'site', 'project'] 
 	},
 
 	//use enabled: false to disable empty-ing all.json upon templates change.
+	//only 1 webroot can be monitored
 	tplwatch: {
+		//enabled: false,
 		client: '/dev'
 	},
 
-	//use enabled: false to disable this special change mirroring service 
+	//use enabled: false to disable this special change mirroring service
+	//only 1 webroot can be monitored 
 	cordovawatch: {
 		enabled: false,
 		client: '/dev',

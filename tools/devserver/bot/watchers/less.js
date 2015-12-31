@@ -12,6 +12,7 @@
  * @created 2013.10.27
  * @updated 2014.04.18
  * @updated 2014.07.31 (Yan.Zhu + Windows support)
+ * @updated 2015.12.31
  */
 
 var _ = require('underscore'),
@@ -29,21 +30,9 @@ _.str = require('underscore.string');
 module.exports = function(server) {
 
     var profile = server.get('profile');
-    if (!profile.lesswatch || profile.lesswatch.enabled === false) return;
+    if (!profile.clients || !profile.lesswatch || profile.lesswatch.enabled === false || !profile.clients[profile.lesswatch.client]) return;
 
-    var selectedClient = "/";
-    if (!_.isArray(profile.lesswatch)) {
-        if (!_.isString(profile.lesswatch)) {
-            //config object
-            selectedClient = profile.lesswatch.client;
-            profile.lesswatch = profile.lesswatch.themes;
-        }
-        //single theme name string
-        if (_.isString(profile.lesswatch))
-            profile.lesswatch = [profile.lesswatch];
-    }
-
-    var themesFolder = path.join(profile.clients[selectedClient], 'themes');
+    var themesFolder = path.join(profile.clients[profile.lesswatch.client], 'themes');
 
     function doCompile(e, f) {
         console.log('[Theme file'.yellow, e, ':'.yellow, f, ']'.yellow);
@@ -53,7 +42,7 @@ module.exports = function(server) {
 
     // watch the selected client themes folders that exist.
     var validThemes = [];
-    var globs = _.map(profile.lesswatch, function(tname){
+    var globs = _.map(profile.lesswatch.themes, function(tname){
         if(fs.existsSync(path.join(themesFolder, tname))){
             validThemes.push(tname);
             return path.join(themesFolder, tname, '**', '*.less');

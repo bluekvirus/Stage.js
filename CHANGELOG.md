@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.9.0 (2015-12-14*)
+1.9.0 (2015-12-31*)
 -------------------
 1. Added favicon support mock in starter-kit index page;
 2. Updated default mockups;
@@ -10,18 +10,21 @@ Change Log
 6. Refined navRegion chaining (through region:show instead);
 7. Reset grid col gaps evenly (added .row-extended);
 8. Refined .wrapper class gaps;
-8. Added app.notify and app.markdown apis;
+9. Added app.notify and app.markdown apis;
+10. Simplified devserver settings for watchers;
 
 working on ...
 
-* [cli] Update update cmd to also refresh mockups;
-* Adding popover and notify plugin/ability to view;
+* Adding anonymous regions;
+* Adding mock-api json maps;
+* Adding popover ability to view;
 * Separate modernizr/detectizr shiv bundles from deps;
-* Adding more unit tests.
+* Adding more unit tests;
 * Adding interactive tutorial site;
 * Updating doc (around data handling, coop, remote, ws, form);
 * Breaking down 'Basic' editors;
 * Adding optional 2-way binding to form editors;
+* [cli] Update update cmd to also refresh mockups;
 
 
 1.8.7 (2015-12-07)

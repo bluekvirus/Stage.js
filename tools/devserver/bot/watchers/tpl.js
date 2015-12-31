@@ -4,6 +4,7 @@
  * @author Tim Lauv
  * @created 2014.07.26
  * @updated 2014.07.31 (Yan.Zhu + Windows support)
+ * @updated 2015.12.31
  */
 
 var path = require('path'),
@@ -16,9 +17,9 @@ _.str = require('underscore.string');
 module.exports = function(server) {
 
     var profile = server.get('profile');
-    if (!profile.tplwatch || profile.tplwatch.enabled === false) return;
+    if (!profile.clients || !profile.tplwatch || profile.tplwatch.enabled === false || !profile.clients[profile.tplwatch.client]) return;
 
-    var tplRoot = _.isString(profile.tplwatch)?profile.resolve(profile.tplwatch):path.join(profile.clients[profile.tplwatch.client], 'static', 'template');
+    var tplRoot = path.join(profile.clients[profile.tplwatch.client], 'static', 'template');
 
     function mergeIntoAllTplJson(e, f) {
         console.log('[Template file'.yellow, e, ':'.yellow, f, ']'.yellow);
