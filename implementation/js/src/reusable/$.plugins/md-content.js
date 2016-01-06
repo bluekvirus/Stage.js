@@ -23,6 +23,10 @@
  * ----------
  * jQuery, Underscore [, Highlight.js]
  *
+ * Ref
+ * ---
+ * https://guides.github.com/features/mastering-markdown/
+ *
  *
  * @author Tim Lauv
  * @created 2013.11.05

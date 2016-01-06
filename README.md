@@ -145,6 +145,6 @@ See in `tools/build/dist` and `dist` for details. The shortcut command also buil
 
 License
 -------
-Copyright 2013 - 2015 Tim Lauv. 
+Copyright 2013 - 2016 Tim Lauv. 
 Under the [MIT](http://opensource.org/licenses/MIT) License.
 

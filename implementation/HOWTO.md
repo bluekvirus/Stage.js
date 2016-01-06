@@ -67,7 +67,7 @@ Script(s)/Template(s)/CSS Injection:
 
 ###Core concepts
 
-<img src="static/resource/default/diagram/Diagram-3.png" alt="Stage.js Architecture" class="center-block"></img>
+![Stage.js Architecture](static/resource/default/diagram/Diagram-3.png)
 
 ####What's Navigation?
 
@@ -85,7 +85,7 @@ alias: Page
 
 ####What's a View?
 
-A *View* is a template with data, interactions and optionally a name. it is to be shown on a region in template of your application or another view instance (both contexts and normal views). Only named views can be used as template shortcuts (through region tag attributes `region="" view="..."`).
+A *View* is a template with data, interactions and optionally a name. it is to be shown on a region in template of your application or another view instance (both contexts and normal views). Only named views can be used as template shortcuts (through anonymous region tag attribute `view="..."`).
 
 **Note**: We have merged the old *Regional* concept with *View* in general. Future releases will not distinguish between *Regional*s and named *View*s.
 
@@ -130,7 +130,7 @@ We choose what we choose when designing this framework simply because we want to
 
 In order to accomplish more with less code using Backbone, we extended **Backbone.Marionette** as our pattern library base and mainly using its *module* and *region* concepts. We also removed the needs to work with the Model/Collection sync methods in the original *Backbone* library. The resulting framework accomplishes all the big frameworks have promised but with **a thiner and flatter structure**. We believe scripting languages are always going to be the perfect thin glue layer between mechanisms and policies. The JavaScript language were picked to glue HTML/CSS and UX but nothing more, it should not be overdosed and attempt to mimic Java. In other words, **only the burger is important**:
 
-<img src="static/resource/default/diagram/Diagram-6.png" alt="HTML is the burger" class="center-block"></img>
+![HTML is the burger](static/resource/default/diagram/Diagram-6.png)
 
 **Note**: Although the **Marionette** library offers many cool concepts for building large JavaScript front-end projects, we felt that the core value it offers lies within its region (for better view life-cycle management) and module managers. Thus only those are included and supported throughout the framework. We also extended the base view classes to enable remote templating, automatic ui and region detection, action listeners, navigation hooks, svg canvas and faster **Cordova** development. 
 
@@ -141,13 +141,13 @@ Basics
 You are assumed to have programed with:
 
 * Underscore.js or Lo-Dash 
-<small class="text-muted">(handy js functions)</small>
+*(handy js functions)*
 * jQuery or Zepto 
-<small class="text-muted">(DOM manipulation through CSS selectors)</small>
+*(DOM manipulation through CSS selectors)*
 * Backbone.js 
-<small class="text-muted">(View, EventEmitter, Router)</small>
+*(EventEmitter, Router, View)*
 * Handlebars.js 
-<small class="text-muted">(dynamic templates)</small>
+*(dynamic templates)*
 
 
 If you don't know what they are, go for a quick look at their websites. (links are provided under the *Included Libraries* area on the left sidebar)
@@ -336,7 +336,7 @@ Since your goal is to build a *multi-context* application, you will need some *r
 Application.setup({
     ...
     template: [
-        '<div region="banner" view="Banner"></div>',
+        '<div view="Banner"></div>',
         '<div region="body"></div>',
         '<div region="footer"></div>'
     ],
@@ -344,7 +344,7 @@ Application.setup({
     ...
 }).run();
 ```
-A `region=""` attribute on any html tag marks a pre-defined region in the template, **you can also do this with any *View*** in our framework. Doing so is equivalent of using the `regions:{}` property.
+A `region=""` attribute on any html tag marks a pre-defined region in the template, **you can do this within any *View*** template. Doing so is equivalent of using the `regions:{}` property.
 
 Tag marked with `region=""` can use an additional `view=""` attribute to load up a *View* / *Widget* or *@remote.template.html* by name:
 ```
@@ -358,9 +358,11 @@ onShow: function(){
     this.getRegion('banner').show(new Application.view('Banner'));
 }
 ```
-**Important:** Views loaded by the `view=""` attribute should have no init options. If you do need to specify init options when showing a view, use the alternative `region:load-view` event.
+**Important:** Views loaded by the `view=""` attribute should have no init options. If you do need to specify init options when showing a view, use the alternative `region:load-view` event or `view.getRegion('...').show()` api.
 
 If your application is a single-context application, you don't need to assign the application template. There will always be a region that wraps the whole application -- the *app* region. The **Default** *Context* will automatically show on region *app* if you did not specify `contextRegion` and `defaultContext`.
+
+**Tip:** You can omit `region=""` if that region is not needed in your application later to show other views.
 
 #####Run
 
@@ -550,7 +552,7 @@ Create `/context-a/myRegionalA.js` like this:
 })(Application);
 ```
 
-**Tip**: You can nest *Views*s with the `region=""` and `view=""` attributes in the template. Only named views can be refered by the `view=` attribute on a `region=` marked HTML tag in template.
+**Tip**: You can nest *Views*s with the `view=""` attributes in the template. Only named views can be refered by the `view=` attribute on an HTML tag in template.
 
 You can define non-regional (un-named) views through the `Application.view()` API:
 ```
@@ -630,29 +632,32 @@ Application.remote({
         y: 2
     }
 });
+Application.remote('abc', null, {params/querys: {x: 1, y: 2}});
 
 //GET: /user/1/details
-Application.remote({
-    url: 'user/1/details'
-});
+Application.remote('user/1/details');
+Application.remote('user', null, {_id: 1, _method: 'details'});
 
 //POST: /user
 Application.remote({
     url: 'user',
     payload: {...} //without _id
 });
+Application.remote('user', {...payload w/o _id...});
 
 //PUT: /user/1
 Application.remote({
     url: 'user',
     payload: { _id: 1, ...} //non-empty + _id
 });
+Application.remote('user', {...payload w/ _id...});
 
 //DELETE: /user/1
 Application.remote({
     url: 'user',
     payload: { _id: 1 } //just _id
 });
+Application.remote('user', {_id: 1});
 
 ```
 It is recommended to handle the callbacks through promises on the returned jqXHR object:
@@ -810,7 +815,7 @@ anyregion.resize({
 The `region:load-view` event listener is implemented for you and can search through both the named *View* and *Widget* registry to find the view by name and show it on the region. You can pass in addition factory options to the event trigger. Remember it can also load up a remote template for you just to boost your prototyping process:
 ```
 //in a region template
-<div region="abc" view="@remote/template/abc.html"></div>
+<div view="@remote/template/abc.html"></div>
 
 //use 'region:load-view' event
 anyregion.trigger('region:load-view', '@remote/template/abc.html');
@@ -827,14 +832,14 @@ Note that for the overflow settings to show effect, you need to first use the re
 
 ####Use parentCt/Ctx/Region?
 
-Before you move on, there is one more thing in this event section we want to clarify. If you use `region=""` in your template to define regions in a *Context*/*View*, your sub-view instances within those regions will receive a `parentCt` property upon showing which should help you find its parent container view instance.
+Before you move on, there is one more thing in this event section we want to clarify. Your sub-view instances within template regions will receive a `parentCt` property upon showing which should help you find their parent view instance.
 
 This is helpful when you want to achieve **collaborations** between sub-views by using event managed by the parent.
 ```
 //Good
 subViewA {
 	...
-	parentCt.trigger('co-op', data);
+	parentCt.trigger('co-op-event', data, [options]);
 	...
 }
 parentCt.onCoOp:
@@ -1287,7 +1292,7 @@ Application.widget('MyWidgetName', {
 
 The *List'n'Container* technique is the golden technique to use when planning your reusable views or, say, any view on screen. Any widget on screen can be decoupled into lists and containers, like this:
 
-<img src="static/resource/default/diagram/Diagram-5.png" alt="List'n'Containers" class="center-block"></img>
+![List'n'Containers](static/resource/default/diagram/Diagram-5.png)
 
 * Starts by choosing a proper container with desired layout, nest containers if needs be.
 * Put lists into the container.
@@ -1605,7 +1610,7 @@ Use the additional events or override the default implementations to customize y
 
 ###Overlay
 
-<span class="label label-info">jQuery plugin</span>
+jQuery plugin
 
 **Purpose**: Provide you a way of overlaying custom content/views on screen.
 
@@ -1660,7 +1665,7 @@ This is the recommended way of using custom views as overlays.
 
 ###Markdown
 
-<span class="label label-info">jQuery plugin</span>
+jQuery plugin
 
 **Purpose**: Offering a convenient way of loading .md content into the application. (through [marked](https://github.com/chjj/marked))
 
@@ -1671,12 +1676,12 @@ marked: //marked options see [https://github.com/chjj/marked]
 hljs: //highlight js configure (e.g languages, classPrefix...)
 cb: //function($el) - callback function once the contend has been added
 ```
-**Plus**: The tag you used to call `$.md()` can have `data-url="..."` attribute to indicate the .md file url.
+**Plus**: The HTML tag you used to call `$.md()` can have `data-url="..."` attribute to indicate the .md file url.
 
 **Usage**:
 ```
 ...
-'<div region="doc" md="HOWTO.md"></div>'
+'<div region="doc" data-url="HOWTO.md"></div>'
 ...
 this.doc.$el.md({
     hljs: {
@@ -1709,7 +1714,7 @@ We recommend that you use the [Github flavored version.](https://help.github.com
 
 ###ToC (Table-of-Content)
 
-<span class="label label-info">jQuery plugin</span>
+jQuery plugin
 
 **Purpose**: Produce a table-of-content tree list in both html and json format for a given document (through `<h1>`-`<h6>` title relationship scanning)
 

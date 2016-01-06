@@ -4441,11 +4441,22 @@ module.exports = DeepModel;
 			//find region marks after rendering and ensure region.$el (to support dynamic template)
 			this.listenTo(this, 'render', function(){
 				var that = this;
+				//a. named regions (for dynamic navigation)
 				$(this.el.outerHTML).find('[region]').each(function(index, el){
 					var r = $(el).attr('region');
 					//that.regions[r] = '[region="' + r + '"]';
 					that.regions[r] = {
 						selector: '[region="' + r + '"]'
+					};
+				});
+				//b. anonymous regions (for static view nesting)
+				$(this.el.outerHTML).find('[view]').each(function(index, el){
+					var $el = $(el);
+					if($el.attr('region')) return; //skip dynamic regions (already detected)
+
+					var r = $el.attr('view');
+					that.regions[_.uniqueId('anonymous-region-')] = {
+						selector: '[view="' + r + '"]'
 					};
 				});
 				this.addRegions(this.regions);     						
@@ -4931,6 +4942,10 @@ var I18N = {};
  * Dependency
  * ----------
  * jQuery, Underscore [, Highlight.js]
+ *
+ * Ref
+ * ---
+ * https://guides.github.com/features/mastering-markdown/
  *
  *
  * @author Tim Lauv
@@ -6862,4 +6877,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.7-949 build 1450496271027";
+;;app.stagejs = "1.8.7-952 build 1452042581954";

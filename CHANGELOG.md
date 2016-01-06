@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.9.0 (2015-12-31*)
+1.9.0 (2016-01-05*)
 -------------------
 1. Added favicon support mock in starter-kit index page;
 2. Updated default mockups;
@@ -12,11 +12,12 @@ Change Log
 8. Refined .wrapper class gaps;
 9. Added app.notify and app.markdown apis;
 10. Simplified devserver settings for watchers;
+11. Added anonymous regions;
 
 working on ...
 
-* Adding anonymous regions;
 * Adding mock-api json maps;
+* Adding render counts;
 * Adding popover ability to view;
 * Separate modernizr/detectizr shiv bundles from deps;
 * Adding more unit tests;
