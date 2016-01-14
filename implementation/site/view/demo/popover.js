@@ -77,7 +77,6 @@
 			//flipped
 			'<div style="position:fixed;left:0;top:50%;-webkit-transform:translateY(-50%);transform:translateY(-50%);"><div id="flipped_left" class="btn btn-success">Flipped Left</div></div>',
 			'<div style="position:fixed;right:0;top:50%;-webkit-transform:translateY(-50%);transform:translateY(-50%);"><div id="flipped_right" class="btn btn-info">Flipped Right</div></div>',
-			//'<div style="position:fixed;top:0;left:50%;-webkit-transform:translateX(-50%);transform:translateX(-50%);"><div id="flipped_top" class="btn btn-warning">Flipped Top</div></div>',
 			'<div style="position:fixed;bottom:0;left:50%;-webkit-transform:translateX(-50%);transform:translateX(-50%);"><div id="flipped_bottom" class="btn btn-primary">Flipped Bottom</div></div>',
 			//regular
 			'<div style="position: fixed;top: 50%;left: 50%;-webkit-transform: translate(-50%, -50%);transform: translate(-50%, -50%);">',
@@ -95,16 +94,8 @@
 			//flipped popovers
 			(new PopLeft()).popover($('#flipped_left'), 'left');
 			(new PopRight()).popover($('#flipped_right'), 'right');
-			//(new PopTop()).popover($('#flipped_top'), 'top');
-			(new PopBottom()).popover($('#flipped_bottom'), 'bottom');
+			(new PopBottom()).popover(document.getElementById('flipped_bottom'), 'bottom');
 		}
-		/*actions: {
-			popover: function(self, event){
-				//this.getRegion('pop').show(new Popover());
-				(new Popover()).popover($('#test1'), 'top');
-				(new Popover()).popover(document.getElementById('test2'), 'left');
-			}
-		}*/
 	});
 
 })(Application);
