@@ -372,73 +372,75 @@
 
 	 	enablePopover: function(){
 
-	 		this.popover = function(anchor, placement, options){
-	 			var direction = ['right', 'left', 'top', 'bottom'],
-	 				that = this,
-	 				dir = placement || 'right',
-	 				$anchor;
-	 			//check whether placement is valid
-	 			if( $.inArray(dir, direction) >= 0 ){
-	 				//check para1(anchor point) is a jquery object or DOM element
-		 			if( anchor.jquery ){
-		 				//jquery object
-		 				$anchor = anchor;
-		 			}else if( anchor.nodeType ){
-		 				//DOM object
-		 				$anchor = $(anchor);
-		 			}else{
-		 				//wrong type of object
-		 				throw new Error("RUNTIME::popover:: the type of anchor argument is incorrent. It can only be a DOM element or a jQuery object.");
-		 			}
-		 			//pass paraments to the popover plugin
-		 			$anchor
-		 			//call bootstrap popover
-		 			.popover({
+	 		this.popover = function(anchor, options){
+	 			//default options
+	 			var that = this,
+	 				defaultOptions = {
 		 				animation: false,
-	 					html: true,
-	 					content: this.render().el,
-	 					container: 'body',
-	 					//use bootstrap's 'auto + direction' placement to keep view inside body, work well for 'top', 'left' and 'right'
-	 					//does not work well for bottom, e.g. flip too early, need to adjust on 'show' event
-	 					placement: 'auto '+ dir
-	 				})
-					.on('shown.bs.popover', function(){
-						//auto + bottom does not work well, recheck on show event
-						if( dir === 'bottom'){
-							var popId = $(this).attr('aria-describedby'), 
-								$elem = $('#'+popId);
-							//check whether already flipped
-							if( $elem[0].className.indexOf('top') > 0 ){
-								var offset = $(this).offset(),
-									height = $(this).height();
-								//check necessity
-								if( offset.top + height + $elem.height() < $(window).height() ){
-									$anchor.popover('hide').data('bs.popover').options.placement = 'bottom';
-									$anchor.popover('show');
-								}								
-							}
-						}
-					});
-		 			/*extend options*/
-		 			//TBD
-		 			
-	 				//listen to window resize event to reposition the visible popovers
-	 				$(window).off("resize").on("resize", function() {
-					    $(".popover").each(function() {
-					        var popover = $(this),
-					        	ctrl = $(popover.context);
-					        if (popover.is(":visible")) {
-					            ctrl.popover('show');
-					        }
-					    });
-					});
-
+		 				html: true,
+		 				content: this.render().el,
+		 				container: 'body',
+		 				placement: 'auto right'//default placement is right
+		 			},
+		 			$anchor;
+		 		//check para1(anchor point) is a jquery object or a DOM element
+	 			if( anchor.jquery ){
+	 				//jquery object
+	 				$anchor = anchor;
+	 			}else if( anchor.nodeType ){
+	 				//DOM object
+	 				$anchor = $(anchor);
 	 			}else{
-	 				throw new Error("RUNTIME::popover:: direction arugment is incorrent. It can only be 'right', 'left', 'top' or 'bottom'.");
-	 			}	 			
-	 			return this;
+	 				//wrong type of object
+	 				throw new Error("RUNTIME::popover:: the type of anchor argument is incorrent. It can only be a DOM element or a jQuery object.");
+	 			}
+	 			//check whether user has data-content, if yes throw warning
+	 			var dataOptions = $anchor.data() || {};
+	 			if(dataOptions.content || dataOptions.html)
+	 				console.warn('DEV::Popover::define data-content in the template will cause incorrent display for the popover view!');
+	 			//merge user data with default option
+	 			_.extend(defaultOptions, dataOptions);
+	 			//merge options with default options
+	 			options = options || {};
+	 			options = _.extend(defaultOptions, options);
+	 			//check whether the placement has auto for better placement, if not add auto
+	 			if(options.placement.indexOf('auto') < 0)
+	 				options.placement = 'auto '+options.placement;
+	 			//check whether the content has been overwritten by the options
+	 			if( options.content !== this.render().el )
+	 				console.warn('DEV::Popover::You have overwritten the content in your options, make sure that is what you intend to do!');
+	 			//initialize the popover
+	 			$anchor
+	 			.popover(options)
+	 			//adjust the bottom placement, since it does not work well with auto
+	 			.on('shown.bs.popover', function(){
+					//auto + bottom does not work well, recheck on show event
+					if( options.placement === 'auto bottom'){
+						var popId = $(this).attr('aria-describedby'), 
+							$elem = $('#'+popId);
+						//check whether already flipped
+						if( $elem[0].className.indexOf('top') > 0 ){
+							var offset = $(this).offset(),
+								height = $(this).height();
+							//check necessity
+							if( offset.top + height + $elem.height() < $(window).height() ){
+								$anchor.popover('hide').data('bs.popover').options.placement = 'bottom';
+								$anchor.popover('show');
+							}								
+						}
+					}
+				});
+				//listen to window resize event to reposition the visible popovers
+ 				$(window).off("resize").on("resize", function() {
+				    $(".popover").each(function() {
+				        var popover = $(this),
+				        	ctrl = $(popover.context);
+				        if (popover.is(":visible")) {
+				            ctrl.popover('show');
+				        }
+				    });
+				});
 	 		};
-
 	 	}
 
 	 });

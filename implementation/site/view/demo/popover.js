@@ -75,26 +75,26 @@
 	app.regional('Demo.Popover', {
 		template: [
 			//flipped
-			'<div style="position:fixed;left:0;top:50%;-webkit-transform:translateY(-50%);transform:translateY(-50%);"><div id="flipped_left" class="btn btn-success">Flipped Left</div></div>',
+			'<div style="position:fixed;left:0;top:50%;-webkit-transform:translateY(-50%);transform:translateY(-50%);"><div id="flipped_left" class="btn btn-success" data-container="body" data-placement="left">Flipped Left</div></div>',
 			'<div style="position:fixed;right:0;top:50%;-webkit-transform:translateY(-50%);transform:translateY(-50%);"><div id="flipped_right" class="btn btn-info">Flipped Right</div></div>',
-			'<div style="position:fixed;bottom:0;left:50%;-webkit-transform:translateX(-50%);transform:translateX(-50%);"><div id="flipped_bottom" class="btn btn-primary">Flipped Bottom</div></div>',
+			'<div style="position:fixed;bottom:0;left:50%;-webkit-transform:translateX(-50%);transform:translateX(-50%);"><div id="flipped_bottom" class="btn btn-primary" data-placement="bottom">Flipped Bottom</div></div>',
 			//regular
 			'<div style="position: fixed;top: 50%;left: 50%;-webkit-transform: translate(-50%, -50%);transform: translate(-50%, -50%);">',
-				'<div id="left_anchor" class="btn btn-success">Popover Left</div>',
+				'<div id="left_anchor" class="btn btn-success" data-placement="left" data-content="I have overwritten the view and animated! YAY!">Popover Left</div>',
 				'<div id="top_anchor" class="btn btn-warning">Popover Top</div>',
-				'<div id="bottom_anchor" class="btn btn-primary">Popover Bottom</div>',
-				'<div id="right_anchor" class="btn btn-info">Popover Right</div>',
+				'<div id="bottom_anchor" class="btn btn-primary" data-placement="bottom">Popover Bottom</div>',
+				'<div id="right_anchor" class="btn btn-info" data-placement="bottom">Popover Right</div>',
 			'</div>',
 		],
 		onShow: function(){
-			(new PopLeft()).popover($('#left_anchor'), 'left');
-			(new PopRight()).popover(document.getElementById('right_anchor'), 'right');
-			(new PopTop()).popover($('#top_anchor'), 'top');
-			(new PopBottom()).popover(document.getElementById('bottom_anchor'), 'bottom');
+			(new PopLeft()).popover($('#left_anchor'), {'animation': true});
+			(new PopRight()).popover(document.getElementById('right_anchor'), {'placement': 'right'});
+			(new PopTop()).popover($('#top_anchor'), {'placement': 'auto top'});
+			(new PopBottom()).popover(document.getElementById('bottom_anchor'));
 			//flipped popovers
-			(new PopLeft()).popover($('#flipped_left'), 'left');
-			(new PopRight()).popover($('#flipped_right'), 'right');
-			(new PopBottom()).popover(document.getElementById('flipped_bottom'), 'bottom');
+			(new PopLeft()).popover($('#flipped_left'));
+			(new PopRight()).popover($('#flipped_right'), {'placement': 'right', 'content':'I have overwritten the view! YAY!'});
+			(new PopBottom()).popover(document.getElementById('flipped_bottom'));
 		}
 	});
 
