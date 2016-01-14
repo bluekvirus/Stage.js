@@ -70,6 +70,7 @@ NProgress.configure({showSpinner: false});
                     '<li><a href="#navigate/Demo/Datatable">Datagrid</a></li>',
                     '<li><a href="#navigate/Demo/Trees"">Tree</a></li>',
                     '<li><a href="#navigate/Demo/Notify">Notifications</a></li>',
+                    '<li><a href="#navigate/Demo/Popover">Popover</a></li>',
                     '<li class="divider"></li>',
                     '<li class="dropdown-header">View Plus</li>',
                     '<li><a href="#navigate/Demo/RemoteTpl">Remote templating</a></li>',

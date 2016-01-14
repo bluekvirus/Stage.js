@@ -365,6 +365,85 @@
 	});
 
 	/**
+	 * Popover
+	 */
+
+	 _.extend(Backbone.Marionette.ItemView.prototype, {
+
+	 	enablePopover: function(){
+
+	 		this.popover = function(anchor, placement, options){
+	 			var direction = ['right', 'left', 'top', 'bottom'],
+	 				that = this,
+	 				dir = placement || 'right',
+	 				$anchor;
+	 			//check whether placement is valid
+	 			if( $.inArray(dir, direction) >= 0 ){
+	 				//check para1(anchor point) is a jquery object or DOM element
+		 			if( anchor.jquery ){
+		 				//jquery object
+		 				$anchor = anchor;
+		 			}else if( anchor.nodeType ){
+		 				//DOM object
+		 				$anchor = $(anchor);
+		 			}else{
+		 				//wrong type of object
+		 				throw new Error("RUNTIME::popover:: the type of anchor argument is incorrent. It can only be a DOM element or a jQuery object.");
+		 			}
+		 			//pass paraments to the popover plugin
+		 			$anchor
+		 			//call bootstrap popover
+		 			.popover({
+		 				animation: false,
+	 					html: true,
+	 					content: this.render().el,
+	 					container: 'body',
+	 					//use bootstrap's 'auto + direction' placement to keep view inside body, work well for 'top', 'left' and 'right'
+	 					//does not work well for bottom, e.g. flip too early, need to adjust on 'show' event
+	 					placement: 'auto '+ dir
+	 				})
+					.on('shown.bs.popover', function(){
+						//auto + bottom does not work well, recheck on show event
+						if( dir === 'bottom'){
+							var popId = $(this).attr('aria-describedby'), 
+								$elem = $('#'+popId);
+							//check whether already flipped
+							if( $elem[0].className.indexOf('top') > 0 ){
+								var offset = $(this).offset(),
+									height = $(this).height();
+								//check necessity
+								if( offset.top + height + $elem.height() < $(window).height() ){
+									$anchor.popover('hide').data('bs.popover').options.placement = 'bottom';
+									$anchor.popover('show');
+								}								
+							}
+						}
+					});
+		 			/*extend options*/
+		 			//TBD
+		 			
+	 				//listen to window resize event to reposition the visible popovers
+	 				$(window).off("resize").on("resize", function() {
+					    $(".popover").each(function() {
+					        var popover = $(this),
+					        	ctrl = $(popover.context);
+					        if (popover.is(":visible")) {
+					            ctrl.popover('show');
+					        }
+					    });
+					});
+
+	 			}else{
+	 				throw new Error("RUNTIME::popover:: direction arugment is incorrent. It can only be 'right', 'left', 'top' or 'bottom'.");
+	 			}	 			
+	 			return this;
+	 		};
+
+	 	}
+
+	 });
+
+	/**
 	 * Data handling enhancements.
 	 * 1. View as normal tpl + data
 	 * 2. view as form with editors (tpl = layout, data = values)

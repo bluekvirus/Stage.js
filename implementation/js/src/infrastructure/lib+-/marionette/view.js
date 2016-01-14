@@ -112,6 +112,11 @@
 			this.enableOverlay();
 		}
 
+		//popover
+		if(this.popover && this.enablePopover){
+			this.enablePopover();
+		}
+
 		//auto-enable i18n
 		if(I18N.locale) {
 			this.listenTo(this, 'render', function(){
