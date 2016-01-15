@@ -12,10 +12,21 @@ cheerio = require('cheerio'),
 fs = require('fs-extra'),
 path = require('path'),
 colors = require('colors'),
+cli = require('commander'),
 meta = require('../libprep/bower.json'); //bower.json version 
 edge = shell.exec('git rev-list HEAD --count', {silent: true}); //total commit count
 
-var tag = meta.version + '-' + edge.output.replace(/\n*$/, '') + ' build ' + new Date().valueOf();
-fs.outputFileSync(path.join(__dirname, '..', '..', 'implementation', 'js', 'tag.js'), ';app.stagejs = "'+tag+'";');
+//provide both generate (default) and echo-only mode
+cli.version('0.2.0').option('-E, --echo').parse(process.argv);
+var tagJSFile = path.join(__dirname, '..', '..', 'implementation', 'js', 'tag.js');
 
-console.log('build tag', tag.green);
+if(cli.echo){
+	//echo-only
+	console.log('confirm tag' + (shell.cat(tagJSFile).split('=')[1] || '').green);
+}
+else {
+	//generate
+	var tag = meta.version + '-' + (Number(edge.output.replace(/\n*$/, '')) + 1) + ' build ' + new Date().valueOf();
+	fs.outputFileSync(tagJSFile, ';app.stagejs = "'+ tag +'";');
+	console.log('build tag', tag.green);
+}

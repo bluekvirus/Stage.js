@@ -1,6 +1,8 @@
 #!/bin/bash
 cd ./build
+
 #1. prepare version number with build number (commit count @HEAD -- current branch)
+echo ' '
 node tag.js
 #----------------------------
 #2. build framework
@@ -17,4 +19,8 @@ node run.js -C starter-kit -G ../../implementation/static/resource/default/downl
 #4. build documentation/demo site
 node run.js -C site 'dist/site'
 #----------------------------
+
+#echo back the build tag before exit
+node tag.js --echo
+echo ' '
 exit 0

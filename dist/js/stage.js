@@ -557,7 +557,7 @@
 						app.debug('View injected', name, 'from', app.config.viewSrcs);
 						Reusable = true;
 					}).fail(function(jqXHR, settings, e){
-						throw new Error('DEV::Application::get() can NOT load View definition for', name, '[', e, ']');
+						throw new Error('DEV::Application::get() can NOT load View definition for ' + name + ' - [' + e + ']');
 					});
 				}
 			}
@@ -6877,4 +6877,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.7-952 build 1452042581954";
+;;app.stagejs = "1.8.7-960 build 1452885806919";
