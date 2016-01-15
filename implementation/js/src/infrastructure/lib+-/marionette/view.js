@@ -119,11 +119,6 @@
 			});
 		}
 
-		//popover
-		if(this.popover && this.enablePopover){
-			this.enablePopover();
-		}
-
 		//data ({}, [] or url for GET only)
 		this.listenToOnce(this, 'show', function(){
 			//supports getting parent data from useParentData.
