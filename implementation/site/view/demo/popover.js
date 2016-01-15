@@ -75,11 +75,11 @@
 	app.regional('Demo.Popover', {
 		template: [
 			//flipped
-			'<div style="position:fixed;left:0;top:50%;-webkit-transform:translateY(-50%);transform:translateY(-50%);"><div id="flipped_left" class="btn btn-success" data-container="body" data-placement="left">Flipped Left</div></div>',
-			'<div style="position:fixed;right:0;top:50%;-webkit-transform:translateY(-50%);transform:translateY(-50%);"><div id="flipped_right" class="btn btn-info">Flipped Right</div></div>',
-			'<div style="position:fixed;bottom:0;left:50%;-webkit-transform:translateX(-50%);transform:translateX(-50%);"><div id="flipped_bottom" class="btn btn-primary" data-placement="bottom">Flipped Bottom</div></div>',
+			'<div style="position:fixed;left:0;top:50%;transform:translateY(-50%);"><div id="flipped_left" class="btn btn-success" data-container="body" data-placement="left">Flipped Left</div></div>',
+			'<div style="position:fixed;right:0;top:50%;transform:translateY(-50%);"><div id="flipped_right" class="btn btn-info">Flipped Right</div></div>',
+			'<div style="position:fixed;bottom:0;left:50%;transform:translateX(-50%);"><div id="flipped_bottom" class="btn btn-primary" data-placement="bottom">Flipped Bottom</div></div>',
 			//regular
-			'<div style="position: fixed;top: 50%;left: 50%;-webkit-transform: translate(-50%, -50%);transform: translate(-50%, -50%);">',
+			'<div style="position: fixed;top: 50%;left: 50%;transform: translate(-50%, -50%);">',
 				'<div id="left_anchor" class="btn btn-success" data-placement="left" data-content="I have overwritten the view and animated! YAY!">Popover Left</div>',
 				'<div id="top_anchor" class="btn btn-warning">Popover Top</div>',
 				'<div id="bottom_anchor" class="btn btn-primary" data-placement="bottom">Popover Bottom</div>',

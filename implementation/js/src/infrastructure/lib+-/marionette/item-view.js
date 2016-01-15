@@ -416,12 +416,13 @@
 	 			.on('shown.bs.popover', function(){
 					//auto + bottom does not work well, recheck on show event
 					if( options.placement === 'auto bottom'){
-						var popId = $(this).attr('aria-describedby'), 
+						var $this = $(this),
+							popId = $this.attr('aria-describedby'),
 							$elem = $('#'+popId);
 						//check whether already flipped
 						if( $elem[0].className.indexOf('top') > 0 ){
-							var offset = $(this).offset(),
-								height = $(this).height();
+							var offset = $this.offset(),
+								height = $this.height();
 							//check necessity
 							if( offset.top + height + $elem.height() < $(window).height() ){
 								$anchor.popover('hide').data('bs.popover').options.placement = 'bottom';
@@ -430,8 +431,8 @@
 						}
 					}
 				});
-				//listen to window resize event to reposition the visible popovers
- 				$(window).off("resize").on("resize", function() {
+				//possible solution for repositioning the visible popovers on window resize event
+ 				/*$window.on("resize", function() {
 				    $(".popover").each(function() {
 				        var popover = $(this),
 				        	ctrl = $(popover.context);
@@ -439,7 +440,7 @@
 				            ctrl.popover('show');
 				        }
 				    });
-				});
+				});*/
 	 		};
 	 	}
 
