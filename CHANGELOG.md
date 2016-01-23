@@ -18,7 +18,7 @@ Change Log
 working on ...
 
 * Adding api-mock-json-404 middleware to dev-server;
-* Adding more dev support (render counts, debug mode in-place data/tpl/js edit & reload);
+* Adding more dev support (data api/render counts, debug mode in-place data/tpl/js edit & reload);
 * Adding more example to doc site;
 * Adding more unit tests;
 * Adding cheatsheet;
