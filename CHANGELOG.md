@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.9.0 (2016-01-05*)
+1.9.0 (2016-01-22*)
 -------------------
 1. Added favicon support mock in starter-kit index page;
 2. Updated default mockups;
@@ -13,15 +13,16 @@ Change Log
 9. Added app.notify and app.markdown apis;
 10. Simplified devserver settings for watchers;
 11. Added anonymous regions;
+12. Added popover ability to view;
 
 working on ...
 
-* Adding mock-api json maps;
-* Adding render counts;
-* Adding popover ability to view;
-* Separate modernizr/detectizr shiv bundles from deps;
+* Adding api-mock-json-404 middleware to dev-server;
+* Adding more dev support (render counts, debug mode in-place data/tpl/js edit & reload);
+* Adding more example to doc site;
 * Adding more unit tests;
-* Adding interactive tutorial site;
+* Adding cheatsheet;
+* Separate modernizr/detectizr shiv bundles from deps;
 * Updating doc (around data handling, coop, remote, ws, form);
 * Breaking down 'Basic' editors;
 * Adding optional 2-way binding to form editors;
