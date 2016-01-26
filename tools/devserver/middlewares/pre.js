@@ -16,25 +16,41 @@
  * @created 2014.05.30
  */
 
-var morgan = require('morgan'),
+var express = require('express'),
+_ = require('underscore'),
+colors = require('colors'),
+morgan = require('morgan'),
 bodyParser = require('body-parser'),
 busboy = require('connect-busboy'),
-session = require('express-session');
+session = require('express-session'),
+cors = require('cors');
 
 module.exports = function(server){
 
 	var profile = server.get('profile');
 
 	return function(server){
-
-		//+server.use...
-		//...
-		server.use(morgan('short'));
+		
+		if(profile.crossdomain){
+			server.use(cors());
+			console.log('[CORS: enabled]'.yellow);
+		}
+		server.use(morgan('short')); //logging
 		server.use(bodyParser.urlencoded({extended: true}));
 		server.use(bodyParser.json());
 		server.use(busboy({limits:{fileSize: profile.upload.size * 1024 * 1024}})); //multipart form & file upload
 		server.use(session(profile.session || {secret: 'unknown...'}));
-		//+server.use...
+
+		//fix web root(s)' path(s)
+		_.each(profile.clients, function(filePath, uriName){
+			profile.clients[uriName] = profile.resolve(filePath);
+		});
+		//mount web roots (static)
+		_.each(profile.clients, function(filePath, uriName){
+			server.use(uriName, express.static(profile.clients[uriName]));
+			console.log('[www root]', uriName.yellow, '[', profile.clients[uriName], ']');
+		});
+		
 		//server.use(server.middlewares.your-middleware-factory())
 		//...
 

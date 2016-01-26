@@ -9,39 +9,16 @@
  * @created 2014.04.20
  * @updated 2014.07.31
  */
-var express = require('express'),
-path = require('path'),
-_ = require('underscore'),
+var _ = require('underscore'),
 http = require('http'),
-cors = require('cors'),
 httpProxy = require('http-proxy'),
-errorhandler = require('errorhandler'),
 colors = require('colors');
 
 module.exports = function(server){
 
 	var profile = server.get('profile');
 
-	//mount different clients (static web.roots)
-	console.log('[web roots]', 'processing...');
-	//fix web root(s)' path(s)
-	_.each(profile.clients, function(filePath, uriName){
-		profile.clients[uriName] = profile.resolve(filePath);
-	});
-	_.each(profile.clients, function(filePath, uriName){
-		server.use(uriName, express.static(profile.clients[uriName]));
-		console.log('[www root]', uriName.yellow, '[', profile.clients[uriName], ']');
-	});
-
-	//mount pre-defined middlewares
-	console.log('[middlewares]', 'processing...', '[pre-defined]'.grey);
-	//1. cors
-	if(profile.crossdomain){
-		server.use(cors());
-		console.log('[CORS: enabled]'.yellow);
-	}
-
-	//2. proxied data services (routes proxy)
+	//1. prepare proxied data services (into routes)
 	_.each(profile.proxied, function(config, uri){
 		if(!config.enabled) return;
 		config.path = config.path || uri;
@@ -76,19 +53,20 @@ module.exports = function(server){
 		console.log('[Proxied API]:'.yellow, uri, '-->', target, config.path);
 	});	
 
-	//mount customized (developer added) middlewares, see /middlewares/inject.js
-	console.log('[middlewares]', 'processing...', '[customized]'.grey);
-	server.middlewares.inject(server);
-	console.log('[middlewares]', 'injected.');
+	//2 mount pre-routes middlewares, add more to /middlewares/pre.js
+	console.log('[middlewares - pre routes]', 'injecting...');
+	server.middlewares.pre(server);
 
-	//mount routers
 	_.each(server.get('routers'), function(router, mountPath){
 		server.use(mountPath, router);
 		console.log('[router]', mountPath.yellow);
 	});
-	console.log('[routers]', 'mounted.');
 
-	//mount websockets, client msg = {channel: '..:..', payload: {...}};
+	//3 mount post-routes middlewares, add more to /middlewares/post.js
+	console.log('[middlewares - post routes]', 'injecting...');
+	server.middlewares.post(server);
+
+	//4 mount websockets, client msg {channel: '..:..', payload: {...}};
 	server.websockets = {};
 	///////////////work-around////////////////
 	serverPlus = http.createServer(server);
@@ -127,12 +105,4 @@ module.exports = function(server){
 			console.log('[websocket]', socketPath.yellow);
 		});
 	});
-	console.log('[websockets]', 'processed.');
-
-	//overall error errorhandler
-	if(profile.errorpage){
-		server.use(errorhandler());
-		console.log('[Error Page: enabled]'.yellow, 'use next(err) in routes and middlewares'.grey);
-	}
-	
 };
