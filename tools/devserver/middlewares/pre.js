@@ -43,7 +43,7 @@ module.exports = function(server){
 
 		//fix web root(s)' path(s)
 		_.each(profile.clients, function(filePath, uriName){
-			profile.clients[uriName] = profile.resolve(filePath);
+			profile.clients[uriName] = server.resolve(filePath);
 		});
 		//mount web roots (static)
 		_.each(profile.clients, function(filePath, uriName){

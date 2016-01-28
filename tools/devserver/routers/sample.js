@@ -66,7 +66,7 @@ module.exports = function(server){
 	router.post('/file', function(req, res, next){
 		req.busboy.on('file', function(fieldname, file, fname, encoding, mimetype){
 
-			var dist = path.join(profile.resolve(path.join(profile.upload.path, fname)));
+			var dist = path.join(server.resolve(path.join(profile.upload.path, fname)));
 			fs.ensureFileSync(dist);
 			file.pipe(fs.createWriteStream(dist));
 

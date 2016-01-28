@@ -38,7 +38,7 @@ module.exports = function(server) {
 
     //1. figure out client src root and add index into watch list
    	var root = profile.clients[profile.cordovawatch.client];
-   	var mirror = profile.resolve(profile.cordovawatch.mirror);
+   	var mirror = server.resolve(profile.cordovawatch.mirror);
    	if(!_.isArray(profile.cordovawatch.files))
    		profile.cordovawatch.files = [profile.cordovawatch.files];
 

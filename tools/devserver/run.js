@@ -16,7 +16,6 @@
 
 var express = require('express'),
 load = require('express-load'),
-path = require('path'),
 _ = require('underscore'),
 colors = require('colors'),
 info = require('./package.json');
@@ -38,11 +37,6 @@ profile = server.set('profile', _.extend({
 	clients: {},
 }, require(__dirname + '/profile/' + profile), {
 	root: __dirname,
-	///////////////////use this to resolve all the path/////////////////// 
-	resolve: function(filePath){
-		var relative = filePath.match(/^\//) ? '/' : this.root;
-		return path.resolve(path.join(relative, filePath));
-	}
 }
 )).get('profile');
 
