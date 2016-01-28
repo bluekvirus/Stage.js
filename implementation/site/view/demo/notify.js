@@ -1,46 +1,10 @@
 ;(function(app){
 
-	//custom view as overlay
-	var Overlay = app.view({
-		overlay: true,
-		type: 'Layout',
-		template: [
-		  '<div class="modal-dialog text-left">',
-		    '<div class="modal-content">',
-		      '<div class="modal-header">',
-		        '<button type="button" class="close" data-dismiss="modal" aria-hidden="true" action="close">×</button>',
-		        '<h4 class="modal-title">Modal title</h4>',
-		      '</div>',
-		      '<div class="modal-body" region="body" >', //view="OverlayBody"
-		      '</div>',
-		      '<div class="modal-footer">',
-		        '<button type="button" class="btn btn-default" data-dismiss="modal" action="close">Close</button>',
-		        '<button type="button" class="btn btn-primary">Save changes</button>',
-		      '</div>',
-		    '</div>',
-		  '</div>'
-		],
-		actions: {
-			close: function(){
-				this.close();
-			}
-		},
-		onShow: function(){
-			this.body.trigger('region:load-view', 'OverlayBody');
-		}
-
-	});
-	app.view({
-		name: 'OverlayBody',
-		template: '<p>One fine body…</p>' 
-	});
-
 	app.regional('Demo.Notify', {
 		template: [
 			'<h1>Notification Examples</h1>',
 			'<hr/>',
 			'<div style="position:relative">',
-				'<span class="btn btn-small btn-primary" action="overlay">Overlay</span> ',
 				'<span class="btn btn-small btn-danger" action="msg" data-type="danger">Critical</span> ',
 				'<span class="btn btn-small btn-success" action="msg" data-type="success">Success</span> ',
 				'<span class="btn btn-small btn-warning" action="msg" data-type="warning">Warning</span> ',
@@ -62,10 +26,6 @@
 			error: {title: 'Your Download is Blocked!', msg: '1.4 GB', icon: 'fa fa-reddit-alien', more: 'my_birthday.mp4'}
 		},
 		actions: {
-			overlay: function(){
-				(new Overlay()).overlay();
-			},
-
 			msg: function($btn, e){
 				var note = this.get($btn.data('type'));
 				app.notify(note.title, note.msg, $btn.data('type'), {more: note.more, icon: note.icon});
