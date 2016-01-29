@@ -73,7 +73,7 @@ NProgress.configure({showSpinner: false});
                     '<li class="divider"></li>',
                     '<li class="dropdown-header">View Plus</li>',
                     '<li><a href="#navigate/Demo/Demo.Templating">Templating</a></li>',
-                    '<li><a href="#navigate/Demo/Demo.WIP">Data handling</a></li>',
+                    '<li><a href="#navigate/Demo/Demo.Datahandling">Data handling</a></li>',
                     '<li><a href="#navigate/Demo/Demo.Coop">Coop events</a></li>',
                     '<li><a href="#navigate/Demo/Demo.Editors">Editors</a></li>',
                     '<li><a href="#navigate/Demo/Demo.Popover">Popover</a></li>',
