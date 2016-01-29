@@ -45,6 +45,13 @@ NProgress.configure({showSpinner: false});
             //     var base = 'static/resource/default/download/';
             //     app.Util.download(base + $btn.attr('target'));  
             // },
+            showSubMenu: function($tag, e){
+                app.notify('Action Detected!', 'Banner menu item ' + $tag.find('> a').text() + ' is ' + e.type + '-ed');
+                $tag.toggleClass('open', true);
+            },
+            closeSubMenu: function($tag, e){
+                $tag.toggleClass('open', false);
+            }
         },
         className: 'navbar navbar-default hidden',
         template: [
@@ -63,7 +70,7 @@ NProgress.configure({showSpinner: false});
                 '<li context="Home"><a href="#navigate/Home">HOME</a></li>',
                 '<li context="Document"><a href="#navigate/Document">DOCUMENT</a></li>',
                 '<li context="Document"><a href="#navigate/Mockups">TEMPLATES</a></li>',
-                '<li context="Demo" class="dropdown">',
+                '<li context="Demo" class="dropdown" action-mouseenter="showSubMenu" action-mouseleave="closeSubMenu">',
                   '<a data-toggle="dropdown" class="dropdown-toggle" href="#">DEMO <b class="caret"></b></a>',
                   '<ul class="dropdown-menu">',
                     '<li class="dropdown-header">Ready-made Widgets</li>',                    
@@ -88,7 +95,7 @@ NProgress.configure({showSpinner: false});
               // '</form>',
 
               '<ul class="nav navbar-nav navbar-right">', //3
-                '<li class="dropdown">',
+                '<li class="dropdown" action-mouseenter="showSubMenu" action-mouseleave="closeSubMenu">',
                     '<a data-toggle="dropdown" class="dropdown-toggle" href="#">DOWNLOAD <b class="caret"></b></a>',
                     '<ul class="dropdown-menu">',
 

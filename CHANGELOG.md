@@ -15,6 +15,7 @@ Change Log
 11. Added anonymous regions;
 12. Added popover ability to view;
 13. Added api-mock-json-404 middleware to dev-server;
+14. Added full event types support to view actions (`action-[type]="fn name"`);
 
 working on ...
 
