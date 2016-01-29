@@ -17,8 +17,8 @@
  */
 
 var errorhandler = require('errorhandler'),
-mockjs = require('mockjs'),
-colors = require('colors');
+colors = require('colors'),
+_ = require('underscore');
 
 module.exports = function(server){
 
@@ -26,16 +26,17 @@ module.exports = function(server){
 
 	return function(server){
 
-		//api (already in routes) -> mock -> json -> 404 fallback 
-		server.use(function(req, res, next){
-			//TODO: mock tpl, data path?
+		//api (already in routes) -> json (xml, yaml, md) -> mock -> 404 fallback
+		_.each(profile.clients, function(filePath, uriName){ 
+			server.use(uriName, server.middlewares.unit.apiJsonMock404);
 		});
 		//overall error errorhandler
 		if(profile.errorpage){
 			server.use(errorhandler());
 			console.log('[Error Page: enabled]'.yellow, 'use next(err) in routes and middlewares'.grey);
 		}
-		//+server.use...
+
+		//+server.use(server.middlewares.unit.your-middleware-factory())
 		//...
 
 	};

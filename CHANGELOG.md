@@ -14,12 +14,12 @@ Change Log
 10. Simplified devserver settings for watchers;
 11. Added anonymous regions;
 12. Added popover ability to view;
+13. Added api-mock-json-404 middleware to dev-server;
 
 working on ...
 
-* Adding api-mock-json-404 middleware to dev-server;
-* Adding more dev support (data api/render counts, debug mode in-place data/tpl/js edit & reload);
-* Adding more example to doc site;
+* Adding more dev support (data api/render counts, debug mode hover-in-place data/tpl/js.action edit & reload);
+* Adding more example to doc site; (data handling)
 * Adding more unit tests;
 * Adding cheatsheet;
 * Separate modernizr/detectizr shiv bundles from deps;

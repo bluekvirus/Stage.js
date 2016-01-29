@@ -51,7 +51,7 @@ module.exports = function(server){
 			console.log('[www root]', uriName.yellow, '[', profile.clients[uriName], ']');
 		});
 		
-		//server.use(server.middlewares.your-middleware-factory())
+		//+server.use(server.middlewares.unit.your-middleware-factory())
 		//...
 
 	};
