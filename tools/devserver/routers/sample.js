@@ -6,11 +6,9 @@
  * @author Tim Lauv
  * @created 2014.04.18
  */
-var Mock = require('mockjs'),
-_ = require('underscore'),
+var _ = require('underscore'),
 path = require('path'),
-fs = require('fs-extra'),
-Random = Mock.Random;
+fs = require('fs-extra');
 
 module.exports = function(server){
 
@@ -18,50 +16,16 @@ module.exports = function(server){
 	var router = server.mount(this);
 	server.secure(router);
 
-	/////////////fake data tpl///////////////
-
-	var mockTpl = {
-		users: {
-			'payload|15-15': [{
-				'_id': '_@GUID',
-				'title|1': ['Dr.', 'Mr.', 'Ms.', 'Mrs'],
-				'username': '@EMAIL',
-				'status|1': ['active', 'blocked', 'offline', 'guest'],
-				profile: {
-					'name|1': _.times(250, function(){return Random.name();}),
-					'age': '@INTEGER(20,90)',
-					'dob': '@DATE',
-					'major|1': ['CS', 'SE', 'Design', 'EE', 'Math'],
-				},
-				'link': '/profile/@_id'
-			}],
-			total: 150,
-		},
-
-		choices: {
-			'payload|10-10': [{
-				label: '@EMAIL',
-				value: '@label'
-			}]
-		}
-
-	};
-
-	////////////////services/////////////////
-
+	//a. json api
 	router.get('/', router.permission('read'), function(req, res, next){
 		res.json({hello: true, content: 'world!'});
+		//res.send()
+		//res.sendFile()
+		//res.download()
+		//res.format({ 'application/json': fn(){res.send()}, 'text/html': fn(){res.send()}, ...})
 	});
 
-	router.get('/user', router.permission('read:users'), function(req, res, next){
-		res.json(Mock.mock(mockTpl.users));
-	});
-
-	router.get('/choices', function(req, res, next){
-		res.json(Mock.mock(mockTpl.choices).payload);
-	});
-
-	//file upload example
+	//b. file upload
 	//use truncate -s 100M dummy.pdf to test on linux
 	router.post('/file', function(req, res, next){
 		req.busboy.on('file', function(fieldname, file, fname, encoding, mimetype){
@@ -83,6 +47,7 @@ module.exports = function(server){
 		req.pipe(req.busboy);
 	});
 
+	//c. throw error
 	router.get('/error', function(req, res, next){
 		next(new Error('error!'));
 	});
