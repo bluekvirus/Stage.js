@@ -18,17 +18,24 @@
 	/**
 	 * Action Tag listener hookups +actions{} (do it in initialize())
 	 * + event forwarding ability to action tags
-	 * Usage:
-	 * 		1. add action tags to html template -> e.g <div ... action="method name or *:event name"></div> 
+	 * Usage
+	 * -----
+	 * 		1. add action tags to html template -> e.g  <div ... action="listener"></div>
+	 * 													<div ... action-dblclick="listener"></div>
+	 * 													<div ... action-scroll="view:method-name"></div>
 	 * 		2. implement the action method name in UI definition body's actions{} object. 
 	 * 		functions under actions{} are invoked with 'this' as scope (the view object).
 	 * 		functions under actions{} are called with a 2 params ($action, e) which is a jQuery object referencing the action tag and the jQuery prepared event object, use e.originalEvent to get the DOM one.
 	 *
 	 * Options
 	 * -------
-	 * 1. uiName - [UNKNOWN.View] this is optional, mainly for better debugging msg;
-	 * 2. passOn - [false] this is to let the clicking event of action tags bubble up if an action listener is not found. 
+	 * 1. uiName - [_UNKNOWN_.View] this is optional, mainly for better debugging msg;
+	 * 2. passOn - [false] this is to let the event of action tags bubble up if an action listener is not found. 
 	 *
+	 * Caveat
+	 * ------
+	 * Your listeners might need to be _.throttled() with app.config.rapidEventDelay.
+	 * 
 	 * Note:
 	 * A. We removed _.bind() altogether from the enableActionTags() function and use Function.apply(scope, args) instead for listener invocation to avoid actions{} methods binding problem.
 	 * Functions under actions will only be bound ONCE to the first instance of the view definition, since _.bind() can not rebind functions that were already bound, other instances of
@@ -47,17 +54,60 @@
 			}
 			passOn = passOn || false;
 			this.events = this.events || {};
-			//add general action tag clicking event and listener
+			//hookup general action tag event listener dispatcher
+			//**Caveat**: _doAction is not _.throttled() with app.config.rapidEventDelay atm.
 			_.extend(this.events, {
-				'click [action]': '_doAction'
+				//------------default------------------------------
+				'click [action]': '_doAction',
+
+				//------------<any>--------------------------------
+				'click [action-click]': '_doAction',
+				'dblclick [action-dblclick]': '_doAction',
+				'contextmenu [action-contextmenu]': '_doAction',
+
+				'mousedown [action-mousedown]': '_doAction',
+				'mousemove [action-mousemove]': '_doAction',
+				'mouseup [action-mouseup]': '_doAction',
+				'mouseenter [action-mouseenter]': '_doAction', //per tag, no bubble even with passOn: true
+				'mouseleave [action-mouseleave]': '_doAction', //per tag, no bubble even with passOn: true
+				'mouseover [action-mouseover]': '_doAction', //=enter but bubble
+				'mouseout [action-mouseout]': '_doAction', //=leave but bubble
+
+				//note that 'hover' is not a valid event.
+
+				//'focus [action-focus]': '_doAction', //use focusin instead (no bubble even with passOn: true in IE)
+				'focusin [action-focusin]': '_doAction', //tabindex=seq or -1
+				'focusout [action-focusout]': '_doAction', //tabindex=seq or -1
+
+				'keydown [action-keydown]': '_doAction',
+				'keyup [action-keyup]': '_doAction',
+				//'keypress [action-keypress]': '_doAction', //use keydown instead (non-printing keys and focus-able diff)
+
+				//------------<div>, <any.overflow>----------------
+				'scroll [action-scroll]': '_doAction',
+
+				//------------<input>, <select>, <textarea>--------
+				'blur [action-blur]': '_doAction',
+				'change [action-change]': '_doAction',
+				'select [action-select]': '_doAction', //text selection only <input>, <textarea>
+				'submit [action-submit]': '_doAction', //<input type="submit">, <input type="image"> or <button type="submit">
+
+				//------------<script>, <img>, <iframe>------------
+				'error [action-error]': '_doAction',
+				'load [action-load]': '_doAction'
+
+				//window events:
+				//load [use $(ready-fn) instead], unload, resize, scroll
+
 			});
 			this.actions = this.actions || {}; 	
-			uiName = uiName || this.name || 'UNKNOWN.View';
+			uiName = uiName || this.name || '_UNKNOWN_.View';
 
+			//captured events will not bubble (due to e.stopPropagation)
 			this._doAction = function(e){
 
 				var $el = $(e.currentTarget);
-				var action = $el.attr('action') || 'UNKNOWN';
+				var action = $el.attr('action') || $el.attr('action-' + e.type) || '_UNKNOWN_';
 				var lockTopic = $el.attr('lock'),
 				unlockTopic = $el.attr('unlock');
 
@@ -76,7 +126,7 @@
 					return;
 				}
 
-				//allow triggering certain event only.
+				//Special: only triggering a meta event (e.g action-dblclick=view:method-name) without doing anything.
 				var eventForwarding = String(action).split(':');
 				if(eventForwarding.length >= 2) {
 					eventForwarding.shift();
@@ -84,6 +134,7 @@
 					return this.trigger(eventForwarding.join(':'));
 				}
 
+				//Normal: call the action fn
 				var doer = this.actions[action];
 				if(doer) {
 					e.stopPropagation(); //Important::This is to prevent confusing the parent view's action tag listeners.
