@@ -93,8 +93,11 @@ npm install
 node run default
 node run site
 
-//4. fire up dev server
+//4-1 fire up dev server (background logging)
 ./start.sh
+
+//4-2 fire up dev server (foreground logging)
+npm start
 ```
 This should fire-up the development server. It will serve the `/implementation` folder as web root on the port define by `/tools/devserver/profile/default`. Please go check the content of this profile config file before starting. It has some nice middlewares and auto-change-detectors there you can switch on/off to make the development a lot easier.
 

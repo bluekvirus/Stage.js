@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.9.0 (2016-01-22*)
+1.9.0 (2016-01-29*)
 -------------------
 1. Added favicon support mock in starter-kit index page;
 2. Updated default mockups;
@@ -16,6 +16,10 @@ Change Log
 12. Added popover ability to view;
 13. Added api-mock-json-404 middleware to dev-server;
 14. Added full event types support to view actions (`action-[type]="fn name"`);
+15. Removed md-content plugin in favor of app.markdown();
+16. Removed json assumption in app.remote response dataType;
+17. Refined app.mainView now will always have a contextRegion/navRegion region;
+18. Added default 'no-template' template to non-form views;
 
 working on ...
 

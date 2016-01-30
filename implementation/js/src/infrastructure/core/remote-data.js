@@ -59,7 +59,9 @@
 			data: undefined,
 			processData: false,
 			contentType: 'application/json; charset=UTF-8', // req format
-			dataType: 'json', //res format
+			//**Caveat**: we do NOT assume a json format response.---------------------------------------
+			//dataType: 'json', //need 'application/json; charset=utf-8' in response Content-Type header.
+			//-------------------------------------------------------------------------------------------
 			timeout: app.config.timeout,
 		});
 

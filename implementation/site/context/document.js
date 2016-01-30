@@ -68,27 +68,30 @@
         },
         onReloadDoc: function(){ //meta:event programming
             var that = this;
-            this.doc.$el.md({
-                hljs: {
-                    languages: ['js', 'html']
-                },
-                cb: function($el){
-                    $el.toc({
-                        ignoreRoot: true,
-                        headerHTML: '<div class="text-muted">Table of Content</div><hr/>'
-                    });
-                    that.toc.show(app.view({
-                        //no name means to use it anonymously, which in turn creates it right away. 
-                        template: $el.data('toc').html,
-                        actions: {
-                            goTo: function($btn, e){
-                                e.preventDefault();
-                                that.trigger('view:go-to-topic', $btn.data('id'));
-                            }
+            app.remote(this.doc.$el.data('url')).done(function(md){
+                //render markdown
+                app.markdown(md, that.doc.$el, {
+                    hljs: {
+                        languages: ['javascript', 'html']
+                    }
+                });
+                //generate table-of-content
+                that.doc.$el.toc({
+                    ignoreRoot: true,
+                    headerHTML: '<div class="text-muted">Table of Content</div><hr/>'
+                });
+                that.toc.show(app.view({
+                    //no name means to use it anonymously, which in turn creates it right away. 
+                    template: that.doc.$el.data('toc').html,
+                    actions: {
+                        goTo: function($btn, e){
+                            e.preventDefault();
+                            that.trigger('view:go-to-topic', $btn.data('id'));
                         }
-                    }, true));
-                    that.$headers = that.doc.$el.data('toc').$headers;
-                }
+                    }
+                }, true));
+                that.$headers = that.doc.$el.data('toc').$headers;
+
             });
         },
         onGoToTopic: function(id){

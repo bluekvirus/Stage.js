@@ -3,6 +3,7 @@
 	app.context('Mockups', {
 		
 		className: 'wrapper-full container-fluid',
+		template: ' ',
 
 		mockups: [
 

@@ -32,12 +32,13 @@ Download:
 * Application.download (url or +params)
 
 Utils:
+* Application.markdown()
 * Application.moment
 * Application.uri
 * Application.param()
 * Application.validator
 * Application.debug()
-* Application.reload ()
+* Application.reload()
 
 Mutual Exclusion:
 * Application.lock ([topic/lock])
@@ -1661,55 +1662,6 @@ view.close(); //this will close the overlay as well;
 This is the recommended way of using custom views as overlays.
 
 **Note**: After closing the overlayed view, remember to re-new it before showing as overlay again.
-
-
-###Markdown
-
-jQuery plugin
-
-**Purpose**: Offering a convenient way of loading .md content into the application. (through [marked](https://github.com/chjj/marked))
-
-**Options**:
-```
-url: //url path to the hosted .md file
-marked: //marked options see [https://github.com/chjj/marked]
-hljs: //highlight js configure (e.g languages, classPrefix...)
-cb: //function($el) - callback function once the contend has been added
-```
-**Plus**: The HTML tag you used to call `$.md()` can have `data-url="..."` attribute to indicate the .md file url.
-
-**Usage**:
-```
-...
-'<div region="doc" data-url="HOWTO.md"></div>'
-...
-this.doc.$el.md({
-    hljs: {
-        languages: ['js', 'html']
-    },
-    cb: function($el){
-        ...
-    }
-});
-...
-```
-
-**Cached Result**:
-```
-//after applying $.md() to an element you can get the cached result by
-this.doc.$el.data('md');
-
-/*
-The above call returns:
-{
-    data: ..., //the data returned by ajax loading;
-    content: ..., //the generated md content in html
-}
- */
-```
-The `data` cached by `$.md` will be used to compare with the result returned by the next call to `$.md` on the same DOM element. If they happen to be the same, there won't be any calculation performed through the `markd` library. `$el.data('md').content` will be reused.
-
-We recommend that you use the [Github flavored version.](https://help.github.com/articles/github-flavored-markdown) ([What's Markdown?](http://daringfireball.net/projects/markdown/))
 
 
 ###ToC (Table-of-Content)

@@ -607,13 +607,13 @@
 		},
 
 		//Reload (if data: url) and re-render the view, or resetting the editors.
-		refresh: function(){
+		refresh: function(options){
 			if(!this.data) return console.warn('DEV::ItemView+::refresh() You must set view.data to use this method.');
 			
 			this.model && this.model.clear({silent: true});
 			if(_.isString(this.data)){
 				var self = this;
-				return app.remote(this.data).done(function(d){
+				return app.remote(this.data, null, options).done(function(d){
 					self.set(d);
 				}).fail(app.ajaxFailed);
 			}

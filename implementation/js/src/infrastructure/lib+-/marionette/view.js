@@ -14,26 +14,67 @@
  * @author Tim Lauv
  * @created 2014.02.25
  * @updated 2015.08.03
+ * @updated 2016.01.29
  */
 
 
 ;(function(app){
 
 	_.extend(Backbone.Marionette.View.prototype, {
+		//expose isInDOM method (hidden in marionette.domRefresh.js)
 		isInDOM: function(){
 			if(!this.$el) return undefined;
 			return $.contains(document.documentElement, this.$el[0]);
-		}
+		},
+
+		//override to give default empty template
+		getTemplate: function(){
+			return Marionette.getOption(this, 'template') || (Marionette.getOption(this, 'editors')? ' ' : '<div class="wrapper-full bg-warning"><p class="h3" style="margin:0;"><span class="label label-default" style="display:inline-block;">No Template</span> ' + this.name + '</p></div>');
+		},
 	});
 
 	/**
-	 * Fixed enhancement
+	 * View life-cycle:
+	 * ---------------
+	 * new View
+	 * 		|
+	 * 		is
+	 * 		|
+	 * new M.Layout
+	 * 		|+render()*, +close()*, regions
+	 * 		|
+	 * M.ItemView
+	 * 		|+render() --> M.Renderer.render --> M.TemplateCache.get
+	 * 		|
+	 * [M.View.prototype.constructor*] (this file)
+	 * 		|+enhancements, +picks (b, see below List of view options...)
+	 * 		|
+	 * M.View.apply(this)
+	 * 		|+close, +options, +bindUIElements
+	 * 		|
+	 * BB.View.prototype.constructor
+	 * 		|+events, +remove, +picks (a, see below List of view options...)
+	 * 		|
+	 * .initialize()
+	 * ---------------
+	 * 
+	 * Fixed enhancement:
 	 * +auto ui tags detection and register
-	 * +meta event programming
-	 * 	view:* (event-name) - on* (camelized)
+	 * +meta event programming (view:* (event-name) - on* (camelized))
+	 * +coop e support
+	 * +useParentData support
 	 *
 	 * Override View.constructor to affect only decendents, e.g ItemView and CollectionView... 
 	 * (This is the Backbone way of extend...)
+	 *
+	 * List of view options passed through new View(opt) that will be auto-merged as properties:
+  	 * a. from Backbone.View ['model', 'collection', 'el', 'id', 'attributes', 'className', 'tagName', 'events'];
+  	 * b. from us ['effect', 'template', 'data'/'useParentData', 'ui', 'coop', 'actions', 'editors', 'tooltips', 'overlay', 'popover', 'svg'];
+  	 *
+  	 * Tip:
+  	 * All new View(opt) will have this.options = opt ready in initialize(), also this.*[all auto-picked properties above].
+  	 * 
+  	 * Note that 'svg' is deprecated and will be changed to canvas in the future.
 	 * 
 	 */
 	Backbone.Marionette.View.prototype.constructor = function(options){
@@ -42,18 +83,17 @@
 		//----------------------deprecated config---------------------------
 		if((this.type || options.type) && !this.forceViewType)
 			console.warn('DEV::View+::type is deprecated, please do not specify ' + (this.name?'in ' + this.name:''));
+		//------------------------------------------------------------------
 
-		//----------------------fixed enhancements--------------------------
-		//fix default tpl to be ' '.
-		this.template = options.template || this.template || ' ';
-		//replace data configure
-		this.data = options.data || this.data;
+		//----------------------fixed view enhancements---------------------
+		//auto-pick live init options
+		_.extend(this, _.pick(options, ['effect', 'template', 'data', 'useParentData', 'ui', 'coop', 'actions', 'editors', 'tooltips', 'overlay', 'popover', 'svg', /*'canvas'*/]));
 
-		//auto ui pick-up after render (to support dynamic template)
-		this._ui = _.extend({}, this.ui, options.ui);
-		this.listenTo(this, 'render', function(){
+		//auto ui pick-up after first render (to support inline [ui=""] mark in template)
+		this._ui = _.extend({}, this.ui);
+		this.listenToOnce(this, 'render', function(){
 			var that = this;
-			this.unbindUIElements();
+			//this.unbindUIElements(); automatically called by bindUIElements();
 			this.ui = this._ui;
 			$(this.el.outerHTML).find('[ui]').each(function(index, el){
 				var ui = $(this).attr('ui');
@@ -85,7 +125,15 @@
 					app.off('app:coop-' + e, fn);
 				});
 			});
-		}		
+		}
+
+		//data / useParentData ({}, [] or url for GET only)
+		this.listenToOnce(this, 'show', function(){
+			//supports getting parent data from useParentData.
+			this.data = this.data || (this.parentCt && this.useParentData && this.parentCt.get(this.useParentData));
+			if(this.data)
+				this.set(this.data);
+		});		
 		
 		//---------------------optional view enhancements-------------------
 		//actions (1-click uis)
@@ -97,7 +145,7 @@
 			this.activateEditors(this.editors);
 		});
 
-		//svg (if rapheal.js is present)
+		//svg (if rapheal.js is present, deprecated...use canvas instead (TBI))
 		if(this.svg && this.enableSVG) {
 			this.listenTo(this, 'render', this.enableSVG);
 		}
@@ -123,14 +171,6 @@
 		if(this.popover && this.enablePopover){
 			this.enablePopover();
 		}
-
-		//data ({}, [] or url for GET only)
-		this.listenToOnce(this, 'show', function(){
-			//supports getting parent data from useParentData.
-			this.data = this.data || (this.parentCt && this.useParentData && this.parentCt.get(this.useParentData));
-			if(this.data)
-				this.set(this.data);
-		});
 
 		return Backbone.Marionette.View.apply(this, arguments);
 	};

@@ -99,7 +99,7 @@
 		app.config = _.extend({
 
 			//------------------------------------------mainView-------------------------------------------
-			template: '',
+			template: undefined,
 			//e.g:: have a unified layout template.
 			/**
 			 * ------------------------
@@ -116,7 +116,7 @@
 			 * 
 			 * @type {String}
 			 */		
-			contextRegion: 'app', //alias: navRegion, preferred: navRegion
+			contextRegion: 'contexts', //alias: navRegion
 			defaultContext: 'Default', //This is the context (name) the application will sit on upon loading.
 			//---------------------------------------------------------------------------------------------
 			fullScreen: false, //This will put <body> to be full screen sized (window.innerHeight).
@@ -254,7 +254,7 @@
 					//prepare and show this new context					
 					app.Util.addMetaEvent(targetCtx, 'context');
 					var navRegion = app.config.navRegion || app.config.contextRegion;
-					var targetRegion = app.mainView.getRegion(navRegion) || app.getRegion(navRegion);
+					var targetRegion = app.mainView.getRegion(navRegion);
 					if(!targetRegion) throw new Error('DEV::Application::navigate() You don\'t have region \'' + navRegion + '\' defined');		
 					
 					//note that .show() might be async due to region enter/exit effects
@@ -330,7 +330,7 @@
 			//the additional <div> under the app region is somehow inevitable atm...
 			app.trigger('app:before-mainview-ready');
 			app.mainView = app.mainView || app.view({
-				template: app.config.template
+				template: app.config.template || ('<div region="' + (app.config.navRegion || app.config.contextRegion) + '"></div>')
 			}, true);
 			app.getRegion('app').show(app.mainView);
 			app.trigger('app:mainview-ready');

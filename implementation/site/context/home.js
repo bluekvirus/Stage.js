@@ -51,7 +51,7 @@
 			this.title.show(app.area({
 				template: [
 					'<i class="project-title" style="margin-bottom:20px;"></i>',
-					marked.parse([
+					app.markdown([
 						/////////////////Intro/////////////////
 						'Learned Backbone? Tried Marionette? Still searching for a complete **single-page** web application **workflow**? ',
 						'Look no further...\n',
@@ -59,7 +59,15 @@
 						'you can direct your next application like a play on stage.\n',
 						'Enjoy!',
 						/////////////////Intro/////////////////
-					].join('\n')),
+						
+						/////////////////Test//////////////////
+						// '```javascript',
+						// 'var a = b;',
+						// '```',
+						// '<span class="label label-success">123</span>'
+						/////////////////Test//////////////////
+						
+					].join('\n'), {marked: {sanitize: false}}),
 					'<p>',
 						'<a href="https://github.com/bluekvirus/Stage.js/releases"><img src="http://img.shields.io/bower/v/stage.js.svg?style=flat-square" alt="Framework Version"></img></a> ', //version badge
 						'<a href="https://www.npmjs.org/package/stage-devtools"><img src="http://img.shields.io/npm/v/stage-devtools.svg?style=flat-square" alt="DevTools Version"></img></a> ', //version badge

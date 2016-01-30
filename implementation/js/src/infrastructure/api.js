@@ -342,11 +342,32 @@
 		},
 
 		//----------------markdown-------------------
-		markdown: function(md, $target, options){
-			if($target && ($target instanceof jQuery))
-				$target.html(marked(md, options));
-			else
-				return marked(md, options || $target);
+		//options.marked, options.hljs
+		//https://guides.github.com/features/mastering-markdown/
+		markdown: function(md, $target /*or options*/, options){
+			options = options || (!($target instanceof jQuery) && $target) || {};
+			//render content
+			var html = marked(md, _.extend({
+				gfm: true,
+				tables: true,
+				breaks: false,
+				pedantic: false,
+				sanitize: true,
+				smartLists: true,
+				smartypants: false
+			}, options.marked)), hljs = window.hljs;
+			//highlight code (use ```language to specify type)
+			if(hljs){
+				hljs.configure(options.hljs);
+				var $html = $('<div>' + html + '</div>');
+				$html.find('pre code').each(function(){
+					hljs.highlightBlock(this);
+				});
+				html = $html.html();
+			}
+			if($target instanceof jQuery)
+				return $target.html(html);
+			return html;
 		},
 
 		//----------------notify---------------------
