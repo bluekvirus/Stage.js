@@ -43,24 +43,23 @@
  * ...(see more in documentations)
  * 
  * Suggested events are: [not included]
- * app:prompt (options) - app.onPrompt [not-defined]
- * app:error/info/success/warning (options) - app.onError [not-defined] //window.onerror is now rewired into this event as well.
- * app:login (options) - app.onLogin [not-defined]
- * app:logout (options) - app.onLogout [not-defined]
- * app:server-push (options) - app.onServerPush [not-defined]
+ * 		app:prompt (options) - app.onPrompt [not-defined]
+ *   	app:error/info/success/warning (options) - app.onError [not-defined] //window.onerror is now rewired into this event as well.
+ *    	app:login (options) - app.onLogin [not-defined]
+ *     	app:logout (options) - app.onLogout [not-defined]
+ *      app:server-push (options) - app.onServerPush [not-defined]
  * 
- * 6. One special event to remove the need of your view objects to listen to window.resized events themselves is
- * app fires >>>
- * 		app:resized - upon window resize event
- * Listen to this event within your view definition on the Application object please.
- *
+ * 6. Special global built-in coop events:
+ * 		window-resized - upon window resize event
+ * 		window-scroll - upon window scroll event
+ * 
  * Usage (Specific)
  * ----------------------------
  * ###Building a view piece in application?
  * plugins to aid you:
  * 
  * 7. $.i18n
- * 8. $.md
+ * 8. $.popover
  * 9. $.overlay
  *
  * Lib enhancements to aid you:
@@ -117,7 +116,7 @@
 			 * @type {String}
 			 */		
 			contextRegion: 'contexts', //alias: navRegion
-			defaultContext: 'Default', //This is the context (name) the application will sit on upon loading.
+			defaultContext: undefined, //This is the context (name) the application will sit on upon loading.
 			//---------------------------------------------------------------------------------------------
 			fullScreen: false, //This will put <body> to be full screen sized (window.innerHeight).
 	        rapidEventDelay: 200, //in ms this is the rapid event delay control value shared within the application (e.g window resize).
@@ -205,7 +204,7 @@
 				return;
 			}
 
-			var path = '';
+			var path = '', options = options || '';
 			if(_.isString(options)){
 				path = options;
 			}else {
@@ -225,13 +224,13 @@
 		//---navigation worker---
 			function navigate(path){
 				path = _.compact(String(path).split('/'));
-				if(path.length <= 0) throw new Error('DEV::Application::navigate() Navigation path error');
+				if(path.length <= 0) throw new Error('DEV::Application::navigate() Navigation path empty...');
 
 				var context = path.shift();
 
-				if(!context) throw new Error('DEV::Application::navigate() Empty context name...');
+				if(!context) throw new Error('DEV::Application::navigate() Empty context/view name...');
 				var TargetContext = app.get(context, 'Context');
-				if(!TargetContext) throw new Error('DEV::Application::navigate() You must have the required context ' + context + ' defined...'); //see - special/registry/context.js			
+				if(!TargetContext) throw new Error('DEV::Application::navigate() You must have the required context/view ' + context + ' defined...');			
 				if(!app.currentContext || app.currentContext.name !== context) {
 					
 					//re-create target context upon switching
@@ -284,7 +283,7 @@
 				},
 				controller: {
 					navigateTo: function(path){
-						app.navigate(path || app.config.defaultContext, true); //will skip updating #hash since the router is triggered by #hash change.
+						app.navigate(path, true); //will skip updating #hash since the router is triggered by #hash change.
 					},
 				}
 			});
@@ -293,14 +292,9 @@
 			if(Backbone.history)
 				Backbone.history.start();
 
-			//Auto-detect and init context (view that replaces the body region)
-			if(!window.location.hash){
-				if(!app.get(app.config.defaultContext, 'Context'))
-					console.warn('DEV::Application:: You might want to define a Default context using app.context(\'Context Name\', {...})');
-				else
-					app.navigate(app.config.defaultContext);
-			}			
-
+			//Auto navigate to init context (view that gets put in mainView's navRegion)
+			if(!window.location.hash && app.config.defaultContext)
+				app.navigate(app.config.defaultContext);
 		});
 
 		return app;

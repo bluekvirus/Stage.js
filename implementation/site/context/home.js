@@ -123,6 +123,7 @@
 	});
 
 	app.area('Home.BG', {
+		//template: ' ', //might need exception as .editors configured views.
 		svg: true,
 
 		onResized: function(){

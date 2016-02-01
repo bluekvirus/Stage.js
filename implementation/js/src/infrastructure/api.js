@@ -157,7 +157,7 @@
 
 		//----------------navigation-----------
 		navigate: function(options, silent){
-			return app.trigger('app:navigate', options || app.config.defaultContext, silent);
+			return app.trigger('app:navigate', options, silent);
 		},	
 
 		//-----------------mutex---------------
