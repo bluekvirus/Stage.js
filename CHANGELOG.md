@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.9.0 (2016-01-29*)
+1.9.0 (2016-02-01*)
 -------------------
 1. Added favicon support mock in starter-kit index page;
 2. Updated default mockups;
@@ -20,11 +20,14 @@ Change Log
 16. Removed json assumption in app.remote response dataType;
 17. Refined app.mainView now will always have a contextRegion/navRegion region;
 18. Added default 'no-template' template to non-form views;
+19. Added 'view', 'viewName' metadata to view.$el and the app.locate api;
+20. Added 'renderCount' metadata to view.$el and the app.profile api;
+21. Added view.category metadata in addition to view.name (through reusable registry);
 
 working on ...
 
-* Adding more dev support (data api/render counts, debug mode hover-in-place data/tpl/js.action edit & reload);
-* Adding more example to doc site; (data handling)
+* Adding debug mode hover-in-place data/tpl/js.action edit & reload;
+* Adding more example to doc site; (effects, actions)
 * Adding more unit tests;
 * Adding cheatsheet;
 * Separate modernizr/detectizr shiv bundles from deps;

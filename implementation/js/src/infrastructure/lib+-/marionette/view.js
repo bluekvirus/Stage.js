@@ -1,25 +1,65 @@
 /**
- * Here we extend the html tag attributes to be auto-recognized by a Marionette.View.
- * This simplifies the view creation by indicating added functionality through template string. (like angular.js?)
+ * This is where we extend and enhance the abilities of a View through init,lifecycle augmentation.
+ * 
+ * View life-cycle:
+ * ---------------
+ * new View
+ * 		|
+ * 		is
+ * 		|
+ * new M.Layout
+ * 		|+render()*, +close()*, regions (+effects recognition)
+ * 		|
+ * M.ItemView
+ * 		|+render() --> M.Renderer.render --> M.TemplateCache.get (+template loading)
+ * 		|+set()/get() [for data loading, 1-way binding (need 2-way binders?)]
+ * 		|
+ * [M.View.prototype.constructor*] (this file)
+ * 		|+fixed enhancements, 
+ * 		|+pick and activate optional ones (b, see below List of view options...)
+ * 		|
+ * M.View.apply(this)
+ * 		|+close, +options, +bindUIElements
+ * 		|
+ * BB.View.prototype.constructor
+ * 		|+events, +remove, +picks (a, see below List of view options...)
+ * 		|
+ * .initialize()
+ * ---------------
+ * 
+ * Fixed enhancement:
+ * +pick additional live options
+ * +rewire get/set to getVal/setVal for Editor view.
+ * +auto ui tags detection and register
+ * +meta event programming (view:* (event-name) - on* (camelized))
+ * +coop e support
+ * +useParentData support
+ * +view name to $el metadata
+ * (see ItemView for the rest of optional abilities, e.g template, data, actions, editors, tooltips, overlay, popover, ...)
  *
- * Fixed
- * -----
- * 0. shiv empty template.
- * 1. auto ui tags detection in template.
- * 2. +meta event programming
- * 	view:* (event-name) <--> on* (camelized)
- * 3. global coop events.
+ * List of view options passed through new View(opt) that will be auto-merged as properties:
+ * 		a. from Backbone.View ['model', 'collection', 'el', 'id', 'attributes', 'className', 'tagName', 'events'];
+ *   	b. from us ['effect', 'template', 'data'/'useParentData', 'ui', 'coop', 'actions', 'editors', 'tooltips', 'overlay', 'popover', 'svg'];
  *
+ * Tip:
+ * All new View(opt) will have this.options = opt ready in initialize(), also this.*[all auto-picked properties above].
+ * 
+ * Note: that 'svg' is deprecated and will be changed in the future.
+ * Note: override View.constructor to affect only decendents, e.g ItemView and CollectionView... 
+ * (This is the Backbone way of extend...)
+ * Note: this.name and this.category comes from core.reusable registry.
+ * 
  * 
  * @author Tim Lauv
  * @created 2014.02.25
  * @updated 2015.08.03
- * @updated 2016.01.29
+ * @updated 2016.02.01
  */
 
 
 ;(function(app){
 
+	//+api
 	_.extend(Backbone.Marionette.View.prototype, {
 		//expose isInDOM method (hidden in marionette.domRefresh.js)
 		isInDOM: function(){
@@ -33,50 +73,7 @@
 		},
 	});
 
-	/**
-	 * View life-cycle:
-	 * ---------------
-	 * new View
-	 * 		|
-	 * 		is
-	 * 		|
-	 * new M.Layout
-	 * 		|+render()*, +close()*, regions
-	 * 		|
-	 * M.ItemView
-	 * 		|+render() --> M.Renderer.render --> M.TemplateCache.get
-	 * 		|
-	 * [M.View.prototype.constructor*] (this file)
-	 * 		|+enhancements, +picks (b, see below List of view options...)
-	 * 		|
-	 * M.View.apply(this)
-	 * 		|+close, +options, +bindUIElements
-	 * 		|
-	 * BB.View.prototype.constructor
-	 * 		|+events, +remove, +picks (a, see below List of view options...)
-	 * 		|
-	 * .initialize()
-	 * ---------------
-	 * 
-	 * Fixed enhancement:
-	 * +auto ui tags detection and register
-	 * +meta event programming (view:* (event-name) - on* (camelized))
-	 * +coop e support
-	 * +useParentData support
-	 *
-	 * Override View.constructor to affect only decendents, e.g ItemView and CollectionView... 
-	 * (This is the Backbone way of extend...)
-	 *
-	 * List of view options passed through new View(opt) that will be auto-merged as properties:
-  	 * a. from Backbone.View ['model', 'collection', 'el', 'id', 'attributes', 'className', 'tagName', 'events'];
-  	 * b. from us ['effect', 'template', 'data'/'useParentData', 'ui', 'coop', 'actions', 'editors', 'tooltips', 'overlay', 'popover', 'svg'];
-  	 *
-  	 * Tip:
-  	 * All new View(opt) will have this.options = opt ready in initialize(), also this.*[all auto-picked properties above].
-  	 * 
-  	 * Note that 'svg' is deprecated and will be changed to canvas in the future.
-	 * 
-	 */
+	//*init, life-cycle
 	Backbone.Marionette.View.prototype.constructor = function(options){
 		options = options || {};
 
@@ -89,6 +86,12 @@
 		//auto-pick live init options
 		_.extend(this, _.pick(options, ['effect', 'template', 'data', 'useParentData', 'ui', 'coop', 'actions', 'editors', 'tooltips', 'overlay', 'popover', 'svg', /*'canvas'*/]));
 
+		//re-wire this.get()/set() to this.getVal()/setVal(), data model in editors is used as configure object.
+		if(this.category === 'Editor'){
+			this.get = this.getVal;
+			this.set = this.setVal;
+		}
+
 		//auto ui pick-up after first render (to support inline [ui=""] mark in template)
 		this._ui = _.extend({}, this.ui);
 		this.listenToOnce(this, 'render', function(){
@@ -100,6 +103,20 @@
 				that.ui[ui] = '[ui="' + ui + '"]';
 			});
 			this.bindUIElements();
+		});
+
+		//add data-view-name meta attribute to view.$el and also view to view.$el.data('view')
+		this.listenToOnce(this, 'render', function(){
+			this.$el.attr('data-view-name', this.name || _.uniqueId('anonymous-view-'));
+			this.$el.data('view', this);
+		});
+
+		//add data-render-count meta attribute to view.$el
+		this._renderCount = 0;
+		this.listenTo(this, 'render', function(){
+			this.$el.attr('data-render-count', ++this._renderCount);
+			//**Caveat: data-attribute change will not change $.data(), it is one way and one time in jQuery.
+			this.$el.data('render-count', this._renderCount);
 		});
 
 		//meta-event programming ability
@@ -133,7 +150,7 @@
 			this.data = this.data || (this.parentCt && this.useParentData && this.parentCt.get(this.useParentData));
 			if(this.data)
 				this.set(this.data);
-		});		
+		});
 		
 		//---------------------optional view enhancements-------------------
 		//actions (1-click uis)

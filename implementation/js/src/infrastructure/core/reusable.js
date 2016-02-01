@@ -42,7 +42,6 @@
 						...
 					},*/ options, {
 						className: regName.toLowerCase() + ' ' + _.string.slugify(regName + '-' + options.name) + ' ' + (options.className || ''),
-						category: regName
 					});
 					factory = function(){
 						return Marionette[options.type || 'Layout'].extend(options);
@@ -57,14 +56,16 @@
 					};
 				}
 
-				//type 3: name and a factory func (won't have preset className & category)
+				//type 3: name and a factory func (won't have preset className)
 				if(!_.isString(name) || !name) throw new Error('DEV::Reusable::register() You must specify a ' + regName + ' name to register.');
 				if(!_.isFunction(factory)) throw new Error('DEV::Reusable::register() You must specify a ' + regName + ' factory function to register ' + name + ' !');
 
 				if(this.has(name))
 					console.warn('DEV::Overriden::Reusable ' + regName + '.' + name);
 				this.map[name] = factory();
+				//+metadata to instances
 				this.map[name].prototype.name = name;
+				this.map[name].prototype.category = regName;
 
 				//fire the coop event (e.g for auto menu entry injection)
 				app.trigger('app:reusable-registered', this.map[name], regName);

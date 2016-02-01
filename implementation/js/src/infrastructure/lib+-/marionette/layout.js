@@ -212,7 +212,7 @@
 			});
 
 			//supporting the navigation chain if it is a named layout view with valid navRegion (context, regional, ...)
-			if(options.name || this.name){
+			if(this.name){
 				this.navRegion = options.navRegion || this.navRegion;
 				//if(this.navRegion)
 				this.onNavigateChain = function(pathArray, old){
@@ -228,7 +228,7 @@
 					if(!this.navRegion) return this.trigger('view:navigate-to', pathArray.join('/'));
 
 					if(!this.regions[this.navRegion]){
-						console.warn('DEV::Layout+::onNavigateChain()', 'invalid navRegion', this.navRegion, 'in', this.name || options.name);
+						console.warn('DEV::Layout+::onNavigateChain()', 'invalid navRegion', this.navRegion, 'in', this.name);
 						return;
 					}
 					

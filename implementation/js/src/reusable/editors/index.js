@@ -205,6 +205,8 @@
 					checked: options.checked || true,
 					unchecked: options.unchecked || false
 				});
+				//mark view name to be Basic.type.name (more specific than just Basic)
+				this.name = [this.name, options.type, options.name].join('.');
 
 				//prep validations
 				if(options.validate) {

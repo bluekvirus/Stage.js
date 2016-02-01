@@ -137,6 +137,50 @@
 			return Reusable;
 		},
 
+		//find a view instance by name or its DOM element.
+		locate: function(name /*el or $el*/){
+			//el, $el for *contained* view names only
+			if(!_.isString(name)){
+				var all;
+				if(name)
+					all = $(name).find('[data-view-name]');
+				else
+					all = $('[data-view-name]');
+
+				all = all.map(function(index, el){
+					return $(el).attr('data-view-name');
+				});
+				return all;
+			}
+
+			//name string, find the view instance and sub-view names
+			var view = $('[data-view-name="' + name + '"]').data('view');
+			return view && {view: view, 'sub-views': app.locate(view.$el)};
+		},
+
+		//output performance related meta info so far for a view by name or its DOM element.
+		profile: function(name /*el or $el*/){
+			//el, $el for *contained* views total count and rankings
+			if(!_.isString(name)){
+				var all;
+				if(name)
+				 	all = $(name).find('[data-render-count]');
+				else
+					all = $('[data-render-count]');
+
+				all = all.map(function(index, el){
+					var $el = $(el);
+					return {name: $el.data('view-name'), 'render-count': Number($el.data('render-count')), $el: $el};
+				});
+				return {total: _.reduce(all, function(memo, num){ return memo + num['render-count']; }, 0), rankings: _.sortBy(all, 'render-count').reverse()};
+			}
+
+			//name string, profile the specific view and its sub-views
+			var result = app.locate(name), view;
+			if(result) view = result.view;
+			return view && {name: view.$el.data('view-name'), 'render-count': view.$el.data('render-count'), $el: view.$el, 'sub-views': app.profile(view.$el)};
+		},
+
 		coop: function(event, options){
 			app.trigger('app:coop', event, options);
 			app.trigger('app:coop-' + event, options);
@@ -435,7 +479,7 @@
 		'remote', 'ws', 'download', //com
 		'extract', 'cookie', 'store', 'moment', 'uri', 'validator', 'markdown', 'notify', //3rd-party lib short-cut
 		//@supportive
-		'debug', 'has', 'get', 'nameToPath', 'pathToName', 'inject.js', 'inject.tpl', 'inject.css',
+		'debug', 'has', 'get', 'locate', 'profile', 'nameToPath', 'pathToName', 'inject.js', 'inject.tpl', 'inject.css',
 		//@deprecated
 		'create - @deprecated', 'regional - @deprecated'
 	];
