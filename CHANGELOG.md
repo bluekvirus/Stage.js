@@ -23,10 +23,11 @@ Change Log
 19. Added 'view', 'viewName' metadata to view.$el and the app.locate api;
 20. Added 'renderCount' metadata to view.$el and the app.profile api;
 21. Added view.category metadata in addition to view.name (through reusable registry);
+22. Added app.mark() api; (experimental)
 
 working on ...
 
-* Adding debug mode hover-in-place data/tpl/js.action edit & reload;
+* Adding debug mode hover-in-place tpl edit and preview;
 * Adding more example to doc site; (effects, actions)
 * Adding more unit tests;
 * Adding cheatsheet;

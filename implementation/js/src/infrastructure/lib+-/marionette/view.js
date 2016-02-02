@@ -98,6 +98,7 @@
 		//			(using 'render' once to guard here, since {{#each}} requires +1 render into 'data-rendered')
 		this.listenToOnce(this, 'render', function(){
 			var that = this;
+			this.ui = this.ui || {};
 			this.$el.find('[ui]').each(function(index, el){
 				var $el = $(el);
 				var key = $el.attr('ui');

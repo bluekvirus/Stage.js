@@ -181,6 +181,36 @@
 			return view && {name: view.$el.data('view-name'), 'render-count': view.$el.data('render-count'), $el: view.$el, 'sub-views': app.profile(view.$el)};
 		},
 
+		//mark views on screen. (hard-coded style, experimental)
+		mark: function(){
+			var nameTagPairing = [], $body = $('body');
+			//round-1: generate border and name tags
+			_.each(app.locate(), function(v){
+				var result = app.locate(v), $container;
+				//add a container style
+				if(result.view.category !== 'Editor')
+					$container = result.view.$el.parent();
+				else return;
+				$container.css({
+					'padding': '1.5em', 
+					'border': '1px dashed black'
+				});
+				//add a name tag (and live position it to container's top left)
+				var $nameTag = $('<span class="label label-default" style="position:absolute;">' + result.view.$el.data('view-name') + '</span>');
+				$body.append($nameTag);
+				nameTagPairing.push({tag: $nameTag, ct: $container});
+			});
+			//round-2: position the name tags
+			$window.trigger('resize');//trigger a possible resizing globally.
+			_.each(nameTagPairing, function(pair){
+				pair.tag.position({
+					my: 'left top',
+					at: 'left top',
+					of: pair.ct
+				});
+			});
+		},
+
 		coop: function(event, options){
 			app.trigger('app:coop', event, options);
 			app.trigger('app:coop-' + event, options);
@@ -479,7 +509,7 @@
 		'remote', 'ws', 'download', //com
 		'extract', 'cookie', 'store', 'moment', 'uri', 'validator', 'markdown', 'notify', //3rd-party lib short-cut
 		//@supportive
-		'debug', 'has', 'get', 'locate', 'profile', 'nameToPath', 'pathToName', 'inject.js', 'inject.tpl', 'inject.css',
+		'debug', 'has', 'get', 'locate', 'profile', 'mark', 'nameToPath', 'pathToName', 'inject.js', 'inject.tpl', 'inject.css',
 		//@deprecated
 		'create - @deprecated', 'regional - @deprecated'
 	];
