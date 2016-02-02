@@ -13,6 +13,7 @@
  * M.ItemView
  * 		|+render() --> M.Renderer.render --> M.TemplateCache.get (+template loading)
  * 		|+set()/get() [for data loading, 1-way binding (need 2-way binders?)]
+ * 		|[use bindUIElements() in render()]
  * 		|
  * [M.View.prototype.constructor*] (this file)
  * 		|+fixed enhancements, 
@@ -24,7 +25,7 @@
  * BB.View.prototype.constructor
  * 		|+events, +remove, +picks (a, see below List of view options...)
  * 		|
- * .initialize()
+ * .initialize(options) [options is already available in this.options]
  * ---------------
  * 
  * Fixed enhancement:
@@ -92,17 +93,16 @@
 			this.set = this.setVal;
 		}
 
-		//auto ui pick-up after first render (to support inline [ui=""] mark in template)
-		this._ui = _.extend({}, this.ui);
+		//extend ui collection after first render (to support inline [ui=""] mark in template)
+		//**Caveat: Don't put anything as [ui=] in {{#each}}, they will overlap. 
+		//			(using 'render' once to guard here, since {{#each}} requires +1 render into 'data-rendered')
 		this.listenToOnce(this, 'render', function(){
 			var that = this;
-			//this.unbindUIElements(); automatically called by bindUIElements();
-			this.ui = this._ui;
-			$(this.el.outerHTML).find('[ui]').each(function(index, el){
-				var ui = $(this).attr('ui');
-				that.ui[ui] = '[ui="' + ui + '"]';
+			this.$el.find('[ui]').each(function(index, el){
+				var $el = $(el);
+				var key = $el.attr('ui');
+				that.ui[key] = $el; 
 			});
-			this.bindUIElements();
 		});
 
 		//add data-view-name meta attribute to view.$el and also view to view.$el.data('view')

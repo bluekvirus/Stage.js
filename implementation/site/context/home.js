@@ -102,7 +102,7 @@
 					'{{/each}}'
 				],
 				data:[
-					{name: 'Edge Build', icon: 'fa fa-download', href:'static/resource/default/download/stagejs-edge.tar.gz'},
+					//{name: 'Edge Build', icon: 'fa fa-download', href:'static/resource/default/download/stagejs-edge.tar.gz'},
 					{name: 'Starter Kit', icon: 'fa fa-download', href:'static/resource/default/download/stagejs-starter-kit.tar.gz'},
 					{name: 'Change Log', href:'https://github.com/bluekvirus/Stage.js/releases'},
 					{name: 'Document', href:'#navigate/Document'},

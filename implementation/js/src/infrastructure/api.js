@@ -149,7 +149,7 @@
 
 				all = all.map(function(index, el){
 					return $(el).attr('data-view-name');
-				});
+				}).get();
 				return all;
 			}
 
@@ -171,7 +171,7 @@
 				all = all.map(function(index, el){
 					var $el = $(el);
 					return {name: $el.data('view-name'), 'render-count': Number($el.data('render-count')), $el: $el};
-				});
+				}).get();
 				return {total: _.reduce(all, function(memo, num){ return memo + num['render-count']; }, 0), rankings: _.sortBy(all, 'render-count').reverse()};
 			}
 

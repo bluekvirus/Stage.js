@@ -107,7 +107,7 @@
                 template:[ 
                     '<div class="text-muted">Included Libraries</div><hr/>',    
                     '{{#list}}',
-                        '<li class="list-group-item" ui="libitem">',
+                        '<li class="list-group-item">',
                             '{{#if url}}<a href="{{url}}">{{name}}</a>',
                             '{{else}}{{name}}',
                             '{{/if}}',
@@ -149,7 +149,6 @@
                             color: versionBadges.css('backgroundColor'),
                             border: '1px solid'
                         });
-                        //app.debug(that.ui.libitem);
                     });                
                 }
             }, true));
@@ -168,11 +167,11 @@
                 '<i class="btn btn-warning btn-xs fa fa-refresh" action="refresh"></i> ',
             '</li>',
             '{{#each path}}',
-                '<li class="breadcrumb-item" ui="breadcrumb-item">',
+                '<li class="breadcrumb-item" action-mouseenter="showSubItems">',
                     '<a href="#" action="goTo" data-id="{{id}}">{{ title }}</a>',
 
                     //put sibling topics under this level here in a <ul>
-                    '<ul class="dropdown-menu">',
+                    '<ul class="dropdown-menu" action-mouseleave="hideSubItems">',
                         '{{#each sibling}}',
                             '{{#if this}}',
                             '<li><a href="#" action="goTo" data-id="{{id}}">{{title}}</a></li>',
@@ -193,20 +192,16 @@
             goTo: function($btn, e){
                 e.preventDefault();
                 this.parentCt.trigger('view:go-to-topic', $btn.data('id'));
+            },
+            showSubItems: function($item){
+                this.$el.find('.breadcrumb-item').removeClass('open');
+                $item.addClass('open');
+            },
+            hideSubItems: function($item){
+                this.$el.find('.breadcrumb-item').removeClass('open');
             }
 
         },
-        events: {
-            'mouseenter .breadcrumb-item' : function(e){
-                var $this = $(e.currentTarget);
-                this.ui['breadcrumb-item'].removeClass('open');
-                $this.addClass('open');
-            },
-
-            'mouseleave .breadcrumb-item .dropdown-menu' : function(e){
-                this.ui['breadcrumb-item'].removeClass('open');
-            }
-        }
 
     });
 

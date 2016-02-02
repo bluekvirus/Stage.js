@@ -324,6 +324,7 @@
 			//the additional <div> under the app region is somehow inevitable atm...
 			app.trigger('app:before-mainview-ready');
 			app.mainView = app.mainView || app.view({
+				name: 'Main',
 				template: app.config.template || ('<div region="' + (app.config.navRegion || app.config.contextRegion) + '"></div>')
 			}, true);
 			app.getRegion('app').show(app.mainView);
