@@ -92,24 +92,23 @@
  * ...(see more in documentations)
  * 
  * Suggested events are: [not included]
- * app:prompt (options) - app.onPrompt [not-defined]
- * app:error/info/success/warning (options) - app.onError [not-defined] //window.onerror is now rewired into this event as well.
- * app:login (options) - app.onLogin [not-defined]
- * app:logout (options) - app.onLogout [not-defined]
- * app:server-push (options) - app.onServerPush [not-defined]
+ * 		app:prompt (options) - app.onPrompt [not-defined]
+ *   	app:error/info/success/warning (options) - app.onError [not-defined] //window.onerror is now rewired into this event as well.
+ *    	app:login (options) - app.onLogin [not-defined]
+ *     	app:logout (options) - app.onLogout [not-defined]
+ *      app:server-push (options) - app.onServerPush [not-defined]
  * 
- * 6. One special event to remove the need of your view objects to listen to window.resized events themselves is
- * app fires >>>
- * 		app:resized - upon window resize event
- * Listen to this event within your view definition on the Application object please.
- *
+ * 6. Special global built-in coop events:
+ * 		window-resized - upon window resize event
+ * 		window-scroll - upon window scroll event
+ * 
  * Usage (Specific)
  * ----------------------------
  * ###Building a view piece in application?
  * plugins to aid you:
  * 
  * 7. $.i18n
- * 8. $.md
+ * 8. $.popover
  * 9. $.overlay
  *
  * Lib enhancements to aid you:
@@ -148,7 +147,7 @@
 		app.config = _.extend({
 
 			//------------------------------------------mainView-------------------------------------------
-			template: '',
+			template: undefined,
 			//e.g:: have a unified layout template.
 			/**
 			 * ------------------------
@@ -165,8 +164,8 @@
 			 * 
 			 * @type {String}
 			 */		
-			contextRegion: 'app', //alias: navRegion, preferred: navRegion
-			defaultContext: 'Default', //This is the context (name) the application will sit on upon loading.
+			contextRegion: 'contexts', //alias: navRegion
+			defaultContext: undefined, //This is the context (name) the application will sit on upon loading.
 			//---------------------------------------------------------------------------------------------
 			fullScreen: false, //This will put <body> to be full screen sized (window.innerHeight).
 	        rapidEventDelay: 200, //in ms this is the rapid event delay control value shared within the application (e.g window resize).
@@ -254,7 +253,7 @@
 				return;
 			}
 
-			var path = '';
+			var path = '', options = options || '';
 			if(_.isString(options)){
 				path = options;
 			}else {
@@ -274,13 +273,13 @@
 		//---navigation worker---
 			function navigate(path){
 				path = _.compact(String(path).split('/'));
-				if(path.length <= 0) throw new Error('DEV::Application::navigate() Navigation path error');
+				if(path.length <= 0) throw new Error('DEV::Application::navigate() Navigation path empty...');
 
 				var context = path.shift();
 
-				if(!context) throw new Error('DEV::Application::navigate() Empty context name...');
+				if(!context) throw new Error('DEV::Application::navigate() Empty context/view name...');
 				var TargetContext = app.get(context, 'Context');
-				if(!TargetContext) throw new Error('DEV::Application::navigate() You must have the required context ' + context + ' defined...'); //see - special/registry/context.js			
+				if(!TargetContext) throw new Error('DEV::Application::navigate() You must have the required context/view ' + context + ' defined...');			
 				if(!app.currentContext || app.currentContext.name !== context) {
 					
 					//re-create target context upon switching
@@ -303,7 +302,7 @@
 					//prepare and show this new context					
 					app.Util.addMetaEvent(targetCtx, 'context');
 					var navRegion = app.config.navRegion || app.config.contextRegion;
-					var targetRegion = app.mainView.getRegion(navRegion) || app.getRegion(navRegion);
+					var targetRegion = app.mainView.getRegion(navRegion);
 					if(!targetRegion) throw new Error('DEV::Application::navigate() You don\'t have region \'' + navRegion + '\' defined');		
 					
 					//note that .show() might be async due to region enter/exit effects
@@ -333,7 +332,7 @@
 				},
 				controller: {
 					navigateTo: function(path){
-						app.navigate(path || app.config.defaultContext, true); //will skip updating #hash since the router is triggered by #hash change.
+						app.navigate(path, true); //will skip updating #hash since the router is triggered by #hash change.
 					},
 				}
 			});
@@ -342,14 +341,9 @@
 			if(Backbone.history)
 				Backbone.history.start();
 
-			//Auto-detect and init context (view that replaces the body region)
-			if(!window.location.hash){
-				if(!app.get(app.config.defaultContext, 'Context'))
-					console.warn('DEV::Application:: You might want to define a Default context using app.context(\'Context Name\', {...})');
-				else
-					app.navigate(app.config.defaultContext);
-			}			
-
+			//Auto navigate to init context (view that gets put in mainView's navRegion)
+			if(!window.location.hash && app.config.defaultContext)
+				app.navigate(app.config.defaultContext);
 		});
 
 		return app;
@@ -379,7 +373,8 @@
 			//the additional <div> under the app region is somehow inevitable atm...
 			app.trigger('app:before-mainview-ready');
 			app.mainView = app.mainView || app.view({
-				template: app.config.template
+				name: 'Main',
+				template: app.config.template || ('<div region="' + (app.config.navRegion || app.config.contextRegion) + '"></div>')
 			}, true);
 			app.getRegion('app').show(app.mainView);
 			app.trigger('app:mainview-ready');
@@ -566,6 +561,80 @@
 			return Reusable;
 		},
 
+		//find a view instance by name or its DOM element.
+		locate: function(name /*el or $el*/){
+			//el, $el for *contained* view names only
+			if(!_.isString(name)){
+				var all;
+				if(name)
+					all = $(name).find('[data-view-name]');
+				else
+					all = $('[data-view-name]');
+
+				all = all.map(function(index, el){
+					return $(el).attr('data-view-name');
+				}).get();
+				return all;
+			}
+
+			//name string, find the view instance and sub-view names
+			var view = $('[data-view-name="' + name + '"]').data('view');
+			return view && {view: view, 'sub-views': app.locate(view.$el)};
+		},
+
+		//output performance related meta info so far for a view by name or its DOM element.
+		profile: function(name /*el or $el*/){
+			//el, $el for *contained* views total count and rankings
+			if(!_.isString(name)){
+				var all;
+				if(name)
+				 	all = $(name).find('[data-render-count]');
+				else
+					all = $('[data-render-count]');
+
+				all = all.map(function(index, el){
+					var $el = $(el);
+					return {name: $el.data('view-name'), 'render-count': Number($el.data('render-count')), $el: $el};
+				}).get();
+				return {total: _.reduce(all, function(memo, num){ return memo + num['render-count']; }, 0), rankings: _.sortBy(all, 'render-count').reverse()};
+			}
+
+			//name string, profile the specific view and its sub-views
+			var result = app.locate(name), view;
+			if(result) view = result.view;
+			return view && {name: view.$el.data('view-name'), 'render-count': view.$el.data('render-count'), $el: view.$el, 'sub-views': app.profile(view.$el)};
+		},
+
+		//mark views on screen. (hard-coded style, experimental)
+		mark: function(){
+			var nameTagPairing = [], $body = $('body');
+			//round-1: generate border and name tags
+			_.each(app.locate(), function(v){
+				var result = app.locate(v), $container;
+				//add a container style
+				if(result.view.category !== 'Editor')
+					$container = result.view.$el.parent();
+				else return;
+				$container.css({
+					'padding': '1.5em', 
+					'border': '1px dashed black'
+				});
+				//add a name tag (and live position it to container's top left)
+				var $nameTag = $('<span class="label label-default" style="position:absolute;">' + result.view.$el.data('view-name') + '</span>');
+				$body.append($nameTag);
+				nameTagPairing.push({tag: $nameTag, ct: $container});
+			});
+			//round-2: position the name tags
+			$window.trigger('resize');//trigger a possible resizing globally.
+			_.each(nameTagPairing, function(pair){
+				pair.tag.position({
+					my: 'left top',
+					at: 'left top',
+					of: pair.ct
+				});
+			});
+		},
+
 		coop: function(event, options){
 			app.trigger('app:coop', event, options);
 			app.trigger('app:coop-' + event, options);
@@ -586,7 +655,7 @@
 
 		//----------------navigation-----------
 		navigate: function(options, silent){
-			return app.trigger('app:navigate', options || app.config.defaultContext, silent);
+			return app.trigger('app:navigate', options, silent);
 		},	
 
 		//-----------------mutex---------------
@@ -771,11 +840,32 @@
 		},
 
 		//----------------markdown-------------------
-		markdown: function(md, $target, options){
-			if($target && ($target instanceof jQuery))
-				$target.html(marked(md, options));
-			else
-				return marked(md, options || $target);
+		//options.marked, options.hljs
+		//https://guides.github.com/features/mastering-markdown/
+		markdown: function(md, $target /*or options*/, options){
+			options = options || (!($target instanceof jQuery) && $target) || {};
+			//render content
+			var html = marked(md, _.extend({
+				gfm: true,
+				tables: true,
+				breaks: false,
+				pedantic: false,
+				sanitize: true,
+				smartLists: true,
+				smartypants: false
+			}, options.marked)), hljs = window.hljs;
+			//highlight code (use ```language to specify type)
+			if(hljs){
+				hljs.configure(options.hljs);
+				var $html = $('<div>' + html + '</div>');
+				$html.find('pre code').each(function(){
+					hljs.highlightBlock(this);
+				});
+				html = $html.html();
+			}
+			if($target instanceof jQuery)
+				return $target.html(html);
+			return html;
 		},
 
 		//----------------notify---------------------
@@ -843,7 +933,7 @@
 		'remote', 'ws', 'download', //com
 		'extract', 'cookie', 'store', 'moment', 'uri', 'validator', 'markdown', 'notify', //3rd-party lib short-cut
 		//@supportive
-		'debug', 'has', 'get', 'nameToPath', 'pathToName', 'inject.js', 'inject.tpl', 'inject.css',
+		'debug', 'has', 'get', 'locate', 'profile', 'mark', 'nameToPath', 'pathToName', 'inject.js', 'inject.tpl', 'inject.css',
 		//@deprecated
 		'create - @deprecated', 'regional - @deprecated'
 	];
@@ -1127,7 +1217,9 @@
 			data: undefined,
 			processData: false,
 			contentType: 'application/json; charset=UTF-8', // req format
-			dataType: 'json', //res format
+			//**Caveat**: we do NOT assume a json format response.---------------------------------------
+			//dataType: 'json', //need 'application/json; charset=utf-8' in response Content-Type header.
+			//-------------------------------------------------------------------------------------------
 			timeout: app.config.timeout,
 		});
 
@@ -1393,7 +1485,6 @@
 						...
 					},*/ options, {
 						className: regName.toLowerCase() + ' ' + _.string.slugify(regName + '-' + options.name) + ' ' + (options.className || ''),
-						category: regName
 					});
 					factory = function(){
 						return Marionette[options.type || 'Layout'].extend(options);
@@ -1408,14 +1499,16 @@
 					};
 				}
 
-				//type 3: name and a factory func (won't have preset className & category)
+				//type 3: name and a factory func (won't have preset className)
 				if(!_.isString(name) || !name) throw new Error('DEV::Reusable::register() You must specify a ' + regName + ' name to register.');
 				if(!_.isFunction(factory)) throw new Error('DEV::Reusable::register() You must specify a ' + regName + ' factory function to register ' + name + ' !');
 
 				if(this.has(name))
 					console.warn('DEV::Overriden::Reusable ' + regName + '.' + name);
 				this.map[name] = factory();
+				//+metadata to instances
 				this.map[name].prototype.name = name;
+				this.map[name].prototype.category = regName;
 
 				//fire the coop event (e.g for auto menu entry injection)
 				app.trigger('app:reusable-registered', this.map[name], regName);
@@ -3569,17 +3662,10 @@ module.exports = DeepModel;
             this.ensureEl();
             var view = this.currentView;
             if (view) {
-                var exitEffect = (_.isPlainObject(view.effect) ? view.effect.exit : (view.effect ? (view.effect + 'Out') : '')) || (this.$el.data('effect')? (this.$el.data('effect') + 'Out'): '') || this.$el.data('effectExit');
-                if (exitEffect) {
-                    var self = this;
-                    view.$el.addClass(exitEffect).addClass('animated')
-                    .one(app.ADE, function() {
-                    	self.close();
-                    	self._show(newView, options);
-                    });
-                    return this;
-                }
-                this.close();
+                this.close(function(){
+                    this._show(newView, options);
+                });
+                return this;
             }
             return this._show(newView, options);
     	},
@@ -3623,7 +3709,7 @@ module.exports = DeepModel;
                     _.defer(function() {
                         view.$el.addClass('animated').one(app.ADE, function() {
                             view.$el.removeClass('animated', enterEffect);
-                            view.trigger('view:animated');
+                            view.trigger('view:animated');//call onAnimated() in view;
                         });
                         _.defer(function() {
                             //end state: display block/inline & opacity 1
@@ -3672,6 +3758,39 @@ module.exports = DeepModel;
             return this;
         },
 
+        // Close the current view, if there is one. If there is no
+        // current view, it does nothing and returns immediately.
+        close: function(_cb) {
+            var view = this.currentView;
+            if (!view || view.isClosed) {
+                return;
+            }
+
+            // call 'close' or 'remove', depending on which is found
+            if (view.close) {
+                var exitEffect = (_.isPlainObject(view.effect) ? view.effect.exit : (view.effect ? (view.effect + 'Out') : '')) || (this.$el.data('effect')? (this.$el.data('effect') + 'Out'): '') || this.$el.data('effectExit');
+                if (exitEffect) {
+                    var self = this;
+                    view.$el.addClass(exitEffect).addClass('animated')
+                    .one(app.ADE, function() {
+                        view.close();
+                        Marionette.triggerMethod.call(self, "close", view);
+                        delete self.currentView;
+                        _cb && _cb.apply(self); //for opening new view immediately (internal, see show());
+                    });
+                    return;
+                }else
+                    view.close();
+            } else if (view.remove) {
+                view.remove();
+            }
+
+            Marionette.triggerMethod.call(this, "close", view);
+            delete this.currentView;
+            _cb && _cb.apply(this); //for opening new view immediately (internal, see show());
+        },
+
+
         //you don't need to calculate paddings on a region, since we are using $.innerHeight()
         resize: function(options) {
             options = options || {};
@@ -3699,67 +3818,125 @@ module.exports = DeepModel;
 })(Application);
 
 ;/**
- * Here we extend the html tag attributes to be auto-recognized by a Marionette.View.
- * This simplifies the view creation by indicating added functionality through template string. (like angular.js?)
+ * This is where we extend and enhance the abilities of a View through init,lifecycle augmentation.
+ * 
+ * View life-cycle:
+ * ---------------
+ * new View
+ * 		|
+ * 		is
+ * 		|
+ * [M.Layout*] see layout.js
+ * 		|+render()*, +close()*, +regions recognition (+effects recognition)
+ * 		|
+ * M.ItemView
+ * 		|+render() --> M.Renderer.render --> M.TemplateCache.get (+template loading)
+ * 		|+set()/get() [for data loading, 1-way binding (need 2-way binders?)]
+ * 		|[use bindUIElements() in render()]
+ * 		|
+ * [M.View.prototype.constructor*] (this file)
+ * 		|+fixed enhancements, +ui recognition,
+ * 		|+pick and activate optional ones (b, see below List of view options...)
+ * 		|
+ * M.View.apply(this)
+ * 		|+close, +options, +bindUIElements
+ * 		|
+ * BB.View.prototype.constructor
+ * 		|+events, +remove, +picks (a, see below List of view options...)
+ * 		|
+ * .initialize(options) [options is already available in this.options]
+ * ---------------
+ * 
+ * Fixed enhancement:
+ * +pick additional live options
+ * +rewire get/set to getVal/setVal for Editor view.
+ * +auto ui tags detection and register
+ * +meta event programming (view:* (event-name) - on* (camelized))
+ * +coop e support
+ * +useParentData support
+ * +view name to $el metadata
+ * (see ItemView for the rest of optional abilities, e.g template, data, actions, editors, tooltips, overlay, popover, ...)
  *
- * Fixed
- * -----
- * 0. shiv empty template.
- * 1. auto ui tags detection in template.
- * 2. +meta event programming
- * 	view:* (event-name) <--> on* (camelized)
- * 3. global coop events.
+ * List of view options passed through new View(opt) that will be auto-merged as properties:
+ * 		a. from Backbone.View ['model', 'collection', 'el', 'id', 'attributes', 'className', 'tagName', 'events'];
+ *   	b. from us ['effect', 'template', 'data'/'useParentData', 'ui', 'coop', 'actions', 'editors', 'tooltips', 'overlay', 'popover', 'svg'];
  *
+ * Tip:
+ * All new View(opt) will have this.options = opt ready in initialize(), also this.*[all auto-picked properties above].
+ * 
+ * Note: that 'svg' is deprecated and will be changed in the future.
+ * Note: override View.constructor to affect only decendents, e.g ItemView and CollectionView... 
+ * (This is the Backbone way of extend...)
+ * Note: this.name and this.category comes from core.reusable registry.
+ * 
  * 
  * @author Tim Lauv
  * @created 2014.02.25
  * @updated 2015.08.03
+ * @updated 2016.02.01
  */
 
 
 ;(function(app){
 
+	//+api
 	_.extend(Backbone.Marionette.View.prototype, {
+		//expose isInDOM method (hidden in marionette.domRefresh.js)
 		isInDOM: function(){
 			if(!this.$el) return undefined;
 			return $.contains(document.documentElement, this.$el[0]);
-		}
+		},
+
+		//override to give default empty template
+		getTemplate: function(){
+			return Marionette.getOption(this, 'template') || (Marionette.getOption(this, 'editors')? ' ' : '<div class="wrapper-full bg-warning"><p class="h3" style="margin:0;"><span class="label label-default" style="display:inline-block;">No Template</span> ' + this.name + '</p></div>');
+		},
 	});
 
-	/**
-	 * Fixed enhancement
-	 * +auto ui tags detection and register
-	 * +meta event programming
-	 * 	view:* (event-name) - on* (camelized)
-	 *
-	 * Override View.constructor to affect only decendents, e.g ItemView and CollectionView... 
-	 * (This is the Backbone way of extend...)
-	 * 
-	 */
+	//*init, life-cycle
 	Backbone.Marionette.View.prototype.constructor = function(options){
 		options = options || {};
 
 		//----------------------deprecated config---------------------------
 		if((this.type || options.type) && !this.forceViewType)
 			console.warn('DEV::View+::type is deprecated, please do not specify ' + (this.name?'in ' + this.name:''));
+		//------------------------------------------------------------------
 
-		//----------------------fixed enhancements--------------------------
-		//fix default tpl to be ' '.
-		this.template = options.template || this.template || ' ';
-		//replace data configure
-		this.data = options.data || this.data;
+		//----------------------fixed view enhancements---------------------
+		//auto-pick live init options
+		_.extend(this, _.pick(options, ['effect', 'template', 'data', 'useParentData', 'ui', 'coop', 'actions', 'editors', 'tooltips', 'overlay', 'popover', 'svg', /*'canvas'*/]));
 
-		//auto ui pick-up after render (to support dynamic template)
-		this._ui = _.extend({}, this.ui, options.ui);
+		//re-wire this.get()/set() to this.getVal()/setVal(), data model in editors is used as configure object.
+		if(this.category === 'Editor'){
+			this.get = this.getVal;
+			this.set = this.setVal;
+		}
+
+		//extend ui collection after first render (to support inline [ui=""] mark in template)
+		//**Caveat: Don't put anything as [ui=] in {{#each}}, they will overlap. 
+		//			bindUIElements in item-view render() will not pick up changes made here. (we re-init [ui=]tags manually)
 		this.listenTo(this, 'render', function(){
 			var that = this;
-			this.unbindUIElements();
-			this.ui = this._ui;
-			$(this.el.outerHTML).find('[ui]').each(function(index, el){
-				var ui = $(this).attr('ui');
-				that.ui[ui] = '[ui="' + ui + '"]';
+			this.ui = this.ui || {};
+			this.$el.find('[ui]').each(function(index, el){
+				var $el = $(el);
+				var key = $el.attr('ui');
+				that.ui[key] = $el;
 			});
-			this.bindUIElements();
+		});
+
+		//add data-view-name meta attribute to view.$el and also view to view.$el.data('view')
+		this.listenToOnce(this, 'render', function(){
+			this.$el.attr('data-view-name', this.name || _.uniqueId('anonymous-view-'));
+			this.$el.data('view', this);
+		});
+
+		//add data-render-count meta attribute to view.$el
+		this._renderCount = 0;
+		this.listenTo(this, 'render', function(){
+			this.$el.attr('data-render-count', ++this._renderCount);
+			//**Caveat: data-attribute change will not change $.data(), it is one way and one time in jQuery.
+			this.$el.data('render-count', this._renderCount);
 		});
 
 		//meta-event programming ability
@@ -3785,7 +3962,15 @@ module.exports = DeepModel;
 					app.off('app:coop-' + e, fn);
 				});
 			});
-		}		
+		}
+
+		//data / useParentData ({}, [] or url for GET only)
+		this.listenToOnce(this, 'show', function(){
+			//supports getting parent data from useParentData.
+			this.data = this.data || (this.parentCt && this.useParentData && this.parentCt.get(this.useParentData));
+			if(this.data)
+				this.set(this.data);
+		});
 		
 		//---------------------optional view enhancements-------------------
 		//actions (1-click uis)
@@ -3797,7 +3982,7 @@ module.exports = DeepModel;
 			this.activateEditors(this.editors);
 		});
 
-		//svg (if rapheal.js is present)
+		//svg (if rapheal.js is present, deprecated...use canvas instead (TBI))
 		if(this.svg && this.enableSVG) {
 			this.listenTo(this, 'render', this.enableSVG);
 		}
@@ -3824,14 +4009,6 @@ module.exports = DeepModel;
 			this.enablePopover();
 		}
 
-		//data ({}, [] or url for GET only)
-		this.listenToOnce(this, 'show', function(){
-			//supports getting parent data from useParentData.
-			this.data = this.data || (this.parentCt && this.useParentData && this.parentCt.get(this.useParentData));
-			if(this.data)
-				this.set(this.data);
-		});
-
 		return Backbone.Marionette.View.apply(this, arguments);
 	};
 
@@ -3857,17 +4034,24 @@ module.exports = DeepModel;
 	/**
 	 * Action Tag listener hookups +actions{} (do it in initialize())
 	 * + event forwarding ability to action tags
-	 * Usage:
-	 * 		1. add action tags to html template -> e.g <div ... action="method name or *:event name"></div> 
+	 * Usage
+	 * -----
+	 * 		1. add action tags to html template -> e.g  <div ... action="listener"></div>
+	 * 													<div ... action-dblclick="listener"></div>
+	 * 													<div ... action-scroll="view:method-name"></div>
 	 * 		2. implement the action method name in UI definition body's actions{} object. 
 	 * 		functions under actions{} are invoked with 'this' as scope (the view object).
 	 * 		functions under actions{} are called with a 2 params ($action, e) which is a jQuery object referencing the action tag and the jQuery prepared event object, use e.originalEvent to get the DOM one.
 	 *
 	 * Options
 	 * -------
-	 * 1. uiName - [UNKNOWN.View] this is optional, mainly for better debugging msg;
-	 * 2. passOn - [false] this is to let the clicking event of action tags bubble up if an action listener is not found. 
+	 * 1. uiName - [_UNKNOWN_.View] this is optional, mainly for better debugging msg;
+	 * 2. passOn - [false] this is to let the event of action tags bubble up if an action listener is not found. 
 	 *
+	 * Caveat
+	 * ------
+	 * Your listeners might need to be _.throttled() with app.config.rapidEventDelay.
+	 * 
 	 * Note:
 	 * A. We removed _.bind() altogether from the enableActionTags() function and use Function.apply(scope, args) instead for listener invocation to avoid actions{} methods binding problem.
 	 * Functions under actions will only be bound ONCE to the first instance of the view definition, since _.bind() can not rebind functions that were already bound, other instances of
@@ -3886,17 +4070,61 @@ module.exports = DeepModel;
 			}
 			passOn = passOn || false;
 			this.events = this.events || {};
-			//add general action tag clicking event and listener
+			//hookup general action tag event listener dispatcher
+			//**Caveat**: _doAction is not _.throttled() with app.config.rapidEventDelay atm.
 			_.extend(this.events, {
-				'click [action]': '_doAction'
+				//------------default------------------------------
+				'click [action]': '_doAction',
+
+				//------------<any>--------------------------------
+				'click [action-click]': '_doAction',
+				'dblclick [action-dblclick]': '_doAction',
+				'contextmenu [action-contextmenu]': '_doAction',
+
+				'mousedown [action-mousedown]': '_doAction',
+				'mousemove [action-mousemove]': '_doAction',
+				'mouseup [action-mouseup]': '_doAction',
+				'mouseenter [action-mouseenter]': '_doAction', //per tag, no bubble even with passOn: true
+				'mouseleave [action-mouseleave]': '_doAction', //per tag, no bubble even with passOn: true
+				'mouseover [action-mouseover]': '_doAction', //=enter but bubble
+				'mouseout [action-mouseout]': '_doAction', //=leave but bubble
+
+				//note that 'hover' is not a valid event.
+
+				'keydown [action-keydown]': '_doAction',
+				'keyup [action-keyup]': '_doAction',
+				//'keypress [action-keypress]': '_doAction', //use keydown instead (non-printing keys and focus-able diff)
+
+				//'focus [action-focus]': '_doAction', //use focusin instead (no bubble even with passOn: true in IE)
+				'focusin [action-focusin]': '_doAction', //tabindex=seq or -1
+				'focusout [action-focusout]': '_doAction', //tabindex=seq or -1
+				//'blur [action-blur]': '_doAction', //use focusin instead (no bubble even with passOn: true in IE, FF)
+
+				//------------<input>, <select>, <textarea>--------
+				'change [action-change]': '_doAction',
+				'select [action-select]': '_doAction', //text selection only <input>, <textarea>
+				'submit [action-submit]': '_doAction', //<input type="submit">, <input type="image"> or <button type="submit">
+
+				//------------<div>, <any.overflow>----------------
+				'scroll [action-scroll]': '_doAction',
+
+				//------------<script>, <img>, <iframe>------------
+				'error [action-error]': '_doAction',
+				'load [action-load]': '_doAction'
+
+				//window events:
+				//load [use $(ready-fn) instead], unload, resize, scroll
+
 			});
 			this.actions = this.actions || {}; 	
-			uiName = uiName || this.name || 'UNKNOWN.View';
+			uiName = uiName || this.name || '_UNKNOWN_.View';
 
+			//captured events will not bubble (due to e.stopPropagation)
 			this._doAction = function(e){
 
+				//**Caveat: non-bubble event will not change e.currentTarget to be current el (the one has [action-*])
 				var $el = $(e.currentTarget);
-				var action = $el.attr('action') || 'UNKNOWN';
+				var action = $el.attr('action') || $el.attr('action-' + e.type) || ('_NON-BUBBLE_' + e.type);
 				var lockTopic = $el.attr('lock'),
 				unlockTopic = $el.attr('unlock');
 
@@ -3915,7 +4143,7 @@ module.exports = DeepModel;
 					return;
 				}
 
-				//allow triggering certain event only.
+				//Special: only triggering a meta event (e.g action-dblclick=view:method-name) without doing anything.
 				var eventForwarding = String(action).split(':');
 				if(eventForwarding.length >= 2) {
 					eventForwarding.shift();
@@ -3923,6 +4151,7 @@ module.exports = DeepModel;
 					return this.trigger(eventForwarding.join(':'));
 				}
 
+				//Normal: call the action fn
 				var doer = this.actions[action];
 				if(doer) {
 					e.stopPropagation(); //Important::This is to prevent confusing the parent view's action tag listeners.
@@ -4395,13 +4624,13 @@ module.exports = DeepModel;
 		},
 
 		//Reload (if data: url) and re-render the view, or resetting the editors.
-		refresh: function(){
+		refresh: function(options){
 			if(!this.data) return console.warn('DEV::ItemView+::refresh() You must set view.data to use this method.');
 			
 			this.model && this.model.clear({silent: true});
 			if(_.isString(this.data)){
 				var self = this;
-				return app.remote(this.data).done(function(d){
+				return app.remote(this.data, null, options).done(function(d){
 					self.set(d);
 				}).fail(app.ajaxFailed);
 			}
@@ -4452,99 +4681,6 @@ module.exports = DeepModel;
 	});
 
 	/**
-	 * Instrument this Layout in case it is used as a Form container.
-	 * 1. getValues() * - collects values from each region; grouped by fieldset name used by the regional form view piece;
-	 * 2. setValues(vals) * - sets values to regions; fieldset aware;
-	 * 3. validate(show) * - validate all the regions;
-	 * 4. getEditor(pathname) * - dotted path name to find your editor;
-	 * 5. status(options) - set status messages to the fieldsets and regions;
-	 * Note that after validation(show:true) got errors, those editors will become eagerly validated, it will turn off as soon as the user has input-ed the correct value.
-	 * 
-	 * Not implemented: button action implementations, you still have to code your button's html into the template.
-	 * submit
-	 * reset
-	 * refresh
-	 * cancel
-	 *
-	 * No setVal getVal
-	 * ----------------
-	 * Use getEditor(a.b.c).set/getVal()
-	 *
-
-
-	_.extend(Backbone.Marionette.Layout.prototype, {
-
-		//1. getValues (O(n) - n is the total number of editors on this form)
-		getValues: function(){
-			var vals = {};
-			this.regionManager.each(function(region){
-				if(region.currentView && region.currentView.getValues){
-					if(region.currentView.fieldset)
-						vals[region.currentView.fieldset] = region.currentView.getValues();
-					else
-						_.extend(vals, region.currentView.getValues());
-				}
-			});
-			return vals;
-		},
-
-		//2. setValues (O(n) - n is the total number of editors on this form)
-		setValues: function(vals, loud){
-			this.regionManager.each(function(region){
-				if(region.currentView && region.currentView.setValues){
-					if(region.currentView.fieldset){
-						region.currentView.setValues(vals[region.currentView.fieldset], loud);
-					}
-					else
-						region.currentView.setValues(vals, loud);
-				}
-			});
-		},
-
-		//3. validate
-		validate: function(show){
-			var errors = {};
-			this.regionManager.each(function(region){
-				if(region.currentView && region.currentView.validate){
-					if(region.currentView.fieldset){
-						errors[region.currentView.fieldset] = region.currentView.validate(show);
-					}
-					else
-						_.extend(errors, region.currentView.validate(show));
-				}
-			});
-			if(_.size(errors) === 0) return;
-			return errors; 
-		},
-
-		// 4. getEditor - with dotted pathname
-		getEditor: function(pathname){
-			if(!pathname || _.isEmpty(pathname)) return;
-			if(!_.isArray(pathname))
-				pathname = String(pathname).split('.');
-			var fieldset = pathname.shift();
-			if(this._fieldsets && this._fieldsets[fieldset])
-				return this._fieldsets[fieldset].getEditor(pathname.join('.'));
-			return;
-		},
-		
-
-		// 5. status (options will be undefined/false or {..:.., ..:..})
-		status: function(options){
-			this.regionManager.each(function(region){
-				if(region.currentView && region.currentView.status){
-					if(!options || !region.currentView.fieldset)
-						region.currentView.status(options);
-					else
-						region.currentView.status(options[region.currentView.fieldset]);
-				}
-			});
-		}
-
-	});
-	 */
-
-	/**
 	 * Fixed behavior overridden. 
 	 *
 	 * Using standard Class overriding technique to change Backbone.Marionette.Layout 
@@ -4557,11 +4693,11 @@ module.exports = DeepModel;
 			options = options || {};
 
 			this.regions = _.extend({}, this.regions, options.regions);
-			//find region marks after rendering and ensure region.$el (to support dynamic template)
-			this.listenTo(this, 'render', function(){
+			//find region marks after 1-render
+			this.listenToOnce(this, 'render', function(){
 				var that = this;
 				//a. named regions (for dynamic navigation)
-				$(this.el.outerHTML).find('[region]').each(function(index, el){
+				this.$el.find('[region]').each(function(index, el){
 					var r = $(el).attr('region');
 					//that.regions[r] = '[region="' + r + '"]';
 					that.regions[r] = {
@@ -4569,7 +4705,7 @@ module.exports = DeepModel;
 					};
 				});
 				//b. anonymous regions (for static view nesting)
-				$(this.el.outerHTML).find('[view]').each(function(index, el){
+				this.$el.find('[view]').each(function(index, el){
 					var $el = $(el);
 					if($el.attr('region')) return; //skip dynamic regions (already detected)
 
@@ -4578,8 +4714,13 @@ module.exports = DeepModel;
 						selector: '[view="' + r + '"]'
 					};
 				});
-				this.addRegions(this.regions);     						
+				this.addRegions(this.regions); //rely on M.Layout._reInitializeRegions() in M.Layout.render();
+			});
+
+			//Giving region the ability to show a registered View/Widget or @remote.tpl.html through event 'region:load-view' (name [,options])
+			this.listenTo(this, 'render', function(){
 				_.each(this.regions, function(selector, region){
+					//ensure region and container style
 					this[region].ensureEl();
 					this[region].$el.addClass('region region-' + _.string.slugify(region));
 					this[region]._parentLayout = this;
@@ -4588,13 +4729,9 @@ module.exports = DeepModel;
 						var oVal = this[region].$el.data(oKey);
 						if(oVal) this[region]._contentOverflow[oKey] = oVal;
 					}, this);
-				},this);
-			});
 
-			//Giving region the ability to show a registered View/Widget or @remote.tpl.html through event 'region:load-view' (name [,options])
-			this.listenTo(this, 'render', function(){
-				_.each(this.regions, function(selector, r){
-					this[r].listenTo(this[r], 'region:load-view', function(name, options){ //can load both view and widget.
+					//+
+					this[region].listenTo(this[region], 'region:load-view', function(name, options){ //can load both view and widget.
 						if(!name) return;
 
 						//Template mockups?
@@ -4630,7 +4767,7 @@ module.exports = DeepModel;
 			});
 
 			//supporting the navigation chain if it is a named layout view with valid navRegion (context, regional, ...)
-			if(options.name || this.name){
+			if(this.name){
 				this.navRegion = options.navRegion || this.navRegion;
 				//if(this.navRegion)
 				this.onNavigateChain = function(pathArray, old){
@@ -4646,7 +4783,7 @@ module.exports = DeepModel;
 					if(!this.navRegion) return this.trigger('view:navigate-to', pathArray.join('/'));
 
 					if(!this.regions[this.navRegion]){
-						console.warn('DEV::Layout+::onNavigateChain()', 'invalid navRegion', this.navRegion, 'in', this.name || options.name);
+						console.warn('DEV::Layout+::onNavigateChain()', 'invalid navRegion', this.navRegion, 'in', this.name);
 						return;
 					}
 					
@@ -5037,99 +5174,6 @@ var I18N = {};
 
 })(jQuery, _);
 
-;/**
- * This is the jquery plugin that fetch and show static .md contents through markd js lib
- * (If you have highlight.js, the code block will be themed for you...)
- *
- * Usage
- * -----
- * ```
- * $.md({
- * 	url: ...
- * 	marked: marked options see [https://github.com/chjj/marked]
- * 	hljs: highlight js configure (e.g languages, classPrefix...)
- *  cb: function($el)...
- * })
- *
- * the $(tag) you used to call .md() can have data-url="..." attribute to indicate md file url.
- * ```
- *
- * Note
- * ----
- * Use $.load() if you just want to load html content instead of md coded content into $(tag)
- *
- * Dependency
- * ----------
- * jQuery, Underscore [, Highlight.js]
- *
- * Ref
- * ---
- * https://guides.github.com/features/mastering-markdown/
- *
- *
- * @author Tim Lauv
- * @created 2013.11.05
- * @updated 2014.03.02
- * @updated 2014.05.27 (added md data caching)
- */
-
-(function($){
-
-	/*===============the util functions================*/
-
-	//support bootstrap theme + hilight.js theme.
-	function theme($el, options){
-
-		var hljs = window.hljs;
-		if(hljs){
-			hljs.configure(options && options.hljs);
-			$el.find('pre code').each(function(){
-
-				//TBI: detect class:lang-xxxx and color the code block accordingly
-				
-				hljs.highlightBlock(this);
-			});
-		}
-	}
-
-
-	/*===============the plugin================*/
-	$.fn.md = function(options){
-		var that = this;
-		if(_.isString(options)) options = { url: options };
-		options = options || {};
-		options.marked = _.extend({
-			gfm: true,
-			tables: true,
-			breaks: false,
-			pedantic: false,
-			sanitize: true,
-			smartLists: true,
-			smartypants: false
-		}, options.marked);
-
-		return this.each(function(index, el){
-			var $el = $(el);
-			var config = $el.data();
-			var url = options.url || config.url;
-			$.get(url).done(function(res){
-				var content;
-				content = marked(res, options.marked);
-
-				//delay rendering big chunk of md data till next tick.
-				_.defer(function(){
-					$el.html(content).addClass('md-content');
-					theme($el, options);
-					if(options.cb) options.cb($el);
-				});
-
-			});
-		});
-	};
-
-
-
-})(jQuery);
 ;/**
  * The Table-Of-Content plugin used with document html pages.
  *
@@ -5990,6 +6034,8 @@ var I18N = {};
 					checked: options.checked || true,
 					unchecked: options.unchecked || false
 				});
+				//mark view name to be Basic.type.name (more specific than just Basic)
+				this.name = [this.name, options.type, options.name].join('.');
 
 				//prep validations
 				if(options.validate) {
@@ -6996,4 +7042,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.7-963 build 1453507633457";
+;;app.stagejs = "1.8.7-992 build 1454470612274";
