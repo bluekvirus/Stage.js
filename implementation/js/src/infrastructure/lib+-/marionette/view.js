@@ -7,8 +7,8 @@
  * 		|
  * 		is
  * 		|
- * new M.Layout
- * 		|+render()*, +close()*, regions (+effects recognition)
+ * [M.Layout*] see layout.js
+ * 		|+render()*, +close()*, +regions recognition (+effects recognition)
  * 		|
  * M.ItemView
  * 		|+render() --> M.Renderer.render --> M.TemplateCache.get (+template loading)
@@ -16,7 +16,7 @@
  * 		|[use bindUIElements() in render()]
  * 		|
  * [M.View.prototype.constructor*] (this file)
- * 		|+fixed enhancements, 
+ * 		|+fixed enhancements, +ui recognition,
  * 		|+pick and activate optional ones (b, see below List of view options...)
  * 		|
  * M.View.apply(this)
@@ -95,14 +95,14 @@
 
 		//extend ui collection after first render (to support inline [ui=""] mark in template)
 		//**Caveat: Don't put anything as [ui=] in {{#each}}, they will overlap. 
-		//			(using 'render' once to guard here, since {{#each}} requires +1 render into 'data-rendered')
-		this.listenToOnce(this, 'render', function(){
+		//			bindUIElements in item-view render() will not pick up changes made here. (we re-init [ui=]tags manually)
+		this.listenTo(this, 'render', function(){
 			var that = this;
 			this.ui = this.ui || {};
 			this.$el.find('[ui]').each(function(index, el){
 				var $el = $(el);
 				var key = $el.attr('ui');
-				that.ui[key] = $el; 
+				that.ui[key] = $el;
 			});
 		});
 
