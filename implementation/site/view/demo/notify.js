@@ -13,7 +13,6 @@
 				'<span class="btn btn-small btn-default" action="msg" data-type="error"><i class="fa fa-reddit-alien"></i> Error</span> ',
 			'</div>'
 		],
-		effect: 'roll',
 		data: {
 			//default notification (theme custom)
 			danger: {title: 'Oh snap!', msg: '<a href="#" class="alert-link">Change a few things up</a> and try submitting again.'},
