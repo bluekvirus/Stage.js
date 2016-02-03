@@ -75,22 +75,22 @@
 
 				//note that 'hover' is not a valid event.
 
-				//'focus [action-focus]': '_doAction', //use focusin instead (no bubble even with passOn: true in IE)
-				'focusin [action-focusin]': '_doAction', //tabindex=seq or -1
-				'focusout [action-focusout]': '_doAction', //tabindex=seq or -1
-
 				'keydown [action-keydown]': '_doAction',
 				'keyup [action-keyup]': '_doAction',
 				//'keypress [action-keypress]': '_doAction', //use keydown instead (non-printing keys and focus-able diff)
 
-				//------------<div>, <any.overflow>----------------
-				'scroll [action-scroll]': '_doAction',
+				//'focus [action-focus]': '_doAction', //use focusin instead (no bubble even with passOn: true in IE)
+				'focusin [action-focusin]': '_doAction', //tabindex=seq or -1
+				'focusout [action-focusout]': '_doAction', //tabindex=seq or -1
+				//'blur [action-blur]': '_doAction', //use focusin instead (no bubble even with passOn: true in IE, FF)
 
 				//------------<input>, <select>, <textarea>--------
-				'blur [action-blur]': '_doAction',
 				'change [action-change]': '_doAction',
 				'select [action-select]': '_doAction', //text selection only <input>, <textarea>
 				'submit [action-submit]': '_doAction', //<input type="submit">, <input type="image"> or <button type="submit">
+
+				//------------<div>, <any.overflow>----------------
+				'scroll [action-scroll]': '_doAction',
 
 				//------------<script>, <img>, <iframe>------------
 				'error [action-error]': '_doAction',
@@ -106,8 +106,9 @@
 			//captured events will not bubble (due to e.stopPropagation)
 			this._doAction = function(e){
 
+				//**Caveat: non-bubble event will not change e.currentTarget to be current el (the one has [action-*])
 				var $el = $(e.currentTarget);
-				var action = $el.attr('action') || $el.attr('action-' + e.type) || '_UNKNOWN_';
+				var action = $el.attr('action') || $el.attr('action-' + e.type) || ('_NON-BUBBLE_' + e.type);
 				var lockTopic = $el.attr('lock'),
 				unlockTopic = $el.attr('unlock');
 

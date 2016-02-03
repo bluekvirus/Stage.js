@@ -23,18 +23,20 @@ Change Log
 19. Added 'view', 'viewName' metadata to view.$el and the app.locate api;
 20. Added 'renderCount' metadata to view.$el and the app.profile api;
 21. Added view.category metadata in addition to view.name (through reusable registry);
-22. Added app.mark() api; (experimental)
+22. Added app.mark() api; (experimental);
+23. Fixed region close effect (will honor view.effect now);
+24. Refined [ui],[region] auto-pick performance after 1-render;
 
 working on ...
 
-* Adding debug mode hover-in-place tpl edit and preview;
 * Adding more example to doc site; (effects, actions)
 * Adding more unit tests;
 * Adding cheatsheet;
-* Separate modernizr/detectizr shiv bundles from deps;
 * Updating doc (around data handling, coop, remote, ws, form);
 * Breaking down 'Basic' editors;
-* Adding optional 2-way binding to form editors;
+* Separate modernizr/detectizr shiv bundles from deps;
+* Adding debug mode hover-in-place tpl edit and preview;
+* Adding optional 2-way binders;
 * [cli] Update update cmd to also refresh mockups;
 
 

@@ -38,17 +38,10 @@
             this.ensureEl();
             var view = this.currentView;
             if (view) {
-                var exitEffect = (_.isPlainObject(view.effect) ? view.effect.exit : (view.effect ? (view.effect + 'Out') : '')) || (this.$el.data('effect')? (this.$el.data('effect') + 'Out'): '') || this.$el.data('effectExit');
-                if (exitEffect) {
-                    var self = this;
-                    view.$el.addClass(exitEffect).addClass('animated')
-                    .one(app.ADE, function() {
-                    	self.close();
-                    	self._show(newView, options);
-                    });
-                    return this;
-                }
-                this.close();
+                this.close(function(){
+                    this._show(newView, options);
+                });
+                return this;
             }
             return this._show(newView, options);
     	},
@@ -92,7 +85,7 @@
                     _.defer(function() {
                         view.$el.addClass('animated').one(app.ADE, function() {
                             view.$el.removeClass('animated', enterEffect);
-                            view.trigger('view:animated');
+                            view.trigger('view:animated');//call onAnimated() in view;
                         });
                         _.defer(function() {
                             //end state: display block/inline & opacity 1
@@ -140,6 +133,38 @@
 
             return this;
         },
+
+        // Close the current view, if there is one. If there is no
+        // current view, it does nothing and returns immediately.
+        close: function(_cb) {
+            var view = this.currentView;
+            if (!view || view.isClosed) {
+                return;
+            }
+
+            // call 'close' or 'remove', depending on which is found
+            if (view.close) {
+                var exitEffect = (_.isPlainObject(view.effect) ? view.effect.exit : (view.effect ? (view.effect + 'Out') : '')) || (this.$el.data('effect')? (this.$el.data('effect') + 'Out'): '') || this.$el.data('effectExit');
+                if (exitEffect) {
+                    var self = this;
+                    view.$el.addClass(exitEffect).addClass('animated')
+                    .one(app.ADE, function() {
+                        view.close();
+                        Marionette.triggerMethod.call(self, "close", view);
+                        delete self.currentView;
+                        _cb && _cb.apply(self); //for opening new view immediately (internal, see show());
+                    });
+                    return;
+                }else
+                    view.close();
+            } else if (view.remove) {
+                view.remove();
+            }
+
+            Marionette.triggerMethod.call(this, "close", view);
+            delete this.currentView;
+        },
+
 
         //you don't need to calculate paddings on a region, since we are using $.innerHeight()
         resize: function(options) {
