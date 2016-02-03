@@ -163,6 +163,7 @@
 
             Marionette.triggerMethod.call(this, "close", view);
             delete this.currentView;
+            _cb && _cb.apply(this); //for opening new view immediately (internal, see show());
         },
 
 
