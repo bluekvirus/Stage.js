@@ -1,4 +1,5 @@
 {
+  "remoteview.html": "<div  style=\"position:relative;top:50%;transform:translateY(-50%);\"><div class=\"text-success\"><div>&lt;div region=\"...\"&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&lt;div view=\"@abc.html\"&gt;&lt;/div&gt;<br>&lt;/div&gt;</div></div></div>",
   "site.html": "<div view=\"Banner\"></div><div region=\"center\"></div><!-- <div region=\"footer\" view=\"demo/Footer\"></div> -->",
   "test-ct.html": "<div class=\"row\"><div region=\"left\" class=\"col-md-6\"></div><div region=\"right\" class=\"col-md-6\"></div></div><div class=\"row\"><div region=\"nav\" class=\"col-md-12\"></div></div><div class=\"row\"><div class=\"col-md-6\"></div><div class=\"col-md-6 wrapper\" view=\"@test2.html\"></div></div>",
   "test.html": "<h1>Hello World</h1>",

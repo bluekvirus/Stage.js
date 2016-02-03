@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.9.0 (2016-01-05*)
+1.9.0 (2016-02-01*)
 -------------------
 1. Added favicon support mock in starter-kit index page;
 2. Updated default mockups;
@@ -13,18 +13,30 @@ Change Log
 9. Added app.notify and app.markdown apis;
 10. Simplified devserver settings for watchers;
 11. Added anonymous regions;
+12. Added popover ability to view;
+13. Added api-mock-json-404 middleware to dev-server;
+14. Added full event types support to view actions (`action-[type]="fn name"`);
+15. Removed md-content plugin in favor of app.markdown();
+16. Removed json assumption in app.remote response dataType;
+17. Refined app.mainView now will always have a contextRegion/navRegion region;
+18. Added default 'no-template' template to non-form views;
+19. Added 'view', 'viewName' metadata to view.$el and the app.locate api;
+20. Added 'renderCount' metadata to view.$el and the app.profile api;
+21. Added view.category metadata in addition to view.name (through reusable registry);
+22. Added app.mark() api; (experimental);
+23. Fixed region close effect (will honor view.effect now);
+24. Refined [ui],[region] auto-pick performance after 1-render;
 
 working on ...
 
-* Adding mock-api json maps;
-* Adding render counts;
-* Adding popover ability to view;
-* Separate modernizr/detectizr shiv bundles from deps;
+* Adding more example to doc site; (effects, actions)
 * Adding more unit tests;
-* Adding interactive tutorial site;
+* Adding cheatsheet;
 * Updating doc (around data handling, coop, remote, ws, form);
 * Breaking down 'Basic' editors;
-* Adding optional 2-way binding to form editors;
+* Separate modernizr/detectizr shiv bundles from deps;
+* Adding debug mode hover-in-place tpl edit and preview;
+* Adding optional 2-way binders;
 * [cli] Update update cmd to also refresh mockups;
 
 
