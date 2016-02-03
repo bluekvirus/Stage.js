@@ -88,7 +88,7 @@
 	});
 
 	var Effect3 = app.view({
-		name: 'Effect2',
+		name: 'Effect3',
 		className: 'wrapper',
 		template: [
 			'<div style="height:30em;border: 1px solid #999;">',
