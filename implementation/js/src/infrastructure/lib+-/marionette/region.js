@@ -5,7 +5,6 @@
  * --------------
  * a. consult view.effect animation names (from Animate.css or your own, not from jQuery ui) when showing a view;
  * b. inject parent view as parentCt to sub-regional view;
- * c. store sub view as parent view's _fieldsets[member];
  *
  * 2. resize()
  * -----------
@@ -27,6 +26,7 @@
  * @updated 2014.03.03
  * @updated 2015.08.10
  * @updated 2015.12.15
+ * @updated 2015.02.03
  */
 
 ;
@@ -34,6 +34,7 @@
 
     _.extend(Backbone.Marionette.Region.prototype, {
 
+        //'region:show', 'view:show' will always trigger after effect done.
     	show: function(newView, options){
             this.ensureEl();
             var view = this.currentView;
@@ -58,51 +59,35 @@
                 Marionette.triggerMethod.call(view, "before:show");
             }
 
-            this.open(view);
-            this.currentView = view;
+            this.open(view, function(){
 
-            //Marionette.triggerMethod.call(this, "show", view);
+                //original region:show from M.Region
+                //Marionette.triggerMethod.call(this, "show", view);
 
-            if (_.isFunction(view.triggerMethod)) {
-                view.triggerMethod("show");
-            } else {
-                Marionette.triggerMethod.call(view, "show");
-            }
+                //call view:show
+                if (_.isFunction(view.triggerMethod)) {
+                    view.triggerMethod("show");
+                } else {
+                    Marionette.triggerMethod.call(view, "show");
+                }
 
-            //delay region:show till after view:show (to accommodate navRegion build up in Layout)
-            Marionette.triggerMethod.call(this, "show", view);
+                //delay region:show till after view:show (to accommodate navRegion build up in Layout)
+                Marionette.triggerMethod.call(this, "show", view);
+            });
 
             return this;
         },
 
-        open: function(view) {
-
-            var enterEffect = (_.isPlainObject(view.effect) ? view.effect.enter : (view.effect ? (view.effect + 'In') : '')) || (this.$el.data('effect')? (this.$el.data('effect') + 'In') : '') || this.$el.data('effectEnter');
-            if (enterEffect) {
-                view.$el.css('opacity', 0).addClass(enterEffect);
-
-                function enter() {
-                    _.defer(function() {
-                        view.$el.addClass('animated').one(app.ADE, function() {
-                            view.$el.removeClass('animated', enterEffect);
-                            view.trigger('view:animated');//call onAnimated() in view;
-                        });
-                        _.defer(function() {
-                            //end state: display block/inline & opacity 1
-                            view.$el.css('opacity', 1);
-                        });
-                    });
-                }
-
-                view.once('show', function() {
-                    enter();
-                });
-
-            }
+        open: function(view, _cb) {
+            var that = this;
 
             //from original open() method in Marionette
             this.$el.empty().append(view.el);
             //-----------------------------------------
+            
+            //mark currentView, parentRegion
+            this.currentView = view;
+            view.parentRegion = this;
 
             //inject parent view container through region into the regional views
             if (this._parentLayout) {
@@ -112,16 +97,9 @@
                 else if (this._parentLayout.parentCtx) view.parentCtx = this._parentLayout.parentCtx;
             }
 
-            //store sub region form view by fieldset
-            if (view.fieldset) {
-                this._parentLayout._fieldsets = this._parentLayout._fieldsets || {};
-                this._parentLayout._fieldsets[view.fieldset] = view;
-            }
-
             //trigger view:resized anyway upon its first display
             if (this._contentStyle) {
                 //view.$el.css(this._contentStyle); //Tricky, use a .$el.css() call to smooth dom sizing/refreshing after $el.empty().append()
-                var that = this;
                 _.defer(function() {
                     view.trigger('view:resized', {
                         region: that
@@ -129,13 +107,28 @@
                 });
             }
 
-            view.parentRegion = this;
+            //play effect (before 'show')
+            var enterEffect = (_.isPlainObject(view.effect) ? view.effect.enter : (view.effect ? (view.effect + 'In') : '')) || (this.$el.data('effect')? (this.$el.data('effect') + 'In') : '') || this.$el.data('effectEnter');
+            if (enterEffect) {
+                view.$el.css('opacity', 0).addClass(enterEffect);
+
+                _.defer(function() {
+                    view.$el.addClass('animated').one(app.ADE, function() {
+                        //end state: display block/inline & opacity 1
+                        view.$el.css('opacity', 1);
+                        view.$el.removeClass('animated', enterEffect);
+                        _cb && _cb.apply(that);
+                    });
+                });
+            }else
+                _cb && _cb.apply(this);
 
             return this;
         },
 
         // Close the current view, if there is one. If there is no
         // current view, it does nothing and returns immediately.
+        // 'region:close', 'view:close' will be triggered after animation effect done.
         close: function(_cb) {
             var view = this.currentView;
             if (!view || view.isClosed) {

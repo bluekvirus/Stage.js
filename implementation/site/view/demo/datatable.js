@@ -7,7 +7,7 @@
 	    	'<div region="footer"></div>'
 	    ],
 
-	    onAnimated: function(){
+	    onShow: function(){
 	    	this.table.trigger('region:load-view', 'Datagrid', {
 	    		className: 'table table-hover',
 
