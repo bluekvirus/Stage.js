@@ -82,7 +82,7 @@ NProgress.configure({showSpinner: false});
                     '<li><a href="#navigate/Demo/Demo.Templating">Templating</a></li>',
                     '<li><a href="#navigate/Demo/Demo.Effect">Effect</a></li>',
                     '<li><a href="#navigate/Demo/Demo.Datahandling">Data handling</a></li>',
-                    '<li><a href="#navigate/Demo/Demo.WIP">Action</a></li>',
+                    '<li><a href="#navigate/Demo/Demo.Action">Action</a></li>',
                     '<li><a href="#navigate/Demo/Demo.Coop">Coop events</a></li>',
                     '<li><a href="#navigate/Demo/Demo.Editors">Editors</a></li>',
                     '<li><a href="#navigate/Demo/Demo.Popover">Popover</a></li>',
