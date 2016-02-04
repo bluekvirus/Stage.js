@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.9.0 (2016-02-01*)
+1.9.0 (2016-02-03*)
 -------------------
 1. Added favicon support mock in starter-kit index page;
 2. Updated default mockups;
@@ -26,6 +26,7 @@ Change Log
 22. Added app.mark() api; (experimental);
 23. Fixed region close effect (will honor view.effect now);
 24. Refined [ui],[region] auto-pick performance after 1-render;
+25. Removed view:animated event (1.8.4) use 'show' instead;
 
 working on ...
 

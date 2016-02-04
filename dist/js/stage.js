@@ -608,19 +608,23 @@
 		//mark views on screen. (hard-coded style, experimental)
 		mark: function(){
 			var nameTagPairing = [], $body = $('body');
+			//clear all name tag
+			$body.find('.dev-support-view-name-tag').remove();
 			//round-1: generate border and name tags
 			_.each(app.locate(), function(v){
 				var result = app.locate(v), $container;
 				//add a container style
 				if(result.view.category !== 'Editor')
 					$container = result.view.$el.parent();
-				else return;
+				else
+					$container = result.view.$el;
+				//else return;
 				$container.css({
 					'padding': '1.5em', 
 					'border': '1px dashed black'
 				});
 				//add a name tag (and live position it to container's top left)
-				var $nameTag = $('<span class="label label-default" style="position:absolute;">' + result.view.$el.data('view-name') + '</span>');
+				var $nameTag = $('<span class="label label-default dev-support-view-name-tag" style="position:absolute;">' + result.view.$el.data('view-name') + '</span>');
 				$body.append($nameTag);
 				nameTagPairing.push({tag: $nameTag, ct: $container});
 			});
@@ -3629,7 +3633,6 @@ module.exports = DeepModel;
  * --------------
  * a. consult view.effect animation names (from Animate.css or your own, not from jQuery ui) when showing a view;
  * b. inject parent view as parentCt to sub-regional view;
- * c. store sub view as parent view's _fieldsets[member];
  *
  * 2. resize()
  * -----------
@@ -3651,6 +3654,7 @@ module.exports = DeepModel;
  * @updated 2014.03.03
  * @updated 2015.08.10
  * @updated 2015.12.15
+ * @updated 2015.02.03
  */
 
 ;
@@ -3658,6 +3662,7 @@ module.exports = DeepModel;
 
     _.extend(Backbone.Marionette.Region.prototype, {
 
+        //'region:show', 'view:show' will always trigger after effect done.
     	show: function(newView, options){
             this.ensureEl();
             var view = this.currentView;
@@ -3682,51 +3687,35 @@ module.exports = DeepModel;
                 Marionette.triggerMethod.call(view, "before:show");
             }
 
-            this.open(view);
-            this.currentView = view;
+            this.open(view, function(){
 
-            //Marionette.triggerMethod.call(this, "show", view);
+                //original region:show from M.Region
+                //Marionette.triggerMethod.call(this, "show", view);
 
-            if (_.isFunction(view.triggerMethod)) {
-                view.triggerMethod("show");
-            } else {
-                Marionette.triggerMethod.call(view, "show");
-            }
+                //call view:show
+                if (_.isFunction(view.triggerMethod)) {
+                    view.triggerMethod("show");
+                } else {
+                    Marionette.triggerMethod.call(view, "show");
+                }
 
-            //delay region:show till after view:show (to accommodate navRegion build up in Layout)
-            Marionette.triggerMethod.call(this, "show", view);
+                //delay region:show till after view:show (to accommodate navRegion build up in Layout)
+                Marionette.triggerMethod.call(this, "show", view);
+            });
 
             return this;
         },
 
-        open: function(view) {
-
-            var enterEffect = (_.isPlainObject(view.effect) ? view.effect.enter : (view.effect ? (view.effect + 'In') : '')) || (this.$el.data('effect')? (this.$el.data('effect') + 'In') : '') || this.$el.data('effectEnter');
-            if (enterEffect) {
-                view.$el.css('opacity', 0).addClass(enterEffect);
-
-                function enter() {
-                    _.defer(function() {
-                        view.$el.addClass('animated').one(app.ADE, function() {
-                            view.$el.removeClass('animated', enterEffect);
-                            view.trigger('view:animated');//call onAnimated() in view;
-                        });
-                        _.defer(function() {
-                            //end state: display block/inline & opacity 1
-                            view.$el.css('opacity', 1);
-                        });
-                    });
-                }
-
-                view.once('show', function() {
-                    enter();
-                });
-
-            }
+        open: function(view, _cb) {
+            var that = this;
 
             //from original open() method in Marionette
             this.$el.empty().append(view.el);
             //-----------------------------------------
+            
+            //mark currentView, parentRegion
+            this.currentView = view;
+            view.parentRegion = this;
 
             //inject parent view container through region into the regional views
             if (this._parentLayout) {
@@ -3736,30 +3725,22 @@ module.exports = DeepModel;
                 else if (this._parentLayout.parentCtx) view.parentCtx = this._parentLayout.parentCtx;
             }
 
-            //store sub region form view by fieldset
-            if (view.fieldset) {
-                this._parentLayout._fieldsets = this._parentLayout._fieldsets || {};
-                this._parentLayout._fieldsets[view.fieldset] = view;
-            }
-
-            //trigger view:resized anyway upon its first display
-            if (this._contentStyle) {
-                //view.$el.css(this._contentStyle); //Tricky, use a .$el.css() call to smooth dom sizing/refreshing after $el.empty().append()
-                var that = this;
-                _.defer(function() {
-                    view.trigger('view:resized', {
-                        region: that
-                    }); //!!Caution: this might be racing if using view.effect as well!!
+            //play effect (before 'show')
+            var enterEffect = (_.isPlainObject(view.effect) ? view.effect.enter : (view.effect ? (view.effect + 'In') : '')) || (this.$el.data('effect')? (this.$el.data('effect') + 'In') : '') || this.$el.data('effectEnter');
+            if (enterEffect) {
+                view.$el.addClass(enterEffect + ' animated').one(app.ADE, function() {
+                    view.$el.removeClass('animated ' + enterEffect);
+                    _cb && _cb.apply(that);
                 });
-            }
-
-            view.parentRegion = this;
+            }else
+                _cb && _cb.apply(this);
 
             return this;
         },
 
         // Close the current view, if there is one. If there is no
         // current view, it does nothing and returns immediately.
+        // 'region:close', 'view:close' will be triggered after animation effect done.
         close: function(_cb) {
             var view = this.currentView;
             if (!view || view.isClosed) {
@@ -3868,6 +3849,7 @@ module.exports = DeepModel;
  * Note: override View.constructor to affect only decendents, e.g ItemView and CollectionView... 
  * (This is the Backbone way of extend...)
  * Note: this.name and this.category comes from core.reusable registry.
+ * Note: $.plugin effects are from jQuery.UI, view/region effects are from animate.css
  * 
  * 
  * @author Tim Lauv
@@ -3889,7 +3871,9 @@ module.exports = DeepModel;
 
 		//override to give default empty template
 		getTemplate: function(){
-			return Marionette.getOption(this, 'template') || (Marionette.getOption(this, 'editors')? ' ' : '<div class="wrapper-full bg-warning"><p class="h3" style="margin:0;"><span class="label label-default" style="display:inline-block;">No Template</span> ' + this.name + '</p></div>');
+			return Marionette.getOption(this, 'template') || (
+				(Marionette.getOption(this, 'editors') || Marionette.getOption(this, 'svg'))? ' ' : '<div class="wrapper-full bg-warning"><p class="h3" style="margin:0;"><span class="label label-default" style="display:inline-block;">No Template</span> ' + this.name + '</p></div>'
+			);
 		},
 	});
 
@@ -3973,10 +3957,6 @@ module.exports = DeepModel;
 		});
 		
 		//---------------------optional view enhancements-------------------
-		//actions (1-click uis)
-		if(this.actions && this.enableActionTags) 
-			this.enableActionTags(this.actions._bubble);
-		
 		//editors
 		if(this.editors && this.activateEditors) this.listenTo(this, 'render', function(){
 			this.activateEditors(this.editors);
@@ -3987,14 +3967,23 @@ module.exports = DeepModel;
 			this.listenTo(this, 'render', this.enableSVG);
 		}
 
-		//tooltip
+		//actions (1-click uis) - Suggestion: move from +M.ItemView to this file
+		if(this.actions && this.enableActionTags) 
+			this.enableActionTags(this.actions._bubble);
+		
+		//tooltip - Suggestion: move from +M.ItemView to this file
 		if(this.tooltips && this.enableTooltips) {
 			this.enableTooltips(this.tooltips);
 		}
 
-		//overlay (use this view as overlay)
+		//overlay (use this view as overlay) - Suggestion: move from +M.ItemView to this file
 		if(this.overlay && this.enableOverlay){
 			this.enableOverlay();
+		}
+
+		//popover - Suggestion: move from +M.ItemView to this file
+		if(this.popover && this.enablePopover){
+			this.enablePopover();
 		}
 
 		//auto-enable i18n
@@ -4002,11 +3991,6 @@ module.exports = DeepModel;
 			this.listenTo(this, 'render', function(){
 				this.$el.i18n({search: true});
 			});
-		}
-
-		//popover
-		if(this.popover && this.enablePopover){
-			this.enablePopover();
 		}
 
 		return Backbone.Marionette.View.apply(this, arguments);
@@ -7042,4 +7026,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.7-992 build 1454470612274";
+;;app.stagejs = "1.8.7-994 build 1454551931731";

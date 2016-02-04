@@ -97,28 +97,12 @@
                 else if (this._parentLayout.parentCtx) view.parentCtx = this._parentLayout.parentCtx;
             }
 
-            //trigger view:resized anyway upon its first display
-            if (this._contentStyle) {
-                //view.$el.css(this._contentStyle); //Tricky, use a .$el.css() call to smooth dom sizing/refreshing after $el.empty().append()
-                _.defer(function() {
-                    view.trigger('view:resized', {
-                        region: that
-                    }); //!!Caution: this might be racing if using view.effect as well!!
-                });
-            }
-
             //play effect (before 'show')
             var enterEffect = (_.isPlainObject(view.effect) ? view.effect.enter : (view.effect ? (view.effect + 'In') : '')) || (this.$el.data('effect')? (this.$el.data('effect') + 'In') : '') || this.$el.data('effectEnter');
             if (enterEffect) {
-                view.$el.css('opacity', 0).addClass(enterEffect);
-
-                _.defer(function() {
-                    view.$el.addClass('animated').one(app.ADE, function() {
-                        //end state: display block/inline & opacity 1
-                        view.$el.css('opacity', 1);
-                        view.$el.removeClass('animated', enterEffect);
-                        _cb && _cb.apply(that);
-                    });
+                view.$el.addClass(enterEffect + ' animated').one(app.ADE, function() {
+                    view.$el.removeClass('animated ' + enterEffect);
+                    _cb && _cb.apply(that);
                 });
             }else
                 _cb && _cb.apply(this);

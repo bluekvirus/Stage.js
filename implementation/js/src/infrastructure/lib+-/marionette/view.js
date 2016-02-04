@@ -49,6 +49,7 @@
  * Note: override View.constructor to affect only decendents, e.g ItemView and CollectionView... 
  * (This is the Backbone way of extend...)
  * Note: this.name and this.category comes from core.reusable registry.
+ * Note: $.plugin effects are from jQuery.UI, view/region effects are from animate.css
  * 
  * 
  * @author Tim Lauv
@@ -70,7 +71,9 @@
 
 		//override to give default empty template
 		getTemplate: function(){
-			return Marionette.getOption(this, 'template') || (Marionette.getOption(this, 'editors')? ' ' : '<div class="wrapper-full bg-warning"><p class="h3" style="margin:0;"><span class="label label-default" style="display:inline-block;">No Template</span> ' + this.name + '</p></div>');
+			return Marionette.getOption(this, 'template') || (
+				(Marionette.getOption(this, 'editors') || Marionette.getOption(this, 'svg'))? ' ' : '<div class="wrapper-full bg-warning"><p class="h3" style="margin:0;"><span class="label label-default" style="display:inline-block;">No Template</span> ' + this.name + '</p></div>'
+			);
 		},
 	});
 
@@ -154,10 +157,6 @@
 		});
 		
 		//---------------------optional view enhancements-------------------
-		//actions (1-click uis)
-		if(this.actions && this.enableActionTags) 
-			this.enableActionTags(this.actions._bubble);
-		
 		//editors
 		if(this.editors && this.activateEditors) this.listenTo(this, 'render', function(){
 			this.activateEditors(this.editors);
@@ -168,14 +167,23 @@
 			this.listenTo(this, 'render', this.enableSVG);
 		}
 
-		//tooltip
+		//actions (1-click uis) - Suggestion: move from +M.ItemView to this file
+		if(this.actions && this.enableActionTags) 
+			this.enableActionTags(this.actions._bubble);
+		
+		//tooltip - Suggestion: move from +M.ItemView to this file
 		if(this.tooltips && this.enableTooltips) {
 			this.enableTooltips(this.tooltips);
 		}
 
-		//overlay (use this view as overlay)
+		//overlay (use this view as overlay) - Suggestion: move from +M.ItemView to this file
 		if(this.overlay && this.enableOverlay){
 			this.enableOverlay();
+		}
+
+		//popover - Suggestion: move from +M.ItemView to this file
+		if(this.popover && this.enablePopover){
+			this.enablePopover();
 		}
 
 		//auto-enable i18n
@@ -183,11 +191,6 @@
 			this.listenTo(this, 'render', function(){
 				this.$el.i18n({search: true});
 			});
-		}
-
-		//popover
-		if(this.popover && this.enablePopover){
-			this.enablePopover();
 		}
 
 		return Backbone.Marionette.View.apply(this, arguments);

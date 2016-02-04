@@ -184,19 +184,23 @@
 		//mark views on screen. (hard-coded style, experimental)
 		mark: function(){
 			var nameTagPairing = [], $body = $('body');
+			//clear all name tag
+			$body.find('.dev-support-view-name-tag').remove();
 			//round-1: generate border and name tags
 			_.each(app.locate(), function(v){
 				var result = app.locate(v), $container;
 				//add a container style
 				if(result.view.category !== 'Editor')
 					$container = result.view.$el.parent();
-				else return;
+				else
+					$container = result.view.$el;
+				//else return;
 				$container.css({
 					'padding': '1.5em', 
 					'border': '1px dashed black'
 				});
 				//add a name tag (and live position it to container's top left)
-				var $nameTag = $('<span class="label label-default" style="position:absolute;">' + result.view.$el.data('view-name') + '</span>');
+				var $nameTag = $('<span class="label label-default dev-support-view-name-tag" style="position:absolute;">' + result.view.$el.data('view-name') + '</span>');
 				$body.append($nameTag);
 				nameTagPairing.push({tag: $nameTag, ct: $container});
 			});
