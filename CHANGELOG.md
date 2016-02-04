@@ -27,13 +27,16 @@ Change Log
 23. Fixed region close effect (will honor view.effect now);
 24. Refined [ui],[region] auto-pick performance after 1-render;
 25. Removed view:animated event (1.8.4) use 'show' instead;
+26. Added dnd support to views (drag, drop, sortable);
+27. Added selectable item support to views (selectable);
 
 working on ...
 
-* Adding more example to doc site; (effects, actions)
+* Adding live-reload to app.mark()-ed views;
 * Adding more unit tests;
 * Adding cheatsheet;
 * Updating doc (around data handling, coop, remote, ws, form);
+* ----------next phase----------
 * Breaking down 'Basic' editors;
 * Separate modernizr/detectizr shiv bundles from deps;
 * Adding debug mode hover-in-place tpl edit and preview;

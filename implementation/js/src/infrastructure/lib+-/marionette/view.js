@@ -88,7 +88,7 @@
 
 		//----------------------fixed view enhancements---------------------
 		//auto-pick live init options
-		_.extend(this, _.pick(options, ['effect', 'template', 'data', 'useParentData', 'ui', 'coop', 'actions', 'editors', 'tooltips', 'overlay', 'popover', 'svg', /*'canvas'*/]));
+		_.extend(this, _.pick(options, ['effect', 'template', 'data', 'useParentData', 'ui', 'coop', 'actions', 'dnd', 'selectable', 'editors', 'tooltips', 'overlay', 'popover', 'svg', /*'canvas'*/]));
 
 		//re-wire this.get()/set() to this.getVal()/setVal(), data model in editors is used as configure object.
 		if(this.category === 'Editor'){
@@ -165,6 +165,113 @@
 		//svg (if rapheal.js is present, deprecated...use canvas instead (TBI))
 		if(this.svg && this.enableSVG) {
 			this.listenTo(this, 'render', this.enableSVG);
+		}
+
+		//dnd (drag, drop, and sortables) 
+		if(this.dnd) {
+			this.listenTo(this, 'render', function(){
+				var that = this;
+				if(this.dnd.sortables) delete this.dnd.drag;
+				var dnd = this.dnd;
+				//draggables
+				if(dnd.drag){
+					var defaultDragOpt = {
+						zIndex: 100,
+						revert: true,
+						//helper: 'clone', //remember to keep size;
+						items: '.ui-draggable-item', //+
+						drag: function(e, ui){
+							that.trigger('view:drag', $(ui.helper), ui, e);
+						}
+					};
+					if(_.isString(dnd.drag))
+						defaultDragOpt.items = dnd.drag;
+					else
+						_.extend(defaultDragOpt, dnd.drag);
+					this.$el.find(defaultDragOpt.items).draggable(defaultDragOpt);
+				}
+				//droppable
+				if(dnd.drop){
+					var defaultDropOpt = {
+						//container: '', //+
+						zIndex: 50,
+						activeClass: 'ui-droppable-active',
+						hoverClass: 'ui-droppable-hover',
+						accept: '.ui-draggable-item',
+						drop: function(e, ui){
+							that.trigger('view:drop', $(ui.draggable), ui, e);
+						}
+					}
+					if(_.isString(dnd.drop))
+						defaultDropOpt.accept = dnd.drop;
+					else
+						_.extend(defaultDropOpt, dnd.drop);
+					var $ct = (defaultDropOpt.container && this.$el.find(defaultDropOpt.container)) || this.$el;
+					$ct.droppable(defaultDropOpt);
+
+					//provide a default onDrop to view
+					if(!this.onDrop){
+						this.onDrop = function($item, ui, e){
+							$ct.append($item.clone().removeClass(defaultDropOpt.accept.slice(1)).css('position', 'static'));
+						}
+					}
+				}
+				//sortable
+				if(dnd.sort){
+					var defaultSortOpt = {
+						//container: '', //+
+						placeholder: 'ui-sortable-placeholder',
+						//revert: true,
+						//helper: 'clone',
+						items: '.ui-sortable-item',
+						sort: function(e, ui){
+							that.trigger('view:sort', $(ui.item), ui, e);
+						},
+						change: function(e, ui){
+							that.trigger('view:sort-change', $(ui.item), ui, e);
+						}
+					}
+					if(_.isString(dnd.sort))
+						defaultSortOpt.items = dnd.sort;
+					else
+						_.extend(defaultSortOpt, dnd.sort);
+					var $ct = (defaultSortOpt.container && this.$el.find(defaultSortOpt.container)) || this.$el;
+					$ct.sortable(defaultSortOpt);
+				}
+			});
+		}
+
+		//selectable
+		if(this.selectable){
+			this.listenTo(this, 'render', function(){
+				var that = this;
+				var defaults = {
+					filter: '.ui-selectable-item',
+					selected: function(e, ui){
+						that.trigger('view:item-selected', $(ui.selected), e);
+					},
+					unselected: function(e, ui){
+						that.trigger('view:item-unselected', $(ui.unselected), e);
+					},
+					selecting: function(e, ui){ //.ui-selecting
+						that.trigger('view:item-selecting', $(ui.selecting), e);
+					},
+					unselecting: function(e, ui){
+						that.trigger('view:item-unselecting', $(ui.unselecting), e);
+					},
+					stop: function(e){ //.ui-selected
+						that.trigger('view:selection-done', that.$el.find('.ui-selected'));
+					},
+					start: function(e){
+						that.trigger('view:selection-begin');
+					}
+				};
+				if(_.isString(this.selectable))
+					defaults.filter = this.selectable;
+				else
+					_.extend(defaults, this.selectable);
+				this.$el.selectable(defaults);
+			});
 		}
 
 		//actions (1-click uis) - Suggestion: move from +M.ItemView to this file

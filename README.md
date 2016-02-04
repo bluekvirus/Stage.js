@@ -57,12 +57,12 @@ What's next?
 * Keep [Cordova](https://cordova.apache.org/) hybrid HTML5 mobile app support (touch, gestures, ready-e); (:heavy_check_mark:)
 * Keep i18n, data validators, async coordination support; (:heavy_check_mark:) 
 * Put custom-made dev process pipeline onto Gulp; (:heavy_check_mark:)
-* Test automation in BDD; (in progress)
-* Data handling shortcuts in Views (data property, set()/get()/refresh());
+* Data handling shortcuts in Views (data property, set()/get()/refresh()) (:heavy_check_mark:, from v1);
 * Websocket integration for messaging/notification & peer discovery; (:heavy_check_mark:, from v1)
+* Test automation in BDD; (in progress)
 * WebRTC integration for peer-to-peer data/stream sharing;
 * Introduce state machine into Views;
-* Introduce engine into App;
+* Introduce data/state engine into App;
 * Give View action listeners a choice to go background (Web Worker);
 
 
@@ -91,7 +91,7 @@ npm install
 
 //3. prepare default & doc site theme packs (under ./themeprep)
 node run default
-node run site
+node run site --fonts bootstrap,open-sans-fontface,fontawesome
 
 //4-1 fire up dev server (background logging)
 ./start.sh
