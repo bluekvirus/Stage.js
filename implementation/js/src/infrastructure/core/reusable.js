@@ -88,7 +88,11 @@
 				if(name)
 					return this.map[name];
 			},
-
+			//remove registration for given view
+			remove: function(name /*or path*/){
+				if(name)
+					delete this.map[name];
+			},
 			alter: function(name /*or path*/, options){
 				var Reusable = this.get(name);
 				if(Reusable){

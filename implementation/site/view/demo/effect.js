@@ -35,7 +35,6 @@
 				this.getRegion('effect1').trigger('region:load-view', 'Effect1');
 			},
 			close_1: function(){
-				//this.Effect1.close();
 				this.getRegion('effect1').close();
 
 			},
