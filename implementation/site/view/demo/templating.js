@@ -27,8 +27,6 @@
 					'</div>',
 				'</div>',
 			'</div>',
-			//for test
-			'<div class="col-md-6" region="test2"></div>',
 		],
 		onShow: function(){
 			//match the height for both sides
@@ -43,7 +41,7 @@
 			$elem.css({height: '100%', width: '100%'});	
 			$($elem[0].firstChild).css({height: '100%', width: '70%', position:'relative', left:'50%', transform:'translateX(-50%)'});
 			$($elem[1].firstChild).css({height: '100%', width: '70%', position:'relative', left:'50%', transform:'translateX(-50%)'});
-		}
+		},
 	});
 
 	var View2 = app.view({
