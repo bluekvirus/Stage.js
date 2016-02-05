@@ -201,6 +201,11 @@
 				});
 				//add a name tag (and live position it to container's top left)
 				var $nameTag = $('<span class="label label-default dev-support-view-name-tag" style="position:absolute;">' + result.view.$el.data('view-name') + '</span>');
+				//add click event to $nameTag
+				$nameTag.css({cursor: 'pointer'})
+				.on('click', function(){
+					app.reload(result.view.$el.data('view-name'), true);
+				});
 				$body.append($nameTag);
 				nameTagPairing.push({tag: $nameTag, ct: $container});
 			});
@@ -383,10 +388,6 @@
 			return params;
 		},
 		
-		reload: function(){
-			window.location.reload();
-		},
-
 		//----------------raw animation (DON'T mix with jQuery fx)---------------
 		//(specifically, don't call $.animate(), use $.css() instead if you must)
 		animation: function(update, condition, ctx){
@@ -409,7 +410,43 @@
 				stop: stop
 			};
 		},
-
+		reload: function(name, override/*optional*/){
+			if( typeof name !== 'string' ){
+				throw new Error('DEV::app.reload():: Name must be a string.');
+			}else{
+				var v = app.locate(name).view,
+					region = v.parentRegion,
+					type;
+				//get type of the named object
+				_.each(app.get(), function(data, key){
+					if( data.indexOf(name) >= 0){
+						type = key;
+						return;
+					}
+				});
+				if(!type)
+					throw new Error('DEV::app.reload():: No type can be found with given view.');
+				override = override || false;
+				//override old view
+				if(override){
+					//clear template cache in cache
+					app.Util.Tpl.cache.clear(v.template);
+					//un-register the view
+					app.Core[type].remove(name);
+					//re-show the new view
+					try{
+						var temp = app.get(name, type);
+						region.show(new temp);
+					}catch(e){
+						console.warn('This view does not defined by in dedicated file.');
+					}
+				}else{
+					//re-render the view
+					v.refresh();
+				}
+			}
+			//return this;
+		},
 		nextFrame: function(step){
 			//return request id
 			return window.requestAnimationFrame(step);
