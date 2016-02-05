@@ -11,7 +11,7 @@
  * 		|+render()*, +close()*, +regions recognition (+effects recognition)
  * 		|
  * M.ItemView
- * 		|+render() --> M.Renderer.render --> M.TemplateCache.get (+template loading)
+ * 		|+render() --> this.getTemplate() --> M.Renderer.render --> M.TemplateCache.get (+template loading)
  * 		|+set()/get() [for data loading, 1-way binding (need 2-way binders?)]
  * 		|[use bindUIElements() in render()]
  * 		|

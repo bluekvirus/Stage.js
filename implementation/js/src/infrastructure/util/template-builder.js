@@ -5,7 +5,7 @@
  *
  * Usage (name as id)
  * -----
- * app.Util.Tpl.build (name, [</>, </>, ...]) / ([</>, </>, ...]) / ('</></>...</>')
+ * app.Util.Tpl.build(name, [</>, </>, ...]) / ([</>, </>, ...]) / ('</></>...</>')
  * app.Util.Tpl.remote(name, base) - default on using app.config.viewTemplates as base
  *
  * @author Tim Lauv
@@ -55,51 +55,41 @@
 		//load all prepared/combined templates from server (*.json without CORS)
 		//or
 		//load individual tpl into (Note: that tplName can be name or path to html) 
-		remote: {
-			map: {},
-			load: function(name, base){
-				var that = this;
-				var url = (base || app.config.viewTemplates) + '/' + name;
-				if(_.string.endsWith(name, '.json')){
-					//load all from preped .json
-					$.ajax({
-						url: url,
-						dataType: 'json', //force return data type.
-						async: false
-					}).done(function(tpls){
-						_.each(tpls, function(tpl, name){
-							if(that.map[name]){
-								//override
-								Template.cache.clear('@' + name);
-								console.warn('DEV::Overriden::Template::', name);
-							}
-							that.map[name] = tpl;
-						});
-					});
-				}else {
-					//individual tpl
-					var result = '';
-					$.ajax({
-						url: url,
-						dataType: 'html',
-						async: false
-					}).done(function(tpl){
-						if(that.map[name]){
-							//override
-							Template.cache.clear('@' + name);
-							console.warn('DEV::Overriden::Template::', name);
-						}
-						result = that.map[name] = tpl;
-					}).fail(function(){
-						throw new Error('DEV::Util.Tpl::load() Can not load template...' + url + ', re-check your app.config.viewTemplates setting');
-					});
-					return result;
-				}
-			},
+		remote: function(name, base){
+			var that = this;
+			if(_.string.startsWith(name, '@'))
+				var name = name.substr(1);
+			if(!name) throw new Error('DEV::Util.Tpl::remote() your template name can NOT be empty!');
 
-			get: function(name){
-				if(!name) return _.keys(this.map);
-				return this.map[name];
+			var url = (base || app.config.viewTemplates) + '/' + name;
+			if(_.string.endsWith(name, '.json')){
+				//load all from preped .json
+				var result = '';
+				$.ajax({
+					url: url,
+					dataType: 'json', //force return data type.
+					async: false
+				}).done(function(tpls){
+					result = tpls;
+					_.each(result, function(t, n){
+						Template.cache.make(n, t);
+					});
+				});//.json can be empty or missing.
+				return result;
+			}else {
+				//individual tpl
+				var result = '';
+				$.ajax({
+					url: url,
+					dataType: 'html',
+					async: false
+				}).done(function(tpl){
+					result = tpl;
+					Template.cache.make(name, tpl);
+				}).fail(function(){
+					throw new Error('DEV::Util.Tpl::remote() Can not load template...' + url + ', re-check your app.config.viewTemplates setting');
+				});
+				return result;
 			}
 		}
 

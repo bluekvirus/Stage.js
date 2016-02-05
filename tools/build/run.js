@@ -69,7 +69,7 @@ if(config.src.templates){
 		var all = {};
 		_.each(tpls, function(name){
 			var tpl = fs.readFileSync(path.join(tplBase, name), {encoding: 'utf8'});
-			name = name.split(path.sep).join('/');//normalize file path from different OS
+			name = '@' + name.split(path.sep).join('/');//tag tpl name as @remote tpl, normalize file path from different OS
 			console.log('[template]'.green, name, '+'.green);
 			all[name] = tpl.replace(/[\n\t]/g, '');
 		});

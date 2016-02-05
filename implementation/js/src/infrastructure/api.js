@@ -317,7 +317,7 @@
 			},
 
 			tpl: function(){
-				return app.Util.Tpl.remote.load.apply(app.Util.Tpl.remote, arguments);
+				return app.Util.Tpl.remote.apply(app.Util.Tpl, arguments);
 			},
 
 			css: function(){

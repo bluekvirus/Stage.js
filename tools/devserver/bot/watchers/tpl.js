@@ -21,6 +21,7 @@ module.exports = function(server) {
 
     var tplRoot = path.join(profile.clients[profile.tplwatch.client], 'static', 'template');
 
+    //**Caveat: we just clear all.json upon template change, see real merge in build/run.js;
     function mergeIntoAllTplJson(e, f) {
         console.log('[Template file'.yellow, e, ':'.yellow, f, ']'.yellow);
         //currently we just clean the all.json file
