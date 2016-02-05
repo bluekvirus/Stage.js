@@ -58,13 +58,14 @@
 		remote: function(name, base){
 			var that = this;
 			if(_.string.startsWith(name, '@'))
-				var name = name.substr(1);
+				name = name.substr(1);
 			if(!name) throw new Error('DEV::Util.Tpl::remote() your template name can NOT be empty!');
 
 			var url = (base || app.config.viewTemplates) + '/' + name;
+			var result = '';
 			if(_.string.endsWith(name, '.json')){
 				//load all from preped .json
-				var result = '';
+				
 				$.ajax({
 					url: url,
 					dataType: 'json', //force return data type.
@@ -78,7 +79,6 @@
 				return result;
 			}else {
 				//individual tpl
-				var result = '';
 				$.ajax({
 					url: url,
 					dataType: 'html',

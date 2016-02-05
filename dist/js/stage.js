@@ -204,7 +204,7 @@
 		function validScreenSize(size){
 			return size.h > 0 && size.w > 0;
 		}
-		$window.on('resize', _.debounce(trackScreenSize, app.config.rapidEventDelay));
+		$window.on('resize', app.debounce(trackScreenSize));
 		//check screen size, trigger app:resized and get app.screenSize ready.
 		app._ensureScreenSize = function(done){
 			trackScreenSize(); 
@@ -218,7 +218,7 @@
 			app.trigger('app:scroll', top);
 			app.coop('window-scroll', top);
 		}
-		$window.on('scroll', _.throttle(trackScroll, app.config.rapidEventDelay));
+		$window.on('scroll', app.throttle(trackScroll));
 		
 		//apply app.config.fullScreen = true
 		if(app.config.fullScreen){
@@ -741,7 +741,7 @@
 			},
 
 			tpl: function(){
-				return app.Util.Tpl.remote.load.apply(app.Util.Tpl.remote, arguments);
+				return app.Util.Tpl.remote.apply(app.Util.Tpl, arguments);
 			},
 
 			css: function(){
@@ -843,6 +843,15 @@
 			return window.cancelAnimationFrame(id);
 		},
 
+		//----------------config.rapidEventDelay wrapped util--------------------
+		throttle: function(fn, ms){
+			return _.throttle(fn, ms || app.config.rapidEventDelay);
+		},
+
+		debounce: function(fn, ms){
+			return _.throttle(fn, ms || app.config.rapidEventDelay);
+		},
+
 		//----------------markdown-------------------
 		//options.marked, options.hljs
 		//https://guides.github.com/features/mastering-markdown/
@@ -933,7 +942,7 @@
 		'dispatcher', 'model', 'collection',
 		'context - @alias:page', 'view', 'widget', 'editor', 'editor.validator - @alias:editor.rule', //view
 		'lock', 'unlock', 'available', //global action locks
-		'coop', 'navigate', 'reload', 'param', 'animation', 'nextFrame', 'cancelFrame',
+		'coop', 'navigate', 'reload', 'param', 'animation', 'nextFrame', 'cancelFrame', 'throttle', 'debounce',
 		'remote', 'ws', 'download', //com
 		'extract', 'cookie', 'store', 'moment', 'uri', 'validator', 'markdown', 'notify', //3rd-party lib short-cut
 		//@supportive
@@ -1015,7 +1024,7 @@
  *
  * Usage (name as id)
  * -----
- * app.Util.Tpl.build (name, [</>, </>, ...]) / ([</>, </>, ...]) / ('</></>...</>')
+ * app.Util.Tpl.build(name, [</>, </>, ...]) / ([</>, </>, ...]) / ('</></>...</>')
  * app.Util.Tpl.remote(name, base) - default on using app.config.viewTemplates as base
  *
  * @author Tim Lauv
@@ -1065,51 +1074,41 @@
 		//load all prepared/combined templates from server (*.json without CORS)
 		//or
 		//load individual tpl into (Note: that tplName can be name or path to html) 
-		remote: {
-			map: {},
-			load: function(name, base){
-				var that = this;
-				var url = (base || app.config.viewTemplates) + '/' + name;
-				if(_.string.endsWith(name, '.json')){
-					//load all from preped .json
-					$.ajax({
-						url: url,
-						dataType: 'json', //force return data type.
-						async: false
-					}).done(function(tpls){
-						_.each(tpls, function(tpl, name){
-							if(that.map[name]){
-								//override
-								Template.cache.clear('@' + name);
-								console.warn('DEV::Overriden::Template::', name);
-							}
-							that.map[name] = tpl;
-						});
-					});
-				}else {
-					//individual tpl
-					var result = '';
-					$.ajax({
-						url: url,
-						dataType: 'html',
-						async: false
-					}).done(function(tpl){
-						if(that.map[name]){
-							//override
-							Template.cache.clear('@' + name);
-							console.warn('DEV::Overriden::Template::', name);
-						}
-						result = that.map[name] = tpl;
-					}).fail(function(){
-						throw new Error('DEV::Util.Tpl::load() Can not load template...' + url + ', re-check your app.config.viewTemplates setting');
-					});
-					return result;
-				}
-			},
+		remote: function(name, base){
+			var that = this;
+			if(_.string.startsWith(name, '@'))
+				name = name.substr(1);
+			if(!name) throw new Error('DEV::Util.Tpl::remote() your template name can NOT be empty!');
 
-			get: function(name){
-				if(!name) return _.keys(this.map);
-				return this.map[name];
+			var url = (base || app.config.viewTemplates) + '/' + name;
+			var result = '';
+			if(_.string.endsWith(name, '.json')){
+				//load all from preped .json
+				
+				$.ajax({
+					url: url,
+					dataType: 'json', //force return data type.
+					async: false
+				}).done(function(tpls){
+					result = tpls;
+					_.each(result, function(t, n){
+						Template.cache.make(n, t);
+					});
+				});//.json can be empty or missing.
+				return result;
+			}else {
+				//individual tpl
+				$.ajax({
+					url: url,
+					dataType: 'html',
+					async: false
+				}).done(function(tpl){
+					result = tpl;
+					Template.cache.make(name, tpl);
+				}).fail(function(){
+					throw new Error('DEV::Util.Tpl::remote() Can not load template...' + url + ', re-check your app.config.viewTemplates setting');
+				});
+				return result;
 			}
 		}
 
@@ -3597,32 +3596,63 @@ module.exports = DeepModel;
 
 },{"backbone":undefined,"lodash.merge":2,"underscore":undefined}]},{},[1]);
 
-;;(function(app){
+;/**
+ * Override M.TemplateCache to hookup our own template-builder.js util
+ *
+ * @author Tim Lauv
+ * @created 2014.02.25
+ * @updated 2016.02.04
+ */
+;(function(app){
 
-	//1 Override the default raw-template retrieving method
-	//We allow both #id or @*.html(remote) and template html string(or string array) as parameter.
-	Backbone.Marionette.TemplateCache.prototype.loadTemplate = function(idOrTplString){
-		//local tpl
-		if(_.string.startsWith(idOrTplString, '#')) return $(idOrTplString).html();
-		//remote tpl (with local stored map cache)
-		if(_.string.startsWith(idOrTplString, '@')) {
-			var name = idOrTplString.substr(1);
-			//search the local templates cache:
-			var tpl = app.Util.Tpl.remote.get(name);
-			if(tpl) return tpl;
-			//fetch from remote: (might need server-side CORS support)
-			return app.Util.Tpl.remote.load(name);
+	_.extend(Backbone.Marionette.TemplateCache, {
+		// Get the specified template by id. Either
+		// retrieves the cached version, or loads it
+		// through cache.load
+		get: function(templateId) {
+		    var cachedTemplate = this.templateCaches[templateId] || this.make(templateId);
+		    return cachedTemplate.load(); //-> cache.loadTemplate()
+		},
 
+		//+ split out a make cache function from the original mono get()
+		//used in a. app.inject.tpl/app.Util.Tpl.remote
+		//consulted in b. cache.loadTemplate
+		make: function(templateId, rawTemplate) {
+			var cachedTemplate = new Marionette.TemplateCache(templateId);
+			this.templateCaches[templateId] = cachedTemplate;
+			cachedTemplate.rawTemplate = rawTemplate;
+			return cachedTemplate;
 		}
-		//string and string array
-		return app.Util.Tpl.build(idOrTplString);
-		//this can NOT be null or empty since Marionette.Render guards it so don't need to use idOrTplString || ' ';
-	};
 
-	//2 Override to use Handlebars templating engine with Backbone.Marionette
-	Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTemplate) {
-	  return Handlebars.compile(rawTemplate);
-	};
+	});
+
+	_.extend(Backbone.Marionette.TemplateCache.prototype, {
+
+		//1 Override the default raw-template retrieving method 
+		//(invoked by M.TemplateCache.get() by cache.load() if the cache doesn't have cache.compiledTemplate)
+		//We allow both #id or @*.html(remote) and template html string(or string array) as parameter.
+		//This method is only invoked with a template cache miss. So clear your cache if you have changed the template. (app.Util.Tpl.cache.clear(name))
+		loadTemplate: function(idOrTplString){
+			//local in-DOM template
+			if(_.string.startsWith(idOrTplString, '#')) 
+				return $(idOrTplString).html();
+			//remote template (with local stored map cache)
+			if(_.string.startsWith(idOrTplString, '@')) {
+				//fetch from remote: (might need server-side CORS support)
+				//**Caveat: triggering app.inject.tpl() will replace the cache object that triggered this loadTemplate() call.
+				return this.rawTemplate || app.inject.tpl(idOrTplString);
+			}
+			//string and string array
+			return app.Util.Tpl.build(idOrTplString);
+			//this can NOT be null or empty since Marionette.Render guards it so don't need to use idOrTplString || ' ';
+		},
+
+		//2 Override to use Handlebars templating engine with Backbone.Marionette
+		compileTemplate: function(rawTemplate) {
+		    return Handlebars.compile(rawTemplate);
+		},
+
+	});
 
 })(Application);
 
@@ -3657,8 +3687,7 @@ module.exports = DeepModel;
  * @updated 2015.02.03
  */
 
-;
-(function(app) {
+;(function(app) {
 
     _.extend(Backbone.Marionette.Region.prototype, {
 
@@ -3811,7 +3840,7 @@ module.exports = DeepModel;
  * 		|+render()*, +close()*, +regions recognition (+effects recognition)
  * 		|
  * M.ItemView
- * 		|+render() --> M.Renderer.render --> M.TemplateCache.get (+template loading)
+ * 		|+render() --> this.getTemplate() --> M.Renderer.render --> M.TemplateCache.get --> cache.load --> cache.loadTemplate
  * 		|+set()/get() [for data loading, 1-way binding (need 2-way binders?)]
  * 		|[use bindUIElements() in render()]
  * 		|
@@ -3888,7 +3917,7 @@ module.exports = DeepModel;
 
 		//----------------------fixed view enhancements---------------------
 		//auto-pick live init options
-		_.extend(this, _.pick(options, ['effect', 'template', 'data', 'useParentData', 'ui', 'coop', 'actions', 'editors', 'tooltips', 'overlay', 'popover', 'svg', /*'canvas'*/]));
+		_.extend(this, _.pick(options, ['effect', 'template', 'data', 'useParentData', 'ui', 'coop', 'actions', 'dnd', 'selectable', 'editors', 'tooltips', 'overlay', 'popover', 'svg', /*'canvas'*/]));
 
 		//re-wire this.get()/set() to this.getVal()/setVal(), data model in editors is used as configure object.
 		if(this.category === 'Editor'){
@@ -3965,6 +3994,118 @@ module.exports = DeepModel;
 		//svg (if rapheal.js is present, deprecated...use canvas instead (TBI))
 		if(this.svg && this.enableSVG) {
 			this.listenTo(this, 'render', this.enableSVG);
+		}
+
+		//dnd (drag, drop, and sortables) 
+		if(this.dnd) {
+			this.listenTo(this, 'render', function(){
+				var that = this;
+				if(this.dnd.sortables) delete this.dnd.drag;
+				var dnd = this.dnd;
+				//draggables
+				if(dnd.drag){
+					var defaultDragOpt = {
+						zIndex: 100,
+						//revert: true,
+						helper: 'clone', //remember to keep size (done for you in default drag listener);
+						items: '.ui-draggable-item', //+
+						drag: function(e, ui){
+							var $sample = that._cachedDraggableItem; //for better performance
+							that.trigger('view:drag', $(ui.helper).width($sample.width()), ui, e);
+						}
+					};
+					if(_.isString(dnd.drag))
+						defaultDragOpt.items = dnd.drag;
+					else
+						_.extend(defaultDragOpt, dnd.drag);
+					this._cachedDraggableItem = this.$el.find(defaultDragOpt.items).draggable(defaultDragOpt).first();
+				}
+				//droppable
+				if(dnd.drop){
+					var defaultDropOpt = {
+						//container: '', //+
+						zIndex: 50,
+						activeClass: 'ui-droppable-active',
+						hoverClass: 'ui-droppable-hover',
+						accept: '.ui-draggable-item',
+						drop: function(e, ui){
+							that.trigger('view:drop', $(ui.draggable), ui, e);
+						}
+					};
+					if(_.isString(dnd.drop))
+						defaultDropOpt.accept = dnd.drop;
+					else
+						_.extend(defaultDropOpt, dnd.drop);
+					var $ctDrop = (defaultDropOpt.container && this.$el.find(defaultDropOpt.container)) || this.$el;
+					$ctDrop.droppable(defaultDropOpt);
+
+					//provide a default onDrop to view
+					if(!this.onDrop){
+						this.onDrop = function($item, ui, e){
+							$ctDrop.append($item.clone().removeClass(defaultDropOpt.accept.slice(1)).css('position', 'static'));
+						};
+					}
+				}
+				//sortable
+				if(dnd.sort){
+					var defaultSortOpt = {
+						//container: '', //+
+						placeholder: 'ui-sortable-placeholder', //remember to keep size in css (done for you in default sort listener)
+						//revert: true,
+						//helper: 'clone',
+						items: '.ui-sortable-item',
+						sort: function(e, ui){
+							var $sample = that._cachedSortableItem;
+							if(!$sample || !$sample.length)
+								$sample = that._cachedSortableItem = that.$el.find(defaultSortOpt.items).first();
+							$(ui.placeholder).height($sample.outerHeight()).css('border', '1px dashed grey');
+							that.trigger('view:sort', $(ui.item), ui, e);
+						},
+						change: function(e, ui){
+							that.trigger('view:sort-change', $(ui.item), ui, e);
+						}
+					};
+					if(_.isString(dnd.sort))
+						defaultSortOpt.items = dnd.sort;
+					else
+						_.extend(defaultSortOpt, dnd.sort);
+					var $ctSort = (defaultSortOpt.container && this.$el.find(defaultSortOpt.container)) || this.$el;
+					$ctSort.sortable(defaultSortOpt);
+				}
+			});
+		}
+
+		//selectable
+		if(this.selectable){
+			this.listenTo(this, 'render', function(){
+				var that = this;
+				var defaults = {
+					filter: '.ui-selectable-item',
+					selected: function(e, ui){
+						that.trigger('view:item-selected', $(ui.selected), e);
+					},
+					unselected: function(e, ui){
+						that.trigger('view:item-unselected', $(ui.unselected), e);
+					},
+					selecting: function(e, ui){ //.ui-selecting
+						that.trigger('view:item-selecting', $(ui.selecting), e);
+					},
+					unselecting: function(e, ui){
+						that.trigger('view:item-unselecting', $(ui.unselecting), e);
+					},
+					stop: function(e){ //.ui-selected
+						that.trigger('view:selection-done', that.$el.find('.ui-selected'));
+					},
+					start: function(e){
+						that.trigger('view:selection-begin');
+					}
+				};
+				if(_.isString(this.selectable))
+					defaults.filter = this.selectable;
+				else
+					_.extend(defaults, this.selectable);
+				this.$el.selectable(defaults);
+			});
 		}
 
 		//actions (1-click uis) - Suggestion: move from +M.ItemView to this file
@@ -7026,4 +7167,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.7-994 build 1454551931731";
+;;app.stagejs = "1.8.7-997 build 1454641477803";

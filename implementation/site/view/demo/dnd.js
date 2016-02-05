@@ -28,7 +28,10 @@
 		dnd: {
 			drag: true,
 			//sort: true,
-		}
+		},
+		onDrag: app.throttle(function(){
+			app.debug(arguments);
+		})
 
 	});
 

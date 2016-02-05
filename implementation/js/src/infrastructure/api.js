@@ -419,6 +419,15 @@
 			return window.cancelAnimationFrame(id);
 		},
 
+		//----------------config.rapidEventDelay wrapped util--------------------
+		throttle: function(fn, ms){
+			return _.throttle(fn, ms || app.config.rapidEventDelay);
+		},
+
+		debounce: function(fn, ms){
+			return _.throttle(fn, ms || app.config.rapidEventDelay);
+		},
+
 		//----------------markdown-------------------
 		//options.marked, options.hljs
 		//https://guides.github.com/features/mastering-markdown/
@@ -509,7 +518,7 @@
 		'dispatcher', 'model', 'collection',
 		'context - @alias:page', 'view', 'widget', 'editor', 'editor.validator - @alias:editor.rule', //view
 		'lock', 'unlock', 'available', //global action locks
-		'coop', 'navigate', 'reload', 'param', 'animation', 'nextFrame', 'cancelFrame',
+		'coop', 'navigate', 'reload', 'param', 'animation', 'nextFrame', 'cancelFrame', 'throttle', 'debounce',
 		'remote', 'ws', 'download', //com
 		'extract', 'cookie', 'store', 'moment', 'uri', 'validator', 'markdown', 'notify', //3rd-party lib short-cut
 		//@supportive

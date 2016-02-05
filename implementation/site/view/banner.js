@@ -45,7 +45,7 @@
               '<ul class="nav navbar-nav">',//1
                 '<li context="Home"><a href="#navigate/Home">HOME</a></li>',
                 '<li context="Document"><a href="#navigate/Document">DOCUMENT</a></li>',
-                '<li context="Document"><a href="#navigate/Mockups">TEMPLATES</a></li>',
+                '<li context="Mockups"><a href="#navigate/Mockups">TEMPLATES</a></li>',
                 '<li context="Demo" class="dropdown" action-mouseenter="showSubMenu" action-mouseleave="closeSubMenu">',
                   '<a data-toggle="dropdown" class="dropdown-toggle" href="#">DEMO <b class="caret"></b></a>',
                   '<ul class="dropdown-menu">',

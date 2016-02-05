@@ -29,8 +29,7 @@
  * @updated 2015.02.03
  */
 
-;
-(function(app) {
+;(function(app) {
 
     _.extend(Backbone.Marionette.Region.prototype, {
 

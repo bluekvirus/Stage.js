@@ -155,7 +155,7 @@
 		function validScreenSize(size){
 			return size.h > 0 && size.w > 0;
 		}
-		$window.on('resize', _.debounce(trackScreenSize, app.config.rapidEventDelay));
+		$window.on('resize', app.debounce(trackScreenSize));
 		//check screen size, trigger app:resized and get app.screenSize ready.
 		app._ensureScreenSize = function(done){
 			trackScreenSize(); 
@@ -169,7 +169,7 @@
 			app.trigger('app:scroll', top);
 			app.coop('window-scroll', top);
 		}
-		$window.on('scroll', _.throttle(trackScroll, app.config.rapidEventDelay));
+		$window.on('scroll', app.throttle(trackScroll));
 		
 		//apply app.config.fullScreen = true
 		if(app.config.fullScreen){

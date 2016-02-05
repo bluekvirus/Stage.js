@@ -11,7 +11,7 @@
  * 		|+render()*, +close()*, +regions recognition (+effects recognition)
  * 		|
  * M.ItemView
- * 		|+render() --> this.getTemplate() --> M.Renderer.render --> M.TemplateCache.get (+template loading)
+ * 		|+render() --> this.getTemplate() --> M.Renderer.render --> M.TemplateCache.get --> cache.load --> cache.loadTemplate
  * 		|+set()/get() [for data loading, 1-way binding (need 2-way binders?)]
  * 		|[use bindUIElements() in render()]
  * 		|
@@ -177,18 +177,19 @@
 				if(dnd.drag){
 					var defaultDragOpt = {
 						zIndex: 100,
-						revert: true,
-						//helper: 'clone', //remember to keep size;
+						//revert: true,
+						helper: 'clone', //remember to keep size (done for you in default drag listener);
 						items: '.ui-draggable-item', //+
 						drag: function(e, ui){
-							that.trigger('view:drag', $(ui.helper), ui, e);
+							var $sample = that._cachedDraggableItem; //for better performance
+							that.trigger('view:drag', $(ui.helper).width($sample.width()), ui, e);
 						}
 					};
 					if(_.isString(dnd.drag))
 						defaultDragOpt.items = dnd.drag;
 					else
 						_.extend(defaultDragOpt, dnd.drag);
-					this.$el.find(defaultDragOpt.items).draggable(defaultDragOpt);
+					this._cachedDraggableItem = this.$el.find(defaultDragOpt.items).draggable(defaultDragOpt).first();
 				}
 				//droppable
 				if(dnd.drop){
@@ -201,42 +202,46 @@
 						drop: function(e, ui){
 							that.trigger('view:drop', $(ui.draggable), ui, e);
 						}
-					}
+					};
 					if(_.isString(dnd.drop))
 						defaultDropOpt.accept = dnd.drop;
 					else
 						_.extend(defaultDropOpt, dnd.drop);
-					var $ct = (defaultDropOpt.container && this.$el.find(defaultDropOpt.container)) || this.$el;
-					$ct.droppable(defaultDropOpt);
+					var $ctDrop = (defaultDropOpt.container && this.$el.find(defaultDropOpt.container)) || this.$el;
+					$ctDrop.droppable(defaultDropOpt);
 
 					//provide a default onDrop to view
 					if(!this.onDrop){
 						this.onDrop = function($item, ui, e){
-							$ct.append($item.clone().removeClass(defaultDropOpt.accept.slice(1)).css('position', 'static'));
-						}
+							$ctDrop.append($item.clone().removeClass(defaultDropOpt.accept.slice(1)).css('position', 'static'));
+						};
 					}
 				}
 				//sortable
 				if(dnd.sort){
 					var defaultSortOpt = {
 						//container: '', //+
-						placeholder: 'ui-sortable-placeholder',
+						placeholder: 'ui-sortable-placeholder', //remember to keep size in css (done for you in default sort listener)
 						//revert: true,
 						//helper: 'clone',
 						items: '.ui-sortable-item',
 						sort: function(e, ui){
+							var $sample = that._cachedSortableItem;
+							if(!$sample || !$sample.length)
+								$sample = that._cachedSortableItem = that.$el.find(defaultSortOpt.items).first();
+							$(ui.placeholder).height($sample.outerHeight()).css('border', '1px dashed grey');
 							that.trigger('view:sort', $(ui.item), ui, e);
 						},
 						change: function(e, ui){
 							that.trigger('view:sort-change', $(ui.item), ui, e);
 						}
-					}
+					};
 					if(_.isString(dnd.sort))
 						defaultSortOpt.items = dnd.sort;
 					else
 						_.extend(defaultSortOpt, dnd.sort);
-					var $ct = (defaultSortOpt.container && this.$el.find(defaultSortOpt.container)) || this.$el;
-					$ct.sortable(defaultSortOpt);
+					var $ctSort = (defaultSortOpt.container && this.$el.find(defaultSortOpt.container)) || this.$el;
+					$ctSort.sortable(defaultSortOpt);
 				}
 			});
 		}

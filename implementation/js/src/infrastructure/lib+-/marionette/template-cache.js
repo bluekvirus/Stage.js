@@ -26,7 +26,7 @@
 			return cachedTemplate;
 		}
 
-	})
+	});
 
 	_.extend(Backbone.Marionette.TemplateCache.prototype, {
 
