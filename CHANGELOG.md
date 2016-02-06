@@ -29,10 +29,13 @@ Change Log
 25. Removed view:animated event (1.8.4) use 'show' instead;
 26. Added dnd support to views (drag, drop, sortable);
 27. Added selectable item support to views (selectable);
+28. Refined template caching (local-dom, remote and in-memory);
+29. Added view recognition to app.reload();
 
 working on ...
 
-* Adding live-reload to app.mark()-ed views;
+* Adding .layout config to view;
+* Adding item effects;
 * Adding more unit tests;
 * Adding cheatsheet;
 * Updating doc (around data handling, coop, remote, ws, form);
