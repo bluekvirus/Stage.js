@@ -23,6 +23,22 @@
 	 */
 	_.extend(Backbone.Marionette.CollectionView.prototype, {
 
+		// Handle cleanup and other closing needs for
+		// the collection of views.
+		close: function() {
+		    if (this.isClosed) {
+		        return;
+		    }
+
+		    this.triggerMethod("collection:before:close");
+		    this.closeChildren();
+
+		    //triggers 'close' before BB.remove() --> stopListening
+		    Marionette.View.prototype.close.apply(this, arguments);
+
+		    this.triggerMethod("collection:closed"); //align with ItemView
+		},
+
 		/////////////////////////////
 		onRenderData: function(data){
 			this.set(data);

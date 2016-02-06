@@ -207,15 +207,20 @@
 					app.reload(result.view.$el.data('view-name'), true);
 				});
 				$body.append($nameTag);
-				nameTagPairing.push({tag: $nameTag, ct: $container});
+				nameTagPairing.push({$tag: $nameTag, $ct: $container, view: result.view});
 			});
 			//round-2: position the name tags
 			$window.trigger('resize');//trigger a possible resizing globally.
-			_.each(nameTagPairing, function(pair){
-				pair.tag.position({
-					my: 'left top',
-					at: 'left top',
-					of: pair.ct
+			_.defer(function(){
+				_.each(nameTagPairing, function(pair){
+					pair.$tag.position({
+						my: 'left top',
+						at: 'left top',
+						of: pair.$ct
+					});
+					pair.view.on('close', function(){
+						pair.$tag.remove();
+					});
 				});
 			});
 		},
@@ -410,43 +415,7 @@
 				stop: stop
 			};
 		},
-		reload: function(name, override/*optional*/){
-			if( typeof name !== 'string' ){
-				throw new Error('DEV::app.reload():: Name must be a string.');
-			}else{
-				var v = app.locate(name).view,
-					region = v.parentRegion,
-					type;
-				//get type of the named object
-				_.each(app.get(), function(data, key){
-					if( data.indexOf(name) >= 0){
-						type = key;
-						return;
-					}
-				});
-				if(!type)
-					throw new Error('DEV::app.reload():: No type can be found with given view.');
-				override = override || false;
-				//override old view
-				if(override){
-					//clear template cache in cache
-					app.Util.Tpl.cache.clear(v.template);
-					//un-register the view
-					app.Core[type].remove(name);
-					//re-show the new view
-					try{
-						var temp = app.get(name, type);
-						region.show(new temp);
-					}catch(e){
-						console.warn('This view does not defined by in dedicated file.');
-					}
-				}else{
-					//re-render the view
-					v.refresh();
-				}
-			}
-			//return this;
-		},
+
 		nextFrame: function(step){
 			//return request id
 			return window.requestAnimationFrame(step);
@@ -528,6 +497,51 @@
 			}
 			else
 				$.amaran(title);
+		},
+
+		//----------------reload---------------------
+		reload: function(name, override/*optional*/){
+			//reload globally
+			if(!name)
+				return window.location.reload();
+
+			var result = app.locate(name);
+			if(!result){
+				app.mark();//highlight available views.
+				throw new Error('DEV::app.reload():: Can NOT find view with given name: ' + name);
+			}
+
+			var v = result.view,
+				region = v.parentRegion,
+				category;
+			//get type of the named object
+			_.each(app.get(), function(data, key){
+				if(data.indexOf(name) >= 0){
+					category = key;
+					return;
+				}
+			});
+			if(!category)
+				throw new Error('DEV::app.reload():: No category can be found with given view: ' + name);
+			override = override || false;
+			//override old view
+			if(override){
+				//clear template cache in cache
+				app.Util.Tpl.cache.clear(v.template);
+				//un-register the view
+				app.Core[category].remove(name);
+				//re-show the new view
+				try{
+					var View = app.get(name, category);
+					region.show(new View);
+				}catch(e){
+					console.warn('DEV::app.reload()::Abort, this', name, 'view is not defined alone, you need to find its source.');
+				}
+			}else{
+				//re-render the view
+				v.refresh();
+			}
+			//return this;
 		},
 
 		//----------------debug----------------------

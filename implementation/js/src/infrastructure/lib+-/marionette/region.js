@@ -38,9 +38,9 @@
             this.ensureEl();
             var view = this.currentView;
             if (view) {
-                this.close(function(){
+                this.close(_.bind(function(){
                     this._show(newView, options);
-                });
+                }, this));
                 return this;
             }
             return this._show(newView, options);
@@ -58,7 +58,7 @@
                 Marionette.triggerMethod.call(view, "before:show");
             }
 
-            this.open(view, function(){
+            this.open(view, _.bind(function(){
 
                 //original region:show from M.Region
                 //Marionette.triggerMethod.call(this, "show", view);
@@ -72,7 +72,7 @@
 
                 //delay region:show till after view:show (to accommodate navRegion build up in Layout)
                 Marionette.triggerMethod.call(this, "show", view);
-            });
+            }, this));
 
             return this;
         },
@@ -101,10 +101,10 @@
             if (enterEffect) {
                 view.$el.addClass(enterEffect + ' animated').one(app.ADE, function() {
                     view.$el.removeClass('animated ' + enterEffect);
-                    _cb && _cb.apply(that);
+                    _cb && _cb();
                 });
             }else
-                _cb && _cb.apply(this);
+                _cb && _cb();
 
             return this;
         },
@@ -114,32 +114,42 @@
         // 'region:close', 'view:close' will be triggered after animation effect done.
         close: function(_cb) {
             var view = this.currentView;
+            app.debug('closing', view.$el.data('view-name'));//debug
+
             if (!view || view.isClosed) {
+                Marionette.triggerMethod.call(this, "close", view);
+                delete this.currentView;
+                _cb && _cb();
                 return;
             }
 
             // call 'close' or 'remove', depending on which is found
             if (view.close) {
+                var callback = _.bind(function(){
+                    app.debug('closed', view.$el.data('view-name'));//debug
+                    Marionette.triggerMethod.call(this, "close", view);
+                    delete this.currentView;
+                    _cb && _cb(); //for opening new view immediately (internal, see show());
+                }, this);
+
                 var exitEffect = (_.isPlainObject(view.effect) ? view.effect.exit : (view.effect ? (view.effect + 'Out') : '')) || (this.$el.data('effect')? (this.$el.data('effect') + 'Out'): '') || this.$el.data('effectExit');
                 if (exitEffect) {
-                    var self = this;
-                    view.$el.addClass(exitEffect).addClass('animated')
-                    .one(app.ADE, function() {
-                        view.close();
-                        Marionette.triggerMethod.call(self, "close", view);
-                        delete self.currentView;
-                        _cb && _cb.apply(self); //for opening new view immediately (internal, see show());
+                    app.debug('exitEffect', view.$el.data('view-name'), 'is', exitEffect);//debug
+                    view.$el.addClass(exitEffect + ' animated')
+                    .one(app.ADE, function(e) {
+                        app.debug(e.type);//debug
+                        e.stopPropagation();
+                        view.close(callback);
                     });
                     return;
                 }else
-                    view.close();
+                    view.close(callback);
             } else if (view.remove) {
                 view.remove();
+                Marionette.triggerMethod.call(this, "close", view);
+                delete this.currentView;
+                _cb && _cb(); //for opening new view immediately (internal, see show());
             }
-
-            Marionette.triggerMethod.call(this, "close", view);
-            delete this.currentView;
-            _cb && _cb.apply(this); //for opening new view immediately (internal, see show());
         },
 
 

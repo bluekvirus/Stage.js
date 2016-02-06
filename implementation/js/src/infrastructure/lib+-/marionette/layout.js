@@ -21,6 +21,7 @@
  * @update 2015.11.03 (-form nesting on regions)
  * @update 2015.11.11 (+getViewIn('region'))
  * @update 2015.12.15 (navRegion chaining on region:show instead)
+ * @update 2016.02.05 (close*(_cb) for region closing effect sync)
  */
 
 ;(function(app){
@@ -30,7 +31,22 @@
 		getViewIn: function(region){
 			region = this.getRegion(region);
 			return region && region.currentView;
-		}
+		},
+
+		// Handle closing regions, and then close the view itself.
+		// *Taking care of closing effect sync (reported on 'item:closed')
+		close: function(_cb) {
+		    if (this.isClosed) {
+		    	_cb && _cb();
+		        return;
+		    }
+		    this.regionManager.close(_.bind(function(){
+		    	app.debug('regionManager', this.name, 'closed');//debug
+		    	Marionette.ItemView.prototype.close.apply(this, arguments);
+		    	_cb && _cb();
+		    }, this));
+		},
+
 	});
 
 	/**
