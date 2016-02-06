@@ -12,10 +12,10 @@
 	    // Close all regions in the region manager, but
 	    // leave them attached
 	    closeRegions: function(_cb) {
-	    	if(!this._regions.length)
+	    	if(!_.size(this._regions))//**Caveat: this._regions is not an [];
 	    		return _cb && _cb();
 
-	    	var callback = _.after(this._regions.length, function(){
+	    	var callback = _.after(_.size(this._regions), function(){
 	    		_cb && _cb();
 	    	});
 	        _.each(this._regions, function(region, name) {

@@ -41,7 +41,6 @@
 		        return;
 		    }
 		    this.regionManager.close(_.bind(function(){
-		    	app.debug('regionManager', this.name, 'closed');//debug
 		    	Marionette.ItemView.prototype.close.apply(this, arguments);
 		    	_cb && _cb();
 		    }, this));
@@ -127,12 +126,26 @@
 
 			//Automatically shows the region's view="" attr indicated View or @remote.tpl.html
 			//Note: re-render a view will not re-render the regions. use data change or .show() will.
+			//Note: 'all-region-shown' will sync on 'region:show' which in turn wait on enterEffects before sub-region 'view:show';
 			this.listenTo(this, 'show view:data-rendered', function(){
+				var pairs = [];
 				_.each(this.regions, function(selector, r){
 					if(this.debug) this[r].$el.html('<p class="alert alert-info">Region <strong>' + r + '</strong></p>'); //give it a fake one.
-					this[r].trigger('region:load-view', this[r].$el.attr('view')); //found corresponding View def.
+					var viewName = this[r].$el.attr('view');
+					if(viewName) //found in-line View name.
+						pairs.push({region: r, name: viewName}); 
 				}, this);
-				this.trigger('view:all-region-shown');
+				if(!pairs.length)
+					return this.trigger('view:all-region-shown');
+
+				var callback = _.after(pairs.length, _.bind(function(){
+					this.trigger('view:all-region-shown');
+				}, this));
+				_.each(pairs, function(p){
+					this[p.region].on('show', callback);
+					this[p.region].trigger('region:load-view', p.name);
+				}, this);
+				
 			});
 
 			//supporting the navigation chain if it is a named layout view with valid navRegion (context, regional, ...)

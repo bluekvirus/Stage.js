@@ -22,6 +22,11 @@
  * https://daneden.github.io/animate.css/
  * 
  *
+ * Show
+ * -------------
+ * 1. means view.$el is in DOM, (sub-region view will only render after parent region 'show')
+ * 2. 'show' will be triggered after enter animation done.
+ * 
  * @author Tim Lauv
  * @updated 2014.03.03
  * @updated 2015.08.10
@@ -114,11 +119,7 @@
         // 'region:close', 'view:close' will be triggered after animation effect done.
         close: function(_cb) {
             var view = this.currentView;
-            app.debug('closing', view.$el.data('view-name'));//debug
-
             if (!view || view.isClosed) {
-                Marionette.triggerMethod.call(this, "close", view);
-                delete this.currentView;
                 _cb && _cb();
                 return;
             }
@@ -126,7 +127,6 @@
             // call 'close' or 'remove', depending on which is found
             if (view.close) {
                 var callback = _.bind(function(){
-                    app.debug('closed', view.$el.data('view-name'));//debug
                     Marionette.triggerMethod.call(this, "close", view);
                     delete this.currentView;
                     _cb && _cb(); //for opening new view immediately (internal, see show());
@@ -134,10 +134,8 @@
 
                 var exitEffect = (_.isPlainObject(view.effect) ? view.effect.exit : (view.effect ? (view.effect + 'Out') : '')) || (this.$el.data('effect')? (this.$el.data('effect') + 'Out'): '') || this.$el.data('effectExit');
                 if (exitEffect) {
-                    app.debug('exitEffect', view.$el.data('view-name'), 'is', exitEffect);//debug
                     view.$el.addClass(exitEffect + ' animated')
                     .one(app.ADE, function(e) {
-                        app.debug(e.type);//debug
                         e.stopPropagation();
                         view.close(callback);
                     });

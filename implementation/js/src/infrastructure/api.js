@@ -182,16 +182,25 @@
 		},
 
 		//mark views on screen. (hard-coded style, experimental)
-		mark: function(){
-			var nameTagPairing = [], $body = $('body');
+		mark: function(name /*el or $el*/){
+			var nameTagPairing = [], $body;
+			if(_.isString(name)){
+				var result = app.locate(name);
+				if(!result) return;
+				$body = result.view.parentRegion.$el;
+			}else if(name){
+				$body = $(name);
+			}else
+				$body = $('body');
+
 			//clear all name tag
 			$body.find('.dev-support-view-name-tag').remove();
 			//round-1: generate border and name tags
-			_.each(app.locate(), function(v){
+			_.each(app.locate($body), function(v){
 				var result = app.locate(v), $container;
 				//add a container style
 				if(result.view.category !== 'Editor')
-					$container = result.view.$el.parent();
+					$container = result.view.parentRegion.$el;
 				else
 					$container = result.view.$el;
 				//else return;
@@ -532,10 +541,13 @@
 				app.Core[category].remove(name);
 				//re-show the new view
 				try{
-					var View = app.get(name, category);
-					region.show(new View);
+					var view = new (app.get(name, category))();
+					view.once('view:all-region-shown', function(){
+						app.mark(name);
+					});
+					region.show(view);
 				}catch(e){
-					console.warn('DEV::app.reload()::Abort, this', name, 'view is not defined alone, you need to find its source.');
+					console.warn('DEV::app.reload()::Abort, this', name, 'view is not defined alone, you need to find its source.', e);
 				}
 			}else{
 				//re-render the view

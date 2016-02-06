@@ -15,6 +15,25 @@
 
 ;(function(app){
 
+	//Original M.ItemView render, close (as a Reference here, to be overriden later)
+	_.extend(Backbone.Marionette.ItemView.prototype, {
+
+		// Override the default close event to add a few
+		// more events that are triggered.
+		close: function() {
+		    if (this.isClosed) {
+		        return;
+		    }
+
+		    this.triggerMethod('item:before:close');
+
+		    Marionette.View.prototype.close.apply(this, arguments);
+
+		    this.triggerMethod('item:closed');
+		}
+
+	});
+
 	/**
 	 * Action Tag listener hookups +actions{} (do it in initialize())
 	 * + event forwarding ability to action tags
