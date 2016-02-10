@@ -37,8 +37,6 @@ Utils:
 * Application.uri
 * Application.param()
 * Application.validator
-* Application.debug()
-* Application.reload()
 
 Mutual Exclusion:
 * Application.lock ([topic/lock])
@@ -49,6 +47,13 @@ Script(s)/Template(s)/CSS Injection:
 * Application.inject.js ([path to js/json]) - util/script-inject.js
 * Application.inject.tpl ([path to html/json ]) - util/template-builder.js
 * Application.inject.css ([path to css], ...) - same arguments to loadCSS
+
+Dev support:
+* Application.debug()
+* Application.reload()
+* Application.locate()
+* Application.mark()
+* Application.profile()
 
 -----------------------------------------------------------------------------
 

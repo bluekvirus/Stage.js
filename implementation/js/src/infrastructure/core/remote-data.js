@@ -144,12 +144,6 @@
 		app.trigger('app:ajax-inactive');
 	});
 
-
-	//Global ajax fail handler (common)
-	app.ajaxFailed = function(jqXHR, settings, e){
-		throw new Error('DEV::Ajax::' + e + ' ' + settings.url);
-	};
-
 	//Ajax Options Fix: (baseAjaxURI, CORS and cache)
 	app.onAjax = function(options){
 

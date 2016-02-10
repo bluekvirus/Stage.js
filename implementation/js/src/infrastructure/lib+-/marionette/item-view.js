@@ -635,7 +635,7 @@
 				var self = this;
 				return app.remote(this.data, null, options).done(function(d){
 					self.set(d);
-				}).fail(app.ajaxFailed);
+				});
 			}
 			else
 				return this.model && this.set(this.model.toJSON());

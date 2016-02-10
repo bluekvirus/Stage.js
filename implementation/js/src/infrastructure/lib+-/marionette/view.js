@@ -20,7 +20,7 @@
  * 		|+pick and activate optional ones (b, see below List of view options...)
  * 		|
  * M.View.apply(this)
- * 		|+close, +options, +bindUIElements
+ * 		|+close, +this.options, +bindUIElements
  * 		|
  * BB.View.prototype.constructor
  * 		|+events, +remove, +picks (a, see below List of view options...)
@@ -40,7 +40,8 @@
  *
  * List of view options passed through new View(opt) that will be auto-merged as properties:
  * 		a. from Backbone.View ['model', 'collection', 'el', 'id', 'attributes', 'className', 'tagName', 'events'];
- *   	b. from us ['effect', 'template', 'data'/'useParentData', 'ui', 'coop', 'actions', 'editors', 'tooltips', 'overlay', 'popover', 'svg'];
+ * 		b*. from M.View ['templateHelpers']; (through M.getOption() -- tried both this and this.options)
+ *   	c. from us ['effect', 'template', 'data'/'useParentData', 'ui', 'coop', 'actions', 'editors', 'tooltips', 'overlay', 'popover', 'svg'];
  *
  * Tip:
  * All new View(opt) will have this.options = opt ready in initialize(), also this.*[all auto-picked properties above].

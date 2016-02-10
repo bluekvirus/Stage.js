@@ -507,7 +507,7 @@
 					_.extend(options, {name: name});
 				else
 					_.extend(options, name);
-				console.warn('DEV::Application::regional() method is deprecated, use .view() instead for', options.name);
+				console.warn('DEV::Application::regional() method is deprecated, use .view() instead for', options.name || options /*as an indicator of anonymous view*/);
 				return app.view(options, !options.name);
 			},
 			//--------------------------------
@@ -1369,12 +1369,6 @@
 	$document.ajaxStop(function() {
 		app.trigger('app:ajax-inactive');
 	});
-
-
-	//Global ajax fail handler (common)
-	app.ajaxFailed = function(jqXHR, settings, e){
-		throw new Error('DEV::Ajax::' + e + ' ' + settings.url);
-	};
 
 	//Ajax Options Fix: (baseAjaxURI, CORS and cache)
 	app.onAjax = function(options){
@@ -3965,7 +3959,7 @@ module.exports = DeepModel;
  * 		|+pick and activate optional ones (b, see below List of view options...)
  * 		|
  * M.View.apply(this)
- * 		|+close, +options, +bindUIElements
+ * 		|+close, +this.options, +bindUIElements
  * 		|
  * BB.View.prototype.constructor
  * 		|+events, +remove, +picks (a, see below List of view options...)
@@ -3985,7 +3979,8 @@ module.exports = DeepModel;
  *
  * List of view options passed through new View(opt) that will be auto-merged as properties:
  * 		a. from Backbone.View ['model', 'collection', 'el', 'id', 'attributes', 'className', 'tagName', 'events'];
- *   	b. from us ['effect', 'template', 'data'/'useParentData', 'ui', 'coop', 'actions', 'editors', 'tooltips', 'overlay', 'popover', 'svg'];
+ * 		b*. from M.View ['templateHelpers']; (through M.getOption() -- tried both this and this.options)
+ *   	c. from us ['effect', 'template', 'data'/'useParentData', 'ui', 'coop', 'actions', 'editors', 'tooltips', 'overlay', 'popover', 'svg'];
  *
  * Tip:
  * All new View(opt) will have this.options = opt ready in initialize(), also this.*[all auto-picked properties above].
@@ -4892,7 +4887,7 @@ module.exports = DeepModel;
 				var self = this;
 				return app.remote(this.data, null, options).done(function(d){
 					self.set(d);
-				}).fail(app.ajaxFailed);
+				});
 			}
 			else
 				return this.model && this.set(this.model.toJSON());
@@ -7347,7 +7342,7 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.7-1003 build 1455064552487";;
+;;app.stagejs = "1.8.7-1004 build 1455136921967";;
         //Make sure this is the last line in the last script!!!
         Application.run(/*deviceready - Cordova*/);
     ;

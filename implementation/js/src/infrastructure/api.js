@@ -83,7 +83,7 @@
 					_.extend(options, {name: name});
 				else
 					_.extend(options, name);
-				console.warn('DEV::Application::regional() method is deprecated, use .view() instead for', options.name);
+				console.warn('DEV::Application::regional() method is deprecated, use .view() instead for', options.name || options /*as an indicator of anonymous view*/);
 				return app.view(options, !options.name);
 			},
 			//--------------------------------
