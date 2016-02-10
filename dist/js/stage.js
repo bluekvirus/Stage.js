@@ -859,12 +859,14 @@
 		},
 
 		//----------------config.rapidEventDelay wrapped util--------------------
+		//**Caveat: must separate app.config() away from app.run(), put view def (anything)
+		//that uses app.config in between in your index.html. (the build tool automatically taken care of this)
 		throttle: function(fn, ms){
 			return _.throttle(fn, ms || app.config.rapidEventDelay);
 		},
 
 		debounce: function(fn, ms){
-			return _.throttle(fn, ms || app.config.rapidEventDelay);
+			return _.debounce(fn, ms || app.config.rapidEventDelay);
 		},
 
 		//----------------markdown-------------------
@@ -7345,4 +7347,7 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.7-1002 build 1454730049716";
+;;app.stagejs = "1.8.7-1003 build 1455064552487";;
+        //Make sure this is the last line in the last script!!!
+        Application.run(/*deviceready - Cordova*/);
+    ;

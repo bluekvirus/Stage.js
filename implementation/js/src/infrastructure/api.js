@@ -435,12 +435,14 @@
 		},
 
 		//----------------config.rapidEventDelay wrapped util--------------------
+		//**Caveat: must separate app.config() away from app.run(), put view def (anything)
+		//that uses app.config in between in your index.html. (the build tool automatically taken care of this)
 		throttle: function(fn, ms){
 			return _.throttle(fn, ms || app.config.rapidEventDelay);
 		},
 
 		debounce: function(fn, ms){
-			return _.throttle(fn, ms || app.config.rapidEventDelay);
+			return _.debounce(fn, ms || app.config.rapidEventDelay);
 		},
 
 		//----------------markdown-------------------

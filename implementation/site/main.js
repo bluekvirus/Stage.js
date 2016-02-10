@@ -12,7 +12,7 @@ NProgress.configure({showSpinner: false});
         baseAjaxURI: '',
         viewSrcs: 'site'
 
-    }).run();
+    });
 
     //Ajax Progress -- Configure NProgress as global progress indicator.
     if(window.NProgress){
