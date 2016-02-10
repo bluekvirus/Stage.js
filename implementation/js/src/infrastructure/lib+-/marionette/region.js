@@ -54,6 +54,10 @@
     	//modified show method (removed preventClose & same view check)
         _show: function(view, options) {
 
+            //so now you can use region.show(app.view({...anonymous...}));
+            if(_.isFunction(view))
+                view = new view(options);
+
             view.render();
             Marionette.triggerMethod.call(this, "before:show", view);
 
@@ -152,6 +156,7 @@
 
 
         //you don't need to calculate paddings on a region, since we are using $.innerHeight()
+        //@deprecating... in favor of incoming view.layout option in v1.9
         resize: function(options) {
             options = options || {};
 

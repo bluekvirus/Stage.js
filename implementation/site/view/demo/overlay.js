@@ -34,7 +34,7 @@
 		template: '<p>One fine body…</p>' 
 	});	
 
-	app.regional('Demo.Overlay', {
+	app.view('Demo.Overlay', {
 		template: [
 			'<div class="row">',
 				'<div class="col-md-4" style="margin-top:15em;">',

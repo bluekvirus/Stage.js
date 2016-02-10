@@ -61,12 +61,12 @@
 				}, options);
 			},
 			onShow: function(){
-				this.header.show(new HeaderRow());
-				this.body.show(new Body({
+				this.header.show(HeaderRow);
+				this.body.show(Body, {
 					//el can be css selector string, dom or $(dom)
 					el: this.body.$el 
 					//Note that a region's el !== $el[0], but a view's el === $el[0] in Marionette
-				}));
+				});
 				this.trigger('view:reconfigure', this._options);
 			},
 			onReconfigure: function(options){
@@ -79,12 +79,18 @@
 					column.header = column.header || 'string';
 					column.cell = column.cell || column.header || 'string';
 					column.label = column.label || _.string.titleize(column.name);
-				});				
-				this.header.currentView.set(this._options.columns);
+				});
 
-				//3. rebuild body rows - let it rerender with new data array
-				this.body.currentView._options = this._options;
-				this.body.currentView.set(this._options.data);
+				////////////////Note that the ifs here are for early 'show' --> .set() when using local .data////////////////
+				if(this.header.currentView) //update column headers region				
+					this.header.currentView.set(this._options.columns);
+
+				if(this.body.currentView){
+					//3. rebuild body rows - let it rerender with new data array
+					this.body.currentView._options = this._options;
+					this.body.currentView.set(this._options.data);
+				}
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 				//4. trigger overall view:data-rendered
 				this.trigger('view:data-rendered');

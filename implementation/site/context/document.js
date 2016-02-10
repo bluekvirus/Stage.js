@@ -1,6 +1,6 @@
 ;(function(app){
 
-    app.page('Document', {
+    app.context('Document', {
         className: 'wrapper container-fluid',
         template: [
             '<div class="row">',
@@ -89,7 +89,7 @@
                             that.trigger('view:go-to-topic', $btn.data('id'));
                         }
                     }
-                }, true));
+                }));
                 that.$headers = that.doc.$el.data('toc').$headers;
 
             });
@@ -105,7 +105,7 @@
     });
 
     //Document - Regionals
-    app.area('Doc.Breadcrumbs', {
+    app.view('Doc.Breadcrumbs', {
         tagName: 'ol',
         className: 'breadcrumb',
         template: [

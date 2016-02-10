@@ -72,7 +72,7 @@
 		],
 	});
 
-	app.regional('Demo.Popover', {
+	app.view('Demo.Popover', {
 		template: [
 			//flipped
 			'<div style="position:fixed;left:0;top:50%;-webkit-transform:translateY(-50%);transform:translateY(-50%);"><div action="flipped_left" id="flipped_left" class="btn btn-success" data-container="body" data-placement="left">Flipped Left</div></div>',

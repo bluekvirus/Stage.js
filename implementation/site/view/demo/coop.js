@@ -1,6 +1,6 @@
 ;(function(app){
 
-	app.regional('Demo.Coop', {
+	app.view('Demo.Coop', {
 		className: 'row',
 		template: [
 			'<div style="margin-top:5em;">',

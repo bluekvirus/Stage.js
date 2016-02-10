@@ -20,7 +20,7 @@
 
 	var data = Mock.mock(treeDataTpl).data;
 
-	app.regional('Demo.Trees', {
+	app.view('Demo.Trees', {
 
 		className: 'container',
 	    template: [
@@ -45,7 +45,7 @@
 	    	});
 
 	    	//2. used in dropdown
-	    	this.mid.show(app.area({
+	    	this.mid.show(app.view({
 	    		className: 'dropdown', 
 	    		template: [
   					'<button class="btn dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">',
@@ -73,7 +73,7 @@
 	    	}));
 
 	    	//3. accordion (with nodes collapsed first)
-	    	this.right.show(app.area({
+	    	this.right.show(app.view({
 	    		type: 'CollectionView',
 	    		forceViewType: true,
 	    		initialize: function(){

@@ -1,6 +1,6 @@
 ;(function(app){
 
-	app.regional('Demo.Datahandling',{
+	app.view('Demo.Datahandling',{
 		className: 'row wrapper-2x',
 		template: [
 			'<div class="col-md-6">',
@@ -56,7 +56,7 @@
 					'</div>',
 				],
 				data: '/realdata',
-			}, true));
+			}));
 			//mock js data
 			this.getRegion('mock').show(app.view({
 				template: [
@@ -84,7 +84,7 @@
 					'</div>',
 				],
 				data: '/mockdata',
-			}, true));
+			}));
 		}
 	});
 
@@ -121,7 +121,7 @@
 					'</div>',
 				],
 				useParentData: 'items'
-			},true));
+			}));
 			this.getRegion('parent2').show(new Parent2({data: this.get()}));
 		}
 	});

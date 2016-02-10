@@ -1,6 +1,6 @@
 ;(function(app){
 
-	app.regional('Demo.Effect',{
+	app.view('Demo.Effect',{
 		className: 'wrapper row',
 		template: [
 			'<div class="col-md-4">',

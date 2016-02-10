@@ -1,6 +1,6 @@
 ;(function(app){
 
-	app.regional('Demo.Notify', {
+	app.view('Demo.Notify', {
 		template: [
 			'<h1>Notification Examples</h1>',
 			'<hr/>',

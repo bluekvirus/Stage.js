@@ -1,6 +1,6 @@
 ;(function(app){
 
-	app.regional('Demo.Action',{
+	app.view('Demo.Action',{
 		className: 'row wrapper',
 		template: [
 			'<div class="col-md-3">',

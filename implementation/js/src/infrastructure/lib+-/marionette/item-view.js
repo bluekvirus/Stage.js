@@ -20,16 +20,16 @@
 
 		// Override the default close event to add a few
 		// more events that are triggered.
-		close: function() {
+		close: function(_cb) {
 		    if (this.isClosed) {
+		    	_cb && _cb();
 		        return;
 		    }
 
 		    this.triggerMethod('item:before:close');
-
 		    Marionette.View.prototype.close.apply(this, arguments);
-
 		    this.triggerMethod('item:closed');
+		    _cb && _cb();
 		}
 
 	});

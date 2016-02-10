@@ -1,6 +1,23 @@
 ;(function(app){
 
-	app.area('Demo.Datatable', {
+	var mockDataTpl = {
+		'payload|15-15': [{
+			'_id': '_@GUID',
+			'title|1': ['Dr.', 'Mr.', 'Ms.', 'Mrs'],
+			'username': '@EMAIL',
+			'status|1': ['active', 'blocked', 'offline', 'guest'],
+			profile: {
+				'name': '@name',
+				'age': '@INTEGER(20,90)',
+				'dob': '@DATE',
+				'major|1': ['CS', 'SE', 'Design', 'EE', 'Math'],
+			},
+			'link': '/profile/@_id'
+		}],
+		total: 150,
+	};
+
+	app.view('Demo.Datatable', {
 	    template: [
 	    	'<div ui="spin"><i class="fa fa-cog fa-spin"></i> Loading...</div>',
 	    	'<div region="table"></div>',
@@ -11,7 +28,7 @@
 	    	this.table.trigger('region:load-view', 'Datagrid', {
 	    		className: 'table table-hover',
 
-	    		//data: Mock.mock(mockDataTpl).data,
+	    		data: Mock.mock(mockDataTpl).payload,
 	    		columns: [
 	    			{
 	    				name: '_id',

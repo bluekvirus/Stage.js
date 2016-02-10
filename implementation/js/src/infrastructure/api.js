@@ -20,7 +20,7 @@
 		//pass in [name,] options to define (named will be registered)
 		//pass in [name] to get (name can be of path form)
 		//pass in [name,] options, instance to create (named will be registered again)
-		view: function(name /*or options*/, options /*or instance*/){
+		view: function(name /*or options*/, options /*or instance flag*/){
 			if(_.isString(name)){
 				if(_.isBoolean(options) && options) return app.Core.View.create(name);
 				if(_.isPlainObject(options)) return app.Core.View.register(name, options);

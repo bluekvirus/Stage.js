@@ -12,6 +12,7 @@
  *
  * @author Tim Lauv
  * @created 2014.04.30
+ * @updated 2016.02.10
  */
 
 ;(function(app){
@@ -25,18 +26,59 @@
 
 		// Handle cleanup and other closing needs for
 		// the collection of views.
-		close: function() {
+		close: function(_cb) {
 		    if (this.isClosed) {
+		    	_cb && _cb();
 		        return;
 		    }
 
 		    this.triggerMethod("collection:before:close");
-		    this.closeChildren();
+		    this.closeChildren(_.bind(function(){
+			    //triggers 'close' before BB.remove() --> stopListening
+			    Marionette.View.prototype.close.apply(this, arguments);
+			    this.triggerMethod("collection:closed"); //align with ItemView
+			    _cb && _cb();
+		    }, this));
+		},
 
-		    //triggers 'close' before BB.remove() --> stopListening
-		    Marionette.View.prototype.close.apply(this, arguments);
+		// Close the child views that this collection view
+		// is holding on to, if any
+		closeChildren: function(_cb) {
+			if(!_.size(this.children))
+				_cb && _cb();
+			else {
+				var callback = _.after(_.size(this.children), function(){
+					_cb && _cb();
+				});
+			    this.children.each(function(child) {
+			        this.removeChildView(child, callback);
+			    }, this);
+			    //this.checkEmpty();
+			}
+		},
 
-		    this.triggerMethod("collection:closed"); //align with ItemView
+		// Remove the child view and close it
+		removeChildView: function(view, _cb) {
+
+		    // shut down the child view properly,
+		    // including events that the collection has from it
+		    if (view) {
+		        // call 'close' or 'remove', depending on which is found
+		        if (view.close) {
+		            view.close(_.bind(function(){
+				        this.stopListening(view);
+				        this.children.remove(view);
+				        this.triggerMethod("item:removed", view);
+				        _cb && _cb();
+		            }, this));
+		        } else if (view.remove) {
+		            view.remove();
+			        this.stopListening(view);
+			        this.children.remove(view);
+			        this.triggerMethod("item:removed", view);
+			        _cb && _cb();
+		        }
+		    }
 		},
 
 		/////////////////////////////

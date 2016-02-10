@@ -1,6 +1,6 @@
 ;(function(app){
 
-	 app.regional('Demo.Templating', {
+	 app.view('Demo.Templating', {
 		className: 'row',
 		template: [
 			'<div class="col-md-8 wrapper">',

@@ -444,7 +444,7 @@
 		//pass in [name,] options to define (named will be registered)
 		//pass in [name] to get (name can be of path form)
 		//pass in [name,] options, instance to create (named will be registered again)
-		view: function(name /*or options*/, options /*or instance*/){
+		view: function(name /*or options*/, options /*or instance flag*/){
 			if(_.isString(name)){
 				if(_.isBoolean(options) && options) return app.Core.View.create(name);
 				if(_.isPlainObject(options)) return app.Core.View.register(name, options);
@@ -3814,6 +3814,10 @@ module.exports = DeepModel;
     	//modified show method (removed preventClose & same view check)
         _show: function(view, options) {
 
+            //so now you can use region.show(app.view({...anonymous...}));
+            if(_.isFunction(view))
+                view = new view(options);
+
             view.render();
             Marionette.triggerMethod.call(this, "before:show", view);
 
@@ -3912,6 +3916,7 @@ module.exports = DeepModel;
 
 
         //you don't need to calculate paddings on a region, since we are using $.innerHeight()
+        //@deprecating... in favor of incoming view.layout option in v1.9
         resize: function(options) {
             options = options || {};
 
@@ -4272,16 +4277,16 @@ module.exports = DeepModel;
 
 		// Override the default close event to add a few
 		// more events that are triggered.
-		close: function() {
+		close: function(_cb) {
 		    if (this.isClosed) {
+		    	_cb && _cb();
 		        return;
 		    }
 
 		    this.triggerMethod('item:before:close');
-
 		    Marionette.View.prototype.close.apply(this, arguments);
-
 		    this.triggerMethod('item:closed');
+		    _cb && _cb();
 		}
 
 	});
@@ -5120,6 +5125,7 @@ module.exports = DeepModel;
  *
  * @author Tim Lauv
  * @created 2014.04.30
+ * @updated 2016.02.10
  */
 
 ;(function(app){
@@ -5133,18 +5139,59 @@ module.exports = DeepModel;
 
 		// Handle cleanup and other closing needs for
 		// the collection of views.
-		close: function() {
+		close: function(_cb) {
 		    if (this.isClosed) {
+		    	_cb && _cb();
 		        return;
 		    }
 
 		    this.triggerMethod("collection:before:close");
-		    this.closeChildren();
+		    this.closeChildren(_.bind(function(){
+			    //triggers 'close' before BB.remove() --> stopListening
+			    Marionette.View.prototype.close.apply(this, arguments);
+			    this.triggerMethod("collection:closed"); //align with ItemView
+			    _cb && _cb();
+		    }, this));
+		},
 
-		    //triggers 'close' before BB.remove() --> stopListening
-		    Marionette.View.prototype.close.apply(this, arguments);
+		// Close the child views that this collection view
+		// is holding on to, if any
+		closeChildren: function(_cb) {
+			if(!_.size(this.children))
+				_cb && _cb();
+			else {
+				var callback = _.after(_.size(this.children), function(){
+					_cb && _cb();
+				});
+			    this.children.each(function(child) {
+			        this.removeChildView(child, callback);
+			    }, this);
+			    //this.checkEmpty();
+			}
+		},
 
-		    this.triggerMethod("collection:closed"); //align with ItemView
+		// Remove the child view and close it
+		removeChildView: function(view, _cb) {
+
+		    // shut down the child view properly,
+		    // including events that the collection has from it
+		    if (view) {
+		        // call 'close' or 'remove', depending on which is found
+		        if (view.close) {
+		            view.close(_.bind(function(){
+				        this.stopListening(view);
+				        this.children.remove(view);
+				        this.triggerMethod("item:removed", view);
+				        _cb && _cb();
+		            }, this));
+		        } else if (view.remove) {
+		            view.remove();
+			        this.stopListening(view);
+			        this.children.remove(view);
+			        this.triggerMethod("item:removed", view);
+			        _cb && _cb();
+		        }
+		    }
 		},
 
 		/////////////////////////////
@@ -6803,12 +6850,12 @@ var I18N = {};
 				}, options);
 			},
 			onShow: function(){
-				this.header.show(new HeaderRow());
-				this.body.show(new Body({
+				this.header.show(HeaderRow);
+				this.body.show(Body, {
 					//el can be css selector string, dom or $(dom)
 					el: this.body.$el 
 					//Note that a region's el !== $el[0], but a view's el === $el[0] in Marionette
-				}));
+				});
 				this.trigger('view:reconfigure', this._options);
 			},
 			onReconfigure: function(options){
@@ -6821,12 +6868,18 @@ var I18N = {};
 					column.header = column.header || 'string';
 					column.cell = column.cell || column.header || 'string';
 					column.label = column.label || _.string.titleize(column.name);
-				});				
-				this.header.currentView.set(this._options.columns);
+				});
 
-				//3. rebuild body rows - let it rerender with new data array
-				this.body.currentView._options = this._options;
-				this.body.currentView.set(this._options.data);
+				////////////////Note that the ifs here are for early 'show' --> .set() when using local .data////////////////
+				if(this.header.currentView) //update column headers region				
+					this.header.currentView.set(this._options.columns);
+
+				if(this.body.currentView){
+					//3. rebuild body rows - let it rerender with new data array
+					this.body.currentView._options = this._options;
+					this.body.currentView.set(this._options.data);
+				}
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 				//4. trigger overall view:data-rendered
 				this.trigger('view:data-rendered');
@@ -7342,7 +7395,7 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.7-1004 build 1455136921967";;
+;;app.stagejs = "1.8.7-1005 build 1455143756924";;
         //Make sure this is the last line in the last script!!!
         Application.run(/*deviceready - Cordova*/);
     ;

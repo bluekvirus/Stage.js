@@ -7,7 +7,7 @@
 		//return 640;
 	}
 
-	app.page('Home', {
+	app.context('Home', {
 
 		template: [
 			//very very important to have overflow:hidden for svg powered background
@@ -48,7 +48,7 @@
 
 		onShow: function(){
 			//title + short desc
-			this.title.show(app.area({
+			this.title.show(app.view({
 				template: [
 					'<i class="project-title" style="margin-bottom:20px;"></i>',
 					app.markdown([
@@ -93,7 +93,7 @@
 			});
 
 			//navi links
-			this.menu.show(app.area({
+			this.menu.show(app.view({
 				tagName: 'ul',
 				className: 'text-right list-unstyled',
 				template: [
@@ -114,7 +114,7 @@
 
 	});
 
-	app.area('Home.Footer', {
+	app.view('Home.Footer', {
 		template: [
 			'<span class="pull-right github-link"><a href="https://github.com/bluekvirus/Stage.js/"><i class="fa fa-github"></i>View on Github</a></span>',	
 			'<span>Super-powered by Stage.js © 2013 - 2015</span> ',		
@@ -122,7 +122,7 @@
 		]
 	});
 
-	app.area('Home.BG', {
+	app.view('Home.BG', {
 		//template: ' ', //might need exception as .editors configured views.
 		svg: true,
 
