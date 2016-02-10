@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.9.0 (2016-02-03*)
+1.9.0 (2016-02-09*)
 -------------------
 1. Added favicon support mock in starter-kit index page;
 2. Updated default mockups;
@@ -31,6 +31,7 @@ Change Log
 27. Added selectable item support to views (selectable);
 28. Refined template caching (local-dom, remote and in-memory);
 29. Added view recognition to app.reload();
+30. Added app.throttle/debounce() apis to be used for action listeners;
 
 working on ...
 
