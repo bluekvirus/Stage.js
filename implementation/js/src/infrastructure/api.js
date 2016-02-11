@@ -434,6 +434,37 @@
 			return window.cancelAnimationFrame(id);
 		},
 
+		//effects see https://daneden.github.io/animate.css/
+		animateItems: function(selector /*or $items*/, effect, stagger){
+			var $selector = $(selector); 
+			if(_.isNumber(effect)){
+				stagger = effect;
+				effect = undefined;
+			}
+			effect = effect || 'flipInX';
+			stagger = stagger || 150;
+			var inOrOut = /In/.test(effect)? 1: (/Out/.test(effect)? -1: 0);
+
+			$selector.each(function(i, el){
+				var $el = $(el);
+				//////////////////different than region.show effect because of stagger delay//////////////////
+				if(inOrOut)
+					if(inOrOut === 1) $el.css('opacity', 0);
+					else $el.css('opacity', 1);
+				//////////////////////////////////////////////////////////////////////////////////////////////
+				_.delay(function($el){
+					var fxName = effect + ' animated';
+					$el.one(app.ADE, function(){
+						$el.removeClass(fxName);
+					}).addClass(fxName);
+					///////////////reset opacity immediately, not after ADE///////////////
+					if(inOrOut)
+						if(inOrOut === 1) $el.css('opacity', 1);
+						else $el.css('opacity', 0);
+					//////////////////////////////////////////////////////////////////////
+				}, i * stagger, $el);
+			});
+		},
 		//----------------config.rapidEventDelay wrapped util--------------------
 		//**Caveat: must separate app.config() away from app.run(), put view def (anything)
 		//that uses app.config in between in your index.html. (the build tool automatically taken care of this)
@@ -583,7 +614,7 @@
 		'dispatcher', 'model', 'collection',
 		'context - @alias:page', 'view', 'widget', 'editor', 'editor.validator - @alias:editor.rule', //view
 		'lock', 'unlock', 'available', //global action locks
-		'coop', 'navigate', 'reload', 'param', 'animation', 'nextFrame', 'cancelFrame', 'throttle', 'debounce',
+		'coop', 'navigate', 'reload', 'param', 'animation', 'nextFrame', 'cancelFrame', 'animateItems', 'throttle', 'debounce',
 		'remote', 'ws', 'download', //com
 		'extract', 'cookie', 'store', 'moment', 'uri', 'validator', 'markdown', 'notify', //3rd-party lib short-cut
 		//@supportive

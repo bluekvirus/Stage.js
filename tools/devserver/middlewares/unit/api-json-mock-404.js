@@ -32,7 +32,7 @@ module.exports = function(server){
 						}
 						else
 							console.log('[middleware api-json-mock-404]', 'tried json'.grey, dataFile.grey);
-						var mockFile = p + '.mock.js';
+						var mockFile = p.replace(/\.json$/, '') + '.mock.js';
 						if(fs.existsSync(mockFile)){
 							console.log('[middleware api-json-mock-404]', 'found mock'.green, mockFile);
 							return res.json(mockjs.mock(require(mockFile)));

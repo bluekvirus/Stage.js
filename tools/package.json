@@ -46,7 +46,8 @@
   "dependencies": {},
   "scripts": {
     "start": "nodemon devserver/run.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "data-export": "echo \"Error: no data mock folder specified\" && exit 1"
   },
   "repository": "",
   "author": "Tim Lauv (bluekvirus@gmail.com)",

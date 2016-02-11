@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.9.0 (2016-02-09*)
+1.9.0 (2016-02-10*)
 -------------------
 1. Added favicon support mock in starter-kit index page;
 2. Updated default mockups;
@@ -32,11 +32,13 @@ Change Log
 28. Refined template caching (local-dom, remote and in-memory);
 29. Added view recognition to app.reload();
 30. Added app.throttle/debounce() apis to be used for action listeners;
+31. Added app.animateItems api;
+32. Fixed mock json searching edge case: /name.json$/ --> name.mock.js;
 
 working on ...
 
 * Adding .layout config to view;
-* Adding item effects;
+* Adding data-export script to tools (npm run data-export);
 * Adding more unit tests;
 * Adding cheatsheet;
 * Updating doc (around data handling, coop, remote, ws, form);
