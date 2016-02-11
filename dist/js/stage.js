@@ -859,6 +859,7 @@
 		},
 
 		//effects see https://daneden.github.io/animate.css/
+		//sample usage: 'view:data-rendered' --> app.animateItems();
 		animateItems: function(selector /*or $items*/, effect, stagger){
 			var $selector = $(selector); 
 			if(_.isNumber(effect)){
@@ -5246,7 +5247,6 @@ module.exports = DeepModel;
 		/////////////////////////////
 		onRenderData: function(data){
 			this.set(data);
-			this.trigger('view:data-rendered');
 		},
 
 		//no refresh() yet (auto data-url fetch in item-view.js)
@@ -5260,8 +5260,11 @@ module.exports = DeepModel;
 				this.listenTo(this.collection, 'reset', this.render);
 			}
 			if(!options)
-				return this.collection.reset(data);
-			return this.collection.set(data, options);
+				this.collection.reset(data);
+			else 
+				this.collection.set(data, options);
+			this.trigger('view:data-rendered');
+			return this;
 		},
 
 		get: function(idCidOrModel){
@@ -5317,7 +5320,7 @@ module.exports = DeepModel;
 		onLoadPageDone: function(args){
 			var result = args[0];
 			//render this page:
-			this.trigger('view:render-data', result[this._remote.dataKey]);
+			this.set(result[this._remote.dataKey]);
 			//signal other widget (e.g a paginator widget)
 			this.trigger('view:page-changed', {
 				current: this._remote.page,
@@ -6899,12 +6902,19 @@ var I18N = {};
 				}, options);
 			},
 			onShow: function(){
-				this.header.show(HeaderRow);
-				this.body.show(Body, {
+				var that = this;
+				var body = new Body({
 					//el can be css selector string, dom or $(dom)
 					el: this.body.$el 
-					//Note that a region's el !== $el[0], but a view's el === $el[0] in Marionette
+					//Note that a region's el !== $el[0], but a view's el === $el[0] in Marionette.
+				}).on('all', function(e){
+					//setup data/page related events forwarding
+					if(/page-/.test(e) || /data-/.test(e))
+						that.trigger.apply(that, arguments);
 				});
+
+				this.header.show(HeaderRow);
+				this.body.show(body);
 				this.trigger('view:reconfigure', this._options);
 			},
 			onReconfigure: function(options){
@@ -6922,16 +6932,21 @@ var I18N = {};
 				////////////////Note that the ifs here are for early 'show' --> .set() when using local .data////////////////
 				if(this.header.currentView) //update column headers region				
 					this.header.currentView.set(this._options.columns);
-
+				if(this.body.currentView)
+					this.body.currentView._options = this._options;
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				this.trigger('view:render-data', this._options.data);
+			},
+			onRenderData: function(data){
 				if(this.body.currentView){
 					//3. rebuild body rows - let it rerender with new data array
-					this.body.currentView._options = this._options;
-					this.body.currentView.set(this._options.data);
+					this.body.currentView.trigger('view:render-data', data);
 				}
-				/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-				//4. trigger overall view:data-rendered
-				this.trigger('view:data-rendered');
+			},
+			onLoadPage: function(options){
+				if(this.body.currentView){
+					this.body.currentView.trigger('view:load-page', options);
+				}
 			},
 			set: function(data){
 				//override the default data rendering meta-event responder
@@ -7444,7 +7459,7 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.7-1007 build 1455157523620";;
+;;app.stagejs = "1.8.7-1008 build 1455168088868";;
         //Make sure this is the last line in the last script!!!
         Application.run(/*deviceready - Cordova*/);
     ;

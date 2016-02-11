@@ -20,12 +20,12 @@
 	app.view('Demo.Datatable', {
 	    template: [
 	    	'<div ui="spin"><i class="fa fa-cog fa-spin"></i> Loading...</div>',
-	    	'<div region="table"></div>',
+	    	'<div region="grid"></div>',
 	    	'<div region="footer"></div>'
 	    ],
 
 	    onShow: function(){
-	    	this.table.trigger('region:load-view', 'Datagrid', {
+	    	var datagrid = new (app.widget('Datagrid'))({
 	    		className: 'table table-hover',
 
 	    		data: Mock.mock(mockDataTpl).payload,
@@ -65,25 +65,29 @@
 	    				}
 	    			}
 	    		]
-
 	    	});
-
-	    	//load data grid page from server
-	    	var table = this.table.currentView;
-	    	table.on('row:clicked row:dblclicked', function(row){
+	    	datagrid.on('row:clicked', function(row){
 	    		app.debug('selected/focused on', row);
 	    	});
+	    	datagrid.on('row:dblclicked', function(row){
+	    		app.debug('drilled in', row);
+	    	});
+	    	datagrid.on('view:data-rendered', function(){
+	    		app.animateItems('tbody tr');
+	    	});
+			this.grid.show(datagrid);
+
+			//load data grid page from server using a Paginator
+			var self = this;
 	    	this.footer.trigger('region:load-view', 'Paginator', {
-	    		target: table.getBody(),
+	    		target: datagrid.getBody(),
 	    		className: 'pagination pagination-sm pull-right',
 	    		pageWindowSize: 3
 	    	});
-
-	    	var self = this;
-	    	table.getBody().onPageChanged = function(){
+	    	datagrid.onPageChanged = function(){
 	    		self.ui.spin.hide();
 	    	};
-	    	table.getBody().trigger('view:load-page', {
+	    	datagrid.trigger('view:load-page', {
 	    		url: 'sample/user',
 	    		page: 1,
 	    		querys: {

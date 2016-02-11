@@ -61,12 +61,19 @@
 				}, options);
 			},
 			onShow: function(){
-				this.header.show(HeaderRow);
-				this.body.show(Body, {
+				var that = this;
+				var body = new Body({
 					//el can be css selector string, dom or $(dom)
 					el: this.body.$el 
-					//Note that a region's el !== $el[0], but a view's el === $el[0] in Marionette
+					//Note that a region's el !== $el[0], but a view's el === $el[0] in Marionette.
+				}).on('all', function(e){
+					//setup data/page related events forwarding
+					if(/page-/.test(e) || /data-/.test(e))
+						that.trigger.apply(that, arguments);
 				});
+
+				this.header.show(HeaderRow);
+				this.body.show(body);
 				this.trigger('view:reconfigure', this._options);
 			},
 			onReconfigure: function(options){
@@ -84,16 +91,21 @@
 				////////////////Note that the ifs here are for early 'show' --> .set() when using local .data////////////////
 				if(this.header.currentView) //update column headers region				
 					this.header.currentView.set(this._options.columns);
-
+				if(this.body.currentView)
+					this.body.currentView._options = this._options;
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				this.trigger('view:render-data', this._options.data);
+			},
+			onRenderData: function(data){
 				if(this.body.currentView){
 					//3. rebuild body rows - let it rerender with new data array
-					this.body.currentView._options = this._options;
-					this.body.currentView.set(this._options.data);
+					this.body.currentView.trigger('view:render-data', data);
 				}
-				/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-				//4. trigger overall view:data-rendered
-				this.trigger('view:data-rendered');
+			},
+			onLoadPage: function(options){
+				if(this.body.currentView){
+					this.body.currentView.trigger('view:load-page', options);
+				}
 			},
 			set: function(data){
 				//override the default data rendering meta-event responder
