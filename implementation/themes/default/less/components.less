@@ -374,14 +374,10 @@
     h2,
     h3,
     h4,
-    h5,
-    h6,
     .h1,
     .h2,
     .h3,
-    .h4,
-    .h5,
-    .h6 {
+    .h4 {
         margin: @font-size-h1 0 @font-size-h6;
     }
     h1,
@@ -400,7 +396,15 @@
     .h4,
     .h5,
     .h6 {
-        color: @gray-light;
+        color: @gray;
+        font-weight: 600;
+    }
+    h5,
+    h6,
+    .h5,
+    .h6 {
+        margin: @font-size-h4 0 @font-size-h6;
+        text-decoration: underline;
     }
     blockquote {
         font-size: @blockquote-font-size * 0.75;

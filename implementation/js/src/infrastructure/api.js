@@ -502,7 +502,7 @@
 				html = $html.html();
 			}
 			if($target instanceof jQuery)
-				return $target.html(html);
+				return $target.html(html).addClass('md-content');
 			return html;
 		},
 

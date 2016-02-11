@@ -926,7 +926,7 @@
 				html = $html.html();
 			}
 			if($target instanceof jQuery)
-				return $target.html(html);
+				return $target.html(html).addClass('md-content');
 			return html;
 		},
 
@@ -7459,7 +7459,7 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.7-1008 build 1455168088868";;
+;;app.stagejs = "1.8.7-1009 build 1455170712080";;
         //Make sure this is the last line in the last script!!!
         Application.run(/*deviceready - Cordova*/);
     ;
