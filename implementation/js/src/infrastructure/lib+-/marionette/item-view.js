@@ -412,9 +412,21 @@
 
 		enableOverlay: function(){
 			this._overlayConfig = _.isBoolean(this.overlay)? {}: this.overlay;
-			this.overlay = function(options){
+			this.overlay = function(anchor, options){
+				var $anchor;
+				if(anchor instanceof jQuery)
+					$anchor = anchor;
+				else if(_.isPlainObject(anchor)){
+					options = anchor;
+					anchor = options.anchor;
+				}
+				//'selector' or 'el'
+				if(anchor)
+					$anchor = $(anchor);
+				else
+					$anchor = $('body');
 				options = options || {};
-				var $anchor = $(options.anchor || 'body');
+
 				var that = this;
 				this.listenTo(this, 'close', function(){
 					$anchor.overlay();//close the overlay if this.close() is called.
@@ -443,7 +455,7 @@
 	 _.extend(Backbone.Marionette.ItemView.prototype, {
 
 	 	enablePopover: function(){
-
+	 		this._popoverConfig = _.isBoolean(this.popover)? {}: this.popover;
 	 		this.popover = function(anchor, options){
 	 			//default options
 	 			var that = this,
@@ -456,16 +468,22 @@
 		 			},
 		 			$anchor;
 		 		//check para1(anchor point) is a jquery object or a DOM element
-	 			if( anchor.jquery ){
+	 			if(anchor instanceof jQuery)
 	 				//jquery object
 	 				$anchor = anchor;
-	 			}else if( anchor.nodeType ){
-	 				//DOM object
+				else if(_.isPlainObject(anchor)){
+					//none, check options.anchor
+					options = anchor;
+					anchor = options.anchor;
+				}
+	 			//'selector', 'el'
+	 			if(anchor)
 	 				$anchor = $(anchor);
-	 			}else{
+	 			else{
 	 				//wrong type of object
-	 				throw new Error("RUNTIME::popover:: the type of anchor argument is incorrent. It can only be a DOM element or a jQuery object.");
+	 				throw new Error("RUNTIME::popover:: You must specify a anchor to use for this popover view...");
 	 			}
+
 	 			//check whether there is already a popover attach to the anchor
 	 			if( $anchor.data('bs.popover') ){
 	 				var tempID = $anchor.data('bs.popover').$tip[0].id;
@@ -482,7 +500,7 @@
 	 			_.extend(defaultOptions, dataOptions);
 	 			//merge options with default options
 	 			options = options || {};
-	 			options = _.extend(defaultOptions, options);
+	 			options = _.extend(defaultOptions, this._popoverConfig, options);
 	 			//check whether the placement has auto for better placement, if not add auto
 	 			if(options.placement.indexOf('auto') < 0)
 	 				options.placement = 'auto '+options.placement;

@@ -17,7 +17,7 @@
 	Swag.registerHelpers();
 	
 	_.isPlainObject = function(o){
-		return _.isObject(o) && !_.isFunction(o) && !_.isArray();
+		return _.isObject(o) && !_.isFunction(o) && !_.isArray(o) && !_.isElement(o);
 	};
 	_.string = underscoreString;
 

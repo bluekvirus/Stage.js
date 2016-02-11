@@ -64,9 +64,12 @@
 				(new Overlay()).overlay();
 			},
 			'overlay-anchor': function(){
-				(new Overlay()).overlay({
-					anchor: $('#anchor')
-				});
+				//(new Overlay()).overlay(document.getElementById('anchor'));
+				(new Overlay()).overlay('#anchor');
+				//(new Overlay()).overlay($('#anchor'));
+				// (new Overlay()).overlay({
+				// 	anchor: '#anchor'
+				// });
 			}
 		}
 	});
