@@ -32,11 +32,16 @@ Download:
 * Application.download (url or +params)
 
 Utils:
+* Application.notify()
 * Application.markdown()
 * Application.moment
 * Application.uri
 * Application.param()
 * Application.validator
+* Application.animateItems() //css mode
+* Application.animation() //js mode
+* Application.throttle()
+* Application.debounce()
 
 Mutual Exclusion:
 * Application.lock ([topic/lock])
