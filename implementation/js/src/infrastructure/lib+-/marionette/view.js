@@ -280,6 +280,18 @@
 			});
 		}
 
+		//layout, split view into several region
+		if(this.layout){
+			//default parameters
+			var direction = this.layout.direction || 'v',
+				split = this.layout.split || 1,
+				opts = this.layout.options || {},
+				that = this;
+			this.listenTo(this, 'show', function(){
+				that.$el[direction + 'split'](split, opts);
+			});
+		}
+
 		//actions (1-click uis) - Suggestion: move from +M.ItemView to this file
 		if(this.actions && this.enableActionTags) 
 			this.enableActionTags(this.actions._bubble);

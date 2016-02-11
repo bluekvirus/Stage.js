@@ -29,7 +29,7 @@
 * 3). A positive number: user can give a single number as an argument, this plug-in will treat it as the first number of the array mentioned before.
 * 		For example: if user give 1 as argument, then all the "sub-div"s will be spread evenly. Because the plug-in will fill the ratio array as [1,1,1.....]
 *
-* Additionally, this plug-in privides options for custmizing div-bar style.
+* Additionally, this plug-in privides options for customizing div-bar style.
 * 
 * Options: {
 * 	hBarClass/vBarClass: string; defines the css class name for divide bars
@@ -54,10 +54,14 @@
 			length = $this.children().filter('div').length,
 			tempArr;
 		options = options || {};
+		//buffer so that view will not be compressed too small
+		options.buffer = options.buffer || 20;
+		//whether the size of divided region can be adjust
+		options.adjustable = options.adjustable || false;
 		//get the class name for the divider bars
-		var tempClass = options.hBarClass || 'split-hbar';
+		var tempClass = options.hBarClass || 'split-hbar',
 		//get the height of divide bars by adding an element then remove it
-		var tempElem = '<div class = "' + tempClass + '"></div>';
+			tempElem = '<div class = "' + tempClass + '"></div>';
 		$this.before(tempElem);
 		var barWidth = $this.prev().height();
 		$this.prev().remove();
@@ -128,7 +132,7 @@
 		function setLayout(target, ratioArr){
 			var length = ratioArr.length,
 				conHeight = $(target).height() - ( length - 1 ) * barWidth,
-			//calculate height for each "sub-div" in terms of percentage
+				//calculate height for each "sub-div" in terms of percentage
 				sum = 0;
 			_.each(ratioArr, function(data, index){
 				sum += data;
@@ -156,30 +160,32 @@
 					var temp = '<div class="'+tempClass+'" style="position:absolute;width:100%;left:0;top:'+top+'%;"></div>';
 					$elem.after(temp);
 					//add mouseover and resize event
-					$elem.next()
-					.mouseover(function(){
-						$(this).css({'cursor':'ns-resize'});
-					})
-					.mousedown(function(){
-						var that = this;
-						$(target).bind('mousemove', function(event){
-							//get relative postion
-							var relY = event.pageY - $(this).offset().top,
-								preTop = $(that).prev().position().top,
-								nextBottom = $(that).next().position().top + $(that).next().height();
-							if(relY > ( preTop + barWidth ) && relY < ( nextBottom - barWidth ) ){
-								$(that).css({'top':(relY/$(target).height())*100+'%'});
-								//resize "sub-div"s next to the current divider
-								resetDiv(that);
-							}
-						}).mouseup(function(){
-							$(target).unbind('mousemove');
+					if(options.adjustable){
+						$elem.next()
+						.mouseover(function(){
+							$(this).css({'cursor':'ns-resize'});
+						})
+						.mousedown(function(){
+							var that = this;
+							$(target).bind('mousemove', function(event){
+								//get relative postion
+								var relY = event.pageY - $(this).offset().top,
+									preTop = $(that).prev().position().top,
+									nextBottom = $(that).next().position().top + $(that).next().height();
+								if(relY > ( preTop + barWidth + options.buffer ) && relY < ( nextBottom - barWidth - options.buffer) ){
+									$(that).css({'top':(relY/$(target).height())*100+'%'});
+									//resize "sub-div"s next to the current divider
+									resetDiv(that);
+								}
+							}).mouseup(function(){
+								$(target).unbind('mousemove');
+							});
+							//track window mouseup 
+							$(window).mouseup(function(){
+								$(target).unbind('mousemove');
+							});
 						});
-						//track window mouseup 
-						$(window).mouseup(function(){
-							$(target).unbind('mousemove');
-						});
-					});
+					}
 					//accumulate the top
 					top += barPercentage;
 				}
@@ -192,10 +198,17 @@
 				preHeight = $divider.prev().height(),
 				preTop = $divider.prev().position().top,
 				nextTop = $divider.next().position().top,
-				nextBottom = nextTop + $divider.next().height(),
 				divTop = $divider.position().top,
 				divHeight = $divider.height(),
-				height = $divider.parent().height();
+				height = $divider.parent().height(),
+				nextBottom;
+			//check whether last divider
+			if($divider.next().next().length === 0)
+				//last
+				nextBottom = $divider.parent().position().top + $divider.parent().height();
+			else
+				//not last
+				nextBottom = $divider.next().next().position().top;
 			$divider.prev().css({'height': (( divTop - preTop ) / height) * 100 + '%'});
 			$divider.next().css({'top':(( divTop + divHeight ) / height) * 100 + '%', 'height': (( nextBottom - ( divTop + divHeight )) / height ) * 100 + '%'});
 
@@ -221,9 +234,12 @@
 			length = $(this).children().filter('div').length,
 			tempArr;
 		options = options || {};
+		//buffer so that view will not be compressed too small
+		options.buffer = options.buffer || 20;
+		//whether the size of divided region can be adjust
+		options.adjustable = options.adjustable || false;
 		//get the class name for the divider bars
 		var tempClass = options.vBarClass || 'split-vbar';
-
 		//get the height of divide bars by adding an element then remove it
 		var tempElem = '<div class="'+tempClass+'"></div>';
 		$this.after(tempElem);
@@ -311,7 +327,6 @@
 			if($(target).css('position') !== 'absolute' && $(target).css('position') !== 'relative'){
 				$(target).css({'position':'relative'});
 			}
-				
 			//
 			var left = 0;
 			$(target).children().filter('div').each(function(index, elem){
@@ -327,30 +342,32 @@
 					var temp = '<div class="'+tempClass+'" style="position:absolute;height:100%;top:0;left:'+left+'%;"></div>';
 					$elem.after(temp);
 					//add mouseover and resize event
-					$elem.next()
-					.mouseover(function(){
-						$(this).css({'cursor':'ew-resize'});
-					})
-					.mousedown(function(){
-						var that = this;
-						$(target).bind('mousemove', function(event){
-							//get relative postion
-							var relX = event.pageX - $(this).offset().left,
-								preLeft = $(that).prev().position().left,
-								nextRight = $(that).next().position().left + $(that).next().width();
-							if(relX > ( preLeft + barWidth ) && relX < ( nextRight - barWidth ) ){
-								$(that).css({'left':( relX / $(target).width() ) * 100 + '%'});
-								//resize "sub-div"s next to the current divider
-								resetDiv(that);
-							}
-						}).mouseup(function(){
-							$(target).unbind('mousemove');
+					if(options.adjustable){
+						$elem.next()
+						.mouseover(function(){
+							$(this).css({'cursor':'ew-resize'});
+						})
+						.mousedown(function(){
+							var that = this;
+							$(target).bind('mousemove', function(event){
+								//get relative postion
+								var relX = event.pageX - $(this).offset().left,
+									preLeft = $(that).prev().position().left,
+									nextRight = $(that).next().position().left + $(that).next().width();
+								if(relX > ( preLeft + barWidth + options.buffer ) && relX < ( nextRight - barWidth - options.buffer ) ){
+									$(that).css({'left':( relX / $(target).width() ) * 100 + '%'});
+									//resize "sub-div"s next to the current divider
+									resetDiv(that);
+								}
+							}).mouseup(function(){
+								$(target).unbind('mousemove');
+							});
+							//track window mouseup 
+							$(window).mouseup(function(){
+								$(target).unbind('mousemove');
+							});
 						});
-						//track window mouseup 
-						$(window).mouseup(function(){
-							$(target).unbind('mousemove');
-						});
-					});
+					}
 					//accumulate the left
 					left += barPercentage;
 				}
@@ -360,13 +377,19 @@
 		//this function expand the "sub-divs" according to the position of divide bars
 		function resetDiv(divider){
 			var $divider = $(divider),
-				preWidth = $divider.prev().width(),
 				preLeft = $divider.prev().position().left,
-				nextLeft = $divider.next().position().left,
-				nextRight = nextLeft + $divider.next().width(),
+				nextLeft = $divider.next().position().left,				
 				divLeft = $divider.position().left,
 				divWidth = $divider.width(),
-				width = $divider.parent().width();
+				width = $divider.parent().width(),
+				nextRight;
+			//check whether last divider
+			if($divider.next().next().length === 0)
+				//last
+				nextRight = $divider.parent().width();
+			else
+				//not last
+				nextRight = $divider.next().next().position().left;
 			$divider.prev().css({'width': (( divLeft - preLeft) / width ) * 100 + '%'} );
 			$divider.next().css({'left':(( divLeft + divWidth) / width) * 100 + '%', 'width': (( nextRight - ( divLeft + divWidth )) / width) * 100 + '%'});
 
