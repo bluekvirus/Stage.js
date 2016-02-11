@@ -8,7 +8,7 @@ Initialize:
 * Application.setup (options)
 * Application.run ()
 
-View:
+View Registery:
 * Application.context ([name,] options) - alias: page()
 * Application.view (name/options, options/instance)
 * Application.widget (name, options/factory)
@@ -16,13 +16,18 @@ View:
 * Application.editor.validator (name, fn) - alias: editor.rule()
 * Application.has (name, [type])
 * Application.get (name, [type])
-* Application.coop (e, [args])
+
+View Options/Api:
+* ['name', 'effect', 'template', 'templateHelpers', 'data'/'useParentData', 'ui', 'coop', 'actions', 'editors', 'tooltips', 'overlay', 'popover', 'svg']
+* view.overlay(anchor, options)
+* view.popup(anchor, options)
+* view.getViewIn(region)
 
 Handling Data:
-* View.data - 'url string', {} or []
-* View.set() (infer View.setValues())
-* View.get() (infer View.getValues())
-* View.refresh()
+* view.data - 'url string', {} or []
+* view.set() (infer View.setValues())
+* view.get() (infer View.getValues())
+* view.refresh()
 * Application.remote (options)
 * Application.extract (keypath, obj)
 * Application.cookie
@@ -32,6 +37,7 @@ Download:
 * Application.download (url or +params)
 
 Utils:
+* Application.coop (e, [args])
 * Application.notify()
 * Application.markdown()
 * Application.moment
@@ -792,9 +798,6 @@ view:render-data (data) - onRenderData [pre-defined]
 view:data-rendered
 view:resized - fired when parent region's .resize() method gets called
 
-//View with effect
-view:animated
-
 //View with navRegion
 view:navigate-chain
 view:navigate-to
@@ -966,6 +969,7 @@ Use the css animation class name you build or from the included *Animate.css* li
 
 Use `view.effect` to override region effects and `view.effect = false` to disable region effects.
 
+**Note**: All region effects are from *Animate.css* but all $.plugin effects are from jQuery UI. (e.g `view.overlay() using $.fn.overlay()`)
 
 Inputs/Editors
 --------------

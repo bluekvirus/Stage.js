@@ -34,6 +34,8 @@ Change Log
 30. Added app.throttle/debounce() apis to be used for action listeners;
 31. Added app.animateItems api;
 32. Fixed mock json searching edge case: /name.json$/ --> name.mock.js;
+33. Fixed _.isPlainObject() method;
+34. Refined view.overlay/popup() anchor argument pick-up;_
 
 working on ...
 
@@ -41,11 +43,11 @@ working on ...
 * Adding data-export script to tools (npm run data-export);
 * Adding more unit tests;
 * Adding cheatsheet;
-* Updating doc (around data handling, coop, remote, ws, form);
+* Updating doc (around data handling, coop, dnd, effect, remote, ws, form);
 * ----------next phase----------
 * Breaking down 'Basic' editors;
 * Separate modernizr/detectizr shiv bundles from deps;
-* Adding debug mode hover-in-place tpl edit and preview;
+* Adding debug mode hover-in-place tpl edit and preview (utilize app.reload());
 * Adding optional 2-way binders;
 * [cli] Update update cmd to also refresh mockups;
 
