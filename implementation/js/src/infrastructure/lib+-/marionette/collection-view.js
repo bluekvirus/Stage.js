@@ -84,7 +84,6 @@
 		/////////////////////////////
 		onRenderData: function(data){
 			this.set(data);
-			this.trigger('view:data-rendered');
 		},
 
 		//no refresh() yet (auto data-url fetch in item-view.js)
@@ -98,8 +97,11 @@
 				this.listenTo(this.collection, 'reset', this.render);
 			}
 			if(!options)
-				return this.collection.reset(data);
-			return this.collection.set(data, options);
+				this.collection.reset(data);
+			else 
+				this.collection.set(data, options);
+			this.trigger('view:data-rendered');
+			return this;
 		},
 
 		get: function(idCidOrModel){
@@ -155,7 +157,7 @@
 		onLoadPageDone: function(args){
 			var result = args[0];
 			//render this page:
-			this.trigger('view:render-data', result[this._remote.dataKey]);
+			this.set(result[this._remote.dataKey]);
 			//signal other widget (e.g a paginator widget)
 			this.trigger('view:page-changed', {
 				current: this._remote.page,

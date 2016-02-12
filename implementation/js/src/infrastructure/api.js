@@ -435,6 +435,7 @@
 		},
 
 		//effects see https://daneden.github.io/animate.css/
+		//sample usage: 'view:data-rendered' --> app.animateItems();
 		animateItems: function(selector /*or $items*/, effect, stagger){
 			var $selector = $(selector); 
 			if(_.isNumber(effect)){
@@ -501,7 +502,7 @@
 				html = $html.html();
 			}
 			if($target instanceof jQuery)
-				return $target.html(html);
+				return $target.html(html).addClass('md-content');
 			return html;
 		},
 
