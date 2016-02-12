@@ -6,6 +6,7 @@
 			'<div class="col-md-6 wrapper-full" region="split-view1"></div>',
 			'<div class="col-md-6 wrapper-full" region="split-view2"></div>',
 			'<div class="col-md-6 col-md-offset-3 wrapper-full" region="split-view3"></div>',
+			'<div class="col-md-6 col-md-offset-3 wrapper-full" id="test" style="height:15em;width:25em;border:1px solid black;">I am test div</div>',
 		],
 		onShow: function(){
 			this.$el.find('[region="split-view1"]').css({height: '25em'});
@@ -14,6 +15,11 @@
 			this.getRegion('split-view1').show(new View1());
 			this.getRegion('split-view2').show(new View2());
 			this.getRegion('split-view3').show(new View3());
+			//for test
+			this.$el.find('#test').split({
+				split: ['xs-6:123', 'md-6'],
+				type: 'bootstrap'
+			});
 		}
 	});
 
@@ -31,13 +37,13 @@
 				'<div></div>',
 			'</div>',
 		],
-		layout: {
+		/*layout: {
 			direction: 'h',
 			split: 1,
 			options: {
 				adjustable: false,
 			}
-		},
+		},*/
 		onRender: function(){
 			this.$el.css({height: '100%', border: '1px solid black'});
 		}
@@ -58,14 +64,14 @@
 			'</div>',
 			'<div></div>',
 		],
-		layout: {
+		/*layout: {
 			direction: 'v',
 			split: [2,3,1],
 			options: {
 				adjustable: true,
 				buffer: 60
 			}
-		},
+		},*/
 		onRender: function(){
 			this.$el.css({height: '100%', border: '1px solid black'});
 		}
@@ -85,13 +91,13 @@
 			'</div>',
 			'<div region="nested"></div>',
 		],
-		layout: {
+		/*layout: {
 			direction: 'v',
 			split: [2,3,1],
 			options: {
 				adjustable: true
 			}
-		},
+		},*/
 		onRender: function(){
 			this.$el.css({height: '100%',border: '1px solid black'});
 			this.getRegion('nested').show(app.view({
@@ -99,13 +105,13 @@
 					'<div></div>',
 					'<div></div>',
 				],
-				layout: {
+				/*layout: {
 					direction: 'h',
 					split: [5],
 					options: {
 						adjustable: true
 					}
-				},
+				},*/
 				onRender: function(){
 					this.$el.css({height: '100%'});
 				}
