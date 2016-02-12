@@ -17,8 +17,8 @@
 			this.getRegion('split-view3').show(new View3());
 			//for test
 			this.$el.find('#test').split({
-				split: ['xs-6:123', 'md-6'],
-				type: 'bootstrap'
+				split: ['xs-6,md-4:sample-region', 'md-6:Sample-view', 'xs-6,sm-4'],
+				type: 'bootstrap',
 			});
 		}
 	});
