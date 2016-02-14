@@ -1,21 +1,21 @@
 ###Mental preparation
 > Technique means nothing if people have no purposes in their mind. To prepare mentally to adapt something is to synchronize the mind around the subject domain so that insights can be developed while applying the technique. The ultimate goal is always to understand the subject (in our case the problem) better.
 
-> Make sure to ask enough questions, so you can quickly locate the core problem that a given technique is trying to solve efficiently. Then go apply the technique and try making changes. Soon enough, you will start to see things like the solution creator, and concepts and ideas start to come out naturally. True understanding is almost always developed this way. If you can't feel the needs and constrains, you can't see through the solution.
+> Make sure to ask enough questions, so you can quickly locate the core problem that a given technique is trying to solve efficiently. Then go apply the technique and try making changes. Soon enough, you will start to see things like the solution maker, and concepts and ideas start to come out naturally. True understanding is almost always developed this way. If you can't feel the needs and constrains, you can't see through the solution.
 
 Frameworks are ways of doing things, they are biased. If you don't feel like doing things *their* way, identify the core problems and solve them in a sequence that fits you, and that process will eventually turn into *your* own framework.
 
 ###The Web app problem
 Before start, you need to understand what is a *GUI application*, here is a brief diagram (casted upon the web realm):
 
-<img src="static/resource/default/diagram/Diagram-1.png" alt="Web App Diagram" class="center-block"></img>
+<img src="implementation/static/resource/default/diagram/Diagram-1.png" alt="Web App Diagram" class="center-block"></img>
 
 The client and server sides are different in purpose fundamentally. Thus, they should be designed and implemented differently. **Do NOT mix them**. Shutting this door will preserve a significant amount of coding/maintenance energy for the application developer(s). The best software development practice encourages separation and delaying of implementation of related components so that each part can vary independently later. And to the author, abstraction should happen after categorization (or say, classification). This is why we are advising the developers *NOT* to make an overly encapsulated framework with tools that try to bridge the gaps. Trying to control everything using central planning is a human flaw, there is no silver-bullet for trying to solve web application building in 1 piece. It will always be 3 parties in the software application world.
 
 As an engineer, the job is to find insights and solve problems between the 3 parties efficiently (profitably if you must insist...) so that the software/application serving the above system comes out correctly. This is hard. Specifically, You need to resolve 2 kinds of problem different in nature: *Interaction* and *Data Flow* in order to produce an application.
 A successful one requires both parts to employ careful design and feasible technique. We illustrate the *Interaction* problem's technical side here, since the framework is more about supporting a good design with cleaner implementation:
 
-<img src="static/resource/default/diagram/Diagram-2.png" alt="UI/UX Problems" class="center-block"></img>
+<img src="implementation/static/resource/default/diagram/Diagram-2.png" alt="UI/UX Problems" class="center-block"></img>
 
 As you can see from the above diagram, there are 3 problems here to address when implementing a UI/UX side for an application:
 1. Data <i class="fa fa-arrows-h"></i> Model/Collection [snapshot]
@@ -56,7 +56,7 @@ We choose to move away from this heavy framework to avoid its complexity and dow
 ###Essence of Design Patterns
 As *Design Patterns* dictates, we need to code in a way to:
 
-<img src="static/resource/default/diagram/Diagram-4.png" alt="Design Pattern Goals" class="center-block"></img>
+<img src="implementation/static/resource/default/diagram/Diagram-4.png" alt="Design Pattern Goals" class="center-block"></img>
 
 ###Rules of Thumb
 ####General
