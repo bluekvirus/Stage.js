@@ -65,6 +65,7 @@
                     '<li><a href="#navigate/Demo/Demo.Editors">Editors/Form</a></li>',
                     '<li><a href="#navigate/Demo/Demo.Popover">Popover</a></li>',
                     '<li><a href="#navigate/Demo/Demo.Overlay">Overlay</a></li>',
+                    '<li><a href="#navigate/Demo/Demo.Split">Split</a></li>',
                     // '<li><a href="#">Terminal</a></li>',
                   '</ul>',
                 '</li>',
