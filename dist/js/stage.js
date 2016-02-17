@@ -278,7 +278,7 @@
 				var context = path.shift();
 
 				if(!context) throw new Error('DEV::Application::navigate() Empty context/view name...');
-				var TargetContext = app.get(context, 'Context');
+				var TargetContext = app.get(context);
 				if(!TargetContext) throw new Error('DEV::Application::navigate() You must have the required context/view ' + context + ' defined...');			
 				if(!app.currentContext || app.currentContext.name !== context) {
 					
@@ -443,7 +443,7 @@
 		//----------------view------------------
 		//pass in [name,] options to define (named will be registered)
 		//pass in [name] to get (name can be of path form)
-		//pass in [name,] options, instance to create (named will be registered again)
+		//pass in [name,] instance to create (named will be registered again)
 		view: function(name /*or options*/, options /*or instance flag*/){
 			if(_.isString(name)){
 				if(_.isBoolean(options) && options) return app.Core.View.create(name);
@@ -529,30 +529,36 @@
 		get: function(name, type, tryAgain){
 			if(!name)
 				return {
-					'Context': app.Core.Context.get(),
+					'Context': app.Core.Context.get(), //similar to view, for backward compatibility.
 					'View': app.Core.View.get(),
 					'Widget': app.Core.Widget.get(),
 					'Editor': app.Core.Editor.get()
 				};
 
-			type = type || 'View';
-			var Reusable = app.Core[type] && app.Core[type].get(name);
+			var Reusable;
+			if(!type) //we merge context into view here. [part-A]
+				Reusable = app.Core.View.get(name) || app.Core.Context.get(name);
+			else
+				Reusable = app.Core[type] && app.Core[type].get(name);
+			
 			if(Reusable)
 				return Reusable;
 			else {
-				//prevent infinite loading when View name is not defined using app.pathToName() rules.
-				if(tryAgain) throw new Error('Application::get() Double check your view name defined in ' + app.nameToPath(name) + ' for ' + app.pathToName(name));
-
+				type = type || 'View';
 				//see if we have app.viewSrcs set to load the View def dynamically
 				if(app.config && app.config.viewSrcs){
 					app.inject.js(
 						_.compact([app.config.viewSrcs, type.toLowerCase(), app.nameToPath(name)]).join('/') + '.js',
 						true //sync
 					).done(function(){
-						app.debug('View injected', name, 'from', app.config.viewSrcs);
+						app.debug(type, name, 'injected', 'from', app.config.viewSrcs);
 						Reusable = true;
 					}).fail(function(jqXHR, settings, e){
-						throw new Error('DEV::Application::get() can NOT load View definition for ' + name + ' - [' + e + ']');
+						//we merge context into view here. [part-B]
+						if(tryAgain || (type !== 'View'))
+							throw new Error('DEV::Application::get() can NOT load definition for ' + name + ' - [' + e + ']');
+						else
+							Reusable = app.get(name, 'Context', true);
 					});
 				}
 			}
@@ -5063,12 +5069,12 @@ module.exports = DeepModel;
 						if(_.string.startsWith(name, '@')){
 							this.show(app.view({
 								template: name,
-							}, true));
+							}));
 							return;
 						}
 
 						//Reusable view?
-						var Reusable = app.get(name, _.isPlainObject(options)?'Widget':'View');
+						var Reusable = app.get(name, _.isPlainObject(options)?'Widget':'');
 						if(Reusable){
 							//Caveat: don't forget to pick up overridable func & properties from options in your Widget.
 							this.show(new Reusable(options));
@@ -5127,7 +5133,7 @@ module.exports = DeepModel;
 					}
 					
 					var targetViewName = pathArray.shift();
-					var TargetView = app.get(targetViewName, 'View');
+					var TargetView = app.get(targetViewName);
 
 					if(TargetView){
 						var navRegion = this.getRegion(this.navRegion);
@@ -7459,7 +7465,7 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.7-1009 build 1455170712080";;
+;;app.stagejs = "1.8.7-1014 build 1455684303962";;
         //Make sure this is the last line in the last script!!!
         Application.run(/*deviceready - Cordova*/);
     ;

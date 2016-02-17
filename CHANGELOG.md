@@ -35,7 +35,8 @@ Change Log
 31. Added app.animateItems api;
 32. Fixed mock json searching edge case: /name.json$/ --> name.mock.js;
 33. Fixed _.isPlainObject() method;
-34. Refined view.overlay/popup() anchor argument pick-up;_
+34. Refined view.overlay/popover() anchor argument pick-up;
+35. Merged the Context concept into View when using app.get(); (you can now use view as a context)
 
 working on ...
 
