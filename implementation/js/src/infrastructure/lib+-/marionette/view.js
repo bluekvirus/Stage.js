@@ -285,7 +285,7 @@
 			var that = this;
 			//call split plug-in
 			this.listenTo(this, 'show', function(){
-				that.$el.split(this.layout);
+				that.$el.split(_.result(this, 'layout'));
 			});
 		}
 

@@ -69,7 +69,7 @@
 		template: ' ',
 		layout: {
 			direction: 'v',
-			split: ['3:region-2-1', '2:region-2-2', '25px:', '3:region-2-3', '1:region-2-4'],
+			split: ['3:region-2-1', '2:region-2-2', '25px:region-fixed', '3:region-2-3', '1:region-2-4'],
 			adjustable: true,
 			min: 10
 		},

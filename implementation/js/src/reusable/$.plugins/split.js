@@ -66,6 +66,8 @@
 							rvname = 'region="' + data[1]+'"';
 						else
 							throw new Error('Dev::runtime::split-plugin::the region/view name you give is not valid.');
+					}else{
+						throw new Error('Dev::runtime::split-plugin::you need to provide a region/view name');
 					}
 					$this.append('<div class="row"><div class="col-xs-12"'+rvname+'><div class="'+barclass+'"></div></div></div>');
 				});
@@ -87,6 +89,8 @@
 							rvname = 'region="' + data[1]+'"';
 						else
 							throw new Error('Dev::runtime::split-plugin::the region/view name you give is not valid.');
+					}else{
+						throw new Error('Dev::runtime::split-plugin::you need to provide a region/view name');
 					}
 					$this.find('.split-plugin-added').append('<div class="'+classnames+'" '+rvname+'><div class="'+barclass+'" style="height:100%;"></div></div>');
 				});
@@ -120,7 +124,7 @@
 
 	};
 
-	var px_em = function(array){
+	var pxem = function(array){
 		var bool = false,
 			match = /(px|em)/;
 		for(var i = 0; i < array.length; i++){
@@ -134,7 +138,7 @@
 
 	var setFreeLayout = function($el, array, direction, adjustable, barclass, min){
 		var sum = 0,
-			sum_px = 0,
+			sumpx = 0,
 			trimmed = [],
 			barPercent,
 			totalHeight = $el.height(),
@@ -143,11 +147,11 @@
 			contentWidth,
 			current = 0;
 		//get divide bar width by adding a barclass div, getting width and removing it
-		$el.append('<div class="'+barclass+'"></div>');
-		var barwidth = $el.find('.'+barclass)[(direction === 'h')? 'height' : 'width']();
-		$el.find('.'+barclass).remove();
+		$el.append('<div class="' + barclass + '"></div>');
+		var barwidth = $el.find('.' + barclass)[(direction === 'h')? 'height' : 'width']();
+		$el.find('.' + barclass).remove();
 		//check the given height, whether there is a fixed number in it.
-		if( px_em(array) ){
+		if( pxem(array) ){
 			//take out the fixed pixel or ems, then calcualte the percentage for every block
 			_.each(array, function(data, index){
 				//store array into trimmed
@@ -156,12 +160,12 @@
 				if( trimmed[index][0].match(/(px|em)/) ){
 					if( trimmed[index][0].match(/(px)/) ){
 						//px
-						sum_px += Number.parseFloat(trimmed[index][0].match(/\d/g).join(""));
+						sumpx += Number.parseFloat(trimmed[index][0].match(/\d/g).join(""));
 					}else{
 						//em
-						sum_px += get_px( Number.parseFloat(trimmed[index][0].match(/\d/g).join("")), $el[0] );
+						sumpx += getpx( Number.parseFloat(trimmed[index][0].match(/\d/g).join("")), $el[0] );
 						//change unit into px
-						trimmed[index][0] = get_px( Number.parseFloat(trimmed[index][0].match(/\d/g).join("")), $el[0] ) + 'px';
+						trimmed[index][0] = getpx( Number.parseFloat(trimmed[index][0].match(/\d/g).join("")), $el[0] ) + 'px';
 					}
 				}else{
 					//not em or px
@@ -171,7 +175,7 @@
 			//insert divs and divide bars
 			if( direction === 'h' ){//horizontally
 				//available content height for ratio divs
-				contentHeight = totalHeight - ( array.length - 1 ) * barwidth - sum_px;
+				contentHeight = totalHeight - ( array.length - 1 ) * barwidth - sumpx;
 				barPercent = ( barwidth / totalHeight ) * 100;
 				//insert divs and bars
 				_.each(trimmed, function(data, index){
@@ -186,19 +190,19 @@
 						contentPercent = ( ( contentHeight * ( data[0] / sum ) ) / totalHeight ) * 100;
 					}
 					//check whether given a region or view name
-					rvname = get_rvname(data[1]);
+					rvname = getrvname(data[1]);
 					//insert contents horizontally
 					if( data[0].match(/(px)/) ){
 						//px in height
-						$currentEl = $('<div ' + rvname + ' style="top:' + current + '%;height:' + Number.parseFloat( data[0].match(/\d/g).join("") ) + 'px;position:absolute;"></div>').appendTo($el);
+						$currentEl = $('<div ' + rvname + ' style="top:' + current + '%;height:' + Number.parseFloat( data[0].match(/\d/g).join("") ) + 'px;position:' + position + ';"></div>').appendTo($el);
 					}else{
 						//% in height
-						$currentEl = $('<div ' + rvname + ' style="top:' + current + '%;height:' + contentPercent + '%;position:absolute;"></div>').appendTo($el);
+						$currentEl = $('<div ' + rvname + ' style="top:' + current + '%;height:' + contentPercent + '%;position:' + position + ';"></div>').appendTo($el);
 					}
 					current += contentPercent;
 					//add divide bar
 					if( index < ( array.length - 1 ) ){
-						var $element = $('<div class="' + barclass + '" style="top:' + current + '%;height:' + barPercent + '%;width:100%;position:absolute;"></div>').appendTo($el);//didn't sepcify the position property yet
+						var $element = $('<div class="' + barclass + '" style="top:' + current + '%;height:' + barwidth + 'px;width:100%;position:' + position + ';"></div>').appendTo($el);//didn't sepcify the position property yet
 						current += barPercent;
 						//adjustable divs, if fixed width, cannot be adjust
 						if( adjustable ){
@@ -237,7 +241,7 @@
 					}
 				});
 			}else{//vertically
-				contentWidth = totalWidth - ( array.length - 1 ) * barwidth - sum_px;
+				contentWidth = totalWidth - ( array.length - 1 ) * barwidth - sumpx;
 				barPercent = ( barwidth / totalWidth ) * 100;
 				//insert divs and bars
 				_.each(trimmed, function(data, index){
@@ -252,7 +256,7 @@
 						contentPercent = ( ( contentWidth * ( data[0] / sum ) ) / totalWidth ) * 100;
 					}
 					//check whether given a region or view name
-					rvname = get_rvname(data[1]);
+					rvname = getrvname(data[1]);
 					//insert contents vertically
 					if( data[0].match(/(px)/) ){
 						//px in height
@@ -264,7 +268,7 @@
 					current += contentPercent;
 					//add divide bar
 					if( index < ( array.length - 1 ) ){
-						var $element = $('<div class="' + barclass + '" style="left:' + current + '%;width:' + barPercent + '%;height:100%;position:'+position+';"></div>').appendTo($el);//didn't sepcify the position property yet
+						var $element = $('<div class="' + barclass + '" style="left:' + current + '%;width:' + barwidth + 'px;height:100%;position:'+position+';"></div>').appendTo($el);//didn't sepcify the position property yet
 						current += barPercent;
 						//ajustable divide bars
 						if(adjustable){
@@ -303,9 +307,6 @@
 					}
 				});
 			}
-			//if adjustable register resize event on the divide bar
-			
-			
 		}else{//calculate the percentage for every block, then insert divs and divde bars
 			//calculate the total ratio for all blocks
 			_.each(array, function(data, index){
@@ -322,13 +323,13 @@
 						position = (data[2])?'fixed':'absolute',
 						contentPercent = ( ( contentHeight * ( data[0] / sum ) ) / totalHeight ) * 100;
 					//check whether given a region or view name
-					rvname = get_rvname(data[1]);
+					rvname = getrvname(data[1]);
 					//insert contents horizontally
-					$el.append('<div ' + rvname + ' style="top:' + current + '%;height:' + contentPercent + '%;position:absolute;"></div>');//didn't sepcify the position property yet
+					$el.append('<div ' + rvname + ' style="top:' + current + '%;height:' + contentPercent + '%;position:' + position + ';"></div>');//didn't sepcify the position property yet
 					current += contentPercent;
 					//add divide bar
 					if( index < ( array.length - 1 ) ){
-						var $element = $('<div class="' + barclass + '" style="top:' + current + '%;height:' + barPercent + '%;width:100%;position:absolute;"></div>').appendTo($el);//didn't sepcify the position property yet
+						var $element = $('<div class="' + barclass + '" style="top:' + current + '%;height:' + barwidth + 'px;width:100%;position:' + position + ';"></div>').appendTo($el);//didn't sepcify the position property yet
 						current += barPercent;
 						//adjustable divide bar event
 						if(adjustable){
@@ -368,13 +369,13 @@
 						position = (data[2])?'fixed':'absolute';
 						contentPercent = ( ( contentWidth * ( data[0] / sum ) ) / totalWidth ) * 100;
 					//check whether given a region or view name
-					rvname = get_rvname(data[1]);
+					rvname = getrvname(data[1]);
 					//insert contents vertically
-					$el.append('<div ' + rvname + ' style="left:' + current + '%;width:' + contentPercent + '%;position:absolute;"></div>');
+					$el.append('<div ' + rvname + ' style="left:' + current + '%;width:' + contentPercent + '%;position:' + position + ';"></div>');
 					current += contentPercent;
 					//add divide bar
 					if( index < ( array.length - 1 ) ){
-						var $element = $('<div class="' + barclass + '" style="left:' + current + '%;width:' + barPercent + '%;height:100%;position:absolute;"></div>').appendTo($el);
+						var $element = $('<div class="' + barclass + '" style="left:' + current + '%;width:' + barwidth + 'px;height:100%;position:' + position + ';"></div>').appendTo($el);
 						current += barPercent;
 						//adjustable divider
 						if(adjustable){
@@ -462,13 +463,13 @@
 	};
 
 	//function for coverting em to px
-	var get_px = function(em, context) {
+	var getpx = function(em, context) {
     	// Returns a number
 	    return em * parseFloat( getComputedStyle( context || document.documentElement ).fontSize );
 	};
 
 	//get region or view name
-	var get_rvname = function(str){
+	var getrvname = function(str){
 		var rvname = '';
 		//check whether given a region or view name
 		if(str){
@@ -478,6 +479,8 @@
 				rvname = 'region="' + str + '"';
 			else
 				throw new Error('Dev::runtime::split-plugin::the region/view name you give is not valid.');
+		}else{
+			throw new Error('Dev::runtime::split-plugin::you need to provide a region/view name');
 		}
 		return rvname;
 	};
