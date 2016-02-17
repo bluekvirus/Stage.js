@@ -106,12 +106,12 @@
 						if(_.string.startsWith(name, '@')){
 							this.show(app.view({
 								template: name,
-							}, true));
+							}));
 							return;
 						}
 
 						//Reusable view?
-						var Reusable = app.get(name, _.isPlainObject(options)?'Widget':'View');
+						var Reusable = app.get(name, _.isPlainObject(options)?'Widget':'');
 						if(Reusable){
 							//Caveat: don't forget to pick up overridable func & properties from options in your Widget.
 							this.show(new Reusable(options));
@@ -170,7 +170,7 @@
 					}
 					
 					var targetViewName = pathArray.shift();
-					var TargetView = app.get(targetViewName, 'View');
+					var TargetView = app.get(targetViewName);
 
 					if(TargetView){
 						var navRegion = this.getRegion(this.navRegion);

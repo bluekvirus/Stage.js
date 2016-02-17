@@ -229,7 +229,7 @@
 				var context = path.shift();
 
 				if(!context) throw new Error('DEV::Application::navigate() Empty context/view name...');
-				var TargetContext = app.get(context, 'Context');
+				var TargetContext = app.get(context);
 				if(!TargetContext) throw new Error('DEV::Application::navigate() You must have the required context/view ' + context + ' defined...');			
 				if(!app.currentContext || app.currentContext.name !== context) {
 					
