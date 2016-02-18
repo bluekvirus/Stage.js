@@ -70,7 +70,7 @@
 					}
 				}, this);
 				this.model.set('actions', actions);
-				this.enableActionTags(true);
+				this._enableActionTags(true);
 			},
 			tooltips: true
 
