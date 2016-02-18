@@ -61,6 +61,13 @@
 			options = options || {};
 
 			this.regions = _.extend({}, this.regions, options.regions);
+
+			//insert tempalte from layout configuration
+			this.listenTo(this, 'before:render', function(){
+				if(this.layout)
+					$(this).split(_.result(this, 'layout'), true);
+			});
+			
 			//find region marks after 1-render
 			this.listenToOnce(this, 'render', function(){
 				var that = this;
@@ -123,7 +130,7 @@
 					
 				},this);
 			});
-
+			
 			//Automatically shows the region's view="" attr indicated View or @remote.tpl.html
 			//Note: re-render a view will not re-render the regions. use data change or .show() will.
 			//Note: 'all-region-shown' will sync on 'region:show' which in turn wait on enterEffects before sub-region 'view:show';

@@ -73,7 +73,7 @@
 		//override to give default empty template
 		getTemplate: function(){
 			return Marionette.getOption(this, 'template') || (
-				(Marionette.getOption(this, 'editors') || Marionette.getOption(this, 'svg'))? ' ' : '<div class="wrapper-full bg-warning"><p class="h3" style="margin:0;"><span class="label label-default" style="display:inline-block;">No Template</span> ' + this.name + '</p></div>'
+				(Marionette.getOption(this, 'editors') || Marionette.getOption(this, 'svg') || Marionette.getOption(this, 'layout'))? ' ' : '<div class="wrapper-full bg-warning"><p class="h3" style="margin:0;"><span class="label label-default" style="display:inline-block;">No Template</span> ' + this.name + '</p></div>'
 			);
 		},
 	});
@@ -277,15 +277,6 @@
 				else
 					_.extend(defaults, this.selectable);
 				this.$el.selectable(defaults);
-			});
-		}
-
-		//layout, split view into several region
-		if(this.layout){
-			var that = this;
-			//call split plug-in
-			this.listenTo(this, 'show', function(){
-				that.$el.split(_.result(this, 'layout'));
 			});
 		}
 

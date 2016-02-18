@@ -12,7 +12,7 @@
 
 ;(function($){
 
-	$.fn.split = function(options){
+	$.fn.split = function(options, view){
 		options = options || {};
 		//default parameters
 		var direction = options.direction || 'h',
@@ -23,105 +23,110 @@
 			width = options.width || '100%',
 			adjustable = options.adjustable || false,
 			barclass = options.barclass || 'split-' + direction + 'bar',
+			border = options.border || false,//for view layout
 			that = this,
-			$this = $(this);
-		//check the type of layout, bootstrap or free
-		if( type === 'bootstrap' /*bootstrap layout*/){
-			//hornor the height and width settings
-			if( height !== 'auto' )
-				$this.css({height: height});
-			if( width !== 'auto' )
-				$this.css({width: width});
-			//break split into tokens in the trimmed array
-			var bsgrid = /(xs|sm|md|lg)/,
-				trimmed = [];
-			_.each(split, function(data, index){
-				//bootstrap grid class
-				trimmed[index] = data.split(':');
-				//check whether split array has proper bootstrap-classname for every element
-				if( !trimmed[index][0].match(bsgrid) ){
-					throw new Error('Dev::runtime::split-plugin::for bootstrap type layout, you must give a proper bootstrap grid class');
-				}
-			});
-			//make the calling element position relative if not defined as relative or absolute
-			if($this.css('position') !== 'absolute' && $this.css('position') !== 'relative')
-				$this.css({position: 'relative'});
-			//check directions
-			if( direction === 'h' ){
-				_.each(trimmed, function(data, index){
-					//split classes and add col
-					var classnames = '',
-						rvname = '';
-					//--------------------bootstrap 'h' divide do not hornor classnames----------------------//
-					//--------------------it simply insert rows of divs that contains the region/view names--//
-					// _.each(data[0].split(','), function(classname){
-					// 	classnames += ( 'col-' + classname + ' ' );
-					// });
-					//--------------------------------------------------------------------------------------//
-					//check whether given a region or view name
-					if(data[1]){
-						if( data[1].charAt(0) === data[1].charAt(0).toUpperCase() )//view name uppercase
-							rvname = 'view="' + data[1]+'"';
-						else if( data[1].charAt(0) === data[1].charAt(0).toLowerCase() )//region name lowercase
-							rvname = 'region="' + data[1]+'"';
-						else
-							throw new Error('Dev::runtime::split-plugin::the region/view name you give is not valid.');
-					}else{
-						throw new Error('Dev::runtime::split-plugin::you need to provide a region/view name');
+			$this = ( view )? this : $(this);
+		//check whether is layout for view
+		if( view ){//for view
+			setViewLayout($this[0], split, height, width, border);
+		}else{//for DOM element
+			//check the type of layout, bootstrap or free
+			if( type === 'bootstrap' /*bootstrap layout*/){
+				//hornor the height and width settings
+				if( height !== 'auto' )
+					$this.css({height: height});
+				if( width !== 'auto' )
+					$this.css({width: width});
+				//break split into tokens in the trimmed array
+				var bsgrid = /(xs|sm|md|lg)/,
+					trimmed = [];
+				_.each(split, function(data, index){
+					//bootstrap grid class
+					trimmed[index] = data.split(':');
+					//check whether split array has proper bootstrap-classname for every element
+					if( !trimmed[index][0].match(bsgrid) ){
+						throw new Error('Dev::runtime::split-plugin::for bootstrap type layout, you must give a proper bootstrap grid class');
 					}
-					$this.append('<div class="row"><div class="col-xs-12"'+rvname+'><div class="'+barclass+'"></div></div></div>');
 				});
-			}else if(direction === 'v'){
-				//add a row for the columns below;
-				$this.append('<div class="row split-plugin-added"></div>');
-				_.each(trimmed, function(data, index){
-					var classnames = '',
-						rvname = '';
-					//hornor the class names for bootstrap
-					_.each(data[0].split(','), function(classname){
-						classnames += ( 'col-' + classname + ' ' );
+				//make the calling element position relative if not defined as relative or absolute
+				if($this.css('position') !== 'absolute' && $this.css('position') !== 'relative')
+					$this.css({position: 'relative'});
+				//check directions
+				if( direction === 'h' ){
+					_.each(trimmed, function(data, index){
+						//split classes and add col
+						var classnames = '',
+							rvname = '';
+						//--------------------bootstrap 'h' divide do not hornor classnames----------------------//
+						//--------------------it simply insert rows of divs that contains the region/view names--//
+						// _.each(data[0].split(','), function(classname){
+						// 	classnames += ( 'col-' + classname + ' ' );
+						// });
+						//--------------------------------------------------------------------------------------//
+						//check whether given a region or view name
+						if(data[1]){
+							if( data[1].charAt(0) === data[1].charAt(0).toUpperCase() )//view name uppercase
+								rvname = 'view="' + data[1]+'"';
+							else if( data[1].charAt(0) === data[1].charAt(0).toLowerCase() )//region name lowercase
+								rvname = 'region="' + data[1]+'"';
+							else
+								throw new Error('Dev::runtime::split-plugin::the region/view name you give is not valid.');
+						}else{
+							throw new Error('Dev::runtime::split-plugin::you need to provide a region/view name');
+						}
+						$this.append('<div class="row"><div class="col-xs-12"'+rvname+'><div class="'+barclass+'"></div></div></div>');
 					});
-					//check whether given a region or view name
-					if(data[1]){
-						if( data[1].charAt(0) === data[1].charAt(0).toUpperCase() )
-							rvname = 'view="' + data[1]+'"';
-						else if( data[1].charAt(0) === data[1].charAt(0).toLowerCase() )
-							rvname = 'region="' + data[1]+'"';
-						else
-							throw new Error('Dev::runtime::split-plugin::the region/view name you give is not valid.');
-					}else{
-						throw new Error('Dev::runtime::split-plugin::you need to provide a region/view name');
-					}
-					$this.find('.split-plugin-added').append('<div class="'+classnames+'" '+rvname+'><div class="'+barclass+'" style="height:100%;"></div></div>');
-				});
+				}else if(direction === 'v'){
+					//add a row for the columns below;
+					$this.append('<div class="row split-plugin-added"></div>');
+					_.each(trimmed, function(data, index){
+						var classnames = '',
+							rvname = '';
+						//hornor the class names for bootstrap
+						_.each(data[0].split(','), function(classname){
+							classnames += ( 'col-' + classname + ' ' );
+						});
+						//check whether given a region or view name
+						if(data[1]){
+							if( data[1].charAt(0) === data[1].charAt(0).toUpperCase() )
+								rvname = 'view="' + data[1]+'"';
+							else if( data[1].charAt(0) === data[1].charAt(0).toLowerCase() )
+								rvname = 'region="' + data[1]+'"';
+							else
+								throw new Error('Dev::runtime::split-plugin::the region/view name you give is not valid.');
+						}else{
+							throw new Error('Dev::runtime::split-plugin::you need to provide a region/view name');
+						}
+						$this.find('.split-plugin-added').append('<div class="'+classnames+'" '+rvname+'><div class="'+barclass+'" style="height:100%;"></div></div>');
+					});
+				}else{
+					throw new Error('Dev::runtime::split-plugin::direction can only be \'h\' or \'v\' for horizontal or vertical respectively.');
+				}
+			}else if( type === 'free' /*free layout*/){
+				//hornor the height and width settings
+				if( height !== 'auto' )
+					$this.css({height: height});
+				if( width !== 'auto' )
+					$this.css({width: width});
+				//make sure the parent position is at least relative
+				if($this.css('position') !== 'absolute' && $this.css('position') !== 'relative')
+					$this.css({position: 'relative'});
+				//---------------------------------------------------------------------
+				//for debug, add border for reference
+				//$this.css({border: '1px solid black'});
+				//---------------------------------------------------------------------
+				//check direction
+				if( direction === 'h' || direction === 'v' ){
+					//call setLayout function
+					setFreeLayout($this, split, direction, adjustable, barclass, min);
+				}else{
+					throw new Error('Dev::runtime::split-plugin::direction can only be \'h\' or \'v\' for horizontal or vertical respectively.');
+				}
 			}else{
-				throw new Error('Dev::runtime::split-plugin::direction can only be \'h\' or \'v\' for horizontal or vertical respectively.');
+				//error layout type
+				throw new error('Dev::runtime::split-plugin::type can only be bootstrap or free; flexbox has not been implemented');
 			}
-		}else if( type === 'free' /*free layout*/){
-			//hornor the height and width settings
-			if( height !== 'auto' )
-				$this.css({height: height});
-			if( width !== 'auto' )
-				$this.css({width: width});
-			//make sure the parent position is at least relative
-			if($this.css('position') !== 'absolute' && $this.css('position') !== 'relative')
-				$this.css({position: 'relative'});
-			//---------------------------------------------------------------------
-			//for debug, add border for reference
-			//$this.css({border: '1px solid black'});
-			//---------------------------------------------------------------------
-			//check direction
-			if( direction === 'h' || direction === 'v' ){
-				//call setLayout function
-				setFreeLayout($this, split, direction, adjustable, barclass, min);
-			}else{
-				throw new Error('Dev::runtime::split-plugin::direction can only be \'h\' or \'v\' for horizontal or vertical respectively.');
-			}
-		}else{
-			//error layout type
-			throw new error('Dev::runtime::split-plugin::type can only be bootstrap or free; flexbox has not been implemented');
 		}
-
 	};
 
 	var pxem = function(array){
@@ -134,6 +139,49 @@
 			}
 		}
 		return bool;
+	};
+
+	var setViewLayout = function($elem, split, height, width, border){
+		var bsgrid = /(xs|sm|md|lg)/,
+			bsflag = false,//flag for whether is a bootstrap
+			trimmed = [],
+			outline = (border)?'border: 1px dashed lightgrey;':' ',
+			template = '';
+		//give height and width
+		if( height !== 'auto' )
+			$elem.$el.css({height: height});
+		if( width !== 'auto' )
+			$elem.$el.css({width: width});
+		_.each(split, function(data, index){
+			trimmed[index] = data.split(':');
+			//check whether bootstrap layout
+			if( trimmed[index][0].match(bsgrid) )
+				bsflag = true;
+		});
+		//insert region/views into template
+		_.each(trimmed, function(data, index){
+			var rvname = getrvname(data[1]);
+			if(bsflag){//vertical split
+				//take care of multiple bootstrap class name
+				var classnames = data[0].split(',');
+				_.each(classnames, function(name, i){
+					classnames[i] = ' col-' + name + ' ';
+				});
+				classnames = classnames.join('');
+				template += '<div class="' + classnames + '" ' + rvname + ' style="' + outline + '"></div>';
+			}else{//horizontal split
+				template += '<div ' + rvname + ' style="flex-grow:'+ Number.parseFloat(data[0]) +';' + outline + '"></div>';
+			}
+		});
+		//trimmed the parent container depends on direction
+		if( bsflag )
+			//add a row for col's
+			template = '<div class="row">' + template + '</div>';
+		else
+			//add flex box for view.$el
+			$elem.$el.css({display: 'flex', 'flex-direction': 'column', 'flex-wrap:': 'nowrap', 'justify-content': 'space-around'});
+		//pass tempalte to $el
+		$elem.template = template;
 	};
 
 	var setFreeLayout = function($el, array, direction, adjustable, barclass, min){
@@ -200,6 +248,9 @@
 						$currentEl = $('<div ' + rvname + ' style="top:' + current + '%;height:' + contentPercent + '%;position:' + position + ';"></div>').appendTo($el);
 					}
 					current += contentPercent;
+					//for last div, if not ajustable, remove binded event on previous div bar
+					if( index == array.length - 1 &&  data[0].match(/(px)/))
+						$currentEl.prev().unbind('mouseover mousedown mouseup');
 					//add divide bar
 					if( index < ( array.length - 1 ) ){
 						var $element = $('<div class="' + barclass + '" style="top:' + current + '%;height:' + barwidth + 'px;width:100%;position:' + position + ';"></div>').appendTo($el);//didn't sepcify the position property yet
@@ -208,9 +259,10 @@
 						if( adjustable ){
 							if( data[0].match(/(px)/) ){
 								//cannot be adjust
-								if($currentEl.prev().length > 0)
+								if($currentEl.prev().length > 0){
 									//cancel all the events registed on previous divide bar
 									$currentEl.prev().unbind('mouseover mousedown mouseup');
+								}
 							}else{
 								$element
 								.mouseover(function(){
@@ -266,6 +318,9 @@
 						$currentEl = $('<div ' + rvname + ' style="left:' + current + '%;width:' + contentPercent + '%;position:'+position+';"></div>').appendTo($el);
 					}
 					current += contentPercent;
+					//for last div, if not ajustable, remove binded event on previous div bar
+					if( index == array.length - 1 &&  data[0].match(/(px)/))
+						$currentEl.prev().unbind('mouseover mousedown mouseup');
 					//add divide bar
 					if( index < ( array.length - 1 ) ){
 						var $element = $('<div class="' + barclass + '" style="left:' + current + '%;width:' + barwidth + 'px;height:100%;position:'+position+';"></div>').appendTo($el);//didn't sepcify the position property yet

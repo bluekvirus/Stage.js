@@ -4,21 +4,35 @@
 		template: [
 			'<div class="col-md-6 wrapper-full" region="split-view1"></div>',
 			'<div class="col-md-6 wrapper-full" region="split-view2"></div>',
-			'<div class="col-md-6 wrapper-full" region="split-view3"></div>',
-			//'<div class="col-md-6 wrapper-full" region="split-view4"></div>',
-			'<div class="col-md-6 wrapper-full" style="height:25em;"><div id="test" style="border: 1px solid black;"></div></div>',
+			'<div class="col-md-6 wrapper-full" style="height:25em;"><div id="div-split1" style="border: 1px solid black;"></div></div>',
+			'<div class="col-md-6 wrapper-full" style="height:25em;"><div id="div-split2" style="border: 1px solid black;"></div></div>',
 		],
 		onShow: function(){
 			this.$el.find('[region="split-view1"]').css({height: '25em'});
 			this.$el.find('[region="split-view2"]').css({height: '25em'});
-			this.$el.find('[region="split-view3"]').css({height: '25em'});
-			//this.$el.find('[region="split-view4"]').css({height: '25em'});
 			this.getRegion('split-view1').show(new View1());
 			this.getRegion('split-view2').show(new View2());
-			this.getRegion('split-view3').show(new View3());
-			//this.getRegion('split-view4').show(new View4());
-			//for test
-			this.$el.find('#test').split({
+			//for div-split1
+			this.$el.find('#div-split1').split({
+				split: ['1:r1', '2:r2', '50px:r3'],
+				direction: 'h',
+				adjustable: true,
+				min: 50
+			});
+			this.$el.find('[region="r1"]').html('<div style="color:#626262;">You can simply use the split plugin in any div.</div>');
+			this.$el.find('[region="r2"]').html(			
+				'<div style="color:#626262;">'+
+					'<div>$SomeDiv.split({</div>'+
+					'<div>&nbsp;&nbsp;&nbsp;&nbsp; direction: \'h\'</div>'+
+					'<div>&nbsp;&nbsp;&nbsp;&nbsp; split: [\'1:r1\', \'2:r2\', \'50px:r3\'],</div>'+
+					'<div>&nbsp;&nbsp;&nbsp;&nbsp; adjustable: true,</div>'+
+					'<div>&nbsp;&nbsp;&nbsp;&nbsp; min: 50</div>'+
+					'<div>}</div>'+
+				'</div>'
+			);
+			this.$el.find('[region="r3"]').html('<div style="color:#626262;">If a region has a fixed px/em width/height, it cannot be adjusted even if adjustable is true.</div>');
+			//for div-split2
+			this.$el.find('#div-split2').split({
 				split: ['1:sample-region-1', '2:sample-region-2'],
 				direction: 'v',
 				adjustable: true,
@@ -27,111 +41,69 @@
 			this.$el.find('[region="sample-region-2"]').html(			
 				'<div style="color:#626262;">'+
 					'<div>$SomeDiv.split({</div>'+
-					'<div>&nbsp;&nbsp;&nbsp;&nbsp; direction: \'h\'</div>'+
+					'<div>&nbsp;&nbsp;&nbsp;&nbsp; direction: \'v\'</div>'+
 					'<div>&nbsp;&nbsp;&nbsp;&nbsp; split: [\'1:sample-region-1\', \'2:sample-region-2\'],</div>'+
-					'<div>&nbsp;&nbsp;&nbsp;&nbsp; options: {</div>'+
-					'<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; adjustable: true,</div>'+
-					'<div>&nbsp;&nbsp;&nbsp;&nbsp; });</div>'+
+					'<div>&nbsp;&nbsp;&nbsp;&nbsp; adjustable: true,</div>'+
+					'<div>}</div>'+
 				'</div>'
 			);
-
 		}
 	});
 
 	var View1 = app.view({
-		template: ' ',
+		template: '',
 		name: 'split-view1',
 		layout: {
-			direction: 'h',
 			split: ['1:region-1-1', '2:region-1-2'],
-			options: {
-				adjustable: false,
-			}
+			border: true //use this to show border of regions for developing purpose.
 		},
 		onShow: function(){
-			this.$el.css({height: '100%', border: '1px solid black'});
-			this.$el.find('[region="region-1-1"]').html('<div style="color:#626262;">This is a FREE horizontally divided view, which contains two regions. <br>You can load any view to the regions as you like during the onShow event.</div>');
-			this.$el.find('[region="region-1-2"]').html(			
-				'<div style="color:#626262;">'+
-					'<div>layout: {</div>'+
-					'<div>&nbsp;&nbsp;&nbsp;&nbsp; direction: \'h\'</div>'+
-					'<div>&nbsp;&nbsp;&nbsp;&nbsp; split: [\'1:region-1-1\', \'2:region-1-2\'],</div>'+
-					'<div>&nbsp;&nbsp;&nbsp;&nbsp; options: {</div>'+
-					'<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; adjustable: false,</div>'+
-					'<div>&nbsp;&nbsp;&nbsp;&nbsp; }</div>'+
-				'</div>'
-			);
+			//set height
+			this.$el.css({height: '100%'});
+			//show first view
+			this.getRegion('region-1-1').show(app.view({
+				template: '<div style="color:#626262;">This is a horizontally divided view, which contains two regions. <br>You can load any view to the regions as you like during the onShow event.</div>'
+			},true));
+			//show second view
+			this.getRegion('region-1-2').show(app.view({
+				template: [
+					'<div style="color:#626262;">',
+						'<div>layout: {</div>',
+						'<div>&nbsp;&nbsp;&nbsp;&nbsp; split: [\'1:region-1-1\', \'2:region-1-2\'],</div>',
+						'<div>&nbsp;&nbsp;&nbsp;&nbsp; border: ture //use this to show border of regions for developing purpose.</div>',
+						'<div>}</div>',
+					'</div>'
+				],
+			},true));
 		}
 	});
 
 	var View2 = app.view({
-		name: 'split-view2',
-		template: ' ',
-		layout: {
-			direction: 'v',
-			split: ['3:region-2-1', '2:region-2-2', '25px:region-fixed', '3:region-2-3', '1:region-2-4'],
-			adjustable: true,
-			min: 10
-		},
-		onShow: function(){
-			this.$el.css({height: '100%', border: '1px solid black'});
-			this.$el.find('[region="region-2-1"]').html('<div style="color:#626262;">This is a FREE vertically divided view, which contains 3 regions, 1 View, and a fixed width column.</div>');
-			this.$el.find('[region="region-2-2"]').html('<div style="color:#626262;">The right one is a fixed width column, so you cannot change its width even though adjustable is true.</div>');
-			this.$el.find('[region="region-2-3"]').html(
-				'<div style="color:#626262;">'+
-					'<div>layout: {</div>'+
-					'<div>&nbsp;&nbsp;&nbsp;&nbsp; direction: \'h\'</div>'+
-					'<div>&nbsp;&nbsp;&nbsp;&nbsp; split: [\'3:region-2-1\', \'2:region-2-2\', \'25px\', \'3:region-2-4\', \'1:\']</div>'+
-					'<div>&nbsp;&nbsp;&nbsp;&nbsp; adjustable: true,</div>'+
-					'<div>&nbsp;&nbsp;&nbsp;&nbsp; min: 10</div>'+
-					'<div>&nbsp;&nbsp;&nbsp;&nbsp; }</div>'+
-				'</div>'
-			);
-		}
-	});
-
-	var View3 = app.view({
 		name: 'split-view3',
-		template: ' ', 
+		template: '', 
 		layout: {
-			direction: 'h',
-			split: ['xs-12:region-3-1', 'xs-6:region-3-2', 'md-2:region-3-3'],
-			type: 'bootstrap'
+			split: ['xs-6,md-4:region-3-1', 'md-4:View-3-2', 'md-4:region-3-3'],
 		},
 		onShow: function(){
 			this.$el.css({height: '100%', border: '1px solid black'});
-			this.$el.find('[region="region-3-1"]').prepend($('<div style="color:#626262;">You can also divide by using bootstrap layout to divide view.</div>'));
-			this.$el.find('[region="region-3-2"]').prepend($('<div style="color:#626262;">This is a view divided into three bootstrap rows.'+
-				'<div>layout: {</div>'+
-				'<div>&nbsp;&nbsp;&nbsp;&nbsp; direction: \'h\'</div>'+
-				'<div>&nbsp;&nbsp;&nbsp;&nbsp; split: [\'xs-12:region-3-1\', \'xs-6:region-3-2\', \'md-2:region-3-3\'],</div>'+
-				'<div>&nbsp;&nbsp;&nbsp;&nbsp; type: bootstrap</div>'+
-				'</div>'
-			));
-			this.$el.find('[region="region-3-3"]').prepend($('<div style="color:#626262;">Note that when divide horizontally with bootstrap, it will NOT hornor the column class.</div>'));
+			this.getRegion('region-3-1').show(app.view({
+				template: '<div style="color:#626262;">You can also divide view vertically by using bootstrap layout.</div>'
+			}, true));
+			this.getRegion('region-3-3').show(app.view({
+				template: [
+					'<div style="color:#626262;">The parent view is divided into three bootstrap columns.',
+						'<div>layout: {</div>',
+						'<div>&nbsp;&nbsp;&nbsp;&nbsp; split: [<br>\'xs-12,md-8:region-3-1\',<br> \'md-4:View-3-2\',<br> \'lg-12:region-3-3\'<br>&nbsp;&nbsp;&nbsp;&nbsp;],</div>',
+						'<div>}</div>',
+					'</div>'
+				],
+			},true));
 		}
 	});
 
-/*	var View4 = app.view({
-		name: 'split-view4',
-		template: ' ', 
-		layout: {
-			direction: 'v',
-			split: ['xs-12:region-4-1', 'xs-6:region-4-2', 'md-6:region-4-3'],
-			type: 'bootstrap'
-		},
-		onShow: function(){
-			this.$el.css({height: '100%', border: '1px solid black'});
-			this.$el.find('[region="region-4-1"]').prepend($('<div style="color:#626262;">Similar for vertically bootstrap dividing.</div>'));
-			this.$el.find('[region="region-4-2"]').prepend($('<div style="color:#626262;">'+
-				'<div>layout: {</div>'+
-				'<div>&nbsp;&nbsp;&nbsp;&nbsp; direction: \'v\'</div>'+
-				'<div>&nbsp;&nbsp;&nbsp;&nbsp; split: [\'xs-12:region-4-1\', \'xs-6:region-4-2\', \'md-6:region-4-3\'],</div>'+
-				'<div>&nbsp;&nbsp;&nbsp;&nbsp; type: bootstrap</div>'+
-				'</div>'
-			));
-			this.$el.find('[region="region-4-3"]').prepend($('<div style="color:#626262;">Note that when divide vertically with bootstrap, it will hornor the column class.</div>'));
-		}
-	});*/
+	var Temp = app.view({
+		name: 'View-3-2',
+		template: '<div style="color:#626262;">This is a view<br>loaded by using<br>md-4:View-3-2</div>',
+	});
 
 })(Application);
