@@ -61,7 +61,7 @@
  *
  * Constrain
  * =========
- * Do addon/transform stuff in onRender() *Do NOT* use onShow() it won't be invoked by enableEditors() enhancement in ItemView/Layout.
+ * Do addon/transform stuff in onRender() *Do NOT* use onShow() it won't be invoked by _enableEditors() enhancement in ItemView/Layout.
  * 
  *
  * @author Tim Lauv
@@ -264,11 +264,11 @@
 
 				//prep tooltip upon rendered.
 				if(options.tooltip)
-					this.enableTooltips(_.isObject(options.tooltip)?options.tooltip:{});
+					this._enableTooltips(_.isObject(options.tooltip)?options.tooltip:{});
 
 				//prep fileupload if type === 'file'
 				if(options.type === 'file'){
-					this.enableActionTags('Editor.File');
+					this._enableActionTags('Editor.File');
 					if(!options.upload || !options.upload.url) throw new Error('DEV::Editor.Basic.File::You need options.upload.url to point to where to upload the file.');
 
 					//1. listen to editor:change so we can reveal [upload] and [clear] buttons
