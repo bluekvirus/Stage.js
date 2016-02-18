@@ -130,7 +130,7 @@
 					
 				},this);
 			});
-			
+
 			//Automatically shows the region's view="" attr indicated View or @remote.tpl.html
 			//Note: re-render a view will not re-render the regions. use data change or .show() will.
 			//Note: 'all-region-shown' will sync on 'region:show' which in turn wait on enterEffects before sub-region 'view:show';
