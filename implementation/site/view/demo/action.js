@@ -339,10 +339,10 @@
 				 app.notify('Action triggered!', 'Change action!', 'danger');
 			},
 			submit: function(){
-				app.notify('Action triggered!', 'submit action!', 'info');
+				app.notify('Action triggered!', 'Submit action!', 'info');
 			},
 			select: function(){
-				app.notify('Action triggered!', 'submit action!', 'warning');
+				app.notify('Action triggered!', 'Select action!', 'warning');
 			}
 		},
 		editors: {

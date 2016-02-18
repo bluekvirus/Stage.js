@@ -41,6 +41,7 @@ Change Log
 working on ...
 
 * Adding .layout config to view;
+* Adding .more() api to view (Layout);
 * Adding data-export script to tools (npm run data-export);
 * Adding more unit tests;
 * Adding cheatsheet;
