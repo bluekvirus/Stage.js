@@ -72,10 +72,13 @@
 			this.regions = _.extend({}, this.regions, options.regions);
 
 			//insert tempalte from layout configuration
-			this.listenTo(this, 'before:render', function(){
-				if(this.layout)
-					$(this).split(_.result(this, 'layout'), true);
-			});
+			// this.listenTo(this, 'before:render', function(){
+			// 	if(this.layout)
+			// 		$(this).split(_.result(this, 'layout'), this);
+			// });
+			
+			if(this.layout)
+				$(this).split(_.result(this, 'layout'), this);
 			
 			//find region marks after 1-render
 			this.listenToOnce(this, 'render', function(){

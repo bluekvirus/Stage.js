@@ -58,7 +58,7 @@
 		},
 		onShow: function(){
 			//set height
-			this.$el.css({height: '100%'});
+			/*this.$el.css({height: '100%'});
 			//show first view
 			this.getRegion('region-1-1').show(app.view({
 				template: '<div style="color:#626262;">This is a horizontally divided view, which contains two regions. <br>You can load any view to the regions as you like during the onShow event.</div>'
@@ -73,7 +73,7 @@
 						'<div>}</div>',
 					'</div>'
 				],
-			},true));
+			},true));*/
 		}
 	});
 

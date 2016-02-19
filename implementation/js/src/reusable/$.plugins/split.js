@@ -35,7 +35,7 @@
 			$this = ( view )? this : $(this);
 		//check whether is layout for view
 		if( view ){//for view
-			setViewLayout($this[0], split, height, width);
+			setViewLayout(view, direction, adjustable, split, height, width, barclass);
 		}else{//for DOM element
 			setDomLayout($this, direction, adjustable, split, height, width, barclass);
 		}
@@ -200,7 +200,13 @@
 		}
 	};
 
-	var setViewLayout = function($elem, split, height, width){
+	var setViewLayout = function(view, direction, adjustable, split, height, width, barclass){
+		view.listenTo(view, 'before:render', function(){
+			
+		});
+	};
+
+	var setViewLayoutOld = function($elem, split, height, width){
 		var trimmed = [],
 			template = '';
 		//give height and width
@@ -220,6 +226,7 @@
 			$elem.$el.css({display: 'flex', 'flex-direction': 'column', 'flex-wrap:': 'nowrap', 'justify-content': 'space-around'});
 		//pass tempalte to $el
 		$elem.template = template;
+		$elem.$el.append($('<div>test-test</div>'));
 	};
 
 	//get region or view name
