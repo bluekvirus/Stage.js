@@ -11,7 +11,7 @@
 			this.$el.find('[region="split-view1"]').css({height: '25em'});
 			this.$el.find('[region="split-view2"]').css({height: '25em'});
 			this.getRegion('split-view1').show(new View1());
-			this.getRegion('split-view2').show(new View2());
+			//this.getRegion('split-view2').show(new View2());
 			//for div-split1
 			this.$el.find('#div-split1').split({
 				split: ['1:r1', '2:r2', '50px:r3'],
@@ -55,11 +55,10 @@
 		name: 'split-view1',
 		layout: {
 			split: ['1:region-1-1', '2:region-1-2'],
-			border: true //use this to show border of regions for developing purpose.
 		},
 		onShow: function(){
 			//set height
-			this.$el.css({height: '100%'});
+			/*this.$el.css({height: '100%'});
 			//show first view
 			this.getRegion('region-1-1').show(app.view({
 				template: '<div style="color:#626262;">This is a horizontally divided view, which contains two regions. <br>You can load any view to the regions as you like during the onShow event.</div>'
@@ -74,7 +73,7 @@
 						'<div>}</div>',
 					'</div>'
 				],
-			},true));
+			},true));*/
 		}
 	});
 

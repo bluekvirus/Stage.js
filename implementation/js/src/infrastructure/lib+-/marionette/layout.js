@@ -47,9 +47,14 @@
 		},
 
 		//add more items into a specific region
-		more: function(region /*or selector, el, $el*/, data /*array only*/, View /*or name*/){
+		more: function(region /*name only*/, data /*array only*/, View /*or name*/, uniqProp /*or fn(obj)->uniqProp*/){
 			//TBI
-		}
+		},
+
+		//lock or unlock a region with overlayed spin/view (e.g waiting)
+		lock: function(region /*name only*/, flag /*true or false*/, View /*or icon name for .fa-spin*/){
+
+		},
 	});
 
 	/**
@@ -67,10 +72,13 @@
 			this.regions = _.extend({}, this.regions, options.regions);
 
 			//insert tempalte from layout configuration
-			this.listenTo(this, 'before:render', function(){
-				if(this.layout)
-					$(this).split(_.result(this, 'layout'), true);
-			});
+			// this.listenTo(this, 'before:render', function(){
+			// 	if(this.layout)
+			// 		$(this).split(_.result(this, 'layout'), this);
+			// });
+			
+			if(this.layout)
+				$(this).split(_.result(this, 'layout'), this);
 			
 			//find region marks after 1-render
 			this.listenToOnce(this, 'render', function(){
