@@ -70,13 +70,8 @@
 			options = options || {};
 
 			this.regions = _.extend({}, this.regions, options.regions);
-
-			//insert tempalte from layout configuration
-			// this.listenTo(this, 'before:render', function(){
-			// 	if(this.layout)
-			// 		$(this).split(_.result(this, 'layout'), this);
-			// });
 			
+			//hornor layout configuration with split plug-in
 			if(this.layout)
 				$(this).split(_.result(this, 'layout'), this);
 			
