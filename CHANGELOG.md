@@ -37,6 +37,7 @@ Change Log
 33. Fixed _.isPlainObject() method;
 34. Refined view.overlay/popover() anchor argument pick-up;
 35. Merged the Context concept into View when using app.get(); (you can now use view as a context)
+36. Added .callout to theme base;
 
 working on ...
 

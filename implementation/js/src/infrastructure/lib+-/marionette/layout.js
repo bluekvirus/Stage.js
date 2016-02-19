@@ -47,9 +47,14 @@
 		},
 
 		//add more items into a specific region
-		more: function(region /*or selector, el, $el*/, data /*array only*/, View /*or name*/){
+		more: function(region /*name only*/, data /*array only*/, View /*or name*/, uniqProp /*or fn(obj)->uniqProp*/){
 			//TBI
-		}
+		},
+
+		//lock or unlock a region with overlayed spin/view (e.g waiting)
+		lock: function(region /*name only*/, flag /*true or false*/, View /*or icon name for .fa-spin*/){
+
+		},
 	});
 
 	/**
