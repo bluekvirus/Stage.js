@@ -6,12 +6,16 @@
 			'<div class="col-md-6 wrapper-full" region="split-view2"></div>',
 			'<div class="col-md-6 wrapper-full" style="height:25em;"><div id="div-split1" style="border: 1px solid black;"></div></div>',
 			'<div class="col-md-6 wrapper-full" style="height:25em;"><div id="div-split2" style="border: 1px solid black;"></div></div>',
+			'<div class="col-md-6 wrapper-full" region="split-nested"></div>',
+			'<div class="col-md-6 wrapper-full" style="height:25em;"><div id="div-split3" style="border: 1px solid black;"></div></div>',
 		],
 		onShow: function(){
 			this.$el.find('[region="split-view1"]').css({height: '25em'});
 			this.$el.find('[region="split-view2"]').css({height: '25em'});
+			this.$el.find('[region="split-nested"]').css({height: '25em'});
 			this.getRegion('split-view1').show(new View1());
 			this.getRegion('split-view2').show(new View2());
+			this.getRegion('split-nested').show(new View3());
 			//for div-split1
 			this.$el.find('#div-split1').split({
 				split: ['1:r1', '2:r2', '50px:r3'],
@@ -41,6 +45,26 @@
 					'<div>$SomeDiv.split({</div>'+
 					'<div>&nbsp;&nbsp;&nbsp;&nbsp; direction: \'v\'</div>'+
 					'<div>&nbsp;&nbsp;&nbsp;&nbsp; split: [\'1:sample-region-1\', \'2:sample-region-2\'],</div>'+
+					'<div>&nbsp;&nbsp;&nbsp;&nbsp; adjustable: true,</div>'+
+					'<div>}</div>'+
+				'</div>'
+			);
+			//for div-split3
+			this.$el.find('#div-split3').split({
+				split:{
+					'1:dom-nested-1:': ['1:dom-nested-1-1:','2:dom-nested-1-2:'],
+					'2:dom-nested-2:': ['30em:dom-nested-2-1:','1:dom-nested-1-2:'],
+				},
+				adjustable: true,
+			});
+			this.$el.find('[region="dom-nested-2-1"]').html(			
+				'<div style="color:#626262;">'+
+					'<div>You can also use two 2-dimension layout on DOM elements.</div>'+
+					'<div>$SomeDiv.split({</div>'+
+					'<div>&nbsp;&nbsp;&nbsp;&nbsp; split: {</div>'+
+					'<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \'1:nested-1:\': [\'1:dom-nested-1-1:\',\'2:Vdom-nested-1-2:\'],</div>'+
+					'<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \'2:nested-2\': [\'30em:dom-nested-2-1:\',\'1:dom-nested-1-2:\'],</div>'+
+					'<div>&nbsp;&nbsp;&nbsp;&nbsp; }</div>'+
 					'<div>&nbsp;&nbsp;&nbsp;&nbsp; adjustable: true,</div>'+
 					'<div>}</div>'+
 				'</div>'
@@ -75,7 +99,7 @@
 	});
 
 	var View2 = app.view({
-		name: 'split-view3',
+		name: 'split-view2',
 		template: '', 
 		layout: {
 			split: ['2:region-3-1', '2:View-3-2', '3:region-3-3'],
@@ -103,6 +127,34 @@
 	var Temp = app.view({
 		name: 'View-3-2',
 		template: '<div style="color:#626262;">This is a view<br>loaded by using<br>2:View-3-2</div>',
+	});
+
+	var View3 = app.view({
+		template: '',
+		name: 'split-nested',
+		layout:{
+			split:{
+				'1:nested-1:': ['1:nested-1-1:','2:View-3-2:'],
+				'2:nested-2:': ['30em:nested-2-1:','1:nested-1-2:'],
+			},
+			adjustable: true
+		},
+		onShow: function(){
+			this.$el.css({height: '100%', border: '1px solid black'});
+			this.getRegion('nested-2-1').show(app.view({
+				template:[
+					'<div style="color:#626262;">You can simply create a 2-dimension layout by passing an object as split parameter.',
+						'<div>layout: {</div>',
+						'<div>&nbsp;&nbsp;&nbsp;&nbsp; split: {</div>',
+						'<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \'1:nested-1:\': [\'1:nested-1-1:\',\'2:View-3-2:\'],</div>',
+						'<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \'2:nested-2\': [\'30em:nested-2-1:\',\'1:nested-1-2:\'],</div>',
+						'<div>&nbsp;&nbsp;&nbsp;&nbsp; }</div>',
+						'<div>&nbsp;&nbsp;&nbsp;&nbsp; adjustable: true</div>',
+						'<div>}</div>',
+					'</div>'
+				]
+			},true));
+		}
 	});
 
 })(Application);
