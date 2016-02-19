@@ -70,6 +70,11 @@
 			options = options || {};
 
 			this.regions = _.extend({}, this.regions, options.regions);
+			
+			//hornor layout configuration with split plug-in
+			if(this.layout)
+				$(this).split(_.result(this, 'layout'), this);
+			
 			//find region marks after 1-render
 			this.listenToOnce(this, 'render', function(){
 				var that = this;
