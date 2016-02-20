@@ -1,32 +1,35 @@
-/*
- *layout: {
- *	direction: 'h' or 'v',
- *	split: ['1:region', '1:View', 'xs-6, md-4:region', 'md-6:View', '1:region:fixed', '2:View:fixed'],
- *	height: 'auto' || number,
- *	width: 'auto' || number,
- *	adjustable: true or false
- *	barclass: '...' //css class name for divide bars
- *}
+/**
+ * This is the pulg-in that horizontally/vertically spread the children of an div according to the options below.
+ * options: {
+ *		direction: 'h' or 'v',
+ *	 	split: ['1:region', '1:View', 'xs-6, md-4:region', 'md-6:View', '1:region:fixed', '2:View:fixed'],
+ *	  	height: 'auto' || number,
+ *	   	width: 'auto' || number,
+ *	    adjustable: true or false
+ *	    barClass: '...' //css class name for divide bars
+ *  }
+ * @author Patrick Zhu
+ * @created 2016.02.09
  */
+
 ;(function($){
 	//main function
 	$.fn.split = function(options){
 		options = options || {};
 		//default parameters
 		var direction = options.direction || 'h',
-			split = options.split || ['1:sample-region', '1'],
-			type = options.type || 'free',
+			split = options.split || ['1:sample-region', '1:SampleView'],
+			//type = options.type || 'free', //not used until future 'boostrap' support
 			//min = options.min || 20, //do not work well with flexbox
 			height = options.height || '100%',
 			width = options.width || '100%',
 			adjustable = options.adjustable || false,
-			barclass = options.barclass || 'split-' + direction + 'bar',
-			that = this,
+			barClass = options.barClass || 'split-' + direction + 'bar',
 			$this = ( this[0].$el ) ? this[0].$el : $(this);
-		setDomLayout($this, direction, adjustable, split, height, width, barclass);
+		setDomLayout($this, direction, adjustable, split, height, width, barClass);
 	};
 	//functions
-	var setDomLayout = function($elem, direction, adjustable, split, height, width, barclass){
+	var setDomLayout = function($elem, direction, adjustable, split, height, width, barClass){
 		var trimmed = [],
 			dir = ( direction === 'h' )? 'column' : 'row',
 			template = '';
@@ -78,17 +81,17 @@
 						$currentEl;
 					//check whether fixed or not
 					if(data[0].match(/(px)/)){//fixed px
-						$currentEl = $('<div ' + getrvname(data[1]) + ' style="flex: 0 0 ' + Number.parseFloat(data[0]) + 'px;' + position + '"></div>').appendTo($elem);
+						$currentEl = $('<div ' + getRegionOrViewName(data[1]) + ' style="flex: 0 0 ' + Number.parseFloat(data[0]) + 'px;' + position + '"></div>').appendTo($elem);
 					}else if(data[0].match(/(em)/)){//fixed em
-						$currentEl = $('<div ' + getrvname(data[1]) + ' style="flex: 0 0 ' + Number.parseFloat(data[0]) + 'em;' + position + '"></div>').appendTo($elem);
+						$currentEl = $('<div ' + getRegionOrViewName(data[1]) + ' style="flex: 0 0 ' + Number.parseFloat(data[0]) + 'em;' + position + '"></div>').appendTo($elem);
 					}else{//not fixed px or em
-						$currentEl = $('<div '+ getrvname(data[1]) +' style="flex:' + Number.parseFloat(data[0]) + ';' + position + '"></div>').appendTo($elem);
+						$currentEl = $('<div '+ getRegionOrViewName(data[1]) +' style="flex:' + Number.parseFloat(data[0]) + ';' + position + '"></div>').appendTo($elem);
 					}
 					if( index < split.length - 1 )
-						$bar = $('<div class="' + barclass + '" style="flex: 0 0 2px;"></div>'/*2px is temprary place holder*/).appendTo($elem);
+						$bar = $('<div class="' + barClass + '" style="flex: 0 0 2px;"></div>'/*2px is temprary place holder*/).appendTo($elem);
 				});
 				//insert a bar at the end to get real height/width later
-				var $bar = $('<div class="' + barclass + '"></div>').appendTo($elem);
+				var $bar = $('<div class="' + barClass + '"></div>').appendTo($elem);
 				//use defer to get height/width after the bar is ready;
 				_.defer(function(){
 					//get barwidth
@@ -98,7 +101,7 @@
 					//remove $bar
 					$bar.remove();
 					//setup all the bars
-					_.each($elem.find('>div+.' + barclass), function(data, index){
+					_.each($elem.find('>div+.' + barClass), function(data, index){
 						var $data = $(data);
 						//overwrite default flex style
 						$data.css({
@@ -205,11 +208,11 @@
 					var position = (data[2]) ? 'position:' + data[2] + ';' : '';
 					//check whether fixed or not
 					if(data[0].match(/(px)/)){//fixed px
-						template += '<div ' + getrvname(data[1]) + ' style="flex: 0 0 ' + Number.parseFloat(data[0]) + 'px;' + position + '"></div>';
+						template += '<div ' + getRegionOrViewName(data[1]) + ' style="flex: 0 0 ' + Number.parseFloat(data[0]) + 'px;' + position + '"></div>';
 					}else if(data[0].match(/(em)/)){//fixed em
-						template += '<div ' + getrvname(data[1]) + ' style="flex: 0 0 ' + Number.parseFloat(data[0]) + 'em;' + position + '"></div>';
+						template += '<div ' + getRegionOrViewName(data[1]) + ' style="flex: 0 0 ' + Number.parseFloat(data[0]) + 'em;' + position + '"></div>';
 					}else{//not fixed px or em
-						template += '<div '+ getrvname(data[1]) +' style="flex:' + Number.parseFloat(data[0]) + ';' + position + '"></div>';
+						template += '<div '+ getRegionOrViewName(data[1]) +' style="flex:' + Number.parseFloat(data[0]) + ';' + position + '"></div>';
 					}
 				});
 				//only append once to save resource
@@ -221,7 +224,7 @@
 	};
 
 	//get region or view name
-	var getrvname = function(str){
+	var getRegionOrViewName = function(str){
 		var rvname = '';
 		//check whether given a region or view name
 		if(str){
