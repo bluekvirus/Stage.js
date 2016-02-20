@@ -15,7 +15,7 @@
  * 		|+set()/get() [for data loading, 1-way binding (need 2-way binders?)]
  * 		|[use bindUIElements() in render()]
  * 		|
- * [M.View.prototype.constructor*] (this file)
+ * [M.View.prototype.constructor*] (this file, does NOT have render())
  * 		|+fixed enhancements, +ui recognition,
  * 		|+pick and activate optional ones (b, see below List of view options...)
  * 		|
