@@ -37,11 +37,14 @@ Change Log
 33. Fixed _.isPlainObject() method;
 34. Refined view.overlay/popover() anchor argument pick-up;
 35. Merged the Context concept into View when using app.get(); (you can now use view as a context)
+36. Added .callout to theme base;
+37. Added .more() api to view; (need example: infinite scrolling)
+38. Added .layout config to view;
+39. Merged $.hsplit/vsplit to $.split
 
 working on ...
 
-* Adding .layout config to view;
-* Adding .more() api to view (Layout);
+* Adding .lock() api to view;
 * Adding data-export script to tools (npm run data-export);
 * Adding more unit tests;
 * Adding cheatsheet;
