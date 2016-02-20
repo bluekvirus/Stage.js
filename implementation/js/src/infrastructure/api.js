@@ -372,6 +372,8 @@
 		},
 
 		collection: function(data){
+			if(data && !_.isArray(data))
+				throw new Error('DEV::Application::collection You need to specify an array to init a collection');
 			return new Backbone.Collection(data);
 		},
 

@@ -29,8 +29,10 @@
 	//+ api view.getViewIn('region')
 	_.extend(Backbone.Marionette.Layout.prototype, {
 		getViewIn: function(region){
-			region = this.getRegion(region);
-			return region && region.currentView;
+			var r = this.getRegion(region);
+			if(!r)
+				throw new Error('DEV::Layout+::getViewIn() Region ' + region + ' is not available...');
+			return r && r.currentView;
 		},
 
 		// Handle closing regions, and then close the view itself.
@@ -47,8 +49,37 @@
 		},
 
 		//add more items into a specific region
-		more: function(region /*name only*/, data /*array only*/, View /*or name*/, uniqProp /*or fn(obj)->uniqProp*/){
-			//TBI
+		more: function(region /*name only*/, data /*array only*/, View /*or name*/, useSet /*use set() instead of add*/){
+			if(!_.isArray(data))
+				throw new Error('DEV::Layout+::more() You must give an array as data objects...');
+			//accept plain array of strings and numbers. (only in this function)
+			var d;
+			if(data && !_.isObject(data[0]))
+				d = _.map(data, function(v){return {'value': v};});
+			else
+				d = data;
+			////////////////////////////////////////
+			
+			if(_.isBoolean(View)){
+				useSet = View;
+				View = undefined;
+			}
+
+			var cv = this.getViewIn(region);
+			if(cv && cv.collection){
+				if(useSet)
+					cv.set(d);
+				else
+					cv.collection.add(d);
+			}
+			else {
+				this.getRegion(region).show(app.view({
+					forceViewType: true,
+					type: 'CollectionView',
+					itemView: _.isString(View)? app.get(View) : View, //if !View then Error: An `itemView` must be specified
+				}));
+				this.getViewIn(region).set(d);
+			}
 		},
 
 		//lock or unlock a region with overlayed spin/view (e.g waiting)
