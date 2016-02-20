@@ -88,13 +88,15 @@
 			//show second view
 			this.getRegion('region-1-2').show(app.view({
 				template: [
-					'<div style="color:#626262;">',
+					'<div style="color:white;">',
 						'<div>layout: {</div>',
 						'<div>&nbsp;&nbsp;&nbsp;&nbsp; split: [\'1:region-1-1\', \'2:region-1-2\'],</div>',
 						'<div>}</div>',
 					'</div>'
 				]
 			},true));
+			//color background
+			this.$el.find('[region="region-1-2"]').addClass('bg-primary');
 		}
 	});
 
@@ -121,12 +123,15 @@
 					'</div>'
 				],
 			},true));
+			//color background
+			this.$el.find('[view="View-3-2"]').addClass('bg-primary');
+			this.$el.find('#view-3-2').css({color: 'white'});
 		}
 	});
 
 	var Temp = app.view({
 		name: 'View-3-2',
-		template: '<div style="color:#626262;">This is a view<br>loaded by using<br>2:View-3-2</div>',
+		template: '<div id="view-3-2" style="color:#626262;">This is a view<br>loaded by using<br>2:View-3-2</div>',
 	});
 
 	var View3 = app.view({
