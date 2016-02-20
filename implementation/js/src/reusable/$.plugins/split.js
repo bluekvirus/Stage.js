@@ -1,388 +1,240 @@
-/**
-*
-* This is the pulg-in that horizontally/vertically spread the children of an div according to the parameter given by user. 
-* Additionally, "sub-div"s can freely change their height by dragging a bar inserted by this plug-in. 
-* In order to achieve such function, there must be at least two "sub-div"s in the given div.
-*
-* Usage
-* ---------
-* someDiv.hsplit(integer or array or NULL, {options});
-* someDiv.vsplit(integer or array or NULL, {options});
-* 
-* Arguments
-* ---------
-* Three kinds of arugments are allowed for the plugin.
-* 
-* 1). No argument: if user does not provide any arguments, then this plug-in only inserts divide bars according to the current height of "sub-divs". 
-* 					Those divide bars can be dragged to change the size of "sub-div"s.
-* 
-* 2). Array: user can give an array as an argument, which indicates the height ratio of the "sub-div"s. 
-* 		For example: [1,3.5,2] means the three "sub-div"s has height/width ratio of 1:3.5:2. Additionally:
-* 		 
-* 	i). if the length of the array given by user is less than the number "sub-div"s the requesting div has,
-* 		then the "sub-div"s are not assigned a ratio, will be marked as ratio 1. 
-* 		For example: if the requesting div has 5 "sub-div"s, and user gives array [1,3,2] as argument, then the plug-in fills given as [1,3,2,1,1].
-* 		
-* 	ii). if the length of the array given by user is greater than the number "sub-div"s the requesting div has, 
-* 		then this plug-in returns an error.
-*
-* 3). A positive number: user can give a single number as an argument, this plug-in will treat it as the first number of the array mentioned before.
-* 		For example: if user give 1 as argument, then all the "sub-div"s will be spread evenly. Because the plug-in will fill the ratio array as [1,1,1.....]
-*
-* Additionally, this plug-in privides options for custmizing div-bar style.
-* 
-* Options: {
-* 	hBarClass/vBarClass: string; defines the css class name for divide bars
-* }
-* 
-* Dependencies
-* ------------
-* _, $
-*
-* @author Patrick Zhu
-* @create 2015.10.20 
-*/
-
-
-
-(function($){
-
-	/*===============the hsplit plugin================*/
-	$.fn.hsplit = function(args, options){
-		var $this = $(this),
-			that = this,
-			length = $this.children().filter('div').length,
-			tempArr;
+/*
+ *layout: {
+ *	direction: 'h' or 'v',
+ *	split: ['1:region', '1:View', 'xs-6, md-4:region', 'md-6:View', '1:region:fixed', '2:View:fixed'],
+ *	height: 'auto' || number,
+ *	width: 'auto' || number,
+ *	adjustable: true or false
+ *	barclass: '...' //css class name for divide bars
+ *}
+ */
+;(function($){
+	//main function
+	$.fn.split = function(options){
 		options = options || {};
-		//get the class name for the divider bars
-		var tempClass = options.hBarClass || 'split-hbar';
-		//get the height of divide bars by adding an element then remove it
-		var tempElem = '<div class = "' + tempClass + '"></div>';
-		$this.before(tempElem);
-		var barWidth = $this.prev().height();
-		$this.prev().remove();
+		//default parameters
+		var direction = options.direction || 'h',
+			split = options.split || ['1:sample-region', '1'],
+			type = options.type || 'free',
+			//min = options.min || 20, //do not work well with flexbox
+			height = options.height || '100%',
+			width = options.width || '100%',
+			adjustable = options.adjustable || false,
+			barclass = options.barclass || 'split-' + direction + 'bar',
+			that = this,
+			$this = ( this[0].$el ) ? this[0].$el : $(this);
+		setDomLayout($this, direction, adjustable, split, height, width, barclass);
+	};
+	//functions
+	var setDomLayout = function($elem, direction, adjustable, split, height, width, barclass){
+		var trimmed = [],
+			dir = ( direction === 'h' )? 'column' : 'row',
+			template = '';
+		//expand height and width for parent element
+		if(height !== 'auto')
+			$elem.css({height: height});
+		if(width !=='auto')
+			$elem.css({width: width});
+		//check whether two dimension layout or single dimension layout
+		if($.isPlainObject(split)){//two dimension layout
+			var firstDimension = [],
+				secondDimension = [],
+				counter = 0,
+				$container;
+			_.each(split, function(data, key){
+				firstDimension[counter] = key;
+				secondDimension[counter] = data;
+				counter++;
+			});
+			//first dimension layout
+			setDomLayout($elem, 'h', adjustable, firstDimension, height, width, 'split-hbar');
+			//second dimension layout
+			_.each($elem.find('>div').filter(function(){
+				return !$(this).hasClass('split-hbar');
+			}), function(div, divIndex){
+				setDomLayout($(div), 'v', adjustable, secondDimension[divIndex], height, width, 'split-vbar');
+			});
 
-		//check whether the requesting div has at least two "sub-div"s
-		if( !length || length < 2 ){
-			throw new Error("RUNTIME::hsplit:: You need at least two 'sub-div's");
-		}else{
-			//check validation of arguments
-			if(!args){//no arguments, spread evenly
-				//no arguments, only insert bars
-				tempArr = [];
-				//get the height of each current div, then calculate the ratio, and put it into ratio array
-				_.each($this.children().filter('div'), function(data, index){
-					tempArr[index] = $(data).height() ;
+		}else if(_.isArray(split)){//single dimension layout
+			//check whether adjustable or not
+			if(adjustable){//adjustable
+				//show divide bar and remove to get height/width for divide bar
+				//trim the split array
+				_.each(split, function(data, index){
+					trimmed[index] = data.split(':');
 				});
-				//pass the ratio array to setLayout, to set the layout :P
-				setLayout(this, tempArr);
-			}else{
-				//array
-				if( _.isArray(args) ){
-					//error
-					if(args.length > length)
-						throw new Error("RUNTIME::hsplit:: Arugment length is greater than the number of 'sub-div's");
-					//length are equal
-					else if(args.length === length){
-						setLayout(this, args);
+				//insert flexboxes
+				//set parent style
+				$elem.css({
+					display: 'flex',
+					'flex-direction': dir,
+					'flex-wrap': 'nowrap',
+					'justify-content': 'space-around'
+				});
+				//insert bars and flexboxs
+				_.each(trimmed, function(data, index){
+					var position = (data[2])? 'postion:' + data[2] + ';':'',
+						$bar,
+						$currentEl;
+					//check whether fixed or not
+					if(data[0].match(/(px)/)){//fixed px
+						$currentEl = $('<div ' + getrvname(data[1]) + ' style="flex: 0 0 ' + Number.parseFloat(data[0]) + 'px;' + position + '"></div>').appendTo($elem);
+					}else if(data[0].match(/(em)/)){//fixed em
+						$currentEl = $('<div ' + getrvname(data[1]) + ' style="flex: 0 0 ' + Number.parseFloat(data[0]) + 'em;' + position + '"></div>').appendTo($elem);
+					}else{//not fixed px or em
+						$currentEl = $('<div '+ getrvname(data[1]) +' style="flex:' + Number.parseFloat(data[0]) + ';' + position + '"></div>').appendTo($elem);
 					}
-					//fillup the ratios
-					else if(args.length > 0){
-						tempArr = args;
-						fillOnes(tempArr, length);
-						setLayout(this, tempArr);
-					}
-					else{
-						throw new Error("RUNTIME::hsplit:: Arugment length is ZERO!");
-					}
-				}
-				//number
-				else if( _.isNumber(args) && !_.isNaN(args) ){
-					//check whether number is positive
-					if( args <= 0){
-						throw new Error("RUNTIME::hsplit:: Single number must be a positive number");
-					}else{
-						tempArr = [];
-						tempArr[0] = args;
-						fillOnes(tempArr, length);
-						setLayout(this, tempArr);
-					}
-				}
-				else{
-					options = args;
-					tempClass = options.vBarClass || 'split-vbar';
-					//no arguments, only insert bars
-					tempArr = [];
-					//get the height of each current div, then calculate the ratio, and put it into ratio array
-					_.each($this.children().filter('div'), function(data, index){
-						tempArr[index] = $(data).height() ;
-					});
-					//pass the ratio array to setLayout, to set the layout :P
-					setLayout(this, tempArr);
-				}//else for object
-			}
-		}//else
-
-		//this function takes an array of ratios of "sub-div"s, and
-		//set the layout accordingly
-		function setLayout(target, ratioArr){
-			var length = ratioArr.length,
-				conHeight = $(target).height() - ( length - 1 ) * barWidth,
-			//calculate height for each "sub-div" in terms of percentage
-				sum = 0;
-			_.each(ratioArr, function(data, index){
-				sum += data;
-			});
-			var perHeight = [];
-			_.each(ratioArr, function(data, index){
-				perHeight[index] = ( ( conHeight / sum * data ) / ( $(target).height() ) ) * 100;//in percentage
-			});
-			//draw the layout
-			//set up the position attribute for the parent div
-			if($(target).css('position') !== 'absolute' && $(target).css('position') !== 'relative')
-				$(target).css({'position':'relative'});
-			//
-			var top = 0;
-			$(target).children().filter('div').each(function(index, elem){
-				var $elem = $(this);
-				//barwidth in percentage
-				var barPercentage = barWidth/($(target).height())*100;
-				//set up css for current "sub-div" in terms of percentage
-				$elem.css({'position':'absolute', 'top':top+'%','left':'0','width':'100%','height':perHeight[index]+'%'});
-
-				top += perHeight[index];
-				//draw the divide bars, last "sub-div" does not need divde bar
-				if( index < length-1 ){
-					var temp = '<div class="'+tempClass+'" style="position:absolute;width:100%;left:0;top:'+top+'%;"></div>';
-					$elem.after(temp);
-					//add mouseover and resize event
-					$elem.next()
-					.mouseover(function(){
-						$(this).css({'cursor':'ns-resize'});
-					})
-					.mousedown(function(){
-						var that = this;
-						$(target).bind('mousemove', function(event){
-							//get relative postion
-							var relY = event.pageY - $(this).offset().top,
-								preTop = $(that).prev().position().top,
-								nextBottom = $(that).next().position().top + $(that).next().height();
-							if(relY > ( preTop + barWidth ) && relY < ( nextBottom - barWidth ) ){
-								$(that).css({'top':(relY/$(target).height())*100+'%'});
-								//resize "sub-div"s next to the current divider
-								resetDiv(that);
+					if( index < split.length - 1 )
+						$bar = $('<div class="' + barclass + '" style="flex: 0 0 2px;"></div>'/*2px is temprary place holder*/).appendTo($elem);
+				});
+				//insert a bar at the end to get real height/width later
+				var $bar = $('<div class="' + barclass + '"></div>').appendTo($elem);
+				//use defer to get height/width after the bar is ready;
+				_.defer(function(){
+					//get barwidth
+					var barwidth = ( direction === 'h' )? $bar.height() : $bar.width(),
+						totalTolerance = 1.01;
+						singelTolerance = 0.5;
+					//remove $bar
+					$bar.remove();
+					//setup all the bars
+					_.each($elem.find('>div+.' + barclass), function(data, index){
+						var $data = $(data);
+						//overwrite default flex style
+						$data.css({
+							flex: '0 0 ' + barwidth + 'px'
+						});
+						//if previous flexbox is fixed px/em, then delete event on the bar before that flexbox
+						if(trimmed[index][0].match(/(px|em)/)){
+							if( $data.prev().prev().length > 0 )
+								$data.prev().prev().unbind('mouseover mousedown mouseup');
+						}else{
+							//separate horizontal and vertical cases
+							if( direction === 'h' ){//horizontal
+								/*!register resize event!*/
+								$data.mouseover(function(){
+									$data.css({cursor: 'ns-resize'});
+								})
+								.mousedown(function(){
+									//get the sum of flex-grow for both resizing elements
+									var flexSum = Number.parseFloat($data.prev().css('flex-grow')) + Number.parseFloat($data.next().css('flex-grow'));
+									//bind mouse move
+									$elem.bind('mousemove', function(e){
+										var relY = e.pageY - $elem.offset().top,
+											//get previous bars bottom
+											prevBottom = ($data.prev().prev().length > 0) ? $data.prev().prev().position().top + $data.prev().prev().height() : 0,
+											//get next bars top
+											nextTop = ($data.next().next().length > 0) ? $data.next().next().position().top : $elem.height(),
+											//reset layout
+											prevHeight = relY - prevBottom,
+											nextHeight = nextTop - ( relY + barwidth ),
+											newFlexTop = ( prevHeight ) / ( prevHeight + nextHeight) * flexSum; // A / ( A + B ) * Sum
+											newFlexBottom = ( nextHeight ) / ( prevHeight + nextHeight) * flexSum;
+										//protect the flexsum, not over strech it		
+										if( (newFlexTop + newFlexBottom) <= ( flexSum * totalTolerance ) && newFlexTop > singelTolerance && newFlexBottom > singelTolerance ){
+											$data.prev().css({'flex-grow': newFlexTop});
+											$data.next().css({'flex-grow': newFlexBottom});
+										}else{
+											$elem.unbind('mousemove');
+										}
+									});
+								})
+								.mouseup(function(){
+									$elem.unbind('mousemove');
+								});
+								//track window mouseup, just in case
+								$window.mouseup(function(){
+									$elem.unbind('mousemove');
+								});
+							}else{//vertical
+								$data.mouseover(function(){
+									$data.css({cursor: 'ew-resize'});
+								})
+								.mousedown(function(){
+									//get the sum of flex-grow for both resizing elements
+									var flexSum = Number.parseFloat($data.prev().css('flex-grow')) + Number.parseFloat($data.next().css('flex-grow'));
+									$elem.bind('mousemove', function(e){
+										var relX = e.pageX - $elem.offset().left,
+											//get previous bars bottom
+											prevRight = ($data.prev().prev().length > 0) ? $data.prev().prev().position().left + $data.prev().prev().width() : 0,
+											//get next bars top
+											nextLeft = ($data.next().next().length > 0) ? $data.next().next().position().left : $elem.width(),
+											//reset layout
+											prevWidth = relX - prevRight,
+											nextWidth = nextLeft - ( relX + barwidth ),
+											newFlexLeft = ( prevWidth ) / ( prevWidth + nextWidth) * flexSum; // A / ( A + B ) * Sum
+											newFlexRight = ( nextWidth ) / ( prevWidth + nextWidth) * flexSum;
+										//protect the flexsum, not over strech it									
+										if( (newFlexLeft + newFlexRight) <= (flexSum * totalTolerance ) && newFlexLeft > singelTolerance && newFlexRight > singelTolerance){
+											$data.prev().css({'flex-grow': newFlexLeft});
+											$data.next().css({'flex-grow': newFlexRight});
+										}else{
+											$elem.unbind('mousemove');
+										}
+									})
+									.mouseup(function(){
+										$elem.unbind('mousemove');
+									});
+									//track window mouseup, just in case
+									$window.mouseup(function(){
+										$elem.unbind('mousemove');
+									});
+								});
 							}
-						}).mouseup(function(){
-							$(target).unbind('mousemove');
-						});
-						//track window mouseup 
-						$(window).mouseup(function(){
-							$(target).unbind('mousemove');
-						});
+						}
+						if( index === ( trimmed.length - 2 ) && trimmed[index+1][0].match(/(px|em)/) ){
+							$data.unbind('mouseover mousedown mouseup');
+						}
 					});
-					//accumulate the top
-					top += barPercentage;
-				}
-			});
-		}
-
-		//this function expand the "sub-divs" according to the position of divide bars
-		function resetDiv(divider){
-			var $divider = $(divider),
-				preHeight = $divider.prev().height(),
-				preTop = $divider.prev().position().top,
-				nextTop = $divider.next().position().top,
-				nextBottom = nextTop + $divider.next().height(),
-				divTop = $divider.position().top,
-				divHeight = $divider.height(),
-				height = $divider.parent().height();
-			$divider.prev().css({'height': (( divTop - preTop ) / height) * 100 + '%'});
-			$divider.next().css({'top':(( divTop + divHeight ) / height) * 100 + '%', 'height': (( nextBottom - ( divTop + divHeight )) / height ) * 100 + '%'});
-
-		}
-
-		//this function fills given array 1s,
-		//the total number of "sub-div"s is given by total
-		function fillOnes(array, total){
-			var length = array.length;
-			array.length = total; //"ie?"
-			for( length; length < total; length++ ){
-				array[length] = 1;
+				});
+			}else{//not adjustable
+				//trim the split array
+				_.each(split, function(data, index){
+					trimmed[index] = data.split(':');
+				});
+				//insert flexboxes
+				//set parent style
+				$elem.css({
+					display: 'flex',
+					'flex-direction': dir,
+					'flex-wrap': 'nowrap',
+					'justify-content': 'space-around'
+				});
+				//insert
+				_.each(trimmed, function(data, index){
+					var position = (data[2]) ? 'position:' + data[2] + ';' : '';
+					//check whether fixed or not
+					if(data[0].match(/(px)/)){//fixed px
+						template += '<div ' + getrvname(data[1]) + ' style="flex: 0 0 ' + Number.parseFloat(data[0]) + 'px;' + position + '"></div>';
+					}else if(data[0].match(/(em)/)){//fixed em
+						template += '<div ' + getrvname(data[1]) + ' style="flex: 0 0 ' + Number.parseFloat(data[0]) + 'em;' + position + '"></div>';
+					}else{//not fixed px or em
+						template += '<div '+ getrvname(data[1]) +' style="flex:' + Number.parseFloat(data[0]) + ';' + position + '"></div>';
+					}
+				});
+				//only append once to save resource
+				$elem.append($(template));
 			}
+		}else{
+			throw new Error('Dev::runtime::split-plugin::the split parameter is error. it can only be an array or an object');
 		}
-		return this;
 	};
 
-
-	/*===============the vsplit plugin================*/
-	$.fn.vsplit = function(args, options){
-		var $this = $(this),
-			that = this,
-			length = $(this).children().filter('div').length,
-			tempArr;
-		options = options || {};
-		//get the class name for the divider bars
-		var tempClass = options.vBarClass || 'split-vbar';
-
-		//get the height of divide bars by adding an element then remove it
-		var tempElem = '<div class="'+tempClass+'"></div>';
-		$this.after(tempElem);
-		var barWidth = $(this).next().width();
-		$this.next().remove();
-
-		//check whether the requesting div has at least two "sub-div"s
-		if( !length || length < 2 ){
-			throw new Error("RUNTIME::vsplit:: You need at least two 'sub-div's");
+	//get region or view name
+	var getrvname = function(str){
+		var rvname = '';
+		//check whether given a region or view name
+		if(str){
+			if( str.charAt(0) === str.charAt(0).toUpperCase() )
+				rvname = 'view="' + str + '"';
+			else if( str.charAt(0) === str.charAt(0).toLowerCase() )
+				rvname = 'region="' + str + '"';
+			else
+				throw new Error('Dev::runtime::split-plugin::the region/view name you give is not valid.');
 		}else{
-			//check validation of arguments
-			if( !args ){
-				//no arguments, only insert bars
-				tempArr = [];
-				//get the height of each current div, then calculate the ratio, and put it into ratio array
-				_.each($this.children().filter('div'), function(data, index){
-					tempArr[index] = $(data).width() ;
-				});
-				//pass the ratio array to setLayout, to set the layout :P
-				setLayout(this, tempArr);
-			}else{
-				//array
-				if( _.isArray(args) ){
-					//error
-					if(args.length > length)
-						throw new Error("RUNTIME::vsplit:: Arugment length is greater than the number of 'sub-div's");
-					//length are equal
-					else if(args.length === length){
-						setLayout(this, args);
-					}
-					//fillup the ratios
-					else if(args.length > 0){
-						tempArr = args;
-						fillOnes(tempArr, length);
-						setLayout(this, tempArr);
-					}
-					else{
-						throw new Error("RUNTIME::vsplit:: Arugment length is ZERO!");
-					}
-				}//if
-				//number
-				else if( _.isNumber(args) && !_.isNaN(args) ){
-					//check whether number is positive
-					if( args <= 0){
-						throw new Error('RUNTIME::vsplit:: Single number must be a positive number');
-					}else{
-						tempArr = [];
-						tempArr[0] = args;
-						fillOnes(tempArr, length);
-						setLayout(this, tempArr);
-					}
-				}//else if number
-				else{
-					options = args;
-					tempClass = options.vBarClass || 'split-vbar';
-					//no arguments, only insert bars
-					tempArr = [];
-					//get the height of each current div, then calculate the ratio, and put it into ratio array
-					_.each($this.children().filter('div'), function(data, index){
-						tempArr[index] = $(data).width() ;
-					});
-					//pass the ratio array to setLayout, to set the layout :P
-					setLayout(this, tempArr);
-				}//else for object
-
-			}//else
-		}//else
-
-		//this function takes an array of ratios of "sub-div"s, and
-		//set the layout accordingly
-		function setLayout(target, ratioArr){
-			var length = ratioArr.length,
-				conWidth = $(target).width() - ( length-1 ) * barWidth,
-			//calculate height for each "sub-div" in terms of percentage
-				sum = 0;
-			_.each(ratioArr, function(data, index){
-				sum += data;
-			});
-			var perWidth = [];
-			_.each(ratioArr, function(data, index){
-				perWidth[index] = ( ( conWidth / sum * data ) / ( $(target).width() ) ) * 100;//in percentage
-			});
-			//draw the layout
-			//set up the position attribute for the parent div
-			if($(target).css('position') !== 'absolute' && $(target).css('position') !== 'relative'){
-				$(target).css({'position':'relative'});
-			}
-				
-			//
-			var left = 0;
-			$(target).children().filter('div').each(function(index, elem){
-				var $elem = $(this);
-				//barwidth in percentage
-				var barPercentage = barWidth / ( $(target).width() ) * 100;
-				//set up css for current "sub-div" in terms of percentage
-				$elem.css({'position':'absolute', 'top':0,'left':left+'%','height':'100%','width':perWidth[index]+'%'});
-
-				left += perWidth[index];
-				//draw the divide bars, last "sub-div" does not need divde bar
-				if( index < length-1 ){
-					var temp = '<div class="'+tempClass+'" style="position:absolute;height:100%;top:0;left:'+left+'%;"></div>';
-					$elem.after(temp);
-					//add mouseover and resize event
-					$elem.next()
-					.mouseover(function(){
-						$(this).css({'cursor':'ew-resize'});
-					})
-					.mousedown(function(){
-						var that = this;
-						$(target).bind('mousemove', function(event){
-							//get relative postion
-							var relX = event.pageX - $(this).offset().left,
-								preLeft = $(that).prev().position().left,
-								nextRight = $(that).next().position().left + $(that).next().width();
-							if(relX > ( preLeft + barWidth ) && relX < ( nextRight - barWidth ) ){
-								$(that).css({'left':( relX / $(target).width() ) * 100 + '%'});
-								//resize "sub-div"s next to the current divider
-								resetDiv(that);
-							}
-						}).mouseup(function(){
-							$(target).unbind('mousemove');
-						});
-						//track window mouseup 
-						$(window).mouseup(function(){
-							$(target).unbind('mousemove');
-						});
-					});
-					//accumulate the left
-					left += barPercentage;
-				}
-			});
+			throw new Error('Dev::runtime::split-plugin::you need to provide a region/view name');
 		}
-
-		//this function expand the "sub-divs" according to the position of divide bars
-		function resetDiv(divider){
-			var $divider = $(divider),
-				preWidth = $divider.prev().width(),
-				preLeft = $divider.prev().position().left,
-				nextLeft = $divider.next().position().left,
-				nextRight = nextLeft + $divider.next().width(),
-				divLeft = $divider.position().left,
-				divWidth = $divider.width(),
-				width = $divider.parent().width();
-			$divider.prev().css({'width': (( divLeft - preLeft) / width ) * 100 + '%'} );
-			$divider.next().css({'left':(( divLeft + divWidth) / width) * 100 + '%', 'width': (( nextRight - ( divLeft + divWidth )) / width) * 100 + '%'});
-
-		}
-
-		//this function fills given array 1s,
-		//the total number of "sub-div"s is given by total
-		function fillOnes(array, total){
-			var length = array.length;
-			array.length = total;
-			for( length; length < total; length++ ){
-				array[length] = 1;
-			}
-		}
-		return this;
+		return rvname;
 	};
-
 
 })(jQuery);
