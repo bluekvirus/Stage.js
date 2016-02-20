@@ -91,12 +91,11 @@
 			if(!_.isArray(data)) throw new Error('DEV::CollectionView+::set() You need to have an array passed in as data...');
 			
 			if(!this.collection){
-				this.collection = new Backbone.Collection();
-				this.listenTo(this.collection, 'add', this.addChildView);
-				this.listenTo(this.collection, 'remove', this.removeItemView);
-				this.listenTo(this.collection, 'reset', this.render);
+				this.collection = app.collection();
+				this._initialEvents(); //from M.CollectionView
 			}
-			if(!options)
+			
+			if(options && _.isBoolean(options))
 				this.collection.reset(data);
 			else 
 				this.collection.set(data, options);
