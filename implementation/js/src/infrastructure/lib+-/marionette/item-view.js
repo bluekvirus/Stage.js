@@ -30,6 +30,35 @@
 		    _cb && _cb();
 		},
 
+		// Render the view, defaulting to underscore.js templates.
+		// You can override this in your view definition to provide
+		// a very specific rendering for your view. In general, though,
+		// you should override the `Marionette.Renderer` object to
+		// change how Marionette renders views.
+		// + honoring empty template (before-render modification on $el will no longer be replaced)
+		render: function() {
+		    this.isClosed = false;
+
+		    this.triggerMethod("before:render", this);
+		    this.triggerMethod("item:before:render", this);
+
+		    var data = this.serializeData();
+		    data = this.mixinTemplateHelpers(data);
+
+		    var template = this.getTemplate();
+		    var html = Marionette.Renderer.render(template, data);
+
+		    //+ skip empty template
+		    if(_.string.ltrim(html))
+		    	this.$el.html(html);
+		    this.bindUIElements();
+
+		    this.triggerMethod("render", this);
+		    this.triggerMethod("item:rendered", this);
+
+		    return this;
+		},
+
 		//Editors don't render according to the underlying backbone model.
 		_renderTplOrResetEditors: function(){
 			if(this._editors){
