@@ -7364,7 +7364,7 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.7-1044 build 1455942228292";;
+;;app.stagejs = "1.8.7-1045 build 1456197213752";;
         //Make sure this is the last line in the last script!!!
         Application.run(/*deviceready - Cordova*/);
     ;
