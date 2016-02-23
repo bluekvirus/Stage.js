@@ -1,6 +1,6 @@
 Introduction
 ------------
-This lightweight framework is made on top of **Backbone** and **Bootstrap**. The goal is to maximize developer efficiency by introducing an intuitive workflow on top of a solid front-end architecture. You will be focusing on user interaction building without distraction. We even give you a web server to start the development right away! Theming and packaging deployments are also a breeze through our tools.
+This lightweight framework is made to maximize developer efficiency by introducing an intuitive workflow on top of a solid front-end architecture. You will be focusing on user interaction building without distraction. We even give you a web server to start the development right away! Theming and packaging deployments are also a breeze through our tools.
 
 To flatten and lower the initial learning curve of adaptation, there is only a handful of APIs to remember:
 
@@ -110,11 +110,11 @@ alias: Area, named View
 
 ####Remote data handling?
 
-Modern web application generates views according to user data dynamically. This is why we picked *Backbone* as our view engine. However, the way we handle remote data in our framework is a bit different than the original design in *Backbone*.
+Modern web application generates views according to user data dynamically. This is why we picked *Backbone* as our view engine base. However, the way we handle remote data in the framework is a bit different than the original design in *Backbone*.
 
-Since most of the application state comes from the server, try **NOT** to use Model/Collection directly in views. Managing locally cached data can backfire badly if your design requirement is vague (like in most of the prototyping phase, right?). You are advised to make the data interfacing/manipulation layer as thin as possible. Operate on plain data object/array as much as possible. (e.g Bind pagination, sorting and filtering as view actions/listeners instead of Collection methods, unless you have a requirement to operate on locally cached data)
+Since most of the application state comes from the server, managing locally cached data can backfire badly if your design requirement is vague (like in most of the prototyping phase, right?). You are advised to make the data interfacing/manipulation layer as thin as possible. Operate on plain data object/array as much as possible. (e.g Bind pagination, sorting and filtering as view actions/listeners instead of Collection methods, unless you have a requirement to operate on locally cached data)
 
-**Important:** We introduce a unified *DATA API* for handling all the in/out of remote server data, skipping the *Model/Collection* centered way of data manipulation. They are still created internally for you however. But *you will only need `view.set()/get()/refresh()` and the `view.data` attribute* to use them. 
+**Important:** We introduce a unified *DATA API* for handling all the in/out of remote server data, skipping the *Model/Collection* centered way of data manipulation. They are still created internally for you however. But *you will only need `view.set()/get()/more()/refresh()` and the `view.data` attribute* to use them. 
 
 Remember, Model/Collection are only used as dumb data snapshot object on the client side to support views. The goal is to make the data interfacing layer *as thin as possible*. You will find more details in the **Quickstart/Handling Data** section.
 
@@ -155,23 +155,20 @@ In order to accomplish more with less code using Backbone, we extended **Backbon
 
 Basics
 ------
-You are assumed to have programed with:
+Although not required, some familiarities of the following Javascript libraries would greatly help while using the framework:
 
-* Underscore.js or Lo-Dash 
+* Underscore.js/Lo-Dash 
 *(handy js functions)*
-* jQuery or Zepto 
+* jQuery/Zepto 
 *(DOM manipulation through CSS selectors)*
-* Backbone.js 
-*(EventEmitter, Router, View)*
 * Handlebars.js 
 *(dynamic templates)*
 
-
-If you don't know what they are, go for a quick look at their websites. (links are provided under the *Included Libraries* area on the left sidebar)
+If you don't know what they are, go for a quick look at their websites.
 
 We also maintain a list of 3rd party libraries for the developers to choose from in addition to the base libraries. These utility libraries (e.g jquery-file-upload, store.js, uri.js, marked, moment.js, ...) are carefully selected from the many open-source JavaScript libraries out there to help with specific but generally-will-appear problems that a developer will encounter during the web application development process. (see more in the **Include other js libraries** section)
 
-**Remember:** The goal of this framework is to assist you in making better use of *Backbone.js*. It is designed to keep you focused on building dynamic views without worrying about putting/linking/organizing them into a manageable whole. It is very important that you understand the *region*, *navigation* and *events* concepts. So that you can maximize the efficiency offered by our unique workflow, intuitive toolset and application container.
+**Remember:** The goal of this framework is to keep you focused on building dynamic views without worrying about putting/linking/organizing them into a manageable whole. It is very important that you understand the *region*, *navigation* and *events* concepts. So that you can maximize the efficiency offered by our unique workflow.
 
 ###Choose the right distribution
 
@@ -399,7 +396,7 @@ Note that the ready event may vary in different hybrid app development package.
 
 #####Customized bootstrapping
 
-The application bootstrapping sequence can be modified, since we are simply using the Marionette.Application object, you can add your own environment preparation code as initializers:
+The application bootstrapping sequence can be modified, since we are simply using the `Marionette.Application` object, you can add your own environment preparation code as initializers:
 ```
 //"initialize:before" / onInitializeBefore;
 
@@ -437,7 +434,6 @@ Create a new file named `myContextA.js`, remember a *Context* is just an special
 (function(app) {
     app.context('MyContextA', { //omitting the name indicates context:Default
         template: '...',
-        //..., normal Backbone View options
         guard: function(){
             //return error to cancel navigation;
             //return '', false, undefined to proceed;
@@ -1507,7 +1503,7 @@ data: [{
             attr2: ...,
             attr3: ...
         }],
-node: {...}, - //node options (standard Backbone View config)
+node: {...}, - //node options (standard View config)
 onSelected: callback(meta, $el, e){
     meta - //meta data about the selected node
     $el - //node view's $el
@@ -2019,7 +2015,7 @@ Remember, use tabs as last resort and only in templates, do *NOT* use dynamic ta
 
 ###Need recursively rendered tree-like View?
 
-You can always use **CompositeView** as the view type and use this *Marionette* way of building recursively rendered views. It is recommended to use the built-in **Tree** widget rather than building recursive views yourself. The `type` configure should not be needed in any occasions when building your application.
+You can always use **CompositeView** as the view type and use this *Marionette* way of building recursively rendered views. It is recommended to use the built-in **Tree** widget rather than building recursive views yourself. The `type` configure should **NOT** be needed in any occasions when building your application.
 
 ###Supporting crossdomain ajax?
 
