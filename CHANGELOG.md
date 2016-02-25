@@ -41,6 +41,7 @@ Change Log
 37. Added .more() api to view; (need example: infinite scrolling)
 38. Added .layout config to view;
 39. Merged $.hsplit/vsplit to $.split
+40. Refined $.overlay options (*content, *effect, +duration, +easing)
 
 working on ...
 

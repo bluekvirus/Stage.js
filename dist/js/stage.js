@@ -4,12 +4,17 @@
 	/**
 	 * Global shortcuts
 	 * ----------------
-	 * $document
 	 * $window
+	 * $document
+	 * $head
+	 * $body
 	 */
 	_.each(['document', 'window'], function(coreDomObj){
 		window['$' + coreDomObj] = $(window[coreDomObj]);
-	});	
+	});
+	_.each(['body', 'head'], function(coreDomWrap){
+		window['$' + coreDomWrap] = $(coreDomWrap);
+	});
 
 	/**
 	 * 3rd party lib init
@@ -55,10 +60,10 @@
  * ###How to start my app?
  * 1. app.setup({config});
  * config:
-		* template,
+		* template/layout,
 		* navRegion/contextRegion,
 		* defaultContext,
-		* fullScreen,
+		* fullScreen, (indicated true by using non empty layout config)
 		* rapidEventDelay,
 		* baseAjaxURI
 		* i18nResources
@@ -148,6 +153,7 @@
 
 			//------------------------------------------mainView-------------------------------------------
 			template: undefined,
+			layout: undefined,
 			//e.g:: have a unified layout template.
 			/**
 			 * ------------------------
@@ -162,7 +168,7 @@
 			 * |		bottom 	      |
 			 * ------------------------		 
 			 * 
-			 * @type {String}
+			 * == --> layout: {'1': ['1:top'], '5': ['1:left', '4:center', '1:right'], '1': ['1:bottom']}
 			 */		
 			contextRegion: 'contexts', //alias: navRegion
 			defaultContext: undefined, //This is the context (name) the application will sit on upon loading.
@@ -179,73 +185,10 @@
 
 		}, config);
 		
-		//2 Global settings. (events & ajax)
-		//Global App Events Listener Dispatcher
+		//2. Global App Events Listener Dispatcher
 		app.Util.addMetaEvent(app, 'app');
 
-		//Track window resize
-		var $body = $('body');
-		function trackScreenSize(e, silent){
-			var screenSize = {h: $window.height(), w: $window.width()};
-			if(!validScreenSize(screenSize)) return;
-
-			////////////////cache the screen size/////////////
-			app.screenSize = screenSize;
-			//////////////////////////////////////////////////
-			if(app.config.fullScreen){
-				$body.height(screenSize.h);
-				$body.width(screenSize.w);
-			}
-			if(!silent){
-				app.trigger('app:resized', screenSize);
-				app.coop('window-resized', screenSize);
-			}
-		}
-		function validScreenSize(size){
-			return size.h > 0 && size.w > 0;
-		}
-		$window.on('resize', app.debounce(trackScreenSize));
-		//check screen size, trigger app:resized and get app.screenSize ready.
-		app._ensureScreenSize = function(done){
-			trackScreenSize(); 
-			if(!app.screenSize) _.delay(app._ensureScreenSize, app.config.rapidEventDelay/4, done);
-			else done();
-		};
-
-		//Track window scroll
-		function trackScroll(){
-			var top = $window.scrollTop();
-			app.trigger('app:scroll', top);
-			app.coop('window-scroll', top);
-		}
-		$window.on('scroll', app.throttle(trackScroll));
-		
-		//apply app.config.fullScreen = true
-		if(app.config.fullScreen){
-			$body.css({
-				overflow: 'hidden',
-				margin: 0,
-				padding: 0					
-			});
-		}
-
-		//3 Load Theme css & View templates & i18n translations
-		var theme = app.uri(window.location.toString()).search(true).theme || app.config.theme;
-		if(theme){
-			console.warn('DEV::Application::theme is now deprecated, please use theme css directly in <head>');
-		}
-
-		if(app.config.viewTemplates)
-			app.inject.tpl('all.json');
-
-		I18N.configure({
-			locale: app.config.i18nLocale,
-			resourcePath: app.config.i18nResources,
-			translationFile: app.config.i18nTransFile
-		});
-
-		//4 Add Navigation
-		// Setup the application with content routing (navigation).
+		//3. Setup the application with content routing (navigation).
 		// - use app:navigate (path) at all times when navigate between contexts & views.
 		app.onNavigate = function(options, silent){
 			if(!app.available()) {
@@ -322,7 +265,7 @@
 			}
 		//-----------------------
 
-		//5 Activate Routing AFTER running all the initializers user has defined
+		//4 Activate Routing AFTER running all the initializers user has defined
 		//Context Switching by Routes (can use href = #navigate/... to trigger them)
 		app.on("initialize:after", function(options){
 			//init client page router and history:
@@ -361,25 +304,94 @@
 
 		function kickstart(){
 
-			//1. check if we need 'fast-click' on mobile plateforms
+			//1. Check if we need 'fast-click' on mobile plateforms
 			if(Modernizr.mobile)
 				FastClick.attach(document.body);
 
-			//2. Put main template into position.
+			//2. Track window resize
+			function trackScreenSize(e, silent){
+				var screenSize = {h: $window.height(), w: $window.width()};
+				if(!validScreenSize(screenSize)) return;
+
+				////////////////cache the screen size/////////////
+				app.screenSize = screenSize;
+				//////////////////////////////////////////////////
+				if(app.config.fullScreen){
+					$body.height(screenSize.h);
+					$body.width(screenSize.w);
+				}
+				if(!silent){
+					app.trigger('app:resized', screenSize);
+					app.coop('window-resized', screenSize);
+				}
+			}
+			function validScreenSize(size){
+				return size.h > 0 && size.w > 0;
+			}
+			$window.on('resize', app.debounce(trackScreenSize));
+			//check screen size, trigger app:resized and get app.screenSize ready.
+			app._ensureScreenSize = function(done){
+				trackScreenSize(); 
+				if(!app.screenSize) _.delay(app._ensureScreenSize, app.config.rapidEventDelay/4, done);
+				else done();
+			};
+			//align $body with screen size if app.config.fullScreen = true
+			if(app.config.layout)
+				app.config.fullScreen = true;
+			if(app.config.fullScreen){
+				$body.css({
+					overflow: 'hidden',
+					margin: 0,
+					padding: 0					
+				});
+			}
+
+			//3. Track window scroll
+			function trackScroll(){
+				var top = $window.scrollTop();
+				app.trigger('app:scroll', top);
+				app.coop('window-scroll', top);
+			}
+			$window.on('scroll', app.throttle(trackScroll));
+
+			//4 Load Theme css & View templates & i18n translations
+			var theme = app.uri(window.location.toString()).search(true).theme || app.config.theme;
+			if(theme){
+				console.warn('DEV::Application::theme is now deprecated, please use theme css directly in <head>');
+			}
+
+			//5 Inject template pack
+			if(app.config.viewTemplates)
+				app.inject.tpl('all.json');
+
+			//6. Activate i18n
+			I18N.configure({
+				locale: app.config.i18nLocale,
+				resourcePath: app.config.i18nResources,
+				translationFile: app.config.i18nTransFile
+			});
+
+			//7. Put main template into position.
 			app.addRegions({
 				app: '[region="app"]'
 			});
-			//Warning: calling ensureEl() on the app region will not work like regions in layouts. (Bug??)
-			//the additional <div> under the app region is somehow inevitable atm...
+			//Warning: calling ensureEl() on the app region will not work like regions in layouts.
+			//(Bug??: the additional <div> under the app region is somehow inevitable atm...)
 			app.trigger('app:before-mainview-ready');
-			app.mainView = app.mainView || app.view({
-				name: 'Main',
-				template: app.config.template || ('<div region="' + (app.config.navRegion || app.config.contextRegion) + '"></div>')
-			}, true);
+			if(!app.config.layout)
+				app.mainView = app.mainView || app.view({
+					name: 'Main',
+					template: app.config.template || ('<div region="' + (app.config.navRegion || app.config.contextRegion) + '"></div>')
+				}, true);
+			else
+				app.mainView = app.mainView || app.view({
+					name: 'Main',
+					layout: app.config.layout
+				}, true);
 			app.getRegion('app').show(app.mainView);
 			app.trigger('app:mainview-ready');
 
-			//3. Start the app --> pre init --> initializers --> post init(router setup)
+			//8. Start the app --> pre init --> initializers --> post init(router setup)
 			app._ensureScreenSize(function(){
 				app.start();				
 			});
@@ -5752,10 +5764,18 @@ var I18N = {};
  * ---------
  * show: true|false show or close the overlay
  * options: {
- * 		class: 'class name strings for styling purposes';
- * 		effect: 'jquery ui effects string', or specifically:
+ * 		[class: 'class name strings for styling purposes';]
+ * 		background: if no 'class' in options
+ * 		zIndex: if no 'class' in options
+ * 		effect: 'jquery ui effects string', or specifically: (use 'false' to disable)
  * 			openEffect: ...,
  * 			closeEffect: ...,
+ * 		duration:
+ * 			openDuration: ...,
+ * 			closeDuration: ...,
+ * 		easing:
+ * 			openEasing: ...,
+ * 			closeEasing: ...,
  * 		content: 'text'/html or el or a function($el, $overlay) that returns one of the three.
  * 		onShow($el, $overlay) - show callback;
  * 		onClose($el, $overlay) - close callback;
@@ -5798,8 +5818,12 @@ var I18N = {};
 
 	/*===============the plugin================*/
 	$.fn.overlay = function(show, options){
-		if(_.isObject(show)){
+		if(_.isPlainObject(show)){
 			options = show;
+			show = true;
+		}
+		if(_.isString(show) || _.isNumber(show)){
+			options = _.extend({content: show}, options);
 			show = true;
 		}
 		if(_.isUndefined(show)) show = false; //$.overlay() closes previous overlay on the element.
@@ -5814,8 +5838,16 @@ var I18N = {};
 
 				$overlay = $el.data('overlay');
 				options = _.extend({}, $overlay.data('closeOptions'), options);
+				var closeEffect = options.closeEffect || options.effect;
+				if(_.isUndefined(closeEffect))
+					closeEffect = 'clip';
+				if(!closeEffect) //so you can use effect: false
+					options.duration = 0;
+				//**Caveat: $.fn.hide() is from jquery.UI instead of jquery
 				$overlay.hide({
-					effect: options.closeEffect || options.effect || 'clip',
+					effect: closeEffect,
+					duration: options.closeDuration || options.duration,
+					easing: options.closeEasing || options.easing,
 					complete: function(){
 						if(options.onClose)
 							options.onClose($el, $overlay);
@@ -5836,7 +5868,7 @@ var I18N = {};
 				//options default (template related):
 				options = _.extend({
 					zIndex: 100,
-					background: (options.content)?'rgba(0, 0, 0, 0.7)':'none',
+					background: (options.content)?'rgba(0, 0, 0, 0.6)':'none',
 					move: false,
 					resize: false
 				}, options);
@@ -5870,12 +5902,20 @@ var I18N = {};
 				if(options.resize) $container.resizable({ containment: "parent" });
 				if(options.move) $container.draggable({ containment: "parent" });
 				$overlay.data({
-					'closeOptions': _.pick(options, 'closeEffect', 'effect', 'duration', 'onClose'),
+					'closeOptions': _.pick(options, 'closeEffect', 'effect', 'closeDuration', 'duration', 'closeEasing', 'easing', 'onClose'),
 					'container': $container
 				});
 				$overlay.data('container').html(_.isFunction(options.content)?options.content($el, $overlay):options.content);
+				var openEffect = options.openEffect || options.effect;
+				if(_.isUndefined(openEffect))
+					openEffect = 'clip';
+				if(!openEffect) //so you can use effect: false
+					options.duration = 0;
+				//**Caveat: $.fn.show() is from jquery.UI instead of jquery
 				$overlay.show({
-					effect: options.openEffect || options.effect || 'clip',
+					effect: openEffect,
+					duration: options.openDuration || options.duration,
+					easing: options.openEasing || options.easing,
 					complete: function(){
 						if(options.onShow)
 							options.onShow($el, $overlay);
@@ -7364,7 +7404,7 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.7-1045 build 1456197213752";;
+;;app.stagejs = "1.8.7-1046 build 1456379325993";;
         //Make sure this is the last line in the last script!!!
         Application.run(/*deviceready - Cordova*/);
     ;

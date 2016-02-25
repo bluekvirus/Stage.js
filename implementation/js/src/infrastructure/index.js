@@ -6,10 +6,10 @@
  * ###How to start my app?
  * 1. app.setup({config});
  * config:
-		* template,
+		* template/layout,
 		* navRegion/contextRegion,
 		* defaultContext,
-		* fullScreen,
+		* fullScreen, (indicated true by using non empty layout config)
 		* rapidEventDelay,
 		* baseAjaxURI
 		* i18nResources
@@ -99,6 +99,7 @@
 
 			//------------------------------------------mainView-------------------------------------------
 			template: undefined,
+			layout: undefined,
 			//e.g:: have a unified layout template.
 			/**
 			 * ------------------------
@@ -113,7 +114,7 @@
 			 * |		bottom 	      |
 			 * ------------------------		 
 			 * 
-			 * @type {String}
+			 * == --> layout: {'1': ['1:top'], '5': ['1:left', '4:center', '1:right'], '1': ['1:bottom']}
 			 */		
 			contextRegion: 'contexts', //alias: navRegion
 			defaultContext: undefined, //This is the context (name) the application will sit on upon loading.
@@ -130,73 +131,10 @@
 
 		}, config);
 		
-		//2 Global settings. (events & ajax)
-		//Global App Events Listener Dispatcher
+		//2. Global App Events Listener Dispatcher
 		app.Util.addMetaEvent(app, 'app');
 
-		//Track window resize
-		var $body = $('body');
-		function trackScreenSize(e, silent){
-			var screenSize = {h: $window.height(), w: $window.width()};
-			if(!validScreenSize(screenSize)) return;
-
-			////////////////cache the screen size/////////////
-			app.screenSize = screenSize;
-			//////////////////////////////////////////////////
-			if(app.config.fullScreen){
-				$body.height(screenSize.h);
-				$body.width(screenSize.w);
-			}
-			if(!silent){
-				app.trigger('app:resized', screenSize);
-				app.coop('window-resized', screenSize);
-			}
-		}
-		function validScreenSize(size){
-			return size.h > 0 && size.w > 0;
-		}
-		$window.on('resize', app.debounce(trackScreenSize));
-		//check screen size, trigger app:resized and get app.screenSize ready.
-		app._ensureScreenSize = function(done){
-			trackScreenSize(); 
-			if(!app.screenSize) _.delay(app._ensureScreenSize, app.config.rapidEventDelay/4, done);
-			else done();
-		};
-
-		//Track window scroll
-		function trackScroll(){
-			var top = $window.scrollTop();
-			app.trigger('app:scroll', top);
-			app.coop('window-scroll', top);
-		}
-		$window.on('scroll', app.throttle(trackScroll));
-		
-		//apply app.config.fullScreen = true
-		if(app.config.fullScreen){
-			$body.css({
-				overflow: 'hidden',
-				margin: 0,
-				padding: 0					
-			});
-		}
-
-		//3 Load Theme css & View templates & i18n translations
-		var theme = app.uri(window.location.toString()).search(true).theme || app.config.theme;
-		if(theme){
-			console.warn('DEV::Application::theme is now deprecated, please use theme css directly in <head>');
-		}
-
-		if(app.config.viewTemplates)
-			app.inject.tpl('all.json');
-
-		I18N.configure({
-			locale: app.config.i18nLocale,
-			resourcePath: app.config.i18nResources,
-			translationFile: app.config.i18nTransFile
-		});
-
-		//4 Add Navigation
-		// Setup the application with content routing (navigation).
+		//3. Setup the application with content routing (navigation).
 		// - use app:navigate (path) at all times when navigate between contexts & views.
 		app.onNavigate = function(options, silent){
 			if(!app.available()) {
@@ -273,7 +211,7 @@
 			}
 		//-----------------------
 
-		//5 Activate Routing AFTER running all the initializers user has defined
+		//4 Activate Routing AFTER running all the initializers user has defined
 		//Context Switching by Routes (can use href = #navigate/... to trigger them)
 		app.on("initialize:after", function(options){
 			//init client page router and history:
@@ -312,25 +250,94 @@
 
 		function kickstart(){
 
-			//1. check if we need 'fast-click' on mobile plateforms
+			//1. Check if we need 'fast-click' on mobile plateforms
 			if(Modernizr.mobile)
 				FastClick.attach(document.body);
 
-			//2. Put main template into position.
+			//2. Track window resize
+			function trackScreenSize(e, silent){
+				var screenSize = {h: $window.height(), w: $window.width()};
+				if(!validScreenSize(screenSize)) return;
+
+				////////////////cache the screen size/////////////
+				app.screenSize = screenSize;
+				//////////////////////////////////////////////////
+				if(app.config.fullScreen){
+					$body.height(screenSize.h);
+					$body.width(screenSize.w);
+				}
+				if(!silent){
+					app.trigger('app:resized', screenSize);
+					app.coop('window-resized', screenSize);
+				}
+			}
+			function validScreenSize(size){
+				return size.h > 0 && size.w > 0;
+			}
+			$window.on('resize', app.debounce(trackScreenSize));
+			//check screen size, trigger app:resized and get app.screenSize ready.
+			app._ensureScreenSize = function(done){
+				trackScreenSize(); 
+				if(!app.screenSize) _.delay(app._ensureScreenSize, app.config.rapidEventDelay/4, done);
+				else done();
+			};
+			//align $body with screen size if app.config.fullScreen = true
+			if(app.config.layout)
+				app.config.fullScreen = true;
+			if(app.config.fullScreen){
+				$body.css({
+					overflow: 'hidden',
+					margin: 0,
+					padding: 0					
+				});
+			}
+
+			//3. Track window scroll
+			function trackScroll(){
+				var top = $window.scrollTop();
+				app.trigger('app:scroll', top);
+				app.coop('window-scroll', top);
+			}
+			$window.on('scroll', app.throttle(trackScroll));
+
+			//4 Load Theme css & View templates & i18n translations
+			var theme = app.uri(window.location.toString()).search(true).theme || app.config.theme;
+			if(theme){
+				console.warn('DEV::Application::theme is now deprecated, please use theme css directly in <head>');
+			}
+
+			//5 Inject template pack
+			if(app.config.viewTemplates)
+				app.inject.tpl('all.json');
+
+			//6. Activate i18n
+			I18N.configure({
+				locale: app.config.i18nLocale,
+				resourcePath: app.config.i18nResources,
+				translationFile: app.config.i18nTransFile
+			});
+
+			//7. Put main template into position.
 			app.addRegions({
 				app: '[region="app"]'
 			});
-			//Warning: calling ensureEl() on the app region will not work like regions in layouts. (Bug??)
-			//the additional <div> under the app region is somehow inevitable atm...
+			//Warning: calling ensureEl() on the app region will not work like regions in layouts.
+			//(Bug??: the additional <div> under the app region is somehow inevitable atm...)
 			app.trigger('app:before-mainview-ready');
-			app.mainView = app.mainView || app.view({
-				name: 'Main',
-				template: app.config.template || ('<div region="' + (app.config.navRegion || app.config.contextRegion) + '"></div>')
-			}, true);
+			if(!app.config.layout)
+				app.mainView = app.mainView || app.view({
+					name: 'Main',
+					template: app.config.template || ('<div region="' + (app.config.navRegion || app.config.contextRegion) + '"></div>')
+				}, true);
+			else
+				app.mainView = app.mainView || app.view({
+					name: 'Main',
+					layout: app.config.layout
+				}, true);
 			app.getRegion('app').show(app.mainView);
 			app.trigger('app:mainview-ready');
 
-			//3. Start the app --> pre init --> initializers --> post init(router setup)
+			//8. Start the app --> pre init --> initializers --> post init(router setup)
 			app._ensureScreenSize(function(){
 				app.start();				
 			});

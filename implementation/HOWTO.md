@@ -318,6 +318,7 @@ Go to your `main.js` and setup the application by using `Application.setup()`:
 Application.setup({
     fullScreen: //false | true,
     template: //'#id', '@**/*.html', [html string array] or 'html string',
+    layout: //same as view layout property,
     contextRegion/navRegion: //your navRegion name marked in template,
     defaultContext: //your default context name to show in navRegion,
     baseAjaxURI: //your base url for using with Application.remote(),

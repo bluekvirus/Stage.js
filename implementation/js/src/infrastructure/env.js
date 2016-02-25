@@ -3,12 +3,17 @@
 	/**
 	 * Global shortcuts
 	 * ----------------
-	 * $document
 	 * $window
+	 * $document
+	 * $head
+	 * $body
 	 */
 	_.each(['document', 'window'], function(coreDomObj){
 		window['$' + coreDomObj] = $(window[coreDomObj]);
-	});	
+	});
+	_.each(['body', 'head'], function(coreDomWrap){
+		window['$' + coreDomWrap] = $(coreDomWrap);
+	});
 
 	/**
 	 * 3rd party lib init

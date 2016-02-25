@@ -5,10 +5,18 @@
  * ---------
  * show: true|false show or close the overlay
  * options: {
- * 		class: 'class name strings for styling purposes';
- * 		effect: 'jquery ui effects string', or specifically:
+ * 		[class: 'class name strings for styling purposes';]
+ * 		background: if no 'class' in options
+ * 		zIndex: if no 'class' in options
+ * 		effect: 'jquery ui effects string', or specifically: (use 'false' to disable)
  * 			openEffect: ...,
  * 			closeEffect: ...,
+ * 		duration:
+ * 			openDuration: ...,
+ * 			closeDuration: ...,
+ * 		easing:
+ * 			openEasing: ...,
+ * 			closeEasing: ...,
  * 		content: 'text'/html or el or a function($el, $overlay) that returns one of the three.
  * 		onShow($el, $overlay) - show callback;
  * 		onClose($el, $overlay) - close callback;
@@ -51,8 +59,12 @@
 
 	/*===============the plugin================*/
 	$.fn.overlay = function(show, options){
-		if(_.isObject(show)){
+		if(_.isPlainObject(show)){
 			options = show;
+			show = true;
+		}
+		if(_.isString(show) || _.isNumber(show)){
+			options = _.extend({content: show}, options);
 			show = true;
 		}
 		if(_.isUndefined(show)) show = false; //$.overlay() closes previous overlay on the element.
@@ -67,8 +79,16 @@
 
 				$overlay = $el.data('overlay');
 				options = _.extend({}, $overlay.data('closeOptions'), options);
+				var closeEffect = options.closeEffect || options.effect;
+				if(_.isUndefined(closeEffect))
+					closeEffect = 'clip';
+				if(!closeEffect) //so you can use effect: false
+					options.duration = 0;
+				//**Caveat: $.fn.hide() is from jquery.UI instead of jquery
 				$overlay.hide({
-					effect: options.closeEffect || options.effect || 'clip',
+					effect: closeEffect,
+					duration: options.closeDuration || options.duration,
+					easing: options.closeEasing || options.easing,
 					complete: function(){
 						if(options.onClose)
 							options.onClose($el, $overlay);
@@ -89,7 +109,7 @@
 				//options default (template related):
 				options = _.extend({
 					zIndex: 100,
-					background: (options.content)?'rgba(0, 0, 0, 0.7)':'none',
+					background: (options.content)?'rgba(0, 0, 0, 0.6)':'none',
 					move: false,
 					resize: false
 				}, options);
@@ -123,12 +143,20 @@
 				if(options.resize) $container.resizable({ containment: "parent" });
 				if(options.move) $container.draggable({ containment: "parent" });
 				$overlay.data({
-					'closeOptions': _.pick(options, 'closeEffect', 'effect', 'duration', 'onClose'),
+					'closeOptions': _.pick(options, 'closeEffect', 'effect', 'closeDuration', 'duration', 'closeEasing', 'easing', 'onClose'),
 					'container': $container
 				});
 				$overlay.data('container').html(_.isFunction(options.content)?options.content($el, $overlay):options.content);
+				var openEffect = options.openEffect || options.effect;
+				if(_.isUndefined(openEffect))
+					openEffect = 'clip';
+				if(!openEffect) //so you can use effect: false
+					options.duration = 0;
+				//**Caveat: $.fn.show() is from jquery.UI instead of jquery
 				$overlay.show({
-					effect: options.openEffect || options.effect || 'clip',
+					effect: openEffect,
+					duration: options.openDuration || options.duration,
+					easing: options.openEasing || options.easing,
 					complete: function(){
 						if(options.onShow)
 							options.onShow($el, $overlay);
