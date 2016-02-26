@@ -114,7 +114,7 @@
 			 * |		bottom 	      |
 			 * ------------------------		 
 			 * 
-			 * == --> layout: {'1:.banner': ['1:top'], '5': ['1:left', '4:center', '1:right'], '1:.footer': ['1:bottom']}
+			 * == --> layout: ['1:#top', ['5', ['1:left', '4:center', '1:right']], '1:.bottom,.bottom2    bottom3']
 			 */		
 			contextRegion: 'contexts', //alias: navRegion
 			defaultContext: undefined, //This is the context (name) the application will sit on upon loading.

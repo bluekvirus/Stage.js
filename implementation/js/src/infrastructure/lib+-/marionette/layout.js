@@ -83,7 +83,7 @@
 		},
 
 		//lock or unlock a region with overlayed spin/view (e.g waiting)
-		lock: function(region /*name only*/, flag /*true or false*/, View /*or icon name for .fa-spin*/){
+		lock: function(region /*name only*/, flag /*true or false*/, View /*or icon name for .fa-spin or {object for overlay configuration}*/){
 			//check whether region is a string
 			if( typeof(region) !== 'string' )
 				throw new Error('DEV::Layout+::lock() Region name must be a string');
@@ -100,7 +100,7 @@
 						content: (new View()).render().$el,
 						effect: false
 					});
-				}else if( $.isPlainObject(View) ){//plain object as overlay option
+				}else if( _.isPlainObject(View) ){//plain object as overlay option
 					View.effect = View.effect || false;
 					$anchor.overlay(View);
 				}else{//spin icon

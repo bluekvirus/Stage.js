@@ -9,6 +9,7 @@
 			'<div class="col-md-6 wrapper-full" region="split-nested"></div>',
 			'<div class="col-md-6 wrapper-full" style="height:25em;"><div id="div-split3" style="border: 1px solid black;"></div></div>',
 			'<div class="col-md-6 wrapper-full" region="test"></div>',
+			'<div class="col-md-6 wrapper-full" style="height:25em;"><div id="test-layout" style="height:100%;border: 1px solid black;"></div></div>'
 		],
 		onShow: function(){
 			//
@@ -66,12 +67,20 @@
 				'<div style="color:#626262;">'+
 					'<div>You can also use two 2-dimension layout on DOM elements.</div>'+
 					'<div>$SomeDiv.split({</div>'+
-					'<div>&nbsp;&nbsp;&nbsp;&nbsp; split: [</div>',
-					'<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [\'1:nested-1:\', [\'1:nested-1-1:\',\'2:View-3-2:\']],</div>',
-					'<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [\'2:nested-2\', [\'30em:nested-2-1:\',\'1:nested-1-2:\']],</div>',
-					'<div>&nbsp;&nbsp;&nbsp;&nbsp; ]</div>',
+					'<div>&nbsp;&nbsp;&nbsp;&nbsp; split: [</div>'+
+					'<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [\'1:nested-1:\', [\'1:nested-1-1:\',\'2:View-3-2:\']],</div>'+
+					'<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [\'2:nested-2\', [\'30em:nested-2-1:\',\'1:nested-1-2:\']],</div>'+
+					'<div>&nbsp;&nbsp;&nbsp;&nbsp; ]</div>'+
 					'<div>&nbsp;&nbsp;&nbsp;&nbsp; adjustable: true,</div>'+
 					'<div>}</div>'+
+				'</div>'
+			);
+			//test-layout
+			this.$el.find('#test-layout').html(
+				'<div style="color:#626262;">'+
+					'<div>You can also pass array directly in layout configuration.<br></div>'+
+					'<div><br>The layout configuration for the view on the left side is simply: </div>'+
+					'<div><br>layout: <br>[\'1:#top\', [\'5\', [[\'1:left\', [\'1:#left-top\', \'2:#left-bottom\']], \'4:center\', \'1:right\']], \'1:.bottom,.bottom2    bottom3\'],</div>'+
 				'</div>'
 			);
 		}
@@ -169,12 +178,16 @@
 
 	var Test = app.view({
 		template: '',
-		layout: {
-			split: ['1:#top', ['5', ['1:left', '4:center', '1:right']], '1:.bottom,.bottom2    bottom3'],
-			adjustable: true
-		},
+		layout: ['1:#top', ['5', [['1:left', ['1:#left-top', '2:#left-bottom']], '4:center', '1:right']], '1:.bottom,.bottom2    bottom3'],
 		onShow: function(){
-			this.$el.css({height: '100%', border: '1px solid black'});
+			var $this = this.$el;
+			$this.css({height: '100%', border: '1px solid black'});
+			//color the regions
+			$this.find('#top').addClass('bg-primary');
+			$this.find('[region="right"]').addClass('bg-success');
+			$this.find('#left-top').addClass('bg-warning');
+			$this.find('#left-bottom').addClass('bg-info');
+			$this.find('.bottom').addClass('bg-danger');
 		}
 	});
 

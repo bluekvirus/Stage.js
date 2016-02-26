@@ -18,6 +18,12 @@
 	//main function
 	$.fn.split = function(options){
 		options = options || {};
+		//check whether options is an array
+		if(_.isArray(options)){
+			var tempOptions = options;
+			options = {};
+			options.split = tempOptions;
+		}
 		//default parameters
 		var direction = options.direction || 'h',
 			split = options.split || ['1:sample-region', '1:SampleView'],
