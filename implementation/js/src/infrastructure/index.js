@@ -114,7 +114,7 @@
 			 * |		bottom 	      |
 			 * ------------------------		 
 			 * 
-			 * == --> layout: {'1': ['1:top'], '5': ['1:left', '4:center', '1:right'], '1': ['1:bottom']}
+			 * == --> layout: {'1:.banner': ['1:top'], '5': ['1:left', '4:center', '1:right'], '1:.footer': ['1:bottom']}
 			 */		
 			contextRegion: 'contexts', //alias: navRegion
 			defaultContext: undefined, //This is the context (name) the application will sit on upon loading.
@@ -332,7 +332,7 @@
 			else
 				app.mainView = app.mainView || app.view({
 					name: 'Main',
-					layout: app.config.layout
+					layout: app.config.layout,
 				}, true);
 			app.getRegion('app').show(app.mainView);
 			app.trigger('app:mainview-ready');
