@@ -94,7 +94,7 @@
 			}
 			//make the overlay view, check View is object or a string
 			var $anchor = (this.getViewIn(region))? this.getViewIn(region).$el : this.getRegion(region).$el;
-			if(flag){
+			if(flag){//flag = true
 				if( _.isFunction(View) ){//view
 					$anchor.overlay({
 						content: (new View()).render().$el,
@@ -109,7 +109,7 @@
 						effect: false
 					});
 				}
-			}else{
+			}else{//flag = false
 				$anchor.overlay();
 			}
 		},
