@@ -59,7 +59,7 @@
 
 	/*===============the plugin================*/
 	$.fn.overlay = function(show, options){
-		if(_.isPlainObject(show)){
+		if($.isPlainObject(show)){
 			options = show;
 			show = true;
 		}

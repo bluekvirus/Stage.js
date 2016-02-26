@@ -100,7 +100,6 @@
 			//------------------------------------------mainView-------------------------------------------
 			template: undefined,
 			layout: undefined,
-			direction: 'h', //only consulted if using layout, indicating how to split $body.
 			//e.g:: have a unified layout template.
 			/**
 			 * ------------------------
@@ -333,7 +332,7 @@
 			else
 				app.mainView = app.mainView || app.view({
 					name: 'Main',
-					layout: app.config.layout
+					layout: app.config.layout,
 				}, true);
 			app.getRegion('app').show(app.mainView);
 			app.trigger('app:mainview-ready');

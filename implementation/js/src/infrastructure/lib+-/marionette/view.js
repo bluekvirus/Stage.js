@@ -44,7 +44,7 @@
  * List of view options passed through new View(opt) that will be auto-merged as properties:
  * 		a. from Backbone.View ['model', 'collection', 'el', 'id', 'attributes', 'className', 'tagName', 'events'];
  * 		b*. from M.View ['templateHelpers']; (through M.getOption() -- tried both this and this.options)
- *   	c. from us ['effect', 'template', 'data'/'useParentData', 'ui', 'coop', 'actions', 'editors', 'tooltips', 'overlay', 'popover', 'svg'];
+ *   	c. from us ['effect', 'template', 'layout', 'data'/'useParentData', 'ui', 'coop', 'actions', 'editors', 'tooltips', 'overlay', 'popover', 'svg'];
  *
  * Tip:
  * All new View(opt) will have this.options = opt ready in initialize(), also this.*[all auto-picked properties above].
@@ -396,7 +396,7 @@
 
 		//----------------------fixed view enhancements---------------------
 		//auto-pick live init options
-		_.extend(this, _.pick(options, ['effect', 'template', 'data', 'useParentData', 'ui', 'coop', 'actions', 'dnd', 'selectable', 'editors', 'tooltips', 'overlay', 'popover', 'svg', /*'canvas'*/]));
+		_.extend(this, _.pick(options, ['effect', 'template', 'layout', 'data', 'useParentData', 'ui', 'coop', 'actions', 'dnd', 'selectable', 'editors', 'tooltips', 'overlay', 'popover', 'svg', /*'canvas'*/]));
 
 		//re-wire this.get()/set() to this.getVal()/setVal(), data model in editors is used as configure object.
 		if(this.category === 'Editor'){
