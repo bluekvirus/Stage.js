@@ -168,7 +168,7 @@
 			 * |		bottom 	      |
 			 * ------------------------		 
 			 * 
-			 * == --> layout: {'1': ['1:top'], '5': ['1:left', '4:center', '1:right'], '1': ['1:bottom']}
+			 * == --> layout: ['1:#top', ['5', ['1:left', '4:center', '1:right']], '1:.bottom,.bottom2    bottom3']
 			 */		
 			contextRegion: 'contexts', //alias: navRegion
 			defaultContext: undefined, //This is the context (name) the application will sit on upon loading.
@@ -386,7 +386,7 @@
 			else
 				app.mainView = app.mainView || app.view({
 					name: 'Main',
-					layout: app.config.layout
+					layout: app.config.layout,
 				}, true);
 			app.getRegion('app').show(app.mainView);
 			app.trigger('app:mainview-ready');
@@ -4040,7 +4040,7 @@ module.exports = DeepModel;
  * List of view options passed through new View(opt) that will be auto-merged as properties:
  * 		a. from Backbone.View ['model', 'collection', 'el', 'id', 'attributes', 'className', 'tagName', 'events'];
  * 		b*. from M.View ['templateHelpers']; (through M.getOption() -- tried both this and this.options)
- *   	c. from us ['effect', 'template', 'data'/'useParentData', 'ui', 'coop', 'actions', 'editors', 'tooltips', 'overlay', 'popover', 'svg'];
+ *   	c. from us ['effect', 'template', 'layout', 'data'/'useParentData', 'ui', 'coop', 'actions', 'editors', 'tooltips', 'overlay', 'popover', 'svg'];
  *
  * Tip:
  * All new View(opt) will have this.options = opt ready in initialize(), also this.*[all auto-picked properties above].
@@ -4392,7 +4392,7 @@ module.exports = DeepModel;
 
 		//----------------------fixed view enhancements---------------------
 		//auto-pick live init options
-		_.extend(this, _.pick(options, ['effect', 'template', 'data', 'useParentData', 'ui', 'coop', 'actions', 'dnd', 'selectable', 'editors', 'tooltips', 'overlay', 'popover', 'svg', /*'canvas'*/]));
+		_.extend(this, _.pick(options, ['effect', 'template', 'layout', 'data', 'useParentData', 'ui', 'coop', 'actions', 'dnd', 'selectable', 'editors', 'tooltips', 'overlay', 'popover', 'svg', /*'canvas'*/]));
 
 		//re-wire this.get()/set() to this.getVal()/setVal(), data model in editors is used as configure object.
 		if(this.category === 'Editor'){
@@ -5056,8 +5056,35 @@ module.exports = DeepModel;
 		},
 
 		//lock or unlock a region with overlayed spin/view (e.g waiting)
-		lock: function(region /*name only*/, flag /*true or false*/, View /*or icon name for .fa-spin*/){
-
+		lock: function(region /*name only*/, flag /*true or false*/, View /*or icon name for .fa-spin or {object for overlay configuration}*/){
+			//check whether region is a string
+			if( typeof(region) !== 'string' )
+				throw new Error('DEV::Layout+::lock() Region name must be a string');
+			//check whether we have flag parameter
+			if( !_.isBoolean(flag) ){
+				View = flag;
+				flag = true;
+			}
+			//make the overlay view, check View is object or a string
+			var $anchor = (this.getViewIn(region))? this.getViewIn(region).$el : this.getRegion(region).$el;
+			if(flag){//flag = true
+				if( _.isFunction(View) ){//view
+					$anchor.overlay({
+						content: (new View()).render().$el,
+						effect: false
+					});
+				}else if( _.isPlainObject(View) ){//plain object as overlay option
+					View.effect = View.effect || false;
+					$anchor.overlay(View);
+				}else{//spin icon
+					$anchor.overlay({
+						content: '<div class="lock-spinner"><i class="' + View + '"></i></div>',
+						effect: false
+					});
+				}
+			}else{//flag = false
+				$anchor.overlay();
+			}
 		},
 	});
 
@@ -5818,7 +5845,7 @@ var I18N = {};
 
 	/*===============the plugin================*/
 	$.fn.overlay = function(show, options){
-		if(_.isPlainObject(show)){
+		if($.isPlainObject(show)){
 			options = show;
 			show = true;
 		}
@@ -5943,9 +5970,17 @@ var I18N = {};
  */
 
 ;(function($){
+	//global queue for storing tasks
+	var taskQueue = [];
 	//main function
 	$.fn.split = function(options){
 		options = options || {};
+		//check whether options is an array
+		if(_.isArray(options)){
+			var tempOptions = options;
+			options = {};
+			options.split = tempOptions;
+		}
 		//default parameters
 		var direction = options.direction || 'h',
 			split = options.split || ['1:sample-region', '1:SampleView'],
@@ -5956,7 +5991,19 @@ var I18N = {};
 			adjustable = options.adjustable || false,
 			barClass = options.barClass || 'split-' + direction + 'bar',
 			$this = ( this[0].$el ) ? this[0].$el : $(this);
-		setDomLayout($this, direction, adjustable, split, height, width, barClass);
+		taskQueue.push({
+			$element: $this,
+			direction: direction,
+			adjustable: adjustable,
+			split: split,
+			height: height,
+			width: width,
+			barClass: barClass
+		});
+		while( taskQueue.length > 0 ){
+			setDomLayout(taskQueue[0].$element, taskQueue[0].direction, taskQueue[0].adjustable, taskQueue[0].split, taskQueue[0].height, taskQueue[0].width, taskQueue[0].barClass);
+			taskQueue.shift();		
+		}
 	};
 	//functions
 	var setDomLayout = function($elem, direction, adjustable, split, height, width, barClass){
@@ -5968,34 +6015,22 @@ var I18N = {};
 			$elem.css({height: height});
 		if(width !=='auto')
 			$elem.css({width: width});
-		//check whether two dimension layout or single dimension layout
-		if($.isPlainObject(split)){//two dimension layout
-			var firstDimension = [],
-				secondDimension = [],
-				counter = 0,
-				$container;
-			_.each(split, function(data, key){
-				firstDimension[counter] = key;
-				secondDimension[counter] = data;
-				counter++;
-			});
-			//first dimension layout
-			setDomLayout($elem, 'h', adjustable, firstDimension, height, width, 'split-hbar');
-			//second dimension layout
-			_.each($elem.find('>div').filter(function(){
-				return !$(this).hasClass('split-hbar');
-			}), function(div, divIndex){
-				setDomLayout($(div), 'v', adjustable, secondDimension[divIndex], height, width, 'split-vbar');
-			});
-
-		}else if(_.isArray(split)){//single dimension layout
+		//trim the split array
+		_.each(split, function(data, index){
+			if(_.isArray(data)){
+				if(data.length !== 2)
+					throw new Error('Dev::runtime::split-plugin::the array in split can only have a length of 2.');
+				trimmed[index] = data[0].split(':');
+			}else if(_.isString(data)){
+				trimmed[index] = data.split(':');
+			}else{
+				throw new Error('Dev::runtime::split-plugin::the elements in split can only be an array with length 2 or a string.');
+			}
+		});
+		if(_.isArray(split)){//single dimension layout
 			//check whether adjustable or not
 			if(adjustable){//adjustable
 				//show divide bar and remove to get height/width for divide bar
-				//trim the split array
-				_.each(split, function(data, index){
-					trimmed[index] = data.split(':');
-				});
 				//insert flexboxes
 				//set parent style
 				$elem.css({
@@ -6017,6 +6052,19 @@ var I18N = {};
 					}else{//not fixed px or em
 						$currentEl = $('<div '+ getRegionOrViewName(data[1]) +' style="flex:' + Number.parseFloat(data[0]) + ';' + position + '"></div>').appendTo($elem);
 					}
+					//check whether there is a two dimension layout for this div
+					if(_.isArray(split[index])){
+						taskQueue.push({
+							$element: $currentEl,
+							direction: (direction === 'h') ? 'v' : 'h',
+							adjustable: adjustable,
+							split: split[index][1],
+							height: height,
+							width: width,
+							barClass: (direction === 'h') ? 'split-vbar' : 'split-hbar'
+						});
+					}
+					//insert a bar after the element
 					if( index < split.length - 1 )
 						$bar = $('<div class="' + barClass + '" style="flex: 0 0 2px;"></div>'/*2px is temprary place holder*/).appendTo($elem);
 				});
@@ -6121,10 +6169,7 @@ var I18N = {};
 					});
 				});
 			}else{//not adjustable
-				//trim the split array
-				_.each(split, function(data, index){
-					trimmed[index] = data.split(':');
-				});
+				
 				//insert flexboxes
 				//set parent style
 				$elem.css({
@@ -6135,38 +6180,72 @@ var I18N = {};
 				});
 				//insert
 				_.each(trimmed, function(data, index){
-					var position = (data[2]) ? 'position:' + data[2] + ';' : '';
+					//check position settings
+					var position = (data[2]) ? 'position:' + data[2] + ';' : '',
+						$currentEl;
 					//check whether fixed or not
 					if(data[0].match(/(px)/)){//fixed px
-						template += '<div ' + getRegionOrViewName(data[1]) + ' style="flex: 0 0 ' + Number.parseFloat(data[0]) + 'px;' + position + '"></div>';
+						$currentEl = $('<div ' + getRegionOrViewName(data[1]) + ' style="flex: 0 0 ' + Number.parseFloat(data[0]) + 'px;' + position + '"></div>').appendTo($elem);
 					}else if(data[0].match(/(em)/)){//fixed em
-						template += '<div ' + getRegionOrViewName(data[1]) + ' style="flex: 0 0 ' + Number.parseFloat(data[0]) + 'em;' + position + '"></div>';
+						$currentEl = $('<div ' + getRegionOrViewName(data[1]) + ' style="flex: 0 0 ' + Number.parseFloat(data[0]) + 'em;' + position + '"></div>').appendTo($elem);
 					}else{//not fixed px or em
-						template += '<div '+ getRegionOrViewName(data[1]) +' style="flex:' + Number.parseFloat(data[0]) + ';' + position + '"></div>';
+						$currentEl = $('<div '+ getRegionOrViewName(data[1]) +' style="flex:' + Number.parseFloat(data[0]) + ';' + position + '"></div>').appendTo($elem);
+					}
+					//check whether there is a two dimension layout for this div
+					if(_.isArray(split[index])){
+						taskQueue.push({
+							$element: $currentEl,
+							direction: (direction === 'h') ? 'v' : 'h',
+							adjustable: adjustable,
+							split: split[index][1],
+							height: height,
+							width: width
+						});
 					}
 				});
-				//only append once to save resource
-				$elem.append($(template));
 			}
 		}else{
-			throw new Error('Dev::runtime::split-plugin::the split parameter is error. it can only be an array or an object');
+			throw new Error('Dev::runtime::split-plugin::the split parameter is error. it can only be an array.');
 		}
 	};
 
 	//get region or view name
 	var getRegionOrViewName = function(str){
-		var rvname = '';
+		var rvname = '',
+			tempClass;
 		//check whether given a region or view name
 		if(str){
-			if( str.charAt(0) === str.charAt(0).toUpperCase() )
-				rvname = 'view="' + str + '"';
-			else if( str.charAt(0) === str.charAt(0).toLowerCase() )
-				rvname = 'region="' + str + '"';
-			else
-				throw new Error('Dev::runtime::split-plugin::the region/view name you give is not valid.');
-		}else{
+			//check the start of the string
+			if( str.charAt(0) === '#' ){//id
+				rvname = 'id="' + str.slice(1) + '"';
+			}else if( str.charAt(0) === '.' ){//class
+				//separate classes, either space or comma will do
+				tempClass = str.split(/[\s,]+/);
+				//trim classes to illiminate spaces, and add to return value
+				rvname = 'class="';
+				_.each(tempClass, function(data, index){
+					var tempStr = _.string.trim(data);
+					//delete . at the beginning if exits
+					if( tempStr.charAt(0) === '.' )
+						tempStr = tempStr.slice(1);
+					//append string
+					rvname += tempStr;
+					//append space if not last one
+					if( index < tempClass.length - 1 )
+						rvname += ' ';
+				});
+				rvname += '"';
+			}else{//region/view name
+				if( str.charAt(0) === str.charAt(0).toUpperCase() )
+					rvname = 'view="' + str + '"';
+				else if( str.charAt(0) === str.charAt(0).toLowerCase() )
+					rvname = 'region="' + str + '"';
+				else
+					console.warn('please check your region/view name setting.');
+			}
+		}/*else{//do not throw error if there is no second parameter
 			throw new Error('Dev::runtime::split-plugin::you need to provide a region/view name');
-		}
+		}*/
 		return rvname;
 	};
 
@@ -7404,7 +7483,7 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.7-1046 build 1456379325993";;
+;;app.stagejs = "1.8.7-1057 build 1456514505741";;
         //Make sure this is the last line in the last script!!!
         Application.run(/*deviceready - Cordova*/);
     ;

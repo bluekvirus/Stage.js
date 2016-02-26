@@ -39,13 +39,14 @@ Change Log
 35. Merged the Context concept into View when using app.get(); (you can now use view as a context)
 36. Added .callout to theme base;
 37. Added .more() api to view; (need example: infinite scrolling)
-38. Added .layout config to view;
+38. Added .layout config to view and app.config;
 39. Merged $.hsplit/vsplit to $.split
 40. Refined $.overlay options (*content, *effect, +duration, +easing)
+41. Added .lock() api to view;
 
 working on ...
 
-* Adding .lock() api to view;
+* Changing svg/canvas support to be (snap/easel)
 * Adding data-export script to tools (npm run data-export);
 * Adding more unit tests;
 * Adding cheatsheet;
