@@ -33,7 +33,9 @@
 			width = options.width || '100%',
 			adjustable = options.adjustable || false,
 			barClass = options.barClass || 'split-' + direction + 'bar',
-			$this = ( this[0].$el ) ? this[0].$el : $(this);
+			$this = ( this[0].$el ) ? this[0].$el : $(this),
+			counter = 1;//count the number of plug-in gets called
+		//push initial task into queue
 		taskQueue.push({
 			$element: $this,
 			direction: direction,
@@ -44,19 +46,20 @@
 			barClass: barClass
 		});
 		while( taskQueue.length > 0 ){
-			setDomLayout(taskQueue[0].$element, taskQueue[0].direction, taskQueue[0].adjustable, taskQueue[0].split, taskQueue[0].height, taskQueue[0].width, taskQueue[0].barClass);
+			setDomLayout(taskQueue[0].$element, taskQueue[0].direction, taskQueue[0].adjustable, taskQueue[0].split, taskQueue[0].height, taskQueue[0].width, taskQueue[0].barClass, counter);
+			counter++;
 			taskQueue.shift();		
 		}
 	};
 	//functions
-	var setDomLayout = function($elem, direction, adjustable, split, height, width, barClass){
+	var setDomLayout = function($elem, direction, adjustable, split, height, width, barClass, counter){
 		var trimmed = [],
 			dir = ( direction === 'h' )? 'column' : 'row',
 			template = '';
 		//expand height and width for parent element
-		if(height !== 'auto')
+		if(height !== 'auto' && counter === 1/*only give heigh/width for the first layer of element, flex automatically sets width/height*/)
 			$elem.css({height: height});
-		if(width !=='auto')
+		if(width !=='auto' && counter === 1)
 			$elem.css({width: width});
 		//trim the split array
 		_.each(split, function(data, index){
