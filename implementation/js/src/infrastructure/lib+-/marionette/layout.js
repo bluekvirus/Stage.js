@@ -49,7 +49,7 @@
 		},
 
 		//add more items into a specific region
-		more: function(region /*name only*/, data /*array only*/, View /*or name*/, useSet /*use set() instead of add*/){
+		more: function(region /*name only*/, data /*array only*/, View /*or name*/, replace /*use set() instead of add, also reconsider View*/){
 			if(!_.isArray(data))
 				throw new Error('DEV::Layout+::more() You must give an array as data objects...');
 			//accept plain array of strings and numbers. (only in this function)
@@ -61,13 +61,15 @@
 			////////////////////////////////////////
 			
 			if(_.isBoolean(View)){
-				useSet = View;
+				replace = View;
 				View = undefined;
 			}
 
 			var cv = this.getViewIn(region);
+			if(replace && View)
+				cv.itemView = _.isString(View)? app.get(View) : View;
 			if(cv && cv.collection){
-				if(useSet)
+				if(replace)
 					cv.set(d);
 				else
 					cv.collection.add(d);
