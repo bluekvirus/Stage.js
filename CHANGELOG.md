@@ -43,6 +43,7 @@ Change Log
 39. Merged $.hsplit/vsplit to $.split
 40. Refined $.overlay options (*content, *effect, +duration, +easing)
 41. Added .lock() api to view;
+42. Deprecated region.resize() api;
 
 working on ...
 
