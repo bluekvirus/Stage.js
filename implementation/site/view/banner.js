@@ -67,6 +67,7 @@
                     '<li><a href="#navigate/Demo/Demo.Overlay">Overlay</a></li>',
                     '<li><a href="#navigate/Demo/Demo.Layout">Layout</a></li>',
                     '<li><a href="#navigate/Demo/Demo.Lock">Lock</a></li>',
+                    '<li><a href="#navigate/Demo/Demo.MoreData">More Data</a></li>',
                     // '<li><a href="#">Terminal</a></li>',
                   '</ul>',
                 '</li>',

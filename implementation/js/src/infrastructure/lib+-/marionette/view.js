@@ -117,6 +117,34 @@
 		 *
 		 * B. We only do e.stopPropagation for you, if you need e.preventDefault(), do it yourself in the action impl;
 		 */
+		_enableSpecialActionTags: function(){
+			var that = this;
+			_.each(['scroll', 'scroll-bottom', 'scroll-top', /*'left,right'*/ 'error', 'load'], function(e){
+				this.$el.find('[action-' + e + ']').each(function(index, el){
+					//extra e.sub-events are handled by e listener, so skip.
+					var tmp = e.split('-');
+					var $el = $(this);
+					if($el.data('special-e-' + tmp[0])) return;
+
+					$el.on(tmp[0], function(innerE){
+						//dirty hack to make scroll-bottom/-top [/-left/-right] work in actions
+						if(innerE.type === 'scroll'){
+							if($el.attr('action-scroll-bottom'))
+								//window scroll distance  + window height (include padding) === inner doc height.
+								($el.scrollTop() + $el.innerHeight() === $el.prop('scrollHeight')) && (innerE.type += '-bottom');
+							if($el.attr('action-scroll-top'))
+								($el.scrollTop() === 0) && (innerE.type += '-top');
+							// case 'left':
+							// case 'right':
+							//**NOTE: that, scroll-* will always be triggered by scroll, we just ignore it when there is no action-scroll tag
+							if(innerE.type === 'scroll' && !$el.attr('action-scroll'))
+								return;
+						}
+						that._doAction(innerE);
+					}).data('special-e-' + tmp[0], 'registered');
+				});
+			}, this);
+		},
 		_enableActionTags: function(uiName, passOn){ //the uiName is just there to output meaningful dev msg if some actions haven't been implemented.
 
 			if(_.isBoolean(uiName)){
@@ -139,8 +167,8 @@
 				'mousedown [action-mousedown]': '_doAction',
 				'mousemove [action-mousemove]': '_doAction',
 				'mouseup [action-mouseup]': '_doAction',
-				'mouseenter [action-mouseenter]': '_doAction', //per tag, no bubble even with passOn: true
-				'mouseleave [action-mouseleave]': '_doAction', //per tag, no bubble even with passOn: true
+				'mouseenter [action-mouseenter]': '_doAction', //per tag, [not a bubble event in some browser, use mouseover]
+				'mouseleave [action-mouseleave]': '_doAction', //per tag, [not a bubble event in some browser, use mouseout]
 				'mouseover [action-mouseover]': '_doAction', //=enter but bubble
 				'mouseout [action-mouseout]': '_doAction', //=leave but bubble
 
@@ -150,10 +178,10 @@
 				'keyup [action-keyup]': '_doAction',
 				//'keypress [action-keypress]': '_doAction', //use keydown instead (non-printing keys and focus-able diff)
 
-				//'focus [action-focus]': '_doAction', //use focusin instead (no bubble even with passOn: true in IE)
+				//'focus [action-focus]': '_doAction', //use focusin instead (non bubble even with passOn: true in IE)
 				'focusin [action-focusin]': '_doAction', //tabindex=seq or -1
 				'focusout [action-focusout]': '_doAction', //tabindex=seq or -1
-				//'blur [action-blur]': '_doAction', //use focusin instead (no bubble even with passOn: true in IE, FF)
+				//'blur [action-blur]': '_doAction', //use focusin instead (non bubble even with passOn: true in IE, FF)
 
 				//------------<input>, <select>, <textarea>--------
 				'change [action-change]': '_doAction',
@@ -161,20 +189,25 @@
 				'submit [action-submit]': '_doAction', //<input type="submit">, <input type="image"> or <button type="submit">
 
 				//------------<div>, <any.overflow>----------------
-				'scroll [action-scroll]': '_doAction',
+				//'scroll [action-scroll]': '_doAction', //non bubble, see _enableSpecialActionTags
+				//'scroll-bottom'
+				//'scroll-top'
 
 				//------------<script>, <img>, <iframe>------------
-				'error [action-error]': '_doAction',
-				'load [action-load]': '_doAction'
+				//'error [action-error]': '_doAction', //non bubble, _enableSpecialActionTags
+				//'load [action-load]': '_doAction' //non bubble, _enableSpecialActionTags
 
 				//window events:
-				//load [use $(ready-fn) instead], unload, resize, scroll
+				// load [use $(ready-fn) instead],
+				// unload, 
+				// resize [use coop 'window-resized'], 
+				// scroll [use coop 'window-scroll'],
 
 			});
 			this.actions = this.actions || {}; 	
 			uiName = uiName || this.name || '_UNKNOWN_.View';
 
-			//captured events will not bubble (due to e.stopPropagation)
+			//captured events will not bubble further up (due to e.stopPropagation)
 			this._doAction = function(e){
 
 				//**Caveat: non-bubble event will not change e.currentTarget to be current el (the one has [action-*])
@@ -587,22 +620,27 @@
 			});
 		}
 
-		//actions
-		if(this.actions && this._enableActionTags) 
+		//actions - 1 (bubble events that can be delegated)
+		if(this.actions) {
 			this._enableActionTags(this.actions._bubble);
-		
+			//actions - 2 (non bubbling events)
+			this.listenTo(this, 'render', function(){
+				this._enableSpecialActionTags();
+			});
+		}
+
 		//tooltip
-		if(this.tooltips && this._enableTooltips) {
+		if(this.tooltips) {
 			this._enableTooltips(this.tooltips);
 		}
 
 		//overlay (use this view as overlay)
-		if(this.overlay && this._enableOverlay){
+		if(this.overlay){
 			this._enableOverlay();
 		}
 
 		//popover
-		if(this.popover && this._enablePopover){
+		if(this.popover){
 			this._enablePopover();
 		}
 

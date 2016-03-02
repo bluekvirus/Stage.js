@@ -44,6 +44,7 @@ Change Log
 40. Refined $.overlay options (*content, *effect, +duration, +easing)
 41. Added .lock() api to view;
 42. Deprecated region.resize() api;
+43. Added 'scroll-bottom/top' and fixed 'scroll/load/error' action events;
 
 working on ...
 
