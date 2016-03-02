@@ -1,23 +1,16 @@
 {
+  "animate.css": "../../implementation/bower_components/animate.css/animate.css",
   "amaranjs": [
     "../../implementation/bower_components/amaranjs/dist/css/amaran.min.css",
     "../../implementation/bower_components/amaranjs/dist/css/animate.min.css",
     "../../implementation/bower_components/amaranjs/dist/js/jquery.amaran.js",
     "../../implementation/bower_components/amaranjs/dist/js/jquery.amaran.min.js"
   ],
-  "animate.css": "../../implementation/bower_components/animate.css/animate.css",
   "backbone.babysitter": "../../implementation/bower_components/backbone.babysitter/lib/backbone.babysitter.js",
   "backbone": "../../implementation/bower_components/backbone/backbone.js",
   "backbone.wreqr": "../../implementation/bower_components/backbone.wreqr/lib/backbone.wreqr.js",
   "blueimp-canvas-to-blob": "../../implementation/bower_components/blueimp-canvas-to-blob",
-  "blueimp-load-image": [
-    "../../implementation/bower_components/blueimp-load-image/js/load-image.js",
-    "../../implementation/bower_components/blueimp-load-image/js/load-image-ios.js",
-    "../../implementation/bower_components/blueimp-load-image/js/load-image-orientation.js",
-    "../../implementation/bower_components/blueimp-load-image/js/load-image-meta.js",
-    "../../implementation/bower_components/blueimp-load-image/js/load-image-exif.js",
-    "../../implementation/bower_components/blueimp-load-image/js/load-image-exif-map.js"
-  ],
+  "blueimp-load-image": "../../implementation/bower_components/blueimp-load-image",
   "blueimp-tmpl": "../../implementation/bower_components/blueimp-tmpl",
   "bootstrap": [
     "../../implementation/bower_components/bootstrap/less/bootstrap.less",
@@ -25,8 +18,8 @@
   ],
   "bootswatch": "../../implementation/bower_components/bootswatch",
   "chai": "../../implementation/bower_components/chai/chai.js",
-  "fastclick": "../../implementation/bower_components/fastclick/lib/fastclick.js",
   "detectizr": "../../implementation/bower_components/detectizr",
+  "fastclick": "../../implementation/bower_components/fastclick/lib/fastclick.js",
   "fontawesome": [
     "../../implementation/bower_components/fontawesome/less/font-awesome.less",
     "../../implementation/bower_components/fontawesome/scss/font-awesome.scss"
@@ -42,11 +35,11 @@
   "jquery": "../../implementation/bower_components/jquery/dist/jquery.js",
   "js-cookie": "../../implementation/bower_components/js-cookie/src/js.cookie.js",
   "loadcss": "../../implementation/bower_components/loadcss/loadCSS.js",
+  "marked": "../../implementation/bower_components/marked/lib/marked.js",
   "marionette": [
     "../../implementation/bower_components/marionette/lib/backbone.marionette.js",
     "../../implementation/bower_components/marionette/lib/core/amd/backbone.marionette.js"
   ],
-  "marked": "../../implementation/bower_components/marked/lib/marked.js",
   "mocha": [
     "../../implementation/bower_components/mocha/mocha.js",
     "../../implementation/bower_components/mocha/mocha.css"
@@ -54,20 +47,20 @@
   "mockjs": "../../implementation/bower_components/mockjs/dist/mock.js",
   "modernizr": "../../implementation/bower_components/modernizr",
   "momentjs": "../../implementation/bower_components/momentjs/moment.js",
-  "nprogress": [
-    "../../implementation/bower_components/nprogress/nprogress.js",
-    "../../implementation/bower_components/nprogress/nprogress.css"
-  ],
   "open-sans-fontface": [
     "../../implementation/bower_components/open-sans-fontface/open-sans.css",
     "../../implementation/bower_components/open-sans-fontface/fonts/**/*"
   ],
+  "nprogress": [
+    "../../implementation/bower_components/nprogress/nprogress.js",
+    "../../implementation/bower_components/nprogress/nprogress.css"
+  ],
   "raphael": "../../implementation/bower_components/raphael/raphael.js",
   "selectn": "../../implementation/bower_components/selectn/selectn.js",
-  "store.js": "../../implementation/bower_components/store.js/store.js",
   "swag": "../../implementation/bower_components/swag/lib/swag.js",
-  "underscore.string": "../../implementation/bower_components/underscore.string/dist/underscore.string.js",
+  "store.js": "../../implementation/bower_components/store.js/store.js",
   "underscore": "../../implementation/bower_components/underscore/underscore.js",
+  "underscore.string": "../../implementation/bower_components/underscore.string/dist/underscore.string.js",
   "uri.js": "../../implementation/bower_components/uri.js/src/URI.js",
   "validator-js": "../../implementation/bower_components/validator-js/validator.js"
 }

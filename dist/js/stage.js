@@ -3966,30 +3966,6 @@ module.exports = DeepModel;
             }
         },
 
-
-        //you don't need to calculate paddings on a region, since we are using $.innerHeight()
-        //@deprecating... in favor of incoming view.layout option in v1.9
-        resize: function(options) {
-            options = options || {};
-
-            /*Note that since we use box-sizing in css, if using this.$el.css() to set height/width, they are equal to using innerHeight/Width()*/
-            this._contentStyle = _.extend({}, options, this._contentOverflow);
-            this.$el.css(this._contentStyle);
-
-            var that = this;
-            _.defer(function() { //give browser a chance to catch up with style changes.
-                if (that.currentView) {
-                    //this.currentView.$el.css(this._contentStyle);
-                    that.currentView.trigger('view:resized', {
-                        region: that
-                    });
-                }
-            });
-
-            return this;
-
-        }
-
     });
 
 })(Application);
@@ -4113,6 +4089,34 @@ module.exports = DeepModel;
 		 *
 		 * B. We only do e.stopPropagation for you, if you need e.preventDefault(), do it yourself in the action impl;
 		 */
+		_enableSpecialActionTags: function(){
+			var that = this;
+			_.each(['scroll', 'scroll-bottom', 'scroll-top', /*'left,right'*/ 'error', 'load'], function(e){
+				this.$el.find('[action-' + e + ']').each(function(index, el){
+					//extra e.sub-events are handled by e listener, so skip.
+					var tmp = e.split('-');
+					var $el = $(this);
+					if($el.data('special-e-' + tmp[0])) return;
+
+					$el.on(tmp[0], function(innerE){
+						//dirty hack to make scroll-bottom/-top [/-left/-right] work in actions
+						if(innerE.type === 'scroll'){
+							if($el.attr('action-scroll-bottom'))
+								//window scroll distance  + window height (include padding) === inner doc height.
+								($el.scrollTop() + $el.innerHeight() === $el.prop('scrollHeight')) && (innerE.type += '-bottom');
+							if($el.attr('action-scroll-top'))
+								($el.scrollTop() === 0) && (innerE.type += '-top');
+							// case 'left':
+							// case 'right':
+							//**NOTE: that, scroll-* will always be triggered by scroll, we just ignore it when there is no action-scroll tag
+							if(innerE.type === 'scroll' && !$el.attr('action-scroll'))
+								return;
+						}
+						that._doAction(innerE);
+					}).data('special-e-' + tmp[0], 'registered');
+				});
+			}, this);
+		},
 		_enableActionTags: function(uiName, passOn){ //the uiName is just there to output meaningful dev msg if some actions haven't been implemented.
 
 			if(_.isBoolean(uiName)){
@@ -4135,8 +4139,8 @@ module.exports = DeepModel;
 				'mousedown [action-mousedown]': '_doAction',
 				'mousemove [action-mousemove]': '_doAction',
 				'mouseup [action-mouseup]': '_doAction',
-				'mouseenter [action-mouseenter]': '_doAction', //per tag, no bubble even with passOn: true
-				'mouseleave [action-mouseleave]': '_doAction', //per tag, no bubble even with passOn: true
+				'mouseenter [action-mouseenter]': '_doAction', //per tag, [not a bubble event in some browser, use mouseover]
+				'mouseleave [action-mouseleave]': '_doAction', //per tag, [not a bubble event in some browser, use mouseout]
 				'mouseover [action-mouseover]': '_doAction', //=enter but bubble
 				'mouseout [action-mouseout]': '_doAction', //=leave but bubble
 
@@ -4146,10 +4150,10 @@ module.exports = DeepModel;
 				'keyup [action-keyup]': '_doAction',
 				//'keypress [action-keypress]': '_doAction', //use keydown instead (non-printing keys and focus-able diff)
 
-				//'focus [action-focus]': '_doAction', //use focusin instead (no bubble even with passOn: true in IE)
+				//'focus [action-focus]': '_doAction', //use focusin instead (non bubble even with passOn: true in IE)
 				'focusin [action-focusin]': '_doAction', //tabindex=seq or -1
 				'focusout [action-focusout]': '_doAction', //tabindex=seq or -1
-				//'blur [action-blur]': '_doAction', //use focusin instead (no bubble even with passOn: true in IE, FF)
+				//'blur [action-blur]': '_doAction', //use focusin instead (non bubble even with passOn: true in IE, FF)
 
 				//------------<input>, <select>, <textarea>--------
 				'change [action-change]': '_doAction',
@@ -4157,20 +4161,25 @@ module.exports = DeepModel;
 				'submit [action-submit]': '_doAction', //<input type="submit">, <input type="image"> or <button type="submit">
 
 				//------------<div>, <any.overflow>----------------
-				'scroll [action-scroll]': '_doAction',
+				//'scroll [action-scroll]': '_doAction', //non bubble, see _enableSpecialActionTags
+				//'scroll-bottom'
+				//'scroll-top'
 
 				//------------<script>, <img>, <iframe>------------
-				'error [action-error]': '_doAction',
-				'load [action-load]': '_doAction'
+				//'error [action-error]': '_doAction', //non bubble, _enableSpecialActionTags
+				//'load [action-load]': '_doAction' //non bubble, _enableSpecialActionTags
 
 				//window events:
-				//load [use $(ready-fn) instead], unload, resize, scroll
+				// load [use $(ready-fn) instead],
+				// unload, 
+				// resize [use coop 'window-resized'], 
+				// scroll [use coop 'window-scroll'],
 
 			});
 			this.actions = this.actions || {}; 	
 			uiName = uiName || this.name || '_UNKNOWN_.View';
 
-			//captured events will not bubble (due to e.stopPropagation)
+			//captured events will not bubble further up (due to e.stopPropagation)
 			this._doAction = function(e){
 
 				//**Caveat: non-bubble event will not change e.currentTarget to be current el (the one has [action-*])
@@ -4583,22 +4592,27 @@ module.exports = DeepModel;
 			});
 		}
 
-		//actions
-		if(this.actions && this._enableActionTags) 
+		//actions - 1 (bubble events that can be delegated)
+		if(this.actions) {
 			this._enableActionTags(this.actions._bubble);
-		
+			//actions - 2 (non bubbling events)
+			this.listenTo(this, 'render', function(){
+				this._enableSpecialActionTags();
+			});
+		}
+
 		//tooltip
-		if(this.tooltips && this._enableTooltips) {
+		if(this.tooltips) {
 			this._enableTooltips(this.tooltips);
 		}
 
 		//overlay (use this view as overlay)
-		if(this.overlay && this._enableOverlay){
+		if(this.overlay){
 			this._enableOverlay();
 		}
 
 		//popover
-		if(this.popover && this._enablePopover){
+		if(this.popover){
 			this._enablePopover();
 		}
 
@@ -5022,7 +5036,7 @@ module.exports = DeepModel;
 		},
 
 		//add more items into a specific region
-		more: function(region /*name only*/, data /*array only*/, View /*or name*/, useSet /*use set() instead of add*/){
+		more: function(region /*name only*/, data /*array only*/, View /*or name*/, replace /*use set() instead of add, also reconsider View*/){
 			if(!_.isArray(data))
 				throw new Error('DEV::Layout+::more() You must give an array as data objects...');
 			//accept plain array of strings and numbers. (only in this function)
@@ -5034,13 +5048,15 @@ module.exports = DeepModel;
 			////////////////////////////////////////
 			
 			if(_.isBoolean(View)){
-				useSet = View;
+				replace = View;
 				View = undefined;
 			}
 
 			var cv = this.getViewIn(region);
+			if(replace && View)
+				cv.itemView = _.isString(View)? app.get(View) : View;
 			if(cv && cv.collection){
-				if(useSet)
+				if(replace)
 					cv.set(d);
 				else
 					cv.collection.add(d);
@@ -5050,7 +5066,7 @@ module.exports = DeepModel;
 					forceViewType: true,
 					type: 'CollectionView',
 					itemView: _.isString(View)? app.get(View) : View, //if !View then Error: An `itemView` must be specified
-				}));
+				})).$el.css('overflow', 'auto');//to support 'action-scroll' in region.
 				this.getViewIn(region).set(d);
 			}
 		},
@@ -5139,11 +5155,6 @@ module.exports = DeepModel;
 					this[region].ensureEl();
 					this[region].$el.addClass('region region-' + _.string.slugify(region));
 					this[region]._parentLayout = this;
-					this[region]._contentOverflow = {};
-					_.each(['overflowX', 'overflowY', 'overflow'], function(oKey){
-						var oVal = this[region].$el.data(oKey);
-						if(oVal) this[region]._contentOverflow[oKey] = oVal;
-					}, this);
 
 					//+
 					this[region].listenTo(this[region], 'region:load-view', function(name, options){ //can load both view and widget.
@@ -5990,7 +6001,9 @@ var I18N = {};
 			width = options.width || '100%',
 			adjustable = options.adjustable || false,
 			barClass = options.barClass || 'split-' + direction + 'bar',
-			$this = ( this[0].$el ) ? this[0].$el : $(this);
+			$this = ( this[0].$el ) ? this[0].$el : $(this),
+			counter = 1;//count the number of plug-in gets called
+		//push initial task into queue
 		taskQueue.push({
 			$element: $this,
 			direction: direction,
@@ -6001,19 +6014,20 @@ var I18N = {};
 			barClass: barClass
 		});
 		while( taskQueue.length > 0 ){
-			setDomLayout(taskQueue[0].$element, taskQueue[0].direction, taskQueue[0].adjustable, taskQueue[0].split, taskQueue[0].height, taskQueue[0].width, taskQueue[0].barClass);
+			setDomLayout(taskQueue[0].$element, taskQueue[0].direction, taskQueue[0].adjustable, taskQueue[0].split, taskQueue[0].height, taskQueue[0].width, taskQueue[0].barClass, counter);
+			counter++;
 			taskQueue.shift();		
 		}
 	};
 	//functions
-	var setDomLayout = function($elem, direction, adjustable, split, height, width, barClass){
+	var setDomLayout = function($elem, direction, adjustable, split, height, width, barClass, counter){
 		var trimmed = [],
 			dir = ( direction === 'h' )? 'column' : 'row',
 			template = '';
 		//expand height and width for parent element
-		if(height !== 'auto')
+		if(height !== 'auto' && counter === 1/*only give heigh/width for the first layer of element, flex automatically sets width/height*/)
 			$elem.css({height: height});
-		if(width !=='auto')
+		if(width !=='auto' && counter === 1)
 			$elem.css({width: width});
 		//trim the split array
 		_.each(split, function(data, index){
@@ -7483,7 +7497,7 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.8.7-1057 build 1456514505741";;
+;;app.stagejs = "1.9.0-1066 build 1456905918945";;
         //Make sure this is the last line in the last script!!!
         Application.run(/*deviceready - Cordova*/);
     ;

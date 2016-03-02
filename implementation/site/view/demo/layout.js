@@ -178,7 +178,7 @@
 
 	var Test = app.view({
 		template: '',
-		layout: ['1:#top', ['5', [['1:left', ['1:#left-top', '2:#left-bottom']], '4:center', '1:right']], '1:.bottom,.bottom2    bottom3'],
+		layout: ['1:#top', ['5', [['1:left', ['1:#left-top', ['2', ['1:.bg-primary', '1:#left-bottom']]]], '4:center', '1:right']], '1:.bottom,.bottom2    bottom3'],
 		onShow: function(){
 			var $this = this.$el;
 			$this.css({height: '100%', border: '1px solid black'});

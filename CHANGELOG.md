@@ -1,6 +1,20 @@
 Change Log
 ==========
-1.9.0 (2016-02-10*)
+1.9.1 (2016-03-02*)
+
+working on ...
+
+* Changing svg/canvas support to be (snap/easel)
+* Adding more unit tests;
+* Adding cheatsheet;
+* Updating doc (around data handling, coop, dnd, effect, remote, ws, form);
+* Breaking down 'Basic' editors;
+* Separate modernizr/detectizr shiv bundles from deps;
+* Adding optional 2-way binders;
+* [cli] Update update cmd to also refresh mockups;
+
+
+1.9.0 (2016-03-02)
 -------------------
 1. Added favicon support mock in starter-kit index page;
 2. Updated default mockups;
@@ -45,20 +59,7 @@ Change Log
 41. Added .lock() api to view;
 42. Deprecated region.resize() api;
 43. Added 'scroll-bottom/top' and fixed 'scroll/load/error' action events;
-
-working on ...
-
-* Changing svg/canvas support to be (snap/easel)
-* Adding data-export script to tools (npm run data-export);
-* Adding more unit tests;
-* Adding cheatsheet;
-* Updating doc (around data handling, coop, dnd, effect, remote, ws, form);
-* ----------next phase----------
-* Breaking down 'Basic' editors;
-* Separate modernizr/detectizr shiv bundles from deps;
-* Adding debug mode hover-in-place tpl edit and preview (utilize app.reload());
-* Adding optional 2-way binders;
-* [cli] Update update cmd to also refresh mockups;
+44. Added data-export script to tools (npm run data-export);
 
 
 1.8.7 (2015-12-07)

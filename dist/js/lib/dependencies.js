@@ -24444,15 +24444,23 @@ jQuery.extend( jQuery.Color.names, {
   }
 }.call(this));
 
-;/* underscore.string 3.2.1 | MIT licensed | http://epeli.github.com/underscore.string/ */
+;/*
+* Underscore.string
+* (c) 2010 Esa-Matti Suuronen <esa-matti aet suuronen dot org>
+* Underscore.string is freely distributable under the terms of the MIT license.
+* Documentation: https://github.com/epeli/underscore.string
+* Some code is borrowed from MooTools and Alexandru Marasteanu.
+* Version '3.3.4'
+* @preserve
+*/
 
-!function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.s=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
-var trim = _dereq_('./trim');
-var decap = _dereq_('./decapitalize');
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.s = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var trim = require('./trim');
+var decap = require('./decapitalize');
 
 module.exports = function camelize(str, decapitalize) {
   str = trim(str).replace(/[-_\s]+(.)?/g, function(match, c) {
-    return c ? c.toUpperCase() : "";
+    return c ? c.toUpperCase() : '';
   });
 
   if (decapitalize === true) {
@@ -24462,8 +24470,8 @@ module.exports = function camelize(str, decapitalize) {
   }
 };
 
-},{"./decapitalize":10,"./trim":62}],2:[function(_dereq_,module,exports){
-var makeString = _dereq_('./helper/makeString');
+},{"./decapitalize":10,"./trim":65}],2:[function(require,module,exports){
+var makeString = require('./helper/makeString');
 
 module.exports = function capitalize(str, lowercaseRest) {
   str = makeString(str);
@@ -24472,14 +24480,14 @@ module.exports = function capitalize(str, lowercaseRest) {
   return str.charAt(0).toUpperCase() + remainingChars;
 };
 
-},{"./helper/makeString":21}],3:[function(_dereq_,module,exports){
-var makeString = _dereq_('./helper/makeString');
+},{"./helper/makeString":20}],3:[function(require,module,exports){
+var makeString = require('./helper/makeString');
 
 module.exports = function chars(str) {
   return makeString(str).split('');
 };
 
-},{"./helper/makeString":21}],4:[function(_dereq_,module,exports){
+},{"./helper/makeString":20}],4:[function(require,module,exports){
 module.exports = function chop(str, step) {
   if (str == null) return [];
   str = String(str);
@@ -24487,42 +24495,49 @@ module.exports = function chop(str, step) {
   return step > 0 ? str.match(new RegExp('.{1,' + step + '}', 'g')) : [str];
 };
 
-},{}],5:[function(_dereq_,module,exports){
-var capitalize = _dereq_('./capitalize');
-var camelize = _dereq_('./camelize');
-var makeString = _dereq_('./helper/makeString');
+},{}],5:[function(require,module,exports){
+var capitalize = require('./capitalize');
+var camelize = require('./camelize');
+var makeString = require('./helper/makeString');
 
 module.exports = function classify(str) {
   str = makeString(str);
   return capitalize(camelize(str.replace(/[\W_]/g, ' ')).replace(/\s/g, ''));
 };
 
-},{"./camelize":1,"./capitalize":2,"./helper/makeString":21}],6:[function(_dereq_,module,exports){
-var trim = _dereq_('./trim');
+},{"./camelize":1,"./capitalize":2,"./helper/makeString":20}],6:[function(require,module,exports){
+var trim = require('./trim');
 
 module.exports = function clean(str) {
   return trim(str).replace(/\s\s+/g, ' ');
 };
 
-},{"./trim":62}],7:[function(_dereq_,module,exports){
+},{"./trim":65}],7:[function(require,module,exports){
 
-var makeString = _dereq_('./helper/makeString');
+var makeString = require('./helper/makeString');
 
-var from  = "ąàáäâãåæăćčĉęèéëêĝĥìíïîĵłľńňòóöőôõðøśșšŝťțŭùúüűûñÿýçżźž",
-    to    = "aaaaaaaaaccceeeeeghiiiijllnnoooooooossssttuuuuuunyyczzz";
+var from  = 'ąàáäâãåæăćčĉęèéëêĝĥìíïîĵłľńňòóöőôõðøśșşšŝťțţŭùúüűûñÿýçżźž',
+  to    = 'aaaaaaaaaccceeeeeghiiiijllnnoooooooossssstttuuuuuunyyczzz';
 
 from += from.toUpperCase();
 to += to.toUpperCase();
 
+to = to.split('');
+
+// for tokens requireing multitoken output
+from += 'ß';
+to.push('ss');
+
+
 module.exports = function cleanDiacritics(str) {
-    return makeString(str).replace(/.{1}/g, function(c){
-      var index = from.indexOf(c);
-      return index === -1 ? c : to.charAt(index);
+  return makeString(str).replace(/.{1}/g, function(c){
+    var index = from.indexOf(c);
+    return index === -1 ? c : to[index];
   });
 };
 
-},{"./helper/makeString":21}],8:[function(_dereq_,module,exports){
-var makeString = _dereq_('./helper/makeString');
+},{"./helper/makeString":20}],8:[function(require,module,exports){
+var makeString = require('./helper/makeString');
 
 module.exports = function(str, substr) {
   str = makeString(str);
@@ -24533,23 +24548,23 @@ module.exports = function(str, substr) {
   return str.split(substr).length - 1;
 };
 
-},{"./helper/makeString":21}],9:[function(_dereq_,module,exports){
-var trim = _dereq_('./trim');
+},{"./helper/makeString":20}],9:[function(require,module,exports){
+var trim = require('./trim');
 
 module.exports = function dasherize(str) {
   return trim(str).replace(/([A-Z])/g, '-$1').replace(/[-_\s]+/g, '-').toLowerCase();
 };
 
-},{"./trim":62}],10:[function(_dereq_,module,exports){
-var makeString = _dereq_('./helper/makeString');
+},{"./trim":65}],10:[function(require,module,exports){
+var makeString = require('./helper/makeString');
 
 module.exports = function decapitalize(str) {
   str = makeString(str);
   return str.charAt(0).toLowerCase() + str.slice(1);
 };
 
-},{"./helper/makeString":21}],11:[function(_dereq_,module,exports){
-var makeString = _dereq_('./helper/makeString');
+},{"./helper/makeString":20}],11:[function(require,module,exports){
+var makeString = require('./helper/makeString');
 
 function getIndent(str) {
   var matches = str.match(/^[\s\\t]*/gm);
@@ -24578,9 +24593,9 @@ module.exports = function dedent(str, pattern) {
   return str.replace(reg, '');
 };
 
-},{"./helper/makeString":21}],12:[function(_dereq_,module,exports){
-var makeString = _dereq_('./helper/makeString');
-var toPositive = _dereq_('./helper/toPositive');
+},{"./helper/makeString":20}],12:[function(require,module,exports){
+var makeString = require('./helper/makeString');
+var toPositive = require('./helper/toPositive');
 
 module.exports = function endsWith(str, ends, position) {
   str = makeString(str);
@@ -24593,16 +24608,15 @@ module.exports = function endsWith(str, ends, position) {
   return position >= 0 && str.indexOf(ends, position) === position;
 };
 
-},{"./helper/makeString":21,"./helper/toPositive":23}],13:[function(_dereq_,module,exports){
-var makeString = _dereq_('./helper/makeString');
-var escapeChars = _dereq_('./helper/escapeChars');
-var reversedEscapeChars = {};
+},{"./helper/makeString":20,"./helper/toPositive":22}],13:[function(require,module,exports){
+var makeString = require('./helper/makeString');
+var escapeChars = require('./helper/escapeChars');
 
-var regexString = "[";
+var regexString = '[';
 for(var key in escapeChars) {
   regexString += key;
 }
-regexString += "]";
+regexString += ']';
 
 var regex = new RegExp( regexString, 'g');
 
@@ -24613,160 +24627,20 @@ module.exports = function escapeHTML(str) {
   });
 };
 
-},{"./helper/escapeChars":18,"./helper/makeString":21}],14:[function(_dereq_,module,exports){
+},{"./helper/escapeChars":17,"./helper/makeString":20}],14:[function(require,module,exports){
 module.exports = function() {
   var result = {};
 
   for (var prop in this) {
-    if (!this.hasOwnProperty(prop) || prop.match(/^(?:include|contains|reverse|join)$/)) continue;
+    if (!this.hasOwnProperty(prop) || prop.match(/^(?:include|contains|reverse|join|map|wrap)$/)) continue;
     result[prop] = this[prop];
   }
 
   return result;
 };
 
-},{}],15:[function(_dereq_,module,exports){
-//  Underscore.string
-//  (c) 2010 Esa-Matti Suuronen <esa-matti aet suuronen dot org>
-//  Underscore.string is freely distributable under the terms of the MIT license.
-//  Documentation: https://github.com/epeli/underscore.string
-//  Some code is borrowed from MooTools and Alexandru Marasteanu.
-//  Version '3.2.1'
-
-'use strict';
-
-function s(value) {
-  /* jshint validthis: true */
-  if (!(this instanceof s)) return new s(value);
-  this._wrapped = value;
-}
-
-s.VERSION = '3.2.1';
-
-s.isBlank          = _dereq_('./isBlank');
-s.stripTags        = _dereq_('./stripTags');
-s.capitalize       = _dereq_('./capitalize');
-s.decapitalize     = _dereq_('./decapitalize');
-s.chop             = _dereq_('./chop');
-s.trim             = _dereq_('./trim');
-s.clean            = _dereq_('./clean');
-s.cleanDiacritics  = _dereq_('./cleanDiacritics');
-s.count            = _dereq_('./count');
-s.chars            = _dereq_('./chars');
-s.swapCase         = _dereq_('./swapCase');
-s.escapeHTML       = _dereq_('./escapeHTML');
-s.unescapeHTML     = _dereq_('./unescapeHTML');
-s.splice           = _dereq_('./splice');
-s.insert           = _dereq_('./insert');
-s.replaceAll       = _dereq_('./replaceAll');
-s.include          = _dereq_('./include');
-s.join             = _dereq_('./join');
-s.lines            = _dereq_('./lines');
-s.dedent           = _dereq_('./dedent');
-s.reverse          = _dereq_('./reverse');
-s.startsWith       = _dereq_('./startsWith');
-s.endsWith         = _dereq_('./endsWith');
-s.pred             = _dereq_('./pred');
-s.succ             = _dereq_('./succ');
-s.titleize         = _dereq_('./titleize');
-s.camelize         = _dereq_('./camelize');
-s.underscored      = _dereq_('./underscored');
-s.dasherize        = _dereq_('./dasherize');
-s.classify         = _dereq_('./classify');
-s.humanize         = _dereq_('./humanize');
-s.ltrim            = _dereq_('./ltrim');
-s.rtrim            = _dereq_('./rtrim');
-s.truncate         = _dereq_('./truncate');
-s.prune            = _dereq_('./prune');
-s.words            = _dereq_('./words');
-s.pad              = _dereq_('./pad');
-s.lpad             = _dereq_('./lpad');
-s.rpad             = _dereq_('./rpad');
-s.lrpad            = _dereq_('./lrpad');
-s.sprintf          = _dereq_('./sprintf');
-s.vsprintf         = _dereq_('./vsprintf');
-s.toNumber         = _dereq_('./toNumber');
-s.numberFormat     = _dereq_('./numberFormat');
-s.strRight         = _dereq_('./strRight');
-s.strRightBack     = _dereq_('./strRightBack');
-s.strLeft          = _dereq_('./strLeft');
-s.strLeftBack      = _dereq_('./strLeftBack');
-s.toSentence       = _dereq_('./toSentence');
-s.toSentenceSerial = _dereq_('./toSentenceSerial');
-s.slugify          = _dereq_('./slugify');
-s.surround         = _dereq_('./surround');
-s.quote            = _dereq_('./quote');
-s.unquote          = _dereq_('./unquote');
-s.repeat           = _dereq_('./repeat');
-s.naturalCmp       = _dereq_('./naturalCmp');
-s.levenshtein      = _dereq_('./levenshtein');
-s.toBoolean        = _dereq_('./toBoolean');
-s.exports          = _dereq_('./exports');
-s.escapeRegExp     = _dereq_('./helper/escapeRegExp');
-s.wrap             = _dereq_('./wrap');
-
-// Aliases
-s.strip     = s.trim;
-s.lstrip    = s.ltrim;
-s.rstrip    = s.rtrim;
-s.center    = s.lrpad;
-s.rjust     = s.lpad;
-s.ljust     = s.rpad;
-s.contains  = s.include;
-s.q         = s.quote;
-s.toBool    = s.toBoolean;
-s.camelcase = s.camelize;
-
-
-// Implement chaining
-s.prototype = {
-  value: function value() {
-    return this._wrapped;
-  }
-};
-
-function fn2method(key, fn) {
-    if (typeof fn !== "function") return;
-    s.prototype[key] = function() {
-      var args = [this._wrapped].concat(Array.prototype.slice.call(arguments));
-      var res = fn.apply(null, args);
-      // if the result is non-string stop the chain and return the value
-      return typeof res === 'string' ? new s(res) : res;
-    };
-}
-
-// Copy functions to instance methods for chaining
-for (var key in s) fn2method(key, s[key]);
-
-fn2method("tap", function tap(string, fn) {
-  return fn(string);
-});
-
-function prototype2method(methodName) {
-  fn2method(methodName, function(context) {
-    var args = Array.prototype.slice.call(arguments, 1);
-    return String.prototype[methodName].apply(context, args);
-  });
-}
-
-var prototypeMethods = [
-  "toUpperCase",
-  "toLowerCase",
-  "split",
-  "replace",
-  "slice",
-  "substring",
-  "substr",
-  "concat"
-];
-
-for (var key in prototypeMethods) prototype2method(prototypeMethods[key]);
-
-
-module.exports = s;
-
-},{"./camelize":1,"./capitalize":2,"./chars":3,"./chop":4,"./classify":5,"./clean":6,"./cleanDiacritics":7,"./count":8,"./dasherize":9,"./decapitalize":10,"./dedent":11,"./endsWith":12,"./escapeHTML":13,"./exports":14,"./helper/escapeRegExp":19,"./humanize":24,"./include":25,"./insert":26,"./isBlank":27,"./join":28,"./levenshtein":29,"./lines":30,"./lpad":31,"./lrpad":32,"./ltrim":33,"./naturalCmp":34,"./numberFormat":35,"./pad":36,"./pred":37,"./prune":38,"./quote":39,"./repeat":40,"./replaceAll":41,"./reverse":42,"./rpad":43,"./rtrim":44,"./slugify":45,"./splice":46,"./sprintf":47,"./startsWith":48,"./strLeft":49,"./strLeftBack":50,"./strRight":51,"./strRightBack":52,"./stripTags":53,"./succ":54,"./surround":55,"./swapCase":56,"./titleize":57,"./toBoolean":58,"./toNumber":59,"./toSentence":60,"./toSentenceSerial":61,"./trim":62,"./truncate":63,"./underscored":64,"./unescapeHTML":65,"./unquote":66,"./vsprintf":67,"./words":68,"./wrap":69}],16:[function(_dereq_,module,exports){
-var makeString = _dereq_('./makeString');
+},{}],15:[function(require,module,exports){
+var makeString = require('./makeString');
 
 module.exports = function adjacent(str, direction) {
   str = makeString(str);
@@ -24776,8 +24650,8 @@ module.exports = function adjacent(str, direction) {
   return str.slice(0, -1) + String.fromCharCode(str.charCodeAt(str.length - 1) + direction);
 };
 
-},{"./makeString":21}],17:[function(_dereq_,module,exports){
-var escapeRegExp = _dereq_('./escapeRegExp');
+},{"./makeString":20}],16:[function(require,module,exports){
+var escapeRegExp = require('./escapeRegExp');
 
 module.exports = function defaultToWhiteSpace(characters) {
   if (characters == null)
@@ -24788,7 +24662,7 @@ module.exports = function defaultToWhiteSpace(characters) {
     return '[' + escapeRegExp(characters) + ']';
 };
 
-},{"./escapeRegExp":19}],18:[function(_dereq_,module,exports){
+},{"./escapeRegExp":18}],17:[function(require,module,exports){
 /* We're explicitly defining the list of entities we want to escape.
 nbsp is an HTML entity, but we don't want to escape all space characters in a string, hence its omission in this map.
 
@@ -24804,19 +24678,19 @@ var escapeChars = {
   '>' : 'gt',
   '"' : 'quot',
   '&' : 'amp',
-  "'": '#39'
+  '\'' : '#39'
 };
 
 module.exports = escapeChars;
 
-},{}],19:[function(_dereq_,module,exports){
-var makeString = _dereq_('./makeString');
+},{}],18:[function(require,module,exports){
+var makeString = require('./makeString');
 
 module.exports = function escapeRegExp(str) {
   return makeString(str).replace(/([.*+?^=!:${}()|[\]\/\\])/g, '\\$1');
 };
 
-},{"./makeString":21}],20:[function(_dereq_,module,exports){
+},{"./makeString":20}],19:[function(require,module,exports){
 /*
 We're explicitly defining the list of entities that might see in escape HTML strings
 */
@@ -24832,12 +24706,12 @@ var htmlEntities = {
   gt: '>',
   quot: '"',
   amp: '&',
-  apos: "'"
+  apos: '\''
 };
 
 module.exports = htmlEntities;
 
-},{}],21:[function(_dereq_,module,exports){
+},{}],20:[function(require,module,exports){
 /**
  * Ensure some object is a coerced to a string
  **/
@@ -24846,7 +24720,7 @@ module.exports = function makeString(object) {
   return '' + object;
 };
 
-},{}],22:[function(_dereq_,module,exports){
+},{}],21:[function(require,module,exports){
 module.exports = function strRepeat(str, qty){
   if (qty < 1) return '';
   var result = '';
@@ -24857,44 +24731,189 @@ module.exports = function strRepeat(str, qty){
   return result;
 };
 
-},{}],23:[function(_dereq_,module,exports){
+},{}],22:[function(require,module,exports){
 module.exports = function toPositive(number) {
   return number < 0 ? 0 : (+number || 0);
 };
 
-},{}],24:[function(_dereq_,module,exports){
-var capitalize = _dereq_('./capitalize');
-var underscored = _dereq_('./underscored');
-var trim = _dereq_('./trim');
+},{}],23:[function(require,module,exports){
+var capitalize = require('./capitalize');
+var underscored = require('./underscored');
+var trim = require('./trim');
 
 module.exports = function humanize(str) {
   return capitalize(trim(underscored(str).replace(/_id$/, '').replace(/_/g, ' ')));
 };
 
-},{"./capitalize":2,"./trim":62,"./underscored":64}],25:[function(_dereq_,module,exports){
-var makeString = _dereq_('./helper/makeString');
+},{"./capitalize":2,"./trim":65,"./underscored":67}],24:[function(require,module,exports){
+var makeString = require('./helper/makeString');
 
 module.exports = function include(str, needle) {
   if (needle === '') return true;
   return makeString(str).indexOf(needle) !== -1;
 };
 
-},{"./helper/makeString":21}],26:[function(_dereq_,module,exports){
-var splice = _dereq_('./splice');
+},{"./helper/makeString":20}],25:[function(require,module,exports){
+/*
+* Underscore.string
+* (c) 2010 Esa-Matti Suuronen <esa-matti aet suuronen dot org>
+* Underscore.string is freely distributable under the terms of the MIT license.
+* Documentation: https://github.com/epeli/underscore.string
+* Some code is borrowed from MooTools and Alexandru Marasteanu.
+* Version '3.3.4'
+* @preserve
+*/
+
+'use strict';
+
+function s(value) {
+  /* jshint validthis: true */
+  if (!(this instanceof s)) return new s(value);
+  this._wrapped = value;
+}
+
+s.VERSION = '3.3.4';
+
+s.isBlank          = require('./isBlank');
+s.stripTags        = require('./stripTags');
+s.capitalize       = require('./capitalize');
+s.decapitalize     = require('./decapitalize');
+s.chop             = require('./chop');
+s.trim             = require('./trim');
+s.clean            = require('./clean');
+s.cleanDiacritics  = require('./cleanDiacritics');
+s.count            = require('./count');
+s.chars            = require('./chars');
+s.swapCase         = require('./swapCase');
+s.escapeHTML       = require('./escapeHTML');
+s.unescapeHTML     = require('./unescapeHTML');
+s.splice           = require('./splice');
+s.insert           = require('./insert');
+s.replaceAll       = require('./replaceAll');
+s.include          = require('./include');
+s.join             = require('./join');
+s.lines            = require('./lines');
+s.dedent           = require('./dedent');
+s.reverse          = require('./reverse');
+s.startsWith       = require('./startsWith');
+s.endsWith         = require('./endsWith');
+s.pred             = require('./pred');
+s.succ             = require('./succ');
+s.titleize         = require('./titleize');
+s.camelize         = require('./camelize');
+s.underscored      = require('./underscored');
+s.dasherize        = require('./dasherize');
+s.classify         = require('./classify');
+s.humanize         = require('./humanize');
+s.ltrim            = require('./ltrim');
+s.rtrim            = require('./rtrim');
+s.truncate         = require('./truncate');
+s.prune            = require('./prune');
+s.words            = require('./words');
+s.pad              = require('./pad');
+s.lpad             = require('./lpad');
+s.rpad             = require('./rpad');
+s.lrpad            = require('./lrpad');
+s.sprintf          = require('./sprintf');
+s.vsprintf         = require('./vsprintf');
+s.toNumber         = require('./toNumber');
+s.numberFormat     = require('./numberFormat');
+s.strRight         = require('./strRight');
+s.strRightBack     = require('./strRightBack');
+s.strLeft          = require('./strLeft');
+s.strLeftBack      = require('./strLeftBack');
+s.toSentence       = require('./toSentence');
+s.toSentenceSerial = require('./toSentenceSerial');
+s.slugify          = require('./slugify');
+s.surround         = require('./surround');
+s.quote            = require('./quote');
+s.unquote          = require('./unquote');
+s.repeat           = require('./repeat');
+s.naturalCmp       = require('./naturalCmp');
+s.levenshtein      = require('./levenshtein');
+s.toBoolean        = require('./toBoolean');
+s.exports          = require('./exports');
+s.escapeRegExp     = require('./helper/escapeRegExp');
+s.wrap             = require('./wrap');
+s.map              = require('./map');
+
+// Aliases
+s.strip     = s.trim;
+s.lstrip    = s.ltrim;
+s.rstrip    = s.rtrim;
+s.center    = s.lrpad;
+s.rjust     = s.lpad;
+s.ljust     = s.rpad;
+s.contains  = s.include;
+s.q         = s.quote;
+s.toBool    = s.toBoolean;
+s.camelcase = s.camelize;
+s.mapChars  = s.map;
+
+
+// Implement chaining
+s.prototype = {
+  value: function value() {
+    return this._wrapped;
+  }
+};
+
+function fn2method(key, fn) {
+  if (typeof fn !== 'function') return;
+  s.prototype[key] = function() {
+    var args = [this._wrapped].concat(Array.prototype.slice.call(arguments));
+    var res = fn.apply(null, args);
+    // if the result is non-string stop the chain and return the value
+    return typeof res === 'string' ? new s(res) : res;
+  };
+}
+
+// Copy functions to instance methods for chaining
+for (var key in s) fn2method(key, s[key]);
+
+fn2method('tap', function tap(string, fn) {
+  return fn(string);
+});
+
+function prototype2method(methodName) {
+  fn2method(methodName, function(context) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    return String.prototype[methodName].apply(context, args);
+  });
+}
+
+var prototypeMethods = [
+  'toUpperCase',
+  'toLowerCase',
+  'split',
+  'replace',
+  'slice',
+  'substring',
+  'substr',
+  'concat'
+];
+
+for (var method in prototypeMethods) prototype2method(prototypeMethods[method]);
+
+
+module.exports = s;
+
+},{"./camelize":1,"./capitalize":2,"./chars":3,"./chop":4,"./classify":5,"./clean":6,"./cleanDiacritics":7,"./count":8,"./dasherize":9,"./decapitalize":10,"./dedent":11,"./endsWith":12,"./escapeHTML":13,"./exports":14,"./helper/escapeRegExp":18,"./humanize":23,"./include":24,"./insert":26,"./isBlank":27,"./join":28,"./levenshtein":29,"./lines":30,"./lpad":31,"./lrpad":32,"./ltrim":33,"./map":34,"./naturalCmp":35,"./numberFormat":38,"./pad":39,"./pred":40,"./prune":41,"./quote":42,"./repeat":43,"./replaceAll":44,"./reverse":45,"./rpad":46,"./rtrim":47,"./slugify":48,"./splice":49,"./sprintf":50,"./startsWith":51,"./strLeft":52,"./strLeftBack":53,"./strRight":54,"./strRightBack":55,"./stripTags":56,"./succ":57,"./surround":58,"./swapCase":59,"./titleize":60,"./toBoolean":61,"./toNumber":62,"./toSentence":63,"./toSentenceSerial":64,"./trim":65,"./truncate":66,"./underscored":67,"./unescapeHTML":68,"./unquote":69,"./vsprintf":70,"./words":71,"./wrap":72}],26:[function(require,module,exports){
+var splice = require('./splice');
 
 module.exports = function insert(str, i, substr) {
   return splice(str, i, 0, substr);
 };
 
-},{"./splice":46}],27:[function(_dereq_,module,exports){
-var makeString = _dereq_('./helper/makeString');
+},{"./splice":49}],27:[function(require,module,exports){
+var makeString = require('./helper/makeString');
 
 module.exports = function isBlank(str) {
   return (/^\s*$/).test(makeString(str));
 };
 
-},{"./helper/makeString":21}],28:[function(_dereq_,module,exports){
-var makeString = _dereq_('./helper/makeString');
+},{"./helper/makeString":20}],28:[function(require,module,exports){
+var makeString = require('./helper/makeString');
 var slice = [].slice;
 
 module.exports = function join() {
@@ -24904,8 +24923,8 @@ module.exports = function join() {
   return args.join(makeString(separator));
 };
 
-},{"./helper/makeString":21}],29:[function(_dereq_,module,exports){
-var makeString = _dereq_('./helper/makeString');
+},{"./helper/makeString":20}],29:[function(require,module,exports){
+var makeString = require('./helper/makeString');
 
 /**
  * Based on the implementation here: https://github.com/hiddentao/fast-levenshtein
@@ -24958,29 +24977,29 @@ module.exports = function levenshtein(str1, str2) {
   return nextCol;
 };
 
-},{"./helper/makeString":21}],30:[function(_dereq_,module,exports){
+},{"./helper/makeString":20}],30:[function(require,module,exports){
 module.exports = function lines(str) {
   if (str == null) return [];
   return String(str).split(/\r\n?|\n/);
 };
 
-},{}],31:[function(_dereq_,module,exports){
-var pad = _dereq_('./pad');
+},{}],31:[function(require,module,exports){
+var pad = require('./pad');
 
 module.exports = function lpad(str, length, padStr) {
   return pad(str, length, padStr);
 };
 
-},{"./pad":36}],32:[function(_dereq_,module,exports){
-var pad = _dereq_('./pad');
+},{"./pad":39}],32:[function(require,module,exports){
+var pad = require('./pad');
 
 module.exports = function lrpad(str, length, padStr) {
   return pad(str, length, padStr, 'both');
 };
 
-},{"./pad":36}],33:[function(_dereq_,module,exports){
-var makeString = _dereq_('./helper/makeString');
-var defaultToWhiteSpace = _dereq_('./helper/defaultToWhiteSpace');
+},{"./pad":39}],33:[function(require,module,exports){
+var makeString = require('./helper/makeString');
+var defaultToWhiteSpace = require('./helper/defaultToWhiteSpace');
 var nativeTrimLeft = String.prototype.trimLeft;
 
 module.exports = function ltrim(str, characters) {
@@ -24990,7 +25009,18 @@ module.exports = function ltrim(str, characters) {
   return str.replace(new RegExp('^' + characters + '+'), '');
 };
 
-},{"./helper/defaultToWhiteSpace":17,"./helper/makeString":21}],34:[function(_dereq_,module,exports){
+},{"./helper/defaultToWhiteSpace":16,"./helper/makeString":20}],34:[function(require,module,exports){
+var makeString = require('./helper/makeString');
+
+module.exports = function(str, callback) {
+  str = makeString(str);
+
+  if (str.length === 0 || typeof callback !== 'function') return str;
+
+  return str.replace(/./g, callback);
+};
+
+},{"./helper/makeString":20}],35:[function(require,module,exports){
 module.exports = function naturalCmp(str1, str2) {
   if (str1 == str2) return 0;
   if (!str1) return -1;
@@ -25021,7 +25051,288 @@ module.exports = function naturalCmp(str1, str2) {
   return str1 < str2 ? -1 : 1;
 };
 
-},{}],35:[function(_dereq_,module,exports){
+},{}],36:[function(require,module,exports){
+(function(window) {
+    var re = {
+        not_string: /[^s]/,
+        number: /[diefg]/,
+        json: /[j]/,
+        not_json: /[^j]/,
+        text: /^[^\x25]+/,
+        modulo: /^\x25{2}/,
+        placeholder: /^\x25(?:([1-9]\d*)\$|\(([^\)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-gijosuxX])/,
+        key: /^([a-z_][a-z_\d]*)/i,
+        key_access: /^\.([a-z_][a-z_\d]*)/i,
+        index_access: /^\[(\d+)\]/,
+        sign: /^[\+\-]/
+    }
+
+    function sprintf() {
+        var key = arguments[0], cache = sprintf.cache
+        if (!(cache[key] && cache.hasOwnProperty(key))) {
+            cache[key] = sprintf.parse(key)
+        }
+        return sprintf.format.call(null, cache[key], arguments)
+    }
+
+    sprintf.format = function(parse_tree, argv) {
+        var cursor = 1, tree_length = parse_tree.length, node_type = "", arg, output = [], i, k, match, pad, pad_character, pad_length, is_positive = true, sign = ""
+        for (i = 0; i < tree_length; i++) {
+            node_type = get_type(parse_tree[i])
+            if (node_type === "string") {
+                output[output.length] = parse_tree[i]
+            }
+            else if (node_type === "array") {
+                match = parse_tree[i] // convenience purposes only
+                if (match[2]) { // keyword argument
+                    arg = argv[cursor]
+                    for (k = 0; k < match[2].length; k++) {
+                        if (!arg.hasOwnProperty(match[2][k])) {
+                            throw new Error(sprintf("[sprintf] property '%s' does not exist", match[2][k]))
+                        }
+                        arg = arg[match[2][k]]
+                    }
+                }
+                else if (match[1]) { // positional argument (explicit)
+                    arg = argv[match[1]]
+                }
+                else { // positional argument (implicit)
+                    arg = argv[cursor++]
+                }
+
+                if (get_type(arg) == "function") {
+                    arg = arg()
+                }
+
+                if (re.not_string.test(match[8]) && re.not_json.test(match[8]) && (get_type(arg) != "number" && isNaN(arg))) {
+                    throw new TypeError(sprintf("[sprintf] expecting number but found %s", get_type(arg)))
+                }
+
+                if (re.number.test(match[8])) {
+                    is_positive = arg >= 0
+                }
+
+                switch (match[8]) {
+                    case "b":
+                        arg = arg.toString(2)
+                    break
+                    case "c":
+                        arg = String.fromCharCode(arg)
+                    break
+                    case "d":
+                    case "i":
+                        arg = parseInt(arg, 10)
+                    break
+                    case "j":
+                        arg = JSON.stringify(arg, null, match[6] ? parseInt(match[6]) : 0)
+                    break
+                    case "e":
+                        arg = match[7] ? arg.toExponential(match[7]) : arg.toExponential()
+                    break
+                    case "f":
+                        arg = match[7] ? parseFloat(arg).toFixed(match[7]) : parseFloat(arg)
+                    break
+                    case "g":
+                        arg = match[7] ? parseFloat(arg).toPrecision(match[7]) : parseFloat(arg)
+                    break
+                    case "o":
+                        arg = arg.toString(8)
+                    break
+                    case "s":
+                        arg = ((arg = String(arg)) && match[7] ? arg.substring(0, match[7]) : arg)
+                    break
+                    case "u":
+                        arg = arg >>> 0
+                    break
+                    case "x":
+                        arg = arg.toString(16)
+                    break
+                    case "X":
+                        arg = arg.toString(16).toUpperCase()
+                    break
+                }
+                if (re.json.test(match[8])) {
+                    output[output.length] = arg
+                }
+                else {
+                    if (re.number.test(match[8]) && (!is_positive || match[3])) {
+                        sign = is_positive ? "+" : "-"
+                        arg = arg.toString().replace(re.sign, "")
+                    }
+                    else {
+                        sign = ""
+                    }
+                    pad_character = match[4] ? match[4] === "0" ? "0" : match[4].charAt(1) : " "
+                    pad_length = match[6] - (sign + arg).length
+                    pad = match[6] ? (pad_length > 0 ? str_repeat(pad_character, pad_length) : "") : ""
+                    output[output.length] = match[5] ? sign + arg + pad : (pad_character === "0" ? sign + pad + arg : pad + sign + arg)
+                }
+            }
+        }
+        return output.join("")
+    }
+
+    sprintf.cache = {}
+
+    sprintf.parse = function(fmt) {
+        var _fmt = fmt, match = [], parse_tree = [], arg_names = 0
+        while (_fmt) {
+            if ((match = re.text.exec(_fmt)) !== null) {
+                parse_tree[parse_tree.length] = match[0]
+            }
+            else if ((match = re.modulo.exec(_fmt)) !== null) {
+                parse_tree[parse_tree.length] = "%"
+            }
+            else if ((match = re.placeholder.exec(_fmt)) !== null) {
+                if (match[2]) {
+                    arg_names |= 1
+                    var field_list = [], replacement_field = match[2], field_match = []
+                    if ((field_match = re.key.exec(replacement_field)) !== null) {
+                        field_list[field_list.length] = field_match[1]
+                        while ((replacement_field = replacement_field.substring(field_match[0].length)) !== "") {
+                            if ((field_match = re.key_access.exec(replacement_field)) !== null) {
+                                field_list[field_list.length] = field_match[1]
+                            }
+                            else if ((field_match = re.index_access.exec(replacement_field)) !== null) {
+                                field_list[field_list.length] = field_match[1]
+                            }
+                            else {
+                                throw new SyntaxError("[sprintf] failed to parse named argument key")
+                            }
+                        }
+                    }
+                    else {
+                        throw new SyntaxError("[sprintf] failed to parse named argument key")
+                    }
+                    match[2] = field_list
+                }
+                else {
+                    arg_names |= 2
+                }
+                if (arg_names === 3) {
+                    throw new Error("[sprintf] mixing positional and named placeholders is not (yet) supported")
+                }
+                parse_tree[parse_tree.length] = match
+            }
+            else {
+                throw new SyntaxError("[sprintf] unexpected placeholder")
+            }
+            _fmt = _fmt.substring(match[0].length)
+        }
+        return parse_tree
+    }
+
+    var vsprintf = function(fmt, argv, _argv) {
+        _argv = (argv || []).slice(0)
+        _argv.splice(0, 0, fmt)
+        return sprintf.apply(null, _argv)
+    }
+
+    /**
+     * helpers
+     */
+    function get_type(variable) {
+        return Object.prototype.toString.call(variable).slice(8, -1).toLowerCase()
+    }
+
+    function str_repeat(input, multiplier) {
+        return Array(multiplier + 1).join(input)
+    }
+
+    /**
+     * export to either browser or node.js
+     */
+    if (typeof exports !== "undefined") {
+        exports.sprintf = sprintf
+        exports.vsprintf = vsprintf
+    }
+    else {
+        window.sprintf = sprintf
+        window.vsprintf = vsprintf
+
+        if (typeof define === "function" && define.amd) {
+            define(function() {
+                return {
+                    sprintf: sprintf,
+                    vsprintf: vsprintf
+                }
+            })
+        }
+    }
+})(typeof window === "undefined" ? this : window);
+
+},{}],37:[function(require,module,exports){
+(function (global){
+
+/**
+ * Module exports.
+ */
+
+module.exports = deprecate;
+
+/**
+ * Mark that a method should not be used.
+ * Returns a modified function which warns once by default.
+ *
+ * If `localStorage.noDeprecation = true` is set, then it is a no-op.
+ *
+ * If `localStorage.throwDeprecation = true` is set, then deprecated functions
+ * will throw an Error when invoked.
+ *
+ * If `localStorage.traceDeprecation = true` is set, then deprecated functions
+ * will invoke `console.trace()` instead of `console.error()`.
+ *
+ * @param {Function} fn - the function to deprecate
+ * @param {String} msg - the string to print to the console when `fn` is invoked
+ * @returns {Function} a new "deprecated" version of `fn`
+ * @api public
+ */
+
+function deprecate (fn, msg) {
+  if (config('noDeprecation')) {
+    return fn;
+  }
+
+  var warned = false;
+  function deprecated() {
+    if (!warned) {
+      if (config('throwDeprecation')) {
+        throw new Error(msg);
+      } else if (config('traceDeprecation')) {
+        console.trace(msg);
+      } else {
+        console.warn(msg);
+      }
+      warned = true;
+    }
+    return fn.apply(this, arguments);
+  }
+
+  return deprecated;
+}
+
+/**
+ * Checks `localStorage` for boolean values for the given `name`.
+ *
+ * @param {String} name
+ * @returns {Boolean}
+ * @api private
+ */
+
+function config (name) {
+  // accessing global.localStorage can trigger a DOMException in sandboxed iframes
+  try {
+    if (!global.localStorage) return false;
+  } catch (_) {
+    return false;
+  }
+  var val = global.localStorage[name];
+  if (null == val) return false;
+  return String(val).toLowerCase() === 'true';
+}
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],38:[function(require,module,exports){
 module.exports = function numberFormat(number, dec, dsep, tsep) {
   if (isNaN(number) || number == null) return '';
 
@@ -25035,9 +25346,9 @@ module.exports = function numberFormat(number, dec, dsep, tsep) {
   return fnums.replace(/(\d)(?=(?:\d{3})+$)/g, '$1' + tsep) + decimals;
 };
 
-},{}],36:[function(_dereq_,module,exports){
-var makeString = _dereq_('./helper/makeString');
-var strRepeat = _dereq_('./helper/strRepeat');
+},{}],39:[function(require,module,exports){
+var makeString = require('./helper/makeString');
+var strRepeat = require('./helper/strRepeat');
 
 module.exports = function pad(str, length, padStr, type) {
   str = makeString(str);
@@ -25051,33 +25362,33 @@ module.exports = function pad(str, length, padStr, type) {
     padStr = padStr.charAt(0);
 
   switch (type) {
-    case 'right':
-      padlen = length - str.length;
-      return str + strRepeat(padStr, padlen);
-    case 'both':
-      padlen = length - str.length;
-      return strRepeat(padStr, Math.ceil(padlen / 2)) + str + strRepeat(padStr, Math.floor(padlen / 2));
-    default: // 'left'
-      padlen = length - str.length;
-      return strRepeat(padStr, padlen) + str;
+  case 'right':
+    padlen = length - str.length;
+    return str + strRepeat(padStr, padlen);
+  case 'both':
+    padlen = length - str.length;
+    return strRepeat(padStr, Math.ceil(padlen / 2)) + str + strRepeat(padStr, Math.floor(padlen / 2));
+  default: // 'left'
+    padlen = length - str.length;
+    return strRepeat(padStr, padlen) + str;
   }
 };
 
-},{"./helper/makeString":21,"./helper/strRepeat":22}],37:[function(_dereq_,module,exports){
-var adjacent = _dereq_('./helper/adjacent');
+},{"./helper/makeString":20,"./helper/strRepeat":21}],40:[function(require,module,exports){
+var adjacent = require('./helper/adjacent');
 
 module.exports = function succ(str) {
   return adjacent(str, -1);
 };
 
-},{"./helper/adjacent":16}],38:[function(_dereq_,module,exports){
+},{"./helper/adjacent":15}],41:[function(require,module,exports){
 /**
  * _s.prune: a more elegant version of truncate
  * prune extra chars, never leaving a half-chopped word.
  * @author github.com/rwz
  */
-var makeString = _dereq_('./helper/makeString');
-var rtrim = _dereq_('./rtrim');
+var makeString = require('./helper/makeString');
+var rtrim = require('./rtrim');
 
 module.exports = function prune(str, length, pruneStr) {
   str = makeString(str);
@@ -25087,8 +25398,8 @@ module.exports = function prune(str, length, pruneStr) {
   if (str.length <= length) return str;
 
   var tmpl = function(c) {
-    return c.toUpperCase() !== c.toLowerCase() ? 'A' : ' ';
-  },
+      return c.toUpperCase() !== c.toLowerCase() ? 'A' : ' ';
+    },
     template = str.slice(0, length + 1).replace(/.(?=\W*\w*$)/g, tmpl); // 'Hello, world' -> 'HellAA AAAAA'
 
   if (template.slice(template.length - 2).match(/\w\w/))
@@ -25099,16 +25410,16 @@ module.exports = function prune(str, length, pruneStr) {
   return (template + pruneStr).length > str.length ? str : str.slice(0, template.length) + pruneStr;
 };
 
-},{"./helper/makeString":21,"./rtrim":44}],39:[function(_dereq_,module,exports){
-var surround = _dereq_('./surround');
+},{"./helper/makeString":20,"./rtrim":47}],42:[function(require,module,exports){
+var surround = require('./surround');
 
 module.exports = function quote(str, quoteChar) {
   return surround(str, quoteChar || '"');
 };
 
-},{"./surround":55}],40:[function(_dereq_,module,exports){
-var makeString = _dereq_('./helper/makeString');
-var strRepeat = _dereq_('./helper/strRepeat');
+},{"./surround":58}],43:[function(require,module,exports){
+var makeString = require('./helper/makeString');
+var strRepeat = require('./helper/strRepeat');
 
 module.exports = function repeat(str, qty, separator) {
   str = makeString(str);
@@ -25119,12 +25430,13 @@ module.exports = function repeat(str, qty, separator) {
   if (separator == null) return strRepeat(str, qty);
 
   // this one is about 300x slower in Google Chrome
+  /*eslint no-empty: 0*/
   for (var repeat = []; qty > 0; repeat[--qty] = str) {}
   return repeat.join(separator);
 };
 
-},{"./helper/makeString":21,"./helper/strRepeat":22}],41:[function(_dereq_,module,exports){
-var makeString = _dereq_('./helper/makeString');
+},{"./helper/makeString":20,"./helper/strRepeat":21}],44:[function(require,module,exports){
+var makeString = require('./helper/makeString');
 
 module.exports = function replaceAll(str, find, replace, ignorecase) {
   var flags = (ignorecase === true)?'gi':'g';
@@ -25133,23 +25445,23 @@ module.exports = function replaceAll(str, find, replace, ignorecase) {
   return makeString(str).replace(reg, replace);
 };
 
-},{"./helper/makeString":21}],42:[function(_dereq_,module,exports){
-var chars = _dereq_('./chars');
+},{"./helper/makeString":20}],45:[function(require,module,exports){
+var chars = require('./chars');
 
 module.exports = function reverse(str) {
   return chars(str).reverse().join('');
 };
 
-},{"./chars":3}],43:[function(_dereq_,module,exports){
-var pad = _dereq_('./pad');
+},{"./chars":3}],46:[function(require,module,exports){
+var pad = require('./pad');
 
 module.exports = function rpad(str, length, padStr) {
   return pad(str, length, padStr, 'right');
 };
 
-},{"./pad":36}],44:[function(_dereq_,module,exports){
-var makeString = _dereq_('./helper/makeString');
-var defaultToWhiteSpace = _dereq_('./helper/defaultToWhiteSpace');
+},{"./pad":39}],47:[function(require,module,exports){
+var makeString = require('./helper/makeString');
+var defaultToWhiteSpace = require('./helper/defaultToWhiteSpace');
 var nativeTrimRight = String.prototype.trimRight;
 
 module.exports = function rtrim(str, characters) {
@@ -25159,19 +25471,17 @@ module.exports = function rtrim(str, characters) {
   return str.replace(new RegExp(characters + '+$'), '');
 };
 
-},{"./helper/defaultToWhiteSpace":17,"./helper/makeString":21}],45:[function(_dereq_,module,exports){
-var makeString = _dereq_('./helper/makeString');
-var defaultToWhiteSpace = _dereq_('./helper/defaultToWhiteSpace');
-var trim = _dereq_('./trim');
-var dasherize = _dereq_('./dasherize');
-var cleanDiacritics = _dereq_("./cleanDiacritics");
+},{"./helper/defaultToWhiteSpace":16,"./helper/makeString":20}],48:[function(require,module,exports){
+var trim = require('./trim');
+var dasherize = require('./dasherize');
+var cleanDiacritics = require('./cleanDiacritics');
 
 module.exports = function slugify(str) {
-  return trim(dasherize(cleanDiacritics(str).replace(/[^\w\s-]/g, '-')), '-');
+  return trim(dasherize(cleanDiacritics(str).replace(/[^\w\s-]/g, '-').toLowerCase()), '-');
 };
 
-},{"./cleanDiacritics":7,"./dasherize":9,"./helper/defaultToWhiteSpace":17,"./helper/makeString":21,"./trim":62}],46:[function(_dereq_,module,exports){
-var chars = _dereq_('./chars');
+},{"./cleanDiacritics":7,"./dasherize":9,"./trim":65}],49:[function(require,module,exports){
+var chars = require('./chars');
 
 module.exports = function splice(str, i, howmany, substr) {
   var arr = chars(str);
@@ -25179,135 +25489,15 @@ module.exports = function splice(str, i, howmany, substr) {
   return arr.join('');
 };
 
-},{"./chars":3}],47:[function(_dereq_,module,exports){
-// sprintf() for JavaScript 0.7-beta1
-// http://www.diveintojavascript.com/projects/javascript-sprintf
-//
-// Copyright (c) Alexandru Marasteanu <alexaholic [at) gmail (dot] com>
-// All rights reserved.
-var strRepeat = _dereq_('./helper/strRepeat');
-var toString = Object.prototype.toString;
-var sprintf = (function() {
-  function get_type(variable) {
-    return toString.call(variable).slice(8, -1).toLowerCase();
-  }
+},{"./chars":3}],50:[function(require,module,exports){
+var deprecate = require('util-deprecate');
 
-  var str_repeat = strRepeat;
+module.exports = deprecate(require('sprintf-js').sprintf,
+  'sprintf() will be removed in the next major release, use the sprintf-js package instead.');
 
-  var str_format = function() {
-    if (!str_format.cache.hasOwnProperty(arguments[0])) {
-      str_format.cache[arguments[0]] = str_format.parse(arguments[0]);
-    }
-    return str_format.format.call(null, str_format.cache[arguments[0]], arguments);
-  };
-
-  str_format.format = function(parse_tree, argv) {
-    var cursor = 1, tree_length = parse_tree.length, node_type = '', arg, output = [], i, k, match, pad, pad_character, pad_length;
-    for (i = 0; i < tree_length; i++) {
-      node_type = get_type(parse_tree[i]);
-      if (node_type === 'string') {
-        output.push(parse_tree[i]);
-      }
-      else if (node_type === 'array') {
-        match = parse_tree[i]; // convenience purposes only
-        if (match[2]) { // keyword argument
-          arg = argv[cursor];
-          for (k = 0; k < match[2].length; k++) {
-            if (!arg.hasOwnProperty(match[2][k])) {
-              throw new Error(sprintf('[_.sprintf] property "%s" does not exist', match[2][k]));
-            }
-            arg = arg[match[2][k]];
-          }
-        } else if (match[1]) { // positional argument (explicit)
-          arg = argv[match[1]];
-        }
-        else { // positional argument (implicit)
-          arg = argv[cursor++];
-        }
-
-        if (/[^s]/.test(match[8]) && (get_type(arg) != 'number')) {
-          throw new Error(sprintf('[_.sprintf] expecting number but found %s', get_type(arg)));
-        }
-        switch (match[8]) {
-          case 'b': arg = arg.toString(2); break;
-          case 'c': arg = String.fromCharCode(arg); break;
-          case 'd': arg = parseInt(arg, 10); break;
-          case 'e': arg = match[7] ? arg.toExponential(match[7]) : arg.toExponential(); break;
-          case 'f': arg = match[7] ? parseFloat(arg).toFixed(match[7]) : parseFloat(arg); break;
-          case 'o': arg = arg.toString(8); break;
-          case 's': arg = ((arg = String(arg)) && match[7] ? arg.substring(0, match[7]) : arg); break;
-          case 'u': arg = Math.abs(arg); break;
-          case 'x': arg = arg.toString(16); break;
-          case 'X': arg = arg.toString(16).toUpperCase(); break;
-        }
-        arg = (/[def]/.test(match[8]) && match[3] && arg >= 0 ? '+'+ arg : arg);
-        pad_character = match[4] ? match[4] == '0' ? '0' : match[4].charAt(1) : ' ';
-        pad_length = match[6] - String(arg).length;
-        pad = match[6] ? str_repeat(pad_character, pad_length) : '';
-        output.push(match[5] ? arg + pad : pad + arg);
-      }
-    }
-    return output.join('');
-  };
-
-  str_format.cache = {};
-
-  str_format.parse = function(fmt) {
-    var _fmt = fmt, match = [], parse_tree = [], arg_names = 0;
-    while (_fmt) {
-      if ((match = /^[^\x25]+/.exec(_fmt)) !== null) {
-        parse_tree.push(match[0]);
-      }
-      else if ((match = /^\x25{2}/.exec(_fmt)) !== null) {
-        parse_tree.push('%');
-      }
-      else if ((match = /^\x25(?:([1-9]\d*)\$|\(([^\)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-fosuxX])/.exec(_fmt)) !== null) {
-        if (match[2]) {
-          arg_names |= 1;
-          var field_list = [], replacement_field = match[2], field_match = [];
-          if ((field_match = /^([a-z_][a-z_\d]*)/i.exec(replacement_field)) !== null) {
-            field_list.push(field_match[1]);
-            while ((replacement_field = replacement_field.substring(field_match[0].length)) !== '') {
-              if ((field_match = /^\.([a-z_][a-z_\d]*)/i.exec(replacement_field)) !== null) {
-                field_list.push(field_match[1]);
-              }
-              else if ((field_match = /^\[(\d+)\]/.exec(replacement_field)) !== null) {
-                field_list.push(field_match[1]);
-              }
-              else {
-                throw new Error('[_.sprintf] huh?');
-              }
-            }
-          }
-          else {
-            throw new Error('[_.sprintf] huh?');
-          }
-          match[2] = field_list;
-        }
-        else {
-          arg_names |= 2;
-        }
-        if (arg_names === 3) {
-          throw new Error('[_.sprintf] mixing positional and named placeholders is not (yet) supported');
-        }
-        parse_tree.push(match);
-      }
-      else {
-        throw new Error('[_.sprintf] huh?');
-      }
-      _fmt = _fmt.substring(match[0].length);
-    }
-    return parse_tree;
-  };
-
-  return str_format;
-})();
-
-module.exports = sprintf;
-
-},{"./helper/strRepeat":22}],48:[function(_dereq_,module,exports){
-var makeString = _dereq_('./helper/makeString');
-var toPositive = _dereq_('./helper/toPositive');
+},{"sprintf-js":36,"util-deprecate":37}],51:[function(require,module,exports){
+var makeString = require('./helper/makeString');
+var toPositive = require('./helper/toPositive');
 
 module.exports = function startsWith(str, starts, position) {
   str = makeString(str);
@@ -25316,8 +25506,8 @@ module.exports = function startsWith(str, starts, position) {
   return str.lastIndexOf(starts, position) === position;
 };
 
-},{"./helper/makeString":21,"./helper/toPositive":23}],49:[function(_dereq_,module,exports){
-var makeString = _dereq_('./helper/makeString');
+},{"./helper/makeString":20,"./helper/toPositive":22}],52:[function(require,module,exports){
+var makeString = require('./helper/makeString');
 
 module.exports = function strLeft(str, sep) {
   str = makeString(str);
@@ -25326,8 +25516,8 @@ module.exports = function strLeft(str, sep) {
   return~ pos ? str.slice(0, pos) : str;
 };
 
-},{"./helper/makeString":21}],50:[function(_dereq_,module,exports){
-var makeString = _dereq_('./helper/makeString');
+},{"./helper/makeString":20}],53:[function(require,module,exports){
+var makeString = require('./helper/makeString');
 
 module.exports = function strLeftBack(str, sep) {
   str = makeString(str);
@@ -25336,8 +25526,8 @@ module.exports = function strLeftBack(str, sep) {
   return~ pos ? str.slice(0, pos) : str;
 };
 
-},{"./helper/makeString":21}],51:[function(_dereq_,module,exports){
-var makeString = _dereq_('./helper/makeString');
+},{"./helper/makeString":20}],54:[function(require,module,exports){
+var makeString = require('./helper/makeString');
 
 module.exports = function strRight(str, sep) {
   str = makeString(str);
@@ -25346,8 +25536,8 @@ module.exports = function strRight(str, sep) {
   return~ pos ? str.slice(pos + sep.length, str.length) : str;
 };
 
-},{"./helper/makeString":21}],52:[function(_dereq_,module,exports){
-var makeString = _dereq_('./helper/makeString');
+},{"./helper/makeString":20}],55:[function(require,module,exports){
+var makeString = require('./helper/makeString');
 
 module.exports = function strRightBack(str, sep) {
   str = makeString(str);
@@ -25356,27 +25546,27 @@ module.exports = function strRightBack(str, sep) {
   return~ pos ? str.slice(pos + sep.length, str.length) : str;
 };
 
-},{"./helper/makeString":21}],53:[function(_dereq_,module,exports){
-var makeString = _dereq_('./helper/makeString');
+},{"./helper/makeString":20}],56:[function(require,module,exports){
+var makeString = require('./helper/makeString');
 
 module.exports = function stripTags(str) {
   return makeString(str).replace(/<\/?[^>]+>/g, '');
 };
 
-},{"./helper/makeString":21}],54:[function(_dereq_,module,exports){
-var adjacent = _dereq_('./helper/adjacent');
+},{"./helper/makeString":20}],57:[function(require,module,exports){
+var adjacent = require('./helper/adjacent');
 
 module.exports = function succ(str) {
   return adjacent(str, 1);
 };
 
-},{"./helper/adjacent":16}],55:[function(_dereq_,module,exports){
+},{"./helper/adjacent":15}],58:[function(require,module,exports){
 module.exports = function surround(str, wrapper) {
   return [wrapper, str, wrapper].join('');
 };
 
-},{}],56:[function(_dereq_,module,exports){
-var makeString = _dereq_('./helper/makeString');
+},{}],59:[function(require,module,exports){
+var makeString = require('./helper/makeString');
 
 module.exports = function swapCase(str) {
   return makeString(str).replace(/\S/g, function(c) {
@@ -25384,8 +25574,8 @@ module.exports = function swapCase(str) {
   });
 };
 
-},{"./helper/makeString":21}],57:[function(_dereq_,module,exports){
-var makeString = _dereq_('./helper/makeString');
+},{"./helper/makeString":20}],60:[function(require,module,exports){
+var makeString = require('./helper/makeString');
 
 module.exports = function titleize(str) {
   return makeString(str).toLowerCase().replace(/(?:^|\s|-)\S/g, function(c) {
@@ -25393,8 +25583,8 @@ module.exports = function titleize(str) {
   });
 };
 
-},{"./helper/makeString":21}],58:[function(_dereq_,module,exports){
-var trim = _dereq_('./trim');
+},{"./helper/makeString":20}],61:[function(require,module,exports){
+var trim = require('./trim');
 
 function boolMatch(s, matchers) {
   var i, matcher, down = s.toLowerCase();
@@ -25408,24 +25598,22 @@ function boolMatch(s, matchers) {
 }
 
 module.exports = function toBoolean(str, trueValues, falseValues) {
-  if (typeof str === "number") str = "" + str;
-  if (typeof str !== "string") return !!str;
+  if (typeof str === 'number') str = '' + str;
+  if (typeof str !== 'string') return !!str;
   str = trim(str);
-  if (boolMatch(str, trueValues || ["true", "1"])) return true;
-  if (boolMatch(str, falseValues || ["false", "0"])) return false;
+  if (boolMatch(str, trueValues || ['true', '1'])) return true;
+  if (boolMatch(str, falseValues || ['false', '0'])) return false;
 };
 
-},{"./trim":62}],59:[function(_dereq_,module,exports){
-var trim = _dereq_('./trim');
-
+},{"./trim":65}],62:[function(require,module,exports){
 module.exports = function toNumber(num, precision) {
   if (num == null) return 0;
   var factor = Math.pow(10, isFinite(precision) ? precision : 0);
   return Math.round(num * factor) / factor;
 };
 
-},{"./trim":62}],60:[function(_dereq_,module,exports){
-var rtrim = _dereq_('./rtrim');
+},{}],63:[function(require,module,exports){
+var rtrim = require('./rtrim');
 
 module.exports = function toSentence(array, separator, lastSeparator, serial) {
   separator = separator || ', ';
@@ -25438,16 +25626,16 @@ module.exports = function toSentence(array, separator, lastSeparator, serial) {
   return a.length ? a.join(separator) + lastSeparator + lastMember : lastMember;
 };
 
-},{"./rtrim":44}],61:[function(_dereq_,module,exports){
-var toSentence = _dereq_('./toSentence');
+},{"./rtrim":47}],64:[function(require,module,exports){
+var toSentence = require('./toSentence');
 
 module.exports = function toSentenceSerial(array, sep, lastSep) {
   return toSentence(array, sep, lastSep, true);
 };
 
-},{"./toSentence":60}],62:[function(_dereq_,module,exports){
-var makeString = _dereq_('./helper/makeString');
-var defaultToWhiteSpace = _dereq_('./helper/defaultToWhiteSpace');
+},{"./toSentence":63}],65:[function(require,module,exports){
+var makeString = require('./helper/makeString');
+var defaultToWhiteSpace = require('./helper/defaultToWhiteSpace');
 var nativeTrim = String.prototype.trim;
 
 module.exports = function trim(str, characters) {
@@ -25457,8 +25645,8 @@ module.exports = function trim(str, characters) {
   return str.replace(new RegExp('^' + characters + '+|' + characters + '+$', 'g'), '');
 };
 
-},{"./helper/defaultToWhiteSpace":17,"./helper/makeString":21}],63:[function(_dereq_,module,exports){
-var makeString = _dereq_('./helper/makeString');
+},{"./helper/defaultToWhiteSpace":16,"./helper/makeString":20}],66:[function(require,module,exports){
+var makeString = require('./helper/makeString');
 
 module.exports = function truncate(str, length, truncateStr) {
   str = makeString(str);
@@ -25467,16 +25655,16 @@ module.exports = function truncate(str, length, truncateStr) {
   return str.length > length ? str.slice(0, length) + truncateStr : str;
 };
 
-},{"./helper/makeString":21}],64:[function(_dereq_,module,exports){
-var trim = _dereq_('./trim');
+},{"./helper/makeString":20}],67:[function(require,module,exports){
+var trim = require('./trim');
 
 module.exports = function underscored(str) {
   return trim(str).replace(/([a-z\d])([A-Z]+)/g, '$1_$2').replace(/[-\s]+/g, '_').toLowerCase();
 };
 
-},{"./trim":62}],65:[function(_dereq_,module,exports){
-var makeString = _dereq_('./helper/makeString');
-var htmlEntities = _dereq_('./helper/htmlEntities');
+},{"./trim":65}],68:[function(require,module,exports){
+var makeString = require('./helper/makeString');
+var htmlEntities = require('./helper/htmlEntities');
 
 module.exports = function unescapeHTML(str) {
   return makeString(str).replace(/\&([^;]+);/g, function(entity, entityCode) {
@@ -25484,8 +25672,10 @@ module.exports = function unescapeHTML(str) {
 
     if (entityCode in htmlEntities) {
       return htmlEntities[entityCode];
+    /*eslint no-cond-assign: 0*/
     } else if (match = entityCode.match(/^#x([\da-fA-F]+)$/)) {
       return String.fromCharCode(parseInt(match[1], 16));
+    /*eslint no-cond-assign: 0*/
     } else if (match = entityCode.match(/^#(\d+)$/)) {
       return String.fromCharCode(~~match[1]);
     } else {
@@ -25494,7 +25684,7 @@ module.exports = function unescapeHTML(str) {
   });
 };
 
-},{"./helper/htmlEntities":20,"./helper/makeString":21}],66:[function(_dereq_,module,exports){
+},{"./helper/htmlEntities":19,"./helper/makeString":20}],69:[function(require,module,exports){
 module.exports = function unquote(str, quoteChar) {
   quoteChar = quoteChar || '"';
   if (str[0] === quoteChar && str[str.length - 1] === quoteChar)
@@ -25502,126 +25692,126 @@ module.exports = function unquote(str, quoteChar) {
   else return str;
 };
 
-},{}],67:[function(_dereq_,module,exports){
-var sprintf = _dereq_('./sprintf');
+},{}],70:[function(require,module,exports){
+var deprecate = require('util-deprecate');
 
-module.exports = function vsprintf(fmt, argv) {
-  argv.unshift(fmt);
-  return sprintf.apply(null, argv);
-};
+module.exports = deprecate(require('sprintf-js').vsprintf,
+  'vsprintf() will be removed in the next major release, use the sprintf-js package instead.');
 
-},{"./sprintf":47}],68:[function(_dereq_,module,exports){
-var isBlank = _dereq_('./isBlank');
-var trim = _dereq_('./trim');
+},{"sprintf-js":36,"util-deprecate":37}],71:[function(require,module,exports){
+var isBlank = require('./isBlank');
+var trim = require('./trim');
 
 module.exports = function words(str, delimiter) {
   if (isBlank(str)) return [];
   return trim(str, delimiter).split(delimiter || /\s+/);
 };
 
-},{"./isBlank":27,"./trim":62}],69:[function(_dereq_,module,exports){
+},{"./isBlank":27,"./trim":65}],72:[function(require,module,exports){
 // Wrap
 // wraps a string by a certain width
 
-makeString = _dereq_('./helper/makeString');
+var makeString = require('./helper/makeString');
 
 module.exports = function wrap(str, options){
-	str = makeString(str);
-
-	options = options || {};
-
-	width = options.width || 75;
-	seperator = options.seperator || '\n';
-	cut = options.cut || false;
-	preserveSpaces = options.preserveSpaces || false;
-	trailingSpaces = options.trailingSpaces || false;
-
-	if(width <= 0){
-		return str;
-	}
-
-	else if(!cut){
-
-		words = str.split(" ");
-		result = "";
-		current_column = 0;
-
-		while(words.length > 0){
-			
-			// if adding a space and the next word would cause this line to be longer than width...
-			if(1 + words[0].length + current_column > width){
-				//start a new line if this line is not already empty
-				if(current_column > 0){
-					// add a space at the end of the line is preserveSpaces is true
-					if (preserveSpaces){
-						result += ' ';
-						current_column++;
-					}
-					// fill the rest of the line with spaces if trailingSpaces option is true
-					else if(trailingSpaces){
-						while(current_column < width){
-							result += ' ';
-							current_column++;
-						}						
-					}
-					//start new line
-					result += seperator;
-					current_column = 0;
-				}
-			}
-
-			// if not at the begining of the line, add a space in front of the word
-			if(current_column > 0){
-				result += " ";
-				current_column++;
-			}
-
-			// tack on the next word, update current column, a pop words array
-			result += words[0];
-			current_column += words[0].length;
-			words.shift();
-
-		}
-
-		// fill the rest of the line with spaces if trailingSpaces option is true
-		if(trailingSpaces){
-			while(current_column < width){
-				result += ' ';
-				current_column++;
-			}						
-		}
-
-		return result;
-
-	}
-
-	else {
-
-		index = 0;
-		result = "";
-
-		// walk through each character and add seperators where appropriate
-		while(index < str.length){
-			if(index % width == 0 && index > 0){
-				result += seperator;
-			}
-			result += str.charAt(index);
-			index++;
-		}
-
-		// fill the rest of the line with spaces if trailingSpaces option is true
-		if(trailingSpaces){
-			while(index % width > 0){
-				result += ' ';
-				index++;
-			}						
-		}
-		
-		return result;
-	}
+  str = makeString(str);
+  
+  options = options || {};
+  
+  var width = options.width || 75;
+  var seperator = options.seperator || '\n';
+  var cut = options.cut || false;
+  var preserveSpaces = options.preserveSpaces || false;
+  var trailingSpaces = options.trailingSpaces || false;
+  
+  var result;
+  
+  if(width <= 0){
+    return str;
+  }
+  
+  else if(!cut){
+  
+    var words = str.split(' ');
+    var current_column = 0;
+    result = '';
+  
+    while(words.length > 0){
+      
+      // if adding a space and the next word would cause this line to be longer than width...
+      if(1 + words[0].length + current_column > width){
+        //start a new line if this line is not already empty
+        if(current_column > 0){
+          // add a space at the end of the line is preserveSpaces is true
+          if (preserveSpaces){
+            result += ' ';
+            current_column++;
+          }
+          // fill the rest of the line with spaces if trailingSpaces option is true
+          else if(trailingSpaces){
+            while(current_column < width){
+              result += ' ';
+              current_column++;
+            }            
+          }
+          //start new line
+          result += seperator;
+          current_column = 0;
+        }
+      }
+  
+      // if not at the begining of the line, add a space in front of the word
+      if(current_column > 0){
+        result += ' ';
+        current_column++;
+      }
+  
+      // tack on the next word, update current column, a pop words array
+      result += words[0];
+      current_column += words[0].length;
+      words.shift();
+  
+    }
+  
+    // fill the rest of the line with spaces if trailingSpaces option is true
+    if(trailingSpaces){
+      while(current_column < width){
+        result += ' ';
+        current_column++;
+      }            
+    }
+  
+    return result;
+  
+  }
+  
+  else {
+  
+    var index = 0;
+    result = '';
+  
+    // walk through each character and add seperators where appropriate
+    while(index < str.length){
+      if(index % width == 0 && index > 0){
+        result += seperator;
+      }
+      result += str.charAt(index);
+      index++;
+    }
+  
+    // fill the rest of the line with spaces if trailingSpaces option is true
+    if(trailingSpaces){
+      while(index % width > 0){
+        result += ' ';
+        index++;
+      }            
+    }
+    
+    return result;
+  }
 };
-},{"./helper/makeString":21}]},{},[15])
-(15)
+
+},{"./helper/makeString":20}]},{},[25])(25)
 });
 ;!function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.selectn=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*!
@@ -25735,7 +25925,7 @@ function selectn(query) {
 
     'use strict';
 
-    validator = { version: '4.4.1' };
+    validator = { version: '4.9.0', coerce: true };
 
     var emailUserPart = /^[a-z\d!#\$%&'\*\+\-\/=\?\^_`{\|}~]+$/i;
     var quotedEmailUser = /^([\s\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e]|(\\[\x01-\x09\x0b\x0c\x0d-\x7f]))*$/i;
@@ -25754,7 +25944,7 @@ function selectn(query) {
 
     var macAddress = /^([0-9a-fA-F][0-9a-fA-F]:){5}([0-9a-fA-F][0-9a-fA-F])$/;
 
-    var ipv4Maybe = /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/
+    var ipv4Maybe = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/
       , ipv6Block = /^[0-9A-F]{1,4}$/i;
 
     var uuid = {
@@ -25764,9 +25954,33 @@ function selectn(query) {
       , all: /^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$/i
     };
 
-    var alpha = /^[A-Z]+$/i
-      , alphanumeric = /^[0-9A-Z]+$/i
-      , numeric = /^[-+]?[0-9]+$/
+    var alpha = {
+        'en-US': /^[A-Z]+$/i,
+        'de-DE': /^[A-ZÄÖÜß]+$/i,
+        'es-ES': /^[A-ZÁÉÍÑÓÚÜ]+$/i,
+        'fr-FR': /^[A-ZÀÂÆÇÉÈÊËÏÎÔŒÙÛÜŸ]+$/i,
+        'nl-NL': /^[A-ZÉËÏÓÖÜ]+$/i,
+        'pt-PT': /^[A-ZÃÁÀÂÇÉÊÍÕÓÔÚÜ]+$/i,
+        'ru-RU': /^[А-ЯЁа-яё]+$/i
+      }
+      , alphanumeric = {
+        'en-US': /^[0-9A-Z]+$/i,
+        'de-DE': /^[0-9A-ZÄÖÜß]+$/i,
+        'es-ES': /^[0-9A-ZÁÉÍÑÓÚÜ]+$/i,
+        'fr-FR': /^[0-9A-ZÀÂÆÇÉÈÊËÏÎÔŒÙÛÜŸ]+$/i,
+        'nl-NL': /^[0-9A-ZÉËÏÓÖÜ]+$/i,
+        'pt-PT': /^[0-9A-ZÃÁÀÂÇÉÊÍÕÓÔÚÜ]+$/i,
+        'ru-RU': /^[0-9А-ЯЁа-яё]+$/i
+      };
+
+    var englishLocales = ['AU', 'GB', 'HK', 'IN', 'NZ', 'ZA', 'ZM'];
+    for (var locale, i = 0; i < englishLocales.length; i++) {
+        locale = 'en-' + englishLocales[i];
+        alpha[locale] = alpha['en-US'];
+        alphanumeric[locale] = alphanumeric['en-US'];
+    }
+
+    var numeric = /^[-+]?[0-9]+$/
       , int = /^(?:[-+]?(?:0|[1-9][0-9]*))$/
       , float = /^(?:[-+]?(?:[0-9]+))?(?:\.[0-9]*)?(?:[eE][\+\-]?(?:[0-9]+))?$/
       , hexadecimal = /^[0-9A-F]+$/i
@@ -25783,22 +25997,27 @@ function selectn(query) {
     var base64 = /^(?:[A-Z0-9+\/]{4})*(?:[A-Z0-9+\/]{2}==|[A-Z0-9+\/]{3}=|[A-Z0-9+\/]{4})$/i;
 
     var phones = {
-      'zh-CN': /^(\+?0?86\-?)?1[345789]\d{9}$/,
-      'zh-TW': /^(\+?886\-?|0)?9\d{8}$/,
-      'en-ZA': /^(\+?27|0)\d{9}$/,
-      'en-AU': /^(\+?61|0)4\d{8}$/,
-      'en-HK': /^(\+?852\-?)?[569]\d{3}\-?\d{4}$/,
-      'fr-FR': /^(\+?33|0)[67]\d{8}$/,
-      'pt-PT': /^(\+351)?9[1236]\d{7}$/,
-      'el-GR': /^(\+30)?((2\d{9})|(69\d{8}))$/,
-      'en-GB': /^(\+?44|0)7\d{9}$/,
       'en-US': /^(\+?1)?[2-9]\d{2}[2-9](?!11)\d{6}$/,
-      'en-ZM': /^(\+26)?09[567]\d{7}$/,
-      'ru-RU': /^(\+?7|8)?9\d{9}$/,
+      'de-DE': /^(\+?49[ \.\-])?([\(]{1}[0-9]{1,6}[\)])?([0-9 \.\-\/]{3,20})((x|ext|extension)[ ]?[0-9]{1,4})?$/,
+      'el-GR': /^(\+?30)?(69\d{8})$/,
+      'en-AU': /^(\+?61|0)4\d{8}$/,
+      'en-GB': /^(\+?44|0)7\d{9}$/,
+      'en-HK': /^(\+?852\-?)?[569]\d{3}\-?\d{4}$/,
+      'en-IN': /^(\+?91|0)?[789]\d{9}$/,
+      'en-NZ': /^(\+?64|0)2\d{7,9}$/,
+      'en-ZA': /^(\+?27|0)\d{9}$/,
+      'en-ZM': /^(\+?26)?09[567]\d{7}$/,
+      'es-ES': /^(\+?34)?(6\d{1}|7[1234])\d{7}$/,
+      'fi-FI': /^(\+?358|0)\s?(4(0|1|2|4|5)?|50)\s?(\d\s?){4,8}\d$/,
+      'fr-FR': /^(\+?33|0)[67]\d{8}$/,
       'nb-NO': /^(\+?47)?[49]\d{7}$/,
       'nn-NO': /^(\+?47)?[49]\d{7}$/,
-      'vi-VN': /^(0|\+?84)?((1(2([0-9])|6([2-9])|88|99))|(9((?!5)[0-9])))([0-9]{7})$/,
-      'en-NZ': /^(\+?64|0)2\d{7,9}$/
+      'pt-BR': /^(\+?55|0)\-?[1-9]{2}\-?[2-9]{1}\d{3,4}\-?\d{4}$/,
+      'pt-PT': /^(\+?351)?9[1236]\d{7}$/,
+      'ru-RU': /^(\+?7|8)?9\d{9}$/,
+      'vi-VN': /^(\+?84|0)?((1(2([0-9])|6([2-9])|88|99))|(9((?!5)[0-9])))([0-9]{7})$/,
+      'zh-CN': /^(\+?0?86\-?)?((13\d|14[57]|15[^4,\D]|17[678]|18\d)\d{8}|170[059]\d{7})$/,
+      'zh-TW': /^(\+?886\-?|0)?9\d{8}$/
     };
 
     // from http://goo.gl/0ejHHW
@@ -25817,16 +26036,49 @@ function selectn(query) {
     validator.init = function () {
         for (var name in validator) {
             if (typeof validator[name] !== 'function' || name === 'toString' ||
-                    name === 'toDate' || name === 'extend' || name === 'init') {
+                    name === 'toDate' || name === 'extend' || name === 'init' ||
+                    name === 'isServerSide') {
                 continue;
             }
             validator.extend(name, validator[name]);
         }
     };
 
+    validator.isServerSide = function () {
+        return typeof module === 'object' && module &&
+            typeof module.exports === 'object' &&
+            typeof process === 'object' &&
+            typeof require === 'function';
+    };
+
+    var depd = null;
+    validator.deprecation = function (msg) {
+        if (depd === null) {
+            if (!validator.isServerSide()) {
+                return;
+            }
+            depd = require('depd')('validator');
+        }
+        depd(msg);
+    };
+
     validator.toString = function (input) {
-        if (typeof input === 'object' && input !== null && input.toString) {
-            input = input.toString();
+        if (typeof input !== 'string') {
+            // The library validates strings only. Currently it coerces all input to a string, but this
+            // will go away in an upcoming major version change. Print a deprecation notice for now
+            if (!validator.coerce) {
+                throw new Error('this library validates strings only');
+            }
+            validator.deprecation('you tried to validate a ' + typeof input + ' but this library ' +
+                    '(validator.js) validates strings only. Please update your code as this will ' +
+                    'be an error soon.');
+        }
+        if (typeof input === 'object' && input !== null) {
+            if (typeof input.toString === 'function') {
+                input = input.toString();
+            } else {
+                input = '[object Object]';
+            }
         } else if (input === null || typeof input === 'undefined' || (isNaN(input) && !input.length)) {
             input = '';
         }
@@ -25896,8 +26148,8 @@ function selectn(query) {
             user = user.replace(/\./g, '').toLowerCase();
         }
 
-        if (!validator.isByteLength(user, 0, 64) ||
-                !validator.isByteLength(domain, 0, 256)) {
+        if (!validator.isByteLength(user, {max: 64}) ||
+                !validator.isByteLength(domain, {max: 256})) {
             return false;
         }
 
@@ -26002,7 +26254,7 @@ function selectn(query) {
     };
 
     validator.isIP = function (str, version) {
-        version = validator.toString(version);
+        version = version ? version + '' : '';
         if (!version) {
             return validator.isIP(str, 4) || validator.isIP(str, 6);
         } else if (version === '4') {
@@ -26102,9 +26354,6 @@ function selectn(query) {
             if (part[0] === '-' || part[part.length - 1] === '-') {
                 return false;
             }
-            if (part.indexOf('---') >= 0 && part.slice(0, 4) !== 'xn--') {
-                return false;
-            }
         }
         return true;
     };
@@ -26113,12 +26362,20 @@ function selectn(query) {
         return (['true', 'false', '1', '0'].indexOf(str) >= 0);
     };
 
-    validator.isAlpha = function (str) {
-        return alpha.test(str);
+    validator.isAlpha = function (str, locale) {
+        locale = locale || 'en-US';
+        if (locale in alpha) {
+            return alpha[locale].test(str);
+        }
+        throw new Error('Invalid locale \'' + locale + '\'');
     };
 
-    validator.isAlphanumeric = function (str) {
-        return alphanumeric.test(str);
+    validator.isAlphanumeric = function (str, locale) {
+        locale = locale || 'en-US';
+        if (locale in alphanumeric) {
+            return alphanumeric[locale].test(str);
+        }
+        throw new Error('Invalid locale \'' + locale + '\'');
     };
 
     validator.isNumeric = function (str) {
@@ -26159,20 +26416,35 @@ function selectn(query) {
     };
 
     validator.isDivisibleBy = function (str, num) {
-        return validator.toFloat(str) % validator.toInt(num) === 0;
+        return validator.toFloat(str) % parseInt(num, 10) === 0;
     };
 
     validator.isNull = function (str) {
         return str.length === 0;
     };
 
-    validator.isLength = function (str, min, max) {
+    validator.isLength = function (str, options) {
+        var min, max;
+        if (typeof(options) === 'object') {
+            min = options.min || 0;
+            max = options.max;
+        } else { // backwards compatibility: isLength(str, min [, max])
+            min = arguments[1];
+            max = arguments[2];
+        }
         var surrogatePairs = str.match(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g) || [];
         var len = str.length - surrogatePairs.length;
         return len >= min && (typeof max === 'undefined' || len <= max);
     };
-
-    validator.isByteLength = function (str, min, max) {
+    validator.isByteLength = function (str, options) {
+        var min, max;
+        if (typeof(options) === 'object') {
+            min = options.min || 0;
+            max = options.max;
+        } else { // backwards compatibility: isByteLength(str, min [, max])
+            min = arguments[1];
+            max = arguments[2];
+        }
         var len = encodeURI(str).split(/%..|./).length - 1;
         return len >= min && (typeof max === 'undefined' || len <= max);
     };
@@ -26205,7 +26477,11 @@ function selectn(query) {
             }
         } else {
             timezone = iso8601Parts[21];
-            if (!timezone || timezone === 'z' || timezone === 'Z') {
+            if (!timezone) {
+                // if no hour/minute was provided, the date is GMT
+                return !iso8601Parts[12] ? 0 : null;
+            }
+            if (timezone === 'z' || timezone === 'Z') {
                 return 0;
             }
             sign = iso8601Parts[22];
@@ -26225,6 +26501,7 @@ function selectn(query) {
         if (isNaN(normalizedDate)) {
             return false;
         }
+
         // normalizedDate is in the user's timezone. Apply the input
         // timezone offset to the date so that the year and day match
         // the input
@@ -26235,6 +26512,7 @@ function selectn(query) {
             normalizedDate = new Date(normalizedDate.getTime() +
                 60000 * timezoneDifference);
         }
+
         var day = String(normalizedDate.getDate());
         var dayOrYear, dayOrYearMatches, year;
         //check for valid double digits that could be late days
@@ -26247,6 +26525,7 @@ function selectn(query) {
         dayOrYear = dayOrYearMatches.map(function(digitString) {
             return digitString.match(/\d+/g)[0];
         }).join('/');
+
         year = String(normalizedDate.getFullYear()).slice(-2);
         if (dayOrYear === day || dayOrYear === year) {
             return true;
@@ -26348,7 +26627,7 @@ function selectn(query) {
     };
 
     validator.isISBN = function (str, version) {
-        version = validator.toString(version);
+        version = version ? version + '' : '';
         if (!version) {
             return validator.isISBN(str, 10) || validator.isISBN(str, 13);
         }
@@ -36604,14 +36883,13 @@ return /******/ (function(modules) { // webpackBootstrap
 ;/*!
  * URI.js - Mutating URLs
  *
- * Version: 1.17.0
+ * Version: 1.17.1
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/
  *
  * Licensed under
  *   MIT License http://www.opensource.org/licenses/mit-license
- *   GPL v3 http://opensource.org/licenses/GPL-3.0
  *
  */
 (function (root, factory) {
@@ -36675,7 +36953,7 @@ return /******/ (function(modules) { // webpackBootstrap
     return this;
   }
 
-  URI.version = '1.17.0';
+  URI.version = '1.17.1';
 
   var p = URI.prototype;
   var hasOwn = Object.prototype.hasOwnProperty;
@@ -37398,18 +37676,35 @@ return /******/ (function(modules) { // webpackBootstrap
     }
   };
   URI.hasQuery = function(data, name, value, withinArray) {
-    if (typeof name === 'object') {
-      for (var key in name) {
-        if (hasOwn.call(name, key)) {
-          if (!URI.hasQuery(data, key, name[key])) {
-            return false;
+    switch (getType(name)) {
+      case 'String':
+        // Nothing to do here
+        break;
+
+      case 'RegExp':
+        for (var key in data) {
+          if (hasOwn.call(data, key)) {
+            if (name.test(key) && (value === undefined || URI.hasQuery(data, key, value))) {
+              return true;
+            }
           }
         }
-      }
 
-      return true;
-    } else if (typeof name !== 'string') {
-      throw new TypeError('URI.hasQuery() accepts an object, string as the name parameter');
+        return false;
+
+      case 'Object':
+        for (var _key in name) {
+          if (hasOwn.call(name, _key)) {
+            if (!URI.hasQuery(data, _key, name[_key])) {
+              return false;
+            }
+          }
+        }
+
+        return true;
+
+      default:
+        throw new TypeError('URI.hasQuery() accepts a string, regular expression or object as the name parameter');
     }
 
     switch (getType(value)) {
@@ -37827,8 +38122,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
   // compound accessors
   p.origin = function(v, build) {
-    var parts;
-
     if (this._parts.urn) {
       return v === undefined ? '' : this;
     }
@@ -37836,7 +38129,10 @@ return /******/ (function(modules) { // webpackBootstrap
     if (v === undefined) {
       var protocol = this.protocol();
       var authority = this.authority();
-      if (!authority) return '';
+      if (!authority) {
+        return '';
+      }
+
       return (protocol ? protocol + '://' : '') + this.authority();
     } else {
       var origin = URI(v);
@@ -38420,6 +38716,8 @@ return /******/ (function(modules) { // webpackBootstrap
       return this;
     }
 
+    _path = URI.recodePath(_path);
+
     var _was_relative;
     var _leadingParents = '';
     var _parent, _pos;
@@ -38450,7 +38748,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
     // resolve parents
     while (true) {
-      _parent = _path.indexOf('/..');
+      _parent = _path.search(/\/\.\.(\/|$)/);
       if (_parent === -1) {
         // no more ../ to resolve
         break;
@@ -38472,7 +38770,6 @@ return /******/ (function(modules) { // webpackBootstrap
       _path = _leadingParents + _path.substring(1);
     }
 
-    _path = URI.recodePath(_path);
     this._parts.path = _path;
     this.build(!build);
     return this;
@@ -38767,14 +39064,13 @@ return /******/ (function(modules) { // webpackBootstrap
  * URI.js - Mutating URLs
  * IPv6 Support
  *
- * Version: 1.17.0
+ * Version: 1.17.1
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/
  *
  * Licensed under
  *   MIT License http://www.opensource.org/licenses/mit-license
- *   GPL v3 http://opensource.org/licenses/GPL-3.0
  *
  */
 
@@ -38956,14 +39252,13 @@ return /******/ (function(modules) { // webpackBootstrap
  * URI.js - Mutating URLs
  * Second Level Domain (SLD) Support
  *
- * Version: 1.17.0
+ * Version: 1.17.1
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/
  *
  * Licensed under
  *   MIT License http://www.opensource.org/licenses/mit-license
- *   GPL v3 http://opensource.org/licenses/GPL-3.0
  *
  */
 
@@ -39194,15 +39489,20 @@ return /******/ (function(modules) { // webpackBootstrap
   return SLD;
 }));
 
-;/*! http://mths.be/punycode v1.2.3 by @mathias */
+;/*! https://mths.be/punycode v1.4.0 by @mathias */
 ;(function(root) {
 
 	/** Detect free variables */
-	var freeExports = typeof exports == 'object' && exports;
+	var freeExports = typeof exports == 'object' && exports &&
+		!exports.nodeType && exports;
 	var freeModule = typeof module == 'object' && module &&
-		module.exports == freeExports && module;
+		!module.nodeType && module;
 	var freeGlobal = typeof global == 'object' && global;
-	if (freeGlobal.global === freeGlobal || freeGlobal.window === freeGlobal) {
+	if (
+		freeGlobal.global === freeGlobal ||
+		freeGlobal.window === freeGlobal ||
+		freeGlobal.self === freeGlobal
+	) {
 		root = freeGlobal;
 	}
 
@@ -39228,8 +39528,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	/** Regular expressions */
 	regexPunycode = /^xn--/,
-	regexNonASCII = /[^ -~]/, // unprintable ASCII chars + non-ASCII chars
-	regexSeparators = /\x2E|\u3002|\uFF0E|\uFF61/g, // RFC 3490 separators
+	regexNonASCII = /[^\x20-\x7E]/, // unprintable ASCII chars + non-ASCII chars
+	regexSeparators = /[\x2E\u3002\uFF0E\uFF61]/g, // RFC 3490 separators
 
 	/** Error messages */
 	errors = {
@@ -39255,7 +39555,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @returns {Error} Throws a `RangeError` with the applicable error message.
 	 */
 	function error(type) {
-		throw RangeError(errors[type]);
+		throw new RangeError(errors[type]);
 	}
 
 	/**
@@ -39268,23 +39568,37 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	function map(array, fn) {
 		var length = array.length;
+		var result = [];
 		while (length--) {
-			array[length] = fn(array[length]);
+			result[length] = fn(array[length]);
 		}
-		return array;
+		return result;
 	}
 
 	/**
-	 * A simple `Array#map`-like wrapper to work with domain name strings.
+	 * A simple `Array#map`-like wrapper to work with domain name strings or email
+	 * addresses.
 	 * @private
-	 * @param {String} domain The domain name.
+	 * @param {String} domain The domain name or email address.
 	 * @param {Function} callback The function that gets called for every
 	 * character.
 	 * @returns {Array} A new string of characters returned by the callback
 	 * function.
 	 */
 	function mapDomain(string, fn) {
-		return map(string.split(regexSeparators), fn).join('.');
+		var parts = string.split('@');
+		var result = '';
+		if (parts.length > 1) {
+			// In email addresses, only the domain name should be punycoded. Leave
+			// the local part (i.e. everything up to `@`) intact.
+			result = parts[0] + '@';
+			string = parts[1];
+		}
+		// Avoid `split(regex)` for IE8 compatibility. See #17.
+		string = string.replace(regexSeparators, '\x2E');
+		var labels = string.split('.');
+		var encoded = map(labels, fn).join('.');
+		return result + encoded;
 	}
 
 	/**
@@ -39294,7 +39608,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * UCS-2 exposes as separate characters) into a single code point,
 	 * matching UTF-16.
 	 * @see `punycode.ucs2.encode`
-	 * @see <http://mathiasbynens.be/notes/javascript-encoding>
+	 * @see <https://mathiasbynens.be/notes/javascript-encoding>
 	 * @memberOf punycode.ucs2
 	 * @name decode
 	 * @param {String} string The Unicode input string (UCS-2).
@@ -39388,7 +39702,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	/**
 	 * Bias adaptation function as per section 3.4 of RFC 3492.
-	 * http://tools.ietf.org/html/rfc3492#section-3.4
+	 * https://tools.ietf.org/html/rfc3492#section-3.4
 	 * @private
 	 */
 	function adapt(delta, numPoints, firstTime) {
@@ -39424,7 +39738,6 @@ return /******/ (function(modules) { // webpackBootstrap
 		    k,
 		    digit,
 		    t,
-		    length,
 		    /** Cached calculation results */
 		    baseMinusT;
 
@@ -39504,8 +39817,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	/**
-	 * Converts a string of Unicode symbols to a Punycode string of ASCII-only
-	 * symbols.
+	 * Converts a string of Unicode symbols (e.g. a domain name label) to a
+	 * Punycode string of ASCII-only symbols.
 	 * @memberOf punycode
 	 * @param {String} input The string of Unicode symbols.
 	 * @returns {String} The resulting Punycode string of ASCII-only symbols.
@@ -39618,17 +39931,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	/**
-	 * Converts a Punycode string representing a domain name to Unicode. Only the
-	 * Punycoded parts of the domain name will be converted, i.e. it doesn't
-	 * matter if you call it on a string that has already been converted to
-	 * Unicode.
+	 * Converts a Punycode string representing a domain name or an email address
+	 * to Unicode. Only the Punycoded parts of the input will be converted, i.e.
+	 * it doesn't matter if you call it on a string that has already been
+	 * converted to Unicode.
 	 * @memberOf punycode
-	 * @param {String} domain The Punycode domain name to convert to Unicode.
+	 * @param {String} input The Punycoded domain name or email address to
+	 * convert to Unicode.
 	 * @returns {String} The Unicode representation of the given Punycode
 	 * string.
 	 */
-	function toUnicode(domain) {
-		return mapDomain(domain, function(string) {
+	function toUnicode(input) {
+		return mapDomain(input, function(string) {
 			return regexPunycode.test(string)
 				? decode(string.slice(4).toLowerCase())
 				: string;
@@ -39636,15 +39950,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	/**
-	 * Converts a Unicode string representing a domain name to Punycode. Only the
-	 * non-ASCII parts of the domain name will be converted, i.e. it doesn't
-	 * matter if you call it with a domain that's already in ASCII.
+	 * Converts a Unicode string representing a domain name or an email address to
+	 * Punycode. Only the non-ASCII parts of the domain name will be converted,
+	 * i.e. it doesn't matter if you call it with a domain that's already in
+	 * ASCII.
 	 * @memberOf punycode
-	 * @param {String} domain The domain name to convert, as a Unicode string.
-	 * @returns {String} The Punycode representation of the given domain name.
+	 * @param {String} input The domain name or email address to convert, as a
+	 * Unicode string.
+	 * @returns {String} The Punycode representation of the given domain name or
+	 * email address.
 	 */
-	function toASCII(domain) {
-		return mapDomain(domain, function(string) {
+	function toASCII(input) {
+		return mapDomain(input, function(string) {
 			return regexNonASCII.test(string)
 				? 'xn--' + encode(string)
 				: string;
@@ -39660,11 +39977,11 @@ return /******/ (function(modules) { // webpackBootstrap
 		 * @memberOf punycode
 		 * @type String
 		 */
-		'version': '1.2.3',
+		'version': '1.3.2',
 		/**
 		 * An object of methods to convert from JavaScript's internal character
 		 * representation (UCS-2) to Unicode code points, and back.
-		 * @see <http://mathiasbynens.be/notes/javascript-encoding>
+		 * @see <https://mathiasbynens.be/notes/javascript-encoding>
 		 * @memberOf punycode
 		 * @type Object
 		 */
@@ -39686,18 +40003,21 @@ return /******/ (function(modules) { // webpackBootstrap
 		typeof define.amd == 'object' &&
 		define.amd
 	) {
-		define(function() {
+		define('punycode', function() {
 			return punycode;
 		});
-	}	else if (freeExports && !freeExports.nodeType) {
-		if (freeModule) { // in Node.js or RingoJS v0.8.0+
+	} else if (freeExports && freeModule) {
+		if (module.exports == freeExports) {
+			// in Node.js, io.js, or RingoJS v0.8.0+
 			freeModule.exports = punycode;
-		} else { // in Narwhal or RingoJS v0.7.0-
+		} else {
+			// in Narwhal or RingoJS v0.7.0-
 			for (key in punycode) {
 				punycode.hasOwnProperty(key) && (freeExports[key] = punycode[key]);
 			}
 		}
-	} else { // in Rhino or a web browser
+	} else {
+		// in Rhino or a web browser
 		root.punycode = punycode;
 	}
 
@@ -39707,14 +40027,13 @@ return /******/ (function(modules) { // webpackBootstrap
  * URI.js - Mutating URLs
  * URI Template Support - http://tools.ietf.org/html/rfc6570
  *
- * Version: 1.17.0
+ * Version: 1.17.1
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/
  *
  * Licensed under
  *   MIT License http://www.opensource.org/licenses/mit-license
- *   GPL v3 http://opensource.org/licenses/GPL-3.0
  *
  */
 (function (root, factory) {
@@ -40207,14 +40526,13 @@ return /******/ (function(modules) { // webpackBootstrap
  * URI.js - Mutating URLs
  * jQuery Plugin
  *
- * Version: 1.17.0
+ * Version: 1.17.1
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/jquery-uri-plugin.html
  *
  * Licensed under
  *   MIT License http://www.opensource.org/licenses/mit-license
- *   GPL v3 http://opensource.org/licenses/GPL-3.0
  *
  */
 (function (root, factory) {
@@ -40536,15 +40854,34 @@ return /******/ (function(modules) { // webpackBootstrap
   // extending existing object rather than defining something new
   return URI;
 }));
-;;(function(win){
+;"use strict"
+// Module export pattern from
+// https://github.com/umdjs/umd/blob/master/returnExports.js
+;(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define([], factory);
+    } else if (typeof exports === 'object') {
+        // Node. Does not work with strict CommonJS, but
+        // only CommonJS-like environments that support module.exports,
+        // like Node.
+        module.exports = factory();
+    } else {
+        // Browser globals (root is window)
+        root.store = factory();
+  }
+}(this, function () {
+	
+	// Store.js
 	var store = {},
+		win = (typeof window != 'undefined' ? window : global),
 		doc = win.document,
 		localStorageName = 'localStorage',
 		scriptTag = 'script',
 		storage
 
 	store.disabled = false
-	store.version = '1.3.17'
+	store.version = '1.3.20'
 	store.set = function(key, value) {}
 	store.get = function(key, defaultVal) {}
 	store.has = function(key) { return store.get(key) !== undefined }
@@ -40608,7 +40945,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				callback(key, store.get(key))
 			}
 		}
-	} else if (doc.documentElement.addBehavior) {
+	} else if (doc && doc.documentElement.addBehavior) {
 		var storageOwner,
 			storageContainer
 		// Since #userData storage applies only to specific paths, we need to
@@ -40653,7 +40990,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		// See https://github.com/marcuswestin/store.js/issues/40
 		// See https://github.com/marcuswestin/store.js/issues/83
 		var forbiddenCharsRegex = new RegExp("[!\"#$%&'()*+,/\\\\:;<=>?@[\\]^`{|}~]", "g")
-		function ieKeyFix(key) {
+		var ieKeyFix = function(key) {
 			return key.replace(/^d/, '___$&').replace(forbiddenCharsRegex, '___')
 		}
 		store.set = withIEStorage(function(storage, key, val) {
@@ -40676,8 +41013,8 @@ return /******/ (function(modules) { // webpackBootstrap
 		store.clear = withIEStorage(function(storage) {
 			var attributes = storage.XMLDocument.documentElement.attributes
 			storage.load(localStorageName)
-			for (var i=0, attr; attr=attributes[i]; i++) {
-				storage.removeAttribute(attr.name)
+			for (var i=attributes.length-1; i>=0; i--) {
+				storage.removeAttribute(attributes[i].name)
 			}
 			storage.save(localStorageName)
 		})
@@ -40705,20 +41042,17 @@ return /******/ (function(modules) { // webpackBootstrap
 		store.disabled = true
 	}
 	store.enabled = !store.disabled
-
-	if (typeof module != 'undefined' && module.exports && this.module !== module) { module.exports = store }
-	else if (typeof define === 'function' && define.amd) { define(store) }
-	else { win.store = store }
-
-})(Function('return this')());
+	
+	return store
+}));
 
 ;//! moment.js
-//! version : 2.10.6
+//! version : 2.11.2
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
 //! license : MIT
 //! momentjs.com
 
-(function (global, factory) {
+;(function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
     typeof define === 'function' && define.amd ? define(factory) :
     global.moment = factory()
@@ -40835,39 +41169,45 @@ return /******/ (function(modules) { // webpackBootstrap
         return m;
     }
 
+    function isUndefined(input) {
+        return input === void 0;
+    }
+
+    // Plugins that add properties should also add the key here (null value),
+    // so we can properly clone ourselves.
     var momentProperties = utils_hooks__hooks.momentProperties = [];
 
     function copyConfig(to, from) {
         var i, prop, val;
 
-        if (typeof from._isAMomentObject !== 'undefined') {
+        if (!isUndefined(from._isAMomentObject)) {
             to._isAMomentObject = from._isAMomentObject;
         }
-        if (typeof from._i !== 'undefined') {
+        if (!isUndefined(from._i)) {
             to._i = from._i;
         }
-        if (typeof from._f !== 'undefined') {
+        if (!isUndefined(from._f)) {
             to._f = from._f;
         }
-        if (typeof from._l !== 'undefined') {
+        if (!isUndefined(from._l)) {
             to._l = from._l;
         }
-        if (typeof from._strict !== 'undefined') {
+        if (!isUndefined(from._strict)) {
             to._strict = from._strict;
         }
-        if (typeof from._tzm !== 'undefined') {
+        if (!isUndefined(from._tzm)) {
             to._tzm = from._tzm;
         }
-        if (typeof from._isUTC !== 'undefined') {
+        if (!isUndefined(from._isUTC)) {
             to._isUTC = from._isUTC;
         }
-        if (typeof from._offset !== 'undefined') {
+        if (!isUndefined(from._offset)) {
             to._offset = from._offset;
         }
-        if (typeof from._pf !== 'undefined') {
+        if (!isUndefined(from._pf)) {
             to._pf = getParsingFlags(from);
         }
-        if (typeof from._locale !== 'undefined') {
+        if (!isUndefined(from._locale)) {
             to._locale = from._locale;
         }
 
@@ -40875,7 +41215,7 @@ return /******/ (function(modules) { // webpackBootstrap
             for (i in momentProperties) {
                 prop = momentProperties[i];
                 val = from[prop];
-                if (typeof val !== 'undefined') {
+                if (!isUndefined(val)) {
                     to[prop] = val;
                 }
             }
@@ -40922,6 +41262,7 @@ return /******/ (function(modules) { // webpackBootstrap
         return value;
     }
 
+    // compare two arrays, return the number of differences
     function compareArrays(array1, array2, dontConvert) {
         var len = Math.min(array1.length, array2.length),
             lengthDiff = Math.abs(array1.length - array2.length),
@@ -40939,6 +41280,7 @@ return /******/ (function(modules) { // webpackBootstrap
     function Locale() {
     }
 
+    // internal storage for locale config files
     var locales = {};
     var globalLocale;
 
@@ -40976,7 +41318,7 @@ return /******/ (function(modules) { // webpackBootstrap
     function loadLocale(name) {
         var oldLocale = null;
         // TODO: Find a better way to register and load all the locales in Node
-        if (!locales[name] && typeof module !== 'undefined' &&
+        if (!locales[name] && (typeof module !== 'undefined') &&
                 module && module.exports) {
             try {
                 oldLocale = globalLocale._abbr;
@@ -40995,7 +41337,7 @@ return /******/ (function(modules) { // webpackBootstrap
     function locale_locales__getSetGlobalLocale (key, values) {
         var data;
         if (key) {
-            if (typeof values === 'undefined') {
+            if (isUndefined(values)) {
                 data = locale_locales__getLocale(key);
             }
             else {
@@ -41080,6 +41422,10 @@ return /******/ (function(modules) { // webpackBootstrap
         return normalizedInput;
     }
 
+    function isFunction(input) {
+        return input instanceof Function || Object.prototype.toString.call(input) === '[object Function]';
+    }
+
     function makeGetSet (unit, keepTime) {
         return function (value) {
             if (value != null) {
@@ -41093,11 +41439,14 @@ return /******/ (function(modules) { // webpackBootstrap
     }
 
     function get_set__get (mom, unit) {
-        return mom._d['get' + (mom._isUTC ? 'UTC' : '') + unit]();
+        return mom.isValid() ?
+            mom._d['get' + (mom._isUTC ? 'UTC' : '') + unit]() : NaN;
     }
 
     function get_set__set (mom, unit, value) {
-        return mom._d['set' + (mom._isUTC ? 'UTC' : '') + unit](value);
+        if (mom.isValid()) {
+            mom._d['set' + (mom._isUTC ? 'UTC' : '') + unit](value);
+        }
     }
 
     // MOMENTS
@@ -41110,7 +41459,7 @@ return /******/ (function(modules) { // webpackBootstrap
             }
         } else {
             units = normalizeUnits(units);
-            if (typeof this[units] === 'function') {
+            if (isFunction(this[units])) {
                 return this[units](value);
             }
         }
@@ -41125,7 +41474,7 @@ return /******/ (function(modules) { // webpackBootstrap
             Math.pow(10, Math.max(0, zerosToFill)).toString().substr(1) + absNumber;
     }
 
-    var formattingTokens = /(\[[^\[]*\])|(\\)?(Mo|MM?M?M?|Do|DDDo|DD?D?D?|ddd?d?|do?|w[o|w]?|W[o|W]?|Q|YYYYYY|YYYYY|YYYY|YY|gg(ggg?)?|GG(GGG?)?|e|E|a|A|hh?|HH?|mm?|ss?|S{1,9}|x|X|zz?|ZZ?|.)/g;
+    var formattingTokens = /(\[[^\[]*\])|(\\)?([Hh]mm(ss)?|Mo|MM?M?M?|Do|DDDo|DD?D?D?|ddd?d?|do?|w[o|w]?|W[o|W]?|Qo?|YYYYYY|YYYYY|YYYY|YY|gg(ggg?)?|GG(GGG?)?|e|E|a|A|hh?|HH?|mm?|ss?|S{1,9}|x|X|zz?|ZZ?|.)/g;
 
     var localFormattingTokens = /(\[[^\[]*\])|(\\)?(LTS|LT|LL?L?L?|l{1,4})/g;
 
@@ -41221,6 +41570,8 @@ return /******/ (function(modules) { // webpackBootstrap
     var match4         = /\d{4}/;         //    0000 - 9999
     var match6         = /[+-]?\d{6}/;    // -999999 - 999999
     var match1to2      = /\d\d?/;         //       0 - 99
+    var match3to4      = /\d\d\d\d?/;     //     999 - 9999
+    var match5to6      = /\d\d\d\d\d\d?/; //   99999 - 999999
     var match1to3      = /\d{1,3}/;       //       0 - 999
     var match1to4      = /\d{1,4}/;       //       0 - 9999
     var match1to6      = /[+-]?\d{1,6}/;  // -999999 - 999999
@@ -41229,23 +41580,19 @@ return /******/ (function(modules) { // webpackBootstrap
     var matchSigned    = /[+-]?\d+/;      //    -inf - inf
 
     var matchOffset    = /Z|[+-]\d\d:?\d\d/gi; // +00:00 -00:00 +0000 -0000 or Z
+    var matchShortOffset = /Z|[+-]\d\d(?::?\d\d)?/gi; // +00 -00 +00:00 -00:00 +0000 -0000 or Z
 
     var matchTimestamp = /[+-]?\d+(\.\d{1,3})?/; // 123456789 123456789.123
 
     // any word (or two) characters or numbers including two/three word month in arabic.
+    // includes scottish gaelic two word and hyphenated months
     var matchWord = /[0-9]*['a-z\u00A0-\u05FF\u0700-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+|[\u0600-\u06FF\/]+(\s*?[\u0600-\u06FF]+){1,2}/i;
+
 
     var regexes = {};
 
-    function isFunction (sth) {
-        // https://github.com/moment/moment/issues/2325
-        return typeof sth === 'function' &&
-            Object.prototype.toString.call(sth) === '[object Function]';
-    }
-
-
     function addRegexToken (token, regex, strictRegex) {
-        regexes[token] = isFunction(regex) ? regex : function (isStrict) {
+        regexes[token] = isFunction(regex) ? regex : function (isStrict, localeData) {
             return (isStrict && strictRegex) ? strictRegex : regex;
         };
     }
@@ -41260,9 +41607,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
     // Code from http://stackoverflow.com/questions/3561493/is-there-a-regexp-escape-function-in-javascript
     function unescapeFormat(s) {
-        return s.replace('\\', '').replace(/\\(\[)|\\(\])|\[([^\]\[]*)\]|\\(.)/g, function (matched, p1, p2, p3, p4) {
+        return regexEscape(s.replace('\\', '').replace(/\\(\[)|\\(\])|\[([^\]\[]*)\]|\\(.)/g, function (matched, p1, p2, p3, p4) {
             return p1 || p2 || p3 || p4;
-        }).replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        }));
+    }
+
+    function regexEscape(s) {
+        return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
     }
 
     var tokens = {};
@@ -41302,6 +41653,8 @@ return /******/ (function(modules) { // webpackBootstrap
     var MINUTE = 4;
     var SECOND = 5;
     var MILLISECOND = 6;
+    var WEEK = 7;
+    var WEEKDAY = 8;
 
     function daysInMonth(year, month) {
         return new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
@@ -41329,8 +41682,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
     addRegexToken('M',    match1to2);
     addRegexToken('MM',   match1to2, match2);
-    addRegexToken('MMM',  matchWord);
-    addRegexToken('MMMM', matchWord);
+    addRegexToken('MMM',  function (isStrict, locale) {
+        return locale.monthsShortRegex(isStrict);
+    });
+    addRegexToken('MMMM', function (isStrict, locale) {
+        return locale.monthsRegex(isStrict);
+    });
 
     addParseToken(['M', 'MM'], function (input, array) {
         array[MONTH] = toInt(input) - 1;
@@ -41348,14 +41705,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
     // LOCALES
 
+    var MONTHS_IN_FORMAT = /D[oD]?(\[[^\[\]]*\]|\s+)+MMMM?/;
     var defaultLocaleMonths = 'January_February_March_April_May_June_July_August_September_October_November_December'.split('_');
-    function localeMonths (m) {
-        return this._months[m.month()];
+    function localeMonths (m, format) {
+        return isArray(this._months) ? this._months[m.month()] :
+            this._months[MONTHS_IN_FORMAT.test(format) ? 'format' : 'standalone'][m.month()];
     }
 
     var defaultLocaleMonthsShort = 'Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec'.split('_');
-    function localeMonthsShort (m) {
-        return this._monthsShort[m.month()];
+    function localeMonthsShort (m, format) {
+        return isArray(this._monthsShort) ? this._monthsShort[m.month()] :
+            this._monthsShort[MONTHS_IN_FORMAT.test(format) ? 'format' : 'standalone'][m.month()];
     }
 
     function localeMonthsParse (monthName, format, strict) {
@@ -41394,6 +41754,11 @@ return /******/ (function(modules) { // webpackBootstrap
     function setMonth (mom, value) {
         var dayOfMonth;
 
+        if (!mom.isValid()) {
+            // No op
+            return mom;
+        }
+
         // TODO: Move this out of here!
         if (typeof value === 'string') {
             value = mom.localeData().monthsParse(value);
@@ -41422,6 +41787,72 @@ return /******/ (function(modules) { // webpackBootstrap
         return daysInMonth(this.year(), this.month());
     }
 
+    var defaultMonthsShortRegex = matchWord;
+    function monthsShortRegex (isStrict) {
+        if (this._monthsParseExact) {
+            if (!hasOwnProp(this, '_monthsRegex')) {
+                computeMonthsParse.call(this);
+            }
+            if (isStrict) {
+                return this._monthsShortStrictRegex;
+            } else {
+                return this._monthsShortRegex;
+            }
+        } else {
+            return this._monthsShortStrictRegex && isStrict ?
+                this._monthsShortStrictRegex : this._monthsShortRegex;
+        }
+    }
+
+    var defaultMonthsRegex = matchWord;
+    function monthsRegex (isStrict) {
+        if (this._monthsParseExact) {
+            if (!hasOwnProp(this, '_monthsRegex')) {
+                computeMonthsParse.call(this);
+            }
+            if (isStrict) {
+                return this._monthsStrictRegex;
+            } else {
+                return this._monthsRegex;
+            }
+        } else {
+            return this._monthsStrictRegex && isStrict ?
+                this._monthsStrictRegex : this._monthsRegex;
+        }
+    }
+
+    function computeMonthsParse () {
+        function cmpLenRev(a, b) {
+            return b.length - a.length;
+        }
+
+        var shortPieces = [], longPieces = [], mixedPieces = [],
+            i, mom;
+        for (i = 0; i < 12; i++) {
+            // make the regex if we don't have it already
+            mom = create_utc__createUTC([2000, i]);
+            shortPieces.push(this.monthsShort(mom, ''));
+            longPieces.push(this.months(mom, ''));
+            mixedPieces.push(this.months(mom, ''));
+            mixedPieces.push(this.monthsShort(mom, ''));
+        }
+        // Sorting makes sure if one month (or abbr) is a prefix of another it
+        // will match the longer piece.
+        shortPieces.sort(cmpLenRev);
+        longPieces.sort(cmpLenRev);
+        mixedPieces.sort(cmpLenRev);
+        for (i = 0; i < 12; i++) {
+            shortPieces[i] = regexEscape(shortPieces[i]);
+            longPieces[i] = regexEscape(longPieces[i]);
+            mixedPieces[i] = regexEscape(mixedPieces[i]);
+        }
+
+        this._monthsRegex = new RegExp('^(' + mixedPieces.join('|') + ')', 'i');
+        this._monthsShortRegex = this._monthsRegex;
+        this._monthsStrictRegex = new RegExp('^(' + longPieces.join('|') + ')$', 'i');
+        this._monthsShortStrictRegex = new RegExp('^(' + shortPieces.join('|') + ')$', 'i');
+    }
+
     function checkOverflow (m) {
         var overflow;
         var a = m._a;
@@ -41439,6 +41870,12 @@ return /******/ (function(modules) { // webpackBootstrap
             if (getParsingFlags(m)._overflowDayOfYear && (overflow < YEAR || overflow > DATE)) {
                 overflow = DATE;
             }
+            if (getParsingFlags(m)._overflowWeeks && overflow === -1) {
+                overflow = WEEK;
+            }
+            if (getParsingFlags(m)._overflowWeekday && overflow === -1) {
+                overflow = WEEKDAY;
+            }
 
             getParsingFlags(m).overflow = overflow;
         }
@@ -41447,7 +41884,8 @@ return /******/ (function(modules) { // webpackBootstrap
     }
 
     function warn(msg) {
-        if (utils_hooks__hooks.suppressDeprecationWarnings === false && typeof console !== 'undefined' && console.warn) {
+        if (utils_hooks__hooks.suppressDeprecationWarnings === false &&
+                (typeof console !==  'undefined') && console.warn) {
             console.warn('Deprecation warning: ' + msg);
         }
     }
@@ -41457,7 +41895,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
         return extend(function () {
             if (firstTime) {
-                warn(msg + '\n' + (new Error()).stack);
+                warn(msg + '\nArguments: ' + Array.prototype.slice.call(arguments).join(', ') + '\n' + (new Error()).stack);
                 firstTime = false;
             }
             return fn.apply(this, arguments);
@@ -41475,22 +41913,39 @@ return /******/ (function(modules) { // webpackBootstrap
 
     utils_hooks__hooks.suppressDeprecationWarnings = false;
 
-    var from_string__isoRegex = /^\s*(?:[+-]\d{6}|\d{4})-(?:(\d\d-\d\d)|(W\d\d$)|(W\d\d-\d)|(\d\d\d))((T| )(\d\d(:\d\d(:\d\d(\.\d+)?)?)?)?([\+\-]\d\d(?::?\d\d)?|\s*Z)?)?$/;
+    // iso 8601 regex
+    // 0000-00-00 0000-W00 or 0000-W00-0 + T + 00 or 00:00 or 00:00:00 or 00:00:00.000 + +00:00 or +0000 or +00)
+    var extendedIsoRegex = /^\s*((?:[+-]\d{6}|\d{4})-(?:\d\d-\d\d|W\d\d-\d|W\d\d|\d\d\d|\d\d))(?:(T| )(\d\d(?::\d\d(?::\d\d(?:[.,]\d+)?)?)?)([\+\-]\d\d(?::?\d\d)?|\s*Z)?)?/;
+    var basicIsoRegex = /^\s*((?:[+-]\d{6}|\d{4})(?:\d\d\d\d|W\d\d\d|W\d\d|\d\d\d|\d\d))(?:(T| )(\d\d(?:\d\d(?:\d\d(?:[.,]\d+)?)?)?)([\+\-]\d\d(?::?\d\d)?|\s*Z)?)?/;
+
+    var tzRegex = /Z|[+-]\d\d(?::?\d\d)?/;
 
     var isoDates = [
-        ['YYYYYY-MM-DD', /[+-]\d{6}-\d{2}-\d{2}/],
-        ['YYYY-MM-DD', /\d{4}-\d{2}-\d{2}/],
-        ['GGGG-[W]WW-E', /\d{4}-W\d{2}-\d/],
-        ['GGGG-[W]WW', /\d{4}-W\d{2}/],
-        ['YYYY-DDD', /\d{4}-\d{3}/]
+        ['YYYYYY-MM-DD', /[+-]\d{6}-\d\d-\d\d/],
+        ['YYYY-MM-DD', /\d{4}-\d\d-\d\d/],
+        ['GGGG-[W]WW-E', /\d{4}-W\d\d-\d/],
+        ['GGGG-[W]WW', /\d{4}-W\d\d/, false],
+        ['YYYY-DDD', /\d{4}-\d{3}/],
+        ['YYYY-MM', /\d{4}-\d\d/, false],
+        ['YYYYYYMMDD', /[+-]\d{10}/],
+        ['YYYYMMDD', /\d{8}/],
+        // YYYYMM is NOT allowed by the standard
+        ['GGGG[W]WWE', /\d{4}W\d{3}/],
+        ['GGGG[W]WW', /\d{4}W\d{2}/, false],
+        ['YYYYDDD', /\d{7}/]
     ];
 
     // iso time formats and regexes
     var isoTimes = [
-        ['HH:mm:ss.SSSS', /(T| )\d\d:\d\d:\d\d\.\d+/],
-        ['HH:mm:ss', /(T| )\d\d:\d\d:\d\d/],
-        ['HH:mm', /(T| )\d\d:\d\d/],
-        ['HH', /(T| )\d\d/]
+        ['HH:mm:ss.SSSS', /\d\d:\d\d:\d\d\.\d+/],
+        ['HH:mm:ss,SSSS', /\d\d:\d\d:\d\d,\d+/],
+        ['HH:mm:ss', /\d\d:\d\d:\d\d/],
+        ['HH:mm', /\d\d:\d\d/],
+        ['HHmmss.SSSS', /\d\d\d\d\d\d\.\d+/],
+        ['HHmmss,SSSS', /\d\d\d\d\d\d,\d+/],
+        ['HHmmss', /\d\d\d\d\d\d/],
+        ['HHmm', /\d\d\d\d/],
+        ['HH', /\d\d/]
     ];
 
     var aspNetJsonRegex = /^\/?Date\((\-?\d+)/i;
@@ -41499,26 +41954,49 @@ return /******/ (function(modules) { // webpackBootstrap
     function configFromISO(config) {
         var i, l,
             string = config._i,
-            match = from_string__isoRegex.exec(string);
+            match = extendedIsoRegex.exec(string) || basicIsoRegex.exec(string),
+            allowTime, dateFormat, timeFormat, tzFormat;
 
         if (match) {
             getParsingFlags(config).iso = true;
+
             for (i = 0, l = isoDates.length; i < l; i++) {
-                if (isoDates[i][1].exec(string)) {
-                    config._f = isoDates[i][0];
+                if (isoDates[i][1].exec(match[1])) {
+                    dateFormat = isoDates[i][0];
+                    allowTime = isoDates[i][2] !== false;
                     break;
                 }
             }
-            for (i = 0, l = isoTimes.length; i < l; i++) {
-                if (isoTimes[i][1].exec(string)) {
-                    // match[6] should be 'T' or space
-                    config._f += (match[6] || ' ') + isoTimes[i][0];
-                    break;
+            if (dateFormat == null) {
+                config._isValid = false;
+                return;
+            }
+            if (match[3]) {
+                for (i = 0, l = isoTimes.length; i < l; i++) {
+                    if (isoTimes[i][1].exec(match[3])) {
+                        // match[2] should be 'T' or space
+                        timeFormat = (match[2] || ' ') + isoTimes[i][0];
+                        break;
+                    }
+                }
+                if (timeFormat == null) {
+                    config._isValid = false;
+                    return;
                 }
             }
-            if (string.match(matchOffset)) {
-                config._f += 'Z';
+            if (!allowTime && timeFormat != null) {
+                config._isValid = false;
+                return;
             }
+            if (match[4]) {
+                if (tzRegex.exec(match[4])) {
+                    tzFormat = 'Z';
+                } else {
+                    config._isValid = false;
+                    return;
+                }
+            }
+            config._f = dateFormat + (timeFormat || '') + (tzFormat || '');
             configFromStringAndFormat(config);
         } else {
             config._isValid = false;
@@ -41556,8 +42034,8 @@ return /******/ (function(modules) { // webpackBootstrap
         //http://stackoverflow.com/questions/181348/instantiating-a-javascript-object-by-calling-prototype-constructor-apply
         var date = new Date(y, m, d, h, M, s, ms);
 
-        //the date constructor doesn't accept years < 1970
-        if (y < 1970) {
+        //the date constructor remaps years 0-99 to 1900-1999
+        if (y < 100 && y >= 0 && isFinite(date.getFullYear())) {
             date.setFullYear(y);
         }
         return date;
@@ -41565,11 +42043,20 @@ return /******/ (function(modules) { // webpackBootstrap
 
     function createUTCDate (y) {
         var date = new Date(Date.UTC.apply(null, arguments));
-        if (y < 1970) {
+
+        //the Date.UTC function remaps years 0-99 to 1900-1999
+        if (y < 100 && y >= 0 && isFinite(date.getUTCFullYear())) {
             date.setUTCFullYear(y);
         }
         return date;
     }
+
+    // FORMATTING
+
+    addFormatToken('Y', 0, 0, function () {
+        var y = this.year();
+        return y <= 9999 ? '' + y : '+' + y;
+    });
 
     addFormatToken(0, ['YY', 2], 0, function () {
         return this.year() % 100;
@@ -41598,6 +42085,9 @@ return /******/ (function(modules) { // webpackBootstrap
     addParseToken('YY', function (input, array) {
         array[YEAR] = utils_hooks__hooks.parseTwoDigitYear(input);
     });
+    addParseToken('Y', function (input, array) {
+        array[YEAR] = parseInt(input, 10);
+    });
 
     // HELPERS
 
@@ -41623,124 +42113,66 @@ return /******/ (function(modules) { // webpackBootstrap
         return isLeapYear(this.year());
     }
 
-    addFormatToken('w', ['ww', 2], 'wo', 'week');
-    addFormatToken('W', ['WW', 2], 'Wo', 'isoWeek');
+    // start-of-first-week - start-of-year
+    function firstWeekOffset(year, dow, doy) {
+        var // first-week day -- which january is always in the first week (4 for iso, 1 for other)
+            fwd = 7 + dow - doy,
+            // first-week day local weekday -- which local weekday is fwd
+            fwdlw = (7 + createUTCDate(year, 0, fwd).getUTCDay() - dow) % 7;
 
-    // ALIASES
-
-    addUnitAlias('week', 'w');
-    addUnitAlias('isoWeek', 'W');
-
-    // PARSING
-
-    addRegexToken('w',  match1to2);
-    addRegexToken('ww', match1to2, match2);
-    addRegexToken('W',  match1to2);
-    addRegexToken('WW', match1to2, match2);
-
-    addWeekParseToken(['w', 'ww', 'W', 'WW'], function (input, week, config, token) {
-        week[token.substr(0, 1)] = toInt(input);
-    });
-
-    // HELPERS
-
-    // firstDayOfWeek       0 = sun, 6 = sat
-    //                      the day of the week that starts the week
-    //                      (usually sunday or monday)
-    // firstDayOfWeekOfYear 0 = sun, 6 = sat
-    //                      the first week is the week that contains the first
-    //                      of this day of the week
-    //                      (eg. ISO weeks use thursday (4))
-    function weekOfYear(mom, firstDayOfWeek, firstDayOfWeekOfYear) {
-        var end = firstDayOfWeekOfYear - firstDayOfWeek,
-            daysToDayOfWeek = firstDayOfWeekOfYear - mom.day(),
-            adjustedMoment;
-
-
-        if (daysToDayOfWeek > end) {
-            daysToDayOfWeek -= 7;
-        }
-
-        if (daysToDayOfWeek < end - 7) {
-            daysToDayOfWeek += 7;
-        }
-
-        adjustedMoment = local__createLocal(mom).add(daysToDayOfWeek, 'd');
-        return {
-            week: Math.ceil(adjustedMoment.dayOfYear() / 7),
-            year: adjustedMoment.year()
-        };
+        return -fwdlw + fwd - 1;
     }
-
-    // LOCALES
-
-    function localeWeek (mom) {
-        return weekOfYear(mom, this._week.dow, this._week.doy).week;
-    }
-
-    var defaultLocaleWeek = {
-        dow : 0, // Sunday is the first day of the week.
-        doy : 6  // The week that contains Jan 1st is the first week of the year.
-    };
-
-    function localeFirstDayOfWeek () {
-        return this._week.dow;
-    }
-
-    function localeFirstDayOfYear () {
-        return this._week.doy;
-    }
-
-    // MOMENTS
-
-    function getSetWeek (input) {
-        var week = this.localeData().week(this);
-        return input == null ? week : this.add((input - week) * 7, 'd');
-    }
-
-    function getSetISOWeek (input) {
-        var week = weekOfYear(this, 1, 4).week;
-        return input == null ? week : this.add((input - week) * 7, 'd');
-    }
-
-    addFormatToken('DDD', ['DDDD', 3], 'DDDo', 'dayOfYear');
-
-    // ALIASES
-
-    addUnitAlias('dayOfYear', 'DDD');
-
-    // PARSING
-
-    addRegexToken('DDD',  match1to3);
-    addRegexToken('DDDD', match3);
-    addParseToken(['DDD', 'DDDD'], function (input, array, config) {
-        config._dayOfYear = toInt(input);
-    });
-
-    // HELPERS
 
     //http://en.wikipedia.org/wiki/ISO_week_date#Calculating_a_date_given_the_year.2C_week_number_and_weekday
-    function dayOfYearFromWeeks(year, week, weekday, firstDayOfWeekOfYear, firstDayOfWeek) {
-        var week1Jan = 6 + firstDayOfWeek - firstDayOfWeekOfYear, janX = createUTCDate(year, 0, 1 + week1Jan), d = janX.getUTCDay(), dayOfYear;
-        if (d < firstDayOfWeek) {
-            d += 7;
+    function dayOfYearFromWeeks(year, week, weekday, dow, doy) {
+        var localWeekday = (7 + weekday - dow) % 7,
+            weekOffset = firstWeekOffset(year, dow, doy),
+            dayOfYear = 1 + 7 * (week - 1) + localWeekday + weekOffset,
+            resYear, resDayOfYear;
+
+        if (dayOfYear <= 0) {
+            resYear = year - 1;
+            resDayOfYear = daysInYear(resYear) + dayOfYear;
+        } else if (dayOfYear > daysInYear(year)) {
+            resYear = year + 1;
+            resDayOfYear = dayOfYear - daysInYear(year);
+        } else {
+            resYear = year;
+            resDayOfYear = dayOfYear;
         }
 
-        weekday = weekday != null ? 1 * weekday : firstDayOfWeek;
-
-        dayOfYear = 1 + week1Jan + 7 * (week - 1) - d + weekday;
-
         return {
-            year: dayOfYear > 0 ? year : year - 1,
-            dayOfYear: dayOfYear > 0 ?  dayOfYear : daysInYear(year - 1) + dayOfYear
+            year: resYear,
+            dayOfYear: resDayOfYear
         };
     }
 
-    // MOMENTS
+    function weekOfYear(mom, dow, doy) {
+        var weekOffset = firstWeekOffset(mom.year(), dow, doy),
+            week = Math.floor((mom.dayOfYear() - weekOffset - 1) / 7) + 1,
+            resWeek, resYear;
 
-    function getSetDayOfYear (input) {
-        var dayOfYear = Math.round((this.clone().startOf('day') - this.clone().startOf('year')) / 864e5) + 1;
-        return input == null ? dayOfYear : this.add((input - dayOfYear), 'd');
+        if (week < 1) {
+            resYear = mom.year() - 1;
+            resWeek = week + weeksInYear(resYear, dow, doy);
+        } else if (week > weeksInYear(mom.year(), dow, doy)) {
+            resWeek = week - weeksInYear(mom.year(), dow, doy);
+            resYear = mom.year() + 1;
+        } else {
+            resYear = mom.year();
+            resWeek = week;
+        }
+
+        return {
+            week: resWeek,
+            year: resYear
+        };
+    }
+
+    function weeksInYear(year, dow, doy) {
+        var weekOffset = firstWeekOffset(year, dow, doy),
+            weekOffsetNext = firstWeekOffset(year + 1, dow, doy);
+        return (daysInYear(year) - weekOffset + weekOffsetNext) / 7;
     }
 
     // Pick the first defined of two or three arguments.
@@ -41755,11 +42187,12 @@ return /******/ (function(modules) { // webpackBootstrap
     }
 
     function currentDateArray(config) {
-        var now = new Date();
+        // hooks is actually the exported moment object
+        var nowValue = new Date(utils_hooks__hooks.now());
         if (config._useUTC) {
-            return [now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()];
+            return [nowValue.getUTCFullYear(), nowValue.getUTCMonth(), nowValue.getUTCDate()];
         }
-        return [now.getFullYear(), now.getMonth(), now.getDate()];
+        return [nowValue.getFullYear(), nowValue.getMonth(), nowValue.getDate()];
     }
 
     // convert an array to a date.
@@ -41829,7 +42262,7 @@ return /******/ (function(modules) { // webpackBootstrap
     }
 
     function dayOfYearFromWeekInfo(config) {
-        var w, weekYear, week, weekday, dow, doy, temp;
+        var w, weekYear, week, weekday, dow, doy, temp, weekdayOverflow;
 
         w = config._w;
         if (w.GG != null || w.W != null || w.E != null) {
@@ -41843,6 +42276,9 @@ return /******/ (function(modules) { // webpackBootstrap
             weekYear = defaults(w.GG, config._a[YEAR], weekOfYear(local__createLocal(), 1, 4).year);
             week = defaults(w.W, 1);
             weekday = defaults(w.E, 1);
+            if (weekday < 1 || weekday > 7) {
+                weekdayOverflow = true;
+            }
         } else {
             dow = config._locale._week.dow;
             doy = config._locale._week.doy;
@@ -41853,23 +42289,32 @@ return /******/ (function(modules) { // webpackBootstrap
             if (w.d != null) {
                 // weekday -- low day numbers are considered next week
                 weekday = w.d;
-                if (weekday < dow) {
-                    ++week;
+                if (weekday < 0 || weekday > 6) {
+                    weekdayOverflow = true;
                 }
             } else if (w.e != null) {
                 // local weekday -- counting starts from begining of week
                 weekday = w.e + dow;
+                if (w.e < 0 || w.e > 6) {
+                    weekdayOverflow = true;
+                }
             } else {
                 // default to begining of week
                 weekday = dow;
             }
         }
-        temp = dayOfYearFromWeeks(weekYear, week, weekday, doy, dow);
-
-        config._a[YEAR] = temp.year;
-        config._dayOfYear = temp.dayOfYear;
+        if (week < 1 || week > weeksInYear(weekYear, dow, doy)) {
+            getParsingFlags(config)._overflowWeeks = true;
+        } else if (weekdayOverflow != null) {
+            getParsingFlags(config)._overflowWeekday = true;
+        } else {
+            temp = dayOfYearFromWeeks(weekYear, week, weekday, dow, doy);
+            config._a[YEAR] = temp.year;
+            config._dayOfYear = temp.dayOfYear;
+        }
     }
 
+    // constant that refers to the ISO standard
     utils_hooks__hooks.ISO_8601 = function () {};
 
     // date from string and format string
@@ -41894,6 +42339,8 @@ return /******/ (function(modules) { // webpackBootstrap
         for (i = 0; i < tokens.length; i++) {
             token = tokens[i];
             parsedInput = (string.match(getParseRegexForToken(token, config)) || [])[0];
+            // console.log('token', token, 'parsedInput', parsedInput,
+            //         'regex', getParseRegexForToken(token, config));
             if (parsedInput) {
                 skipped = string.substr(0, string.indexOf(parsedInput));
                 if (skipped.length > 0) {
@@ -41962,6 +42409,7 @@ return /******/ (function(modules) { // webpackBootstrap
         }
     }
 
+    // date from string and array of format strings
     function configFromStringAndArray(config) {
         var tempConfig,
             bestMoment,
@@ -42012,7 +42460,9 @@ return /******/ (function(modules) { // webpackBootstrap
         }
 
         var i = normalizeObjectUnits(config._i);
-        config._a = [i.year, i.month, i.day || i.date, i.hour, i.minute, i.second, i.millisecond];
+        config._a = map([i.year, i.month, i.day || i.date, i.hour, i.minute, i.second, i.millisecond], function (obj) {
+            return obj && parseInt(obj, 10);
+        });
 
         configFromArray(config);
     }
@@ -42054,13 +42504,17 @@ return /******/ (function(modules) { // webpackBootstrap
             configFromInput(config);
         }
 
+        if (!valid__isValid(config)) {
+            config._d = null;
+        }
+
         return config;
     }
 
     function configFromInput(config) {
         var input = config._i;
         if (input === undefined) {
-            config._d = new Date();
+            config._d = new Date(utils_hooks__hooks.now());
         } else if (isDate(input)) {
             config._d = new Date(+input);
         } else if (typeof input === 'string') {
@@ -42107,7 +42561,11 @@ return /******/ (function(modules) { // webpackBootstrap
          'moment().min is deprecated, use moment.min instead. https://github.com/moment/moment/issues/1548',
          function () {
              var other = local__createLocal.apply(null, arguments);
-             return other < this ? this : other;
+             if (this.isValid() && other.isValid()) {
+                 return other < this ? this : other;
+             } else {
+                 return valid__createInvalid();
+             }
          }
      );
 
@@ -42115,7 +42573,11 @@ return /******/ (function(modules) { // webpackBootstrap
         'moment().max is deprecated, use moment.max instead. https://github.com/moment/moment/issues/1548',
         function () {
             var other = local__createLocal.apply(null, arguments);
-            return other > this ? this : other;
+            if (this.isValid() && other.isValid()) {
+                return other > this ? this : other;
+            } else {
+                return valid__createInvalid();
+            }
         }
     );
 
@@ -42153,6 +42615,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
         return pickBy('isAfter', args);
     }
+
+    var now = function () {
+        return Date.now ? Date.now() : +(new Date());
+    };
 
     function Duration (duration) {
         var normalizedInput = normalizeObjectUnits(duration),
@@ -42193,6 +42659,8 @@ return /******/ (function(modules) { // webpackBootstrap
         return obj instanceof Duration;
     }
 
+    // FORMATTING
+
     function offset (token, separator) {
         addFormatToken(token, 0, 0, function () {
             var offset = this.utcOffset();
@@ -42210,11 +42678,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
     // PARSING
 
-    addRegexToken('Z',  matchOffset);
-    addRegexToken('ZZ', matchOffset);
+    addRegexToken('Z',  matchShortOffset);
+    addRegexToken('ZZ', matchShortOffset);
     addParseToken(['Z', 'ZZ'], function (input, array, config) {
         config._useUTC = true;
-        config._tzm = offsetFromString(input);
+        config._tzm = offsetFromString(matchShortOffset, input);
     });
 
     // HELPERS
@@ -42224,8 +42692,8 @@ return /******/ (function(modules) { // webpackBootstrap
     // '-1530'  > ['-15', '30']
     var chunkOffset = /([\+\-]|\d\d)/gi;
 
-    function offsetFromString(string) {
-        var matches = ((string || '').match(matchOffset) || []);
+    function offsetFromString(matcher, string) {
+        var matches = ((string || '').match(matcher) || []);
         var chunk   = matches[matches.length - 1] || [];
         var parts   = (chunk + '').match(chunkOffset) || ['-', 0, 0];
         var minutes = +(parts[1] * 60) + toInt(parts[2]);
@@ -42275,11 +42743,13 @@ return /******/ (function(modules) { // webpackBootstrap
     function getSetOffset (input, keepLocalTime) {
         var offset = this._offset || 0,
             localAdjust;
+        if (!this.isValid()) {
+            return input != null ? this : NaN;
+        }
         if (input != null) {
             if (typeof input === 'string') {
-                input = offsetFromString(input);
-            }
-            if (Math.abs(input) < 16) {
+                input = offsetFromString(matchShortOffset, input);
+            } else if (Math.abs(input) < 16) {
                 input = input * 60;
             }
             if (!this._isUTC && keepLocalTime) {
@@ -42339,12 +42809,15 @@ return /******/ (function(modules) { // webpackBootstrap
         if (this._tzm) {
             this.utcOffset(this._tzm);
         } else if (typeof this._i === 'string') {
-            this.utcOffset(offsetFromString(this._i));
+            this.utcOffset(offsetFromString(matchOffset, this._i));
         }
         return this;
     }
 
     function hasAlignedHourOffset (input) {
+        if (!this.isValid()) {
+            return false;
+        }
         input = input ? local__createLocal(input).utcOffset() : 0;
 
         return (this.utcOffset() - input) % 60 === 0;
@@ -42358,7 +42831,7 @@ return /******/ (function(modules) { // webpackBootstrap
     }
 
     function isDaylightSavingTimeShifted () {
-        if (typeof this._isDSTShifted !== 'undefined') {
+        if (!isUndefined(this._isDSTShifted)) {
             return this._isDSTShifted;
         }
 
@@ -42379,22 +42852,23 @@ return /******/ (function(modules) { // webpackBootstrap
     }
 
     function isLocal () {
-        return !this._isUTC;
+        return this.isValid() ? !this._isUTC : false;
     }
 
     function isUtcOffset () {
-        return this._isUTC;
+        return this.isValid() ? this._isUTC : false;
     }
 
     function isUtc () {
-        return this._isUTC && this._offset === 0;
+        return this.isValid() ? this._isUTC && this._offset === 0 : false;
     }
 
-    var aspNetRegex = /(\-)?(?:(\d*)\.)?(\d+)\:(\d+)(?:\:(\d+)\.?(\d{3})?)?/;
+    // ASP.NET json date format regex
+    var aspNetRegex = /^(\-)?(?:(\d*)[. ])?(\d+)\:(\d+)(?:\:(\d+)\.?(\d{3})?\d*)?$/;
 
     // from http://docs.closure-library.googlecode.com/git/closure_goog_date_date.js.source.html
     // somewhat more in line with 4.4.3.2 2004 spec, but allows decimal anywhere
-    var create__isoRegex = /^(-)?P(?:(?:([0-9,.]*)Y)?(?:([0-9,.]*)M)?(?:([0-9,.]*)D)?(?:T(?:([0-9,.]*)H)?(?:([0-9,.]*)M)?(?:([0-9,.]*)S)?)?|([0-9,.]*)W)$/;
+    var isoRegex = /^(-)?P(?:(?:([0-9,.]*)Y)?(?:([0-9,.]*)M)?(?:([0-9,.]*)D)?(?:T(?:([0-9,.]*)H)?(?:([0-9,.]*)M)?(?:([0-9,.]*)S)?)?|([0-9,.]*)W)$/;
 
     function create__createDuration (input, key) {
         var duration = input,
@@ -42427,7 +42901,7 @@ return /******/ (function(modules) { // webpackBootstrap
                 s  : toInt(match[SECOND])      * sign,
                 ms : toInt(match[MILLISECOND]) * sign
             };
-        } else if (!!(match = create__isoRegex.exec(input))) {
+        } else if (!!(match = isoRegex.exec(input))) {
             sign = (match[1] === '-') ? -1 : 1;
             duration = {
                 y : parseIso(match[2], sign),
@@ -42484,6 +42958,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
     function momentsDifference(base, other) {
         var res;
+        if (!(base.isValid() && other.isValid())) {
+            return {milliseconds: 0, months: 0};
+        }
+
         other = cloneWithOffset(other, base);
         if (base.isBefore(other)) {
             res = positiveMomentsDifference(base, other);
@@ -42496,6 +42974,7 @@ return /******/ (function(modules) { // webpackBootstrap
         return res;
     }
 
+    // TODO: remove 'name' arg after deprecation is removed
     function createAdder(direction, name) {
         return function (val, period) {
             var dur, tmp;
@@ -42516,6 +42995,12 @@ return /******/ (function(modules) { // webpackBootstrap
         var milliseconds = duration._milliseconds,
             days = duration._days,
             months = duration._months;
+
+        if (!mom.isValid()) {
+            // No op
+            return;
+        }
+
         updateOffset = updateOffset == null ? true : updateOffset;
 
         if (milliseconds) {
@@ -42547,7 +43032,10 @@ return /******/ (function(modules) { // webpackBootstrap
                 diff < 1 ? 'sameDay' :
                 diff < 2 ? 'nextDay' :
                 diff < 7 ? 'nextWeek' : 'sameElse';
-        return this.format(formats && formats[format] || this.localeData().calendar(format, this, local__createLocal(now)));
+
+        var output = formats && (isFunction(formats[format]) ? formats[format]() : formats[format]);
+
+        return this.format(output || this.localeData().calendar(format, this, local__createLocal(now)));
     }
 
     function clone () {
@@ -42555,26 +43043,28 @@ return /******/ (function(modules) { // webpackBootstrap
     }
 
     function isAfter (input, units) {
-        var inputMs;
-        units = normalizeUnits(typeof units !== 'undefined' ? units : 'millisecond');
+        var localInput = isMoment(input) ? input : local__createLocal(input);
+        if (!(this.isValid() && localInput.isValid())) {
+            return false;
+        }
+        units = normalizeUnits(!isUndefined(units) ? units : 'millisecond');
         if (units === 'millisecond') {
-            input = isMoment(input) ? input : local__createLocal(input);
-            return +this > +input;
+            return +this > +localInput;
         } else {
-            inputMs = isMoment(input) ? +input : +local__createLocal(input);
-            return inputMs < +this.clone().startOf(units);
+            return +localInput < +this.clone().startOf(units);
         }
     }
 
     function isBefore (input, units) {
-        var inputMs;
-        units = normalizeUnits(typeof units !== 'undefined' ? units : 'millisecond');
+        var localInput = isMoment(input) ? input : local__createLocal(input);
+        if (!(this.isValid() && localInput.isValid())) {
+            return false;
+        }
+        units = normalizeUnits(!isUndefined(units) ? units : 'millisecond');
         if (units === 'millisecond') {
-            input = isMoment(input) ? input : local__createLocal(input);
-            return +this < +input;
+            return +this < +localInput;
         } else {
-            inputMs = isMoment(input) ? +input : +local__createLocal(input);
-            return +this.clone().endOf(units) < inputMs;
+            return +this.clone().endOf(units) < +localInput;
         }
     }
 
@@ -42583,21 +43073,44 @@ return /******/ (function(modules) { // webpackBootstrap
     }
 
     function isSame (input, units) {
-        var inputMs;
+        var localInput = isMoment(input) ? input : local__createLocal(input),
+            inputMs;
+        if (!(this.isValid() && localInput.isValid())) {
+            return false;
+        }
         units = normalizeUnits(units || 'millisecond');
         if (units === 'millisecond') {
-            input = isMoment(input) ? input : local__createLocal(input);
-            return +this === +input;
+            return +this === +localInput;
         } else {
-            inputMs = +local__createLocal(input);
+            inputMs = +localInput;
             return +(this.clone().startOf(units)) <= inputMs && inputMs <= +(this.clone().endOf(units));
         }
     }
 
+    function isSameOrAfter (input, units) {
+        return this.isSame(input, units) || this.isAfter(input,units);
+    }
+
+    function isSameOrBefore (input, units) {
+        return this.isSame(input, units) || this.isBefore(input,units);
+    }
+
     function diff (input, units, asFloat) {
-        var that = cloneWithOffset(input, this),
-            zoneDelta = (that.utcOffset() - this.utcOffset()) * 6e4,
+        var that,
+            zoneDelta,
             delta, output;
+
+        if (!this.isValid()) {
+            return NaN;
+        }
+
+        that = cloneWithOffset(input, this);
+
+        if (!that.isValid()) {
+            return NaN;
+        }
+
+        zoneDelta = (that.utcOffset() - this.utcOffset()) * 6e4;
 
         units = normalizeUnits(units);
 
@@ -42649,7 +43162,7 @@ return /******/ (function(modules) { // webpackBootstrap
     function moment_format__toISOString () {
         var m = this.clone().utc();
         if (0 < m.year() && m.year() <= 9999) {
-            if ('function' === typeof Date.prototype.toISOString) {
+            if (isFunction(Date.prototype.toISOString)) {
                 // native implementation is ~50x faster, use it when we can
                 return this.toDate().toISOString();
             } else {
@@ -42666,10 +43179,13 @@ return /******/ (function(modules) { // webpackBootstrap
     }
 
     function from (time, withoutSuffix) {
-        if (!this.isValid()) {
+        if (this.isValid() &&
+                ((isMoment(time) && time.isValid()) ||
+                 local__createLocal(time).isValid())) {
+            return create__createDuration({to: this, from: time}).locale(this.locale()).humanize(!withoutSuffix);
+        } else {
             return this.localeData().invalidDate();
         }
-        return create__createDuration({to: this, from: time}).locale(this.locale()).humanize(!withoutSuffix);
     }
 
     function fromNow (withoutSuffix) {
@@ -42677,16 +43193,22 @@ return /******/ (function(modules) { // webpackBootstrap
     }
 
     function to (time, withoutSuffix) {
-        if (!this.isValid()) {
+        if (this.isValid() &&
+                ((isMoment(time) && time.isValid()) ||
+                 local__createLocal(time).isValid())) {
+            return create__createDuration({from: this, to: time}).locale(this.locale()).humanize(!withoutSuffix);
+        } else {
             return this.localeData().invalidDate();
         }
-        return create__createDuration({from: this, to: time}).locale(this.locale()).humanize(!withoutSuffix);
     }
 
     function toNow (withoutSuffix) {
         return this.to(local__createLocal(), withoutSuffix);
     }
 
+    // If passed a locale key, it will set the locale for this
+    // instance.  Otherwise, it will return the locale configuration
+    // variables for this instance.
     function locale (key) {
         var newLocaleData;
 
@@ -42797,6 +43319,11 @@ return /******/ (function(modules) { // webpackBootstrap
         };
     }
 
+    function toJSON () {
+        // JSON.stringify(new Date(NaN)) === 'null'
+        return this.isValid() ? this.toISOString() : 'null';
+    }
+
     function moment_valid__isValid () {
         return valid__isValid(this);
     }
@@ -42808,6 +43335,18 @@ return /******/ (function(modules) { // webpackBootstrap
     function invalidAt () {
         return getParsingFlags(this).overflow;
     }
+
+    function creationData() {
+        return {
+            input: this._i,
+            format: this._f,
+            locale: this._locale,
+            isUTC: this._isUTC,
+            strict: this._strict
+        };
+    }
+
+    // FORMATTING
 
     addFormatToken(0, ['gg', 2], 0, function () {
         return this.weekYear() % 100;
@@ -42850,22 +43389,20 @@ return /******/ (function(modules) { // webpackBootstrap
         week[token] = utils_hooks__hooks.parseTwoDigitYear(input);
     });
 
-    // HELPERS
-
-    function weeksInYear(year, dow, doy) {
-        return weekOfYear(local__createLocal([year, 11, 31 + dow - doy]), dow, doy).week;
-    }
-
     // MOMENTS
 
     function getSetWeekYear (input) {
-        var year = weekOfYear(this, this.localeData()._week.dow, this.localeData()._week.doy).year;
-        return input == null ? year : this.add((input - year), 'y');
+        return getSetWeekYearHelper.call(this,
+                input,
+                this.week(),
+                this.weekday(),
+                this.localeData()._week.dow,
+                this.localeData()._week.doy);
     }
 
     function getSetISOWeekYear (input) {
-        var year = weekOfYear(this, 1, 4).year;
-        return input == null ? year : this.add((input - year), 'y');
+        return getSetWeekYearHelper.call(this,
+                input, this.isoWeek(), this.isoWeekday(), 1, 4);
     }
 
     function getISOWeeksInYear () {
@@ -42877,7 +43414,33 @@ return /******/ (function(modules) { // webpackBootstrap
         return weeksInYear(this.year(), weekInfo.dow, weekInfo.doy);
     }
 
-    addFormatToken('Q', 0, 0, 'quarter');
+    function getSetWeekYearHelper(input, week, weekday, dow, doy) {
+        var weeksTarget;
+        if (input == null) {
+            return weekOfYear(this, dow, doy).year;
+        } else {
+            weeksTarget = weeksInYear(input, dow, doy);
+            if (week > weeksTarget) {
+                week = weeksTarget;
+            }
+            return setWeekAll.call(this, input, week, weekday, dow, doy);
+        }
+    }
+
+    function setWeekAll(weekYear, week, weekday, dow, doy) {
+        var dayOfYearData = dayOfYearFromWeeks(weekYear, week, weekday, dow, doy),
+            date = createUTCDate(dayOfYearData.year, 0, dayOfYearData.dayOfYear);
+
+        // console.log("got", weekYear, week, weekday, "set", date.toISOString());
+        this.year(date.getUTCFullYear());
+        this.month(date.getUTCMonth());
+        this.date(date.getUTCDate());
+        return this;
+    }
+
+    // FORMATTING
+
+    addFormatToken('Q', 0, 'Qo', 'quarter');
 
     // ALIASES
 
@@ -42895,6 +43458,62 @@ return /******/ (function(modules) { // webpackBootstrap
     function getSetQuarter (input) {
         return input == null ? Math.ceil((this.month() + 1) / 3) : this.month((input - 1) * 3 + this.month() % 3);
     }
+
+    // FORMATTING
+
+    addFormatToken('w', ['ww', 2], 'wo', 'week');
+    addFormatToken('W', ['WW', 2], 'Wo', 'isoWeek');
+
+    // ALIASES
+
+    addUnitAlias('week', 'w');
+    addUnitAlias('isoWeek', 'W');
+
+    // PARSING
+
+    addRegexToken('w',  match1to2);
+    addRegexToken('ww', match1to2, match2);
+    addRegexToken('W',  match1to2);
+    addRegexToken('WW', match1to2, match2);
+
+    addWeekParseToken(['w', 'ww', 'W', 'WW'], function (input, week, config, token) {
+        week[token.substr(0, 1)] = toInt(input);
+    });
+
+    // HELPERS
+
+    // LOCALES
+
+    function localeWeek (mom) {
+        return weekOfYear(mom, this._week.dow, this._week.doy).week;
+    }
+
+    var defaultLocaleWeek = {
+        dow : 0, // Sunday is the first day of the week.
+        doy : 6  // The week that contains Jan 1st is the first week of the year.
+    };
+
+    function localeFirstDayOfWeek () {
+        return this._week.dow;
+    }
+
+    function localeFirstDayOfYear () {
+        return this._week.doy;
+    }
+
+    // MOMENTS
+
+    function getSetWeek (input) {
+        var week = this.localeData().week(this);
+        return input == null ? week : this.add((input - week) * 7, 'd');
+    }
+
+    function getSetISOWeek (input) {
+        var week = weekOfYear(this, 1, 4).week;
+        return input == null ? week : this.add((input - week) * 7, 'd');
+    }
+
+    // FORMATTING
 
     addFormatToken('D', ['DD', 2], 'Do', 'date');
 
@@ -42918,6 +43537,8 @@ return /******/ (function(modules) { // webpackBootstrap
     // MOMENTS
 
     var getSetDayOfMonth = makeGetSet('Date', true);
+
+    // FORMATTING
 
     addFormatToken('d', 0, 'do', 'day');
 
@@ -42951,8 +43572,8 @@ return /******/ (function(modules) { // webpackBootstrap
     addRegexToken('ddd',  matchWord);
     addRegexToken('dddd', matchWord);
 
-    addWeekParseToken(['dd', 'ddd', 'dddd'], function (input, week, config) {
-        var weekday = config._locale.weekdaysParse(input);
+    addWeekParseToken(['dd', 'ddd', 'dddd'], function (input, week, config, token) {
+        var weekday = config._locale.weekdaysParse(input, token, config._strict);
         // if we didn't get a weekday name, mark the date as invalid
         if (weekday != null) {
             week.d = weekday;
@@ -42987,8 +43608,9 @@ return /******/ (function(modules) { // webpackBootstrap
     // LOCALES
 
     var defaultLocaleWeekdays = 'Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday'.split('_');
-    function localeWeekdays (m) {
-        return this._weekdays[m.day()];
+    function localeWeekdays (m, format) {
+        return isArray(this._weekdays) ? this._weekdays[m.day()] :
+            this._weekdays[this._weekdays.isFormat.test(format) ? 'format' : 'standalone'][m.day()];
     }
 
     var defaultLocaleWeekdaysShort = 'Sun_Mon_Tue_Wed_Thu_Fri_Sat'.split('_');
@@ -43001,20 +43623,37 @@ return /******/ (function(modules) { // webpackBootstrap
         return this._weekdaysMin[m.day()];
     }
 
-    function localeWeekdaysParse (weekdayName) {
+    function localeWeekdaysParse (weekdayName, format, strict) {
         var i, mom, regex;
 
-        this._weekdaysParse = this._weekdaysParse || [];
+        if (!this._weekdaysParse) {
+            this._weekdaysParse = [];
+            this._minWeekdaysParse = [];
+            this._shortWeekdaysParse = [];
+            this._fullWeekdaysParse = [];
+        }
 
         for (i = 0; i < 7; i++) {
             // make the regex if we don't have it already
+
+            mom = local__createLocal([2000, 1]).day(i);
+            if (strict && !this._fullWeekdaysParse[i]) {
+                this._fullWeekdaysParse[i] = new RegExp('^' + this.weekdays(mom, '').replace('.', '\.?') + '$', 'i');
+                this._shortWeekdaysParse[i] = new RegExp('^' + this.weekdaysShort(mom, '').replace('.', '\.?') + '$', 'i');
+                this._minWeekdaysParse[i] = new RegExp('^' + this.weekdaysMin(mom, '').replace('.', '\.?') + '$', 'i');
+            }
             if (!this._weekdaysParse[i]) {
-                mom = local__createLocal([2000, 1]).day(i);
                 regex = '^' + this.weekdays(mom, '') + '|^' + this.weekdaysShort(mom, '') + '|^' + this.weekdaysMin(mom, '');
                 this._weekdaysParse[i] = new RegExp(regex.replace('.', ''), 'i');
             }
             // test the regex
-            if (this._weekdaysParse[i].test(weekdayName)) {
+            if (strict && format === 'dddd' && this._fullWeekdaysParse[i].test(weekdayName)) {
+                return i;
+            } else if (strict && format === 'ddd' && this._shortWeekdaysParse[i].test(weekdayName)) {
+                return i;
+            } else if (strict && format === 'dd' && this._minWeekdaysParse[i].test(weekdayName)) {
+                return i;
+            } else if (!strict && this._weekdaysParse[i].test(weekdayName)) {
                 return i;
             }
         }
@@ -43023,6 +43662,9 @@ return /******/ (function(modules) { // webpackBootstrap
     // MOMENTS
 
     function getSetDayOfWeek (input) {
+        if (!this.isValid()) {
+            return input != null ? this : NaN;
+        }
         var day = this._isUTC ? this._d.getUTCDay() : this._d.getDay();
         if (input != null) {
             input = parseWeekday(input, this.localeData());
@@ -43033,20 +43675,73 @@ return /******/ (function(modules) { // webpackBootstrap
     }
 
     function getSetLocaleDayOfWeek (input) {
+        if (!this.isValid()) {
+            return input != null ? this : NaN;
+        }
         var weekday = (this.day() + 7 - this.localeData()._week.dow) % 7;
         return input == null ? weekday : this.add(input - weekday, 'd');
     }
 
     function getSetISODayOfWeek (input) {
+        if (!this.isValid()) {
+            return input != null ? this : NaN;
+        }
         // behaves the same as moment#day except
         // as a getter, returns 7 instead of 0 (1-7 range instead of 0-6)
         // as a setter, sunday should belong to the previous week.
         return input == null ? this.day() || 7 : this.day(this.day() % 7 ? input : input - 7);
     }
 
-    addFormatToken('H', ['HH', 2], 0, 'hour');
-    addFormatToken('h', ['hh', 2], 0, function () {
+    // FORMATTING
+
+    addFormatToken('DDD', ['DDDD', 3], 'DDDo', 'dayOfYear');
+
+    // ALIASES
+
+    addUnitAlias('dayOfYear', 'DDD');
+
+    // PARSING
+
+    addRegexToken('DDD',  match1to3);
+    addRegexToken('DDDD', match3);
+    addParseToken(['DDD', 'DDDD'], function (input, array, config) {
+        config._dayOfYear = toInt(input);
+    });
+
+    // HELPERS
+
+    // MOMENTS
+
+    function getSetDayOfYear (input) {
+        var dayOfYear = Math.round((this.clone().startOf('day') - this.clone().startOf('year')) / 864e5) + 1;
+        return input == null ? dayOfYear : this.add((input - dayOfYear), 'd');
+    }
+
+    // FORMATTING
+
+    function hFormat() {
         return this.hours() % 12 || 12;
+    }
+
+    addFormatToken('H', ['HH', 2], 0, 'hour');
+    addFormatToken('h', ['hh', 2], 0, hFormat);
+
+    addFormatToken('hmm', 0, 0, function () {
+        return '' + hFormat.apply(this) + zeroFill(this.minutes(), 2);
+    });
+
+    addFormatToken('hmmss', 0, 0, function () {
+        return '' + hFormat.apply(this) + zeroFill(this.minutes(), 2) +
+            zeroFill(this.seconds(), 2);
+    });
+
+    addFormatToken('Hmm', 0, 0, function () {
+        return '' + this.hours() + zeroFill(this.minutes(), 2);
+    });
+
+    addFormatToken('Hmmss', 0, 0, function () {
+        return '' + this.hours() + zeroFill(this.minutes(), 2) +
+            zeroFill(this.seconds(), 2);
     });
 
     function meridiem (token, lowercase) {
@@ -43075,6 +43770,11 @@ return /******/ (function(modules) { // webpackBootstrap
     addRegexToken('HH', match1to2, match2);
     addRegexToken('hh', match1to2, match2);
 
+    addRegexToken('hmm', match3to4);
+    addRegexToken('hmmss', match5to6);
+    addRegexToken('Hmm', match3to4);
+    addRegexToken('Hmmss', match5to6);
+
     addParseToken(['H', 'HH'], HOUR);
     addParseToken(['a', 'A'], function (input, array, config) {
         config._isPm = config._locale.isPM(input);
@@ -43083,6 +43783,32 @@ return /******/ (function(modules) { // webpackBootstrap
     addParseToken(['h', 'hh'], function (input, array, config) {
         array[HOUR] = toInt(input);
         getParsingFlags(config).bigHour = true;
+    });
+    addParseToken('hmm', function (input, array, config) {
+        var pos = input.length - 2;
+        array[HOUR] = toInt(input.substr(0, pos));
+        array[MINUTE] = toInt(input.substr(pos));
+        getParsingFlags(config).bigHour = true;
+    });
+    addParseToken('hmmss', function (input, array, config) {
+        var pos1 = input.length - 4;
+        var pos2 = input.length - 2;
+        array[HOUR] = toInt(input.substr(0, pos1));
+        array[MINUTE] = toInt(input.substr(pos1, 2));
+        array[SECOND] = toInt(input.substr(pos2));
+        getParsingFlags(config).bigHour = true;
+    });
+    addParseToken('Hmm', function (input, array, config) {
+        var pos = input.length - 2;
+        array[HOUR] = toInt(input.substr(0, pos));
+        array[MINUTE] = toInt(input.substr(pos));
+    });
+    addParseToken('Hmmss', function (input, array, config) {
+        var pos1 = input.length - 4;
+        var pos2 = input.length - 2;
+        array[HOUR] = toInt(input.substr(0, pos1));
+        array[MINUTE] = toInt(input.substr(pos1, 2));
+        array[SECOND] = toInt(input.substr(pos2));
     });
 
     // LOCALES
@@ -43111,6 +43837,8 @@ return /******/ (function(modules) { // webpackBootstrap
     // this rule.
     var getSetHour = makeGetSet('Hours', true);
 
+    // FORMATTING
+
     addFormatToken('m', ['mm', 2], 0, 'minute');
 
     // ALIASES
@@ -43127,6 +43855,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
     var getSetMinute = makeGetSet('Minutes', false);
 
+    // FORMATTING
+
     addFormatToken('s', ['ss', 2], 0, 'second');
 
     // ALIASES
@@ -43142,6 +43872,8 @@ return /******/ (function(modules) { // webpackBootstrap
     // MOMENTS
 
     var getSetSecond = makeGetSet('Seconds', false);
+
+    // FORMATTING
 
     addFormatToken('S', 0, 0, function () {
         return ~~(this.millisecond() / 100);
@@ -43198,6 +43930,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
     var getSetMillisecond = makeGetSet('Milliseconds', false);
 
+    // FORMATTING
+
     addFormatToken('z',  0, 0, 'zoneAbbr');
     addFormatToken('zz', 0, 0, 'zoneName');
 
@@ -43213,40 +43947,43 @@ return /******/ (function(modules) { // webpackBootstrap
 
     var momentPrototype__proto = Moment.prototype;
 
-    momentPrototype__proto.add          = add_subtract__add;
-    momentPrototype__proto.calendar     = moment_calendar__calendar;
-    momentPrototype__proto.clone        = clone;
-    momentPrototype__proto.diff         = diff;
-    momentPrototype__proto.endOf        = endOf;
-    momentPrototype__proto.format       = format;
-    momentPrototype__proto.from         = from;
-    momentPrototype__proto.fromNow      = fromNow;
-    momentPrototype__proto.to           = to;
-    momentPrototype__proto.toNow        = toNow;
-    momentPrototype__proto.get          = getSet;
-    momentPrototype__proto.invalidAt    = invalidAt;
-    momentPrototype__proto.isAfter      = isAfter;
-    momentPrototype__proto.isBefore     = isBefore;
-    momentPrototype__proto.isBetween    = isBetween;
-    momentPrototype__proto.isSame       = isSame;
-    momentPrototype__proto.isValid      = moment_valid__isValid;
-    momentPrototype__proto.lang         = lang;
-    momentPrototype__proto.locale       = locale;
-    momentPrototype__proto.localeData   = localeData;
-    momentPrototype__proto.max          = prototypeMax;
-    momentPrototype__proto.min          = prototypeMin;
-    momentPrototype__proto.parsingFlags = parsingFlags;
-    momentPrototype__proto.set          = getSet;
-    momentPrototype__proto.startOf      = startOf;
-    momentPrototype__proto.subtract     = add_subtract__subtract;
-    momentPrototype__proto.toArray      = toArray;
-    momentPrototype__proto.toObject     = toObject;
-    momentPrototype__proto.toDate       = toDate;
-    momentPrototype__proto.toISOString  = moment_format__toISOString;
-    momentPrototype__proto.toJSON       = moment_format__toISOString;
-    momentPrototype__proto.toString     = toString;
-    momentPrototype__proto.unix         = unix;
-    momentPrototype__proto.valueOf      = to_type__valueOf;
+    momentPrototype__proto.add               = add_subtract__add;
+    momentPrototype__proto.calendar          = moment_calendar__calendar;
+    momentPrototype__proto.clone             = clone;
+    momentPrototype__proto.diff              = diff;
+    momentPrototype__proto.endOf             = endOf;
+    momentPrototype__proto.format            = format;
+    momentPrototype__proto.from              = from;
+    momentPrototype__proto.fromNow           = fromNow;
+    momentPrototype__proto.to                = to;
+    momentPrototype__proto.toNow             = toNow;
+    momentPrototype__proto.get               = getSet;
+    momentPrototype__proto.invalidAt         = invalidAt;
+    momentPrototype__proto.isAfter           = isAfter;
+    momentPrototype__proto.isBefore          = isBefore;
+    momentPrototype__proto.isBetween         = isBetween;
+    momentPrototype__proto.isSame            = isSame;
+    momentPrototype__proto.isSameOrAfter     = isSameOrAfter;
+    momentPrototype__proto.isSameOrBefore    = isSameOrBefore;
+    momentPrototype__proto.isValid           = moment_valid__isValid;
+    momentPrototype__proto.lang              = lang;
+    momentPrototype__proto.locale            = locale;
+    momentPrototype__proto.localeData        = localeData;
+    momentPrototype__proto.max               = prototypeMax;
+    momentPrototype__proto.min               = prototypeMin;
+    momentPrototype__proto.parsingFlags      = parsingFlags;
+    momentPrototype__proto.set               = getSet;
+    momentPrototype__proto.startOf           = startOf;
+    momentPrototype__proto.subtract          = add_subtract__subtract;
+    momentPrototype__proto.toArray           = toArray;
+    momentPrototype__proto.toObject          = toObject;
+    momentPrototype__proto.toDate            = toDate;
+    momentPrototype__proto.toISOString       = moment_format__toISOString;
+    momentPrototype__proto.toJSON            = toJSON;
+    momentPrototype__proto.toString          = toString;
+    momentPrototype__proto.unix              = unix;
+    momentPrototype__proto.valueOf           = to_type__valueOf;
+    momentPrototype__proto.creationData      = creationData;
 
     // Year
     momentPrototype__proto.year       = getSetYear;
@@ -43332,7 +44069,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
     function locale_calendar__calendar (key, mom, now) {
         var output = this._calendar[key];
-        return typeof output === 'function' ? output.call(mom, now) : output;
+        return isFunction(output) ? output.call(mom, now) : output;
     }
 
     var defaultLongDateFormat = {
@@ -43394,21 +44131,21 @@ return /******/ (function(modules) { // webpackBootstrap
 
     function relative__relativeTime (number, withoutSuffix, string, isFuture) {
         var output = this._relativeTime[string];
-        return (typeof output === 'function') ?
+        return (isFunction(output)) ?
             output(number, withoutSuffix, string, isFuture) :
             output.replace(/%d/i, number);
     }
 
     function pastFuture (diff, output) {
         var format = this._relativeTime[diff > 0 ? 'future' : 'past'];
-        return typeof format === 'function' ? format(output) : format.replace(/%s/i, output);
+        return isFunction(format) ? format(output) : format.replace(/%s/i, output);
     }
 
     function locale_set__set (config) {
         var prop, i;
         for (i in config) {
             prop = config[i];
-            if (typeof prop === 'function') {
+            if (isFunction(prop)) {
                 this[i] = prop;
             } else {
                 this['_' + i] = prop;
@@ -43438,11 +44175,15 @@ return /******/ (function(modules) { // webpackBootstrap
     prototype__proto.set             = locale_set__set;
 
     // Month
-    prototype__proto.months       =        localeMonths;
-    prototype__proto._months      = defaultLocaleMonths;
-    prototype__proto.monthsShort  =        localeMonthsShort;
-    prototype__proto._monthsShort = defaultLocaleMonthsShort;
-    prototype__proto.monthsParse  =        localeMonthsParse;
+    prototype__proto.months            =        localeMonths;
+    prototype__proto._months           = defaultLocaleMonths;
+    prototype__proto.monthsShort       =        localeMonthsShort;
+    prototype__proto._monthsShort      = defaultLocaleMonthsShort;
+    prototype__proto.monthsParse       =        localeMonthsParse;
+    prototype__proto._monthsRegex      = defaultMonthsRegex;
+    prototype__proto.monthsRegex       = monthsRegex;
+    prototype__proto._monthsShortRegex = defaultMonthsShortRegex;
+    prototype__proto.monthsShortRegex  = monthsShortRegex;
 
     // Week
     prototype__proto.week = localeWeek;
@@ -43730,15 +44471,15 @@ return /******/ (function(modules) { // webpackBootstrap
         var years    = round(duration.as('y'));
 
         var a = seconds < thresholds.s && ['s', seconds]  ||
-                minutes === 1          && ['m']           ||
+                minutes <= 1           && ['m']           ||
                 minutes < thresholds.m && ['mm', minutes] ||
-                hours   === 1          && ['h']           ||
+                hours   <= 1           && ['h']           ||
                 hours   < thresholds.h && ['hh', hours]   ||
-                days    === 1          && ['d']           ||
+                days    <= 1           && ['d']           ||
                 days    < thresholds.d && ['dd', days]    ||
-                months  === 1          && ['M']           ||
+                months  <= 1           && ['M']           ||
                 months  < thresholds.M && ['MM', months]  ||
-                years   === 1          && ['y']           || ['yy', years];
+                years   <= 1           && ['y']           || ['yy', years];
 
         a[2] = withoutSuffix;
         a[3] = +posNegDuration > 0;
@@ -43859,6 +44600,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
     // Side effect imports
 
+    // FORMATTING
+
     addFormatToken('X', 0, 0, 'unix');
     addFormatToken('x', 0, 0, 'valueOf');
 
@@ -43876,13 +44619,14 @@ return /******/ (function(modules) { // webpackBootstrap
     // Side effect imports
 
 
-    utils_hooks__hooks.version = '2.10.6';
+    utils_hooks__hooks.version = '2.11.2';
 
     setHookCallback(local__createLocal);
 
     utils_hooks__hooks.fn                    = momentPrototype;
     utils_hooks__hooks.min                   = min;
     utils_hooks__hooks.max                   = max;
+    utils_hooks__hooks.now                   = now;
     utils_hooks__hooks.utc                   = create_utc__createUTC;
     utils_hooks__hooks.unix                  = moment__createUnix;
     utils_hooks__hooks.months                = lists__listMonths;
@@ -43901,6 +44645,7 @@ return /******/ (function(modules) { // webpackBootstrap
     utils_hooks__hooks.weekdaysShort         = lists__listWeekdaysShort;
     utils_hooks__hooks.normalizeUnits        = normalizeUnits;
     utils_hooks__hooks.relativeTimeThreshold = duration_humanize__getSetRelativeTimeThreshold;
+    utils_hooks__hooks.prototype             = momentPrototype;
 
     var _moment = utils_hooks__hooks;
 

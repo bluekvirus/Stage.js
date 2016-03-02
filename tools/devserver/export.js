@@ -1,14 +1,20 @@
-  /**
- * This is the export script for exporting the data in /tools/devserver/data to the destination folder specified by user(default ./exports).
- * 
- * --If the original data is mock data, this script runs the mocking script and export a .json file instead.
+ /**
+ * This is the export script for exporting static stuff from /tools/devserver
  *
+ * Options
+ * -------
+ * 1. -D --data [dist], export data mockups (into JSON) from /devserver/data to [dist](default: ./exported)
+ *
+ * @author Patrick Zhu
+ * @created 2016.03.01
+ * 
  */
 var program = require('commander'),
 	_ = require('underscore'),
 	fs = require('fs-extra'),
 	path = require('path'),
 	Mock = require('mockjs'),
+	colors = require('colors'),
 	/*function for recursively traverse the given folder*/
 	walk = function(dir, current) {
 	    var results = [],
@@ -24,8 +30,7 @@ var program = require('commander'),
 	        if (stat && stat.isDirectory()){//element is directory, dive in
 	        	relative = path.relative(path.join(__dirname, 'data'), file);
 	        	//make dir for exporting
-	        	if(!fs.existsSync(path.join(current, relative)))
-	        		fs.mkdir(path.join(current, relative));
+	        	fs.ensureDirSync(path.join(current, relative));
 	        	results = results.concat(walk(file, path.join(current, relative)));
 	        }
 	        else//simple file element
@@ -37,12 +42,11 @@ var program = require('commander'),
 //setup parameters 
 program
   .version('1.0.1')
-  .option('-D, --data [output folder]', 'Add options for data folder', path.join(__dirname, 'export'))
+  .option('-D, --data [output folder]', 'output data folder', path.join('.', 'exported', 'data'))
   .parse(process.argv);
 
 //make export folder, if it does not exist
-if( !fs.existsSync(program.data) )
-	fs.mkdir(program.data);
+fs.ensureDirSync(program.data);
 
 //read all the files
 _.each(walk(path.join(__dirname, 'data'), program.data), function(data, index){
@@ -51,18 +55,18 @@ _.each(walk(path.join(__dirname, 'data'), program.data), function(data, index){
 	//check whether mock data or not
 	if( path.extname(relative) === '.js' ){//mock js file
 		//replace .mock.js with .json
-		fs.writeFile(path.join(program.data, relative.replace(/(\.mock\.js)/, '.json')), JSON.stringify(Mock.mock(temp)), function(err){
+		fs.writeFile(path.join(program.data, relative.replace(/(\.mock\.js)/, '.json')), JSON.stringify(Mock.mock(temp), null, '\t'), function(err){
 			if(err){
 				return console.log(err);
 			}
-			console.log(data + ' has been exported.');
+			console.log('[', 'exported'.green, '-', 'mock', ']', data);
 		});
 	}else{
-		fs.writeFile(path.join(program.data, relative), JSON.stringify(temp), function(err){
+		fs.writeFile(path.join(program.data, relative), JSON.stringify(temp, null, '\t'), function(err){
 			if(err){
 				return console.log(err);
 			}
-			console.log(data + ' has been exported.');
+			console.log('[', 'exported'.green, '-', 'copy'.grey, ']', data);
 		});
 	}
 });
