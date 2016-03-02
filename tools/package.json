@@ -47,7 +47,7 @@
   "scripts": {
     "start": "nodemon devserver/run.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "data-export": "echo \"Error: no data mock folder specified\" && exit 1"
+    "data-export": "node ./devserver/export.js"
   },
   "repository": "",
   "author": "Tim Lauv (bluekvirus@gmail.com)",
