@@ -154,30 +154,6 @@
             }
         },
 
-
-        //you don't need to calculate paddings on a region, since we are using $.innerHeight()
-        //@deprecating... in favor of incoming view.layout option in v1.9
-        resize: function(options) {
-            options = options || {};
-
-            /*Note that since we use box-sizing in css, if using this.$el.css() to set height/width, they are equal to using innerHeight/Width()*/
-            this._contentStyle = _.extend({}, options, this._contentOverflow);
-            this.$el.css(this._contentStyle);
-
-            var that = this;
-            _.defer(function() { //give browser a chance to catch up with style changes.
-                if (that.currentView) {
-                    //this.currentView.$el.css(this._contentStyle);
-                    that.currentView.trigger('view:resized', {
-                        region: that
-                    });
-                }
-            });
-
-            return this;
-
-        }
-
     });
 
 })(Application);

@@ -1,7 +1,7 @@
 ;(function(app){
 
 	function minH(){
-		var h = $window.height();
+		var h = app.screenSize.h;
 		//if(h > 640) 
 			return h;
 		//return 640;
@@ -11,7 +11,7 @@
 
 		template: [
 			//very very important to have overflow:hidden for svg powered background
-			'<div overflow="hidden" region="bg" view="Home.BG" style="position:absolute"></div>',
+			'<div overflow="hidden" region="bg" view="Home.BG" style="position:absolute;left:0;right:0;top:0;bottom:0;"></div>',
 			'<div class="container-fluid">',
 				'<div class="row">',
 					'<div class="col-sm-offset-6 col-sm-4" region="title"></div>',
@@ -22,6 +22,8 @@
 			'</div>',
 			'<div style="position:absolute;bottom:0;width:100%" region="footer" view="Home.Footer"></div>'
 		],
+
+		coop: ['window-resized'],
 
 		onBeforeNavigateTo:function(){
 			app.debug('before navi to', this.name);
@@ -37,13 +39,11 @@
 			});
 		},
 
-		initialize: function(){
-			this.listenTo(app, 'app:resized', function(){
-				this.bg.resize({
-					height: app.screenSize.h,
-					width: app.screenSize.w
-				});
-			});
+		onWindowResized: function(){
+			var bgv = this.getViewIn('bg');
+			bgv && bgv.trigger('view:fit-and-draw');
+			var titlev = this.getViewIn('title');
+			titlev && titlev.trigger('view:move-to-center');
 		},
 
 		onShow: function(){
@@ -74,23 +74,14 @@
 						'<a href="http://cordova.apache.org/"><img src="http://img.shields.io/badge/supports-Cordova-3B4854.svg?style=flat-square" alt="Supports Cordova"></img></a>', //cordova badge
 					'</p>',
 				],
-				initialize: function(){
-					this.listenTo(app, 'app:resized', function(){
-						this.trigger('view:track-full-screen');
-					});
-				},				
+		
 				onShow: function(){
-					this.trigger('view:track-full-screen');
+					this.trigger('view:move-to-center');
 				},
-				onTrackFullScreen: function(){
+				onMoveToCenter: function(){
 					this.$el.height(minH()*0.44).css('marginTop', minH()*0.06);
 				}
 			}));
-
-			this.bg.resize({
-				height: app.screenSize.h,
-				width: app.screenSize.w
-			});
 
 			//navi links
 			this.menu.show(app.view({
@@ -126,10 +117,6 @@
 		//template: ' ', //might need exception as .editors configured views.
 		svg: true,
 
-		onResized: function(){
-			this.trigger('view:fit-and-draw');
-		},
-
 		onShow: function(){
 			if(this.paper){
 				//delay 10ms for re-draw - for the scrollbars to recover(disappear)
@@ -143,7 +130,7 @@
 		},
 
 		onFitAndDraw: function(){
-			this.$el.height(minH());
+			this.$el.height(minH()).width(app.screenSize.w);
 			this.trigger('view:fit-paper');
 
 		},
