@@ -109,7 +109,7 @@ var I18N = {};
 			return key;
 		} else if (typeof(translation) === 'object') {
 			//console.log('translation', translation, 'is object');
-			var ns = (options && options.module) || '_default';
+			var ns = (_.isString(options) && options) || (options && options.module) || '_default';
 			translation = translation[ns];
 			if (typeof(translation) === 'undefined') {
 				//console.log('translation', translation, 'is undefined');
@@ -168,21 +168,32 @@ var I18N = {};
 		return result;
 	}
 
-	function getResourceJSON(untransedOnly) {
+	function getResourceJSON(untransedOnly, encode) {
 		var res = resources;
 		if(untransedOnly){
 			res = _.reject(resources, function(trans, key){
 				if(trans) return true; return false;
 			});
 		}
-		return JSON.stringify({
+		if(_.isUndefined(encode))
+			encode = true;
+		var result = {
 			locale: locale,
 			trans: res
-		});
+		};
+
+		if(encode)
+			return JSON.stringify(result, null, '\t');
+		return result;
+	}
+
+	function insertTrans(trans){
+		_.extend(resources, trans);
 	}
 
 	I18N.getResourceProperties = getResourceProperties;
 	I18N.getResourceJSON = getResourceJSON;
+	I18N.insertTrans = insertTrans;
 
 	/**
 	 * =============================================================

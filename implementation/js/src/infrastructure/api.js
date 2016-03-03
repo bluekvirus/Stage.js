@@ -598,6 +598,18 @@
 			//return this;
 		},
 
+		//----------------i18n-----------------------
+		i18n: function(key, ns){
+			if(key){
+				//insert translations to current locale
+				if(_.isPlainObject(key))
+					return I18N.insertTrans(key);
+				//return a translation for specified key, ns/module
+				return String(key).i18n(ns);
+			}
+			return I18N.getResourceJSON(null, false); //collect available strings (so far) into an i18n object.
+		},
+
 		//----------------debug----------------------
 		debug: function(){
 			var fn = console.debug || console.log;

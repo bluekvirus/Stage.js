@@ -800,11 +800,6 @@ view:navigate-chain
 view:navigate-to
 view:navigate-away (if parentCt persists)
 
-//SVG enabled
-view:fit-paper
-view:paper-resized
-view:paper-ready
-
 //CollectionView only (Remote Data Pagination)
 view:load-page
 view:page-changed
@@ -906,33 +901,21 @@ You can't acquire topic locks if the global lock is currently unavailable.
 
 ###Graphs
 
-We support graphs through SVG. An **optional** basic SVG library (Raphaël.js) is included in the framework's starter-kit distribution. You can use it in any *View* through:
+We support graphs through SVG. Use of SVG library (Raphaël.js/Snap.svg) is **optional**. After including the library (NOT in dependencies.min.js), You can use `this.paper` in any *View* through:
 ```
 Application.view({
     svg: true,
     onShow: function(){
-        if(this.paper) 
-            //draw...
-        else 
-            this.onPaperReady = function(paper){
-                //draw...
-            }
+        this.paper.clear();
+        //draw...
     }
 });
 ```
-Don't worry about the resizing routine, it is already prepared for you. The paper size will be set correctly to the container's through the use of `view:fit-paper` event on the container view object and there is an follow-up meta event `view:paper-resized` triggered on the view so you can do something accordingly after the SVG canvas is resized.
-```
-view.listenTo(app, 'app:resized', function(){
-    this.trigger('view:fit-paper')
-});
-view.onPaperResized(){
-    //draw...
-}
-```
+Don't worry about resizing, it is already prepared for you. The paper size will be set correctly to the containing region automatically. Just **DON'T forget** to call `this.paper.clear()` upon drawing and re-draw in your svg canvas.
 
-If you require charts to be drawn, look through our monitored libraries under `/bower_components` there should be **d3.js** and **highcharts.js** for exactly that.
+If you require ready-made charts to be drawn, look through our monitored libraries under `/bower_components` there should be `d3/c3.js`, `Chart.js` and `peity` for exactly that.
 
-**Note:** HTML5 *Canvas* libraries are also included in the bower registry.
+**Note:** HTML5 *Canvas* is not supported at the moment, you can use `Easel.js` or `paper.js` on your own effort.
 
 ###UX
 
@@ -1720,7 +1703,7 @@ that.toc.show(Application.view({
 
 i18n/l10n
 ---------
-Internationalization/Localization is always a painful process, making substitution dynamically to the strings and labels appear in the application according to the user locale settings can interfere with the coding process if every string must be coded with a `getResource('actual string')` wrapped around.
+Internationalization/Localization is always a painful process, making substitution dynamically to the strings and labels appear in the application according to the user locale settings can interfere with the coding process if every string is to be coded with a `getResource('actual string')` wrapped around.
 
 Luckily, JavaScript is a prototypical language, we can extend the `String` class through its prototype and give every string a way of finding its own translation.
 
@@ -1824,12 +1807,20 @@ The default settings will always look for `http://your host/static/resource/{loc
 When the application is running in browser, you can fire-up the developer console and call the following APIs on the `I18N` object to collect the translation keys:
 ```
 //get all i18n keys and trans rendered in the app in "key" = "val" format;
-I18N.getResourceProperties(flag) 
+I18N.getResourceProperties(untransedOnly) 
 
 //get the above listing in JSON format;
-I18N.getResourceJSON(flag)
+I18N.getResourceJSON(untransedOnly, encode=true)
+//or
+app.i18n() //encode=false
+
+//check translation;
+app.i18n(key, ns)
+
+//insert translations
+app.i18n({...}) //'key': {'ns1': 'trans1', ...} or 'trans'
 ```
-You can use `flag = true` in the above functions if you only want to get un-translated entries. This is a great way of collecting un-translated strings  for your localizer (by simply go through the application views).
+You can use `untransedOnly = true` in the above functions if you only want to get un-translated entries. This is a great way of collecting un-translated strings  for your localizer (by simply go through the application views).
 
 **Note**: If your view hasn't been shown in the application, the i18n keys for that view can not be collected by the above functions.
 

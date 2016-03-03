@@ -41,7 +41,7 @@
 
 		onWindowResized: function(){
 			var bgv = this.getViewIn('bg');
-			bgv && bgv.trigger('view:fit-and-draw');
+			bgv && bgv.trigger('view:draw');
 			var titlev = this.getViewIn('title');
 			titlev && titlev.trigger('view:move-to-center');
 		},
@@ -118,25 +118,14 @@
 		svg: true,
 
 		onShow: function(){
-			if(this.paper){
-				//delay 10ms for re-draw - for the scrollbars to recover(disappear)
-				var that = this;
-				setTimeout(function(){that.trigger('view:fit-and-draw');}, app.config.rapidEventDebounce/20);
-			}else {
-				this.onPaperReady = function(){
-					this.trigger('view:fit-and-draw');
-				};
-			}
+			this.trigger('view:draw');
 		},
 
-		onFitAndDraw: function(){
-			this.$el.height(minH()).width(app.screenSize.w);
-			this.trigger('view:fit-paper');
-
-		},
-		onPaperResized: function(){
+		//expose drawBg to view:draw.
+		onDraw: function(){
 			this.drawBg();
 		},
+
 		drawBg: function(){
 			this.paper.clear();
 			var size = {

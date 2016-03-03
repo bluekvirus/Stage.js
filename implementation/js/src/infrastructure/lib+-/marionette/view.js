@@ -403,7 +403,7 @@
 					that.close();
 				})
 				.popover('toggle');
-				//possible solution for repositioning the visible popovers on window resize event
+				//possible solution for repositioning the visible popovers on window resize event (experimental)
  				/*$window.on("resize", function() {
 				    $(".popover").each(function() {
 				        var popover = $(this),
@@ -498,16 +498,6 @@
 		});
 		
 		//---------------------optional view enhancements-------------------
-		//editors
-		if(this.editors && this._activateEditors) this.listenTo(this, 'render', function(){
-			this._activateEditors(this.editors);
-		});
-
-		//svg (if rapheal.js is present, deprecated...use canvas instead (TBI))
-		if(this.svg && this._enableSVG) {
-			this.listenTo(this, 'render', this._enableSVG);
-		}
-
 		//dnd (drag, drop, and sortables) 
 		if(this.dnd) {
 			this.listenTo(this, 'render', function(){
@@ -642,6 +632,16 @@
 		//popover
 		if(this.popover){
 			this._enablePopover();
+		}
+
+		//editors -- doesn't re-activate upon re-render (usually used with non-data bound template or no template)
+		if(this.editors && this._activateEditors) this.listenToOnce(this, 'render', function(){
+			this._activateEditors(this.editors);
+		});
+
+		//svg (if rapheal.js is present) -- doesn't re-activate upon render (usually used with no template)
+		if(this.svg && this._enableSVG) {
+			this.listenToOnce(this, 'show', this._enableSVG);
 		}
 
 		//auto-enable i18n

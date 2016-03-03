@@ -1034,6 +1034,18 @@
 			//return this;
 		},
 
+		//----------------i18n-----------------------
+		i18n: function(key, ns){
+			if(key){
+				//insert translations to current locale
+				if(_.isPlainObject(key))
+					return I18N.insertTrans(key);
+				//return a translation for specified key, ns/module
+				return String(key).i18n(ns);
+			}
+			return I18N.getResourceJSON(null, false); //collect available strings (so far) into an i18n object.
+		},
+
 		//----------------debug----------------------
 		debug: function(){
 			var fn = console.debug || console.log;
@@ -4375,7 +4387,7 @@ module.exports = DeepModel;
 					that.close();
 				})
 				.popover('toggle');
-				//possible solution for repositioning the visible popovers on window resize event
+				//possible solution for repositioning the visible popovers on window resize event (experimental)
  				/*$window.on("resize", function() {
 				    $(".popover").each(function() {
 				        var popover = $(this),
@@ -4470,16 +4482,6 @@ module.exports = DeepModel;
 		});
 		
 		//---------------------optional view enhancements-------------------
-		//editors
-		if(this.editors && this._activateEditors) this.listenTo(this, 'render', function(){
-			this._activateEditors(this.editors);
-		});
-
-		//svg (if rapheal.js is present, deprecated...use canvas instead (TBI))
-		if(this.svg && this._enableSVG) {
-			this.listenTo(this, 'render', this._enableSVG);
-		}
-
 		//dnd (drag, drop, and sortables) 
 		if(this.dnd) {
 			this.listenTo(this, 'render', function(){
@@ -4616,6 +4618,16 @@ module.exports = DeepModel;
 			this._enablePopover();
 		}
 
+		//editors -- doesn't re-activate upon re-render (usually used with non-data bound template or no template)
+		if(this.editors && this._activateEditors) this.listenToOnce(this, 'render', function(){
+			this._activateEditors(this.editors);
+		});
+
+		//svg (if rapheal.js is present) -- doesn't re-activate upon render (usually used with no template)
+		if(this.svg && this._enableSVG) {
+			this.listenToOnce(this, 'show', this._enableSVG);
+		}
+
 		//auto-enable i18n
 		if(I18N.locale) {
 			this.listenTo(this, 'render', function(){
@@ -4631,7 +4643,7 @@ module.exports = DeepModel;
 ;/**
  * Marionette.ItemView Enhancements (can be used in Layout as well) - Note that you can NOT use these in a CompositeView.
  *
- * 1. svg (view:fit-paper, view:paper-resized, view:paper-ready)
+ * 1. svg (+this.paper, *this.paper.clear())
  * 2. basic Editors (view as form piece)
  * 3. data <-> render handling 
  *
@@ -4777,37 +4789,37 @@ module.exports = DeepModel;
 			this.set(data);
 		},
 
-		/**
-		 * Inject a svg canvas within view. - note that 'this' in cb means paper.
-		 * Do this in onShow() instead of initialize.
-		 */
+		//Inject a svg canvas within view. (fully extended to parent region size)
 		_enableSVG: function(){
-			if(!Raphael) throw new Error('DEV::ItemView+::_enableSVG() You did NOT have Raphael.js included...');
-			var that = this;
-
-			Raphael(this.el, this.$el.width(), this.$el.height(), function(){
-				that.paper = this;
-				that.trigger('view:paper-ready', this); // - use this instead of onShow() in the 1st time
-				/**
-				 * e.g 
-				 * onShow(){
-				 * 	if(this.paper) draw...;
-				 * 	else
-				 * 		this.onPaperReady(){ draw... };
-				 * }
-				 */
+			if(!Raphael && !Snap) throw new Error('DEV::ItemView+::_enableSVG() You did NOT have Raphael.js/Snap.svg included...');
+			var SVG = Raphael || Snap;
+			this.$el.css({
+				'width': '100%',
+				'height': '100%',
+			});
+			this.paper = SVG(this.el);
+			this.$el.find('svg').attr({
+				'width': '100%',
+				'height': '100%',
 			});
 
-			//resize paper (e.g upon window resize event).
-			this.onFitPaper = function(){
-				if(!this.paper) return;
-				this.paper.setSize(this.$el.width(), this.$el.height());
-				this.trigger('view:paper-resized');
+			var that = this;
+			//+._fit() to paper.clear() (since this.paper.height/width won't change with the above w/h:100% settings)
+			this.paper._fit = function(w, h){
+				that.paper.setSize(w || that.$el.width(), h || that.$el.height());
 			};
+			var tmp = this.paper.clear;
+			this.paper.clear = function(){
+				tmp.apply(that.paper, arguments);
+				that.paper._fit();
+			};
+			//just call this.paper.clear() when resize --> re-draw. so this.paper.width/height will be corrected.
+
 		},
 
 		/**
-		 * Editor Activation - do it in onShow() or onRender()
+		 * Editor Activation - do it once upon render()
+		 * 
 		 * Turn per field config into real editors.
 		 * You can activate editors in any Layout/ItemView object, it doesn't have to be a turnIntoForm() instrumented view.
 		 * You can also send a view with activated editors to a form by using addFormPart()[in onShow() or onRender()] it is turn(ed)IntoForm()
@@ -5541,7 +5553,7 @@ var I18N = {};
 			return key;
 		} else if (typeof(translation) === 'object') {
 			//console.log('translation', translation, 'is object');
-			var ns = (options && options.module) || '_default';
+			var ns = (_.isString(options) && options) || (options && options.module) || '_default';
 			translation = translation[ns];
 			if (typeof(translation) === 'undefined') {
 				//console.log('translation', translation, 'is undefined');
@@ -5600,21 +5612,32 @@ var I18N = {};
 		return result;
 	}
 
-	function getResourceJSON(untransedOnly) {
+	function getResourceJSON(untransedOnly, encode) {
 		var res = resources;
 		if(untransedOnly){
 			res = _.reject(resources, function(trans, key){
 				if(trans) return true; return false;
 			});
 		}
-		return JSON.stringify({
+		if(_.isUndefined(encode))
+			encode = true;
+		var result = {
 			locale: locale,
 			trans: res
-		});
+		};
+
+		if(encode)
+			return JSON.stringify(result, null, '\t');
+		return result;
+	}
+
+	function insertTrans(trans){
+		_.extend(resources, trans);
 	}
 
 	I18N.getResourceProperties = getResourceProperties;
 	I18N.getResourceJSON = getResourceJSON;
+	I18N.insertTrans = insertTrans;
 
 	/**
 	 * =============================================================
@@ -7497,7 +7520,7 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.9.0-1066 build 1456905918945";;
+;;app.stagejs = "1.9.0-1068 build 1456981752181";;
         //Make sure this is the last line in the last script!!!
         Application.run(/*deviceready - Cordova*/);
     ;
