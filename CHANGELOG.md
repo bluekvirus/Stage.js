@@ -1,17 +1,21 @@
 Change Log
 ==========
+
 1.9.1 (2016-03-02*)
+-------------------
+1. Refined svg support in view (Raphael/Snap.svg);
+2. Added app.i18n() api for using global I18N functions;
 
 working on ...
 
-* Changing svg/canvas support to be (snap/easel)
 * Adding more unit tests;
 * Adding cheatsheet;
 * Updating doc (around data handling, coop, dnd, effect, remote, ws, form);
 * Breaking down 'Basic' editors;
 * Separate modernizr/detectizr shiv bundles from deps;
 * Adding optional 2-way binders;
-* [cli] Update update cmd to also refresh mockups;
+* Adding canvas support in view (easel);
+* [cli] Enhance update cmd to also refresh mockups;
 
 
 1.9.0 (2016-03-02)
