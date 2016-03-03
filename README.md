@@ -10,9 +10,9 @@ app.stagejs (1.8.x-<commits> build <timestamp>)
 ```
 You can compare this version number with the one you see on the [documentation site](http://bluekvirus.github.io/Stage.js/#navigate/Document) and see if an upgrade is recommended.
 
-**Announcement**: We are working on a fully upgraded live demo site and updated version of documents for the v1 branch. We are also working on the v2 branch development. A complete feature listing is available. ([v2 plan](#whats-next)). Please note that v1 will not be abandoned even if v2 is released, they are different tech directions. v2 will be called `-ng`.
+**Announcement**: We are working on a fully upgraded live demo/document site for the v1 branch. We are also working on the v2 branch development. A complete feature listing is available. ([v2 plan](#whats-next)). Please note that v1 will **NOT be abandoned** even if v2 is released, they are different tech directions. v2 will be called `-ng`.
 
-> <sup>\*</sup>LTS - Given that ECMAScript6 is coming and our goal of making a lightweight, time-saving and most importantly **easy** framework for both desktop web and hybrid application development, further improvements will be made directly into the v2 codebase without disturbing the v1 branch. The LTS version also serves as a benchmark for creating tests and for feature-list and feedback gathering. We have now successfully released 6 security products with complex configure panels/dashboards and excellent user flows & localizations through the v1 branch. More will come. 
+> <sup>\*</sup>The v1 branch serves as a benchmark for creating tests for features and for feedback gathering. We have now successfully released 6 security products offering intuitive control panels, complex monitoring dashboards, online/offline reports and excellent user interactions with full localization support through the v1 branch. More will come. 
 
 This project produces **Stage.js** - an infrastructure for building modern web application client with different contexts (e.g a data-heavy administration app). In other words, we solve this problem for you:
 
@@ -46,8 +46,8 @@ What's next?
 2.0.0 Roadmap:
 * AMD support; (:heavy_check_mark:)
 * ECMAScript 5 & 6 support; (:heavy_check_mark:)
-* Handshake mode support in app init,load & view init; (:heavy_check_mark:)
-* Support reactive app building concept; (optional two-way bindings, MVVM) (:heavy_check_mark:)
+* Handshake/Async mode support in app init,load and view init; (:heavy_check_mark:)
+* Support reactive view building concept; (optional two-way bindings through MVVM) (:heavy_check_mark:)
 * Global co-op events; (:heavy_check_mark:, back-ported)
 * Merge Context, Regional, Widget, Editor and Canvas to be generic named Views; (:heavy_check_mark:, back-ported)
 * Refine the navigation and layout region concepts; (:heavy_check_mark:)
