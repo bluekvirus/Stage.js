@@ -12,7 +12,7 @@ You can compare this version number with the one you see on the [documentation s
 
 **Announcement**: We are working on a fully upgraded live demo/document site for the v1 branch. We are also working on the v2 branch development. A complete feature listing is available. ([v2 plan](#whats-next)). Please note that v1 will **NOT be abandoned** even if v2 is released, they are different tech directions. v2 will be called `-ng`.
 
-> <sup>\*</sup>The v1 branch serves as a benchmark for creating tests for features and for feedback gathering. We have now successfully released 6 security products offering intuitive control panels, complex monitoring dashboards, online/offline reports and excellent user interactions with full localization support through the v1 branch. More will come. 
+> <sup>\*</sup>The v1 branch serves as a benchmark for creating tests for features and for feedback gathering. We have now successfully released 6 web/cloud products offering intuitive control panels, complex monitoring dashboards, online/offline reports and excellent user interactions with full localization support through the v1 branch. More will come. 
 
 This project produces **Stage.js** - an infrastructure for building modern web application client with different contexts (e.g a data-heavy administration app). In other words, we solve this problem for you:
 
