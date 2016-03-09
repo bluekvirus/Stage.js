@@ -1,10 +1,6 @@
 Change Log
 ==========
-
-1.9.1 (2016-03-02*)
--------------------
-1. Refined svg support in view (Raphael/Snap.svg);
-2. Added app.i18n() api for using global I18N functions;
+1.9.2 (2016-03-09*)
 
 working on ...
 
@@ -18,7 +14,7 @@ working on ...
 * [cli] Enhance update cmd to also refresh mockups;
 
 
-1.9.0 (2016-03-02)
+1.9.1 (2016-03-09)
 -------------------
 1. Added favicon support mock in starter-kit index page;
 2. Updated default mockups;
@@ -64,6 +60,9 @@ working on ...
 42. Deprecated region.resize() api;
 43. Added 'scroll-bottom/top' and fixed 'scroll/load/error' action events;
 44. Added data-export script to tools (npm run data-export);
+45. Refined svg support in view (Raphael/Snap.svg);
+46. Added app.i18n() api for using global I18N functions;
+47. Fixed build interference with the doc site sub-project;
 
 
 1.8.7 (2015-12-07)

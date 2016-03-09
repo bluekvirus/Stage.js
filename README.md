@@ -6,7 +6,7 @@ Stage.js
 
 To get version, type `app.stagejs` in the console. Example output:
 ```
-app.stagejs (1.8.x-<commits> build <timestamp>)
+app.stagejs (1.9.x-<commits> build <timestamp>)
 ```
 You can compare this version number with the one you see on the [documentation site](http://bluekvirus.github.io/Stage.js/#navigate/Document) and see if an upgrade is recommended.
 
@@ -129,8 +129,11 @@ Distribute
 a. CHANGELOG.md and tools/libprep/bower.json
 //numbers in README.md, HOWTO.md are updated automatically.
 
-//1. [optional] update libs & bower release version
+//1.a update libs & bower release version
 tools/lib-update.sh
+//or
+//1.b update bower release version only
+tools/libprep/node run.js all
 
 //2. [optional] update themes (under tools/themeprep/)
 //**Stop the devserver by using `./stop.sh` under `tools` first!**
