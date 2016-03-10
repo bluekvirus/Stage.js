@@ -633,12 +633,17 @@
 	 */
 	app._apis = [
 		'dispatcher', 'model', 'collection',
-		'context - @alias:page', 'view', 'widget', 'editor', 'editor.validator - @alias:editor.rule', //view
-		'lock', 'unlock', 'available', //global action locks
-		'coop', 'navigate', 'reload', 'param', 'animation', 'nextFrame', 'cancelFrame', 'animateItems', 'throttle', 'debounce',
-		'remote', 'ws', 'download', //com
-		'extract', 'cookie', 'store', 'moment', 'uri', 'validator', 'markdown', 'notify', //3rd-party lib short-cut
-		//@supportive
+		//view related
+		'context - @alias:page', 'view', 'widget', 'editor', 'editor.validator - @alias:editor.rule',
+		//global action locks
+		'lock', 'unlock', 'available', 
+		//utils
+		'coop', 'navigate', 'icing', 'i18n', 'reload', 'param', 'animation', 'nextFrame', 'cancelFrame', 'animateItems', 'throttle', 'debounce',
+		//com
+		'remote', 'ws', 'download',
+		//3rd-party lib short-cut
+		'extract', 'cookie', 'store', 'moment', 'uri', 'validator', 'markdown', 'notify',
+		//supportive
 		'debug', 'has', 'get', 'locate', 'profile', 'mark', 'nameToPath', 'pathToName', 'inject.js', 'inject.tpl', 'inject.css',
 		//@deprecated
 		'create - @deprecated', 'regional - @deprecated'

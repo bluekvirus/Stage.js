@@ -39,7 +39,9 @@ Download:
 Utils:
 * Application.coop (e, [args])
 * Application.notify()
+* Application.icing()
 * Application.markdown()
+* Application.i18n()
 * Application.moment
 * Application.uri
 * Application.param()

@@ -4,7 +4,8 @@
 
 		template: [
 			'<div>Scroll down to add more icons below</div>',
-			'<div region="items" action-scroll="track" action-scroll-top="notify-top" action-scroll-bottom="get-more-items" style="height:8em;margin:1em;" class="border border-full"></div>'
+			'<div region="items" action-scroll="track" action-scroll-top="notify-top" action-scroll-bottom="get-more-items" style="height:12em;margin:1em 0;" class="border border-full"></div>',
+			'<div><span class="btn btn-default btn-xs btn-outline" action="reset">Reset</span></div>'
 		],
 
 		onShow: function(){
@@ -15,14 +16,18 @@
 
 		actions: {
 			'track': app.throttle(function($el, e){
-				console.log('track', e.type);
+				app.debug('track', e.type);
 			}),
 			'notify-top': function($el, e){
-				this.more('items', ['bluetooth', 'edge', 'shopping-basket'], true);
+				app.notify('action-scroll-top', 'Scrolled to top...', 'warning');
 			},
 			'get-more-items': function($el, e){
-				console.log('bottom', e.type);
+				app.debug('bottom', e.type);
 				this.more('items', ['bluetooth', 'edge', 'shopping-basket']);
+			},
+
+			reset: function(){
+				this.more('items', ['bluetooth', 'edge', 'shopping-basket', 'bluetooth', 'edge', 'shopping-basket'], true);
 			}
 		}
 

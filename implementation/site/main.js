@@ -7,6 +7,9 @@ NProgress.configure({showSpinner: false});
         //You can override other production config vars if wanted.
         //fullScreen: true,
         template: '@site.html',
+        icings: {
+            feedback: {bottom: '2em', left: 0, right: 0, height: '3em'}
+        },
         contextRegion: 'center',
         defaultContext: 'Home',
         baseAjaxURI: '',

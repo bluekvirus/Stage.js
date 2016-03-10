@@ -1,87 +1,40 @@
 /*
  * Main application definition.
  *
- * Usage (General)
- * ----------------------------
+ * Usage
+ * -----------------------
  * ###How to start my app?
+ * 
  * 1. app.setup({config});
- * config:
-		* template/layout,
-		* navRegion/contextRegion,
-		* defaultContext,
-		* fullScreen, (indicated true by using non empty layout config)
-		* rapidEventDelay,
-		* baseAjaxURI
-		* i18nResources
-		* i18nTransFile
-		* timeout (ms)
- * 2. app.run();
- *
- * ###How to interface with remote data?
- * 3. app.remote(options); see core/remote-data.js
- *
- * ###How to create app elements?
- * 4. see Application apis down at the bottom
- * 	 	
- * ###Application Events to the aid?
- * 5. Use app:[your-event] format, and then register a global listener on app by using app.onYourEvent = function(e, your args);
- * You are in charge of event args as well.
- *
- * Pre-defined events
- * -navigation:
- * app:navigate (string) or ({context:..., module/subpath:...}) - app.onNavigate [pre-defined]
- * context:navigate-away - context.onNavigateAway [not-defined]
- * app:context-switched (contextName)  - app.onContextSwitched [not-defined]
- * context:navigate-to (moduleName/subpath) on context] - context.onNavigateTo [not-defined]
- *
- * -ajax 
- * ...(see core/remote-data.js for more.)
- *
- * -view and regions
- * region:load-view (view/widget name registered in app, [widget init options])
- * view:render-data (data)
- * ...(see more in documentations)
+ * 2. app.run([hybrid ready e]);
  * 
- * Suggested events are: [not included]
- * 		app:prompt (options) - app.onPrompt [not-defined]
- *   	app:error/info/success/warning (options) - app.onError [not-defined] //window.onerror is now rewired into this event as well.
- *    	app:login (options) - app.onLogin [not-defined]
- *     	app:logout (options) - app.onLogout [not-defined]
- *      app:server-push (options) - app.onServerPush [not-defined]
+ * Suggested additional events are:
+ *   	app:error - app.onError ==> window.onerror in hybrid mode.
+ *    	app:login - app.onLogin [not-defined]
+ *     	app:logout - app.onLogout [not-defined]
+ *      app:server-push - app.onServerPush [not-defined]
+ * You can define them in a fn through app.addInitializer(fn(options));
  * 
- * 6. Special global built-in coop events:
- * 		window-resized - upon window resize event
- * 		window-scroll - upon window scroll event
- * 
- * Usage (Specific)
- * ----------------------------
- * ###Building a view piece in application?
- * plugins to aid you:
- * 
- * 7. $.i18n
- * 8. $.popover
- * 9. $.overlay
- *
- * Lib enhancements to aid you:
- * 10. see lib+-/...
- *   		
  * 
  * Global vars
  * ------------
  * $window
  * $document
+ * $body, $head
  * Application
- * and the various libs global vars
  *
- * Global events
+ * 
+ * Global coop events
  * ------------
- * app:resized
- * app:scroll
+ * window-resized
+ * window-scroll
+ * context-switched
  * 
  *
  * @author Tim Lauv
  * @created 2014.02.17
  * @updated 2015.08.03
+ * @updated 2016.03.09
  */
 
 ;(function(app){
@@ -97,7 +50,7 @@
 		//1. Configure.
 		app.config = _.extend({
 
-			//------------------------------------------mainView-------------------------------------------
+			//------------------------------------------app.mainView-------------------------------------------
 			template: undefined,
 			layout: undefined,
 			//e.g:: have a unified layout template.
@@ -114,11 +67,12 @@
 			 * |		bottom 	      |
 			 * ------------------------		 
 			 * 
-			 * == --> layout: ['1:#top', ['5', ['1:left', '4:center', '1:right']], '1:.bottom,.bottom2    bottom3']
-			 */		
+			 * == --> layout: ['1:#top', ['5', ['1:left', '4:center', '1:right']], '1:.bottom, .bottom2, .bottom3']
+			 */	
 			contextRegion: 'contexts', //alias: navRegion
-			defaultContext: undefined, //This is the context (name) the application will sit on upon loading.
+			icings: {}, //various fixed overlaying regions for visual prompts ('name': {top, bottom, height, left, right, width})
 			//---------------------------------------------------------------------------------------------
+			defaultContext: undefined, //This is the context (name) the application will sit on upon loading.
 			fullScreen: false, //This will put <body> to be full screen sized (window.innerHeight).
 	        rapidEventDelay: 200, //in ms this is the rapid event delay control value shared within the application (e.g window resize).
 	        baseAjaxURI: '', //Modify this to fit your own backend apis. e.g index.php?q= or '/api',
@@ -142,12 +96,12 @@
 				return;
 			}
 
-			var path = '', options = options || '';
-			if(_.isString(options)){
-				path = options;
+			var path = '', opt = options || '';
+			if(_.isString(opt)){
+				path = opt;
 			}else {
 				//backward compatibility 
-				path = _.string.rtrim([options.context || app.currentContext.name, options.module || options.subpath].join('/'), '/');
+				path = _.string.rtrim([opt.context || app.currentContext.name, opt.module || opt.subpath].join('/'), '/');
 			}
 			if(silent || app.hybridEvent)
 				navigate(path);//hybrid app will navigate using the silent mode.
@@ -319,7 +273,7 @@
 
 			//7. Put main template into position.
 			app.addRegions({
-				app: '[region="app"]'
+				'region-app': '[region="app"]'
 			});
 			//Warning: calling ensureEl() on the app region will not work like regions in layouts.
 			//(Bug??: the additional <div> under the app region is somehow inevitable atm...)
@@ -334,10 +288,30 @@
 					name: 'Main',
 					layout: app.config.layout,
 				}, true);
-			app.getRegion('app').show(app.mainView);
+			app.getRegion('region-app').show(app.mainView).$el.css({height: '100%', width: '100%'});
 			app.trigger('app:mainview-ready');
 
-			//8. Start the app --> pre init --> initializers --> post init(router setup)
+			//8. Create the fixed overlaying regions according to app.config.icings (like a cake, yay!)
+			var icings = {};
+			_.each(app.config.icings, function(cfg, name){
+				if(name === 'app') return;
+
+				var irUID = _.uniqueId('app-icing-');
+				$body.append($('<div id="' + irUID + '" style="position:fixed"></div>').css(cfg).hide()); //default on hidden
+				icings[['icing', 'region', name].join('-')] = '#' + irUID;
+			});
+			app.addRegions(icings);
+			app.icing = function(name, flag){
+				var ir = app.getRegion(['icing', 'region', name].join('-'));
+				ir.ensureEl();
+				if(flag === false)
+					ir.$el.hide();
+				else
+					ir.$el.show();
+				return ir;
+			};
+
+			//9. Start the app --> pre init --> initializers --> post init(router setup)
 			app._ensureScreenSize(function(){
 				app.start();				
 			});
