@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.9.2 (2016-03-09*)
+1.9.2 (2016-03-10*)
 
 working on ...
 
@@ -14,7 +14,7 @@ working on ...
 * [cli] Enhance update cmd to also refresh mockups;
 
 
-1.9.1 (2016-03-09)
+1.9.1 (2016-03-10)
 -------------------
 1. Added favicon support mock in starter-kit index page;
 2. Updated default mockups;
@@ -46,7 +46,7 @@ working on ...
 28. Refined template caching (local-dom, remote and in-memory);
 29. Added view recognition to app.reload();
 30. Added app.throttle/debounce() apis to be used for action listeners;
-31. Added app.animateItems api;
+31. Added app.animateItems() api;
 32. Fixed mock json searching edge case: /name.json$/ --> name.mock.js;
 33. Fixed _.isPlainObject() method;
 34. Refined view.overlay/popover() anchor argument pick-up;
@@ -63,6 +63,9 @@ working on ...
 45. Refined svg support in view (Raphael/Snap.svg);
 46. Added app.i18n() api for using global I18N functions;
 47. Fixed build interference with the doc site sub-project;
+48. Fixed [region="app"] sizing regression;
+49. Added app.icing() api; (with app.config.icing)
+50. Added region.show('template string') direct call;
 
 
 1.8.7 (2015-12-07)
