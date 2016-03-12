@@ -3,6 +3,8 @@
 
 > Make sure to ask enough questions, so you can quickly locate the core problem that a given technique is trying to solve efficiently. Then go apply the technique and try making changes. Soon enough, you will start to see things like the solution maker, and concepts and ideas start to come out naturally. True understanding is almost always developed this way. If you can't feel the needs and constrains, you can't see through the solution.
 
+> -- Tim Lauv
+
 Frameworks are ways of doing things, they are biased. If you don't feel like doing things *their* way, identify the core problems and solve them in a sequence that fits you, and that process will eventually turn into *your* own framework.
 
 ###The Web app problem
@@ -17,19 +19,21 @@ A successful one requires both parts to employ careful design and feasible techn
 
 <img src="../implementation/static/resource/default/diagram/Diagram-2.png" alt="UI/UX Problems" class="center-block"></img>
 
-As you can see from the above diagram, there are 3 problems here to address when implementing a UI/UX side for an application:
-1. Data <i class="fa fa-arrows-h"></i> Model/Collection [snapshot]
-2. Model/Collection [snapshot] <i class="fa fa-arrows-h"></i> View (UI)
-3. View <i class="fa fa-arrows-h"></i> Layout/Page + Transitions (UX)
+As you can see from the above diagram, there are 4 problems here to address when implementing a UI/UX side for an application:
 
-Failing to address any of the 3 parts above will cost the project a significant amount of refractory time. Do *NOT* skip or trying to merge them into one big abstraction. Conquer each one with a consistent API style (like parameters and naming conventions) then combine the result. A complete system is never a destination, it is only a state of being or appearance. In other words, anytime you want your solution appear to be *a complete one*, focus on identifying the key problems and then solve them. Do *NOT* set your goal to be *a complete system* when start.
+1. Data <---> Snapshot
+2. Snapshot <---> View (UI ready)
+3. View <---> Layout/Overlays (Interactions: do\*/open/save/delete/move, find\*/filter/paginate, select)
+4. Visual Feedback (UX promote action result with transitions)
+
+Failing to address any of the 4 parts above will cost the project a significant amount of refractory time. Do *NOT* skip or trying to merge them into one big abstraction. Conquer each one with a consistent API style (like parameters and naming conventions) then combine the result. A complete system is never a destination, it is only a state of being or appearance. In other words, if you want your solution appear to be *a complete one*, focus on identifying the key problems and solve them coherently. Do *NOT* set your goal to be *a complete system* when start.
 
 So, how do we form our solution?
 
 ###Moving away from ExtJS
 We have been developing in ExtJS4 for 2+ years, starting form the last version of 4.0.x which is the promising 4.0.7. As our knowledge base expands, we felt that it is time to form our own blueprint of a modern data heavy web application to shorten the development cycles. Here are some of the main reasons:
 
-1. Although it is relatively fast to develop prototypes using an all-in-one framework like ExtJS, it is hard to maintain the code while keeping up with the changes required by the users and those that come from Sencha. The widgets are bound too tightly with the framework.
+1. Although it is relatively fast to develop prototypes using an all-in-one framework like ExtJS, it is hard to maintain the code while keeping up with the changes required by new features and those that come from Sencha. The widgets are bound too tightly with the framework.
 2. Loading, DOM interfacing, Widget and Application containers are all provided with a biased opinion, which always leads to fighting with the framework here and there or messing around with the life-cycles defined when trying to implement application specific user requirements. 
 3. Performance issues. There are often a massive amount of unnecessary DOM elements lurking in the client browser. We have very limited control over the life-cycles nor the HTML template structure of the components. Making widgets as Classes and loading like Java is really a bad idea for Javascript.
 4. Theming difficulties. It is hard to theme an ExtJS application correctly given the extensively nested component structure and the lack of SASS/Compass adaptation among developers.
@@ -37,19 +41,19 @@ We have been developing in ExtJS4 for 2+ years, starting form the last version o
 
 If the above listing can not convince you, try to compare the ExtJS solutions to the web application building process with ours: (Strict MVC vs View centric)
 
-0. Classes vs 4 types of general view;
-1. Containers vs General in-template regions;
-2. Layouts vs Dynamic grid system;
+0. Classes vs 4 types of general View;
+1. Containers vs in-template regions;
+2. Absolute positioning vs Dynamic grid/layout system;
 3. Thick data layer vs A single remote() API;
 4. Single Viewport vs Switchable Contexts;
-5. Controllers vs Generic events and view actions;
+5. Controllers vs View events and actions;
 6. XTemplate vs Mustache/Handlebars;
 
 The one thing that ExtJS could not get right and still is getting wrong is that it tries to use Javascript like JAVA and dominating HTML/CSS manipulation. It casts the developers out to a changed problem domain where basic problems are taken cared of in a complicated/overkilled way so that the programs can be written like *piles of configure files*. 
 
-The *Class* system confuses developers coding in Javascript's function scope, the heavy *Layout* system kills what HTML/CSS is designed for and good at, the thick *Data* layer tries to isolate data snapshot from their in-separable views and the *Controllers* pulls developers out into another place to define routines just to have the listeners wired back again into the views. All of these ignores the fact that the core of a web application is at HTML(client-side) and the data(server side), not the glue and state snapshots. (Well, maybe in 5.0 they can fix it, we have high hope on this...)
+The *Class* system confuses developers coding in Javascript's function scope, the heavy *Layout* system kills what HTML/CSS is designed for and good at, the thick *Data* layer tries to isolate data snapshot from their in-separable views and the *Controllers* pulls developers out into another place to define routines just to have the listeners wired back again into the views. All of these ignores the fact that the core of a web application is at HTML(client-side) and the data(server side), not the glue and state snapshots. (Well, maybe in 5.0 they can fix it, we have high hope for them...)
 
-Whatever you do, *Do NOT* stack up abstraction layers over layers so further programs can be written like configuration files. It will be slow to run, even harder to change and incur a very steep learning curve for new comers...
+Whatever you do, *Do NOT* stack up abstraction layers over layers so further programs can be written like configuration files. It will be slow to run, even harder to change and incur a very steep learning curve to new comers...
 
 We choose to move away from this heavy framework to avoid its complexity and downside and to have more control over the component life-cycles, interactions and application container separately. An equally powerful yet still lightweight solution combining the best practices in the field is thus made. 
 
@@ -61,29 +65,26 @@ As *Design Patterns* dictates, we need to code in a way to:
 ###Rules of Thumb
 ####General
 * Keep things simple, especially the simple ones.
-* Categorization before abstraction.
-* Separate, Reuse and Pipeline.
-* Cleaner method signature. Options as a single object parameter.
+* Categorization before abstraction. Be purpose oriented.
+* Cleaner method signature. Options as the second parameter (1st one being the most common arg).
 * Events for collaborations and process control instead of APIs. Promises for asynchronous operations instead of callbacks.
 
-Start with user requirements/stories and focus on serving the customers' need. Use the 80/20 rule to pick out important features/functionalities and implement them first. Gradually refine code and documentation later. Remember to write down **why** before **how** in the code comments. !FOCUS!
+Start with user requirements/stories and focus on serving the customers' need (piggy back a feature feedback loop to your app core so it coherently fits with others). Use the 80/20 rule to pick out important features/functionalities and implement them first. Gradually refine code and documentation later (cut waste in steps, resources and communications). Remember to write down **why** before **how** in the code comments. !FOCUS!
 
 ####GUI
 * Concision - exact but nothing more
 * Expressiveness - allow useful possibilities be deducted
-* Ease - low mnemonic load on commands, control sequence
-* Transparency - low mnemonic load in user's mind for keeping track of states/layers of task at hand
+* Ease & Transparency - low mnemonic load in user's mind for keeping track of states/layers of task, command sequence.
 * Script-ability - batch-able, automate-able
 
 ####Product design
 Goal-Driven! Design through the api-interaction-transition tuples.
 
-           interaction (UI)
-          /           \
-(Data) api             transition, visual (UX)
+           (Data) api --- interaction (UI) --- visual feedback (UX)
 
-* Match a list of goals with a list of UIs (flow)
-* Serve the list of UIs with a list of apis (read)
-* Link the UI actions with more apis (create, update, delete, execute)
-* Guard UI actions with validation, prompts and help
+####Bootstrapping Project
+* Match a list of goals with a list of UIs (template: size, space, item, clickables)
+* Serve the list of UIs with a list of apis (data)
+* Link the UI actions apis (actions)
 * Enhance UI with transitions and color/type/scale/layer/texture/image & icon
+* Guide UI actions with validation, and help
