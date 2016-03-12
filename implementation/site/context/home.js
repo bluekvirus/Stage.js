@@ -49,6 +49,7 @@
 		onShow: function(){
 			//title + short desc
 			this.title.show(app.view({
+				tooltip: true,
 				template: [
 					'<i class="project-title" style="margin-bottom:20px;"></i>',
 					app.markdown([
@@ -73,6 +74,14 @@
 						'<a href="https://www.npmjs.org/package/stage-devtools"><img src="http://img.shields.io/npm/v/stage-devtools.svg?style=flat-square" alt="DevTools Version"></img></a> ', //version badge
 						'<a href="http://cordova.apache.org/"><img src="http://img.shields.io/badge/supports-Cordova-3B4854.svg?style=flat-square" alt="Supports Cordova"></img></a>', //cordova badge
 					'</p>',
+					'<p>',
+						'Supported Browsers: ',
+						'<i class="fa fa-firefox cursor-hand" data-toggle="tooltip" data-placement="bottom" title="Firefox Latest"></i> ',
+						'<i class="fa fa-chrome cursor-hand" data-toggle="tooltip" data-placement="bottom" title="Chrome Latest"></i> ',
+						'<i class="fa fa-edge cursor-hand" data-toggle="tooltip" data-placement="bottom" title="IE Edge/10+"></i> ',
+						'<i class="fa fa-safari cursor-hand" data-toggle="tooltip" data-placement="bottom" title="Safari (experimental)"></i> ',
+						'<i class="fa fa-opera cursor-hand" data-toggle="tooltip" data-placement="bottom" title="Opera (experimental)"></i> ',
+					'<p>'
 				],
 		
 				onShow: function(){
@@ -108,7 +117,7 @@
 	app.view('Home.Footer', {
 		template: [
 			'<span class="pull-right github-link"><a href="https://github.com/bluekvirus/Stage.js/"><i class="fa fa-github"></i>View on Github</a></span>',	
-			'<span>Super-powered by Stage.js © 2013 - 2015</span> ',		
+			'<span>Super-powered by Stage.js © 2013 - 2016</span> ',		
 			'<p>Code licensed under The <a href="http://opensource.org/licenses/MIT">MIT</a> License. Documentation licensed under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>',
 		]
 	});

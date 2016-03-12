@@ -7,7 +7,126 @@
  * @updated 2015.12.03
  * @updated 2015.12.07
  * @updated 2015.12.15
+ * @updated 2016.03.11
  */
+
+/**
+ * =================================
+ * Helpers
+ * =================================
+ */
+.cursor {
+    //---status---
+    &-context-menu {
+        cursor: context-menu;
+    }
+    &-help {
+        cursor: help;
+    }
+    &-pointer, &-hand {
+        cursor: pointer;
+    }
+    &-progress {
+        cursor: progress;
+    }
+    &-wait {
+        cursor: wait;
+    }
+
+    //---selection---
+    &-cell, &-selectable {
+        cursor: cell; //[+] means selectable
+    }
+    &-crosshair {
+        cursor: crosshair;
+    }
+    &-text {
+        cursor: text;
+    }
+    &-vertical-text, &-v-text {
+        cursor: vertical-text;
+    }
+
+    //---dnd---
+    &-alias, &-shortcut {
+        cursor: alias;
+    }
+    &-copy {
+        cursor: copy;
+    }
+    &-move {
+        cursor: move;
+    }
+    &-no-drop {
+        cursor: no-drop;
+    }
+    &-not-allowed {
+        cursor: not-allowed;
+    }
+
+    //---scroll-resize---
+    &-all-scroll, &-pan {
+        cursor: all-scroll;
+    }
+    &-col-resize, &-h-resize {
+        cursor: col-resize;
+    }
+    &-row-resize, &-v-resize {
+        cursor: row-resize;
+    }
+    &-n-resize {
+        cursor: n-resize;
+    }
+    &-e-resize {
+        cursor: e-resize;
+    }
+    &-s-resize {
+        cursor: s-resize;
+    }
+    &-w-resize {
+        cursor: w-resize;
+    }
+    &-ne-resize {
+        cursor: ne-resize;
+    }
+    &-nw-resize {
+        cursor: nw-resize;
+    }
+    &-se-resize {
+        cursor: se-resize;
+    }
+    &-sw-resize {
+        cursor: sw-resize;
+    }
+    &-ew-resize {
+        cursor: ew-resize;
+    }
+    &-ns-resize {
+        cursor: ns-resize;
+    }
+    &-nesw-resize {
+        cursor: nesw-resize;
+    }
+    &-nwes-resize {
+        cursor: nwes-resize;
+    }
+
+    //---zoom---
+    &-zoom-in {
+        cursor: zoom-in;
+    }
+    &-zoom-out {
+        cursor: zoom-out;
+    }
+
+    //---grab---
+    &-grab {
+        cursor: grab;
+    }
+    &-grabbing {
+        cursor: grabbing;
+    }
+}
 
 
 /**
@@ -389,7 +508,7 @@
  * =================================================
  */
 
-// Tree ---------------------------------------------------
+// Tree
 .tree {
     list-style: none;
     .node {
@@ -413,7 +532,7 @@
     }
 }
 
-// MD ------------------------------------------------------
+// MD
 .md-content {
     h1,
     h2,
@@ -494,16 +613,18 @@
     }
 }
 
+// Split
 .split-hbar {
-    background: darkGrey;
+    background: @gray-dark;
     height: 3px;
 }
 
 .split-vbar {
-    background: darkGrey;
+    background: @gray-dark;
     width: 3px;
 }
 
+// Notification
 .amaran {
     border-radius: @border-radius-base;
     width: @notification-width-base;
@@ -519,6 +640,12 @@
         background: none;
     }
 }
+
+// Popover
+.popover{
+  max-width: auto;
+}
+
 
 /**
  * ===============================================
@@ -614,7 +741,6 @@
     }
   }
 }
-
 
 .checkbox{
   padding-left: 20px;
@@ -804,9 +930,4 @@ input[type="radio"] {
       color: #fff;
     }
   }
-}
-
-//popover
-.popover{
-  max-width: auto;
 }
