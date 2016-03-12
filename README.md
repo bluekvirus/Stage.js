@@ -45,35 +45,24 @@ What's next?
 
 2.0.0 Roadmap:
 * AMD support; (:heavy_check_mark:)
-* ECMAScript 5 & 6 support; (:heavy_check_mark:)
-* Handshake/Async mode support in app init,load and view init; (:heavy_check_mark:)
-* Support reactive view building concept; (optional two-way bindings through MVVM) (:heavy_check_mark:)
-* Global co-op events; (:heavy_check_mark:, back-ported)
-* Merge Context, Regional, Widget, Editor and Canvas to be generic named Views; (:heavy_check_mark:, back-ported)
-* Refine the navigation and layout region concepts; (:heavy_check_mark:)
-* Remove deps on Backbone.js, Marionette.js, jQuery UI Core to have a lightweight core; (:heavy_check_mark:)
-* Remove theming/templating deps on Bootstrap (free to choose your own); (:heavy_check_mark:)
-* Remove optional charting deps on Raphael (free to choose your own); (:heavy_check_mark:)
-* Keep [Cordova](https://cordova.apache.org/) hybrid HTML5 mobile app support (touch, gestures, ready-e); (:heavy_check_mark:)
-* Keep i18n, data validators, async coordination support; (:heavy_check_mark:) 
-* Put custom-made dev process pipeline onto Gulp; (:heavy_check_mark:)
-* Data handling shortcuts in Views (data property, set()/get()/refresh()) (:heavy_check_mark:, from v1);
-* Websocket integration for messaging/notification & peer discovery; (:heavy_check_mark:, from v1)
-* Test automation in BDD; (in progress)
-* WebRTC integration for peer-to-peer data/stream sharing;
+* ECMAScript6 (2015) support; (:heavy_check_mark:)
+* Build a lightweight framework core from scratch; (:heavy_check_mark:)
+* Handshake (Full-Async) mode for app init,load and view init; (:heavy_check_mark:)
+* Support optional reactive view building; (two-way bindings through MVVM) (:heavy_check_mark:)
+* Remove theming/templating deps on Bootstrap (easy to hook your own); (:heavy_check_mark:)
+* Port custom-made DevOps process pipeline onto Gulp; (:heavy_check_mark:)
+* Introduce data engine to App (separated app.remote() call in Views); (in progress)
 * Introduce state machine into Views;
-* Introduce data/state engine into App;
+* WebRTC integration for peer-to-peer data/stream sharing;
 * Give View action listeners a choice to go background (Web Worker);
 
 
 Optional:
-* complete filter/sorter/pager in views (v1 has remote version only);
+* complete filter/sort/pagination in views (v1 has remote version only);
 * form & input wrappers (already in v1);
-* view to ui prompts (overlay already in v1, need notification, popover);
-* view transition effects (already in v1);
-* grid and cells (already in v1);
-* tree and recursive views (already in v1);
-* dev-server stack; (already in v1);
+* datagrid (already in v1);
+* tree (already in v1);
+* dev-server; (already in v1);
 
 
 Contribute
@@ -93,10 +82,10 @@ npm install
 node run default
 node run site --fonts bootstrap,open-sans-fontface,fontawesome
 
-//4-1 fire up dev server (background logging)
+//4.a fire up dev server (background logging)
 ./start.sh
-
-//4-2 fire up dev server (foreground logging)
+//or
+//4.b fire up dev server (foreground logging)
 npm start
 ```
 This should fire-up the development server. It will serve the `/implementation` folder as web root on the port define by `/tools/devserver/profile/default`. Please go check the content of this profile config file before starting. It has some nice middlewares and auto-change-detectors there you can switch on/off to make the development a lot easier.
