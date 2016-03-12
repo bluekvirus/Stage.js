@@ -1,3 +1,5 @@
+This is put here to remind me how clumsy it was when it first get started... 
+
 ProJS
 =====
 *An intuitive web application architecture and implementation* - by Tim(Zhiyuan).Liu
