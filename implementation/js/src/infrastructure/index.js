@@ -71,6 +71,7 @@
 			 */	
 			contextRegion: 'contexts', //alias: navRegion
 			icings: {}, //various fixed overlaying regions for visual prompts ('name': {top, bottom, height, left, right, width})
+						//alias -- curtains
 			//---------------------------------------------------------------------------------------------
 			defaultContext: undefined, //This is the context (name) the application will sit on upon loading.
 			fullScreen: false, //This will put <body> to be full screen sized (window.innerHeight).
@@ -293,7 +294,7 @@
 
 			//8. Create the fixed overlaying regions according to app.config.icings (like a cake, yay!)
 			var icings = {};
-			_.each(app.config.icings, function(cfg, name){
+			_.each(_.extend({}, app.config.icings, app.config.curtains), function(cfg, name){
 				if(name === 'app') return;
 
 				var irUID = _.uniqueId('app-icing-');

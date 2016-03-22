@@ -4,6 +4,7 @@ Change Log
 
 1. Added .btn-pointy-right/left to base theme; (default size only)
 2. Added .pointer-up/down/left/right and .relative-ct to base theme;
+3. Added app.config.curtains as an alias to app.config.icings; 
 
 working on ...
 

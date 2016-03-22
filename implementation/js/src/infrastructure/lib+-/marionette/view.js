@@ -354,9 +354,6 @@
 	 			//check whether the placement has auto for better placement, if not add auto
 	 			if(options.placement.indexOf('auto') < 0)
 	 				options.placement = 'auto '+options.placement;
-	 			//check whether the content has been overwritten by the options
-	 			if( options.content !== this.render().$el )
-	 				console.warn('DEV::Popover::You have overwritten the content in your options, make sure that is what you intend to do!');
 	 			//check whether user has given custom container
 	 			if( options.container !== 'body' ){
 	 				console.warn('DEV::Popover::You have overwritten the container. It might cause incorrect in display.');

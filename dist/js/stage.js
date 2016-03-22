@@ -125,6 +125,7 @@
 			 */	
 			contextRegion: 'contexts', //alias: navRegion
 			icings: {}, //various fixed overlaying regions for visual prompts ('name': {top, bottom, height, left, right, width})
+						//alias -- curtains
 			//---------------------------------------------------------------------------------------------
 			defaultContext: undefined, //This is the context (name) the application will sit on upon loading.
 			fullScreen: false, //This will put <body> to be full screen sized (window.innerHeight).
@@ -347,7 +348,7 @@
 
 			//8. Create the fixed overlaying regions according to app.config.icings (like a cake, yay!)
 			var icings = {};
-			_.each(app.config.icings, function(cfg, name){
+			_.each(_.extend({}, app.config.icings, app.config.curtains), function(cfg, name){
 				if(name === 'app') return;
 
 				var irUID = _.uniqueId('app-icing-');
@@ -4319,9 +4320,6 @@ module.exports = DeepModel;
 	 			//check whether the placement has auto for better placement, if not add auto
 	 			if(options.placement.indexOf('auto') < 0)
 	 				options.placement = 'auto '+options.placement;
-	 			//check whether the content has been overwritten by the options
-	 			if( options.content !== this.render().$el )
-	 				console.warn('DEV::Popover::You have overwritten the content in your options, make sure that is what you intend to do!');
 	 			//check whether user has given custom container
 	 			if( options.container !== 'body' ){
 	 				console.warn('DEV::Popover::You have overwritten the container. It might cause incorrect in display.');
@@ -7501,4 +7499,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.9.1-1072 build 1457761009303";
+;;app.stagejs = "1.9.1-1079 build 1458689872200";
