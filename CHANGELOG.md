@@ -2,6 +2,9 @@ Change Log
 ==========
 1.9.2 (2016-03-10*)
 
+1. Added .btn-pointy-right/left to base theme; (default size only)
+2. Added .pointer-up/down/left/right and .relative-ct to base theme;
+
 working on ...
 
 * Adding more unit tests;
