@@ -272,6 +272,45 @@
     }
 }
 
+// Pointer (Triangle) -- needs absolute (or float, less likely) to work
+//(use font-size for size, border-color for backgroud)
+//(use top, left to position it inside a .pointer-ct)
+.pointer-ct, .relative-ct {
+    position: relative;
+}
+.pointer {
+    position: absolute; //always honor width/height
+    width: 0; 
+    height: 0;
+    border: 0.5em solid @border-color-base;
+    top: 50%;
+    left: 50%;
+
+    &-up {
+        border-top: 0;
+        border-left-color: transparent !important; //so we can just set border-color to change any type of pointer.
+        border-right-color: transparent !important;
+    }
+
+    &-down {
+        border-bottom: 0;
+        border-left-color: transparent !important;
+        border-right-color: transparent !important;
+    }
+
+    &-right {
+        border-right: 0;
+        border-top-color: transparent !important;
+        border-bottom-color: transparent !important;
+    }
+
+    &-left {
+        border-left: 0;
+        border-top-color: transparent !important;
+        border-bottom-color: transparent !important;
+    }
+}
+
 // Circle --------------------------
 //mixin
 .circle(@size: 2.4em) {
@@ -286,14 +325,6 @@
     //Note: if you have more than 3 chars as content, increase @size
 }
 
-// Center (mixin) ------------------
-// .center-box(@width, @height) {
-//   .center-block();
-//   position: absolute;
-//   top: 50%;
-//   margin-top: -@heigth;
-//   .size(@width, @height);
-// }
 // Heading ----------------------
 .heading {
     padding-left: 1.5em;
@@ -439,7 +470,7 @@
     .segmented-control(danger);
 }
 
-// Callouts (suggestion: use h4 as headings, credit: https://github.com/dotnetchris)
+// Callouts (suggestion: use h4 as headings, @credit: https://github.com/dotnetchris)
 .callout(@color, @bgcolor: lighten(@color, 35%)) {
     display: block;
     margin: 20px 0;
@@ -722,15 +753,18 @@
 //Button Pointy -------------------------
 //@credit https://github.com/shpoont/bootstrap-arrow-buttons
 @pointy-button-font-size: @font-size-base;
-@pointy-button-padding-tb: @pointy-button-font-size * 0.5;
-@pointy-button-height: @pointy-button-padding-tb * 2 + @pointy-button-font-size * @line-height-base;
-@pointy-button-corner-square-size: @pointy-button-height / sqrt(2);
-@pointy-button-ba-delta: 5px;
+@pointy-button-padding-tb: ceil(@pointy-button-font-size * 0.5);
+@pointy-button-height: ceil(@pointy-button-padding-tb * 2 + @pointy-button-font-size * @line-height-base);
+@pointy-button-corner-square-size: ceil(@pointy-button-height / sqrt(2)); //use ceil to smooth
+@pointy-button-ba-delta: 5px; //::before/::after vertical offset delta compensation
+@pointy-button-aliasing-factor: 1; //not used in normal sized pointy button
 
 .btn-pointy-right,
 .btn-pointy-left {
     position: relative;
     padding: @pointy-button-padding-tb @pointy-button-height / 2;
+    border: 0;
+    margin-left: @pointy-button-font-size * 0.2;
 }
 .btn-pointy-right {
     padding-left: @pointy-button-height; 
@@ -742,9 +776,9 @@
 .btn-pointy-right:after,
 .btn-pointy-left:before,
 .btn-pointy-left:after { /* make two squares (before and after), looking similar to the button */
-    content:"";
-    position: absolute;
-    top: @pointy-button-ba-delta; /* move it down because of rounded corners */ 
+    content:" ";
+    position: absolute; //so the width/height takes effect.
+    top: @pointy-button-ba-delta * @pointy-button-aliasing-factor; /* move it down because of rounded corners */ 
     width: @pointy-button-corner-square-size; /* same as height */
     height: @pointy-button-corner-square-size; /* button_inner_height / sqrt(2) */
     background: inherit; /* use parent background */
@@ -763,15 +797,17 @@
 }
 .btn-pointy-right:before,
 .btn-pointy-left:before { /* align the "before" square to the left */
-    left: -@pointy-button-height / 2 + @pointy-button-ba-delta; 
+    left: (@pointy-button-ba-delta - @pointy-button-height / 2) * @pointy-button-aliasing-factor; 
 }
 .btn-pointy-right:after,
 .btn-pointy-left:after { /* align the "after" square to the right */
-    right: -@pointy-button-height / 2 + @pointy-button-ba-delta;
+    right: (@pointy-button-ba-delta - @pointy-button-height / 2) * @pointy-button-aliasing-factor;
 }
 .btn-pointy-right:after,
 .btn-pointy-left:before { /* bring arrow pointers to front */
     z-index: 1;
+    border-top-left-radius: 2px;
+    border-bottom-right-radius: 2px;
 }
 .btn-pointy-right:before,
 .btn-pointy-left:after { /* hide arrow tails background */
