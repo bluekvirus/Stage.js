@@ -712,10 +712,70 @@
     }
 }
 
+//Button Circle -------------------------
 //.circle applied to (icon-font) .btn
 .btn.circle {
     .circle();
     box-shadow: 1px 1px 1px rgba(127, 127, 127, 0.5);
+}
+
+//Button Pointy -------------------------
+//@credit https://github.com/shpoont/bootstrap-arrow-buttons
+@pointy-button-font-size: @font-size-base;
+@pointy-button-padding-tb: @pointy-button-font-size * 0.5;
+@pointy-button-height: @pointy-button-padding-tb * 2 + @pointy-button-font-size * @line-height-base;
+@pointy-button-corner-square-size: @pointy-button-height / sqrt(2);
+@pointy-button-ba-delta: 5px;
+
+.btn-pointy-right,
+.btn-pointy-left {
+    position: relative;
+    padding: @pointy-button-padding-tb @pointy-button-height / 2;
+}
+.btn-pointy-right {
+    padding-left: @pointy-button-height; 
+}
+.btn-pointy-left {
+    padding-right: @pointy-button-height;
+}
+.btn-pointy-right:before,
+.btn-pointy-right:after,
+.btn-pointy-left:before,
+.btn-pointy-left:after { /* make two squares (before and after), looking similar to the button */
+    content:"";
+    position: absolute;
+    top: @pointy-button-ba-delta; /* move it down because of rounded corners */ 
+    width: @pointy-button-corner-square-size; /* same as height */
+    height: @pointy-button-corner-square-size; /* button_inner_height / sqrt(2) */
+    background: inherit; /* use parent background */
+    border: inherit; /* use parent border */
+    border-left-color: transparent; /* hide left border */
+    border-bottom-color: transparent; /* hide bottom border */
+    border-radius: 0px @border-radius-base 0px 0px; /* round arrow corner, the shorthand property doesn't accept "inherit" so it is set to 4px */
+}
+.btn-pointy-right:before,
+.btn-pointy-right:after {
+    transform: rotate(45deg); /* rotate right arrow squares 45 deg to point right */
+}
+.btn-pointy-left:before,
+.btn-pointy-left:after {
+    transform: rotate(225deg); /* rotate left arrow squares 225 deg to point left */
+}
+.btn-pointy-right:before,
+.btn-pointy-left:before { /* align the "before" square to the left */
+    left: -@pointy-button-height / 2 + @pointy-button-ba-delta; 
+}
+.btn-pointy-right:after,
+.btn-pointy-left:after { /* align the "after" square to the right */
+    right: -@pointy-button-height / 2 + @pointy-button-ba-delta;
+}
+.btn-pointy-right:after,
+.btn-pointy-left:before { /* bring arrow pointers to front */
+    z-index: 1;
+}
+.btn-pointy-right:before,
+.btn-pointy-left:after { /* hide arrow tails background */
+    background-color: white;
 }
 
 //Label -------------------------
