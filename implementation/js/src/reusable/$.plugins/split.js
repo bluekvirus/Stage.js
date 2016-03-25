@@ -289,9 +289,7 @@
 				else
 					console.warn('please check your region/view name setting.');
 			}
-		}/*else{//do not throw error if there is no second parameter
-			throw new Error('Dev::runtime::split-plugin::you need to provide a region/view name');
-		}*/
+		}
 		return rvname;
 	};
 

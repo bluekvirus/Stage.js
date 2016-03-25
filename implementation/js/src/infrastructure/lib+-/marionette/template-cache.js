@@ -3,7 +3,7 @@
  *
  * @author Tim Lauv
  * @created 2014.02.25
- * @updated 2016.02.04
+ * @updated 2016.03.24
  */
 ;(function(app){
 
@@ -42,7 +42,13 @@
 			if(_.string.startsWith(idOrTplString, '@')) {
 				//fetch from remote: (might need server-side CORS support)
 				//**Caveat: triggering app.inject.tpl() will replace the cache object that triggered this loadTemplate() call.
-				return this.rawTemplate || app.inject.tpl(idOrTplString);
+				if(this.rawTemplate)
+					return this.rawTemplate;
+				var rtpl; //sync mode injecting
+				app.inject.tpl(idOrTplString, true).done(function(tpl){
+					rtpl = tpl;
+				});
+				return rtpl;
 			}
 			//string and string array
 			return app.Util.Tpl.build(idOrTplString);

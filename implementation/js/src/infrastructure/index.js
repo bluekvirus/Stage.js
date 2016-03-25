@@ -34,11 +34,12 @@
  * @author Tim Lauv
  * @created 2014.02.17
  * @updated 2015.08.03
- * @updated 2016.03.09
+ * @updated 2016.03.24
  */
 
 ;(function(app){
 
+	//setup configures, navigation mechanisms (both ctx switch and #history) and 1st(main) view.
 	app.setup = function(config){
 		
 		//0. Re-run app.setup will only affect app.config variable.
@@ -149,7 +150,7 @@
 					var targetRegion = app.mainView.getRegion(navRegion);
 					if(!targetRegion) throw new Error('DEV::Application::navigate() You don\'t have region \'' + navRegion + '\' defined');		
 					
-					//note that .show() might be async due to region enter/exit effects
+					//note that .show() is guaranteed to happen after region enter/exit effects
 					targetCtx.once('show', function(){
 						app.currentContext = targetCtx;
 						//fire a notification to app as meta-event.
@@ -166,10 +167,50 @@
 			}
 		//-----------------------
 
-		//4 Activate Routing AFTER running all the initializers user has defined
-		//Context Switching by Routes (can use href = #navigate/... to trigger them)
-		app.on("initialize:after", function(options){
-			//init client page router and history:
+		//4 Put up Main View and activate Routing (href = #navigate/...) AFTER running all the initializers user has defined.
+		app.on("app:initialized", function(options){
+
+			//a. Put main template into position.
+			app.addRegions({
+				'region-app': '[region="app"]'
+			});
+			//Warning: calling ensureEl() on the app region will not work like regions in layouts.
+			//(Bug??: the additional <div> under the app region is somehow inevitable atm...)
+			app.trigger('app:before-mainview-ready');
+			if(!app.config.layout)
+				app.mainView = app.mainView || app.view({
+					name: 'Main',
+					template: app.config.template || ('<div region="' + (app.config.navRegion || app.config.contextRegion) + '"></div>')
+				}, true);
+			else
+				app.mainView = app.mainView || app.view({
+					name: 'Main',
+					layout: app.config.layout,
+				}, true);
+			app.getRegion('region-app').show(app.mainView).$el.css({height: '100%', width: '100%'});
+			app.trigger('app:mainview-ready');
+
+			//b. Create the fixed overlaying regions according to app.config.icings (like a cake, yay!)
+			var icings = {};
+			_.each(_.extend({}, app.config.icings, app.config.curtains), function(cfg, name){
+				if(name === 'app') return;
+
+				var irUID = _.uniqueId('app-icing-');
+				$body.append($('<div id="' + irUID + '" style="position:fixed"></div>').css(cfg).hide()); //default on hidden
+				icings[['icing', 'region', name].join('-')] = '#' + irUID;
+			});
+			app.addRegions(icings);
+			app.icing = function(name, flag){
+				var ir = app.getRegion(['icing', 'region', name].join('-'));
+				ir.ensureEl();
+				if(flag === false)
+					ir.$el.hide();
+				else
+					ir.$el.show();
+				return ir;
+			};
+
+			//c. init client page router and history:
 			var Router = Backbone.Marionette.AppRouter.extend({
 				appRoutes: {
 					'navigate/*path' : 'navigateTo', //navigate to a context and signal it about *module (can be a path for further navigation within)
@@ -185,7 +226,7 @@
 			if(Backbone.history)
 				Backbone.history.start();
 
-			//Auto navigate to init context (view that gets put in mainView's navRegion)
+			//d. Auto navigate to init context (view that gets put in mainView's navRegion)
 			if(!window.location.hash && app.config.defaultContext)
 				app.navigate(app.config.defaultContext);
 		});
@@ -194,7 +235,7 @@
 	};
 
 	/**
-	 * Define app starting point function
+	 * Define app init function upon doc.ready
 	 * -----------------------------------------
 	 * We support using stage.js in a hybrid app
 	 * 
@@ -203,6 +244,7 @@
 
 		hybridEvent = (hybridEvent === true) ? 'deviceready' : hybridEvent;
 
+		//called upon doc.ready
 		function kickstart(){
 
 			//1. Check if we need 'fast-click' on mobile plateforms
@@ -257,68 +299,34 @@
 
 			//4 Load Theme css & View templates & i18n translations
 			var theme = app.uri(window.location.toString()).search(true).theme || app.config.theme;
+			//4.0 Dynamic theme (skipped)
 			if(theme){
 				console.warn('DEV::Application::theme is now deprecated, please use theme css directly in <head>');
 			}
 
-			//5 Inject template pack
-			if(app.config.viewTemplates)
-				app.inject.tpl('all.json');
-
-			//6. Activate i18n
-			I18N.configure({
-				locale: app.config.i18nLocale,
-				resourcePath: app.config.i18nResources,
-				translationFile: app.config.i18nTransFile
+			//4.1 Inject template pack
+			app.addInitializer(function(){
+				//based on path in app.config.viewTemplates
+				return app.inject.tpl('all.json');
 			});
 
-			//7. Put main template into position.
-			app.addRegions({
-				'region-app': '[region="app"]'
+			//4.2 Activate i18n
+			app.addInitializer(function(){
+				return I18N.init({
+					locale: app.config.i18nLocale,
+					resourcePath: app.config.i18nResources,
+					translationFile: app.config.i18nTransFile
+				});
 			});
-			//Warning: calling ensureEl() on the app region will not work like regions in layouts.
-			//(Bug??: the additional <div> under the app region is somehow inevitable atm...)
-			app.trigger('app:before-mainview-ready');
-			if(!app.config.layout)
-				app.mainView = app.mainView || app.view({
-					name: 'Main',
-					template: app.config.template || ('<div region="' + (app.config.navRegion || app.config.contextRegion) + '"></div>')
-				}, true);
-			else
-				app.mainView = app.mainView || app.view({
-					name: 'Main',
-					layout: app.config.layout,
-				}, true);
-			app.getRegion('region-app').show(app.mainView).$el.css({height: '100%', width: '100%'});
-			app.trigger('app:mainview-ready');
 
-			//8. Create the fixed overlaying regions according to app.config.icings (like a cake, yay!)
-			var icings = {};
-			_.each(_.extend({}, app.config.icings, app.config.curtains), function(cfg, name){
-				if(name === 'app') return;
-
-				var irUID = _.uniqueId('app-icing-');
-				$body.append($('<div id="' + irUID + '" style="position:fixed"></div>').css(cfg).hide()); //default on hidden
-				icings[['icing', 'region', name].join('-')] = '#' + irUID;
-			});
-			app.addRegions(icings);
-			app.icing = function(name, flag){
-				var ir = app.getRegion(['icing', 'region', name].join('-'));
-				ir.ensureEl();
-				if(flag === false)
-					ir.$el.hide();
-				else
-					ir.$el.show();
-				return ir;
-			};
-
-			//9. Start the app --> pre init --> initializers --> post init(router setup)
+			//5. Start the app --> pre init --> initializers --> post init(router setup)
 			app._ensureScreenSize(function(){
 				app.start();				
 			});
 
 		}
 
+		//hook up desktop/mobile doc.ready respectively.
 		if(hybridEvent){
 			//Mobile development
 			app.hybridEvent = hybridEvent; //window.cordova is probably true.

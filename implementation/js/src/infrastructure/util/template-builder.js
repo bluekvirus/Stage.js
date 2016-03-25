@@ -1,16 +1,18 @@
 /**
  * This is the template builder/registry util, making it easier to create new templates for View objects.
+ * (used by M.TemplateCache* in template-cache.js)
  *
  * Note: use build() for local templates and remote() for remote ones
  *
  * Usage (name as id)
  * -----
  * app.Util.Tpl.build(name, [</>, </>, ...]) / ([</>, </>, ...]) / ('</></>...</>')
- * app.Util.Tpl.remote(name, base) - default on using app.config.viewTemplates as base
+ * app.Util.Tpl.remote(name, base, sync) - default on using app.config.viewTemplates as base
  *
  * @author Tim Lauv
  * @create 2013.12.20
  * @updated 2014.10.25
+ * @updated 2016.03.24
  */
 
 ;(function(app){
@@ -26,13 +28,9 @@
 		cache: Backbone.Marionette.TemplateCache,
 
 		build: function (name, tplString){
-			//if(arguments.length === 0 || _.string.trim(name) === '') return {id:'#_blank', tpl: ' '};
 			if(arguments.length === 1) {
-				//if(_.string.startsWith(name, '#')) return {id: name};
 				tplString = name;
 				name = null;
-				//name = _.uniqueId('tpl-gen-');
-				//if(!_.isArray(tplString)) tplString = [tplString];
 			}
 			var tpl = _.isArray(tplString)?tplString.join(''):tplString;
 
@@ -55,44 +53,42 @@
 		//load all prepared/combined templates from server (*.json without CORS)
 		//or
 		//load individual tpl into (Note: that tplName can be name or path to html) 
-		remote: function(name, base){
+		remote: function(name, base, sync){
 			var that = this;
 			if(_.string.startsWith(name, '@'))
 				name = name.substr(1);
 			if(!name) throw new Error('DEV::Util.Tpl::remote() your template name can NOT be empty!');
 
+			if(_.isBoolean(base)){
+				sync = base;
+				base = undefined;
+			}
+
 			var url = (base || app.config.viewTemplates) + '/' + name;
-			var result = '';
 			if(_.string.endsWith(name, '.json')){
 				//load all from preped .json
-				
-				$.ajax({
+				return $.ajax({
 					url: url,
 					dataType: 'json', //force return data type.
-					async: false
+					async: !sync
 				}).done(function(tpls){
-					result = tpls;
-					_.each(result, function(t, n){
+					_.each(tpls, function(t, n){
 						Template.cache.make(n, t);
 					});
 				});//.json can be empty or missing.
-				return result;
 			}else {
 				//individual tpl
-				$.ajax({
+				return $.ajax({
 					url: url,
 					dataType: 'html',
-					async: false
+					async: !sync
 				}).done(function(tpl){
-					result = tpl;
 					Template.cache.make(name, tpl);
 				}).fail(function(){
 					throw new Error('DEV::Util.Tpl::remote() Can not load template...' + url + ', re-check your app.config.viewTemplates setting');
 				});
-				return result;
 			}
 		}
-
 	};
 
 	app.Util.Tpl = Template;

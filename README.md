@@ -47,7 +47,7 @@ What's next?
 * AMD support; (:heavy_check_mark:)
 * ECMAScript6 (2015) support; (:heavy_check_mark:)
 * Build a lightweight framework core from scratch; (:heavy_check_mark:)
-* Handshake (Full-Async) mode for app init,load and view init; (:heavy_check_mark:)
+* Handshake (Full-Async) mode for view init; (:heavy_check_mark:)
 * Support optional reactive view building; (two-way bindings through MVVM) (:heavy_check_mark:)
 * Remove theming/templating deps on Bootstrap (easy to hook your own); (:heavy_check_mark:)
 * Port custom-made DevOps process pipeline onto Gulp; (:heavy_check_mark:)

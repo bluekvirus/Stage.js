@@ -88,11 +88,12 @@
  * @author Tim Lauv
  * @created 2014.02.17
  * @updated 2015.08.03
- * @updated 2016.03.09
+ * @updated 2016.03.24
  */
 
 ;(function(app){
 
+	//setup configures, navigation mechanisms (both ctx switch and #history) and 1st(main) view.
 	app.setup = function(config){
 		
 		//0. Re-run app.setup will only affect app.config variable.
@@ -203,7 +204,7 @@
 					var targetRegion = app.mainView.getRegion(navRegion);
 					if(!targetRegion) throw new Error('DEV::Application::navigate() You don\'t have region \'' + navRegion + '\' defined');		
 					
-					//note that .show() might be async due to region enter/exit effects
+					//note that .show() is guaranteed to happen after region enter/exit effects
 					targetCtx.once('show', function(){
 						app.currentContext = targetCtx;
 						//fire a notification to app as meta-event.
@@ -220,10 +221,50 @@
 			}
 		//-----------------------
 
-		//4 Activate Routing AFTER running all the initializers user has defined
-		//Context Switching by Routes (can use href = #navigate/... to trigger them)
-		app.on("initialize:after", function(options){
-			//init client page router and history:
+		//4 Put up Main View and activate Routing (href = #navigate/...) AFTER running all the initializers user has defined.
+		app.on("app:initialized", function(options){
+
+			//a. Put main template into position.
+			app.addRegions({
+				'region-app': '[region="app"]'
+			});
+			//Warning: calling ensureEl() on the app region will not work like regions in layouts.
+			//(Bug??: the additional <div> under the app region is somehow inevitable atm...)
+			app.trigger('app:before-mainview-ready');
+			if(!app.config.layout)
+				app.mainView = app.mainView || app.view({
+					name: 'Main',
+					template: app.config.template || ('<div region="' + (app.config.navRegion || app.config.contextRegion) + '"></div>')
+				}, true);
+			else
+				app.mainView = app.mainView || app.view({
+					name: 'Main',
+					layout: app.config.layout,
+				}, true);
+			app.getRegion('region-app').show(app.mainView).$el.css({height: '100%', width: '100%'});
+			app.trigger('app:mainview-ready');
+
+			//b. Create the fixed overlaying regions according to app.config.icings (like a cake, yay!)
+			var icings = {};
+			_.each(_.extend({}, app.config.icings, app.config.curtains), function(cfg, name){
+				if(name === 'app') return;
+
+				var irUID = _.uniqueId('app-icing-');
+				$body.append($('<div id="' + irUID + '" style="position:fixed"></div>').css(cfg).hide()); //default on hidden
+				icings[['icing', 'region', name].join('-')] = '#' + irUID;
+			});
+			app.addRegions(icings);
+			app.icing = function(name, flag){
+				var ir = app.getRegion(['icing', 'region', name].join('-'));
+				ir.ensureEl();
+				if(flag === false)
+					ir.$el.hide();
+				else
+					ir.$el.show();
+				return ir;
+			};
+
+			//c. init client page router and history:
 			var Router = Backbone.Marionette.AppRouter.extend({
 				appRoutes: {
 					'navigate/*path' : 'navigateTo', //navigate to a context and signal it about *module (can be a path for further navigation within)
@@ -239,7 +280,7 @@
 			if(Backbone.history)
 				Backbone.history.start();
 
-			//Auto navigate to init context (view that gets put in mainView's navRegion)
+			//d. Auto navigate to init context (view that gets put in mainView's navRegion)
 			if(!window.location.hash && app.config.defaultContext)
 				app.navigate(app.config.defaultContext);
 		});
@@ -248,7 +289,7 @@
 	};
 
 	/**
-	 * Define app starting point function
+	 * Define app init function upon doc.ready
 	 * -----------------------------------------
 	 * We support using stage.js in a hybrid app
 	 * 
@@ -257,6 +298,7 @@
 
 		hybridEvent = (hybridEvent === true) ? 'deviceready' : hybridEvent;
 
+		//called upon doc.ready
 		function kickstart(){
 
 			//1. Check if we need 'fast-click' on mobile plateforms
@@ -311,68 +353,34 @@
 
 			//4 Load Theme css & View templates & i18n translations
 			var theme = app.uri(window.location.toString()).search(true).theme || app.config.theme;
+			//4.0 Dynamic theme (skipped)
 			if(theme){
 				console.warn('DEV::Application::theme is now deprecated, please use theme css directly in <head>');
 			}
 
-			//5 Inject template pack
-			if(app.config.viewTemplates)
-				app.inject.tpl('all.json');
-
-			//6. Activate i18n
-			I18N.configure({
-				locale: app.config.i18nLocale,
-				resourcePath: app.config.i18nResources,
-				translationFile: app.config.i18nTransFile
+			//4.1 Inject template pack
+			app.addInitializer(function(){
+				//based on path in app.config.viewTemplates
+				return app.inject.tpl('all.json');
 			});
 
-			//7. Put main template into position.
-			app.addRegions({
-				'region-app': '[region="app"]'
+			//4.2 Activate i18n
+			app.addInitializer(function(){
+				return I18N.init({
+					locale: app.config.i18nLocale,
+					resourcePath: app.config.i18nResources,
+					translationFile: app.config.i18nTransFile
+				});
 			});
-			//Warning: calling ensureEl() on the app region will not work like regions in layouts.
-			//(Bug??: the additional <div> under the app region is somehow inevitable atm...)
-			app.trigger('app:before-mainview-ready');
-			if(!app.config.layout)
-				app.mainView = app.mainView || app.view({
-					name: 'Main',
-					template: app.config.template || ('<div region="' + (app.config.navRegion || app.config.contextRegion) + '"></div>')
-				}, true);
-			else
-				app.mainView = app.mainView || app.view({
-					name: 'Main',
-					layout: app.config.layout,
-				}, true);
-			app.getRegion('region-app').show(app.mainView).$el.css({height: '100%', width: '100%'});
-			app.trigger('app:mainview-ready');
 
-			//8. Create the fixed overlaying regions according to app.config.icings (like a cake, yay!)
-			var icings = {};
-			_.each(_.extend({}, app.config.icings, app.config.curtains), function(cfg, name){
-				if(name === 'app') return;
-
-				var irUID = _.uniqueId('app-icing-');
-				$body.append($('<div id="' + irUID + '" style="position:fixed"></div>').css(cfg).hide()); //default on hidden
-				icings[['icing', 'region', name].join('-')] = '#' + irUID;
-			});
-			app.addRegions(icings);
-			app.icing = function(name, flag){
-				var ir = app.getRegion(['icing', 'region', name].join('-'));
-				ir.ensureEl();
-				if(flag === false)
-					ir.$el.hide();
-				else
-					ir.$el.show();
-				return ir;
-			};
-
-			//9. Start the app --> pre init --> initializers --> post init(router setup)
+			//5. Start the app --> pre init --> initializers --> post init(router setup)
 			app._ensureScreenSize(function(){
 				app.start();				
 			});
 
 		}
 
+		//hook up desktop/mobile doc.ready respectively.
 		if(hybridEvent){
 			//Mobile development
 			app.hybridEvent = hybridEvent; //window.cordova is probably true.
@@ -1128,17 +1136,19 @@
 })(Application);
 ;/**
  * This is the template builder/registry util, making it easier to create new templates for View objects.
+ * (used by M.TemplateCache* in template-cache.js)
  *
  * Note: use build() for local templates and remote() for remote ones
  *
  * Usage (name as id)
  * -----
  * app.Util.Tpl.build(name, [</>, </>, ...]) / ([</>, </>, ...]) / ('</></>...</>')
- * app.Util.Tpl.remote(name, base) - default on using app.config.viewTemplates as base
+ * app.Util.Tpl.remote(name, base, sync) - default on using app.config.viewTemplates as base
  *
  * @author Tim Lauv
  * @create 2013.12.20
  * @updated 2014.10.25
+ * @updated 2016.03.24
  */
 
 ;(function(app){
@@ -1154,13 +1164,9 @@
 		cache: Backbone.Marionette.TemplateCache,
 
 		build: function (name, tplString){
-			//if(arguments.length === 0 || _.string.trim(name) === '') return {id:'#_blank', tpl: ' '};
 			if(arguments.length === 1) {
-				//if(_.string.startsWith(name, '#')) return {id: name};
 				tplString = name;
 				name = null;
-				//name = _.uniqueId('tpl-gen-');
-				//if(!_.isArray(tplString)) tplString = [tplString];
 			}
 			var tpl = _.isArray(tplString)?tplString.join(''):tplString;
 
@@ -1183,44 +1189,42 @@
 		//load all prepared/combined templates from server (*.json without CORS)
 		//or
 		//load individual tpl into (Note: that tplName can be name or path to html) 
-		remote: function(name, base){
+		remote: function(name, base, sync){
 			var that = this;
 			if(_.string.startsWith(name, '@'))
 				name = name.substr(1);
 			if(!name) throw new Error('DEV::Util.Tpl::remote() your template name can NOT be empty!');
 
+			if(_.isBoolean(base)){
+				sync = base;
+				base = undefined;
+			}
+
 			var url = (base || app.config.viewTemplates) + '/' + name;
-			var result = '';
 			if(_.string.endsWith(name, '.json')){
 				//load all from preped .json
-				
-				$.ajax({
+				return $.ajax({
 					url: url,
 					dataType: 'json', //force return data type.
-					async: false
+					async: !sync
 				}).done(function(tpls){
-					result = tpls;
-					_.each(result, function(t, n){
+					_.each(tpls, function(t, n){
 						Template.cache.make(n, t);
 					});
 				});//.json can be empty or missing.
-				return result;
 			}else {
 				//individual tpl
-				$.ajax({
+				return $.ajax({
 					url: url,
 					dataType: 'html',
-					async: false
+					async: !sync
 				}).done(function(tpl){
-					result = tpl;
 					Template.cache.make(name, tpl);
 				}).fail(function(){
 					throw new Error('DEV::Util.Tpl::remote() Can not load template...' + url + ', re-check your app.config.viewTemplates setting');
 				});
-				return result;
 			}
 		}
-
 	};
 
 	app.Util.Tpl = Template;
@@ -3705,11 +3709,119 @@ module.exports = DeepModel;
 },{"backbone":undefined,"lodash.merge":2,"underscore":undefined}]},{},[1]);
 
 ;/**
+ * Overriding the special M.Application module so that,
+ *
+ * It waits for `callbacks:all-done` event from its init chain and trigger `app:initialized`.
+ *
+ * Usage
+ * -----
+ * All init routines added through `app.addInitializer()` can now contain async code.
+ * ```
+ * app.addInitializer(function(){
+ *    return app.remote('some-data.json').done(...);
+ * });
+ * ```
+ *
+ * Deps
+ * ----
+ * see callbacks.js
+ *
+ * @author Tim Lauv
+ * @created 2016.03.24
+ */
+;(function(app){
+
+	_.extend(Marionette.Application.prototype, {
+
+		// kick off all of the application's processes.
+		// initializes all of the regions that have been added
+		// to the app, and runs all of the initializer functions (+async promise)
+		start: function(options){
+			this._initCallbacks.once('callbacks:all-done', function(noi){
+				app.trigger('app:initialized', options);
+			});
+			this._initCallbacks.run(options, this);
+		},
+
+	});
+
+})(Application);
+;/**
+ * Overriding the special M.Callbacks module so that any callback in the chain
+ * could return a promise for async operations. 
+ *
+ * Final done event is `callbacks:all-done` triggered on the Callbacks object (now also has events!).
+ *
+ * Caveat 1: we skipped this._callbacks since it is always initialized with length 2 ... :S
+ * Caveat 2: changes made here also affect all the init/finalize chains in M.Modules, but luckily no one is using them.
+ *
+ * @author Tim Lauv
+ * @created 2016.03.24
+ */
+;(function(app) {
+
+    _.extend(Marionette.Callbacks.prototype, Backbone.Events, {
+
+        // Add a callback to be executed. Callbacks added here are
+        // guaranteed to execute, even if they are added after the
+        // `run` method is called.
+        add: function(callback, contextOverride) {
+        	this._cbs = this._cbs || [];
+            this._cbs.push({ cb: callback, ctx: contextOverride });
+
+            var that = this;
+            this._deferred.done(function(context, options) {
+                if (contextOverride) { context = contextOverride; }
+                var result = callback.call(context, options);
+
+                if (result && _.isFunction(result.always)) {
+                    //async promise object returned by a callback/initializer
+                    result.always(function() {
+                        that._alldone();
+                    });
+                }else {
+                	that._alldone();
+                }
+            });
+        },
+
+        // Run all registered callbacks with the context specified.
+        // Additional callbacks can be added after this has been run
+        // and they will still be executed.
+        run: function(options, context) {
+            var that = this;
+            this._cbs = this._cbs || [];
+            if(this._cbs.length){
+	            this._alldone = _.after(this._cbs.length, function() {
+	                that.trigger('callbacks:all-done', that._cbs.length);
+	            });
+	            this._deferred.resolve(context, options);
+	        }else {
+	        	this.trigger('callbacks:all-done');
+	        }
+        },
+
+        // Resets the list of callbacks to be run, allowing the same list
+        // to be run multiple times - whenever the `run` method is called.
+        reset: function() {
+            var callbacks = this._cbs;
+            this._deferred = Marionette.$.Deferred();
+            this._cbs = [];
+            this._alldone = _.noop;
+
+            _.each(callbacks, function(cb) {
+                this.add(cb.cb, cb.ctx);
+            }, this);
+        }
+    });
+
+})(Application);
+;/**
  * Override M.TemplateCache to hookup our own template-builder.js util
  *
  * @author Tim Lauv
  * @created 2014.02.25
- * @updated 2016.02.04
+ * @updated 2016.03.24
  */
 ;(function(app){
 
@@ -3748,7 +3860,13 @@ module.exports = DeepModel;
 			if(_.string.startsWith(idOrTplString, '@')) {
 				//fetch from remote: (might need server-side CORS support)
 				//**Caveat: triggering app.inject.tpl() will replace the cache object that triggered this loadTemplate() call.
-				return this.rawTemplate || app.inject.tpl(idOrTplString);
+				if(this.rawTemplate)
+					return this.rawTemplate;
+				var rtpl; //sync mode injecting
+				app.inject.tpl(idOrTplString, true).done(function(tpl){
+					rtpl = tpl;
+				});
+				return rtpl;
 			}
 			//string and string array
 			return app.Util.Tpl.build(idOrTplString);
@@ -5426,7 +5544,7 @@ module.exports = DeepModel;
  *
  * Config
  * ------
- * I18N.configure(options) - change the resource folder path or key-trans file name per locale.
+ * I18N.init(options) - change the resource folder path or key-trans file name per locale.
  * 	options:
  * 		resourcePath: ... - resource folder path without locale
  * 		translationFile: ... - the file name that holds the key trans pairs for a certain locale.
@@ -5456,6 +5574,7 @@ module.exports = DeepModel;
  * @author Yan Zhu, Tim Lauv
  * @created 2013-08-26
  * @updated 2014-08-06
+ * @updated 2016.03.24 (I18N.init now returns a jqXHR object)
  * 
  */
 var I18N = {};
@@ -5467,8 +5586,8 @@ var I18N = {};
 		translationFile: 'i18n.json'
 	};
 	
-	var locale, resources;	
-	I18N.configure = function(options){
+	var locale, resources = {};	
+	I18N.init = function(options){
 		_.extend(configure, options);
 		var params = app.uri(window.location.toString()).search(true);
 		locale = I18N.locale = params.locale || configure.locale || Detectizr.browser.language;
@@ -5487,9 +5606,8 @@ var I18N = {};
 			 *  }
 			 * }
 			 */
-			$.ajax({
+			return $.ajax({
 				url: [configure.resourcePath, (configure.translationFile.indexOf('{locale}') >= 0?configure.translationFile.replace('{locale}', locale):[locale, configure.translationFile].join('/'))].join('/'),
-				async: false,
 				dataType: 'json',
 				success: function(data, textStatus, jqXHR) {
 					if(!data || !data.trans) throw new Error('RUNTIME::i18n::Malformed ' + locale + ' data...');
@@ -5499,11 +5617,7 @@ var I18N = {};
 					throw new Error('RUNTIME::i18n::' + errorThrown);
 				}
 			});
-
-			resources = resources || {};
-			
-		}		
-		return this;
+		}
 	};
 	//-------------------------------------------------
 	
@@ -6259,9 +6373,7 @@ var I18N = {};
 				else
 					console.warn('please check your region/view name setting.');
 			}
-		}/*else{//do not throw error if there is no second parameter
-			throw new Error('Dev::runtime::split-plugin::you need to provide a region/view name');
-		}*/
+		}
 		return rvname;
 	};
 
@@ -6676,7 +6788,7 @@ var I18N = {};
 				}
 			},
 
-			validate: $.noop,
+			validate: _.noop,
 
 			status: function(options){
 			//options: 
@@ -7499,4 +7611,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.9.1-1079 build 1458689872200";
+;;app.stagejs = "1.9.1-1080 build 1458870474532";

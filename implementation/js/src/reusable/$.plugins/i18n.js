@@ -3,7 +3,7 @@
  *
  * Config
  * ------
- * I18N.configure(options) - change the resource folder path or key-trans file name per locale.
+ * I18N.init(options) - change the resource folder path or key-trans file name per locale.
  * 	options:
  * 		resourcePath: ... - resource folder path without locale
  * 		translationFile: ... - the file name that holds the key trans pairs for a certain locale.
@@ -33,6 +33,7 @@
  * @author Yan Zhu, Tim Lauv
  * @created 2013-08-26
  * @updated 2014-08-06
+ * @updated 2016.03.24 (I18N.init now returns a jqXHR object)
  * 
  */
 var I18N = {};
@@ -44,8 +45,8 @@ var I18N = {};
 		translationFile: 'i18n.json'
 	};
 	
-	var locale, resources;	
-	I18N.configure = function(options){
+	var locale, resources = {};	
+	I18N.init = function(options){
 		_.extend(configure, options);
 		var params = app.uri(window.location.toString()).search(true);
 		locale = I18N.locale = params.locale || configure.locale || Detectizr.browser.language;
@@ -64,9 +65,8 @@ var I18N = {};
 			 *  }
 			 * }
 			 */
-			$.ajax({
+			return $.ajax({
 				url: [configure.resourcePath, (configure.translationFile.indexOf('{locale}') >= 0?configure.translationFile.replace('{locale}', locale):[locale, configure.translationFile].join('/'))].join('/'),
-				async: false,
 				dataType: 'json',
 				success: function(data, textStatus, jqXHR) {
 					if(!data || !data.trans) throw new Error('RUNTIME::i18n::Malformed ' + locale + ' data...');
@@ -76,11 +76,7 @@ var I18N = {};
 					throw new Error('RUNTIME::i18n::' + errorThrown);
 				}
 			});
-
-			resources = resources || {};
-			
-		}		
-		return this;
+		}
 	};
 	//-------------------------------------------------
 	

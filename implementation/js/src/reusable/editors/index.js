@@ -408,7 +408,7 @@
 				}
 			},
 
-			validate: $.noop,
+			validate: _.noop,
 
 			status: function(options){
 			//options: 
