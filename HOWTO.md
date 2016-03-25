@@ -401,31 +401,27 @@ Note that the ready event may vary in different hybrid app development package.
 
 The application bootstrapping sequence can be modified, since we are simply using the `Marionette.Application` object, you can add your own environment preparation code as initializers:
 ```
-//"initialize:before" / onInitializeBefore;
-
 Application.addInitializer(function(options){
     //go to check user's session
-    app.navigate(...);
+    return app.remote('api/v1/user/touch').done(...);
 });
-Application.addInitializer(function(options){...});
+Application.addInitializer(function(options){
+   //...anything sync or async(return a promise)...
+});
 ...
 
-//"initialize:after" / onInitializeBefore;
-//"start" / onStart;
-
-Application.setup({...}).run();
+Application.run();
 ```
 
-Plus the events we put in during application loading:
+Plus the events we put in after running your initializers:
 ```
 app:before-mainview-ready //fired before the application is shown
 app:mainview-ready //fired after the application is shown
 ```
-**Important**: Only after the `app:mainview-ready` event, can the application start its initializer-calling sequence. In other words, if you've added customized initializers, they will be called after the `app:mainview-ready` event.
 
-**Tip**: You can swap application template using the `Application.setup()` call upon receiving the `app:before-mainview-ready` event to layout your application differently on different platforms. (Use the `Modernizr` global variable for platform/feature detections.)
+**Tip**: You can swap application template using the `Application.setup()` call upon receiving the `app:before-mainview-ready` event to configure/layout your application differently on different platforms. (Use the `Modernizr` global variable for platform/feature detections.)
 
-You can also make good use of the `app:navigate` event for context preparation.
+You can also make good use of the `app:navigate` event for context preparation in the initializers.
 
 Let's proceed to define your contexts so you have something to show after the application starts.
 
@@ -795,7 +791,6 @@ context:navigate-away - [empty stub] - triggered before app:navigate
 //General
 view:render-data (data) - onRenderData [pre-defined]
 view:data-rendered
-view:resized - fired when parent region's .resize() method gets called
 
 //View with navRegion
 view:navigate-chain
@@ -813,12 +808,6 @@ Though you can not use customized meta-event on *regions*, there are still some 
 ```
 //region:load-view
 anyregion.trigger('region:load-view', name[, options]);
-
-//region.resize
-anyregion.resize({
-    height: ..., //can be 100, '50%'' or '100px'
-    width: ...
-});
 ```
 The `region:load-view` event listener is implemented for you and can search through both the named *View* and *Widget* registry to find the view by name and show it on the region. You can pass in addition factory options to the event trigger. Remember it can also load up a remote template for you just to boost your prototyping process:
 ```
@@ -828,15 +817,6 @@ The `region:load-view` event listener is implemented for you and can search thro
 //use 'region:load-view' event
 anyregion.trigger('region:load-view', '@remote/template/abc.html');
 ```
-
-The `region.resize()` method call is there for better UI sizing control and propagation. The region's currentView (if exists) will automatically receive a `view:resized` event at the end of this function call, thus triggering `view.onResized()` method, you can choose to propagate the resizing action into the sub-regions of the region's currentView within its `onResized()` method.
-
-If you want also to control the overflow css style of a region's `currentView`, do it either in your theme (CSS/LESS) or mark it on the region template:
-```
-<div region="abc" data-overflow="auto"></div>
-<div region="efg" data-overflow-x="hidden" data-overflow-y="auto"></div>
-```
-Note that for the overflow settings to show effect, you need to first use the region's `resize()` method call to size the region. 
 
 ####Use parentCt/Ctx/Region?
 
@@ -1974,28 +1954,11 @@ Application.setup({
     ...
 });
 ```
-This will keep the `<body>` tag to be 100% on both its width and height to the browser window and set its `overflow-y/x` to `hidden`. You now need to set the height of your content region:
-```
-//Recall that when initialize is called, app template is already on screen.
-Application.addInitializer(function(options){
-    //1. calculate your content region height dynamically here;
-    ...
-    //2. set it using region.resize();
-    Application.myContextRegion.resize({
-        height: ..., //number, x% or 50px
-        width: ...
-    });
-    //3. hook this calcuation function with app:resized event;
-    ...
-});
-```
-You can use the `Application.mainView` variable to access the view instance that's holding the app template. 
-
-The `region.resize()` api will automatically trigger `view:resized` event on the region's `currentView` instance. So make sure you are listening to this event in the `onResized` function within that view instance. You can choose to propagate the resizing action down into the sub-regions by applying the same technique on that `currentView`'s regions.
+This will keep the `<body>` tag to be 100% on both its width and height to the browser window and set its `overflow-y/x` to `hidden`.
 
 ###View size measurement error?
 
-The dynamic theme loading mechanism (deprecated) is currently racing with el size measuring in views' `onShow()` functions. This is mainly caused by modern browser's ability to multi-threading CSS rendering and JavaScript execution. Make sure you specify theme css in your `index.html`.
+The dynamic theme loading mechanism (deprecated) will potentially race with size measuring in views' `onShow()` functions. This is mainly caused by modern browser's ability to multi-threading CSS rendering and JavaScript execution. Make sure you specify theme css in your `index.html`.
 ```
 //index.html
 <link rel="stylesheet" type="text/css" href="themes/[your theme]/main.css">
