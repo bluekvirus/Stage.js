@@ -17,12 +17,21 @@
 		onShow: function(){
 			this.getRegion('view-left').show(new ViewLeft());
 			this.getRegion('view-right').show(new viewRight());
+		},
+		onUpdateLeft: function(options){
+			this.getViewIn('view-left').getRegion('temp').show(app.view({
+				template: [
+					'<div class="wrapper">nav/breadcrumb/'+options.text+'</div>',
+					'<div class="wrapper" id="fakebody" style="height:7em;color:white;background-color:'+options.color+'">content for '+options.text+' view',
+						'<div>onUpdateLeft: function(options){...}</div>',
+					'</div>',
+				],
+			},true));
 		}
 	});
 
 	var ViewLeft = app.view({
 		className: 'coop-left',
-		coop:['update-left'],
 		template: [
 			'<div style="height:50%;width:100%;">',
 				'<div class="form-horizontal" style="position:relative;top:50%;transform:translateY(-50%);">',
@@ -45,16 +54,6 @@
 					field: 'col-md-6',
 				}
 			}
-		},
-		onUpdateLeft: function(options){
-			this.getRegion('temp').show(app.view({
-				template: [
-					'<div class="wrapper">nav/breadcrumb/'+options.text+'</div>',
-					'<div class="wrapper" id="fakebody" style="height:7em;color:white;background-color:'+options.color+'">content for '+options.text+' view',
-						'<div>onUpdateLeft: function(options){...}</div>',
-					'</div>',
-				],
-			},true));
 		},
 		onShow: function(){
 			//make view height 100%
@@ -81,7 +80,7 @@
 					'<div action="info" class="btn btn-info">Click Me & See!</div>',
 					'<div action="warning" class="btn btn-warning">Click Me & See!</div>',
 					'<div action="success" class="btn btn-success">Click Me & See!</div>',
-					'<div style="text-align:center;color:#626262;">app.coop("update-left", {options});</div>',
+					'<div style="text-align:center;color:#626262;">this.coop("update-left", {options});</div>',
 				'</div>',
 			'</div>',
 		],
@@ -100,19 +99,19 @@
 		},
 		actions: {
 			info: function(){
-				app.coop('update-left',{
+				this.coop('update-left',{
 					text: 'info',
 					color: '#7E3F9D'
 				});
 			},
 			success: function(){
-				app.coop('update-left',{
+				this.coop('update-left',{
 					text: 'success',
 					color: '#E45C00',
 				});
 			},
 			warning: function(){
-				app.coop('update-left',{
+				this.coop('update-left',{
 					text: 'warning',
 					color: '#2F8912',
 				});

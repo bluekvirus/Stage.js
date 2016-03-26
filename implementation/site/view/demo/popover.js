@@ -87,56 +87,26 @@
 			'</div>',
 		],
 		actions: {
-			'flipped_left': function(self){
-				//check whether already displayed
-				if( self.attr('aria-describedby') )
-					//being displayed
-					self.popover('destroy');
-				else
-					//not displayed
-					(new PopLeft()).popover(self, {bond: this});
+			'flipped_left': function($btn){
+				(new PopLeft()).popover($btn, {bond: this});
 			},
-			'flipped_right': function(self){
-				(new PopRight()).popover($('#flipped_right'), {animation: true, placement: 'right', content:'I have overwritten the view and action did not close me :D!', bond: this});
+			'flipped_right': function($btn){
+				(new PopRight()).popover($('#flipped_right'), {placement: 'right', content:'I have overwritten the view', bond: this});
 			},
-			'flipped_bottom': function(self){
-				//check whether already displayed
-				if( self.attr('aria-describedby') )
-					//being displayed
-					self.popover('destroy');
-				else
-					//not displayed
-					(new PopBottom()).popover(document.getElementById('flipped_bottom'), {bond: this});
+			'flipped_bottom': function($btn){
+				(new PopBottom()).popover(document.getElementById('flipped_bottom'), {bond: this});
 			},
-			left: function(self){
-				//check whether already displayed
-				if( self.attr('aria-describedby') )
-					//being displayed
-					self.popover('destroy');
-				else
-					//not displayed
-					(new PopLeft()).popover(self, {'animation': true, bond: this});
+			left: function($btn){
+				(new PopLeft()).popover($btn, {bond: this});
 			},
-			right: function(self){
-				//check whether already displayed
-				if( self.attr('aria-describedby') )
-					//being displayed
-					self.popover('destroy');
-				else
-					//not displayed
-					(new PopRight()).popover(document.getElementById('right_anchor'), {placement: 'right', bond: this});
+			right: function($btn){
+				(new PopRight()).popover(document.getElementById('right_anchor'), {placement: 'right', bond: this});
 			},
-			top: function(self){
-				(new PopTop()).popover(self, {placement: 'auto top', animation: true, bond: this});
+			top: function($btn){
+				(new PopTop()).popover($btn, {placement: 'top', position: 20, style: {width: '200px'}, bond: this});
 			},
-			bottom: function(self){
-				//check whether already displayed
-				if( self.attr('aria-describedby') )
-					//being displayed
-					self.popover('destroy');
-				else
-					//not displayed
-					(new PopBottom()).popover(self, {placement: 'bottom', bond: this});
+			bottom: function($btn){
+				(new PopBottom()).popover($btn, {placement: 'bottom', position: 70, bond: this});
 			}
 		}
 	});

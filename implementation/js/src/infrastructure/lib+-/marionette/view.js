@@ -80,6 +80,13 @@
 			);
 		},
 
+		//local collaboration under the same parentCt (Trick: use this.coop() instead of this._coop())
+		_coop: function(){
+			var pCt = this.parentCt, listener = app.Util.metaEventToListenerName(arguments[0]);
+			while (pCt && !pCt[listener]) pCt = pCt.parentCt;
+			if(pCt) pCt[listener].apply(pCt, _.toArray(arguments).slice(1));
+		},
+
 		//activate tooltips (bootstrap version)
 		_enableTooltips: function(options){
 			this.listenTo(this, 'render', function(){
@@ -315,6 +322,7 @@
 		 				content: this.render().$el,
 		 				container: 'body',
 		 				placement: 'auto right',//default placement is right
+		 				//style: {..css..}
 		 			},
 		 			$anchor;
 		 		//check para1(anchor point) is a jquery object or a DOM element
@@ -335,12 +343,15 @@
 	 			}
 
 	 			//check whether there is already a popover attach to the anchor
-	 			if( $anchor.data('bs.popover') ){
+	 			//Caveat: animated popover might still be in the process of closing but invisible. (empty extra click)
+	 			if($anchor.data('bs.popover')){
 	 				var tempID = $anchor.data('bs.popover').$tip[0].id;
 	 				//remove elements attached on anchor
 	 				$anchor.popover('destroy');	
 	 				//remove popover div
 	 				$('#'+tempID).remove();
+	 				//do NOT re-open it
+	 				return;
 	 			}
 	 			//check whether user has data-content, if yes throw warning
 	 			var dataOptions = $anchor.data() || {};
@@ -374,6 +385,10 @@
 	 			}
 	 			//initialize the popover
 	 			$anchor.popover(options)
+	 			//add options.style (alias: css)
+				.on('show.bs.popover', function(){
+					that.$el.css(options.style || options.css || {});
+				})
 	 			//adjust the bottom placement, since it does not work well with auto
 	 			.on('shown.bs.popover', function(){
 					//auto + bottom does not work well, recheck on show event
@@ -485,6 +500,8 @@
 				});
 			});
 		}
+		//recover local (same-ancestor) collaboration
+		this.coop = this._coop;
 
 		//data / useParentData ({}, [] or url for GET only)
 		this.listenToOnce(this, 'show', function(){

@@ -143,103 +143,6 @@
 			return Reusable;
 		},
 
-		//find a view instance by name or its DOM element.
-		locate: function(name /*el or $el*/){
-			//el, $el for *contained* view names only
-			if(!_.isString(name)){
-				var all;
-				if(name)
-					all = $(name).find('[data-view-name]');
-				else
-					all = $('[data-view-name]');
-
-				all = all.map(function(index, el){
-					return $(el).attr('data-view-name');
-				}).get();
-				return all;
-			}
-
-			//name string, find the view instance and sub-view names
-			var view = $('[data-view-name="' + name + '"]').data('view');
-			return view && {view: view, 'sub-views': app.locate(view.$el)};
-		},
-
-		//output performance related meta info so far for a view by name or its DOM element.
-		profile: function(name /*el or $el*/){
-			//el, $el for *contained* views total count and rankings
-			if(!_.isString(name)){
-				var all;
-				if(name)
-				 	all = $(name).find('[data-render-count]');
-				else
-					all = $('[data-render-count]');
-
-				all = all.map(function(index, el){
-					var $el = $(el);
-					return {name: $el.data('view-name'), 'render-count': Number($el.data('render-count')), $el: $el};
-				}).get();
-				return {total: _.reduce(all, function(memo, num){ return memo + num['render-count']; }, 0), rankings: _.sortBy(all, 'render-count').reverse()};
-			}
-
-			//name string, profile the specific view and its sub-views
-			var result = app.locate(name), view;
-			if(result) view = result.view;
-			return view && {name: view.$el.data('view-name'), 'render-count': view.$el.data('render-count'), $el: view.$el, 'sub-views': app.profile(view.$el)};
-		},
-
-		//mark views on screen. (hard-coded style, experimental)
-		mark: function(name /*el or $el*/){
-			var nameTagPairing = [], $body;
-			if(_.isString(name)){
-				var result = app.locate(name);
-				if(!result) return;
-				$body = result.view.parentRegion.$el;
-			}else if(name){
-				$body = $(name);
-			}else
-				$body = $('body');
-
-			//clear all name tag
-			$body.find('.dev-support-view-name-tag').remove();
-			//round-1: generate border and name tags
-			_.each(app.locate($body), function(v){
-				var result = app.locate(v), $container;
-				//add a container style
-				if(result.view.category !== 'Editor')
-					$container = result.view.parentRegion.$el;
-				else
-					$container = result.view.$el;
-				//else return;
-				$container.css({
-					'padding': '1.5em', 
-					'border': '1px dashed black'
-				});
-				//add a name tag (and live position it to container's top left)
-				var $nameTag = $('<span class="label label-default dev-support-view-name-tag" style="position:absolute;">' + result.view.$el.data('view-name') + '</span>');
-				//add click event to $nameTag
-				$nameTag.css({cursor: 'pointer'})
-				.on('click', function(){
-					app.reload(result.view.$el.data('view-name'), true);
-				});
-				$body.append($nameTag);
-				nameTagPairing.push({$tag: $nameTag, $ct: $container, view: result.view});
-			});
-			//round-2: position the name tags
-			$window.trigger('resize');//trigger a possible resizing globally.
-			_.defer(function(){
-				_.each(nameTagPairing, function(pair){
-					pair.$tag.position({
-						my: 'left top',
-						at: 'left top',
-						of: pair.$ct
-					});
-					pair.view.on('close', function(){
-						pair.$tag.remove();
-					});
-				});
-			});
-		},
-
 		coop: function(event, options){
 			app.trigger('app:coop', event, options);
 			app.trigger('app:coop-' + event, options);
@@ -382,28 +285,7 @@
 			return selectn(keypath, from);
 		},
 
-		//js-cookie (former jquery-cookie)
-		//.set()
-		//.get()
-		//.remove()
-		cookie: Cookies,
-
-		//store.js 
-		//.set()
-		//.get(), .getAll()
-		//.remove()
-		//.clear()
-		store: store.enabled && store,
-
-		//----------------validation-----------------
-		validator: validator,
-
-		//----------------time-----------------------
-		moment: moment,
-
-		//----------------url------------------------
-		uri: URI,
-
+		//----------------url params---------------------------------
 		param: function(key, defaultVal){
 			var params = URI.parseQuery(app.uri(window.location.href).search()) || {};
 			if(key) return params[key] || defaultVal;
@@ -615,7 +497,123 @@
 			var fn = console.debug || console.log;
 			if(app.param('debug') === 'true')
 				fn.apply(console, arguments);
-		}
+		},
+
+		//find a view instance by name or its DOM element.
+		locate: function(name /*el or $el*/){
+			//el, $el for *contained* view names only
+			if(!_.isString(name)){
+				var all;
+				if(name)
+					all = $(name).find('[data-view-name]');
+				else
+					all = $('[data-view-name]');
+
+				all = all.map(function(index, el){
+					return $(el).attr('data-view-name');
+				}).get();
+				return all;
+			}
+
+			//name string, find the view instance and sub-view names
+			var view = $('[data-view-name="' + name + '"]').data('view');
+			return view && {view: view, 'sub-views': app.locate(view.$el)};
+		},
+
+		//output performance related meta info so far for a view by name or its DOM element.
+		profile: function(name /*el or $el*/){
+			//el, $el for *contained* views total count and rankings
+			if(!_.isString(name)){
+				var all;
+				if(name)
+				 	all = $(name).find('[data-render-count]');
+				else
+					all = $('[data-render-count]');
+
+				all = all.map(function(index, el){
+					var $el = $(el);
+					return {name: $el.data('view-name'), 'render-count': Number($el.data('render-count')), $el: $el};
+				}).get();
+				return {total: _.reduce(all, function(memo, num){ return memo + num['render-count']; }, 0), rankings: _.sortBy(all, 'render-count').reverse()};
+			}
+
+			//name string, profile the specific view and its sub-views
+			var result = app.locate(name), view;
+			if(result) view = result.view;
+			return view && {name: view.$el.data('view-name'), 'render-count': view.$el.data('render-count'), $el: view.$el, 'sub-views': app.profile(view.$el)};
+		},
+
+		//mark views on screen. (hard-coded style, experimental)
+		mark: function(name /*el or $el*/){
+			var nameTagPairing = [], $body;
+			if(_.isString(name)){
+				var result = app.locate(name);
+				if(!result) return;
+				$body = result.view.parentRegion.$el;
+			}else if(name){
+				$body = $(name);
+			}else
+				$body = $('body');
+
+			//clear all name tag
+			$body.find('.dev-support-view-name-tag').remove();
+			//round-1: generate border and name tags
+			_.each(app.locate($body), function(v){
+				var result = app.locate(v), $container;
+				//add a container style
+				if(result.view.category !== 'Editor')
+					$container = result.view.parentRegion.$el;
+				else
+					$container = result.view.$el;
+				//else return;
+				$container.css({
+					'padding': '1.5em', 
+					'border': '1px dashed black'
+				});
+				//add a name tag (and live position it to container's top left)
+				var $nameTag = $('<span class="label label-default dev-support-view-name-tag" style="position:absolute;">' + result.view.$el.data('view-name') + '</span>');
+				//add click event to $nameTag
+				$nameTag.css({cursor: 'pointer'})
+				.on('click', function(){
+					app.reload(result.view.$el.data('view-name'), true);
+				});
+				$body.append($nameTag);
+				nameTagPairing.push({$tag: $nameTag, $ct: $container, view: result.view});
+			});
+			//round-2: position the name tags
+			$window.trigger('resize');//trigger a possible resizing globally.
+			_.defer(function(){
+				_.each(nameTagPairing, function(pair){
+					pair.$tag.position({
+						my: 'left top',
+						at: 'left top',
+						of: pair.$ct
+					});
+					pair.view.on('close', function(){
+						pair.$tag.remove();
+					});
+				});
+			});
+		},
+
+		//--------3rd party lib pass-through---------
+		
+		// js-cookie (former jquery-cookie)
+		//.set(), .get(), .remove()
+		cookie: Cookies,
+
+		// store.js (localStorage)
+		//.set(), .get(), .getAll(), .remove(), .clear()
+		store: store.enabled && store,
+
+		// validator.js
+		validator: validator,
+
+		// moment.js
+		moment: moment,
+
+		// URI.js
+		uri: URI,
 	});
 
 	//editor rules
