@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.9.2 (2016-03-24*)
+1.9.2 (2016-03-25*)
 
 1. Added .btn-pointy-right/left to base theme; (default size only)
 2. Added .pointer-up/down/left/right and .relative-ct to base theme;
@@ -8,6 +8,8 @@ Change Log
 4. Changed I18N.configure() to async I18N.init();
 5. Changed app.inject.tpl also support async loading;
 6. Refined app initializers to support fully async promise mode;
+7. Refined view.popover() to honor position and style in options;
+8. Added view.coop() for same-ancestor co-op;
 
 working on ...
 
