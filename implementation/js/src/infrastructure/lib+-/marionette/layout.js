@@ -79,7 +79,7 @@
 					forceViewType: true,
 					type: 'CollectionView',
 					itemView: _.isString(View)? app.get(View) : View, //if !View then Error: An `itemView` must be specified
-				})).$el.css('overflow', 'auto');//to support 'action-scroll' in region.
+				}));//to support 'action-scroll' in region.
 				this.getViewIn(region).set(d);
 			}
 		},

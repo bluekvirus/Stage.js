@@ -4,7 +4,7 @@
 
 		template: [
 			'<div>Scroll down to add more icons below</div>',
-			'<div region="items" action-scroll="track" action-scroll-top="notify-top" action-scroll-bottom="get-more-items" style="height:12em;margin:1em 0;" class="border border-full"></div>',
+			'<div region="items" action-scroll="track" action-scroll-top="notify-top" action-scroll-bottom="get-more-items" style="height:12em;margin:1em 0;overflow-y:auto;" class="border border-full"></div>',
 			'<div><span class="btn btn-default btn-xs btn-outline" action="reset">Reset</span></div>'
 		],
 

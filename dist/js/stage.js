@@ -5827,7 +5827,7 @@ module.exports = DeepModel;
 					forceViewType: true,
 					type: 'CollectionView',
 					itemView: _.isString(View)? app.get(View) : View, //if !View then Error: An `itemView` must be specified
-				})).$el.css('overflow', 'auto');//to support 'action-scroll' in region.
+				}));//to support 'action-scroll' in region.
 				this.getViewIn(region).set(d);
 			}
 		},
@@ -8263,4 +8263,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.9.1-1081 build 1458963070615";
+;;app.stagejs = "1.9.1-1082 build 1459381009419";
