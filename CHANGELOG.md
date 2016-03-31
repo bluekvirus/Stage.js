@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.9.2 (2016-03-25*)
+1.9.2 (2016-03-31*)
 
 1. Added .btn-pointy-right/left to base theme; (default size only)
 2. Added .pointer-up/down/left/right and .relative-ct to base theme;
@@ -10,9 +10,14 @@ Change Log
 6. Refined app initializers to support fully async promise mode;
 7. Refined view.popover() to honor position and style in options;
 8. Added view.coop() for same-ancestor co-op;
+9. Refined view.lock() to be able to lock itself in addition to regions;
+10. Refined default websocket data path register and exposure; (+app:ws-data, +coop['ws-data-[channel]'])
+11. Refined meta-event name-to-listener mapping rule; (app.Util)
 
 working on ...
 
+* Adding app.schedule;(later.js)
+* Enhance view.lock (+private action locks);
 * Adding more unit tests;
 * Adding cheatsheet;
 * Updating doc (around data handling, coop, dnd, effect, remote, ws, form);
