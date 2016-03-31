@@ -1,3 +1,9 @@
+/**
+ * Environment setup (global)
+ *
+ * @author Tim Lauv
+ */
+
 ;(function($, _, Swag, underscoreString, Marionette){
 
 	/**

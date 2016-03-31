@@ -1,3 +1,11 @@
+/**
+ * Framework APIs (global - app.*)
+ *
+ * Note: View APIs are in view.js (view - view.*)
+ * 
+ * @author Tim Lauv
+ */
+
 ;(function(app){
 
 	/**
@@ -197,7 +205,23 @@
 		},
 
 		_websockets: {},
-		ws: function(socketPath){ //returns a promise, use app.ws().then(function(ws){...});
+		/**
+		 * returns a promise.
+		 * 
+		 * Usage
+		 * -----
+		 * register: app.config.websockets [] or app.ws(socketPath);
+		 * receive (e): view.coop['ws-data-[channel]'] or app.onWsData = custom fn;
+		 * send (json): app.ws(socketPath)
+		 * 								.then(function(ws){ws.channel(...).json({...});}); default per channel data
+		 * 								.then(function(ws){ws.send(); or ws.json();}); anything by any contract
+		 * e.websocket = ws in .then(function(ws){})
+		 *
+		 * Default messaging contract
+		 * --------------------------
+		 * json {channel: '..:..', payload: {.data.}} through ws.channel('..:..').json({.data.})
+		 */
+		ws: function(socketPath){
 			if(!Modernizr.websockets) throw new Error('DEV::Application::ws() Websocket is not supported by your browser!');
 			socketPath = socketPath || '/ws';
 			var d = $.Deferred();
@@ -205,14 +229,14 @@
 
 				app._websockets[socketPath] = new WebSocket("ws://" + location.host + socketPath);
 				//events: 'open', 'error', 'close', 'message' = e.data
-				//apis: send(), *json(), *channel().payload(), close()
+				//apis: send(), +json(), +channel().json(), close()
 
 				app._websockets[socketPath].json = function(data){
 					app._websockets[socketPath].send(JSON.stringify(data));
 				};
 				app._websockets[socketPath].channel = function(channel){
 					return {
-						payload: function(data){
+						json: function(data){
 							app._websockets[socketPath].json({
 								channel: channel,
 								payload: data
@@ -227,11 +251,18 @@
 					return d.resolve(app._websockets[socketPath]);
 				};
 
-				//empty stub, override this .onmessage
-				//Server will always send json string {"channel": "...", "payload": "..."}
+				//general ws data stub, override this through app.ws(path).then(function(ws){ws.onmessage=...});
+				//Dev Server will always send default json contract string {"channel": "...", "payload": "..."}
 				app._websockets[socketPath].onmessage = function(e){
-					var data = JSON.parse(e.data);
-					app.debug('websocket', socketPath, 'channel', data.channel, 'payload', data.payload);
+					//opt a. override app.onWsData to active otherwise
+					app.trigger('app:ws-data', {websocket: app._websockets[socketPath], path: socketPath, raw: e.data});
+					//opt b. use global coop event 'ws-data-[channel]' in views directly (default json contract)
+					try {
+						var data = JSON.parse(e.data);
+						app.coop('ws-data-' + data.channel, {websocket: app._websockets[socketPath], path: socketPath, data: data.payload});
+					}catch(ex){
+						console.warn('DEV::Application::ws() Websocket is getting non-default {channel: ..., payload: ...} json contract strings...');
+					}
 				};
 				
 			}else

@@ -12,7 +12,7 @@ NProgress.configure({showSpinner: false});
         },
         contextRegion: 'center',
         defaultContext: 'Home',
-        baseAjaxURI: '',
+        //websockets: ['/ws'],
         viewSrcs: 'site'
 
     });

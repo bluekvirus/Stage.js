@@ -11,7 +11,7 @@
  * can receive payload.
  *
  * ###Possible Payload Usage Senario A (this sample.js)
- * a payload can have 1 e/event and 1 data field, so that we can use event based messaging.
+ * a payload can have 1 action and 1 data field, so that we can use action based messaging.
  *
  * ###Possible Payload Usage Senario B
  * a payload ...
@@ -38,7 +38,8 @@ module.exports = function(server){
 	//channel, socketPath, handler
 	server.tuneTo('room:public', '*', function(channel, payload, clientSock, serverSock){
 		
-		switch(payload.e || payload.event){
+		//example: switch on payload.action (client use ws.channel('room:public').json({action: ..., ...});)
+		switch(payload.action){
 			case 'join':
 				clientSock.json({channel: channel, payload: {msg: 'welcome'}});
 				serverSock.broadcast({channel: channel, payload:{msg: 'new client joined!', count: serverSock.clients.length}});

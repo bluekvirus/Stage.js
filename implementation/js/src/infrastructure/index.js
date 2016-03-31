@@ -34,7 +34,7 @@
  * @author Tim Lauv
  * @created 2014.02.17
  * @updated 2015.08.03
- * @updated 2016.03.24
+ * @updated 2016.03.31
  */
 
 ;(function(app){
@@ -76,13 +76,14 @@
 			//---------------------------------------------------------------------------------------------
 			defaultContext: undefined, //This is the context (name) the application will sit on upon loading.
 			fullScreen: false, //This will put <body> to be full screen sized (window.innerHeight).
-	        rapidEventDelay: 200, //in ms this is the rapid event delay control value shared within the application (e.g window resize).
+	        websockets: [], //Websocket paths to initialize with (single path with multi-channel prefered).
 	        baseAjaxURI: '', //Modify this to fit your own backend apis. e.g index.php?q= or '/api',
 	        viewTemplates: 'static/template', //this is assisted by the build tool, combining all the *.html handlebars templates into one big json.
 			viewSrcs: undefined, //set this to enable reusable view dynamic loading.
 			i18nResources: 'static/resource', //this the the default location where our I18N plugin looks for locale translations.
 			i18nTransFile: 'i18n.json', //can be {locale}.json
 			i18nLocale: '', //if you really want to force the app to certain locale other than browser preference. (Still override-able by ?locale=.. in url)
+			rapidEventDelay: 200, //in ms this is the rapid event delay control value shared within the application (e.g window resize, app.throttle, app.debounce).
 			timeout: 5 * 60 * 1000, //general communication timeout (ms). for app.remote and $.fileupload atm.
 
 		}, config);
@@ -319,7 +320,12 @@
 				});
 			});
 
-			//5. Start the app --> pre init --> initializers --> post init(router setup)
+			//5 Register websockets
+			_.each(app.config.websockets, function(wspath){
+				app.ws(wspath); //we don't wait for websocket hand-shake
+			});
+
+			//6. Start the app --> pre init --> initializers --> post init(router setup)
 			app._ensureScreenSize(function(){
 				app.start();				
 			});

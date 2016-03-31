@@ -630,7 +630,13 @@
 
 }(jQuery);
 
-;;(function($, _, Swag, underscoreString, Marionette){
+;/**
+ * Environment setup (global)
+ *
+ * @author Tim Lauv
+ */
+
+;(function($, _, Swag, underscoreString, Marionette){
 
 	/**
 	 * Global shortcuts
@@ -719,7 +725,7 @@
  * @author Tim Lauv
  * @created 2014.02.17
  * @updated 2015.08.03
- * @updated 2016.03.24
+ * @updated 2016.03.31
  */
 
 ;(function(app){
@@ -761,13 +767,14 @@
 			//---------------------------------------------------------------------------------------------
 			defaultContext: undefined, //This is the context (name) the application will sit on upon loading.
 			fullScreen: false, //This will put <body> to be full screen sized (window.innerHeight).
-	        rapidEventDelay: 200, //in ms this is the rapid event delay control value shared within the application (e.g window resize).
+	        websockets: [], //Websocket paths to initialize with (single path with multi-channel prefered).
 	        baseAjaxURI: '', //Modify this to fit your own backend apis. e.g index.php?q= or '/api',
 	        viewTemplates: 'static/template', //this is assisted by the build tool, combining all the *.html handlebars templates into one big json.
 			viewSrcs: undefined, //set this to enable reusable view dynamic loading.
 			i18nResources: 'static/resource', //this the the default location where our I18N plugin looks for locale translations.
 			i18nTransFile: 'i18n.json', //can be {locale}.json
 			i18nLocale: '', //if you really want to force the app to certain locale other than browser preference. (Still override-able by ?locale=.. in url)
+			rapidEventDelay: 200, //in ms this is the rapid event delay control value shared within the application (e.g window resize, app.throttle, app.debounce).
 			timeout: 5 * 60 * 1000, //general communication timeout (ms). for app.remote and $.fileupload atm.
 
 		}, config);
@@ -1004,7 +1011,12 @@
 				});
 			});
 
-			//5. Start the app --> pre init --> initializers --> post init(router setup)
+			//5 Register websockets
+			_.each(app.config.websockets, function(wspath){
+				app.ws(wspath); //we don't wait for websocket hand-shake
+			});
+
+			//6. Start the app --> pre init --> initializers --> post init(router setup)
 			app._ensureScreenSize(function(){
 				app.start();				
 			});
@@ -1048,7 +1060,15 @@
 
 
 
-;;(function(app){
+;/**
+ * Framework APIs (global - app.*)
+ *
+ * Note: View APIs are in view.js (view - view.*)
+ * 
+ * @author Tim Lauv
+ */
+
+;(function(app){
 
 	/**
 	 * Universal app object creation api entry point
@@ -1247,7 +1267,23 @@
 		},
 
 		_websockets: {},
-		ws: function(socketPath){ //returns a promise, use app.ws().then(function(ws){...});
+		/**
+		 * returns a promise.
+		 * 
+		 * Usage
+		 * -----
+		 * register: app.config.websockets [] or app.ws(socketPath);
+		 * receive (e): view.coop['ws-data-[channel]'] or app.onWsData = custom fn;
+		 * send (json): app.ws(socketPath)
+		 * 								.then(function(ws){ws.channel(...).json({...});}); default per channel data
+		 * 								.then(function(ws){ws.send(); or ws.json();}); anything by any contract
+		 * e.websocket = ws in .then(function(ws){})
+		 *
+		 * Default messaging contract
+		 * --------------------------
+		 * json {channel: '..:..', payload: {.data.}} through ws.channel('..:..').json({.data.})
+		 */
+		ws: function(socketPath){
 			if(!Modernizr.websockets) throw new Error('DEV::Application::ws() Websocket is not supported by your browser!');
 			socketPath = socketPath || '/ws';
 			var d = $.Deferred();
@@ -1255,14 +1291,14 @@
 
 				app._websockets[socketPath] = new WebSocket("ws://" + location.host + socketPath);
 				//events: 'open', 'error', 'close', 'message' = e.data
-				//apis: send(), *json(), *channel().payload(), close()
+				//apis: send(), +json(), +channel().json(), close()
 
 				app._websockets[socketPath].json = function(data){
 					app._websockets[socketPath].send(JSON.stringify(data));
 				};
 				app._websockets[socketPath].channel = function(channel){
 					return {
-						payload: function(data){
+						json: function(data){
 							app._websockets[socketPath].json({
 								channel: channel,
 								payload: data
@@ -1277,11 +1313,18 @@
 					return d.resolve(app._websockets[socketPath]);
 				};
 
-				//empty stub, override this .onmessage
-				//Server will always send json string {"channel": "...", "payload": "..."}
+				//general ws data stub, override this through app.ws(path).then(function(ws){ws.onmessage=...});
+				//Dev Server will always send default json contract string {"channel": "...", "payload": "..."}
 				app._websockets[socketPath].onmessage = function(e){
-					var data = JSON.parse(e.data);
-					app.debug('websocket', socketPath, 'channel', data.channel, 'payload', data.payload);
+					//opt a. override app.onWsData to active otherwise
+					app.trigger('app:ws-data', {websocket: app._websockets[socketPath], path: socketPath, raw: e.data});
+					//opt b. use global coop event 'ws-data-[channel]' in views directly (default json contract)
+					try {
+						var data = JSON.parse(e.data);
+						app.coop('ws-data-' + data.channel, {websocket: app._websockets[socketPath], path: socketPath, data: data.payload});
+					}catch(ex){
+						console.warn('DEV::Application::ws() Websocket is getting non-default {channel: ..., payload: ...} json contract strings...');
+					}
 				};
 				
 			}else
@@ -1713,21 +1756,24 @@
  *
  * @author Tim Lauv
  * @created 2014.03.22
- * @updated 2016.03.24
+ * @updated 2016.03.31
  */
 
 ;(function(app){
 
+	//e as event in meta-event domain:e without the domain: string
 	app.Util.metaEventToListenerName = function(e){
 		if(!e) throw new Error('DEV::Util::metaEventToListenerName() e an NOT be empty...');
-		return _.string.camelize('on-' + e);
+		return _.string.camelize('on-' + e.split(/[\.:-\s\/]/).join('-')); //IMPORTANT e --> fn rule
 	};
 
 	app.Util.addMetaEvent = function(target, namespace, delegate){
 		if(!delegate) delegate = target;
 		target.listenTo(target, 'all', function(eWithNamespace){
+			//separate the domain: string
 			var tmp = String(eWithNamespace).split(':');
 			if(tmp.length !== 2 || tmp[0] !== namespace) return;
+			//apply the e --> fn rule
 			var listener = app.Util.metaEventToListenerName(tmp[1]);
 			if(delegate[listener])
 				delegate[listener].apply(target, _.toArray(arguments).slice(1));
@@ -5835,15 +5881,20 @@ module.exports = DeepModel;
 		//lock or unlock a region with overlayed spin/view (e.g waiting)
 		lock: function(region /*name only*/, flag /*true or false*/, View /*or icon name for .fa-spin or {object for overlay configuration}*/){
 			//check whether region is a string
-			if( typeof(region) !== 'string' )
-				throw new Error('DEV::Layout+::lock() Region name must be a string');
+			if (typeof(region) !== 'string') {
+			    View = flag;
+			    flag = region;
+			    region = '';
+			}
 			//check whether we have flag parameter
 			if( !_.isBoolean(flag) ){
 				View = flag;
 				flag = true;
 			}
 			//make the overlay view, check View is object or a string
-			var $anchor = (this.getViewIn(region))? this.getViewIn(region).$el : this.getRegion(region).$el;
+			var $anchor = (region === '')? this.$el : 
+				(this.getViewIn(region))? this.getViewIn(region).$el : this.getRegion(region).$el;
+
 			if(flag){//flag = true
 				if( _.isFunction(View) ){//view
 					$anchor.overlay({
@@ -8263,4 +8314,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.9.1-1082 build 1459381009419";
+;;app.stagejs = "1.9.1-1083 build 1459460802200";

@@ -87,15 +87,20 @@
 		//lock or unlock a region with overlayed spin/view (e.g waiting)
 		lock: function(region /*name only*/, flag /*true or false*/, View /*or icon name for .fa-spin or {object for overlay configuration}*/){
 			//check whether region is a string
-			if( typeof(region) !== 'string' )
-				throw new Error('DEV::Layout+::lock() Region name must be a string');
+			if (typeof(region) !== 'string') {
+			    View = flag;
+			    flag = region;
+			    region = '';
+			}
 			//check whether we have flag parameter
 			if( !_.isBoolean(flag) ){
 				View = flag;
 				flag = true;
 			}
 			//make the overlay view, check View is object or a string
-			var $anchor = (this.getViewIn(region))? this.getViewIn(region).$el : this.getRegion(region).$el;
+			var $anchor = (region === '')? this.$el : 
+				(this.getViewIn(region))? this.getViewIn(region).$el : this.getRegion(region).$el;
+
 			if(flag){//flag = true
 				if( _.isFunction(View) ){//view
 					$anchor.overlay({
