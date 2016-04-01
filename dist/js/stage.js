@@ -5131,15 +5131,15 @@ module.exports = DeepModel;
 	 			if(options.placement.indexOf('auto') < 0)
 	 				options.placement = 'auto '+options.placement;
 	 			//check whether user has given custom container
-	 			if( options.container !== 'body' ){
+	 			if(options.container !== 'body'){
 	 				console.warn('DEV::Popover::You have overwritten the container. It might cause incorrect in display.');
 	 			}
 	 			//check whether user has given the bond view
-	 			if( !options.bond )
+	 			if(!options.bond)
 	 				console.warn('DEV::Popover::You have not provided a bond view. It might cause view close incorrectly');
 	 			else{
 	 				this.listenTo(options.bond, 'close', function(){
-						if( $anchor.data('bs.popover') ){
+						if($anchor.data('bs.popover')){
 							var tempID = $anchor.data('bs.popover').$tip[0].id;
 							//remove elements on anchor
 			 				$anchor.popover('destroy');
@@ -5157,16 +5157,16 @@ module.exports = DeepModel;
 	 			//adjust the bottom placement, since it does not work well with auto
 	 			.on('shown.bs.popover', function(){
 					//auto + bottom does not work well, recheck on show event
-					if( options.placement === 'auto bottom'){
+					if(options.placement === 'auto bottom'){
 						var $this = $(this),
 							popId = $this.attr('aria-describedby'),
 							$elem = $('#'+popId);
 						//check whether already flipped
-						if( $elem[0].className.indexOf('top') > 0 ){
+						if($elem[0].className.indexOf('top') > 0){
 							var offset = $this.offset(),
 								height = $this.height();
 							//check necessity
-							if( offset.top + height + $elem.height() < $window.height() ){
+							if(offset.top + height + $elem.height() < $window.height()){
 								$anchor.data('bs.popover').options.placement = 'bottom';
 								$anchor.popover('show');	
 							}
@@ -5887,7 +5887,7 @@ module.exports = DeepModel;
 			    region = '';
 			}
 			//check whether we have flag parameter
-			if( !_.isBoolean(flag) ){
+			if(!_.isBoolean(flag)){
 				View = flag;
 				flag = true;
 			}
@@ -5896,12 +5896,12 @@ module.exports = DeepModel;
 				(this.getViewIn(region))? this.getViewIn(region).$el : this.getRegion(region).$el;
 
 			if(flag){//flag = true
-				if( _.isFunction(View) ){//view
+				if(_.isFunction(View)){//view
 					$anchor.overlay({
 						content: (new View()).render().$el,
 						effect: false
 					});
-				}else if( _.isPlainObject(View) ){//plain object as overlay option
+				}else if(_.isPlainObject(View)){//plain object as overlay option
 					View.effect = View.effect || false;
 					$anchor.overlay(View);
 				}else{//spin icon
@@ -6708,7 +6708,9 @@ var I18N = {};
 					complete: function(){
 						if(options.onClose)
 							options.onClose($el, $overlay);
-						$window.off('resize', $overlay.data('onResize'));
+						if($overlay.data('onResize'))
+							//check so we don't remove global 'resize' listeners accidentally
+							$window.off('resize', $overlay.data('onResize'));
 						$overlay.remove();//el, data, and events removed;
 						var recoverCSS = $el.data('recover-css');						
 						$el.css({
@@ -6820,7 +6822,7 @@ var I18N = {};
 			width = options.width || '100%',
 			adjustable = options.adjustable || false,
 			barClass = options.barClass || 'split-' + direction + 'bar',
-			$this = ( this[0].$el ) ? this[0].$el : $(this),
+			$this = (this[0].$el) ? this[0].$el : $(this),
 			counter = 1;//count the number of plug-in gets called
 		//push initial task into queue
 		taskQueue.push({
@@ -6832,7 +6834,7 @@ var I18N = {};
 			width: width,
 			barClass: barClass
 		});
-		while( taskQueue.length > 0 ){
+		while(taskQueue.length > 0){
 			setDomLayout(taskQueue[0].$element, taskQueue[0].direction, taskQueue[0].adjustable, taskQueue[0].split, taskQueue[0].height, taskQueue[0].width, taskQueue[0].barClass, counter);
 			counter++;
 			taskQueue.shift();		
@@ -6841,7 +6843,7 @@ var I18N = {};
 	//functions
 	var setDomLayout = function($elem, direction, adjustable, split, height, width, barClass, counter){
 		var trimmed = [],
-			dir = ( direction === 'h' )? 'column' : 'row',
+			dir = (direction === 'h')? 'column' : 'row',
 			template = '';
 		//expand height and width for parent element
 		if(height !== 'auto' && counter === 1/*only give heigh/width for the first layer of element, flex automatically sets width/height*/)
@@ -6898,7 +6900,7 @@ var I18N = {};
 						});
 					}
 					//insert a bar after the element
-					if( index < split.length - 1 )
+					if(index < split.length - 1)
 						$bar = $('<div class="' + barClass + '" style="flex: 0 0 2px;"></div>'/*2px is temprary place holder*/).appendTo($elem);
 				});
 				//insert a bar at the end to get real height/width later
@@ -6906,7 +6908,7 @@ var I18N = {};
 				//use defer to get height/width after the bar is ready;
 				_.defer(function(){
 					//get barwidth
-					var barwidth = ( direction === 'h' )? $bar.height() : $bar.width(),
+					var barwidth = (direction === 'h')? $bar.height() : $bar.width(),
 						totalTolerance = 1.01;
 						singelTolerance = 0.5;
 					//remove $bar
@@ -6920,11 +6922,11 @@ var I18N = {};
 						});
 						//if previous flexbox is fixed px/em, then delete event on the bar before that flexbox
 						if(trimmed[index][0].match(/(px|em)/)){
-							if( $data.prev().prev().length > 0 )
+							if($data.prev().prev().length > 0)
 								$data.prev().prev().unbind('mouseover mousedown mouseup');
 						}else{
 							//separate horizontal and vertical cases
-							if( direction === 'h' ){//horizontal
+							if(direction === 'h'){//horizontal
 								/*!register resize event!*/
 								$data.mouseover(function(){
 									$data.css({cursor: 'ns-resize'});
@@ -6941,11 +6943,11 @@ var I18N = {};
 											nextTop = ($data.next().next().length > 0) ? $data.next().next().position().top : $elem.height(),
 											//reset layout
 											prevHeight = relY - prevBottom,
-											nextHeight = nextTop - ( relY + barwidth ),
-											newFlexTop = ( prevHeight ) / ( prevHeight + nextHeight) * flexSum; // A / ( A + B ) * Sum
-											newFlexBottom = ( nextHeight ) / ( prevHeight + nextHeight) * flexSum;
+											nextHeight = nextTop - (relY + barwidth),
+											newFlexTop = (prevHeight) / (prevHeight + nextHeight) * flexSum; // A / ( A + B ) * Sum
+											newFlexBottom = (nextHeight) / (prevHeight + nextHeight) * flexSum;
 										//protect the flexsum, not over strech it		
-										if( (newFlexTop + newFlexBottom) <= ( flexSum * totalTolerance ) && newFlexTop > singelTolerance && newFlexBottom > singelTolerance ){
+										if((newFlexTop + newFlexBottom) <= (flexSum * totalTolerance) && newFlexTop > singelTolerance && newFlexBottom > singelTolerance){
 											$data.prev().css({'flex-grow': newFlexTop});
 											$data.next().css({'flex-grow': newFlexBottom});
 										}else{
@@ -6975,11 +6977,11 @@ var I18N = {};
 											nextLeft = ($data.next().next().length > 0) ? $data.next().next().position().left : $elem.width(),
 											//reset layout
 											prevWidth = relX - prevRight,
-											nextWidth = nextLeft - ( relX + barwidth ),
-											newFlexLeft = ( prevWidth ) / ( prevWidth + nextWidth) * flexSum; // A / ( A + B ) * Sum
-											newFlexRight = ( nextWidth ) / ( prevWidth + nextWidth) * flexSum;
+											nextWidth = nextLeft - (relX + barwidth),
+											newFlexLeft = (prevWidth) / (prevWidth + nextWidth) * flexSum; // A / ( A + B ) * Sum
+											newFlexRight = (nextWidth) / (prevWidth + nextWidth) * flexSum;
 										//protect the flexsum, not over strech it									
-										if( (newFlexLeft + newFlexRight) <= (flexSum * totalTolerance ) && newFlexLeft > singelTolerance && newFlexRight > singelTolerance){
+										if((newFlexLeft + newFlexRight) <= (flexSum * totalTolerance) && newFlexLeft > singelTolerance && newFlexRight > singelTolerance){
 											$data.prev().css({'flex-grow': newFlexLeft});
 											$data.next().css({'flex-grow': newFlexRight});
 										}else{
@@ -6996,7 +6998,7 @@ var I18N = {};
 								});
 							}
 						}
-						if( index === ( trimmed.length - 2 ) && trimmed[index+1][0].match(/(px|em)/) ){
+						if(index === (trimmed.length - 2) && trimmed[index+1][0].match(/(px|em)/)){
 							$data.unbind('mouseover mousedown mouseup');
 						}
 					});
@@ -7049,9 +7051,9 @@ var I18N = {};
 		//check whether given a region or view name
 		if(str){
 			//check the start of the string
-			if( str.charAt(0) === '#' ){//id
+			if(str.charAt(0) === '#'){//id
 				rvname = 'id="' + str.slice(1) + '"';
-			}else if( str.charAt(0) === '.' ){//class
+			}else if(str.charAt(0) === '.'){//class
 				//separate classes, either space or comma will do
 				tempClass = str.split(/[\s,]+/);
 				//trim classes to illiminate spaces, and add to return value
@@ -7059,19 +7061,19 @@ var I18N = {};
 				_.each(tempClass, function(data, index){
 					var tempStr = _.string.trim(data);
 					//delete . at the beginning if exits
-					if( tempStr.charAt(0) === '.' )
+					if(tempStr.charAt(0) === '.')
 						tempStr = tempStr.slice(1);
 					//append string
 					rvname += tempStr;
 					//append space if not last one
-					if( index < tempClass.length - 1 )
+					if(index < tempClass.length - 1)
 						rvname += ' ';
 				});
 				rvname += '"';
 			}else{//region/view name
-				if( str.charAt(0) === str.charAt(0).toUpperCase() )
+				if(str.charAt(0) === str.charAt(0).toUpperCase())
 					rvname = 'view="' + str + '"';
-				else if( str.charAt(0) === str.charAt(0).toLowerCase() )
+				else if(str.charAt(0) === str.charAt(0).toLowerCase())
 					rvname = 'region="' + str + '"';
 				else
 					console.warn('please check your region/view name setting.');
@@ -8314,4 +8316,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.9.1-1083 build 1459460802200";
+;;app.stagejs = "1.9.1-1084 build 1459472183603";

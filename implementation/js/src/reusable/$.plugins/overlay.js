@@ -92,7 +92,9 @@
 					complete: function(){
 						if(options.onClose)
 							options.onClose($el, $overlay);
-						$window.off('resize', $overlay.data('onResize'));
+						if($overlay.data('onResize'))
+							//check so we don't remove global 'resize' listeners accidentally
+							$window.off('resize', $overlay.data('onResize'));
 						$overlay.remove();//el, data, and events removed;
 						var recoverCSS = $el.data('recover-css');						
 						$el.css({

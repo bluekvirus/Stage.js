@@ -33,7 +33,7 @@
 			width = options.width || '100%',
 			adjustable = options.adjustable || false,
 			barClass = options.barClass || 'split-' + direction + 'bar',
-			$this = ( this[0].$el ) ? this[0].$el : $(this),
+			$this = (this[0].$el) ? this[0].$el : $(this),
 			counter = 1;//count the number of plug-in gets called
 		//push initial task into queue
 		taskQueue.push({
@@ -45,7 +45,7 @@
 			width: width,
 			barClass: barClass
 		});
-		while( taskQueue.length > 0 ){
+		while(taskQueue.length > 0){
 			setDomLayout(taskQueue[0].$element, taskQueue[0].direction, taskQueue[0].adjustable, taskQueue[0].split, taskQueue[0].height, taskQueue[0].width, taskQueue[0].barClass, counter);
 			counter++;
 			taskQueue.shift();		
@@ -54,7 +54,7 @@
 	//functions
 	var setDomLayout = function($elem, direction, adjustable, split, height, width, barClass, counter){
 		var trimmed = [],
-			dir = ( direction === 'h' )? 'column' : 'row',
+			dir = (direction === 'h')? 'column' : 'row',
 			template = '';
 		//expand height and width for parent element
 		if(height !== 'auto' && counter === 1/*only give heigh/width for the first layer of element, flex automatically sets width/height*/)
@@ -111,7 +111,7 @@
 						});
 					}
 					//insert a bar after the element
-					if( index < split.length - 1 )
+					if(index < split.length - 1)
 						$bar = $('<div class="' + barClass + '" style="flex: 0 0 2px;"></div>'/*2px is temprary place holder*/).appendTo($elem);
 				});
 				//insert a bar at the end to get real height/width later
@@ -119,7 +119,7 @@
 				//use defer to get height/width after the bar is ready;
 				_.defer(function(){
 					//get barwidth
-					var barwidth = ( direction === 'h' )? $bar.height() : $bar.width(),
+					var barwidth = (direction === 'h')? $bar.height() : $bar.width(),
 						totalTolerance = 1.01;
 						singelTolerance = 0.5;
 					//remove $bar
@@ -133,11 +133,11 @@
 						});
 						//if previous flexbox is fixed px/em, then delete event on the bar before that flexbox
 						if(trimmed[index][0].match(/(px|em)/)){
-							if( $data.prev().prev().length > 0 )
+							if($data.prev().prev().length > 0)
 								$data.prev().prev().unbind('mouseover mousedown mouseup');
 						}else{
 							//separate horizontal and vertical cases
-							if( direction === 'h' ){//horizontal
+							if(direction === 'h'){//horizontal
 								/*!register resize event!*/
 								$data.mouseover(function(){
 									$data.css({cursor: 'ns-resize'});
@@ -154,11 +154,11 @@
 											nextTop = ($data.next().next().length > 0) ? $data.next().next().position().top : $elem.height(),
 											//reset layout
 											prevHeight = relY - prevBottom,
-											nextHeight = nextTop - ( relY + barwidth ),
-											newFlexTop = ( prevHeight ) / ( prevHeight + nextHeight) * flexSum; // A / ( A + B ) * Sum
-											newFlexBottom = ( nextHeight ) / ( prevHeight + nextHeight) * flexSum;
+											nextHeight = nextTop - (relY + barwidth),
+											newFlexTop = (prevHeight) / (prevHeight + nextHeight) * flexSum; // A / ( A + B ) * Sum
+											newFlexBottom = (nextHeight) / (prevHeight + nextHeight) * flexSum;
 										//protect the flexsum, not over strech it		
-										if( (newFlexTop + newFlexBottom) <= ( flexSum * totalTolerance ) && newFlexTop > singelTolerance && newFlexBottom > singelTolerance ){
+										if((newFlexTop + newFlexBottom) <= (flexSum * totalTolerance) && newFlexTop > singelTolerance && newFlexBottom > singelTolerance){
 											$data.prev().css({'flex-grow': newFlexTop});
 											$data.next().css({'flex-grow': newFlexBottom});
 										}else{
@@ -188,11 +188,11 @@
 											nextLeft = ($data.next().next().length > 0) ? $data.next().next().position().left : $elem.width(),
 											//reset layout
 											prevWidth = relX - prevRight,
-											nextWidth = nextLeft - ( relX + barwidth ),
-											newFlexLeft = ( prevWidth ) / ( prevWidth + nextWidth) * flexSum; // A / ( A + B ) * Sum
-											newFlexRight = ( nextWidth ) / ( prevWidth + nextWidth) * flexSum;
+											nextWidth = nextLeft - (relX + barwidth),
+											newFlexLeft = (prevWidth) / (prevWidth + nextWidth) * flexSum; // A / ( A + B ) * Sum
+											newFlexRight = (nextWidth) / (prevWidth + nextWidth) * flexSum;
 										//protect the flexsum, not over strech it									
-										if( (newFlexLeft + newFlexRight) <= (flexSum * totalTolerance ) && newFlexLeft > singelTolerance && newFlexRight > singelTolerance){
+										if((newFlexLeft + newFlexRight) <= (flexSum * totalTolerance) && newFlexLeft > singelTolerance && newFlexRight > singelTolerance){
 											$data.prev().css({'flex-grow': newFlexLeft});
 											$data.next().css({'flex-grow': newFlexRight});
 										}else{
@@ -209,7 +209,7 @@
 								});
 							}
 						}
-						if( index === ( trimmed.length - 2 ) && trimmed[index+1][0].match(/(px|em)/) ){
+						if(index === (trimmed.length - 2) && trimmed[index+1][0].match(/(px|em)/)){
 							$data.unbind('mouseover mousedown mouseup');
 						}
 					});
@@ -262,9 +262,9 @@
 		//check whether given a region or view name
 		if(str){
 			//check the start of the string
-			if( str.charAt(0) === '#' ){//id
+			if(str.charAt(0) === '#'){//id
 				rvname = 'id="' + str.slice(1) + '"';
-			}else if( str.charAt(0) === '.' ){//class
+			}else if(str.charAt(0) === '.'){//class
 				//separate classes, either space or comma will do
 				tempClass = str.split(/[\s,]+/);
 				//trim classes to illiminate spaces, and add to return value
@@ -272,19 +272,19 @@
 				_.each(tempClass, function(data, index){
 					var tempStr = _.string.trim(data);
 					//delete . at the beginning if exits
-					if( tempStr.charAt(0) === '.' )
+					if(tempStr.charAt(0) === '.')
 						tempStr = tempStr.slice(1);
 					//append string
 					rvname += tempStr;
 					//append space if not last one
-					if( index < tempClass.length - 1 )
+					if(index < tempClass.length - 1)
 						rvname += ' ';
 				});
 				rvname += '"';
 			}else{//region/view name
-				if( str.charAt(0) === str.charAt(0).toUpperCase() )
+				if(str.charAt(0) === str.charAt(0).toUpperCase())
 					rvname = 'view="' + str + '"';
-				else if( str.charAt(0) === str.charAt(0).toLowerCase() )
+				else if(str.charAt(0) === str.charAt(0).toLowerCase())
 					rvname = 'region="' + str + '"';
 				else
 					console.warn('please check your region/view name setting.');

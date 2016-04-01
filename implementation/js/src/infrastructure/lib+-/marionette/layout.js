@@ -93,7 +93,7 @@
 			    region = '';
 			}
 			//check whether we have flag parameter
-			if( !_.isBoolean(flag) ){
+			if(!_.isBoolean(flag)){
 				View = flag;
 				flag = true;
 			}
@@ -102,12 +102,12 @@
 				(this.getViewIn(region))? this.getViewIn(region).$el : this.getRegion(region).$el;
 
 			if(flag){//flag = true
-				if( _.isFunction(View) ){//view
+				if(_.isFunction(View)){//view
 					$anchor.overlay({
 						content: (new View()).render().$el,
 						effect: false
 					});
-				}else if( _.isPlainObject(View) ){//plain object as overlay option
+				}else if(_.isPlainObject(View)){//plain object as overlay option
 					View.effect = View.effect || false;
 					$anchor.overlay(View);
 				}else{//spin icon

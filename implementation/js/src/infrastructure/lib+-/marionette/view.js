@@ -366,15 +366,15 @@
 	 			if(options.placement.indexOf('auto') < 0)
 	 				options.placement = 'auto '+options.placement;
 	 			//check whether user has given custom container
-	 			if( options.container !== 'body' ){
+	 			if(options.container !== 'body'){
 	 				console.warn('DEV::Popover::You have overwritten the container. It might cause incorrect in display.');
 	 			}
 	 			//check whether user has given the bond view
-	 			if( !options.bond )
+	 			if(!options.bond)
 	 				console.warn('DEV::Popover::You have not provided a bond view. It might cause view close incorrectly');
 	 			else{
 	 				this.listenTo(options.bond, 'close', function(){
-						if( $anchor.data('bs.popover') ){
+						if($anchor.data('bs.popover')){
 							var tempID = $anchor.data('bs.popover').$tip[0].id;
 							//remove elements on anchor
 			 				$anchor.popover('destroy');
@@ -392,16 +392,16 @@
 	 			//adjust the bottom placement, since it does not work well with auto
 	 			.on('shown.bs.popover', function(){
 					//auto + bottom does not work well, recheck on show event
-					if( options.placement === 'auto bottom'){
+					if(options.placement === 'auto bottom'){
 						var $this = $(this),
 							popId = $this.attr('aria-describedby'),
 							$elem = $('#'+popId);
 						//check whether already flipped
-						if( $elem[0].className.indexOf('top') > 0 ){
+						if($elem[0].className.indexOf('top') > 0){
 							var offset = $this.offset(),
 								height = $this.height();
 							//check necessity
-							if( offset.top + height + $elem.height() < $window.height() ){
+							if(offset.top + height + $elem.height() < $window.height()){
 								$anchor.data('bs.popover').options.placement = 'bottom';
 								$anchor.popover('show');	
 							}

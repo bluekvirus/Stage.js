@@ -17,11 +17,13 @@ View Registery:
 * Application.has (name, [type])
 * Application.get (name, [type])
 
-View Options/Api:
+View Options/Utils:
 * ['name', 'effect', 'template', 'templateHelpers', 'data'/'useParentData', 'ui', 'coop', 'actions', 'editors', 'tooltips', 'overlay', 'popover', 'svg']
 * view.overlay(anchor, options)
 * view.popup(anchor, options)
 * view.getViewIn(region)
+* view.lock(region, flag, options)
+* view.coop()
 
 Handling Data:
 * view.data - 'url string', {} or []
@@ -321,14 +323,15 @@ Application.setup({
     fullScreen: //false | true,
     template: //'#id', '@**/*.html', [html string array] or 'html string',
     layout: //same as view layout property,
+    icings/curtains: //fixed overlays
     contextRegion/navRegion: //your navRegion name marked in template,
     defaultContext: //your default context name to show in navRegion,
     baseAjaxURI: //your base url for using with Application.remote(),
-    viewTemplates: //remote view templates folder, if using template:@**/*.html in views,
+    websockets: //websocket paths to initialize,
     viewSrcs: //view dynamic loading base path.
-    i18nResources: //where to load i18n related data (e.g translations),
     i18nTransFile: //the translation file name/pattern under i18nResources,
     i18nLocale: //force the app to certain locale,
+    rapidEventDelay: //for throttling window resize/scroll and app.throttle/debounce,
     timeout: //default data (ajax) operation timeout in ms,
 }).run();
 ```
