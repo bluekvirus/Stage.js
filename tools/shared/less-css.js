@@ -35,7 +35,7 @@ module.exports = function(root, main){
 			//use autoprefixer(options).compile if needs be in the future.
 			var css = autoprefixer(/*options*/).process(tree.toCSS()).css;
 			//fix the google-font issue (remove them)
-			css = css.replace(/@import url\("\/\/fonts.*?"\)/, '');
+			css = css.replace(/@import url\(.*?fonts.*?\)/, '');
 			css = cleancss.minify(css);
 			fs.outputFileSync(mainCss, css);
 			console.log('[Theme'.yellow, path.basename(root).cyan, 'recompiled:'.yellow, mainCss.cyan, ']'.yellow);				
