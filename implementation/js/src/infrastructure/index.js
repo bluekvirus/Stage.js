@@ -152,7 +152,7 @@
 					if(!targetRegion) throw new Error('DEV::Application::navigate() You don\'t have region \'' + navRegion + '\' defined');		
 					
 					//note that .show() is guaranteed to happen after region enter/exit effects
-					targetCtx.once('show', function(){
+					targetRegion.once('show', function(){
 						app.currentContext = targetCtx;
 						//fire a notification to app as meta-event.
 						app.trigger('app:context-switched', app.currentContext.name);

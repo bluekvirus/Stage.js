@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.9.2 (2016-03-31*)
+1.9.2 (2016-04-06*)
 
 1. Added .btn-pointy-right/left to base theme; (default size only)
 2. Added .pointer-up/down/left/right and .relative-ct to base theme;
@@ -13,6 +13,7 @@ Change Log
 9. Refined view.lock() to be able to lock itself in addition to regions;
 10. Refined default websocket data path register and exposure; (+app:ws-data, +coop['ws-data-[channel]'])
 11. Refined meta-event name-to-listener mapping rule; (app.Util)
+12. Fixed show event out-of-sync issue with context during nav chaining;
 
 working on ...
 
