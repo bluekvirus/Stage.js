@@ -40,7 +40,7 @@ REPOSITORY=${REPOSITORY:-"../../Stage.js-site"}
 DIST=${DIST:-"./build/dist/site"}
 
 echo publish to REPOSITORY = "$REPOSITORY" from DIST = "$DIST"
-EDGEVER=$(git rev-list HEAD --count)
+EDGEVER=$(($(git rev-list HEAD --count) + 1))
 
 cd "$REPOSITORY"
 git pull
