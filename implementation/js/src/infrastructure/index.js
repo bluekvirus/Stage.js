@@ -124,7 +124,7 @@
 				var context = path.shift();
 
 				if(!context) throw new Error('DEV::Application::navigate() Empty context/view name...');
-				var TargetContext = app.get(context, 'Context', true); //fallback to use view if needed
+				var TargetContext = app.get(context, 'Context', true); //fallback to use view if context not found.
 				if(!TargetContext) throw new Error('DEV::Application::navigate() You must have the required context/view ' + context + ' defined...');			
 				if(!app.currentContext || app.currentContext.name !== context) {
 					

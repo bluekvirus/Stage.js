@@ -110,7 +110,7 @@
 		},
 
 		//(name can be of path form)
-		get: function(name, type, tryAgain){
+		get: function(name, type, fallback){
 			if(!name)
 				return {
 					'Context': app.Core.Context.get(),
@@ -119,35 +119,27 @@
 					'Editor': app.Core.Editor.get()
 				};
 
-			var Reusable;
-			if(!type) //we merge context into view here. [part-A]
-				Reusable = app.Core.View.get(name) || app.Core.Context.get(name);
-			else
-				Reusable = app.Core[type] && app.Core[type].get(name);
+			var Reusable, t = type || 'View';
+
+			//try local
+			Reusable = (app.Core[t] && app.Core[t].get(name)) || (fallback && app.Core['View'].get(name));
 			
-			if(Reusable)
-				return Reusable;
-			else {
-				type = type || 'View';
-				//see if we have app.viewSrcs set to load the View def dynamically
-				if(app.config && app.config.viewSrcs){
-					app.inject.js(
-						_.compact([app.config.viewSrcs, type.toLowerCase(), app.nameToPath(name)]).join('/') + '.js',
-						true //sync
-					).done(function(){
-						app.debug(type, name, 'injected', 'from', app.config.viewSrcs);
-						Reusable = true;
-					}).fail(function(jqXHR, settings, e){
-						//we merge context into view here. [part-B]
-						if(!tryAgain || (type === 'View'))
-							throw new Error('DEV::Application::get() can NOT load definition for ' + name + ' - [' + e + ']');
-						else
-							Reusable = app.get(name, 'View', true);
-					});
-				}
+			//try remote, if we have app.viewSrcs set to load the View def dynamically
+			if(!Reusable && app.config && app.config.viewSrcs){
+				app.inject.js(
+					_.compact([app.config.viewSrcs, t.toLowerCase(), app.nameToPath(name)]).join('/') + '.js',
+					true //sync
+				).done(function(){
+					app.debug(t, name, 'injected', 'from', app.config.viewSrcs);
+					Reusable = app.get(name, t);
+				}).fail(function(jqXHR, settings, e){
+					if(!fallback || (t === 'View'))
+						throw new Error('DEV::Application::get() can NOT load definition for ' + name + ' - [' + e + ']');
+					else
+						Reusable = app.get(name, 'View');
+				});
 			}
-			if(Reusable === true)
-				return this.get(name, type, true);
+
 			return Reusable;
 		},
 

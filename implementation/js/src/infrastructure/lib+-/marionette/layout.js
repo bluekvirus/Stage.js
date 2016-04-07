@@ -187,7 +187,7 @@
 						}
 
 						//Reusable view?
-						var Reusable = app.get(name, _.isPlainObject(options)?'Widget':'', true);
+						var Reusable = app.get(name, _.isPlainObject(options)?'Widget':'', true); //fallback to use view if widget not found.
 						if(Reusable){
 							//Caveat: don't forget to pick up overridable func & properties from options in your Widget.
 							this.show(new Reusable(options));
