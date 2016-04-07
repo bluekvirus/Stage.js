@@ -675,10 +675,9 @@
 	 * 			 |       |
 	 * 			 |      ...
 	 * 		Resuable
-	 * 		  |Context
-	 * 		  |Regional (View)
-	 * 		  |Widget
-	 * 		  |Editor
+	 * 		  |Context|
+	 * 		  |Widget | --fallback--> View (Regional)
+	 * 		  |Editor |
 	 * 		Remote (RESTful)
 	 * 		Lock
 	 */
@@ -815,7 +814,7 @@
 				var context = path.shift();
 
 				if(!context) throw new Error('DEV::Application::navigate() Empty context/view name...');
-				var TargetContext = app.get(context);
+				var TargetContext = app.get(context, 'Context', true); //fallback to use view if needed
 				if(!TargetContext) throw new Error('DEV::Application::navigate() You must have the required context/view ' + context + ' defined...');			
 				if(!app.currentContext || app.currentContext.name !== context) {
 					
@@ -1201,10 +1200,10 @@
 						Reusable = true;
 					}).fail(function(jqXHR, settings, e){
 						//we merge context into view here. [part-B]
-						if(tryAgain || (type !== 'View'))
+						if(!tryAgain || (type === 'View'))
 							throw new Error('DEV::Application::get() can NOT load definition for ' + name + ' - [' + e + ']');
 						else
-							Reusable = app.get(name, 'Context', true);
+							Reusable = app.get(name, 'View', true);
 					});
 				}
 			}
@@ -5981,7 +5980,7 @@ module.exports = DeepModel;
 						}
 
 						//Reusable view?
-						var Reusable = app.get(name, _.isPlainObject(options)?'Widget':'');
+						var Reusable = app.get(name, _.isPlainObject(options)?'Widget':'', true);
 						if(Reusable){
 							//Caveat: don't forget to pick up overridable func & properties from options in your Widget.
 							this.show(new Reusable(options));
@@ -8316,4 +8315,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.9.1-1087 build 1459980183846";
+;;app.stagejs = "1.9.1-1088 build 1459989581794";

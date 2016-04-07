@@ -14,6 +14,7 @@ Change Log
 10. Refined default websocket data path register and exposure; (+app:ws-data, +coop['ws-data-[channel]'])
 11. Refined meta-event name-to-listener mapping rule; (app.Util)
 12. Fixed show event out-of-sync issue with context during nav chaining;
+13. Refined app.get() fallback strategy (any --> view);
 
 working on ...
 

@@ -43,10 +43,9 @@
 	 * 			 |       |
 	 * 			 |      ...
 	 * 		Resuable
-	 * 		  |Context
-	 * 		  |Regional (View)
-	 * 		  |Widget
-	 * 		  |Editor
+	 * 		  |Context|
+	 * 		  |Widget | --fallback--> View (Regional)
+	 * 		  |Editor |
 	 * 		Remote (RESTful)
 	 * 		Lock
 	 */

@@ -139,10 +139,10 @@
 						Reusable = true;
 					}).fail(function(jqXHR, settings, e){
 						//we merge context into view here. [part-B]
-						if(tryAgain || (type !== 'View'))
+						if(!tryAgain || (type === 'View'))
 							throw new Error('DEV::Application::get() can NOT load definition for ' + name + ' - [' + e + ']');
 						else
-							Reusable = app.get(name, 'Context', true);
+							Reusable = app.get(name, 'View', true);
 					});
 				}
 			}
