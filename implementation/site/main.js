@@ -18,13 +18,15 @@ NProgress.configure({showSpinner: false});
     });
 
     //Ajax Progress -- Configure NProgress as global progress indicator.
-    if(window.NProgress){
-        app.onAjaxStart = function() {
-            NProgress.start();
-        };
-        app.onAjaxStop = function() {
-            NProgress.done();
-        };  
-    }    
+    app.addInitializer(function(){
+        if(window.NProgress){
+            app.onAjaxStart = function() {
+                NProgress.start();
+            };
+            app.onAjaxStop = function() {
+                NProgress.done();
+            };  
+        }
+    });    
 
 })(Application);

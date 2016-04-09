@@ -25,15 +25,10 @@
             this._deferred.done(function(context, options) {
                 if (contextOverride) { context = contextOverride; }
                 var result = callback.call(context, options);
-
-                if (result && _.isFunction(result.always)) {
-                    //async promise object returned by a callback/initializer
-                    result.always(function() {
-                        that._alldone();
-                    });
-                }else {
-                	that._alldone();
-                }
+                //both sync and async objects can be returned by a callback/initializer
+                $.when(result).always(function(){
+                    that._alldone();
+                });
             });
         },
 
