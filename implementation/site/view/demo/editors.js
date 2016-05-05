@@ -3,14 +3,12 @@
 
     app.view('FieldsetA', {
         editors: {
-
             _global: {
                 layout: {
                     label: 'col-sm-2',
                     field: 'col-sm-10'
                 }
             },
-
             abc: {
                 type: 'text',
                 label: 'Abc',
@@ -51,15 +49,12 @@
     app.view('FieldsetB', {
         className: 'well well-sm',
         editors: {
-
             _global: {
                 layout: {
                     label: 'col-sm-2',
                     field: 'col-sm-10'
                 }
             },
-
-
             area: {
                 label: 'Codes',
                 type: 'textarea',
@@ -77,7 +72,6 @@
                 type: 'ro',
                 value: 'Unchange-able'
             },
-
             xyz: {
                 label: 'File',
                 type: 'file',
@@ -98,7 +92,6 @@
                     }
                 }
             },
-
             xyz2: {
                 label: 'File2',
                 type: 'file',
@@ -120,7 +113,6 @@
                 }
 
             },
-
             radios: {
                 label: 'Radios',
                 type: 'radios',
@@ -169,7 +161,6 @@
                 checked: 'enabled',
                 unchecked: 'disabled',
             },
-
             select: {
                 label: 'Select',
                 type: 'select',
@@ -188,7 +179,6 @@
                     valueField: 'val'
                 }
             },
-
             remoteselect: {
                 label: 'Remote Select',
                 type: 'select',
@@ -286,7 +276,7 @@
                     return vals.time + vals.unit;
                 },
                 setVal: function(val, loud) {
-
+                    //set editor values
                 }
             })
         },
@@ -343,7 +333,6 @@
                     this.getEditor('fieldset-b.radios').disable(false);
                 }
             },
-
             info: function(){
                 this.status({
                     singlecheckbox: 'passed!',
@@ -353,7 +342,6 @@
                     }
                 });
             },
-
             clearinfo: function(){
                 this.status();
             }

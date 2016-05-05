@@ -1,18 +1,15 @@
 ;(function(app){
 
 	app.view('Demo.Selectable', {
-
 		template: [
 			'<div class="row">',
 				'<div class="col-md-6" view="Selectable.List"></div>',
 				'<div class="col-md-6" view="Selectable.Result"></div>',
 			'</div>'
 		],
-
 	});
 
 	app.view('Selectable.List', {
-
 		className: 'wrapper-full',
 		template: [
 			'<div class="box border border-full">',
@@ -44,7 +41,6 @@
 	});
 
 	app.view('Selectable.Result', {
-
 		className: 'wrapper-full',
 		template: [
 			'<div class="box">',
@@ -57,6 +53,6 @@
 		onDisplaySelectionResult: function(items){
 			this.ui.result.html(items.join(', '));
 		}
-	})
+	});
 
 })(Application);

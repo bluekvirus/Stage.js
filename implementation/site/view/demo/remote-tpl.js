@@ -9,7 +9,6 @@
 			enter: 'fadeInDown',
 			exit: 'fadeOutDown'
 		},
-
 		onShow: function(){
 			this.getRegion('left').show(app.view({
 				template: '@test/test2.html' //nested template path, != @test2.html

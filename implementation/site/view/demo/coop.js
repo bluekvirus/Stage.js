@@ -26,7 +26,7 @@
 						'<div>onUpdateLeft: function(options){...}</div>',
 					'</div>',
 				],
-			},true));
+			}, true));
 		}
 	});
 

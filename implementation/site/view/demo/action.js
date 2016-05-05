@@ -1,6 +1,6 @@
 ;(function(app){
 
-	app.view('Demo.Action',{
+	app.view('Demo.Action', {
 		className: 'row wrapper',
 		template: [
 			'<div class="col-md-3">',
@@ -50,7 +50,7 @@
 			this.key.show(new Key());
 			this.inputs.show(new Inputs());
 			//adjust height for the views
-			$('.action-demo-view').css({height: '100%', width:'100%'});
+			$('.action-demo-view').css({height: '100%', width: '100%'});
 		}
 	});
 

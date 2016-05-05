@@ -1,6 +1,6 @@
 ;(function(app){
 
-	app.view('Demo.Datahandling',{
+	app.view('Demo.Datahandling', {
 		className: 'row wrapper-2x',
 		template: [
 			'<div class="col-md-6">',
@@ -154,8 +154,8 @@
 	});
 
 	var View3 = app.view({
-		className:'wrapper-full',
-		template:[
+		className: 'wrapper-full',
+		template: [
 			'<div>GET:</div>',
 			'<div style="color:#626262;">',
 				'Application.remote(\'url\');',
