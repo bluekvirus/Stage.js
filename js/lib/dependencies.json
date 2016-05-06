@@ -1,5 +1,5 @@
 {
-	"created": "Wed, 09 Mar 2016 20:28:03 GMT",
+	"created": "Fri, 06 May 2016 18:41:55 GMT",
 	"list": [
 		{
 			"name": "modernizr",
@@ -58,8 +58,14 @@
 		{
 			"name": "jquery-file-upload",
 			"size": "72.6",
-			"version": "9.12.1",
+			"version": "9.12.3",
 			"url": "https://github.com/blueimp/jQuery-File-Upload"
+		},
+		{
+			"name": "flexlayout",
+			"size": "10.0",
+			"version": "0.2.0",
+			"url": "TBI"
 		},
 		{
 			"name": "underscore",
@@ -111,8 +117,8 @@
 		},
 		{
 			"name": "uri.js",
-			"size": "114.3",
-			"version": "1.17.1",
+			"size": "115.6",
+			"version": "1.18.0",
 			"url": "https://github.com/medialize/URI.js"
 		},
 		{
@@ -123,8 +129,8 @@
 		},
 		{
 			"name": "momentjs",
-			"size": "116.4",
-			"version": "2.11.2",
+			"size": "131.7",
+			"version": "2.13.0",
 			"url": "https://github.com/moment/moment"
 		},
 		{
