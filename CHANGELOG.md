@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.9.2 (2016-04-06*)
+1.9.2 (2016-05-06*)
 
 1. Added .btn-pointy-right/left to base theme; (default size only)
 2. Added .pointer-up/down/left/right and .relative-ct to base theme;
@@ -14,18 +14,19 @@ Change Log
 10. Refined default websocket data path register and exposure; (+app:ws-data, +coop['ws-data-[channel]'])
 11. Refined meta-event name-to-listener mapping rule; (app.Util)
 12. Fixed show event out-of-sync issue with context during nav chaining;
-13. Refined app.get() fallback strategy (any --> view);
+13. Refined app.get() fallback strategy; (any --> view)
+14. Moved $.split into separate repo as dep; (flexlayout)
 
 working on ...
 
-* Adding app.schedule;(later.js)
+* Adding app.schedule; (later.js)
 * Enhance view.lock (+private action locks);
 * Adding more unit tests;
 * Adding cheatsheet;
 * Updating doc (around data handling, coop, dnd, effect, remote, ws, form);
 * Breaking down 'Basic' editors;
 * Separate modernizr/detectizr shiv bundles from deps;
-* Adding optional 2-way binders;
+* Adding optional 2-way binders (stickit);
 * Adding canvas support in view (easel);
 * [cli] Enhance update cmd to also refresh mockups;
 

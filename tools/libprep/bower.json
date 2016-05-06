@@ -47,6 +47,7 @@
     "js-cookie": "~2.0.x",
     "amaranjs": "~0.5.x",
     "jquery-file-upload": "~9.x.x",
+    "flexlayout": "0.2.x",
     "underscore": "~1.8.x",
     "underscore.string": "~3.x.x",
     "selectn": "~0.10.x",
@@ -119,8 +120,7 @@
     "animate.css": "~3.x.x",
     "mockjs": "0.1.x",
     "mocha": "~2.2.5",
-    "chai": "~3.2.0",
-    "flexlayout": "*"
+    "chai": "~3.2.0"
   },
   "resolutions": {
     "underscore": "~1.8.x",

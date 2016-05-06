@@ -1,5 +1,5 @@
 {
-	"created": "Wed, 04 May 2016 23:11:36 GMT",
+	"created": "Fri, 06 May 2016 18:41:55 GMT",
 	"list": [
 		{
 			"name": "modernizr",
@@ -60,6 +60,12 @@
 			"size": "72.6",
 			"version": "9.12.3",
 			"url": "https://github.com/blueimp/jQuery-File-Upload"
+		},
+		{
+			"name": "flexlayout",
+			"size": "10.0",
+			"version": "0.2.0",
+			"url": "TBI"
 		},
 		{
 			"name": "underscore",
