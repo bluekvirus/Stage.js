@@ -1,18 +1,15 @@
 ;(function(app){
 
 	app.view('Demo.DND', {
-
 		template: [
 			'<div class="row">',
 				'<div class="col-md-6" view="DND.Draggables"></div>',
 				'<div class="col-md-6" view="DND.Droppable"></div>',
 			'</div>'
 		],
-
 	});
 
 	app.view('DND.Draggables', {
-
 		className: 'wrapper-full',
 		template: [
 			'<div class="box">',
@@ -32,11 +29,9 @@
 		onDrag: app.throttle(function(){
 			app.debug(arguments);
 		})
-
 	});
 
 	app.view('DND.Droppable', {
-
 		className: 'wrapper-full',
 		template: [
 			'<div class="box">',
@@ -55,7 +50,6 @@
 				container: '.body'
 			},
 		}
-
-	})
+	});
 
 })(Application);

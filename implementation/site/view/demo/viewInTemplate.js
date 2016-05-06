@@ -1,6 +1,6 @@
 ;(function(app){
 
-	app.view('Demo.ViewInTemplate',{
+	app.view('Demo.ViewInTemplate', {
 		className: 'view1-holder',
 		template: [
 			'<div style="text-align:center;position:relative;top:50%;transform:translateY(-50%);">',

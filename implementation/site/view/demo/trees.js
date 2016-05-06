@@ -21,7 +21,6 @@
 	var data = Mock.mock(treeDataTpl).data;
 
 	app.view('Demo.Trees', {
-
 		className: 'container',
 	    template: [
 	    	'<p class="alert alert-info"><strong>Note:</strong> Bootstrap 3 has removed multi-level dropdown-menu support...</p>',

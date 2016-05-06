@@ -27,8 +27,8 @@
 		onShow: function(){
 			this.body.trigger('region:load-view', 'OverlayBody');
 		}
-
 	});
+	
 	app.view({
 		name: 'OverlayBody',
 		template: '<p>One fine body…</p>' 

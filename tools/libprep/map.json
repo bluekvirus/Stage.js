@@ -1,41 +1,41 @@
 {
-  "animate.css": "../../implementation/bower_components/animate.css/animate.css",
   "amaranjs": [
     "../../implementation/bower_components/amaranjs/dist/css/amaran.min.css",
     "../../implementation/bower_components/amaranjs/dist/css/animate.min.css",
     "../../implementation/bower_components/amaranjs/dist/js/jquery.amaran.js",
     "../../implementation/bower_components/amaranjs/dist/js/jquery.amaran.min.js"
   ],
+  "animate.css": "../../implementation/bower_components/animate.css/animate.css",
   "backbone.babysitter": "../../implementation/bower_components/backbone.babysitter/lib/backbone.babysitter.js",
-  "backbone": "../../implementation/bower_components/backbone/backbone.js",
   "backbone.wreqr": "../../implementation/bower_components/backbone.wreqr/lib/backbone.wreqr.js",
   "blueimp-canvas-to-blob": "../../implementation/bower_components/blueimp-canvas-to-blob",
+  "backbone": "../../implementation/bower_components/backbone/backbone.js",
   "blueimp-load-image": "../../implementation/bower_components/blueimp-load-image",
   "blueimp-tmpl": "../../implementation/bower_components/blueimp-tmpl",
+  "bootswatch": "../../implementation/bower_components/bootswatch",
   "bootstrap": [
     "../../implementation/bower_components/bootstrap/less/bootstrap.less",
     "../../implementation/bower_components/bootstrap/dist/js/bootstrap.js"
   ],
-  "bootswatch": "../../implementation/bower_components/bootswatch",
   "chai": "../../implementation/bower_components/chai/chai.js",
   "detectizr": "../../implementation/bower_components/detectizr",
   "fastclick": "../../implementation/bower_components/fastclick/lib/fastclick.js",
+  "handlebars": "../../implementation/bower_components/handlebars/handlebars.js",
+  "flexlayout": "../../implementation/bower_components/flexlayout/flexlayout.js",
   "fontawesome": [
     "../../implementation/bower_components/fontawesome/less/font-awesome.less",
     "../../implementation/bower_components/fontawesome/scss/font-awesome.scss"
   ],
-  "handlebars": "../../implementation/bower_components/handlebars/handlebars.js",
   "highlightjs": [
     "../../implementation/bower_components/highlightjs/highlight.pack.js",
     "../../implementation/bower_components/highlightjs/styles/default.css"
   ],
-  "jquery-color": "../../implementation/bower_components/jquery-color",
   "jquery-file-upload": "../../implementation/bower_components/jquery-file-upload/js/jquery.fileupload.js",
+  "jquery-color": "../../implementation/bower_components/jquery-color",
   "jquery-ui": "../../implementation/bower_components/jquery-ui/ui/jquery-ui.js",
   "jquery": "../../implementation/bower_components/jquery/dist/jquery.js",
-  "js-cookie": "../../implementation/bower_components/js-cookie/src/js.cookie.js",
   "loadcss": "../../implementation/bower_components/loadcss/loadCSS.js",
-  "marked": "../../implementation/bower_components/marked/lib/marked.js",
+  "js-cookie": "../../implementation/bower_components/js-cookie/src/js.cookie.js",
   "marionette": [
     "../../implementation/bower_components/marionette/lib/backbone.marionette.js",
     "../../implementation/bower_components/marionette/lib/core/amd/backbone.marionette.js"
@@ -44,23 +44,24 @@
     "../../implementation/bower_components/mocha/mocha.js",
     "../../implementation/bower_components/mocha/mocha.css"
   ],
+  "marked": "../../implementation/bower_components/marked/lib/marked.js",
   "mockjs": "../../implementation/bower_components/mockjs/dist/mock.js",
-  "modernizr": "../../implementation/bower_components/modernizr",
   "momentjs": "../../implementation/bower_components/momentjs/moment.js",
-  "open-sans-fontface": [
-    "../../implementation/bower_components/open-sans-fontface/open-sans.css",
-    "../../implementation/bower_components/open-sans-fontface/fonts/**/*"
-  ],
+  "modernizr": "../../implementation/bower_components/modernizr",
   "nprogress": [
     "../../implementation/bower_components/nprogress/nprogress.js",
     "../../implementation/bower_components/nprogress/nprogress.css"
   ],
+  "open-sans-fontface": [
+    "../../implementation/bower_components/open-sans-fontface/open-sans.css",
+    "../../implementation/bower_components/open-sans-fontface/fonts/**/*"
+  ],
   "raphael": "../../implementation/bower_components/raphael/raphael.js",
+  "store.js": "../../implementation/bower_components/store.js/store.js",
   "selectn": "../../implementation/bower_components/selectn/selectn.js",
   "swag": "../../implementation/bower_components/swag/lib/swag.js",
-  "store.js": "../../implementation/bower_components/store.js/store.js",
-  "underscore": "../../implementation/bower_components/underscore/underscore.js",
   "underscore.string": "../../implementation/bower_components/underscore.string/dist/underscore.string.js",
+  "underscore": "../../implementation/bower_components/underscore/underscore.js",
   "uri.js": "../../implementation/bower_components/uri.js/src/URI.js",
   "validator-js": "../../implementation/bower_components/validator-js/validator.js"
 }

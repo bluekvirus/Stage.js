@@ -1,6 +1,6 @@
 ;(function(app){
 
-	app.view('Demo.Lock',{
+	app.view('Demo.Lock', {
 		className: 'row',
 		template: [
 			'<div class="col-md-6 col-md-offset-3" region="view-lock" view="View-lock"></div>',

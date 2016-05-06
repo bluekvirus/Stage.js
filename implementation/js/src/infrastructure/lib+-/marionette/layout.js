@@ -139,7 +139,17 @@
 			//hornor layout configuration through $.split plug-in
 			if(this.layout)
 				this.listenToOnce(this, 'before:render', function(){
-					$(this).split(_.result(this, 'layout'));
+					var $el = this.$el, //use View.$el to trigger jQuery plugin
+						_layoutConig = [];
+					if(_.isArray(this.layout)){
+						//this.layout is an array
+						$el.flexlayout(_.result(this, 'layout'));
+					}else if(_.isPlainObject(this.layout)){
+						//this.layout is an object
+						_layoutConig = this.layout.split;
+						$el.flexlayout(_layoutConig, _.result(this, 'layout'));
+					}else
+						throw new Error('DEV::Layout+::layout can only be an array or an object.');
 				});
 			
 			//find region marks after 1-render
