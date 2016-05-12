@@ -1,24 +1,59 @@
 /**
  * This is where we extend the abilities of adding an enclosing div wrapper with specified class(className) for using of '^^^className'.
+ * For example, the following illustration shows the input and output.
+ *          +-----------+     +-----------------------------------------+
+ *          | '^^^xyz', |     | <div class="xyz">                       |
+ *          | '**ab**', |     |   <p><strong>ab</strong></p>            |
+ *          | '~~~',    |     |   <pre>                                 |
+ *          | 'cc',     | ==> |     <code class="hljs stylus">cc        |
+ *          | 'dd',     |     |       <span class="hljs-tag">dd</span>  |
+ *          | '~~~',    |     |     </code>                             |
+ *          | '^^^'     |     |   </pre>                                |
+ *          |           |     | </div>                                  |
+ *          +-----------+     +-----------------------------------------+
+ * Note: the div wrapper can't not be used recursively, for instance, you can not use it like:
+ *          +-----------+
+ *          | '^^^xyz', |
+ *          | '^^^abc', |
+ *          | '~~~',    |
+ *          | 'dd',     |
+ *          | '~~~',    |
+ *          | '^^^',    |
+ *          | '^^^'     |
+ *          +-----------+
+ * The following illustration indicate the typical flow how the whole bunch stuff works:
+ *          
+ *              +-----------+                                   +-----------+
+ *              | Lex Rules |                                   | Renderer  |
+ *              +-----------+                                   +-----------+
+ *                    |                                               |
+ *                    |                                               |
+ *                    v                                               v
+ *   +-----+     +-------+  Lexing(Lexer.token)   +--------+  Rendering Current Token     +--------+
+ *   | src | --> | Lexer | ---------------------> | Parser | ---------------------------> | output |
+ *   +-----+     +-------+                        +--------+                              +--------+
+ *   
  * @author Zhizhen Fan
  * @created 2016.05.11
  */
 ;(function(){
 
-  _.extend(marked.Renderer.prototype, {
-    clswrapper: function(cls, text) {
-      return '<div class=' + cls + '>' + marked.Parser.parse(marked.Lexer.lex(text, this.options), this.options) + '</div>\n';
-    }
-  });
-
+  /**
+   * Overwrite the static Lex method to add new rules.
+   */
   marked.Lexer.lex = function(src, options) {
     var lexer = new marked.Lexer(options);
     _.extend(lexer.rules, {
+      // Append the new added rules here
       clsfences: /^ *(\^{3,}) *(\S+)? *\n([\s\S]+?)\s*\1 *(?:\n+|$)/
     });
     return lexer.lex(src);
   };
 
+
+  /**
+   * Overwrite the Lexing function to apply new rules in the loop.
+   */
   marked.Lexer.prototype.token = function(src, top, bq) {
     var src = src.replace(/^ +$/gm, ''),
       next, loose, cap, bull, b, item, space, i, l;
@@ -56,7 +91,7 @@
         continue;
       }
 
-      // fences for div class wrapper
+      // fences for div wrapper with specified class
       if (cap = this.rules.clsfences.exec(src)) {
         src = src.substring(cap[0].length);
         this.tokens.push({
@@ -308,7 +343,7 @@
   };
 
   /**
-   * Parse Current Token
+   * Overwrite the function to apply the new renderers.
    */
   marked.Parser.prototype.tok = function() {
     switch (this.token.type) {
@@ -434,4 +469,14 @@
         }
     }
   };
+
+  /**
+   * Extend the Renderer with new type and its handler.
+   */
+  _.extend(marked.Renderer.prototype, {
+    clswrapper: function(cls, text) {
+      return '<div class=' + cls + '>' + marked.Parser.parse(marked.Lexer.lex(text, this.options), this.options) + '</div>\n';
+    }
+  });
+
 })();
