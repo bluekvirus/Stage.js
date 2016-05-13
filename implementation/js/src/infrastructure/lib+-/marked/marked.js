@@ -35,17 +35,19 @@
  *   
  * @author Zhizhen Fan
  * @created 2016.05.11
+ * Inspired by marked.js by Christopher Jeffrey.
  */
+
 ;(function(){
 
   /**
    * Overwrite the static Lex method to add new rules.
    */
-  marked.Lexer.lex = function(src, options) {
+  marked.Lexer.lex = function(src, options){
     var lexer = new marked.Lexer(options);
     _.extend(lexer.rules, {
       // Append the new added rules here
-      clsfences: /^ *(\^{3,}) *(\S+)? *\n([\s\S]+?)\s*\1 *(?:\n+|$)/
+      clsfences: /^ *(\^{3,}) *(\S+(?: +\S+)*)? *\n([\s\S]+?)\s*\1 *(?:\n+|$)/
     });
     return lexer.lex(src);
   };
@@ -54,15 +56,15 @@
   /**
    * Overwrite the Lexing function to apply new rules in the loop.
    */
-  marked.Lexer.prototype.token = function(src, top, bq) {
+  marked.Lexer.prototype.token = function(src, top, bq){
     var src = src.replace(/^ +$/gm, ''),
       next, loose, cap, bull, b, item, space, i, l;
 
-    while (src) {
+    while(src){
       // newline
-      if (cap = this.rules.newline.exec(src)) {
+      if(cap = this.rules.newline.exec(src)){
         src = src.substring(cap[0].length);
-        if (cap[0].length > 1) {
+        if(cap[0].length > 1){
           this.tokens.push({
             type: 'space'
           });
@@ -70,7 +72,7 @@
       }
 
       // code
-      if (cap = this.rules.code.exec(src)) {
+      if(cap = this.rules.code.exec(src)){
         src = src.substring(cap[0].length);
         cap = cap[0].replace(/^ {4}/gm, '');
         this.tokens.push({
@@ -81,7 +83,7 @@
       }
 
       // fences (gfm)
-      if (cap = this.rules.fences.exec(src)) {
+      if(cap = this.rules.fences.exec(src)){
         src = src.substring(cap[0].length);
         this.tokens.push({
           type: 'code',
@@ -92,7 +94,7 @@
       }
 
       // fences for div wrapper with specified class
-      if (cap = this.rules.clsfences.exec(src)) {
+      if(cap = this.rules.clsfences.exec(src)){
         src = src.substring(cap[0].length);
         this.tokens.push({
           type: 'clswrapper',
@@ -103,7 +105,7 @@
       }
 
       // heading
-      if (cap = this.rules.heading.exec(src)) {
+      if(cap = this.rules.heading.exec(src)){
         src = src.substring(cap[0].length);
         this.tokens.push({
           type: 'heading',
@@ -114,7 +116,7 @@
       }
 
       // table no leading pipe (gfm)
-      if (top && (cap = this.rules.nptable.exec(src))) {
+      if(top && (cap = this.rules.nptable.exec(src))){
         src = src.substring(cap[0].length);
 
         item = {
@@ -124,19 +126,19 @@
           cells: cap[3].replace(/\n$/, '').split('\n')
         };
 
-        for (i = 0; i < item.align.length; i++) {
-          if (/^ *-+: *$/.test(item.align[i])) {
+        for(i = 0; i < item.align.length; i++){
+          if(/^ *-+: *$/.test(item.align[i])){
             item.align[i] = 'right';
-          } else if (/^ *:-+: *$/.test(item.align[i])) {
+          } else if(/^ *:-+: *$/.test(item.align[i])){
             item.align[i] = 'center';
-          } else if (/^ *:-+ *$/.test(item.align[i])) {
+          } else if(/^ *:-+ *$/.test(item.align[i])){
             item.align[i] = 'left';
           } else {
             item.align[i] = null;
           }
         }
 
-        for (i = 0; i < item.cells.length; i++) {
+        for(i = 0; i < item.cells.length; i++){
           item.cells[i] = item.cells[i].split(/ *\| */);
         }
 
@@ -146,7 +148,7 @@
       }
 
       // lheading
-      if (cap = this.rules.lheading.exec(src)) {
+      if(cap = this.rules.lheading.exec(src)){
         src = src.substring(cap[0].length);
         this.tokens.push({
           type: 'heading',
@@ -157,7 +159,7 @@
       }
 
       // hr
-      if (cap = this.rules.hr.exec(src)) {
+      if(cap = this.rules.hr.exec(src)){
         src = src.substring(cap[0].length);
         this.tokens.push({
           type: 'hr'
@@ -166,7 +168,7 @@
       }
 
       // blockquote
-      if (cap = this.rules.blockquote.exec(src)) {
+      if(cap = this.rules.blockquote.exec(src)){
         src = src.substring(cap[0].length);
 
         this.tokens.push({
@@ -188,7 +190,7 @@
       }
 
       // list
-      if (cap = this.rules.list.exec(src)) {
+      if(cap = this.rules.list.exec(src)){
         src = src.substring(cap[0].length);
         bull = cap[2];
 
@@ -204,7 +206,7 @@
         l = cap.length;
         i = 0;
 
-        for (; i < l; i++) {
+        for(; i < l; i++){
           item = cap[i];
 
           // Remove the list item's bullet
@@ -214,16 +216,16 @@
 
           // Outdent whatever the
           // list item contains. Hacky.
-          if (~item.indexOf('\n ')) {
+          if(~item.indexOf('\n ')){
             space -= item.length;
             item = !this.options.pedantic ? item.replace(new RegExp('^ {1,' + space + '}', 'gm'), '') : item.replace(/^ {1,4}/gm, '');
           }
 
           // Determine whether the next list item belongs here.
           // Backpedal if it does not belong in this list.
-          if (this.options.smartLists && i !== l - 1) {
+          if(this.options.smartLists && i !== l - 1){
             b = block.bullet.exec(cap[i + 1])[0];
-            if (bull !== b && !(bull.length > 1 && b.length > 1)) {
+            if(bull !== b && !(bull.length > 1 && b.length > 1)){
               src = cap.slice(i + 1).join('\n') + src;
               i = l - 1;
             }
@@ -233,9 +235,9 @@
           // Use: /(^|\n)(?! )[^\n]+\n\n(?!\s*$)/
           // for discount behavior.
           loose = next || /\n\n(?!\s*$)/.test(item);
-          if (i !== l - 1) {
+          if(i !== l - 1){
             next = item.charAt(item.length - 1) === '\n';
-            if (!loose) loose = next;
+            if(!loose) loose = next;
           }
 
           this.tokens.push({
@@ -258,7 +260,7 @@
       }
 
       // html
-      if (cap = this.rules.html.exec(src)) {
+      if(cap = this.rules.html.exec(src)){
         src = src.substring(cap[0].length);
         this.tokens.push({
           type: this.options.sanitize ? 'paragraph' : 'html',
@@ -269,7 +271,7 @@
       }
 
       // def
-      if ((!bq && top) && (cap = this.rules.def.exec(src))) {
+      if((!bq && top) && (cap = this.rules.def.exec(src))){
         src = src.substring(cap[0].length);
         this.tokens.links[cap[1].toLowerCase()] = {
           href: cap[2],
@@ -279,7 +281,7 @@
       }
 
       // table (gfm)
-      if (top && (cap = this.rules.table.exec(src))) {
+      if(top && (cap = this.rules.table.exec(src))){
         src = src.substring(cap[0].length);
 
         item = {
@@ -289,19 +291,19 @@
           cells: cap[3].replace(/(?: *\| *)?\n$/, '').split('\n')
         };
 
-        for (i = 0; i < item.align.length; i++) {
-          if (/^ *-+: *$/.test(item.align[i])) {
+        for(i = 0; i < item.align.length; i++){
+          if(/^ *-+: *$/.test(item.align[i])){
             item.align[i] = 'right';
-          } else if (/^ *:-+: *$/.test(item.align[i])) {
+          } else if(/^ *:-+: *$/.test(item.align[i])){
             item.align[i] = 'center';
-          } else if (/^ *:-+ *$/.test(item.align[i])) {
+          } else if(/^ *:-+ *$/.test(item.align[i])){
             item.align[i] = 'left';
           } else {
             item.align[i] = null;
           }
         }
 
-        for (i = 0; i < item.cells.length; i++) {
+        for(i = 0; i < item.cells.length; i++){
           item.cells[i] = item.cells[i]
             .replace(/^ *\| *| *\| *$/g, '')
             .split(/ *\| */);
@@ -313,7 +315,7 @@
       }
 
       // top-level paragraph
-      if (top && (cap = this.rules.paragraph.exec(src))) {
+      if(top && (cap = this.rules.paragraph.exec(src))){
         src = src.substring(cap[0].length);
         this.tokens.push({
           type: 'paragraph',
@@ -323,7 +325,7 @@
       }
 
       // text
-      if (cap = this.rules.text.exec(src)) {
+      if(cap = this.rules.text.exec(src)){
         // Top-level should never reach here.
         src = src.substring(cap[0].length);
         this.tokens.push({
@@ -333,7 +335,7 @@
         continue;
       }
 
-      if (src) {
+      if(src){
         throw new
         Error('Infinite loop on byte: ' + src.charCodeAt(0));
       }
@@ -345,128 +347,102 @@
   /**
    * Overwrite the function to apply the new renderers.
    */
-  marked.Parser.prototype.tok = function() {
-    switch (this.token.type) {
+  marked.Parser.prototype.tok = function(){
+    switch(this.token.type){
       case 'space':
-        {
-          return '';
-        }
+        return '';
       case 'hr':
-        {
-          return this.renderer.hr();
-        }
+        return this.renderer.hr();
       case 'heading':
-        {
-          return this.renderer.heading(
-            this.inline.output(this.token.text),
-            this.token.depth,
-            this.token.text);
-        }
+        return this.renderer.heading(
+          this.inline.output(this.token.text),
+          this.token.depth,
+          this.token.text);
       case 'code':
-        {
-          return this.renderer.code(this.token.text,
-            this.token.lang,
-            this.token.escaped);
-        }
+        return this.renderer.code(this.token.text,
+          this.token.lang,
+          this.token.escaped);
       case 'clswrapper':
-        {
-          return this.renderer.clswrapper(this.token.cls,
-            this.token.text,
-            this.token.escaped);
-        }
+        return this.renderer.clswrapper(this.token.cls,
+          this.token.text,
+          this.token.escaped);
       case 'table':
-        {
-          var header = '',
-            body = '',
-            i, row, cell, flags, j;
+        var header = '',
+          body = '',
+          i, row, cell, flags, j;
 
-          // header
-          cell = '';
-          for (i = 0; i < this.token.header.length; i++) {
-            flags = {
+        // header
+        cell = '';
+        for(i = 0; i < this.token.header.length; i++){
+          flags = {
+            header: true,
+            align: this.token.align[i]
+          };
+          cell += this.renderer.tablecell(
+            this.inline.output(this.token.header[i]), {
               header: true,
               align: this.token.align[i]
-            };
+            }
+          );
+        }
+        header += this.renderer.tablerow(cell);
+
+        for(i = 0; i < this.token.cells.length; i++){
+          row = this.token.cells[i];
+
+          cell = '';
+          for(j = 0; j < row.length; j++){
             cell += this.renderer.tablecell(
-              this.inline.output(this.token.header[i]), {
-                header: true,
-                align: this.token.align[i]
+              this.inline.output(row[j]), {
+                header: false,
+                align: this.token.align[j]
               }
             );
           }
-          header += this.renderer.tablerow(cell);
 
-          for (i = 0; i < this.token.cells.length; i++) {
-            row = this.token.cells[i];
-
-            cell = '';
-            for (j = 0; j < row.length; j++) {
-              cell += this.renderer.tablecell(
-                this.inline.output(row[j]), {
-                  header: false,
-                  align: this.token.align[j]
-                }
-              );
-            }
-
-            body += this.renderer.tablerow(cell);
-          }
-          return this.renderer.table(header, body);
+          body += this.renderer.tablerow(cell);
         }
+        return this.renderer.table(header, body);
       case 'blockquote_start':
-        {
-          var body = '';
+        var body = '';
 
-          while (this.next().type !== 'blockquote_end') {
-            body += this.tok();
-          }
-
-          return this.renderer.blockquote(body);
+        while(this.next().type !== 'blockquote_end'){
+          body += this.tok();
         }
+
+        return this.renderer.blockquote(body);
       case 'list_start':
-        {
-          var body = '',
-            ordered = this.token.ordered;
+        var body = '',
+          ordered = this.token.ordered;
 
-          while (this.next().type !== 'list_end') {
-            body += this.tok();
-          }
-
-          return this.renderer.list(body, ordered);
+        while(this.next().type !== 'list_end'){
+          body += this.tok();
         }
+
+        return this.renderer.list(body, ordered);
       case 'list_item_start':
-        {
-          var body = '';
+        var body = '';
 
-          while (this.next().type !== 'list_item_end') {
-            body += this.token.type === 'text' ? this.parseText() : this.tok();
-          }
-
-          return this.renderer.listitem(body);
+        while(this.next().type !== 'list_item_end'){
+          body += this.token.type === 'text' ? this.parseText() : this.tok();
         }
+
+        return this.renderer.listitem(body);
       case 'loose_item_start':
-        {
-          var body = '';
+        var body = '';
 
-          while (this.next().type !== 'list_item_end') {
-            body += this.tok();
-          }
-
-          return this.renderer.listitem(body);
+        while(this.next().type !== 'list_item_end'){
+          body += this.tok();
         }
+
+        return this.renderer.listitem(body);
       case 'html':
-        {
-          var html = !this.token.pre && !this.options.pedantic ? this.inline.output(this.token.text) : this.token.text;
-          return this.renderer.html(html);
-        }
+        var html = !this.token.pre && !this.options.pedantic ? this.inline.output(this.token.text) : this.token.text;
+        return this.renderer.html(html);
       case 'paragraph':
-        {
-          return this.renderer.paragraph(this.inline.output(this.token.text));
-        }
+        return this.renderer.paragraph(this.inline.output(this.token.text));
       case 'text':
-        {
-          return this.renderer.paragraph(this.parseText());
-        }
+        return this.renderer.paragraph(this.parseText());
     }
   };
 
@@ -474,8 +450,8 @@
    * Extend the Renderer with new type and its handler.
    */
   _.extend(marked.Renderer.prototype, {
-    clswrapper: function(cls, text) {
-      return '<div class=' + cls + '>' + marked.Parser.parse(marked.Lexer.lex(text, this.options), this.options) + '</div>\n';
+    clswrapper: function(cls, text){
+      return '<div class="' + cls + '">' + marked.Parser.parse(marked.Lexer.lex(text, this.options), this.options) + '</div>\n';
     }
   });
 
