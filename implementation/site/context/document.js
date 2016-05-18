@@ -11,8 +11,8 @@
                 '<div class="col-sm-7">',
                     '<div region="breadcrumbs" view="Doc.Breadcrumbs" style="background-color:#eee; padding: 0 1em;position: fixed; top: 0; right: 0; display:none"></div>',
                     '<i class="project-title"></i><hr/>',
-                    '<span class="label label-primary h6">'+ app.stagejs + '</span> ',
-                    '<a href="http://semver.org/">(Why is it version-ed like this?)</a>',
+                    '<span class="h6 text-primary">'+ app.stagejs + '</span> ',
+                    '(<a href="http://semver.org/">M.m.p@semver</a>-<a href="https://github.com/bluekvirus/Stage.js/commits/master">commits@github</a> and timestamp)',
                     '<div region="doc" data-url="HOWTO.md"></div>',
                 '</div>',
             '</div>'

@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.9.2 (2016-05-06*)
+1.9.2 (2016-05-17*)
 
 1. Added .btn-pointy-right/left to base theme; (default size only)
 2. Added .pointer-up/down/left/right and .relative-ct to base theme;
@@ -16,11 +16,17 @@ Change Log
 12. Fixed show event out-of-sync issue with context during nav chaining;
 13. Refined app.get() fallback strategy; (any --> view)
 14. Moved $.split into separate repo as dep; (flexlayout)
+15. Added ^^^class ... classN extension to app.markdown();
+16. Removed restrictive api check on .overlay() and .popover();
+17. Added app.curtain() as an alias to app.icing();
 
 working on ...
 
+* app.prompt();
+* app.*get() with view related fn param clean-up;
 * Adding app.schedule; (later.js)
 * Enhance view.lock (+private action locks);
+* app.*view/bind({e $el/el: fn, ...,}) raw'n'direct bind?;
 * Adding more unit tests;
 * Adding cheatsheet;
 * Updating doc (around data handling, coop, dnd, effect, remote, ws, form);

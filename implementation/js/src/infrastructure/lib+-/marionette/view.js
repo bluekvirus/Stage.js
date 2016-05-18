@@ -639,21 +639,23 @@
 		}
 
 		//overlay (use this view as overlay)
-		if(this.overlay){
+		//if(this.overlay){
+		//unconditional 1.9.2+
 			this._enableOverlay();
-		}
+		//}
 
-		//popover
-		if(this.popover){
+		//popover (use this view as popover)
+		//if(this.popover){
+		//unconditional 1.9.2+
 			this._enablePopover();
-		}
+		//}
 
 		//editors -- doesn't re-activate upon re-render (usually used with non-data bound template or no template)
 		if(this.editors && this._activateEditors) this.listenToOnce(this, 'render', function(){
 			this._activateEditors(this.editors);
 		});
 
-		//svg (if rapheal.js is present) -- doesn't re-activate upon render (usually used with no template)
+		//svg (if rapheal.js is present) -- doesn't re-activate upon re-render (usually used with no template)
 		if(this.svg && this._enableSVG) {
 			this.listenToOnce(this, 'show', this._enableSVG);
 		}

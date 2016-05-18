@@ -22,7 +22,7 @@
             //     app.Util.download(base + $btn.attr('target'));  
             // },
             showSubMenu: function($tag, e){
-                app.notify('Action Detected!', 'Banner menu item ' + $tag.find('> a').text() + ' is ' + e.type + '-ed');
+                //app.notify('Action Detected!', 'Banner menu item ' + $tag.find('> a').text() + ' is ' + e.type + '-ed');
                 $tag.toggleClass('open', true);
             },
             closeSubMenu: function($tag, e){

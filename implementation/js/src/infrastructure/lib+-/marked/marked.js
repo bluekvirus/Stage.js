@@ -35,7 +35,9 @@
  *   
  * @author Zhizhen Fan
  * @created 2016.05.11
- * Inspired by marked.js by Christopher Jeffrey.
+ * @updated 2016.05.17 (Tim Lauv)
+ * 
+ * Based on marked.js 0.3.5 by Christopher Jeffrey.
  */
 
 ;(function(){
@@ -224,7 +226,8 @@
           // Determine whether the next list item belongs here.
           // Backpedal if it does not belong in this list.
           if(this.options.smartLists && i !== l - 1){
-            b = block.bullet.exec(cap[i + 1])[0];
+            //was using block.bullet, fixed (Tim Lauv)
+            b = this.rules.bullet.exec(cap[i + 1])[0];
             if(bull !== b && !(bull.length > 1 && b.length > 1)){
               src = cap.slice(i + 1).join('\n') + src;
               i = l - 1;

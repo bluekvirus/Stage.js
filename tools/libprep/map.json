@@ -11,20 +11,20 @@
   "backbone": "../../implementation/bower_components/backbone/backbone.js",
   "blueimp-canvas-to-blob": "../../implementation/bower_components/blueimp-canvas-to-blob",
   "blueimp-load-image": "../../implementation/bower_components/blueimp-load-image",
+  "blueimp-tmpl": "../../implementation/bower_components/blueimp-tmpl",
   "bootstrap": [
     "../../implementation/bower_components/bootstrap/less/bootstrap.less",
     "../../implementation/bower_components/bootstrap/dist/js/bootstrap.js"
   ],
-  "blueimp-tmpl": "../../implementation/bower_components/blueimp-tmpl",
   "bootswatch": "../../implementation/bower_components/bootswatch",
   "chai": "../../implementation/bower_components/chai/chai.js",
-  "fastclick": "../../implementation/bower_components/fastclick/lib/fastclick.js",
   "detectizr": "../../implementation/bower_components/detectizr",
+  "fastclick": "../../implementation/bower_components/fastclick/lib/fastclick.js",
+  "flexlayout": "../../implementation/bower_components/flexlayout/flexlayout.js",
   "fontawesome": [
     "../../implementation/bower_components/fontawesome/less/font-awesome.less",
     "../../implementation/bower_components/fontawesome/scss/font-awesome.scss"
   ],
-  "flexlayout": "../../implementation/bower_components/flexlayout/flexlayout.js",
   "handlebars": "../../implementation/bower_components/handlebars/handlebars.js",
   "highlightjs": [
     "../../implementation/bower_components/highlightjs/highlight.pack.js",

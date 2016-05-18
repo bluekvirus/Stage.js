@@ -393,17 +393,21 @@
 		//----------------markdown-------------------
 		//options.marked, options.hljs
 		//https://guides.github.com/features/mastering-markdown/
+		//our addition:
+		//	^^^class class2 class3 ...
+		//	...
+		//	^^^
 		markdown: function(md, $target /*or options*/, options){
 			options = options || (!($target instanceof jQuery) && $target) || {};
 			//render content
 			var html = marked(md, _.extend({
 				gfm: true,
 				tables: true,
-				breaks: false,
-				pedantic: false,
+				breaks: true,
+				pedantic: false, //don't use original markdown.pl choices
 				sanitize: true,
 				smartLists: true,
-				smartypants: false
+				smartypants: false //don't be too smart on the punctuations
 			}, options.marked)), hljs = window.hljs;
 			//highlight code (use ```language to specify type)
 			if(hljs){
@@ -659,7 +663,7 @@
 		//global action locks
 		'lock', 'unlock', 'available', 
 		//utils
-		'coop', 'navigate', 'icing', 'i18n', 'reload', 'param', 'animation', 'nextFrame', 'cancelFrame', 'animateItems', 'throttle', 'debounce',
+		'coop', 'navigate', 'icing/curtain', 'i18n', 'reload', 'param', 'animation', 'nextFrame', 'cancelFrame', 'animateItems', 'throttle', 'debounce',
 		//com
 		'remote', 'ws', 'download',
 		//3rd-party lib short-cut

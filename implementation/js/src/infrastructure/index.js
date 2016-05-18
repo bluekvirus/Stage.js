@@ -209,7 +209,8 @@
 				else
 					ir.$el.show();
 				return ir;
-			};
+			}; 
+			app.curtain = app.icing; //alias: curtain()
 
 			//c. init client page router and history:
 			var Router = Backbone.Marionette.AppRouter.extend({

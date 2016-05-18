@@ -45484,8 +45484,9 @@ block.normal = merge({}, block);
  */
 
 block.gfm = merge({}, block.normal, {
-  fences: /^ *(`{3,}|~{3,}) *(\S+)? *\n([\s\S]+?)\s*\1 *(?:\n+|$)/,
-  paragraph: /^/
+  fences: /^ *(`{3,}|~{3,})[ \.]*(\S+)? *\n([\s\S]*?)\s*\1 *(?:\n+|$)/,
+  paragraph: /^/,
+  heading: /^ *(#{1,6}) +([^\n]+?) *#* *(?:\n+|$)/
 });
 
 block.gfm.paragraph = replace(block.paragraph)
@@ -45597,7 +45598,7 @@ Lexer.prototype.token = function(src, top, bq) {
       this.tokens.push({
         type: 'code',
         lang: cap[2],
-        text: cap[3]
+        text: cap[3] || ''
       });
       continue;
     }
@@ -45768,7 +45769,8 @@ Lexer.prototype.token = function(src, top, bq) {
         type: this.options.sanitize
           ? 'paragraph'
           : 'html',
-        pre: cap[1] === 'pre' || cap[1] === 'script' || cap[1] === 'style',
+        pre: !this.options.sanitizer
+          && (cap[1] === 'pre' || cap[1] === 'script' || cap[1] === 'style'),
         text: cap[0]
       });
       continue;
@@ -45863,7 +45865,7 @@ var inline = {
   reflink: /^!?\[(inside)\]\s*\[([^\]]*)\]/,
   nolink: /^!?\[((?:\[[^\]]*\]|[^\[\]])*)\]/,
   strong: /^__([\s\S]+?)__(?!_)|^\*\*([\s\S]+?)\*\*(?!\*)/,
-  em: /^\b_((?:__|[\s\S])+?)_\b|^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,
+  em: /^\b_((?:[^_]|__)+?)_\b|^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,
   code: /^(`+)\s*([\s\S]*?[^`])\s*\1(?!`)/,
   br: /^ {2,}\n(?!\s*$)/,
   del: noop,
@@ -46015,8 +46017,10 @@ InlineLexer.prototype.output = function(src) {
       }
       src = src.substring(cap[0].length);
       out += this.options.sanitize
-        ? escape(cap[0])
-        : cap[0];
+        ? this.options.sanitizer
+          ? this.options.sanitizer(cap[0])
+          : escape(cap[0])
+        : cap[0]
       continue;
     }
 
@@ -46087,7 +46091,7 @@ InlineLexer.prototype.output = function(src) {
     // text
     if (cap = this.rules.text.exec(src)) {
       src = src.substring(cap[0].length);
-      out += escape(this.smartypants(cap[0]));
+      out += this.renderer.text(escape(this.smartypants(cap[0])));
       continue;
     }
 
@@ -46121,7 +46125,9 @@ InlineLexer.prototype.smartypants = function(text) {
   if (!this.options.smartypants) return text;
   return text
     // em-dashes
-    .replace(/--/g, '\u2014')
+    .replace(/---/g, '\u2014')
+    // en-dashes
+    .replace(/--/g, '\u2013')
     // opening singles
     .replace(/(^|[-\u2014/(\[{"\s])'/g, '$1\u2018')
     // closing singles & apostrophes
@@ -46139,6 +46145,7 @@ InlineLexer.prototype.smartypants = function(text) {
  */
 
 InlineLexer.prototype.mangle = function(text) {
+  if (!this.options.mangle) return text;
   var out = ''
     , l = text.length
     , i = 0
@@ -46296,6 +46303,10 @@ Renderer.prototype.image = function(href, title, text) {
   }
   out += this.options.xhtml ? '/>' : '>';
   return out;
+};
+
+Renderer.prototype.text = function(text) {
+  return text;
 };
 
 /**
@@ -46641,6 +46652,8 @@ marked.defaults = {
   breaks: false,
   pedantic: false,
   sanitize: false,
+  sanitizer: null,
+  mangle: true,
   smartLists: false,
   silent: false,
   highlight: null,
