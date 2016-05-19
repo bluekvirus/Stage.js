@@ -1633,7 +1633,8 @@
 		},
 
 		//(name can be of path form)
-		get: function(name, type, fallback){
+		//always return View definition.
+		get: function(name, type, fallback /*in effect only if you specify type*/){
 			if(!name)
 				return {
 					'Context': app.Core.Context.get(),
@@ -1811,7 +1812,7 @@
 				this.stopListening();
 			};
 			return dispatcher;
-		},
+		}, reactor: function(){ return app.dispatcher.apply(this, arguments); }, //alias: reactor
 
 		model: function(data){
 			//return new Backbone.Model(data);
@@ -1946,7 +1947,7 @@
 			return html;
 		},
 
-		//----------------notify---------------------
+		//----------------notify/overlay/popover---------------------
 		notify: function(title /*or options*/, msg, type /*or otherOptions*/, otherOptions){
 			if(_.isString(title)){
 				if(_.isPlainObject(type)){
@@ -1982,52 +1983,23 @@
 				$.amaran(title);
 		},
 
-		//----------------reload---------------------
-		reload: function(name, override/*optional*/){
-			//reload globally
-			if(!name)
-				return window.location.reload();
+		//overlay or popover
+		prompt: function(view, anchor, placement, options){
+			if(_.isFunction(view))
+				view = new view();
+			else if(_.isString(view))
+				view = new (app.get(view))();
 
-			var result = app.locate(name);
-			if(!result){
-				app.mark();//highlight available views.
-				throw new Error('DEV::app.reload():: Can NOT find view with given name: ' + name);
+			//is popover
+			if(_.isString(placement)){
+				options = options || {};
+				options.placement = placement;
+				return view.popover(anchor, options);
 			}
 
-			var v = result.view,
-				region = v.parentRegion,
-				category;
-			//get type of the named object
-			_.each(app.get(), function(data, key){
-				if(data.indexOf(name) >= 0){
-					category = key;
-					return;
-				}
-			});
-			if(!category)
-				throw new Error('DEV::app.reload():: No category can be found with given view: ' + name);
-			override = override || false;
-			//override old view
-			if(override){
-				//clear template cache in cache
-				app.Util.Tpl.cache.clear(v.template);
-				//un-register the view
-				app.Core[category].remove(name);
-				//re-show the new view
-				try{
-					var view = new (app.get(name, category))();
-					view.once('view:all-region-shown', function(){
-						app.mark(name);
-					});
-					region.show(view);
-				}catch(e){
-					console.warn('DEV::app.reload()::Abort, this', name, 'view is not defined alone, you need to find its source.', e);
-				}
-			}else{
-				//re-render the view
-				v.refresh();
-			}
-			//return this;
+			//is overlay
+			options = placement;
+			return view.overlay(anchor, options);
 		},
 
 		//----------------i18n-----------------------
@@ -2146,6 +2118,54 @@
 			});
 		},
 
+		//reload everything, or override a view with newer version.
+		reload: function(name, override/*optional*/){
+			//reload globally
+			if(!name)
+				return window.location.reload();
+
+			var result = app.locate(name);
+			if(!result){
+				app.mark();//highlight available views.
+				throw new Error('DEV::app.reload():: Can NOT find view with given name: ' + name);
+			}
+
+			var v = result.view,
+				region = v.parentRegion,
+				category;
+			//get type of the named object
+			_.each(app.get(), function(data, key){
+				if(data.indexOf(name) >= 0){
+					category = key;
+					return;
+				}
+			});
+			if(!category)
+				throw new Error('DEV::app.reload():: No category can be found with given view: ' + name);
+			override = override || false;
+			//override old view
+			if(override){
+				//clear template cache in cache
+				app.Util.Tpl.cache.clear(v.template);
+				//un-register the view
+				app.Core[category].remove(name);
+				//re-show the new view
+				try{
+					var view = new (app.get(name, category))();
+					view.once('view:all-region-shown', function(){
+						app.mark(name);
+					});
+					region.show(view);
+				}catch(e){
+					console.warn('DEV::app.reload()::Abort, this', name, 'view is not defined alone, you need to find its source.', e);
+				}
+			}else{
+				//re-render the view
+				v.refresh();
+			}
+			//return this;
+		},
+
 		//--------3rd party lib pass-through---------
 		
 		// js-cookie (former jquery-cookie)
@@ -2180,19 +2200,20 @@
 	 * API summary
 	 */
 	app._apis = [
-		'dispatcher', 'model', 'collection',
+		'dispatcher/reactor', 'model', 'collection',
 		//view related
 		'context - @alias:page', 'view', 'widget', 'editor', 'editor.validator - @alias:editor.rule',
 		//global action locks
 		'lock', 'unlock', 'available', 
 		//utils
-		'coop', 'navigate', 'icing/curtain', 'i18n', 'reload', 'param', 'animation', 'nextFrame', 'cancelFrame', 'animateItems', 'throttle', 'debounce',
+		'has', 'get', 'coop', 'navigate', 'icing/curtain', 'i18n', 'param', 'animation', 'nextFrame', 'cancelFrame', 'animateItems', 'throttle', 'debounce',
 		//com
 		'remote', 'ws', 'download',
 		//3rd-party lib short-cut
-		'extract', 'cookie', 'store', 'moment', 'uri', 'validator', 'markdown', 'notify',
+		'extract', 'markdown', 'notify', 'prompt', //wraps
+		'cookie', 'store', 'moment', 'uri', 'validator', //refs
 		//supportive
-		'debug', 'has', 'get', 'locate', 'profile', 'mark', 'nameToPath', 'pathToName', 'inject.js', 'inject.tpl', 'inject.css',
+		'debug', 'reload', 'locate', 'profile', 'mark', 'nameToPath', 'pathToName', 'inject.js', 'inject.tpl', 'inject.css',
 		//@deprecated
 		'create - @deprecated', 'regional - @deprecated'
 	];
@@ -5506,7 +5527,7 @@ module.exports = DeepModel;
 				this.listenTo(this, 'close', function(){
 					$anchor.overlay();//close the overlay if this.close() is called.
 				});
-				$anchor.overlay(_.extend(this._overlayConfig, options, {
+				$anchor.overlay(_.extend(this._overlayConfig || {}, options, {
 					content: function(){
 						return that.render().el;
 					},
@@ -7128,7 +7149,11 @@ var I18N = {};
 			'<div class="overlay-outer" style="display: table;table-layout: fixed; height: 100%; width: 100%;">',
 				'<div class="overlay-inner" style="display: table-cell;text-align: center;vertical-align: middle; width: 100%;">',
 					'<div class="overlay-content-ct" style="display: inline-block;outline: medium none; position:relative;">',
-						//your overlay content will be put here
+						//a. your overlay content will be put here, and it will always be auto-centered.
+						//b. overflow scrolling is not automatic the content's scroll box needs,
+						//	1. a max-height < app.screenSize.h
+						//	2. overflow-y: auto
+						//	to work.
 					'</div>',
 				'</div>',
 			'</div>',
@@ -8484,4 +8509,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.9.1-1099 build 1463546037401";
+;;app.stagejs = "1.9.1-1100 build 1463632494786";

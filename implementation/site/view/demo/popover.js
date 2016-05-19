@@ -1,7 +1,6 @@
 ;(function(app){
 
 	var PopLeft = app.view({
-		popover: true,
 		template: [
 			'<div action="alert">I am popover LEFT!</div>'
 		],
@@ -13,7 +12,6 @@
 	});
 
 	var PopRight = app.view({
-		popover: true,
 		template: [
 			'<div class="row form-horizontal">',
 				'<div class="col-md-12">',
@@ -35,7 +33,6 @@
 	});
 
 	var PopTop = app.view({
-		popover: true,
 		template: [
 			'<div class="wrapper-full">',
 	            '<ul class="list-group">',
@@ -57,7 +54,6 @@
 	});
 
 	var PopBottom = app.view({
-		popover: true,
 		template: [
 			'<div class="wrapper">',
             	'<button type="button" class="btn btn-default rounded rounded-lg">Default</button>',
@@ -88,7 +84,7 @@
 		],
 		actions: {
 			'flipped_left': function($btn){
-				(new PopLeft()).popover($btn, {bond: this});
+				app.prompt(PopLeft, $btn, 'left', {bond: this});
 			},
 			'flipped_right': function($btn){
 				(new PopRight()).popover($('#flipped_right'), {placement: 'right', content:'I have overwritten the view', bond: this});

@@ -56,8 +56,7 @@
 						/////////////////Intro/////////////////
 						'Learned Backbone? Tried Marionette? Still searching for a complete **single-page** web application **workflow**? ',
 						'Look no further...\n',
-						'With our thiner and flatter **architecture**, intuitive **api** and handy **tooling**, ',
-						'you can direct your next application like a play on stage.\n',
+						'With our thiner and flattened **architecture**, intuitive **api** and handy **tooling**, you can direct your next application like a play on stage.\n',
 						'Enjoy!',
 						/////////////////Intro/////////////////
 						

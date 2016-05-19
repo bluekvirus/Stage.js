@@ -1,8 +1,6 @@
 ;(function(app){
 
 	var Overlay = app.view({
-		overlay: true,
-		type: 'Layout',
 		template: [
 		  '<div class="modal-dialog text-left">',
 		    '<div class="modal-content">',

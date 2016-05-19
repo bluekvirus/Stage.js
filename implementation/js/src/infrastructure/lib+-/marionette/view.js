@@ -289,7 +289,7 @@
 				this.listenTo(this, 'close', function(){
 					$anchor.overlay();//close the overlay if this.close() is called.
 				});
-				$anchor.overlay(_.extend(this._overlayConfig, options, {
+				$anchor.overlay(_.extend(this._overlayConfig || {}, options, {
 					content: function(){
 						return that.render().el;
 					},

@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.9.2 (2016-05-17*)
+1.9.2 (2016-05-18*)
 
 1. Added .btn-pointy-right/left to base theme; (default size only)
 2. Added .pointer-up/down/left/right and .relative-ct to base theme;
@@ -19,6 +19,7 @@ Change Log
 15. Added ^^^class ... classN extension to app.markdown();
 16. Removed restrictive api check on .overlay() and .popover();
 17. Added app.curtain() as an alias to app.icing();
+18. Added app.prompt();
 
 working on ...
 

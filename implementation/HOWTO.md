@@ -56,7 +56,7 @@ A *Widget* is a named *View* with `.reconfigure(options)` method that can change
 
 #### What's a Canvas?
 
-A *Canvas* is a *View* with the `.svg` property set to `true`, you will have an automatically expanded `this.paper` to draw upon with live height/width update on the `this.paper` property after shown and auto clean upon `reDraw()`.
+A *Canvas* is a *View* with the `.svg` property set to `true`, you will have an automatically expanded `this.paper` to draw upon with live height/width update on the `this.paper` property after shown plus auto clean/resize upon `onDraw()`.
 
 ^^^callout callout-primary
 **Note:** *Canvas* is svg based and the `this.paper` drawing APIs are from the Raphaël.js/Snap.svg library, make sure you have them included in your `index.html`
@@ -111,7 +111,7 @@ We choose what we choose when designing this framework simply because we want to
 
 **The Backbone library can implement them all** (Yes, any client side framework). (Not 100% for Meteor though, since Meteor combines its server into a full-stack solution. You need nodejs in the picture, and we do have a dev-server package called **ajax-box-lite** in the toolset for just that based on the [express.js](http://expressjs.com/4x/) framework). And, if you need more evidence, YUI3 has the exact same concepts from Backbone implemented as its infrastructure. (Why did we mention YUI here? Because of Yahoo!'s JavaScript [Architect](http://www.crockford.com/))
 
-In order to accomplish more with less code using Backbone, we extended **Backbone.Marionette** as our pattern library base and mainly using its *module* and *region* concepts. We also removed the needs to work with the Model/Collection sync methods in the original *Backbone* library. The resulting framework accomplishes all the big frameworks have promised but with **a thiner and flatter structure**. We believe scripting languages are always going to be the perfect thin glue layer between mechanisms and policies. The JavaScript language were picked to glue HTML/CSS and UX but nothing more, it should not be overdosed and attempt to mimic Java. In other words, **only the burger is important**:
+In order to accomplish more with less code using Backbone, we extended **Backbone.Marionette** as our pattern library base and mainly using its *module* and *region* concepts. We also removed the needs to work with the Model/Collection sync methods in the original *Backbone* library. The resulting framework accomplishes all the big frameworks have promised but with **a thiner and flattened structure**. We believe scripting languages are always going to be the perfect thin glue layer between mechanisms and policies. The JavaScript language were picked to glue HTML/CSS and UX but nothing more, it should not be overdosed and attempt to mimic Java. In other words, **only the burger is important**:
 
 ![HTML is the burger](static/resource/default/diagram/Diagram-6.png)
 
@@ -2049,12 +2049,12 @@ Initialize:
 
 View Registery:
 * Application.context ([name,] options) - alias: page()
-* Application.view (name/options, options/instance)
+* Application.view (name/options, options/instance-flag)
 * Application.widget (name, options/factory)
 * Application.editor (name, options/factory)
 * Application.editor.validator (name, fn) - alias: editor.rule()
 * Application.has (name, [type])
-* Application.get (name, [type])
+* Application.get (name, [[type], fallback-flag])
 
 View Options/Utils:
 * ['name', 'effect', 'template', 'templateHelpers', 'data'/'useParentData', 'ui', 'coop', 'actions', 'editors', 'tooltips', 'overlay', 'popover', 'svg']
@@ -2080,6 +2080,7 @@ Download:
 Utils:
 * Application.coop (e, [args])
 * Application.notify ()
+* Application.prompt ()
 * Application.icing/curtain ()
 * Application.markdown ()
 * Application.i18n ()

@@ -48,7 +48,11 @@
 			'<div class="overlay-outer" style="display: table;table-layout: fixed; height: 100%; width: 100%;">',
 				'<div class="overlay-inner" style="display: table-cell;text-align: center;vertical-align: middle; width: 100%;">',
 					'<div class="overlay-content-ct" style="display: inline-block;outline: medium none; position:relative;">',
-						//your overlay content will be put here
+						//a. your overlay content will be put here, and it will always be auto-centered.
+						//b. overflow scrolling is not automatic the content's scroll box needs,
+						//	1. a max-height < app.screenSize.h
+						//	2. overflow-y: auto
+						//	to work.
 					'</div>',
 				'</div>',
 			'</div>',
