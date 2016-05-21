@@ -23,11 +23,9 @@ Change Log
 
 working on ...
 
-* app.prompt();
-* app.*get() with view related fn param clean-up;
-* Adding app.schedule; (later.js)
+* Adding app.schedule/poll; (later.js)
 * Enhance view.lock (+private action locks);
-* app.*view/bind({e $el/el: fn, ...,}) raw'n'direct bind?;
+* app.bind({e $el/el: fn, ...,}) raw'n'direct bind?;
 * Adding more unit tests;
 * Adding cheatsheet;
 * Updating doc (around data handling, coop, dnd, effect, remote, ws, form);
