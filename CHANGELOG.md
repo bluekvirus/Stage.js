@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.9.2 (2016-05-18*)
+1.9.2 (2016-05-24*)
 
 1. Added .btn-pointy-right/left to base theme; (default size only)
 2. Added .pointer-up/down/left/right and .relative-ct to base theme;
@@ -20,11 +20,10 @@ Change Log
 16. Removed restrictive api check on .overlay() and .popover();
 17. Added app.curtain() as an alias to app.icing();
 18. Added app.prompt();
+19. Added app.poll(); (with later.js)
 
 working on ...
 
-* Adding app.schedule/poll; (later.js)
-* Enhance view.lock (+private action locks);
 * app.bind({e $el/el: fn, ...,}) raw'n'direct bind?;
 * Adding more unit tests;
 * Adding cheatsheet;
@@ -32,7 +31,7 @@ working on ...
 * Breaking down 'Basic' editors;
 * Separate modernizr/detectizr shiv bundles from deps;
 * Adding optional 2-way binders (stickit);
-* Adding canvas support in view (easel);
+* Adding `<canvas>` support in view (easel);
 * [cli] Enhance update cmd to also refresh mockups;
 
 

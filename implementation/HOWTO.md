@@ -2070,6 +2070,8 @@ Handling Data:
 * view.get () (infer View.getValues())
 * view.refresh ()
 * Application.remote (options)
+* Application.poll ()
+* Application.ws ()
 * Application.extract (keypath, obj)
 * Application.cookie.*
 * Application.store.*
@@ -2085,6 +2087,7 @@ Utils:
 * Application.markdown ()
 * Application.i18n ()
 * Application.moment.*
+* Application.later.*
 * Application.uri.*
 * Application.param ()
 * Application.validator.*

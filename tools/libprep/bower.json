@@ -60,6 +60,7 @@
     "store.js": "~1.x.x",
     "momentjs": "~2.x.x",
     "marked": "0.3.5",
+    "later": "1.2.x",
     "bootstrap": "~3.3.x"
   },
   "themeDependencies": {

@@ -1720,6 +1720,8 @@
 			return app.Util.download(ticket);
 		},
 
+		//data push 
+		//(ws channels)
 		_websockets: {},
 		/**
 		 * returns a promise.
@@ -1786,18 +1788,71 @@
 			return d.promise();
 		},
 
-		inject: {
-			js: function(){
-				return app.Util.inject.apply(null, arguments);
-			},
+		//data polling 
+		//(through later.js) and emit data events/or invoke callback
+		_polls: {},
+		poll: function(url, occurrence, coopEvent /*or callback*/){
+			var schedule;
+			if(_.isString(occurrence))
+				schedule = app.later.parse.text(occurrence);
+			else if(_.isPlainObject(occurrence))
+				schedule = occurrence;
+			else //number
+				schedule = Number(occurrence);
 
-			tpl: function(){
-				return app.Util.Tpl.remote.apply(app.Util.Tpl, arguments);
-			},
-
-			css: function(){
-				return loadCSS.apply(null, arguments);
+			//cancel polling
+			if(occurrence === false){
+				if(this._polls[url])
+					return this._polls[url].cancel();
+				console.warn('DEV::Application::poll() No polling card registered yet for ' + url);
+				return;
 			}
+
+			//register polling card
+			if(!occurrence || !coopEvent)
+				throw new Error('DEV::Application::poll() You must specify an occurrence and a coop event or callback...');
+			var card = {
+				url: url,
+				eof: coopEvent,
+				timerId: 'unknown',
+				failed: 0,
+				valid: true,
+			};
+			this._polls[url] = card;
+
+			var call = _.isNumber(schedule)? window.setTimeout : app.later.setTimeout;
+			var worker = function(){
+				app.remote(url).done(function(data){
+					//callback
+					if(_.isFunction(card.eof))
+						card.eof(data, card);
+					//coop event
+					else
+						app.coop(card.eof, data, card);
+				}).fail(function(){
+					card.failed++;
+					//Warning: Hardcoded 3 attemps here!
+					if(card.failed >= 3) card.cancel();
+				}).always(function(){
+					//go schedule the next call
+					if(card.valid)
+						card.timerId = call(worker, schedule);
+				});
+			};
+			//+timerType
+			card.timerType = (call === window.setTimeout)? 'native' : 'later.js';
+			//+timerId
+			card.timerId = call(worker, schedule);
+			//+cancel()
+			var that = this;
+			card.cancel = function(){
+				if(this.timerType === 'native')
+					window.clearTimeout(this.timerId);
+				else
+					this.timerId.clear();
+				this.valid = false;
+				delete that._polls[this.url];
+			};
 		},
 
 		//-----------------dispatcher/observer/cache----------------
@@ -2166,6 +2221,20 @@
 			//return this;
 		},
 
+		inject: {
+			js: function(){
+				return app.Util.inject.apply(null, arguments);
+			},
+
+			tpl: function(){
+				return app.Util.Tpl.remote.apply(app.Util.Tpl, arguments);
+			},
+
+			css: function(){
+				return loadCSS.apply(null, arguments);
+			}
+		},
+
 		//--------3rd party lib pass-through---------
 		
 		// js-cookie (former jquery-cookie)
@@ -2176,14 +2245,17 @@
 		//.set(), .get(), .getAll(), .remove(), .clear()
 		store: store.enabled && store,
 
-		// validator.js
+		// validator.js (form data type,val,deps validation)
 		validator: validator,
 
-		// moment.js
+		// moment.js (date and time)
 		moment: moment,
 
-		// URI.js
+		// URI.js (uri,query and hash in the url)
 		uri: URI,
+
+		// later.js (schedule repeated workers, e.g poll RESTful data)
+		later: later,
 	});
 
 	//editor rules
@@ -2208,10 +2280,10 @@
 		//utils
 		'has', 'get', 'coop', 'navigate', 'icing/curtain', 'i18n', 'param', 'animation', 'nextFrame', 'cancelFrame', 'animateItems', 'throttle', 'debounce',
 		//com
-		'remote', 'ws', 'download',
+		'remote', 'download', 'ws', 'poll',
 		//3rd-party lib short-cut
 		'extract', 'markdown', 'notify', 'prompt', //wraps
-		'cookie', 'store', 'moment', 'uri', 'validator', //refs
+		'cookie', 'store', 'moment', 'uri', 'validator', 'later', //direct refs
 		//supportive
 		'debug', 'reload', 'locate', 'profile', 'mark', 'nameToPath', 'pathToName', 'inject.js', 'inject.tpl', 'inject.css',
 		//@deprecated
@@ -8509,4 +8581,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.9.1-1100 build 1463632494786";
+;;app.stagejs = "1.9.1-1102 build 1464126154835";

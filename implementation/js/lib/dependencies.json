@@ -1,5 +1,5 @@
 {
-	"created": "Tue, 17 May 2016 23:44:41 GMT",
+	"created": "Mon, 23 May 2016 21:01:58 GMT",
 	"list": [
 		{
 			"name": "modernizr",
@@ -63,9 +63,9 @@
 		},
 		{
 			"name": "flexlayout",
-			"size": "10.0",
-			"version": "0.2.0",
-			"url": "TBI"
+			"size": "10.2",
+			"version": "0.2.1",
+			"url": "http://mr-beaver.github.io/flexLayout/"
 		},
 		{
 			"name": "underscore",
@@ -138,6 +138,12 @@
 			"size": "27.9",
 			"version": "0.3.5",
 			"url": "https://github.com/chjj/marked"
+		},
+		{
+			"name": "later",
+			"size": "50.4",
+			"version": "1.2.0",
+			"url": "https://github.com/bunkat/later"
 		},
 		{
 			"name": "bootstrap",
