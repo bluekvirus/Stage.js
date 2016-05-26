@@ -69,12 +69,14 @@
 			 * ------------------------		 
 			 * 
 			 * == --> layout: ['1:#top', ['5', ['1:left', '4:center', '1:right']], '1:.bottom, .bottom2, .bottom3']
-			 */	
+			 */
+			data: undefined,
+			actions: undefined,
 			contextRegion: 'contexts', //alias: navRegion
-			icings: {}, //various fixed overlaying regions for visual prompts ('name': {top, bottom, height, left, right, width})
-						//alias -- curtains
 			//---------------------------------------------------------------------------------------------
 			defaultContext: undefined, //This is the context (name) the application will sit on upon loading.
+			icings: {}, //various fixed overlaying regions for visual prompts ('name': {top, bottom, height, left, right, width})
+						//alias -- curtains			
 			fullScreen: false, //This will put <body> to be full screen sized (window.innerHeight).
 	        websockets: [], //Websocket paths to initialize with (single path with multi-channel prefered).
 	        baseAjaxURI: '', //Modify this to fit your own backend apis. e.g index.php?q= or '/api',
@@ -85,7 +87,6 @@
 			i18nLocale: '', //if you really want to force the app to certain locale other than browser preference. (Still override-able by ?locale=.. in url)
 			rapidEventDelay: 200, //in ms this is the rapid event delay control value shared within the application (e.g window resize, app.throttle, app.debounce).
 			timeout: 5 * 60 * 1000, //general communication timeout (ms). for app.remote and $.fileupload atm.
-
 		}, config);
 		
 		//2. Global App Events Listener Dispatcher
@@ -181,14 +182,19 @@
 			if(!app.config.layout)
 				app.mainView = app.mainView || app.view({
 					name: 'Main',
-					template: app.config.template || ('<div region="' + (app.config.navRegion || app.config.contextRegion) + '"></div>')
+					data: app.config.data,
+					actions: app.config.actions,
+					template: app.config.template || ('<div region="' + (app.config.navRegion || app.config.contextRegion) + '"></div>'),
 				}, true);
 			else
 				app.mainView = app.mainView || app.view({
 					name: 'Main',
+					data: app.config.data,
+					actions: app.config.actions,
 					layout: app.config.layout,
 				}, true);
 			app.getRegion('region-app').show(app.mainView).$el.css({height: '100%', width: '100%'});
+			//Caveat: if you use app.config.data, the mainview-ready event won't be the real `data-rendered ready`.
 			app.trigger('app:mainview-ready');
 
 			//b. Create the fixed overlaying regions according to app.config.icings (like a cake, yay!)

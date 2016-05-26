@@ -1,7 +1,21 @@
 Change Log
 ==========
-1.9.2 (2016-05-24*)
+1.10.0 (2016-05-25*)
 
+working on ...
+
+* Adding more unit tests;
+* Adding cheatsheet;
+* Updating doc (around data handling, coop, dnd, effect, remote, ws, form);
+* Breaking down 'Basic' editors;
+* Separate modernizr/detectizr shiv bundles from deps;
+* Adding optional 2-way binders (stickit);
+* Adding `<canvas>` support in view (easel);
+* [cli] Enhance update cmd to also refresh mockups;
+
+
+1.9.2 (2016-05-25)
+------------------
 1. Added .btn-pointy-right/left to base theme; (default size only)
 2. Added .pointer-up/down/left/right and .relative-ct to base theme;
 3. Added app.config.curtains as an alias to app.config.icings; 
@@ -21,18 +35,7 @@ Change Log
 17. Added app.curtain() as an alias to app.icing();
 18. Added app.prompt();
 19. Added app.poll(); (with later.js)
-
-working on ...
-
-* app.bind({e $el/el: fn, ...,}) raw'n'direct bind?;
-* Adding more unit tests;
-* Adding cheatsheet;
-* Updating doc (around data handling, coop, dnd, effect, remote, ws, form);
-* Breaking down 'Basic' editors;
-* Separate modernizr/detectizr shiv bundles from deps;
-* Adding optional 2-way binders (stickit);
-* Adding `<canvas>` support in view (easel);
-* [cli] Enhance update cmd to also refresh mockups;
+20. Added .data and .actions to app.config for mainView; (easy global data + bind for multi-page app)
 
 
 1.9.1 (2016-03-10)

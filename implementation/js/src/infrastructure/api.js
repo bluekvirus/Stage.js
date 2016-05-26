@@ -285,6 +285,10 @@
 				return;
 			}
 
+			//cancel previous polling
+			if(this._polls[url])
+				this._polls[url].cancel();
+
 			//register polling card
 			if(!occurrence || !coopEvent)
 				throw new Error('DEV::Application::poll() You must specify an occurrence and a coop event or callback...');
