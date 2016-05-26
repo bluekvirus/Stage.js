@@ -258,11 +258,9 @@ Go to your `main.js` and setup the application by using `Application.setup()`:
 ``` 
 //main.js
 Application.setup({
+    /*----------------------configure-----------------------*/
     fullScreen: //false | true,
-    template: //'#id', '@**/*.html', [html string array] or 'html string',
-    layout: //same as view layout property,
-    icings/curtains: //fixed overlays
-    contextRegion/navRegion: //your navRegion name marked in template,
+    icings/curtains: //fixed overlay regions,
     defaultContext: //your default context name to show in navRegion,
     baseAjaxURI: //your base url for using with Application.remote(),
     websockets: //websocket paths to initialize,
@@ -271,6 +269,12 @@ Application.setup({
     i18nLocale: //force the app to certain locale,
     rapidEventDelay: //for throttling window resize/scroll and app.throttle/debounce,
     timeout: //default data (ajax) operation timeout in ms,
+    /*----------------------mainView-----------------------*/
+    template: //same as view template property, (or use layout)
+    layout: //same as view layout property, (or use template)
+    contextRegion/navRegion: //your region used for navigation chain,
+    data: //same as view data property,
+    actions: //same as view actions property,
 }).run();
 ```
 The configure variables have sensible defaults, you can safely skip configuring them here, however, there is one you might want to change now -- `template`.
