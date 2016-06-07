@@ -1,17 +1,21 @@
 Change Log
 ==========
 1.10.0 (2016-05-25*)
+--------------------
+1. missing locale file will no longer raise exceptions;
 
 working on ...
 
+* Integrate stage-unideck into framework kit;
 * Adding more unit tests;
 * Adding cheatsheet;
-* Updating doc (around data handling, coop, dnd, effect, remote, ws, form);
+* Updating doc (around data rendering, coop, dnd, effect, remote, ws, form);
 * Breaking down 'Basic' editors;
 * Separate modernizr/detectizr shiv bundles from deps;
 * Adding optional 2-way binders (stickit);
 * Adding `<canvas>` support in view (easel);
 * [cli] Enhance update cmd to also refresh mockups;
+* [cli] Add a `revive` cmd as an alias to `update`;
 
 
 1.9.2 (2016-05-25)

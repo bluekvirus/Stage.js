@@ -73,7 +73,7 @@ var I18N = {};
 					resources = data.trans;
 				},
 				error: function(jqXHR, textStatus, errorThrown) {
-					throw new Error('RUNTIME::i18n::' + errorThrown);
+					console.warn('RUNTIME::i18n::', errorThrown);
 				}
 			});
 		}

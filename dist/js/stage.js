@@ -6884,7 +6884,7 @@ var I18N = {};
 					resources = data.trans;
 				},
 				error: function(jqXHR, textStatus, errorThrown) {
-					throw new Error('RUNTIME::i18n::' + errorThrown);
+					console.warn('RUNTIME::i18n::', errorThrown);
 				}
 			});
 		}
@@ -8591,4 +8591,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.9.2-1103 build 1464234344080";
+;;app.stagejs = "1.9.2-1104 build 1465260922481";
