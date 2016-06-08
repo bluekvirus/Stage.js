@@ -1,5 +1,5 @@
 {
-	"created": "Thu, 26 May 2016 03:43:53 GMT",
+	"created": "Wed, 08 Jun 2016 22:34:15 GMT",
 	"list": [
 		{
 			"name": "modernizr",
@@ -64,7 +64,7 @@
 		{
 			"name": "flexlayout",
 			"size": "10.2",
-			"version": "0.2.1",
+			"version": "0.2.3",
 			"url": "http://mr-beaver.github.io/flexLayout/"
 		},
 		{
@@ -118,7 +118,7 @@
 		{
 			"name": "uri.js",
 			"size": "115.6",
-			"version": "1.18.0",
+			"version": "1.18.1",
 			"url": "https://github.com/medialize/URI.js"
 		},
 		{

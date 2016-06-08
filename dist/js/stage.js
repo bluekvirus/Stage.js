@@ -8591,4 +8591,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.9.2-1104 build 1465260922481";
+;;app.stagejs = "1.9.2-1105 build 1465425323145";

@@ -22906,7 +22906,7 @@ jQuery.extend( jQuery.Color.names, {
 
 ;(function($){
 
-	$.fn.flexLayout = function(layout, opts, _cb/*TBI*/){
+	$.fn.flexLayout = function(layout, opts/*,_cb TBI*/){
 		var _options = {}, /*store options*/
 			_layoutArr = []; /*store array*/
 		//check whether layout is given
@@ -22961,7 +22961,7 @@ jQuery.extend( jQuery.Color.names, {
 			/*defines whether the width/height of created blocks can be adjusted or not, boolean or [boolean, boolean]*/
 			adjust: false,
 			/*defines the style of divide bars between created blocks, {...css object}, '...string of class name...', boolean or [..., ..., ..., ...]*/
-			bars: {flex: '0 0 2px', 'background-color': '#ddd'}
+			bars: {flex: '0 0 1px', 'background-color': '#DEDEDE'}
 		}
 	};
 
@@ -23070,7 +23070,9 @@ jQuery.extend( jQuery.Color.names, {
 	}
 
 	/**
-	 * Trim attributes given by user, if user uses selectors style(e.g. #, .)
+	 * Trim attributes given by user. 
+	 * If user uses selectors style(e.g. #, .), it can only appears at the beginning of the string. Otherwise it will be ignored.
+	 * 
 	 *
 	 * Note: if using selector style, the function performs under the assumption that only one 'id' exits.
 	 * 		 That is, there is only one '#' in the selector style string.
@@ -23082,7 +23084,7 @@ jQuery.extend( jQuery.Color.names, {
 		if(!attrStr)
 			return '';
 		//selector style
-		if(/(#|\.)/.test(attrStr) && !/(href)/.test(attrStr)){
+		if(/(#|\.)/.test(attrStr.charAt(0))){
 			//remove spaces
 			attrStr = attrStr.replace(/\s/g, '');
 			//id exists
@@ -23106,7 +23108,7 @@ jQuery.extend( jQuery.Color.names, {
 		//region and view
 		else if(!/(=)/.test(attrStr)){
 			//check whether capitalized(View)
-			if(attrStr.charAt(0) === attrStr.charAt(0).toUpperCase)
+			if(attrStr.charAt(0) === attrStr.charAt(0).toUpperCase())
 				return 'view="' + attrStr + '" ';
 			else if(attrStr.charAt(0) === attrStr.charAt(0).toLowerCase())
 				return 'region="' + attrStr + '"';
@@ -37160,7 +37162,7 @@ return /******/ (function(modules) { // webpackBootstrap
 ;/*!
  * URI.js - Mutating URLs
  *
- * Version: 1.18.0
+ * Version: 1.18.1
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/
@@ -37230,7 +37232,7 @@ return /******/ (function(modules) { // webpackBootstrap
     return this;
   }
 
-  URI.version = '1.18.0';
+  URI.version = '1.18.1';
 
   var p = URI.prototype;
   var hasOwn = Object.prototype.hasOwnProperty;
@@ -39372,7 +39374,7 @@ return /******/ (function(modules) { // webpackBootstrap
  * URI.js - Mutating URLs
  * IPv6 Support
  *
- * Version: 1.18.0
+ * Version: 1.18.1
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/
@@ -39558,7 +39560,7 @@ return /******/ (function(modules) { // webpackBootstrap
  * URI.js - Mutating URLs
  * Second Level Domain (SLD) Support
  *
- * Version: 1.18.0
+ * Version: 1.18.1
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/
@@ -40333,7 +40335,7 @@ return /******/ (function(modules) { // webpackBootstrap
  * URI.js - Mutating URLs
  * URI Template Support - http://tools.ietf.org/html/rfc6570
  *
- * Version: 1.18.0
+ * Version: 1.18.1
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/
@@ -40847,7 +40849,7 @@ return /******/ (function(modules) { // webpackBootstrap
  * URI.js - Mutating URLs
  * jQuery Plugin
  *
- * Version: 1.18.0
+ * Version: 1.18.1
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/jquery-uri-plugin.html
@@ -40861,7 +40863,7 @@ return /******/ (function(modules) { // webpackBootstrap
   // https://github.com/umdjs/umd/blob/master/returnExports.js
   if (typeof exports === 'object') {
     // Node
-    module.exports = factory(require('jquery', './URI'));
+    module.exports = factory(require('jquery'), require('./URI'));
   } else if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module.
     define(['jquery', './URI'], factory);
