@@ -37,7 +37,7 @@
 				'<div style="height:18em;" region="inputs">key</div>',
 			'</div>'
 		],
-		onShow: function(){
+		onReady: function(){
 			this.default.show(new Default());
 			this.click.show(new Click());
 			this.contextmenu.show(new Contextmenu());
@@ -111,7 +111,7 @@
 				'</ul>',
 			'</div>',
 		],
-		onShow: function(){
+		onReady: function(){
 			var $el = this.$el.find('#temp-list');
 			$window.on('click', function(){
 				if( !$el.hasClass('hidden') )
@@ -331,7 +331,7 @@
 				'</div>',
 			'</div>',
 		],
-		onShow: function(){
+		onReady: function(){
 			this.$el.find('textarea').attr('rows', '2');
 		},
 		actions: {

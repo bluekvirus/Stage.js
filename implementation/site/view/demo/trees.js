@@ -33,7 +33,7 @@
 		    	'<div region="right" class="col-md-4"></div>',
 	    	'</div>'
 	    ],
-	    onShow: function(){
+	    onReady: function(){
 	    	//1. normal tree (minimum)
 	    	this.left.trigger('region:load-view', 'Tree', {
 	    		data: data,
@@ -53,7 +53,7 @@
   					'</button>',
   					'<ul region="tree" class="dropdown-menu"></ul>',
   				],
-  				onShow: function(){
+  				onReady: function(){
   					var tree = app.widget('Tree', {
 	    				data: data,
 	    				el: this.tree.$el[0],
@@ -93,7 +93,7 @@
 	    				'</div>',
 	    				'<div class="panel-body" region="body"></div>',
 	    			],
-	    			onShow: function(){
+	    			onReady: function(){
 	    				this.$el.css({
 	    					'marginBottom': '5px',
 	    					'cursor': 'pointer'

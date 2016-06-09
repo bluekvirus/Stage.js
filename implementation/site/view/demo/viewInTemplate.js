@@ -9,7 +9,7 @@
 				'</div>',
 			'</div>',
 		],
-		onShow: function(){
+		onReady: function(){
 			$('.view1-holder').css({height: '100%', width: '100%'});
 		}
 	});

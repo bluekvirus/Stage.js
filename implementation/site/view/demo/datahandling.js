@@ -16,7 +16,7 @@
 				'<div region="view3" style="border:1px #999 solid;"></div>',
 			'</div>',
 		],
-		onShow: function(){
+		onReady: function(){
 			this.getRegion('view1').show(new View1());
 			this.getRegion('view2').show(new View2());
 			this.getRegion('view3').show(new View3());
@@ -28,7 +28,7 @@
 			'<div region="real"></div>',
 			'<div region="mock"></div>'
 		],
-		onShow: function(){
+		onReady: function(){
 			//real json data
 			this.getRegion('real').show(app.view({
 				template: [

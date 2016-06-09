@@ -22,7 +22,7 @@
 				this.close();
 			}
 		},
-		onShow: function(){
+		onReady: function(){
 			this.body.trigger('region:load-view', 'OverlayBody');
 		}
 	});

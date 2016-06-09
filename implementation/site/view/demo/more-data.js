@@ -6,7 +6,7 @@
 			'<div region="items" action-scroll="track" action-scroll-top="notify-top" action-scroll-bottom="get-more-items" style="height:12em;margin:1em 0;overflow-y:auto;" class="border border-full"></div>',
 			'<div><span class="btn btn-default btn-xs btn-outline" action="reset">Reset</span></div>'
 		],
-		onShow: function(){
+		onReady: function(){
 			this.more('items', ['bluetooth', 'edge', 'shopping-basket', 'bluetooth', 'edge', 'shopping-basket'], app.view({
 				template: '<i class="fa fa-{{value}}" style="margin:1em;"></i>'
 			}));

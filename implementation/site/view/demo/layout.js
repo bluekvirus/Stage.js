@@ -11,7 +11,7 @@
 			'<div class="col-md-6 wrapper-full" region="test"></div>',
 			'<div class="col-md-6 wrapper-full" style="height:25em;"><div id="test-layout" style="height:100%;border: 1px solid black;"></div></div>'
 		],
-		onShow: function(){
+		onReady: function(){
 			//
 			this.$el.find('[region="test"]').css({height: '25em'});
 			this.getRegion('test').show(new Test());
@@ -88,12 +88,12 @@
 		layout: {
 			split: ['1:region-1-1', '2:region-1-2'],
 		},
-		onShow: function(){
+		onReady: function(){
 			//set height
 			this.$el.css({height: '100%', border: '1px solid black'});
 			//show first view
 			this.getRegion('region-1-1').show(app.view({
-				template: '<div style="color:#626262;">This is a simply horizontally divided view, which contains two regions. <br>You can load any view to the regions as you like during the onShow event.</div>'
+				template: '<div style="color:#626262;">This is a simply horizontally divided view, which contains two regions. <br>You can load any view to the regions as you like during the onReady event.</div>'
 			}, true));
 			//show second view
 			this.getRegion('region-1-2').show(app.view({
@@ -119,7 +119,7 @@
 			adjust: true,
 			bars: 'split-vbar'
 		},
-		onShow: function(){
+		onReady: function(){
 			this.$el.css({height: '100%', border: '1px solid black'});
 			this.getRegion('region-3-1').show(app.view({
 				template: '<div style="color:#626262;">You can also divide view vertically. This is a vertically divided view and it can also be adjusted.</div>'
@@ -157,7 +157,7 @@
 			adjust: true,
 			bars: { flex: '0 0 3px', 'background-color': "#CCC"}
 		},
-		onShow: function(){
+		onReady: function(){
 			this.$el.css({height: '100%', border: '1px solid black'});
 			this.getRegion('nested-2-1').show(app.view({
 				template: [
@@ -182,7 +182,7 @@
 			split: ['1:#top', ['5', [['1:left', ['1:#left-top', ['2', ['1:.bg-primary', '1:#left-bottom']]]], '4:center', '1:right']], '1:.bottom .bottom2 .bottom3'],
 			bars: false
 		},
-		onShow: function(){
+		onReady: function(){
 			var $this = this.$el;
 			$this.css({height: '100%', border: '1px solid black'});
 			//color the regions

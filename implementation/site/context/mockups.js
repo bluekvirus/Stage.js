@@ -15,7 +15,7 @@
 			{tpl: 'nav-bar.html', className: 'navbar-inverse'},
 
 			//boxes
-			{tpl: 'boxes.html', onShow: function(){
+			{tpl: 'boxes.html', onReady: function(){
 				if(Modernizr.chrome){
 					this.$el.find('[warning="chrome"]').removeClass('hidden');
 				}
@@ -37,7 +37,7 @@
 			{tpl: 'navs.html'},
 
 			//popups & dialogs
-			{tpl: 'dialogs.html', onShow: function(){
+			{tpl: 'dialogs.html', onReady: function(){
 				this.$el.find('[data-toggle="popover"]').popover();
 				this.$el.find('[data-toggle="tooltip"]').tooltip();
 			}},
@@ -53,7 +53,7 @@
 
 		],
 
-		onShow: function(){
+		onReady: function(){
 			_.each(this.mockups, function(m){
 				var view = app.view({
 					className: 'wrapper-full',
@@ -61,8 +61,8 @@
 					onRender: function(){
 						this.$el.find('> div').addClass(m.className);
 					},
-					onShow: function(){
-						if(m.onShow) m.onShow.call(this);
+					onReady: function(){
+						if(m.onReady) m.onReady.call(this);
 					}
 				}, true);
 				this.$el.append(view.render().el);

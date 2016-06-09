@@ -280,7 +280,7 @@
                 }
             })
         },
-        onShow: function(){
+        onReady: function(){
 
             // this.$('input').iCheck({
             //     checkboxClass: 'icheckbox_square',
@@ -290,7 +290,9 @@
         },
         actions: {
             validate: function($btn){
-                app.debug('error', this.validate(true));
+                this.getViewIn('fieldset-a').validate(true);
+                this.getViewIn('fieldset-b').validate(true);
+                this.validate(true);
             },
             submit: function(){
                 // var f = this.getEditor('fieldset-b.xyz');
@@ -343,6 +345,8 @@
                 });
             },
             clearinfo: function(){
+                this.getViewIn('fieldset-a').status();
+                this.getViewIn('fieldset-b').status();
                 this.status();
             }
         }

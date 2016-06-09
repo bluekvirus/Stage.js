@@ -510,7 +510,14 @@
 			if(this.data)
 				this.set(this.data);
 		});
-		
+
+		//enable i18n
+		if(I18N.locale) {
+			this.listenTo(this, 'render', function(){
+				this.$el.i18n({search: true});
+			});
+		}
+
 		//---------------------optional view enhancements-------------------
 		//dnd (drag, drop, and sortables) 
 		if(this.dnd) {
@@ -639,16 +646,12 @@
 		}
 
 		//overlay (use this view as overlay)
-		//if(this.overlay){
 		//unconditional 1.9.2+
-			this._enableOverlay();
-		//}
+		this._enableOverlay();
 
 		//popover (use this view as popover)
-		//if(this.popover){
 		//unconditional 1.9.2+
-			this._enablePopover();
-		//}
+		this._enablePopover();
 
 		//editors -- doesn't re-activate upon re-render (usually used with non-data bound template or no template)
 		if(this.editors && this._activateEditors) this.listenToOnce(this, 'render', function(){
@@ -660,12 +663,15 @@
 			this.listenToOnce(this, 'show', this._enableSVG);
 		}
 
-		//auto-enable i18n
-		if(I18N.locale) {
-			this.listenTo(this, 'render', function(){
-				this.$el.i18n({search: true});
-			});
-		}
+		//--------------------+ready event---------------------------		
+		//ensure a ready event for static views (align with data and form views)
+		//Caveat: re-rendered static view will not trigger 'view:ready' again...
+		this.listenTo(this, 'show', function(){
+			//call view:ready (if not waiting for data render after 1st `show`)
+			if(!this.data && !this.useParentData)
+			    this.trigger('view:ready');
+			    //note that form view will not re-render on .set(data) so there should be no 2x view:ready triggered.
+		});
 
 		return Backbone.Marionette.View.apply(this, arguments);
 	};

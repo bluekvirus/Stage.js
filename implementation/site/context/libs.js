@@ -16,7 +16,7 @@
 		    '<li class="list-group-item text-center panel-footer"><small>{{created}}</small></li>',
 		    '<h5 class="text-center"><small>Package manager: <a href="http://bower.io/">bower</a></small></h5>',
 		],
-		onShow: function(){
+		onReady: function(){
 		    var that = this;
 		    $.get('js/lib/dependencies.json').done(function(data){
 		        //add update timestamp

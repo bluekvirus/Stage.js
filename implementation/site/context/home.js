@@ -46,7 +46,7 @@
 			titlev && titlev.trigger('view:move-to-center');
 		},
 
-		onShow: function(){
+		onReady: function(){
 			//title + short desc
 			this.title.show(app.view({
 				tooltip: true,
@@ -83,7 +83,7 @@
 					'<p>'
 				],
 		
-				onShow: function(){
+				onReady: function(){
 					this.trigger('view:move-to-center');
 				},
 				onMoveToCenter: function(){
@@ -125,7 +125,7 @@
 		//template: ' ', //might need exception as .editors configured views.
 		svg: true,
 
-		onShow: function(){
+		onReady: function(){
 			this.trigger('view:draw');
 		},
 

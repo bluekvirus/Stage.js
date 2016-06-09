@@ -99,7 +99,9 @@
 				this.collection.reset(data);
 			else 
 				this.collection.set(data, options);
+			//align with normal view's data rendered and ready events notification
 			this.trigger('view:data-rendered');
+			this.trigger('view:ready');
 			return this;
 		},
 

@@ -28,7 +28,7 @@
 				'</div>',
 			'</div>',
 		],
-		onShow: function(){
+		onReady: function(){
 			//match the height for both sides
 			var $el = this.$el,
 				height = $el.find('#right').innerHeight(),
@@ -54,7 +54,7 @@
 				'</div>',
 			'</div>',
 		],
-		onShow: function(){
+		onReady: function(){
 			$('.view2-holder').css({height: '100%', width: '100%'});
 		}
 	});

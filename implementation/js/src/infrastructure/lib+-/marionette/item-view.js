@@ -71,6 +71,8 @@
 				//note that this will re-render the sub-regional views.
 				this.trigger('view:data-rendered');
 			}
+			//static view, data view and form all have onReady now...
+			this.trigger('view:ready');
 		},
 		
 		//Set & change the underlying data of the view.

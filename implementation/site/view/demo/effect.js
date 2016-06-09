@@ -25,7 +25,7 @@
 				'<div region="effect3"></div>',
 			'</div>',
 		],
-		onShow: function(){
+		onReady: function(){
 			this.getRegion('effect1').show(new Effect1());
 			this.getRegion('effect2').show(new Effect2());
 			this.getRegion('effect3').show(new Effect3());

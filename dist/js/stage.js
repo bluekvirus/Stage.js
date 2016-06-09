@@ -5830,7 +5830,14 @@ module.exports = DeepModel;
 			if(this.data)
 				this.set(this.data);
 		});
-		
+
+		//enable i18n
+		if(I18N.locale) {
+			this.listenTo(this, 'render', function(){
+				this.$el.i18n({search: true});
+			});
+		}
+
 		//---------------------optional view enhancements-------------------
 		//dnd (drag, drop, and sortables) 
 		if(this.dnd) {
@@ -5959,16 +5966,12 @@ module.exports = DeepModel;
 		}
 
 		//overlay (use this view as overlay)
-		//if(this.overlay){
 		//unconditional 1.9.2+
-			this._enableOverlay();
-		//}
+		this._enableOverlay();
 
 		//popover (use this view as popover)
-		//if(this.popover){
 		//unconditional 1.9.2+
-			this._enablePopover();
-		//}
+		this._enablePopover();
 
 		//editors -- doesn't re-activate upon re-render (usually used with non-data bound template or no template)
 		if(this.editors && this._activateEditors) this.listenToOnce(this, 'render', function(){
@@ -5980,12 +5983,15 @@ module.exports = DeepModel;
 			this.listenToOnce(this, 'show', this._enableSVG);
 		}
 
-		//auto-enable i18n
-		if(I18N.locale) {
-			this.listenTo(this, 'render', function(){
-				this.$el.i18n({search: true});
-			});
-		}
+		//--------------------+ready event---------------------------		
+		//ensure a ready event for static views (align with data and form views)
+		//Caveat: re-rendered static view will not trigger 'view:ready' again...
+		this.listenTo(this, 'show', function(){
+			//call view:ready (if not waiting for data render after 1st `show`)
+			if(!this.data && !this.useParentData)
+			    this.trigger('view:ready');
+			    //note that form view will not re-render on .set(data) so there should be no 2x view:ready triggered.
+		});
 
 		return Backbone.Marionette.View.apply(this, arguments);
 	};
@@ -6065,6 +6071,8 @@ module.exports = DeepModel;
 				//note that this will re-render the sub-regional views.
 				this.trigger('view:data-rendered');
 			}
+			//static view, data view and form all have onReady now...
+			this.trigger('view:ready');
 		},
 		
 		//Set & change the underlying data of the view.
@@ -6742,7 +6750,9 @@ module.exports = DeepModel;
 				this.collection.reset(data);
 			else 
 				this.collection.set(data, options);
+			//align with normal view's data rendered and ready events notification
 			this.trigger('view:data-rendered');
+			this.trigger('view:ready');
 			return this;
 		},
 
@@ -7005,6 +7015,7 @@ var I18N = {};
 	/**
 	 * =============================================================
 	 * Handlebars helper(s) for displaying text in i18n environment.
+	 * {{i18n \'key\'}}
 	 * =============================================================
 	 */
 	if(Handlebars){
@@ -7015,8 +7026,6 @@ var I18N = {};
 			}
 			if(_.isString(key))
 	  			return key.i18n(ns && {module:ns});
-	  		if(_.isUndefined(key))
-	  			return '';
 	  		return key;
 		});
 	}
@@ -8591,4 +8600,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.9.2-1105 build 1465425323145";
+;;app.stagejs = "1.9.2-1106 build 1465440563552";

@@ -99,7 +99,7 @@
             var $topic = this.doc.$el.find('#' + id);
             $window.scrollTop($topic.offset().top - window.innerHeight*0.16);
         },
-        onShow: function(){
+        onReady: function(){
             this.trigger('view:reload-doc'); 
         }
     });

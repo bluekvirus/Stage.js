@@ -14,7 +14,7 @@
 				'</div>',
 			'</div>',
 		],
-		onShow: function(){
+		onReady: function(){
 			this.getRegion('view-left').show(new ViewLeft());
 			this.getRegion('view-right').show(new viewRight());
 		},
@@ -55,7 +55,7 @@
 				}
 			}
 		},
-		onShow: function(){
+		onReady: function(){
 			//make view height 100%
 			$('.coop-left').css({height: '100%'});
 			//trigger coop when editor has changed
@@ -121,7 +121,7 @@
 			this.getEditor('editor2').setVal(text);
 			
 		},
-		onShow: function(){
+		onReady: function(){
 			//make view height 100%
 			$('.coop-right').css({height: '100%'});
 		}

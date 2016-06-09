@@ -24,7 +24,7 @@
 	    	'<div region="footer"></div>'
 	    ],
 
-	    onShow: function(){
+	    onReady: function(){
 	    	var datagrid = new (app.widget('Datagrid'))({
 	    		className: 'table table-hover',
 

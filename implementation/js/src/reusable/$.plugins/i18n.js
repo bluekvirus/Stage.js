@@ -194,6 +194,7 @@ var I18N = {};
 	/**
 	 * =============================================================
 	 * Handlebars helper(s) for displaying text in i18n environment.
+	 * {{i18n \'key\'}}
 	 * =============================================================
 	 */
 	if(Handlebars){
@@ -204,8 +205,6 @@ var I18N = {};
 			}
 			if(_.isString(key))
 	  			return key.i18n(ns && {module:ns});
-	  		if(_.isUndefined(key))
-	  			return '';
 	  		return key;
 		});
 	}
