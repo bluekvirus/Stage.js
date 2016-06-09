@@ -757,8 +757,11 @@ context:navigate-away - [empty stub] - triggered before app:navigate
 **View** -- view:meta-event
 ```
 //General
-view:render-data (data) - onRenderData [pre-defined]
-view:data-rendered
+view:ready 
+    (same as view:show for static view)
+    (same as view:data-rendered for data view)
+    (same as view:editors-updated for form view)
+    view:ready doesn't guarantee sub-region view ready.
 
 //View with navRegion
 view:navigate-chain
@@ -1712,7 +1715,7 @@ You can also use it in template as a *Handlebars.js* helper:
 ```
 template: [
     '<div>',
-        '{{i18n key}}', //this will translate whatever string the var 'key' is holding
+        '{{i18n \'key\'}}', //this will translate whatever string the var 'key' is holding
     '<div>'
 ]
 ```

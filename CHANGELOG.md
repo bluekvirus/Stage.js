@@ -1,8 +1,10 @@
 Change Log
 ==========
-1.10.0 (2016-05-25*)
+1.10.0 (2016-06-08*)
 --------------------
 1. missing locale file will no longer raise exceptions;
+2. updated flexlayout to be 0.2.3;
+3. added view:ready event for all type of views (static, data, form);
 
 working on ...
 
