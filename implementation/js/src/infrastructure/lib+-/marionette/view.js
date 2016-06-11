@@ -504,11 +504,20 @@
 		this.coop = this._coop;
 
 		//data / useParentData ({}, [] or url for GET only)
-		this.listenToOnce(this, 'show', function(){
-			//supports getting parent data from useParentData.
-			this.data = this.data || (this.parentCt && this.useParentData && this.parentCt.get(this.useParentData));
-			if(this.data)
-				this.set(this.data);
+		this.listenToOnce(this, 'show', function() {
+		    //supports getting parent data from useParentData.
+		    if (this.parentCt && this.useParentData) {
+		        var tmp = this.parentCt.get(this.useParentData);
+		        //wrap non-object data into an object with same key indicated by .useParentData.
+		        if (!_.isUndefined(tmp) && !_.isPlainObject(tmp)) {
+		            var tmpwrap = {};
+		            tmpwrap[this.useParentData] = tmp;
+		            tmp = tmpwrap;
+		        }
+		        this.data = tmp;
+		    }
+		    if (this.data)
+		        this.set(this.data);
 		});
 
 		//enable i18n

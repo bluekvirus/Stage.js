@@ -2,9 +2,12 @@ Change Log
 ==========
 1.10.0 (2016-06-08*)
 --------------------
-1. missing locale file will no longer raise exceptions;
-2. updated flexlayout to be 0.2.3;
-3. added view:ready event for all type of views (static, data, form);
+1. Missing locale file will no longer raise exceptions;
+2. Updated flexlayout to be 0.2.3;
+3. Added view:ready event for all type of views (static, data, form);
+4. Added {options} object (like in app.remote) as `url` support to app.poll();
+5. Added app.poll(false) to stop all polling;
+6. Non-object ref-ed by `useParentData` will now be wrapped into object before assigning to this.data in a sub-view;
 
 working on ...
 

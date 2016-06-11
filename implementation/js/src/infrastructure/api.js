@@ -268,72 +268,90 @@
 		//data polling 
 		//(through later.js) and emit data events/or invoke callback
 		_polls: {},
-		poll: function(url, occurrence, coopEvent /*or callback*/){
-			var schedule;
-			if(_.isString(occurrence))
-				schedule = app.later.parse.text(occurrence);
-			else if(_.isPlainObject(occurrence))
-				schedule = occurrence;
-			else //number
-				schedule = Number(occurrence);
+		poll: function(url /*or {options} for app.remote()*/, occurrence, coopEvent /*or callback*/) {
+		    //stop everything
+		    if (url === false)
+		        return _.each(this._polls, function(card) {
+		            card.cancel();
+		        });
 
-			//cancel polling
-			if(occurrence === false){
-				if(this._polls[url])
-					return this._polls[url].cancel();
-				console.warn('DEV::Application::poll() No polling card registered yet for ' + url);
-				return;
-			}
+		    var schedule;
+		    if (_.isString(occurrence)) {
+		        schedule = app.later.parse.text(occurrence);
+		        if (schedule.error !== -1)
+		            throw new Error('DEV::Application::poll() occurrence string unrecognizable...');
+		    } else if (_.isPlainObject(occurrence))
+		        schedule = occurrence;
+		    else //number
+		        schedule = Number(occurrence);
 
-			//cancel previous polling
-			if(this._polls[url])
-				this._polls[url].cancel();
+		    //make a key from url, or {url: ..., params/querys}
+		    var key = url;
+		    if (_.isPlainObject(key))
+		        key = [key.url, _.reduce((_.map(key.params || key.querys, function(qV, qKey) {
+		            return [qKey, qV].join('='); 
+		        })).sort(), function(qSignature, more) {
+		            return [more, qSignature].join('&');
+		        }, '')].join('?');
 
-			//register polling card
-			if(!occurrence || !coopEvent)
-				throw new Error('DEV::Application::poll() You must specify an occurrence and a coop event or callback...');
-			var card = {
-				url: url,
-				eof: coopEvent,
-				timerId: 'unknown',
-				failed: 0,
-				valid: true,
-			};
-			this._polls[url] = card;
+		    //cancel polling
+		    if (occurrence === false) {
+		        if (this._polls[key])
+		            return this._polls[key].cancel();
+		        console.warn('DEV::Application::poll() No polling card registered yet for ' + key);
+		        return;
+		    }
 
-			var call = _.isNumber(schedule)? window.setTimeout : app.later.setTimeout;
-			var worker = function(){
-				app.remote(url).done(function(data){
-					//callback
-					if(_.isFunction(card.eof))
-						card.eof(data, card);
-					//coop event
-					else
-						app.coop(card.eof, data, card);
-				}).fail(function(){
-					card.failed++;
-					//Warning: Hardcoded 3 attemps here!
-					if(card.failed >= 3) card.cancel();
-				}).always(function(){
-					//go schedule the next call
-					if(card.valid)
-						card.timerId = call(worker, schedule);
-				});
-			};
-			//+timerType
-			card.timerType = (call === window.setTimeout)? 'native' : 'later.js';
-			//+timerId
-			card.timerId = call(worker, schedule);
-			//+cancel()
-			var that = this;
-			card.cancel = function(){
-				if(this.timerType === 'native')
-					window.clearTimeout(this.timerId);
-				else
-					this.timerId.clear();
-				this.valid = false;
-				delete that._polls[this.url];
-			};
+		    //cancel previous polling
+		    if (this._polls[key])
+		        this._polls[key].cancel();
+
+		    //register polling card
+		    if (!occurrence || !coopEvent)
+		        throw new Error('DEV::Application::poll() You must specify an occurrence and a coop event or callback...');
+		    var card = {
+		        _key: key,
+		        url: url,
+		        eof: coopEvent,
+		        timerId: 'unknown',
+		        failed: 0,
+		        valid: true,
+		    };
+		    this._polls[key] = card;
+
+		    var call = _.isNumber(schedule) ? window.setTimeout : app.later.setTimeout;
+		    var worker = function() {
+		        app.remote(url).done(function(data) {
+		            //callback
+		            if (_.isFunction(card.eof))
+		                card.eof(data, card);
+		            //coop event
+		            else
+		                app.coop(card.eof, data, card);
+		        }).fail(function() {
+		            card.failed++;
+		            //Warning: Hardcoded 3 attemps here!
+		            if (card.failed >= 3) card.cancel();
+		        }).always(function() {
+		            //go schedule the next call
+		            if (card.valid)
+		                card.timerId = call(worker, schedule);
+		        });
+		    };
+		    //+timerType
+		    card.timerType = (call === window.setTimeout) ? 'native' : 'later.js';
+		    //+timerId
+		    card.timerId = call(worker, schedule);
+		    //+cancel()
+		    var that = this;
+		    card.cancel = function() {
+		        if (this.timerType === 'native')
+		            window.clearTimeout(this.timerId);
+		        else
+		            this.timerId.clear();
+		        this.valid = false;
+		        delete that._polls[this._key];
+		    };
 		},
 
 		//-----------------dispatcher/observer/cache----------------
