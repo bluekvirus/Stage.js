@@ -314,7 +314,7 @@ Tag marked with `region=""` can use an additional `view=""` attribute to load up
 
 //is equivalent to
 
-onShow: function(){
+onReady: function(){
     this.getRegion('banner').trigger('region:load-view', 'Banner');
     //or
     this.getRegion('banner').show(new Application.view('Banner'));
@@ -515,7 +515,7 @@ Create `/context-a/myRegionalA.js` like this:
         coop: '...',
         actions: '...',
         [events: ...],
-        onShow(): function(){
+        onReady(): function(){
             //...
         }
     });
@@ -861,7 +861,8 @@ We support graphs through SVG. Use of SVG library (Raphaël.js/Snap.svg) is **op
 ```
 Application.view({
     svg: true,
-    onShow: function(){
+    onReady: function(){
+        //call .clear() first to re-init canvas.
         this.paper.clear();
         //draw...
     }
@@ -1064,22 +1065,7 @@ Application.editor('[your editor name]', function(){
 You need to provide the `getVal`, `setVal`, `validate`, `status` and `disable` (+`isEnabled`) methods.
 
 ^^^callout callout-warning
-**Important:** Do *NOT* use `onShow()` in your editor definition. Use `onRender` instead so that your editor can support the `editor=""` template attributes for dynamic positioning.
-^^^
-
-There is also another way of activating your editors without fixing the configurations in the view definition:
-```
-Application.view({
-...
-    onShow: function(){
-        this.activateEditors(options);
-    },
-...
-});
-```
-
-^^^callout callout-warning
-**Warning:** Although this is no difference than defining a view dynamically with editors configuration, it is not the *recommended* way of adding editors to a view.
+**Important:** Do *NOT* write `onShow/onReady` in your editor definition. Use `onRender` instead so that your editor can support the `editor=""` template attributes for dynamic positioning.
 ^^^
 
 #### Validation
@@ -1210,7 +1196,7 @@ Application.view({
     editors: {
         ..., //itself can contain editors!
     },
-    onShow: function(){
+    onReady: function(){
         this.getRegion('fieldset-a').show(new FieldsetX);
     }
 
@@ -1474,7 +1460,7 @@ data: [{
             attr2: ...,
             attr3: ...
         }],
-node: {...}, - //node options (standard View config)
+node: {...}, - //custom node definition (standard View config)
 onSelected: callback(meta, $el, e){
     meta - //meta data about the selected node
     $el - //node view's $el
@@ -1517,12 +1503,10 @@ Use options.node to alter the node views:
 ...
 node: {
     template: ..., 
-    onRender: ...,
-    onShow: ...,
 }
 ...
 ```
-Basically it is a *CompositeView* configure but without `type`, `tagName`, `itemViewContainer`, `itemViewOptions`, `className` and `initialize`.
+Just like define a new view.
 
 **Traverse**:
 Each node will have the following data hooked into its $el
@@ -1998,7 +1982,7 @@ This will keep the `<body>` tag to be 100% on both its width and height to the b
 
 ### View size measurement error?
 
-The dynamic theme loading mechanism (deprecated) will potentially race with size measuring in views' `onShow()` functions. This is mainly caused by modern browser's ability to multi-threading CSS rendering and JavaScript execution. Make sure you specify theme css in your `index.html`.
+The dynamic theme loading mechanism (deprecated) will potentially race with size measuring in views' `onReady()` functions. This is mainly caused by modern browser's ability to multi-threading CSS rendering and JavaScript execution. Make sure you specify theme css in your `index.html`.
 ```
 //index.html
 <link rel="stylesheet" type="text/css" href="themes/[your theme]/main.css">
