@@ -1,17 +1,125 @@
 Change Log
 ==========
-1.9.0 (2015-11-25*)
+1.10.0 (2016-06-25*)
+--------------------
+1. Missing locale file will no longer raise exceptions;
+2. Updated flexlayout to be 0.2.3;
+3. Added view:ready event for all type of views (static/svg, data, form);
+4. Added {options} object (like in app.remote) as `url` support to app.poll();
+5. Added app.poll(false) to stop all polling;
+6. Non-object ref-ed by `useParentData` will now be wrapped into object before assigning to this.data in a sub-view;
+7. Added view.show('region', ...) as an alternative to `region:load-view`; 
+
+working on ...
+
+* preprocessed template: '*.md';
+* view.tab();
+* view.poll();
+* view.datapush{};
+* Integrate stage-unideck into framework kit;
+* Adding more unit test in demos;
+* Adding cheatsheet;
+* Updating doc (around actions, data rendering, coop, dnd, effect, remote, ws, form, svg and prompt);
+* Breaking down 'Basic' editors;
+* Separate modernizr/detectizr shiv bundles from deps;
+* Adding optional 2-way binders (stickit);
+* Adding `<canvas>` support in view (easel);
+* [cli] Enhance update cmd to also refresh mockups;
+* [cli] Add a `revive` cmd as an alias to `update`;
+
+
+1.9.2 (2016-05-25)
+------------------
+1. Added .btn-pointy-right/left to base theme; (default size only)
+2. Added .pointer-up/down/left/right and .relative-ct to base theme;
+3. Added app.config.curtains as an alias to app.config.icings; 
+4. Changed I18N.configure() to async I18N.init();
+5. Changed app.inject.tpl also support async loading;
+6. Refined app initializers to support fully async promise mode;
+7. Refined view.popover() to honor position and style in options;
+8. Added view.coop() for same-ancestor co-op;
+9. Refined view.lock() to be able to lock itself in addition to regions;
+10. Refined default websocket data path register and exposure; (+app:ws-data, +coop['ws-data-[channel]'])
+11. Refined meta-event name-to-listener mapping rule; (app.Util)
+12. Fixed show event out-of-sync issue with context during nav chaining;
+13. Refined app.get() fallback strategy; (any --> view)
+14. Moved $.split into separate repo as dep; (flexlayout)
+15. Added ^^^class ... classN extension to app.markdown();
+16. Removed restrictive api check on .overlay() and .popover();
+17. Added app.curtain() as an alias to app.icing();
+18. Added app.prompt();
+19. Added app.poll(); (with later.js)
+20. Added .data and .actions to app.config for mainView; (easy global data + bind for multi-page app)
+
+
+1.9.1 (2016-03-10)
+-------------------
+1. Added favicon support mock in starter-kit index page;
+2. Updated default mockups;
+3. Added .btn.circle in base theme (also updated .circle mixin);
+4. Updated export to include /channels and /profile;
+5. Added navRegion chain cleanup;
+6. Refined navRegion chaining (through region:show instead);
+7. Reset grid col gaps evenly (added .row-extended);
+8. Refined .wrapper class gaps;
+9. Added app.notify and app.markdown apis;
+10. Simplified devserver settings for watchers;
+11. Added anonymous regions;
+12. Added popover ability to view;
+13. Added api-mock-json-404 middleware to dev-server;
+14. Added full event types support to view actions (`action-[type]="fn name"`);
+15. Removed md-content plugin in favor of app.markdown();
+16. Removed json assumption in app.remote response dataType;
+17. Refined app.mainView now will always have a contextRegion/navRegion region;
+18. Added default 'no-template' template to non-form views;
+19. Added 'view', 'viewName' metadata to view.$el and the app.locate api;
+20. Added 'renderCount' metadata to view.$el and the app.profile api;
+21. Added view.category metadata in addition to view.name (through reusable registry);
+22. Added app.mark() api; (experimental);
+23. Fixed region close effect (will honor view.effect now);
+24. Refined [ui],[region] auto-pick performance after 1-render;
+25. Removed view:animated event (1.8.4) use 'show' instead;
+26. Added dnd support to views (drag, drop, sortable);
+27. Added selectable item support to views (selectable);
+28. Refined template caching (local-dom, remote and in-memory);
+29. Added view recognition to app.reload();
+30. Added app.throttle/debounce() apis to be used for action listeners;
+31. Added app.animateItems() api;
+32. Fixed mock json searching edge case: /name.json$/ --> name.mock.js;
+33. Fixed _.isPlainObject() method;
+34. Refined view.overlay/popover() anchor argument pick-up;
+35. Merged the Context concept into View when using app.get(); (you can now use view as a context)
+36. Added .callout to theme base;
+37. Added .more() api to view; (need example: infinite scrolling)
+38. Added .layout config to view and app.config;
+39. Merged $.hsplit/vsplit to $.split
+40. Refined $.overlay options (*content, *effect, +duration, +easing)
+41. Added .lock() api to view;
+42. Deprecated region.resize() api;
+43. Added 'scroll-bottom/top' and fixed 'scroll/load/error' action events;
+44. Added data-export script to tools (npm run data-export);
+45. Refined svg support in view (Raphael/Snap.svg);
+46. Added app.i18n() api for using global I18N functions;
+47. Fixed build interference with the doc site sub-project;
+48. Fixed [region="app"] sizing regression;
+49. Added app.icing() api; (with app.config.icing)
+50. Added region.show('template string') direct call;
+
+
+1.8.7 (2015-12-07)
 -------------------
 1. Added $.hsplit/vsplit plugins (beta);
 2. Aligned editor templates to handlbars v4;
 3. Added 'view:editor-changed' event;
 4. Added 'view:editors-updated' event;
-
-working on ...
-* Breaking down 'Basic' editors;
-* Adding more unit tests.
-* Adding interactive tutorial site;
-* Updating doc (around data handling, coop, remote, ws, form).
+5. Removed theme dependency on .fa;
+6. Added app.animation() raw fx api;
+7. Added 'window-resized' to global coop event;
+8. Added icon-font powered checkboxs and radios;
+9. Added hand-cursor & text-shadow to [action] tags;
+10. Added 'window-scroll' to global coop event;
+11. Added 'context-switched' to global coop event;
+12. Fixed app.get() name recovery error;
 
 
 1.8.6 (2015-11-18)

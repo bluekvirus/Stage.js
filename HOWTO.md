@@ -1,123 +1,106 @@
 Introduction
 ------------
-This lightweight framework is made on top of **Backbone** and **Bootstrap**. The goal is to maximize developer efficiency by introducing an intuitive workflow on top of a solid front-end architecture. You will be focusing on user interaction building without distraction. We even give you a web server to start the development right away! Theming and packaging deployments are also a breeze through our tools.
+This lightweight framework is made to maximize developer efficiency by introducing an intuitive workflow on top of a solid front-end architecture. You will be focusing on user interaction building without distraction. We even give you a full-featured *Javascript* web server as a reference implementation on the RESTful and Websocket services to start the development right away! Theming and packaging deployments are also a breeze through our tools.
 
-To flatten and lower the initial learning curve of adaptation, there is only a handful of APIs to remember:
+^^^callout callout-info
+**Tip:** Keep your *JavaScript* codes flat and *HTML* dynamic, style through *CSS* class.
+^^^
 
-Initialize:
-* Application.setup (options)
-* Application.run ()
+### Core concepts
 
-View:
-* Application.context ([name,] options) - alias: page()
-* Application.view (name/options, options/instance)
-* Application.widget (name, options/factory)
-* Application.editor (name, options/factory)
-* Application.editor.validator (name, fn) - alias: editor.rule()
-* Application.has (name, [type])
-* Application.get (name, [type])
-* Application.coop (e, [args])
+![Stage.js Architecture](static/resource/default/diagram/Diagram-3.png)
 
-Handling Data:
-* View.data - 'url string', {} or []
-* View.set() (infer View.setValues())
-* View.get() (infer View.getValues())
-* View.refresh()
-* Application.remote (options)
-* Application.extract (keypath, obj)
-* Application.cookie
-* Application.store
-
-Download:
-* Application.download (url or +params)
-
-Utils:
-* Application.moment
-* Application.uri
-* Application.param()
-* Application.validator
-* Application.debug()
-* Application.reload ()
-
-Mutual Exclusion:
-* Application.lock ([topic/lock])
-* Application.unlock ([topic/lock])
-* Application.available ([topic/lock])
-
-Script(s)/Template(s)/CSS Injection:
-* Application.inject.js ([path to js/json]) - util/script-inject.js
-* Application.inject.tpl ([path to html/json ]) - util/template-builder.js
-* Application.inject.css ([path to css], ...) - same arguments to loadCSS
-
------------------------------------------------------------------------------
-
+^^^callout callout-info
 **Remember:** Your goal is to
 * Create view objects with HTML template and actions. 
-* Put them into pre-defined regions. 
-* Make them talk to each other through events.
-* Group them into purposeful(topic related) swap-able contexts.
+* Link them into pre-defined regions. 
+* Help them talk to each other through collaboration events.
+* Navigate through them as groups or individually by regions.
+^^^
 
-**Don't:**
-* Create Model and Collection instances unless it is to generate views.
-* Wrap/Organize your view definitions into Class hierarchies.
-* Put more than 2 non-object params in any function signature.
-* Use direct method invocations for view-view, view-context, view-application collaborations.
-
-**Keep your JavaScript codes flat and HTML dynamic, style through CSS class.**
-
-###Core concepts
-
-<img src="static/resource/default/diagram/Diagram-3.png" alt="Stage.js Architecture" class="center-block"></img>
-
-####What's Navigation?
+#### What's Navigation?
 
 We achieve client-side multi-page-alike navigation through switching *Context*s on a pre-defined application region in respond to the URL hash fragment change event. You can also keep navigating beyond a *Context* by chaining view names in the hash. (e.g #navigate/Context/LvlOneSubView/LvlTwoSubView...)
 
-By using named views and their `navRegion` properties, our navigation mechanism enables endless possibilities in combining views in hierarchies.
+By using named views and their `navRegion` properties, our navigation mechanism enables endless possibilities in combining views in hierarchies. You can also add transitional effects to the views when they enter and leave the regions.
 
-####What's a Context?
+#### What's a View?
 
-A *Context* is a special view object. *Context*s only appear on the application's context region (each application can have only 1 such region). If you have more than 1 *Context*s defined, they will automatically swap on the context region in response to the navigation event. You will not have more than 1 active *Context* at any given time.
+A *View* is a template with data, interactions and optionally a name. it is to be shown on a region in template of your application or another view instance (both contexts and normal views). Only named views can be used as template shortcuts (through anonymous region tag attribute `view="..."`).
 
-A *Context* can also guard itself from being viewed by certain user by utilizing the `guard` property (a function) before switched to in navigation. This is good for automatically jumping to other contexts if the targeted one requires authenticated user in session. 
-
-alias: Page
-
-####What's a View?
-
-A *View* is a template with data, interactions and optionally a name. it is to be shown on a region in template of your application or another view instance (both contexts and normal views). Only named views can be used as template shortcuts (through region tag attributes `region="" view="..."`).
-
-**Note**: We have merged the old *Regional* concept with *View* in general. Future releases will not distinguish between *Regional*s and named *View*s.
+^^^callout callout-primary
+**Note:** As in v1.8+ We have merged the old *Regional* concept with *View* in general. Future releases will not distinguish between *Regional*s and named *View*s.
+^^^
 
 alias: Area, named View
 
-####Remote data handling?
+#### What's a Context?
 
-Modern web application generates views according to user data dynamically. This is why we picked *Backbone* as our view engine. However, the way we handle remote data in our framework is a bit different than the original design in *Backbone*.
+A *Context* is a special named *View* object. *Context*s only appear on the application's context region (each application can have only 1 such region). If you have more than 1 *Context*s defined, they will automatically swap on the context region in response to the navigation event. You will not have more than 1 active *Context* at any given time.
 
-Since most of the application state comes from the server, try **NOT** to use Model/Collection directly in views. Managing locally cached data can backfire badly if your design requirement is vague (like in most of the prototyping phase, right?). You are advised to make the data interfacing/manipulation layer as thin as possible. Operate on plain data object/array as much as possible. (e.g Bind pagination, sorting and filtering as view actions/listeners instead of Collection methods, unless you have a requirement to operate on locally cached data)
+A *Context* can also guard itself from being viewed by certain user by utilizing the `guard` property (a function) before switched to in navigation. This is good for automatically jumping to other contexts if the targeted one requires authenticated user in session. 
 
-**Important:** We introduce a unified *DATA API* for handling all the in/out of remote server data, skipping the *Model/Collection* centered way of data manipulation. They are still created internally for you however. But *you will only need `view.set()/get()/refresh()` and the `view.data` attribute* to use them. 
+^^^callout callout-primary
+**Note:** As in v1.9+ We have merged the old *Context* concept with *View* in general. Future releases will not distinguish between *Context*s and named *View*s. The first-level views demanded by the navigation chain (#hash path) will automatically be treated as a *Context*. The `guard` function will be triggered if presented.
+^^^
+
+alias: Page
+
+#### What's an Editor?
+
+An *Editor* is a named *View* with `.setVal()`, `.getVal()`, `.validate()`, `.status()` and `.enable()/.disable()/.isEnabled()` methods that caches its value through `<input>`,`<select>`and`<textarea>` contained in the template. Your *Editor* can have sub-views but the APIs required are not chained automatically.
+
+#### What's a Widget?
+
+A *Widget* is a named *View* with `.reconfigure(options)` method that can change its layout and functional parts without a full re-creation of the *Widget*. A great example would be the **DataGrid** widget released as an bonus component with the framework together with **Tree** and **Paginator**.
+
+#### What's a Canvas?
+
+A *Canvas* is a *View* with the `.svg` property set to `true`, you will have an automatically expanded `this.paper` to draw upon with live height/width update on the `this.paper` property after shown plus auto clean/resize upon `onDraw()`.
+
+^^^callout callout-primary
+**Note:** *Canvas* is svg based and the `this.paper` drawing APIs are from the Raphaël.js/Snap.svg library, make sure you have them included in your `index.html`
+^^^
+
+We have not yet included support for *HTML5 Canvas*.
+
+#### Remote data handling?
+
+Modern web application generates views according to user data dynamically. This is why we picked *Backbone* as our view engine base. However, the way we handle remote data in the framework is a bit different than the original design in *Backbone*.
+
+Since most of the application state comes from the server, managing locally cached data can backfire badly if your design requirement is vague (like in most of the prototyping phase, right?). You are advised to make the data interfacing/manipulation layer as thin as possible. Operate on plain data object/array as much as possible. (e.g Bind pagination, sorting and filtering as view actions/listeners instead of Collection methods, unless you have a requirement to operate on locally cached data)
+
+^^^callout callout-warning
+**Important:** We introduce a unified *DATA API* for handling all the in/out of remote server data, skipping the *Model/Collection* centered way of data manipulation. They are still created internally for you however. But *you will only need `view.set()/get()/more()/refresh()` and the `view.data` attribute* to use them.
+^^^
 
 Remember, Model/Collection are only used as dumb data snapshot object on the client side to support views. The goal is to make the data interfacing layer *as thin as possible*. You will find more details in the **Quickstart/Handling Data** section.
 
-####Reuse view definitions?
+#### Reuse view definitions?
 
 For views that you need to use again and again but with different configuration/options (e.g a Datagrid), register it as a *Widget* or, in case of a basic input, an *Editor*. These reusable view definitions are called *Reusable*s in the framework. Think in terms of the **List and Container** (further down this document) technique as much as possible when creating them.
 
-####Co-op through events
+#### Co-op through events
 
 We encourage event programming in this framework. We glue views into a functioning whole by using meta-events. Whenever an interaction or transition happens (e.g navigation, context-swap, login, error, data-ready...), instead of calling the actual *doer*s, **fire/trigger an event first and provide a default listener**, so that later the actual behavior triggered by this event can be changed without affecting the glue/interfacing logic. Read carefully through the **Events** subsection in **Basics** below so you understand how to implement and extend application behaviors mainly through events. 
 
-####Application locking
+#### User actions
+
+Use of `action=` and `action-<*>=` in the templates can automatically generate events to trigger your *View* functions registered by `.actions` property. From within the functions, it is very easy to grab the DOM element invloved in the action and `this` bind to the *View*. You can put data ids as metadata attributes (`data-*=` then `$actionEl.data(*)`) on the `action=` tagged elements to ease your data management or craft unique operation routines.
+
+#### Application locking
 
 Sometimes, with Ajax or other asynchronized operations (like timer related ones), you might need to disable the application's ability to navigate through views or respond to certain events/actions. We have a very neat locking module for you to use in just those situations. The 2-level locking design allows you to decide when to use the global lock or the topic based ones to maximize your control over the availability of UIs.
 
-####Seems complicated...
+#### Seems complicated...
 
 To focus, think of your application in terms of *Context*s and *Views*s (pages and areas). Like drawing a series of pictures, each page is a *Context* and you lay things out by sketching out regions (areas) first on each page then refine the details. Each *Context* can also be made state-aware through the same navigation mechanism that powers *Context* switching in the application container.
 
-###Why not using...
+^^^callout callout-info
+**Remember:** The goal of this framework is to keep you focused on building dynamic views without worrying about linking or organizing them into a manageable whole. It is very important that you understand the *region*, *navigation* and *events* concepts. So that you can maximize the efficiency offered by our unique workflow.
+^^^
+
+### Why not using...
 
 Why not using AngularJS/EmberJS/Meteor or YUI/ExtJS? Yes you can, but, if you can, **always favor libraries over frameworks**. Given that *Stage.js* is also a framework. The advise here should be extended to: 
 > If you can *NOT* agree with the workflow/abstraction, always favor libraries over frameworks.
@@ -128,37 +111,33 @@ We choose what we choose when designing this framework simply because we want to
 
 **The Backbone library can implement them all** (Yes, any client side framework). (Not 100% for Meteor though, since Meteor combines its server into a full-stack solution. You need nodejs in the picture, and we do have a dev-server package called **ajax-box-lite** in the toolset for just that based on the [express.js](http://expressjs.com/4x/) framework). And, if you need more evidence, YUI3 has the exact same concepts from Backbone implemented as its infrastructure. (Why did we mention YUI here? Because of Yahoo!'s JavaScript [Architect](http://www.crockford.com/))
 
-In order to accomplish more with less code using Backbone, we extended **Backbone.Marionette** as our pattern library base and mainly using its *module* and *region* concepts. We also removed the needs to work with the Model/Collection sync methods in the original *Backbone* library. The resulting framework accomplishes all the big frameworks have promised but with **a thiner and flatter structure**. We believe scripting languages are always going to be the perfect thin glue layer between mechanisms and policies. The JavaScript language were picked to glue HTML/CSS and UX but nothing more, it should not be overdosed and attempt to mimic Java. In other words, **only the burger is important**:
+In order to accomplish more with less code using Backbone, we extended **Backbone.Marionette** as our pattern library base and mainly using its *module* and *region* concepts. We also removed the needs to work with the Model/Collection sync methods in the original *Backbone* library. The resulting framework accomplishes all the big frameworks have promised but with **a thiner and flattened structure**. We believe scripting languages are always going to be the perfect thin glue layer between mechanisms and policies. The JavaScript language were picked to glue HTML/CSS and UX but nothing more, it should not be overdosed and attempt to mimic Java. In other words, **only the burger is important**:
 
-<img src="static/resource/default/diagram/Diagram-6.png" alt="HTML is the burger" class="center-block"></img>
+![HTML is the burger](static/resource/default/diagram/Diagram-6.png)
 
-**Note**: Although the **Marionette** library offers many cool concepts for building large JavaScript front-end projects, we felt that the core value it offers lies within its region (for better view life-cycle management) and module managers. Thus only those are included and supported throughout the framework. We also extended the base view classes to enable remote templating, automatic ui and region detection, action listeners, navigation hooks, svg canvas and faster **Cordova** development. 
+^^^callout callout-primary
+**Note:** Although the **Marionette** library offers many cool concepts for building large JavaScript front-end projects, we felt that the core value it offers lies within its region (for better view life-cycle management) and module managers. Thus only those are included and supported throughout the framework. We also extended the base view classes to enable remote templating, automatic ui and region detection, action listeners, navigation hooks, svg canvas and faster **Cordova** development. 
+^^^
 
-**Note**: The **JQuery UI** library contained in this framework is a custom build (Core, Interaction and Effect). It is sufficient for you to create plugins and widgets and to use the `$.fn.position()` and `$.fn.animation()` methods. However, you will *NOT* be able to use any UIs in the original library.
+^^^callout callout-primary
+**Note:** The **JQuery UI** library contained in this framework is a custom build (Core, Interaction and Effect). It is sufficient for you to create plugins and widgets and to use the `$.fn.position()` and `$.fn.animation()` methods. However, you will *NOT* be able to use any UIs in the original library.
+^^^
 
 Basics
 ------
-You are assumed to have programed with:
+Although not required, some familiarities of the following Javascript libraries would greatly help while using the framework:
 
-* Underscore.js or Lo-Dash 
-<small class="text-muted">(handy js functions)</small>
-* jQuery or Zepto 
-<small class="text-muted">(DOM manipulation through CSS selectors)</small>
-* Backbone.js 
-<small class="text-muted">(View, EventEmitter, Router)</small>
-* Handlebars.js 
-<small class="text-muted">(dynamic templates)</small>
+* Underscore.js/Lo-Dash *(handy js functional helpers)*
+* jQuery/Zepto *(DOM manipulation through CSS selectors)*
+* Handlebars.js *(dynamic templates)*
 
-
-If you don't know what they are, go for a quick look at their websites. (links are provided under the *Included Libraries* area on the left sidebar)
+If you don't know what they are, go for a quick look at their websites.
 
 We also maintain a list of 3rd party libraries for the developers to choose from in addition to the base libraries. These utility libraries (e.g jquery-file-upload, store.js, uri.js, marked, moment.js, ...) are carefully selected from the many open-source JavaScript libraries out there to help with specific but generally-will-appear problems that a developer will encounter during the web application development process. (see more in the **Include other js libraries** section)
 
-**Remember:** The goal of this framework is to assist you in making better use of *Backbone.js*. It is designed to keep you focused on building dynamic views without worrying about putting/linking/organizing them into a manageable whole. It is very important that you understand the *region*, *navigation* and *events* concepts. So that you can maximize the efficiency offered by our unique workflow, intuitive toolset and application container.
+### Choose the right distribution
 
-###Choose the right distribution
-
-####Project kit
+#### Project kit
 
 > * /implementation -- your web root
 >   * /js (-)
@@ -177,7 +156,7 @@ We also maintain a list of 3rd party libraries for the developers to choose from
 
 Use the project-kit distribution whenever you want to start a production level web application project.
 
-####Release pack
+#### Release pack
 
 > * /js
 >     - /lib
@@ -193,126 +172,115 @@ This distribution is designed to be simple and doesn't have tools and theme pack
 
 Use the release-pack distribution for prototyping your next product concept, or to keep your project core up-to-date.
 
-**Note**: The release-pack distribution is also what you will get from the bower package manager when using command:
+The release-pack distribution is also what you will get from the bower package manager when using command:
 ```
 bower install/update stage
 ```
 
-
-###Quickstart
+### Quickstart
 
 Here is the recommended **workflow**. You should follow the steps each time you want to start a new project with *Stage.js*.
 
+#### Preparation
 
-####Preparation
-
-#####Automatically
+##### Automatically
 
 1. Install the [`stage-devtools`](https://www.npmjs.com/package/stage-devtools) from `npm`:
 ```
 npm -g install stage-devtools
 ```
-2. Under an empty folder run:
+2. Check your development environment:
+```
+stagejs env
+```
+If you see missing command-line tools marked with `*required`, have them installed before moving on. See our [Environment Prep Guide](https://github.com/bluekvirus/Stage-devtools/blob/master/ENV.md).
+3. Under an empty folder run:
 ```
 stagejs init
+stagejs theme [--fonts ...]
 ```
-3. [optional] Update everything with the latest edge version:
+4. [optional] Update everything with the latest edge version:
 ```
-stagejs update --edge
+stagejs update [--edge]
 ```
-4. Start the development server
+5. Start the development server
 ```
 stagejs serve [--port <number>]
 ```
 
-**Tip**: You can now use the `stagejs` command-line to create all the element needed in your application. Use the following cmd to see what you can create from the command-line:
+You can now use the `stagejs` command-line to create all the element needed in your application. Use the following cmd to see what you can create from the command-line:
 ```
 stagejs create -l
 ```
+
 Read more about the `stagejs` [cli tool](https://github.com/bluekvirus/Stage-devtools).
 
-**Tip**: Use our development [VM through `vagrant`](https://github.com/bluekvirus/vm-webdev) if you don't want to bother with setting up your own environment. Run the `stagejs` command-line tool inside this VM once it is up and running.
+^^^callout callout-info
+**Tip:** Use our development [**VM through Vagrant**](https://github.com/bluekvirus/vm-webdev) if you don't want to bother with setting up your own environment. Run the `stagejs` command-line tool inside this VM once it is up and running.
+^^^
 
-#####Manually
+##### Manually
 
 Download the *Stage.js* [project-kit](static/resource/default/download/stagejs-starter-kit.tar.gz) and extract its content to your project folder of choice.
 
 Under your project folder, open up a console/terminal on your OS and do the following:
-1. Under the `/tools` folder run
+1. Revive the project
 ```
-npm install
-npm start //this will start the development web server
+stagejs update [-e]
 ```
-2. Under the `/implementation` folder run
+2. Create a new theme
 ```
-bower install
+stagejs theme [project]
 ```
-3. Under the '/tools/themeprep' folder run
-```
-node run [your theme name] //leave blank if you are using theme 'default'
-```
-**Note**: It is recommended that you use the theme preparation tool to create a new theme before you continue to develop your project. This way, whenever the basic (default) theme updates, you can upgrade to it easily.
+^^^callout callout-primary
+**Note:** It is recommended that you use the theme preparation tool to create a new theme before you continue to develop your project. This way, whenever the basic (default) theme updates, you can upgrade to it easily.
+^^^
 
-4. Create a `main.js` (you are free to choose whatever the name you like) 
-and include it in `index.html` below the `<!--main.js-->` comment line:
+3. Create a `main.js`
 ```
-<script src="bower_components/stage/dist/js/lib/dependencies.min.js"></script>
-<script src="bower_components/stage/dist/js/stage.min.js"></script>
-...  
-<!--main.js-->
-<script type="text/javascript" src="js/main.js"></script>
-...
+stagejs create main
 ```
-**Note:** You can use `stage.js` instead of `stage.min.js` to have better debugging info.
-Minimum `main.js` script looks like this:
+4. Start the devserver
 ```
-//main.js
-Application.setup().run();
+stagejs serve [port:5000]
 ```
 You should now see a *blank* page without JavaScript error on http://localhost:5000/dev/.
 
-If you are really in a hurry to see some stuff on page, give your application a template:
-```
-//main.js
-Application.setup({
-    template: [
-        '<div>',
-            '<h1>Hello World</h1>',
-            //put some html here as strings
-        '</div>'
-    ]
-}).run();
-```
-**Tip**: Instead of configure a template in the `Application`, you can put your application's main template under a HTML tag with attribute `region="app"` in your `index.html`.
-
-Remember, creating a web application is like drawing a picture. Start by laying things out and gradually refine the details. In our case, always start by defining the application template.
+^^^callout callout-info
+**Remember:** Creating a web application is like drawing a picture. Start by laying things out and gradually refine the details. In our case, always start by defining the application template.
+^^^
 
 Now, let's start building a real web application.
 
-####Step 1. Initialize
+#### Step 1. Initialize
 
-To create your main.js file from our suggested code template, simply use the `stage-devtools` with the `create` command:
-```
-stagejs create main [your main file name, default to main.js]
-```
+^^^callout callout-primary
+**Note:** You can use `stage.js` instead of `stage.min.js` in `index.html` to have better debugging info.
+^^^
 
-#####Configure
+##### Configure
 
 Go to your `main.js` and setup the application by using `Application.setup()`:
 ``` 
 //main.js
 Application.setup({
+    /*----------------------configure-----------------------*/
     fullScreen: //false | true,
-    template: //'#id', '@**/*.html', [html string array] or 'html string',
-    contextRegion/navRegion: //your navRegion name marked in template,
+    icings/curtains: //fixed overlay regions,
     defaultContext: //your default context name to show in navRegion,
     baseAjaxURI: //your base url for using with Application.remote(),
-    viewTemplates: //remote view templates folder, if using template:@**/*.html in views,
+    websockets: //websocket paths to initialize,
     viewSrcs: //view dynamic loading base path.
-    i18nResources: //where to load i18n related data (e.g translations),
     i18nTransFile: //the translation file name/pattern under i18nResources,
     i18nLocale: //force the app to certain locale,
+    rapidEventDelay: //for throttling window resize/scroll and app.throttle/debounce,
     timeout: //default data (ajax) operation timeout in ms,
+    /*----------------------mainView-----------------------*/
+    template: //same as view template property, (or use layout)
+    layout: //same as view layout property, (or use template)
+    contextRegion/navRegion: //your region used for navigation chain,
+    data: //same as view data property,
+    actions: //same as view actions property,
 }).run();
 ```
 The configure variables have sensible defaults, you can safely skip configuring them here, however, there is one you might want to change now -- `template`.
@@ -336,7 +304,7 @@ Since your goal is to build a *multi-context* application, you will need some *r
 Application.setup({
     ...
     template: [
-        '<div region="banner" view="Banner"></div>',
+        '<div view="Banner"></div>',
         '<div region="body"></div>',
         '<div region="footer"></div>'
     ],
@@ -344,7 +312,7 @@ Application.setup({
     ...
 }).run();
 ```
-A `region=""` attribute on any html tag marks a pre-defined region in the template, **you can also do this with any *View*** in our framework. Doing so is equivalent of using the `regions:{}` property.
+A `region=""` attribute on any html tag marks a pre-defined region in the template, **you can do this within any *View*** template. Doing so is equivalent of using the `regions:{}` property.
 
 Tag marked with `region=""` can use an additional `view=""` attribute to load up a *View* / *Widget* or *@remote.template.html* by name:
 ```
@@ -352,65 +320,67 @@ Tag marked with `region=""` can use an additional `view=""` attribute to load up
 
 //is equivalent to
 
-onShow: function(){
+onReady: function(){
     this.getRegion('banner').trigger('region:load-view', 'Banner');
     //or
     this.getRegion('banner').show(new Application.view('Banner'));
 }
 ```
-**Important:** Views loaded by the `view=""` attribute should have no init options. If you do need to specify init options when showing a view, use the alternative `region:load-view` event.
+
+^^^callout callout-warning
+**Important:** Views loaded by the `view=""` attribute should have no init options. If you do need to specify init options when showing a view, use the alternative `region:load-view` event or `view.getRegion('...').show()` api.
+^^^
 
 If your application is a single-context application, you don't need to assign the application template. There will always be a region that wraps the whole application -- the *app* region. The **Default** *Context* will automatically show on region *app* if you did not specify `contextRegion` and `defaultContext`.
 
-#####Run
+^^^callout callout-info
+**Tip:** You can omit `region=""` if that region is not needed in your application later to show other views.
+^^^
+
+##### Run
 
 ```
 Application.setup({...}).run();
 ```
-
-**Tip:** If you are using Stage.js in a hybrid app (cordova/phonegap), use this to kickstart the app:
+If you are using Stage.js in a hybrid app (cordova/phonegap), use this to kickstart the app:
 ```
 Application.setup({...}).run(true);
-
 //or
-
 Application.setup({...}).run('deviceready'); //hook on specified ready event
 ```
 Note that the ready event may vary in different hybrid app development package.
 
-#####Customized bootstrapping
+##### Customized bootstrapping
 
-The application bootstrapping sequence can be modified, since we are simply using the Marionette.Application object, you can add your own environment preparation code as initializers:
+The application bootstrapping sequence can be modified, since we are simply using the `Marionette.Application` object, you can add your own environment preparation code as initializers:
 ```
-//"initialize:before" / onInitializeBefore;
-
 Application.addInitializer(function(options){
     //go to check user's session
-    app.navigate(...);
+    return app.remote('api/v1/user/touch').done(...);
 });
-Application.addInitializer(function(options){...});
+Application.addInitializer(function(options){
+   //...anything sync or async(return a promise)...
+});
 ...
 
-//"initialize:after" / onInitializeBefore;
-//"start" / onStart;
-
-Application.setup({...}).run();
+Application.run();
 ```
 
-Plus the events we put in during application loading:
+Plus the events we put in after running your initializers:
 ```
 app:before-mainview-ready //fired before the application is shown
 app:mainview-ready //fired after the application is shown
 ```
-**Important**: Only after the `app:mainview-ready` event, can the application start its initializer-calling sequence. In other words, if you've added customized initializers, they will be called after the `app:mainview-ready` event.
 
-**Tip**: You can swap application template using the `Application.setup()` call upon receiving the `app:before-mainview-ready` event to layout your application differently on different platforms. (Use the `Modernizr` global variable for platform/feature detections.)
+^^^callout callout-info
+**Tip:** You can swap application template using the `Application.setup()` call upon receiving the `app:before-mainview-ready` event to configure/layout your application differently on different platforms. (Use the `Modernizr` global variable for platform/feature detections.)
+^^^
 
-You can also make good use of the `app:navigate` event for context preparation.
+You can also make good use of the `app:navigate` event for context preparation in the initializers.
 
 Let's proceed to define your contexts so you have something to show after the application starts.
 
-####Step 2. Define Contexts
+#### Step 2. Define Contexts
 
 Create a new file named `myContextA.js`, remember a *Context* is just an special view object with additional special methods/listeners:
 ```
@@ -418,7 +388,6 @@ Create a new file named `myContextA.js`, remember a *Context* is just an special
 (function(app) {
     app.context('MyContextA', { //omitting the name indicates context:Default
         template: '...',
-        //..., normal Backbone View options
         guard: function(){
             //return error to cancel navigation;
             //return '', false, undefined to proceed;
@@ -440,7 +409,7 @@ Create a new file named `myContextA.js`, remember a *Context* is just an special
 ```
 alias: `Application.page()`. 
 
-#####Template
+##### Template
 
 When defining template for a context you can use one of the four ways we support:
 
@@ -449,16 +418,23 @@ When defining template for a context you can use one of the four ways we support
 * 'html string' -- single line html string;
 * ['html str1', 'html str2', ...] -- array of html strings;
 
+^^^callout callout-primary
 **Note:** To enable remote template support, you need to configure `viewTemplates` through `Application.setup()`.
+^^^
 
+^^^callout callout-primary
 **Note:** Remote view templates will only be fetched once and then cached and reused within the client side application. Additional view instances using the same remote template will not trigger another loading process.
+^^^
 
+^^^callout callout-primary
 **Note:** Remote templates should be combined into a single `all.json` file before going into production deployment. This is already supported by our build tool. Check your build configure file to enable this auto processing. You don *NOT* need to care about this `all.json` file. It is automatically loaded once you've set the `viewTemplates` configure.
+^^^
 
+^^^callout callout-info
 **Tip:** Combine remote templating with IDE tool (ZenCoding/(Emmet)[http://emmet.io]) will greatly improve your development speed.
+^^^
 
-
-#####Navigate between Contexts
+##### Navigate between Contexts
 
 Use the `app:navigate` event on `Application` to actively switch between contexts.
 ```
@@ -482,7 +458,7 @@ window.location.hash = '#navigate/ABC/EFG/...';
 
 There is an `context:navigate-away` event triggered to call `onNavigateAway` method on a context when the application is switching away from one. Use this listener if you want to store some of the context state and recover later. We recommend that you use the localStorage feature of HTML5 and we have already include a library for you in the framework distribution. (see [store.js](https://github.com/marcuswestin/store.js) for more)
 
-**Note**: You can pass an additional *silent* argument with the `app:navigate` event to avoid changing the url hash path during the navigation:
+You can pass an additional *silent* argument with the `app:navigate` event to avoid changing the url hash path during the navigation:
 ```
 Application.trigger('app:navigate', {
     context: context, //optional
@@ -519,15 +495,17 @@ If you defined a `guard` function as property in one of your contexts, it will b
 })(Application);
 ```
 
-#####Navigate beyond a Context
+##### Navigate beyond a Context
 
 When the navigation is at `#navigate/MyContextA/SubViewA/SubViewB...` the router finds `navRegion` in `MyContextA` and shows `SubViewA` in it and then move on to `SubViewA` to show `SubViewB...` in its `navRegion`. If, somehow, it can not find the definition of `SubViewA`, the navigation stops on `MyContextA` and triggers `view:navigate-to` event with the remaining subpath starting with `SubViewA/...` on `MyContextA`. The same process happens on `SubViewA` if the router can not find `SubViewB...`.
 
-**Note**: All named Views can all appear in the navigation path if they have the `navRegion` property defined.
+^^^callout callout-primary
+**Note:** All named Views can all appear in the navigation path if they have the `navRegion` property defined.
+^^^
 
 You will learn how to create *View*s in the next section.
 
-####Step 3. Views
+#### Step 3. Views
 
 Before continue, change your `myContextA.js` into `/context-a/index.js` so you can start adding regional view definitions into the context folder as separate code files. Always maintain a clear code hierarchy through file structures. (Try to limit each code file to be **under 300-400 lines** including comments)
 
@@ -543,14 +521,16 @@ Create `/context-a/myRegionalA.js` like this:
         coop: '...',
         actions: '...',
         [events: ...],
-        onShow(): function(){
+        onReady(): function(){
             //...
         }
     });
 })(Application);
 ```
 
-**Tip**: You can nest *Views*s with the `region=""` and `view=""` attributes in the template. Only named views can be refered by the `view=` attribute on a `region=` marked HTML tag in template.
+^^^callout callout-info
+**Tip:** You can nest *Views*s with the `view=""` attributes in the template. Only named views can be refered by the `view=` attribute on an HTML tag in template.
+^^^
 
 You can define non-regional (un-named) views through the `Application.view()` API:
 ```
@@ -566,7 +546,7 @@ var view = app.view({...}, true);
 ...
 ```
 
-#####Template
+##### Template
 
 Remember, when defining template for a view you can use one of the four ways we support: 
 
@@ -577,11 +557,11 @@ Remember, when defining template for a view you can use one of the four ways we 
 
 Now, we've sketched the layout of our application, you might want more contexts defined before continue but that's the easy part, just repeat Step 1-2 till you are ready to proceed to light-up the views dynamically with remote data.
 
-####Step 4. Handling data
+#### Step 4. Handling data
 
 Though we do not agree with *Backbone*'s way of loading and persisting data through *Model/Collection*s. We do agree that **data** should be the central part of every computer program. In our case, the remote data from server are still used to power the dynamic views. We use *Backbone.Model/Collection* only when there is a *View*. In other words, *data* and *View*s are centric in our framework paradigm, *Model/Collection*s are not. Try to think of them as a integrated part of *View*s. 
 
-#####Within a View
+##### Within a View
 
 Use the `data` property and `.set()/get()/refresh()` methods.
 ```
@@ -603,9 +583,11 @@ view.get() - get all data or per key
 view.refresh() - re-fetch data if needed and re-render;
 ```
 
-#####With app.remote()
+##### With app.remote()
 
+^^^callout callout-primary
 **Note:** Use normal `$.ajax()` calls for **NON-API** resources such as static `.json` files. You don't want to pick up `Application.config.baseAjaxURI` in these situations. Further, you should specify `dataType: 'json'` in your `$.ajax()` call configure explicitly for loading `*.json` files so that the data can be returned as expected locally on mobile platforms. (When there isn't a web server, `$.ajax()` get `*.json` files into text strings instead of parsed Javascript object due to incorrect MIME type.)
+^^^
 
 Our recommended way of loading/persisting remote data is through:
 ```
@@ -630,29 +612,32 @@ Application.remote({
         y: 2
     }
 });
+Application.remote('abc', null, {params/querys: {x: 1, y: 2}});
 
 //GET: /user/1/details
-Application.remote({
-    url: 'user/1/details'
-});
+Application.remote('user/1/details');
+Application.remote('user', null, {_id: 1, _method: 'details'});
 
 //POST: /user
 Application.remote({
     url: 'user',
     payload: {...} //without _id
 });
+Application.remote('user', {...payload w/o _id...});
 
 //PUT: /user/1
 Application.remote({
     url: 'user',
     payload: { _id: 1, ...} //non-empty + _id
 });
+Application.remote('user', {...payload w/ _id...});
 
 //DELETE: /user/1
 Application.remote({
     url: 'user',
     payload: { _id: 1 } //just _id
 });
+Application.remote('user', {_id: 1});
 
 ```
 It is recommended to handle the callbacks through promises on the returned jqXHR object:
@@ -666,9 +651,9 @@ Application.remote(...)
 Data returned should be in the [JSON](http://json.org/) format and with `Content-Type: application/json` in its response headers. 
 
 
-###Actions
+### Actions
 
-Actions are click-ables marked by `action=""` attribute in your view template. The original way of registering events and listeners introduced by *Backbone.View* are flexible but tedious and repetitive. We offer you the *Action Tags for speeding things up.
+Actions are click-ables marked by `action=""` attribute in your view template. The original way of registering events and listeners introduced by *Backbone.View* are flexible but tedious and repetitive. We offer you the **Action Tags** for speeding things up.
 
 Any *View* can have its actions configure block activated like this (2 easy steps):
 ```
@@ -702,13 +687,19 @@ Use `_bubble: true` if you want the click event to **propagate** to the parent v
 
 If you have locked the application with `Application.lock()` then the actions will not respond until the application becomes available again. This constrain is stronger than topic based locking throught the `lock="your lock name"` attribute on action tags.
 
+^^^callout callout-warning
 **Heads up**: Don't forget to unlock your lock, if specified through the `lock="..."` attribute, at the bottom of your action listener. 
+^^^
 
-**Tip**: You can use `lock="*"` to lock the application globally.
+^^^callout callout-info
+**Tip:** You can use `lock="*"` to lock the application globally.
+^^^
 
-**Tip**: You can also use `unlock="..."` attribute to unlock the app or certain topic/action, this is in case that you want a pair of *Start/Stop* controls with app locking/unlocking splited into the 2 actions. 
+^^^callout callout-info
+**Tip:** You can also use `unlock="..."` attribute to unlock the app or certain topic/action, this is in case that you want a pair of *Start/Stop* controls with app locking/unlocking splited into the 2 actions. 
+^^^
 
-###Events
+### Events
 
 Some interactions demand **collaboration** between view objects, this is why we introduce the concept of meta-event programming. 
 ```
@@ -772,22 +763,16 @@ context:navigate-away - [empty stub] - triggered before app:navigate
 **View** -- view:meta-event
 ```
 //General
-view:render-data (data) - onRenderData [pre-defined]
-view:data-rendered
-view:resized - fired when parent region's .resize() method gets called
-
-//View with effect
-view:animated
+view:ready 
+    (same as view:show for static view)
+    (same as view:data-rendered for data view)
+    (same as view:editors-updated for form view)
+    view:ready doesn't guarantee sub-region view ready.
 
 //View with navRegion
 view:navigate-chain
 view:navigate-to
 view:navigate-away (if parentCt persists)
-
-//SVG enabled
-view:fit-paper
-view:paper-resized
-view:paper-ready
 
 //CollectionView only (Remote Data Pagination)
 view:load-page
@@ -800,41 +785,26 @@ Though you can not use customized meta-event on *regions*, there are still some 
 ```
 //region:load-view
 anyregion.trigger('region:load-view', name[, options]);
-
-//region.resize
-anyregion.resize({
-    height: ..., //can be 100, '50%'' or '100px'
-    width: ...
-});
 ```
 The `region:load-view` event listener is implemented for you and can search through both the named *View* and *Widget* registry to find the view by name and show it on the region. You can pass in addition factory options to the event trigger. Remember it can also load up a remote template for you just to boost your prototyping process:
 ```
 //in a region template
-<div region="abc" view="@remote/template/abc.html"></div>
+<div view="@remote/template/abc.html"></div>
 
 //use 'region:load-view' event
 anyregion.trigger('region:load-view', '@remote/template/abc.html');
 ```
 
-The `region.resize()` method call is there for better UI sizing control and propagation. The region's currentView (if exists) will automatically receive a `view:resized` event at the end of this function call, thus triggering `view.onResized()` method, you can choose to propagate the resizing action into the sub-regions of the region's currentView within its `onResized()` method.
+#### Use parentCt/Ctx/Region?
 
-If you want also to control the overflow css style of a region's `currentView`, do it either in your theme (CSS/LESS) or mark it on the region template:
-```
-<div region="abc" data-overflow="auto"></div>
-<div region="efg" data-overflow-x="hidden" data-overflow-y="auto"></div>
-```
-Note that for the overflow settings to show effect, you need to first use the region's `resize()` method call to size the region. 
-
-####Use parentCt/Ctx/Region?
-
-Before you move on, there is one more thing in this event section we want to clarify. If you use `region=""` in your template to define regions in a *Context*/*View*, your sub-view instances within those regions will receive a `parentCt` property upon showing which should help you find its parent container view instance.
+Before you move on, there is one more thing in this event section we want to clarify. Your sub-view instances within template regions will receive a `parentCt` property upon showing which should help you find their parent view instance.
 
 This is helpful when you want to achieve **collaborations** between sub-views by using event managed by the parent.
 ```
 //Good
 subViewA {
 	...
-	parentCt.trigger('co-op', data);
+	parentCt.trigger('co-op-event', data, [options]);
 	...
 }
 parentCt.onCoOp:
@@ -851,11 +821,14 @@ subViewA {
 	...
 }
 ```
+
+^^^callout callout-info
 **Remember:** Always prefer *Events* over *APIs* while implementing collaborations.
+^^^
 
 Besides `parentCt`, views shown in regions will also get a ref to `parentCtx` and `parentRegion`.
 
-###Locks
+### Locks
 
 You can use a global lock to lock all UIs of your application, like this
 ```
@@ -888,41 +861,32 @@ Application.available('anything'); //false, since global lock is unavailable.
 ```
 You can't acquire topic locks if the global lock is currently unavailable.
 
-###Graphs
+### Graphs (Canvas)
 
-We support graphs through SVG. An **optional** basic SVG library (Raphaël.js) is included in the framework's starter-kit distribution. You can use it in any *View* through:
+We support graphs through SVG. Use of SVG library (Raphaël.js/Snap.svg) is **optional**. After including the library (NOT in dependencies.min.js), You can use `this.paper` in any *View* through:
 ```
 Application.view({
     svg: true,
-    onShow: function(){
-        if(this.paper) 
-            //draw...
-        else 
-            this.onPaperReady = function(paper){
-                //draw...
-            }
+    onReady: function(){
+        //call .clear() first to re-init canvas.
+        this.paper.clear();
+        //draw...
     }
 });
 ```
-Don't worry about the resizing routine, it is already prepared for you. The paper size will be set correctly to the container's through the use of `view:fit-paper` event on the container view object and there is an follow-up meta event `view:paper-resized` triggered on the view so you can do something accordingly after the SVG canvas is resized.
-```
-view.listenTo(app, 'app:resized', function(){
-    this.trigger('view:fit-paper')
-});
-view.onPaperResized(){
-    //draw...
-}
-```
+Don't worry about resizing, it is already prepared for you. The paper size will be set correctly to the containing region automatically. Just **DON'T forget** to call `this.paper.clear()` upon drawing and re-draw in your svg canvas.
 
-If you require charts to be drawn, look through our monitored libraries under `/bower_components` there should be **d3.js** and **highcharts.js** for exactly that.
+If you require ready-made charts to be drawn, look through our monitored libraries under `/bower_components` there should be `d3/c3.js`, `Chart.js` and `peity` for exactly that.
 
-**Note:** HTML5 *Canvas* libraries are also included in the bower registry.
+^^^callout callout-primary
+**Note:** HTML5 *Canvas* is not supported at the moment, you can use `Easel.js` or `paper.js` on your own effort.
+^^^
 
-###UX
+### UX
 
 UX stands for user experience, it is not just about look'n'feel and clickings but also transitions/animations that links between interactions and state change. UX is hard to design, without a clear think-through over the purposes and targeted user tasks, it can be a total chaos... Make sure you have had your plan/sketch reviewed by targeted audience/friends or colleagues before implementation. Employ the *Goal-Directed Design* technique as much as you can.
 
-####Enter/Exit Effects
+#### Enter/Exit Effects
 
 Both *region* and *View* can have an `effect` configure to control the effect through which it will be entering/exiting on a region:
 ```
@@ -946,9 +910,23 @@ Both *region* and *View* can have an `effect` configure to control the effect th
 ```
 Use the css animation class name you build or from the included *Animate.css* library.
 
-**Note**: If you are using a single effect name for both entering and exiting effects, do **NOT** write `In` and `Out` at the end of the name as they will be added automatically for you.
+^^^callout callout-primary
+**Note:** If you are using a single effect name for both entering and exiting effects, do **NOT** write `In` and `Out` at the end of the name as they will be added automatically for you.
+^^^
 
 Use `view.effect` to override region effects and `view.effect = false` to disable region effects.
+
+^^^callout callout-primary
+**Note:** All region effects are from *Animate.css* but all $.plugin effects are from jQuery UI. (e.g `view.overlay() using $.fn.overlay()`)
+^^^
+
+^^^callout callout-warning
+**Don't:**
+* Create Model/Collection instances unless it is to generate views.
+* Wrap/Organize your view definitions into Class hierarchies.
+* Put more than 2 non-object params in any function signature.
+* Use direct method invocations for view-view, view-context, view-application collaborations.
+^^^
 
 
 Inputs/Editors
@@ -957,7 +935,7 @@ We have already prepared the basic html editors for you in the framework. You do
 
 You can also easily compose compound editors and fieldsets with the basic editors. This way you can reduce/combine values produced by the editors and collect them with a hierarchy/structure.
 
-###Basic
+### Basic
 
 You can activate basic editors in any *View* like this:
 ```
@@ -992,7 +970,7 @@ Application.view({
 The editors will be appended inside the calling view instance one by one by default, or, by the `editor="[fieldname]"` position attribute in the view's template. They can also be placed according to its own `appendTo` configuration.
 
 
-####Configure
+#### Configure
 
 * appendTo - in case you don't have `editor="[fieldname]"` in your template and want to change where to put the editor other than the default position.
 * parentCt - in case you want to delegate editor events to a parent container object (e.g a form object).
@@ -1004,7 +982,7 @@ The editors will be appended inside the calling view instance one by one by defa
 * value - (default value)
 * validate - (custom function or list of validators/rules)
 
-####Advanced configure
+#### Advanced configure
 
 * layout 
  - label - css class (e.g col-sm-2)
@@ -1038,7 +1016,7 @@ template: [
 ]
 ```
 
-####API and events
+#### API and events
 
 You will also get the following APIs attached to the **view** instance object once you have configured the `editors:{}` block:
 ```
@@ -1076,9 +1054,11 @@ editor.upload({
 //you can use this to trigger the upload process and submit additional data
 ```
 
+^^^callout callout-primary
 **Note:** The *select, radios and checkboxes* editors can be initialized without `options.data` configuration, these editors have an additional `setChoices()` API that you can use to set the available choices later. However it is recommended that you use the `options.remote` configure if the options data is from a remote data source.
+^^^
 
-####Add your own
+#### Add your own
 
 If you need more editors please register them through
 ```
@@ -1090,21 +1070,11 @@ Application.editor('[your editor name]', function(){
 ```
 You need to provide the `getVal`, `setVal`, `validate`, `status` and `disable` (+`isEnabled`) methods.
 
-**Important:** Do *NOT* use `onShow()` in your editor definition. Use `onRender` instead so that your editor can support the `editor=""` template attributes for dynamic positioning.
+^^^callout callout-warning
+**Important:** Do *NOT* write `onShow/onReady` in your editor definition. Use `onRender` instead so that your editor can support the `editor=""` template attributes for dynamic positioning.
+^^^
 
-There is also another way of activating your editors without fixing the configurations in the view definition:
-```
-Application.view({
-...
-    onShow: function(){
-        this.activateEditors(options);
-    },
-...
-});
-```
-**Warning:** Although this is no difference than defining a view dynamically with editors configuration, it is not the *recommended* way of adding editors to a view.
-
-####Validation
+#### Validation
 
 A custom validate function for an editor can be directly configured like this:
 ```
@@ -1171,9 +1141,11 @@ Application.editor.validator('my-validator-name', function(options, val, parentC
 ```
 alias: `Application.editor.rule()`.
 
+^^^callout callout-info
 **Tip:** We included the [`validator-js`](https://github.com/chriso/validator.js) library for you in the framework through `dependencies.js`. You can use it as a base to implement your validations faster and easier.
+^^^
 
-###Compound
+### Compound
 
 Sometimes you need to build a compound editor with more basic editors than the number of values collected. You can do this by assigning a view **definition** to the editor configure:
 ```
@@ -1198,12 +1170,15 @@ This has some disadvantages compare to registering an new editor via `app.editor
 
 If you still want `_global` (e.g appendTo) configure and `parentCt` (for editor events) to be passed to the editor, use `app.editor()` to register the view as a formal editor.
 
-**Note**: Compound editor has its child editors' eager validation feature disabled.
+^^^callout callout-primary
+**Note:** Compound editor has its child editors' eager validation feature disabled.
+^^^
 
-**Tip**: Configure your child editor without the `label` config option.
+^^^callout callout-info
+**Tip:** Configure your child editor without the `label` config option.
+^^^
 
-
-###Fieldset
+### Fieldset
 
 With view instance easily turned into form now, you might want to nest form pieces with *View* and collect the values with similar hierarchy, this could be done by adding a `fieldset` property to your view definition besides the `editors` configuration:
 ```
@@ -1227,7 +1202,7 @@ Application.view({
     editors: {
         ..., //itself can contain editors!
     },
-    onShow: function(){
+    onReady: function(){
         this.getRegion('fieldset-a').show(new FieldsetX);
     }
 
@@ -1240,9 +1215,11 @@ You can also control the nested editors through a dotted name path:
 parent.getEditor('sub-fieldset-x.abc'); //will get you editor `abc` in targeted fieldset.
 ```
 
-**Note**: Normally, if you don't need to collect values per group, you can omit the `fieldset` property in the view's definition. Values will be merged with those from the parent view.
+^^^callout callout-primary
+**Note:** Normally, if you don't need to collect values per group, you can omit the `fieldset` property in the view's definition. Values will be merged with those from the parent view.
+^^^
 
-###Build a form
+### Build a form
 
 As you can see from the above sections, you can build 2 types of forms through views:
 * Basic/Piece
@@ -1283,11 +1260,11 @@ Application.widget('MyWidgetName', {
 ```
 
 
-###Build your own
+### Build your own
 
 The *List'n'Container* technique is the golden technique to use when planning your reusable views or, say, any view on screen. Any widget on screen can be decoupled into lists and containers, like this:
 
-<img src="static/resource/default/diagram/Diagram-5.png" alt="List'n'Containers" class="center-block"></img>
+![List'n'Containers](static/resource/default/diagram/Diagram-5.png)
 
 * Starts by choosing a proper container with desired layout, nest containers if needs be.
 * Put lists into the container.
@@ -1305,7 +1282,7 @@ You can always nest another layer of container-list-item into an item of parent 
 To assist you further in the development process, we have several pre-implemented lightweight widgets bundled into the release as well, let's examine them. 
 
 
-###Datagrid
+### Datagrid
 
 **Purpose**: Give you a dynamic `<table>` with columns and customizable cells.
 
@@ -1425,14 +1402,17 @@ otherView.listenTo(table, 'row:dblclicked', function(row){...});
 
 })(Application);
 ```
-**Note**: Don't forget to name your cells according to the naming convention. You don't have to give `tagName:td` or `tagName:th` to the cell definitions. Define them like normal views.
+
+^^^callout callout-primary
+**Note:** Don't forget to name your cells according to the naming convention. You don't have to give `tagName:td` or `tagName:th` to the cell definitions. Define them like normal views.
+^^^
 
 **Built-in Cells**
 * action
 * seq
 * string
 
-**Note:** If you want to get hold of the outer datagrid view instance from a cell, reference it like this
+If you want to get hold of the outer datagrid view instance from a cell, reference it like this
 ```
     app.widget('YourOwnCell', function(){
 
@@ -1451,12 +1431,11 @@ otherView.listenTo(table, 'row:dblclicked', function(row){...});
     });
 ```
 
-
 **Built-in Headers**
 * string
 
 
-###Tree
+### Tree
 
 **Purpose**: Give you a nested tree list with customizable node template and selection events:
 ```
@@ -1487,14 +1466,17 @@ data: [{
             attr2: ...,
             attr3: ...
         }],
-node: {...}, - //node options (standard Backbone View config)
+node: {...}, - //custom node definition (standard View config)
 onSelected: callback(meta, $el, e){
     meta - //meta data about the selected node
     $el - //node view's $el
     e - //the click event
 }
 ```
-**Note**: You can *NOT* change sub-node array key to be other than 'children' at the moment. Other than the 'children' field, any named field can appear in the data as node properties. Add the names into the node template to display them.
+
+^^^callout callout-primary
+**Note:** You can *NOT* change sub-node array key to be other than 'children' at the moment. Other than the 'children' field, any named field can appear in the data as node properties. Add the names into the node template to display them.
+^^^
 
 The default node template is like this:
 ```
@@ -1527,12 +1509,10 @@ Use options.node to alter the node views:
 ...
 node: {
     template: ..., 
-    onRender: ...,
-    onShow: ...,
 }
 ...
 ```
-Basically it is a *CompositeView* configure but without `type`, `tagName`, `itemViewContainer`, `itemViewOptions`, `className` and `initialize`.
+Just like define a new view.
 
 **Traverse**:
 Each node will have the following data hooked into its $el
@@ -1548,7 +1528,7 @@ nodeView.$el.data('$parent').data('$parent');
 ```
 
 
-###Paginator
+### Paginator
 
 **Purpose**: To be used with any CollectionView for jumping between pages.
 
@@ -1603,9 +1583,9 @@ CollectionView.trigger('view:load-page', {
 Use the additional events or override the default implementations to customize your own page loading logic for *CollectionView*s.
 
 
-###Overlay
+### Overlay
 
-<span class="label label-info">jQuery plugin</span>
+jQuery plugin
 
 **Purpose**: Provide you a way of overlaying custom content/views on screen.
 
@@ -1635,7 +1615,10 @@ $('body').overlay(false, {
     effect: {...}
 })
 ```
-**Note**: Repeatedly open overlays on the same $(el) will have no effect. Close the previous one first. There are also 3rd-party libraries available for creating simple overlays over `<a>` and `<img>` tags (e.g [colorbox](http://www.jacklmoore.com/colorbox/)).
+
+^^^callout callout-primary
+**Note:** Repeatedly open overlays on the same $(el) will have no effect. Close the previous one first. There are also 3rd-party libraries available for creating simple overlays over `<a>` and `<img>` tags (e.g [colorbox](http://www.jacklmoore.com/colorbox/)).
+^^^
 
 **Short-cut**: Use with custom views
 ```
@@ -1655,61 +1638,13 @@ view.close(); //this will close the overlay as well;
 ```
 This is the recommended way of using custom views as overlays.
 
-**Note**: After closing the overlayed view, remember to re-new it before showing as overlay again.
+^^^callout callout-primary
+**Note:** After closing the overlayed view, remember to re-new it before showing as overlay again.
+^^^
 
+### ToC (Table-of-Content)
 
-###Markdown
-
-<span class="label label-info">jQuery plugin</span>
-
-**Purpose**: Offering a convenient way of loading .md content into the application. (through [marked](https://github.com/chjj/marked))
-
-**Options**:
-```
-url: //url path to the hosted .md file
-marked: //marked options see [https://github.com/chjj/marked]
-hljs: //highlight js configure (e.g languages, classPrefix...)
-cb: //function($el) - callback function once the contend has been added
-```
-**Plus**: The tag you used to call `$.md()` can have `data-url="..."` attribute to indicate the .md file url.
-
-**Usage**:
-```
-...
-'<div region="doc" md="HOWTO.md"></div>'
-...
-this.doc.$el.md({
-    hljs: {
-        languages: ['js', 'html']
-    },
-    cb: function($el){
-        ...
-    }
-});
-...
-```
-
-**Cached Result**:
-```
-//after applying $.md() to an element you can get the cached result by
-this.doc.$el.data('md');
-
-/*
-The above call returns:
-{
-    data: ..., //the data returned by ajax loading;
-    content: ..., //the generated md content in html
-}
- */
-```
-The `data` cached by `$.md` will be used to compare with the result returned by the next call to `$.md` on the same DOM element. If they happen to be the same, there won't be any calculation performed through the `markd` library. `$el.data('md').content` will be reused.
-
-We recommend that you use the [Github flavored version.](https://help.github.com/articles/github-flavored-markdown) ([What's Markdown?](http://daringfireball.net/projects/markdown/))
-
-
-###ToC (Table-of-Content)
-
-<span class="label label-info">jQuery plugin</span>
+jQuery plugin
 
 **Purpose**: Produce a table-of-content tree list in both html and json format for a given document (through `<h1>`-`<h6>` title relationship scanning)
 
@@ -1752,11 +1687,11 @@ that.toc.show(Application.view({
 
 i18n/l10n
 ---------
-Internationalization/Localization is always a painful process, making substitution dynamically to the strings and labels appear in the application according to the user locale settings can interfere with the coding process if every string must be coded with a `getResource('actual string')` wrapped around.
+Internationalization/Localization is always a painful process, making substitution dynamically to the strings and labels appear in the application according to the user locale settings can interfere with the coding process if every string is to be coded with a `getResource('actual string')` wrapped around.
 
 Luckily, JavaScript is a prototypical language, we can extend the `String` class through its prototype and give every string a way of finding its own translation.
 
-###Cast i18n on strings
+### Cast i18n on strings
 
 To use the i18n mechanism in your application, simply add `.i18n()` to the tail of your string:
 ```
@@ -1770,7 +1705,7 @@ You can also use it in template as a *Handlebars.js* helper:
 ```
 template: [
     '<div>',
-        '{{i18n key}}', //this will translate whatever string the var 'key' is holding
+        '{{i18n \'key\'}}', //this will translate whatever string the var 'key' is holding
     '<div>'
 ]
 ```
@@ -1786,18 +1721,18 @@ $('div').i18n({search: true}); //if you want to use parent container to cast
 ```
 Remember to use the `data-i18n-key` attribute to identify the content of a tag for translation. If you want to use the entire content text as a *big* key for the translation, use `data-i18n-key="*"`. If you use `data-i18n-key="efg"` to identify a tag, its content will be translated as if you were using string `efg`.
 
-###Translation file
+### Translation file
 
 The translation files are needed to complete the i18n mechanism. We use a simple opt-in way of loading resource file for a given locale:
-```
+```html
 http(s)://your host'n'app/?locale=xx-XX
 ```
 The query param **locale** in the url will tell the i18n mechanism to load a specific resource file.
 
-####Format
+#### Format
 
 Your translation file should be in the [JSON](http://json.org/) format, like this:
-```
+```javascript
 {
     locale: 'xx-XX',
     trans: {
@@ -1815,20 +1750,25 @@ Your translation file should be in the [JSON](http://json.org/) format, like thi
 }
 ```
 Note that, we allow you the freedom to translate the same string into different things according to module/namespace/senario settings. You can activate a module/namespace/senario translation like this:
-```
+```javascript
 //directly in javascript
 'String to translate'.i18n({module: 'module/namespace/senario'});
+```
 
+```html
 //or in a Handlebar.js template
-{{i18n key module}}
+<span>{{i18n key module}}</span>
 
 //or as jQuery plugin
 <span data-i18n-key="*" data-i18n-module="module-y">abc</span>
+```
+```javascript
+//then
 $('span').i18n();
 ```
 
 
-###Configuration
+### Configuration
 
 You can configure where and what the i18n mechanism need to look for its required translation files through the I18N global variable:
 ```
@@ -1851,28 +1791,45 @@ I18N.configure({
 ```
 The default settings will always look for `http://your host/static/resource/{locale}/i18n.json`.
 
-###Gather keys at runtime
+### Gather keys at runtime
 
 When the application is running in browser, you can fire-up the developer console and call the following APIs on the `I18N` object to collect the translation keys:
 ```
 //get all i18n keys and trans rendered in the app in "key" = "val" format;
-I18N.getResourceProperties(flag) 
+I18N.getResourceProperties(untransedOnly) 
 
 //get the above listing in JSON format;
-I18N.getResourceJSON(flag)
-```
-You can use `flag = true` in the above functions if you only want to get un-translated entries. This is a great way of collecting un-translated strings  for your localizer (by simply go through the application views).
+I18N.getResourceJSON(untransedOnly, encode=true)
+//or
+app.i18n() //encode=false
 
-**Note**: If your view hasn't been shown in the application, the i18n keys for that view can not be collected by the above functions.
+//check translation;
+app.i18n(key, ns)
+
+//insert translations
+app.i18n({...}) //'key': {'ns1': 'trans1', ...} or 'trans'
+```
+You can use `untransedOnly = true` in the above functions if you only want to get un-translated entries. This is a great way of collecting un-translated strings  for your localizer (by simply go through the application views).
+
+^^^callout callout-primary
+**Note:** If your view hasn't been shown in the application, the i18n keys for that view can not be collected by the above functions.
+^^^
 
 
 Themes
 ------
-Dynamic Theme rolling is now deprecated. Please specify your theme css in `index.html`.
 
-Please use the `themeprep` tool to create and refresh your themes.
+^^^callout callout-danger
+**Deprecated:** Dynamic Theme Rolling is now deprecated on the client side. Please specify your theme `main.css` directly in `index.html`.
+^^^
 
-###Theme structure
+Please use the `themeprep` tool to create and refresh your themes. Note that you don't have to use the tool to regenerate the theme each time your change your `*.less` files. Your `devserver` automatically watches and recompiles the `*.less` files for you.
+
+^^^callout callout-primary
+**Note:** Only invoke the theme tool when you add new fonts or images to an old theme, or creating a new theme.
+^^^
+
+### Theme structure
 
 Themes are located at `/implementation/themes/[your theme name]/` with the following structure:
 > * /css
@@ -1892,7 +1849,32 @@ Themes are located at `/implementation/themes/[your theme name]/` with the follo
 
 Open up the `themes/default/less/main.less` file and read the details about how to modify the default theme bundled with the starter-kit distribution. The `bower` distribution only contains a built version of the default theme.
 
-###LESS to CSS
+### Theme preparation
+
+Use `/tools/themeprep` to prepare your theme with required fonts and images (icons, texture, logo and pics). This tool will create required folders and copy needed fonts for you. It will also combine css-sprite from the image folders each time you run it and produce `img.less` to be included in your `main.less`.
+
+```
+stagejs theme [your theme name] - default on 'project'
+```
+
+### Create image CSS-Sprite
+
+If you put images (e.g *.png icon files) into the `img` folder, the `themeprep` tool will create an image CSS-Sprite for you together with a .less ready to use. A demo page is also generated to display all the images/icons.
+```
+stagejs theme <your theme name>
+```
+
+### Change to other Fonts
+
+* Manually or use the `-F` or `--fonts` option in the `themeprep` tool to copy the fonts into `/fonts`.
+* Change `main.less` to include the related font style .less file.
+* Change `vars.less` to override the font base path if needed and change `@font-family-base` to include prefered font-family names.
+
+```
+stagejs theme <your theme name> -F fontawesome,bootstrap,...
+```
+
+### LESS to CSS
 
 (What's [LESS](http://lesscss.org/)?)
 
@@ -1905,46 +1887,39 @@ One perk of using LESS is that you can define each .less to do only one thing, e
 * component.less - use styles loaded/defined in static.less/vars.less to define new css styles in a nested class format;
 * main.less - glue(@include) the above .less files and let the compiler compile into main.css;
 
-###Create image CSS-Sprite
-
-If you put images (e.g *.png icon files) into the `img` folder, the `themeprep` tool will create an image CSS-Sprite for you together with a .less ready to use. A demo page is also generated to display all the images/icons.
-
-###Change to other Fonts
-
-* Manually or use the `-F` or `--fonts` option in the `themeprep` tool to copy the fonts into `/fonts`.
-* Change `main.less` to include the related font style .less file.
-* Change `vars.less` to override the font base path if needed and change `@font-family-base` to include prefered font-family names.
-
-
 Tools
 -----
 It is recommended to install the [Stagejs-devtools](https://www.npmjs.com/package/stage-devtools) and use the command-line for building, serving and theming your project instead of calling them manually.
 
-###Build & Deploy
+### Build & Deploy
 
-Under `/tools/build/`, type in this command in console/terminal to build:
+Type in this command in console/terminal to build:
 ```
-node run.js dist //find your built deployment under /tools/build/dist
+stagejs build dist
 ```
-You might need to change the `config.dist.js` file if you want to include more files in deployment.
+Find your built deployment under /tools/build/dist.
 
-By default, the `node run.js abc` command will look for `config.dist.js` and construct your deployment folder `abc` with folders and files accordingly.
+^^^callout callout-primary
+**Note:** You might need to change the `config.dist.js` file if you want to include more files in deployment.
+^^^
+
+By default, the command will look for `config.dist.js` and construct your deployment folder `dist` with folders and files accordingly.
 
 Also by default, the build tool will grab the targeted index.html indicated by `config.dist.js` and scan through all the `<script>` tags to collect and combine the js codes.
 
 Type this command to get more from the build tool:
 ```
-node run.js -h
+stagejs build -h
 ```
 
 
-###Development Server
+### Development Server
 
 Under `/tools/devserver`, we provide you with a development web server that could help you serve both the `/implementation` folder and your built deployments. It can also monitor your theme folders and automatically compile `main.less` into `main.css`.
 
-**Start** (under `/tools`)
+**Start**
 ```
-npm start
+stagejs serve [port:5000]
 ```
 
 **Configure**
@@ -1955,37 +1930,33 @@ Please see `/tools/devserver/profile/default.js`
 
 You can add more bots, profiles and most importantly routers into the server. Just add them into the folders respectively, they will be automatically loaded. Routers added will be mounted and available for all web roots.
 
-**Note**: By design, we only introduced *bots*(worker routine/processes), *profiles*(configures) and *routers* into the development server stack, you can also add *middlewares*, *dbs* and other stuff into the server.
+^^^callout callout-primary
+**Note:** By design, we only introduced *bots*(init/helper routines), *profiles*(configures), *middlewares*, *routers* and *channels* into the development server stack, you can also add *dbs* and other stuff into the server.
+^^^
 
 Read more about [express.js](http://expressjs.com/) and [express-load](https://github.com/jarradseers/express-load) so you can make full use of this development server.
 
 
-###Theme Preparation
-
-Use `/tools/themeprep` to prepare your theme with required fonts and images (icons, texture, logo and pics). This tool will create required folders and copy needed fonts for you. It will also combine css-sprite from the image folders each time you run it and produce `img.less` to be included in your `main.less`.
-
-```
-//under /tools/themeprep
-node run [your theme name] - default on 'default'
-
-//create a new theme
-node run [your new theme name] - if theme name not found, it will be created
-```
-
-
 FAQs
 ----
-###Include other js libraries
+### Include other js libraries
 
 The default `dependences.js` contains carefully (minimum) selected libraries for your project, if you would like to introduce more, use [bower](http://bower.io/) and the `bower.json` file included.
 Go into `/implementation` and run `bower install` to grab all the monitored 3rd-party libraries.
 
 Include your libraries after `dependences.js` in `/implementation/index.html`.
 
-**Tip:** 
-Alternatively, you can always use a *CDN* (Content Delivery Network) to load the JavaScript libraries into your index.html (e.g [jsDelivr](http://www.jsdelivr.com/)) However, this will affect the build process since these libraries will not be combined if they are not from local.
+You can also use our devtools to do that:
+```
+stagejs lib install <lib name on bower>
+stagejs lib use <lib name on bower>
+```
 
-###Initialize/Update project
+^^^callout callout-info
+**Tip:** Alternatively, you can always use a *CDN* (Content Delivery Network) to load the JavaScript libraries into your index.html (e.g [jsDelivr](http://www.jsdelivr.com/)) However, this will affect the build process since these libraries will not be combined if they are not from local.
+^^^
+
+### Initialize/Update project
 
 Start developing and keep your project up-to-date is made easy with the command-line devtools. You can install it through `npm`:
 ```
@@ -2000,11 +1971,11 @@ stagejs update [--edge]
 ```
 Read more about this cli tool [here](https://www.npmjs.com/package/stage-devtools).
 
-###What should I put in `/static`?
+### What should I put in `/static`?
 
 `/resource` should contain static resources per locale. (per xx-XX folder, `/default` for locale independent)
 
-###Developing for Full-Screen?
+### Developing for Full-Screen?
 
 To develop your app to be full-screen, first setup the application to be in full-screen mode:
 ```
@@ -2013,44 +1984,27 @@ Application.setup({
     ...
 });
 ```
-This will keep the `<body>` tag to be 100% on both its width and height to the browser window and set its `overflow-y/x` to `hidden`. You now need to set the height of your content region:
-```
-//Recall that when initialize is called, app template is already on screen.
-Application.addInitializer(function(options){
-    //1. calculate your content region height dynamically here;
-    ...
-    //2. set it using region.resize();
-    Application.myContextRegion.resize({
-        height: ..., //number, x% or 50px
-        width: ...
-    });
-    //3. hook this calcuation function with app:resized event;
-    ...
-});
-```
-You can use the `Application.mainView` variable to access the view instance that's holding the app template. 
+This will keep the `<body>` tag to be 100% on both its width and height to the browser window and set its `overflow-y/x` to `hidden`.
 
-The `region.resize()` api will automatically trigger `view:resized` event on the region's `currentView` instance. So make sure you are listening to this event in the `onResized` function within that view instance. You can choose to propagate the resizing action down into the sub-regions by applying the same technique on that `currentView`'s regions.
+### View size measurement error?
 
-###View size measurement error?
-
-The dynamic theme loading mechanism (deprecated) is currently racing with el size measuring in views' `onShow()` functions. This is mainly caused by modern browser's ability to multi-threading CSS rendering and JavaScript execution. Make sure you specify theme css in your `index.html`.
+The dynamic theme loading mechanism (deprecated) will potentially race with size measuring in views' `onReady()` functions. This is mainly caused by modern browser's ability to multi-threading CSS rendering and JavaScript execution. Make sure you specify theme css in your `index.html`.
 ```
 //index.html
 <link rel="stylesheet" type="text/css" href="themes/[your theme]/main.css">
 ```
 
-###Need tabs in the UI?
+### Need tabs in the UI?
 
 Tabs are not widgets, they may contain widget(s). This is why we didn't include them in the base widget collection. You can always start a new view with proper templating to enable tabs (see [Bootstarp.Tabs](http://getbootstrap.com/javascript/#tabs))
 
 Remember, use tabs as last resort and only in templates, do *NOT* use dynamic tabs and manage them using Javascript.
 
-###Need recursively rendered tree-like View?
+### Need recursively rendered tree-like View?
 
-You can always use **CompositeView** as the view type and use this *Marionette* way of building recursively rendered views. It is recommended to use the built-in **Tree** widget rather than building recursive views yourself. The `type` configure should not be needed in any occasions when building your application.
+You can always use **CompositeView** as the view type and use this *Marionette* way of building recursively rendered views. It is recommended to use the built-in **Tree** widget rather than building recursive views yourself. The `type` configure should **NOT** be needed in any occasions when building your application.
 
-###Supporting crossdomain ajax?
+### Supporting crossdomain ajax?
 
 Yes, if you need client-side crossdomain ajax calls, you can supply the `xdomain` option to your ajax requests:
 ```
@@ -2079,30 +2033,102 @@ Your web services must support crossdomain in the first place by replying the aj
 
 Appendix
 --------
-###A. Change log
+### A. Change log
 
 see [CHANGELOG.md](https://github.com/bluekvirus/Stage.js/blob/master/CHANGELOG.md)
 
+### B. APIs
+To flatten and lower the initial learning curve of adaptation, there is only a handful of APIs to use:
 
-###B. Useful sites
+Initialize:
+* Application.setup (options)
+* Application.run ()
 
-####CDN
+View Registery:
+* Application.context ([name,] options) - alias: page()
+* Application.view (name/options, options/instance-flag)
+* Application.widget (name, options/factory)
+* Application.editor (name, options/factory)
+* Application.editor.validator (name, fn) - alias: editor.rule()
+* Application.has (name, [type])
+* Application.get (name, [[type], fallback-flag])
+
+View Options/Utils:
+* ['name', 'effect', 'template', 'templateHelpers', 'data'/'useParentData', 'ui', 'coop', 'actions', 'editors', 'tooltips', 'overlay', 'popover', 'svg']
+* view.overlay (anchor, options)
+* view.popup (anchor, options)
+* view.getViewIn (region)
+* view.lock (region, flag, options)
+* view.coop ()
+
+Handling Data:
+* view.data - 'url string', {} or []
+* view.set () (infer View.setValues())
+* view.get () (infer View.getValues())
+* view.refresh ()
+* Application.remote (options)
+* Application.poll ()
+* Application.ws ()
+* Application.extract (keypath, obj)
+* Application.cookie.*
+* Application.store.*
+
+Download:
+* Application.download (url or +params)
+
+Utils:
+* Application.coop (e, [args])
+* Application.notify ()
+* Application.prompt ()
+* Application.icing/curtain ()
+* Application.markdown ()
+* Application.i18n ()
+* Application.moment.*
+* Application.later.*
+* Application.uri.*
+* Application.param ()
+* Application.validator.*
+* Application.animateItems () //css mode
+* Application.animation () //js mode
+* Application.throttle ()
+* Application.debounce ()
+
+Mutual Exclusion:
+* Application.lock ([topic/lock])
+* Application.unlock ([topic/lock])
+* Application.available ([topic/lock])
+
+Script(s)/Template(s)/CSS Injection:
+* Application.inject.js ([path to js/json]) - util/script-inject.js
+* Application.inject.tpl ([path to html/json ]) - util/template-builder.js
+* Application.inject.css ([path to css], ...) - same arguments to loadCSS
+
+Dev support:
+* Application.debug ()
+* Application.reload ()
+* Application.locate ()
+* Application.mark ()
+* Application.profile ()
+
+### C. Useful sites
+
+#### CDN
 
 * [jsDelivr](http://www.jsdelivr.com/)
 
-####Web Standards
+#### Web Standards
 
 * [CORS](https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS) - crossdomain ajax support.
 * [Web API 1](https://developer.mozilla.org/en-US/docs/Web/API) - Mozzila MDN
 * [Web API 2](https://developer.chrome.com/extensions/api_other) - Chrome Dev
 * [Can I Use?](http://caniuse.com/) - feature compatibility check
 
-####JavaScript
+#### JavaScript
 
 * [Douglas Crockford on js](http://www.crockford.com/javascript/)
 * [Superherojs](http://superherojs.com)
 
-####HTML5/CSS3
+#### HTML5/CSS3
 
 * [HTML5 boilerplate](http://html5boilerplate.com/)
 * [Initializr](http://www.initializr.com/) - faster way of using h5bp
@@ -2110,7 +2136,7 @@ see [CHANGELOG.md](https://github.com/bluekvirus/Stage.js/blob/master/CHANGELOG.
 * [HTML5.org](http://html5.org/)
 * [CSS-Tricks.com](http://css-tricks.com/snippets/)
 
-####Look'n'Feel
+#### Look'n'Feel
 
 * [Bootswatch](http://bootswatch.com/) - Bootstrap themes
 * [WrapBootstrap](https://wrapbootstrap.com/) - Advanced Bootstrap themes
@@ -2118,13 +2144,13 @@ see [CHANGELOG.md](https://github.com/bluekvirus/Stage.js/blob/master/CHANGELOG.
 * [Subtlepatterns](http://subtlepatterns.com/) - web texture
 * [Google Fonts](http://www.google.com/fonts/)/[Font Squirrell](http://www.fontsquirrel.com/) - web fonts
 
-####Platform Options
+#### Platform Options
 
-#####Cross-platform
+##### Cross-platform
 
 1. HTML5, JS, CSS3 - iOS, Android, Windows Phone, Ubuntu OS, Firefox OS through Cordova(PhoneGap)
 2. C++ with Boost & Qt(+QML) - Ubuntu OS and General (Win, MacOS/iOS, Linux/Android)
 
-#####Native
+##### Native
 
 3. Swift/Object-C & Java - iOS and Android
