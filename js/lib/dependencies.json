@@ -1,5 +1,5 @@
 {
-	"created": "Wed, 08 Jun 2016 22:34:15 GMT",
+	"created": "Thu, 19 Nov 2015 04:17:57 GMT",
 	"list": [
 		{
 			"name": "modernizr",
@@ -29,13 +29,7 @@
 			"name": "jquery",
 			"size": "241.8",
 			"version": "2.1.4",
-			"url": "https://github.com/jquery/jquery-dist"
-		},
-		{
-			"name": "jquery-ui",
-			"size": "217.8",
-			"version": "1.10.4",
-			"url": "https://github.com/components/jqueryui"
+			"url": "https://github.com/jquery/jquery"
 		},
 		{
 			"name": "jquery-color",
@@ -50,22 +44,16 @@
 			"url": "https://github.com/js-cookie/js-cookie"
 		},
 		{
-			"name": "amaranjs",
-			"size": "11.1",
-			"version": "0.5.4",
-			"url": "http://hakanersu.github.io/AmaranJS/"
+			"name": "jquery-ui",
+			"size": "217.8",
+			"version": "1.10.4",
+			"url": "https://github.com/components/jqueryui"
 		},
 		{
 			"name": "jquery-file-upload",
 			"size": "72.6",
-			"version": "9.12.3",
+			"version": "9.11.2",
 			"url": "https://github.com/blueimp/jQuery-File-Upload"
-		},
-		{
-			"name": "flexlayout",
-			"size": "10.2",
-			"version": "0.2.3",
-			"url": "http://mr-beaver.github.io/flexLayout/"
 		},
 		{
 			"name": "underscore",
@@ -75,8 +63,8 @@
 		},
 		{
 			"name": "underscore.string",
-			"size": "42.7",
-			"version": "3.3.4",
+			"size": "36.4",
+			"version": "3.2.2",
 			"url": "http://epeli.github.com/underscore.string/"
 		},
 		{
@@ -87,8 +75,8 @@
 		},
 		{
 			"name": "validator-js",
-			"size": "34.0",
-			"version": "4.9.0",
+			"size": "29.2",
+			"version": "4.2.0",
 			"url": "https://github.com/chriso/validator.js"
 		},
 		{
@@ -105,8 +93,8 @@
 		},
 		{
 			"name": "handlebars",
-			"size": "155.8",
-			"version": "4.0.5",
+			"size": "156.0",
+			"version": "4.0.4",
 			"url": "https://github.com/components/handlebars.js"
 		},
 		{
@@ -117,39 +105,39 @@
 		},
 		{
 			"name": "uri.js",
-			"size": "115.6",
-			"version": "1.18.1",
+			"size": "113.5",
+			"version": "1.17.0",
 			"url": "https://github.com/medialize/URI.js"
 		},
 		{
 			"name": "store.js",
-			"size": "6.4",
-			"version": "1.3.20",
+			"size": "5.9",
+			"version": "1.3.17",
 			"url": "https://github.com/marcuswestin/store.js"
 		},
 		{
 			"name": "momentjs",
-			"size": "131.7",
-			"version": "2.13.0",
+			"size": "102.0",
+			"version": "2.10.6",
 			"url": "https://github.com/moment/moment"
 		},
 		{
 			"name": "marked",
-			"size": "27.9",
-			"version": "0.3.5",
+			"size": "27.5",
+			"version": "0.3.3",
 			"url": "https://github.com/chjj/marked"
-		},
-		{
-			"name": "later",
-			"size": "50.4",
-			"version": "1.2.0",
-			"url": "https://github.com/bunkat/later"
 		},
 		{
 			"name": "bootstrap",
 			"size": "67.3",
-			"version": "3.3.6",
+			"version": "3.3.5",
 			"url": "http://getbootstrap.com"
+		},
+		{
+			"name": "fontawesome",
+			"size": "0.0",
+			"version": "4.4.0",
+			"url": "http://fontawesome.io"
 		}
 	]
 }
