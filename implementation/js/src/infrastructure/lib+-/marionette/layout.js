@@ -26,7 +26,7 @@
 
 ;(function(app){
 
-	//+ api view.getViewIn('region')
+	//+api view.getViewIn('region')
 	_.extend(Backbone.Marionette.Layout.prototype, {
 		getViewIn: function(region){
 			var r = this.getRegion(region);
@@ -35,10 +35,10 @@
 			return r && r.currentView;
 		},
 
-		// Handle closing regions, and then close the view itself.
-		// *Taking care of closing effect sync (reported on 'item:closed')
-		close: function(_cb) {
-		    if (this.isClosed) {
+		//handle closing regions, and then close the view itself.
+		//taking care of closing effect sync (reported on 'item:closed')
+		close: function(_cb){
+		    if(this.isClosed){
 		    	_cb && _cb();
 		        return;
 		    }
@@ -46,6 +46,13 @@
 		    	Marionette.ItemView.prototype.close.apply(this, arguments);
 		    	_cb && _cb();
 		    }, this));
+		},
+
+		//allow a .region.show() shortcut through .show('region', ...)
+		show: function(region /*name only*/, View /*or template or name or instance*/, options){
+			var r = this.getRegion(region);
+			if(r) 
+				return r.trigger('region:load-view', View, options);
 		},
 
 		//add more items into a specific region
@@ -185,26 +192,35 @@
 					this[region]._parentLayout = this;
 
 					//+
-					this[region].listenTo(this[region], 'region:load-view', function(name, options){ //can load both view and widget.
+					this[region].listenTo(this[region], 'region:load-view', function(name /*or View*/, options){ //can load both view and widget.
 						if(!name) return;
 
-						//Template mockups?
-						if(_.string.startsWith(name, '@')){
-							this.show(app.view({
-								template: name,
-							}));
+						if(_.isString(name)){
+							//Template mockups (both inline and @remote)? (_ or A-Z starts a View name, no $ sign here sorry...)
+							if(!/^[_A-Z]/.test(name)){
+								return this.show(app.view({
+									template: name,
+								}));
+							}
+							else{
+							//View name
+								var Reusable = app.get(name, _.isPlainObject(options)?'Widget':'', true); //fallback to use view if widget not found.
+								if(Reusable){
+									//Caveat: don't forget to pick up overridable func & properties from options in your Widget.
+									return this.show(new Reusable(options));
+								}else
+									console.warn('DEV::Layout+::region:load-view View required ' + name + ' can NOT be found...use app.view({name: ..., ...}).');					
+							}
 							return;
 						}
 
-						//Reusable view?
-						var Reusable = app.get(name, _.isPlainObject(options)?'Widget':'', true); //fallback to use view if widget not found.
-						if(Reusable){
-							//Caveat: don't forget to pick up overridable func & properties from options in your Widget.
-							this.show(new Reusable(options));
-							return;
-						}						
+						//View definition
+						if(_.isFunction(name))
+							return this.show(new name(options));
 
-						console.warn('DEV::Layout+::region:load-view View required ' + name + ' can NOT be found...use app.view({name: ..., ...}).');
+						//View instance
+						if(_.isPlainObject(name))
+							return this.show(name);
 					});
 					
 				},this);

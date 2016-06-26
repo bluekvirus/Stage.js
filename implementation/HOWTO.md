@@ -189,15 +189,21 @@ Here is the recommended **workflow**. You should follow the steps each time you 
 ```
 npm -g install stage-devtools
 ```
-2. Under an empty folder run:
+2. Check your development environment:
+```
+stagejs env
+```
+If you see missing command-line tools marked with `*required`, have them installed before moving on. See our [Environment Prep Guide](https://github.com/bluekvirus/Stage-devtools/blob/master/ENV.md).
+3. Under an empty folder run:
 ```
 stagejs init
+stagejs theme [--fonts ...]
 ```
-3. [optional] Update everything with the latest edge version:
+4. [optional] Update everything with the latest edge version:
 ```
 stagejs update [--edge]
 ```
-4. Start the development server
+5. Start the development server
 ```
 stagejs serve [--port <number>]
 ```

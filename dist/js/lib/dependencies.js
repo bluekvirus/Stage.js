@@ -21212,7 +21212,7 @@ jQuery.extend( jQuery.Color.names, {
 
 /* global define, require, window, document */
 
-(function (factory) {
+;(function (factory) {
     'use strict';
     if (typeof define === 'function' && define.amd) {
         // Register as an anonymous AMD module:
@@ -21431,7 +21431,7 @@ jQuery.extend( jQuery.Color.names, {
 /* jshint nomen:false */
 /* global define, require, window, document, location, Blob, FormData */
 
-(function (factory) {
+;(function (factory) {
     'use strict';
     if (typeof define === 'function' && define.amd) {
         // Register as an anonymous AMD module:

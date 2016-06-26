@@ -23,7 +23,7 @@
 			}
 		},
 		onReady: function(){
-			this.body.trigger('region:load-view', 'OverlayBody');
+			this.show('body', 'OverlayBody');
 		}
 	});
 	

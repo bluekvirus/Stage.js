@@ -1,20 +1,25 @@
 Change Log
 ==========
-1.10.0 (2016-06-08*)
+1.10.0 (2016-06-25*)
 --------------------
 1. Missing locale file will no longer raise exceptions;
 2. Updated flexlayout to be 0.2.3;
-3. Added view:ready event for all type of views (static, data, form);
+3. Added view:ready event for all type of views (static/svg, data, form);
 4. Added {options} object (like in app.remote) as `url` support to app.poll();
 5. Added app.poll(false) to stop all polling;
 6. Non-object ref-ed by `useParentData` will now be wrapped into object before assigning to this.data in a sub-view;
+7. Added view.show('region', ...) as an alternative to `region:load-view`; 
 
 working on ...
 
+* preprocessed template: '*.md';
+* view.tab();
+* view.poll();
+* view.datapush{};
 * Integrate stage-unideck into framework kit;
-* Adding more unit tests;
+* Adding more unit test in demos;
 * Adding cheatsheet;
-* Updating doc (around data rendering, coop, dnd, effect, remote, ws, form);
+* Updating doc (around actions, data rendering, coop, dnd, effect, remote, ws, form, svg and prompt);
 * Breaking down 'Basic' editors;
 * Separate modernizr/detectizr shiv bundles from deps;
 * Adding optional 2-way binders (stickit);

@@ -2,7 +2,7 @@
 	"name": "keep name here to use bower install, change if you prefer",
 	"private": true,
 	"devDependencies": {
-		"stage": "^1.9.2",
+		"stage": "^1.9.3",
 		"bootstrap": "~3.x.x",
 		"jquery-ui": "1.10.4",
 		"amaranjs": "~0.5.x",

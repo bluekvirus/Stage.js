@@ -79,7 +79,7 @@
 
 			//load data grid page from server using a Paginator
 			var self = this;
-	    	this.footer.trigger('region:load-view', 'Paginator', {
+	    	this.show('footer', 'Paginator', {
 	    		target: datagrid.getBody(),
 	    		className: 'pagination pagination-sm pull-right',
 	    		pageWindowSize: 3

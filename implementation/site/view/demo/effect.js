@@ -32,20 +32,20 @@
 		},
 		actions: {
 			show_1: function(){
-				this.getRegion('effect1').trigger('region:load-view', 'Effect1');
+				this.show('effect1', 'Effect1');
 			},
 			close_1: function(){
 				this.getRegion('effect1').close();
 
 			},
 			show_2: function(){
-				this.getRegion('effect2').show(new Effect2());	
+				this.show('effect2', Effect2);	
 			},
 			close_2: function(){
 				this.getRegion('effect2').close();
 			},
 			show_3: function(){
-				this.getRegion('effect3').show(new Effect3());	
+				this.show('effect3', new Effect3());	
 			},
 			close_3: function(){
 				this.getRegion('effect3').close();

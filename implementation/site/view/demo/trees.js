@@ -35,7 +35,7 @@
 	    ],
 	    onReady: function(){
 	    	//1. normal tree (minimum)
-	    	this.left.trigger('region:load-view', 'Tree', {
+	    	this.show('left', 'Tree', {
 	    		data: data,
 	    		onSelected: function(meta, $el, e){
 	    			e.preventDefault();
@@ -44,7 +44,7 @@
 	    	});
 
 	    	//2. used in dropdown
-	    	this.mid.show(app.view({
+	    	this.show('mid', app.view({
 	    		className: 'dropdown', 
 	    		template: [
   					'<button class="btn dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">',
@@ -67,12 +67,12 @@
   					// tree.onDataRendered = function(){
   					// 	app.debug('ready');
   					// }
-  					this.tree.show(tree);
+  					this.show('tree', tree);
   				}
 	    	}));
 
 	    	//3. accordion (with nodes collapsed first)
-	    	this.right.show(app.view({
+	    	this.show('right', app.view({
 	    		type: 'CollectionView',
 	    		forceViewType: true,
 	    		initialize: function(){
@@ -98,7 +98,7 @@
 	    					'marginBottom': '5px',
 	    					'cursor': 'pointer'
 	    				});
-	    				this.body.trigger('region:load-view', 'Tree', {
+	    				this.show('body', 'Tree', {
 	    					data: this.model.get('children'),
 	    					onSelected: function(meta, $el, e){
 								e.preventDefault();

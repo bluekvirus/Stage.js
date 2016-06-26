@@ -39,10 +39,10 @@
     _.extend(Backbone.Marionette.Region.prototype, {
 
         //'region:show', 'view:show' will always trigger after effect done.
-    	show: function(newView /*or template string*/, options){
+        //note that, newView is always a view instance.
+    	show: function(newView, options){
             this.ensureEl();
-            if(_.isString(newView))
-                newView = app.view({template: newView});
+            
             var view = this.currentView;
             if (view) {
                 this.close(_.bind(function(){

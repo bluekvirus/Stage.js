@@ -25,44 +25,23 @@ Quick Start
 
 Use the devtools to get started quickly.
 ```
+1. prep
 npm -g install stage-devtools
-mkdir project
-cd project
+stagejs env
+
+2. start
+mkdir <project dir>
+cd <project dir>
 stagejs init
+stagejs theme
 stagejs serve [--port <number>]
 ```
-You can now start developing your app with Stage.js. Read the [command-line tool](https://www.npmjs.com/package/stage-devtools) for more.
+You can now start developing your app with Stage.js. Read the [command-line devtool](https://www.npmjs.com/package/stage-devtools) for more.
 
 
 Documentation
 -------------
 Again, as an application developer you are encouraged read this [documentation](http://bluekvirus.github.io/Stage.js/#navigate/Document)
-
-
-What's next?
-------------
-[:crystal_ball: Preview current progress](https://github.com/bluekvirus/Stage.js-ng/tree/master/libs/vendor/stagejsv2).
-
-2.0.0 Roadmap:
-* AMD support; (:heavy_check_mark:)
-* ECMAScript6 (2015) support; (:heavy_check_mark:)
-* Build a lightweight framework core from scratch; (:heavy_check_mark:)
-* Handshake (Full-Async) mode for view init; (:heavy_check_mark:)
-* Support optional reactive view building; (two-way bindings through MVVM) (:heavy_check_mark:)
-* Remove theming/templating deps on Bootstrap (easy to hook your own); (:heavy_check_mark:)
-* Port custom-made DevOps process pipeline onto Gulp; (:heavy_check_mark:)
-* Introduce data engine to App (separated app.remote() call in Views); (in progress)
-* Introduce state machine into Views;
-* WebRTC integration for peer-to-peer data/stream sharing;
-* Give View action listeners a choice to go background (Web Worker);
-
-
-Optional:
-* complete filter/sort/pagination in views (v1 has remote version only);
-* form & input wrappers (already in v1);
-* datagrid (already in v1);
-* tree (already in v1);
-* dev-server; (already in v1);
 
 
 Contribute
@@ -72,28 +51,31 @@ Fork/Clone the project and tweak the code locally, then contribute by making a p
 ###Prepare
 After cloning the project, you should go to `/tools` and run these commands:
 ```
+//0. check your development environment
+stagejs env
+
 //1. prepare npm packages
 npm install
 
 //2. prepare bower packages
 ./lib-update.sh
 
-//3. prepare default & doc site theme packs (under ./themeprep)
-node run default
-node run site --fonts bootstrap,open-sans-fontface,fontawesome
+//3. prepare doc site theme packs (under ./themeprep)
+node run site
+node run site --fonts fontawesome
 
-//4.a fire up dev server (background logging)
+//4.a fire up dev server (background logging by forever)
 ./start.sh
 //or
-//4.b fire up dev server (foreground logging)
+//4.b fire up dev server (foreground logging by nodemon)
 npm start
 ```
 This should fire-up the development server. It will serve the `/implementation` folder as web root on the port define by `/tools/devserver/profile/default`. Please go check the content of this profile config file before starting. It has some nice middlewares and auto-change-detectors there you can switch on/off to make the development a lot easier.
 
-###Develop, Demo & Tryout
+###Develop, Demo & Test
 Change code under `/implementation/js/src` to test and contribute your ideas to this framework.
 
-You can also change the code under `/implementation/site`, it is the application for **Stage.js**'s documentation site.
+You can also change the code under `/implementation/site`, it is the application for **Stage.js**'s documentation site and it also holds all the tests and demos.
 
 Look closely to the `/implementation/index.html` file, it not only defines the loading sequence of all the src files but also defines which one goes to which build target in the build process.
 
@@ -136,6 +118,27 @@ tools/build.sh
 
 ###Deploy
 See in `tools/build/dist` and `dist` for details. The shortcut command also builds the project site (as its github page).
+
+
+What's next?
+------------
+[:crystal_ball: Preview current progress](https://github.com/bluekvirus/Stage.js-ng/tree/master/libs/vendor/stagejsv2).
+
+2.0.0 Roadmap:
+* AMD support; (:heavy_check_mark:)
+* ECMAScript6 (2015) support; (:heavy_check_mark:)
+* Build a lightweight framework core from scratch; (:heavy_check_mark:)
+* Handshake (Full-Async) mode for view init; (:heavy_check_mark:)
+* Support optional reactive view building; (two-way bindings through MVVM) (:heavy_check_mark:)
+* Remove theming/templating deps on Bootstrap (easy to hook your own); (:heavy_check_mark:)
+* Port custom-made DevOps process pipeline onto Gulp; (:heavy_check_mark:)
+* Introduce data engine to App (separated app.remote() call in Views); (in progress)
+* Introduce state machine into Views;
+* WebRTC integration for peer-to-peer data/stream sharing;
+* Give View action listeners a choice to go background (Web Worker);
+
+Optional:
+* complete filter/sort/pagination in views (v1 has remote version only);
 
 
 License

@@ -1,5 +1,5 @@
 {
-	"created": "Wed, 08 Jun 2016 22:34:15 GMT",
+	"created": "Sun, 26 Jun 2016 06:48:02 GMT",
 	"list": [
 		{
 			"name": "modernizr",
@@ -58,7 +58,7 @@
 		{
 			"name": "jquery-file-upload",
 			"size": "72.6",
-			"version": "9.12.3",
+			"version": "9.12.5",
 			"url": "https://github.com/blueimp/jQuery-File-Upload"
 		},
 		{
