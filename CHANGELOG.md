@@ -9,6 +9,7 @@ Change Log
 5. Added app.poll(false) to stop all polling;
 6. Non-object ref-ed by `useParentData` will now be wrapped into object before assigning to this.data in a sub-view;
 7. Added view.show('region', ...) as an alternative to `region:load-view`; 
+8. Refined app.markdown() api to support 2 ways of getting options (direct, data-marked/hljs);
 
 working on ...
 

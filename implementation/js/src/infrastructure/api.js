@@ -475,8 +475,8 @@
 		//	^^^class class2 class3 ...
 		//	...
 		//	^^^
-		markdown: function(md, $target /*or options*/, options){
-			options = options || (!($target instanceof jQuery) && $target) || {};
+		markdown: function(md, $anchor /*or options*/, options){
+			options = options || (!($anchor instanceof jQuery) && $anchor) || {};
 			//render content
 			var html = marked(md, _.extend({
 				gfm: true,
@@ -486,18 +486,18 @@
 				sanitize: true,
 				smartLists: true,
 				smartypants: false //don't be too smart on the punctuations
-			}, options.marked)), hljs = window.hljs;
+			}, (options.marked && options.marked) || options, $anchor instanceof jQuery && $anchor.data('marked'))), hljs = window.hljs;
 			//highlight code (use ```language to specify type)
 			if(hljs){
-				hljs.configure(options.hljs);
+				hljs.configure(_.extend({}, options.hljs, $anchor instanceof jQuery && $anchor.data('hljs')));
 				var $html = $('<div>' + html + '</div>');
 				$html.find('pre code').each(function(){
 					hljs.highlightBlock(this);
 				});
 				html = $html.html();
 			}
-			if($target instanceof jQuery)
-				return $target.html(html).addClass('md-content');
+			if($anchor instanceof jQuery)
+				return $anchor.html(html).addClass('md-content');
 			return html;
 		},
 

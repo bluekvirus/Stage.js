@@ -66,22 +66,23 @@
                 this.trigger('view:reload-doc');
             }
         },
+        onRender: function(){
+            //inject the highlight js configure to markdown $anchor.
+            this.getRegion('doc').$el.data('hljs', {
+                languages: ['javascript', 'html']
+            });
+        },
         onReloadDoc: function(){ //meta:event programming
             var that = this;
             app.remote(this.doc.$el.data('url')).done(function(md){
                 //render markdown
-                app.markdown(md, that.doc.$el, {
-                    hljs: {
-                        languages: ['javascript', 'html']
-                    }
-                });
+                app.markdown(md, that.doc.$el);
                 //generate table-of-content
                 that.doc.$el.toc({
                     ignoreRoot: true,
                     headerHTML: '<div class="text-muted">Table of Content</div><hr/>'
                 });
                 that.toc.show(app.view({
-                    //no name means to use it anonymously, which in turn creates it right away. 
                     template: that.doc.$el.data('toc').html,
                     actions: {
                         goTo: function($btn, e){
