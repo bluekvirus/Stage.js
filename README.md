@@ -126,7 +126,7 @@ What's next?
 
 2.0.0 Roadmap:
 * AMD support; (:heavy_check_mark:)
-* ECMAScript6 (2015) support; (:heavy_check_mark:)
+* ECMAScript6 (2015-2016) support; (:heavy_check_mark:)
 * Build a lightweight framework core from scratch; (:heavy_check_mark:)
 * Handshake (Full-Async) mode for view init; (:heavy_check_mark:)
 * Support optional reactive view building; (two-way bindings through MVVM) (:heavy_check_mark:)

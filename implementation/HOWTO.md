@@ -2,21 +2,21 @@ Introduction
 ------------
 This lightweight framework is made to maximize developer efficiency by introducing an intuitive workflow on top of a solid front-end architecture. You will be focusing on user interaction building without distraction. We even give you a full-featured *Javascript* web server as a reference implementation on the RESTful and Websocket services to start the development right away! Theming and packaging deployments are also a breeze through our tools.
 
-^^^callout callout-info
+!!!callout callout-info
 **Tip:** Keep your *JavaScript* codes flat and *HTML* dynamic, style through *CSS* class.
-^^^
+!!!
 
 ### Core concepts
 
 ![Stage.js Architecture](static/resource/default/diagram/Diagram-3.png)
 
-^^^callout callout-info
+!!!callout callout-info
 **Remember:** Your goal is to
 * Create view objects with HTML template and actions. 
 * Link them into pre-defined regions. 
 * Help them talk to each other through collaboration events.
 * Navigate through them as groups or individually by regions.
-^^^
+!!!
 
 #### What's Navigation?
 
@@ -28,9 +28,9 @@ By using named views and their `navRegion` properties, our navigation mechanism 
 
 A *View* is a template with data, interactions and optionally a name. it is to be shown on a region in template of your application or another view instance (both contexts and normal views). Only named views can be used as template shortcuts (through anonymous region tag attribute `view="..."`).
 
-^^^callout callout-primary
+!!!callout callout-primary
 **Note:** As in v1.8+ We have merged the old *Regional* concept with *View* in general. Future releases will not distinguish between *Regional*s and named *View*s.
-^^^
+!!!
 
 alias: Area, named View
 
@@ -40,9 +40,9 @@ A *Context* is a special named *View* object. *Context*s only appear on the appl
 
 A *Context* can also guard itself from being viewed by certain user by utilizing the `guard` property (a function) before switched to in navigation. This is good for automatically jumping to other contexts if the targeted one requires authenticated user in session. 
 
-^^^callout callout-primary
+!!!callout callout-primary
 **Note:** As in v1.9+ We have merged the old *Context* concept with *View* in general. Future releases will not distinguish between *Context*s and named *View*s. The first-level views demanded by the navigation chain (#hash path) will automatically be treated as a *Context*. The `guard` function will be triggered if presented.
-^^^
+!!!
 
 alias: Page
 
@@ -58,9 +58,9 @@ A *Widget* is a named *View* with `.reconfigure(options)` method that can change
 
 A *Canvas* is a *View* with the `.svg` property set to `true`, you will have an automatically expanded `this.paper` to draw upon with live height/width update on the `this.paper` property after shown plus auto clean/resize upon `onDraw()`.
 
-^^^callout callout-primary
+!!!callout callout-primary
 **Note:** *Canvas* is svg based and the `this.paper` drawing APIs are from the Raphaël.js/Snap.svg library, make sure you have them included in your `index.html`
-^^^
+!!!
 
 We have not yet included support for *HTML5 Canvas*.
 
@@ -70,9 +70,9 @@ Modern web application generates views according to user data dynamically. This 
 
 Since most of the application state comes from the server, managing locally cached data can backfire badly if your design requirement is vague (like in most of the prototyping phase, right?). You are advised to make the data interfacing/manipulation layer as thin as possible. Operate on plain data object/array as much as possible. (e.g Bind pagination, sorting and filtering as view actions/listeners instead of Collection methods, unless you have a requirement to operate on locally cached data)
 
-^^^callout callout-warning
+!!!callout callout-warning
 **Important:** We introduce a unified *DATA API* for handling all the in/out of remote server data, skipping the *Model/Collection* centered way of data manipulation. They are still created internally for you however. But *you will only need `view.set()/get()/more()/refresh()` and the `view.data` attribute* to use them.
-^^^
+!!!
 
 Remember, Model/Collection are only used as dumb data snapshot object on the client side to support views. The goal is to make the data interfacing layer *as thin as possible*. You will find more details in the **Quickstart/Handling Data** section.
 
@@ -96,9 +96,9 @@ Sometimes, with Ajax or other asynchronized operations (like timer related ones)
 
 To focus, think of your application in terms of *Context*s and *Views*s (pages and areas). Like drawing a series of pictures, each page is a *Context* and you lay things out by sketching out regions (areas) first on each page then refine the details. Each *Context* can also be made state-aware through the same navigation mechanism that powers *Context* switching in the application container.
 
-^^^callout callout-info
+!!!callout callout-info
 **Remember:** The goal of this framework is to keep you focused on building dynamic views without worrying about linking or organizing them into a manageable whole. It is very important that you understand the *region*, *navigation* and *events* concepts. So that you can maximize the efficiency offered by our unique workflow.
-^^^
+!!!
 
 ### Why not using...
 
@@ -115,13 +115,13 @@ In order to accomplish more with less code using Backbone, we extended **Backbon
 
 ![HTML is the burger](static/resource/default/diagram/Diagram-6.png)
 
-^^^callout callout-primary
+!!!callout callout-primary
 **Note:** Although the **Marionette** library offers many cool concepts for building large JavaScript front-end projects, we felt that the core value it offers lies within its region (for better view life-cycle management) and module managers. Thus only those are included and supported throughout the framework. We also extended the base view classes to enable remote templating, automatic ui and region detection, action listeners, navigation hooks, svg canvas and faster **Cordova** development. 
-^^^
+!!!
 
-^^^callout callout-primary
+!!!callout callout-primary
 **Note:** The **JQuery UI** library contained in this framework is a custom build (Core, Interaction and Effect). It is sufficient for you to create plugins and widgets and to use the `$.fn.position()` and `$.fn.animation()` methods. However, you will *NOT* be able to use any UIs in the original library.
-^^^
+!!!
 
 Basics
 ------
@@ -215,9 +215,9 @@ stagejs create -l
 
 Read more about the `stagejs` [cli tool](https://github.com/bluekvirus/Stage-devtools).
 
-^^^callout callout-info
+!!!callout callout-info
 **Tip:** Use our development [**VM through Vagrant**](https://github.com/bluekvirus/vm-webdev) if you don't want to bother with setting up your own environment. Run the `stagejs` command-line tool inside this VM once it is up and running.
-^^^
+!!!
 
 ##### Manually
 
@@ -232,9 +232,9 @@ stagejs update [-e]
 ```
 stagejs theme [project]
 ```
-^^^callout callout-primary
+!!!callout callout-primary
 **Note:** It is recommended that you use the theme preparation tool to create a new theme before you continue to develop your project. This way, whenever the basic (default) theme updates, you can upgrade to it easily.
-^^^
+!!!
 
 3. Create a `main.js`
 ```
@@ -246,17 +246,17 @@ stagejs serve [port:5000]
 ```
 You should now see a *blank* page without JavaScript error on http://localhost:5000/dev/.
 
-^^^callout callout-info
+!!!callout callout-info
 **Remember:** Creating a web application is like drawing a picture. Start by laying things out and gradually refine the details. In our case, always start by defining the application template.
-^^^
+!!!
 
 Now, let's start building a real web application.
 
 #### Step 1. Initialize
 
-^^^callout callout-primary
+!!!callout callout-primary
 **Note:** You can use `stage.js` instead of `stage.min.js` in `index.html` to have better debugging info.
-^^^
+!!!
 
 ##### Configure
 
@@ -321,21 +321,21 @@ Tag marked with `region=""` can use an additional `view=""` attribute to load up
 //is equivalent to
 
 onReady: function(){
-    this.getRegion('banner').trigger('region:load-view', 'Banner');
+    this.show('banner', 'Banner');
     //or
-    this.getRegion('banner').show(new Application.view('Banner'));
+    this.getRegion('banner').show(new Application.get('Banner'));
 }
 ```
 
-^^^callout callout-warning
-**Important:** Views loaded by the `view=""` attribute should have no init options. If you do need to specify init options when showing a view, use the alternative `region:load-view` event or `view.getRegion('...').show()` api.
-^^^
+!!!callout callout-warning
+**Important:** Views loaded by the `view=""` attribute should have no init options. If you do need to specify init options when showing a view, use the alternative `region:load-view` event or `view.show('region', View)` api.
+!!!
 
 If your application is a single-context application, you don't need to assign the application template. There will always be a region that wraps the whole application -- the *app* region. The **Default** *Context* will automatically show on region *app* if you did not specify `contextRegion` and `defaultContext`.
 
-^^^callout callout-info
+!!!callout callout-info
 **Tip:** You can omit `region=""` if that region is not needed in your application later to show other views.
-^^^
+!!!
 
 ##### Run
 
@@ -372,9 +372,9 @@ app:before-mainview-ready //fired before the application is shown
 app:mainview-ready //fired after the application is shown
 ```
 
-^^^callout callout-info
+!!!callout callout-info
 **Tip:** You can swap application template using the `Application.setup()` call upon receiving the `app:before-mainview-ready` event to configure/layout your application differently on different platforms. (Use the `Modernizr` global variable for platform/feature detections.)
-^^^
+!!!
 
 You can also make good use of the `app:navigate` event for context preparation in the initializers.
 
@@ -389,8 +389,8 @@ Create a new file named `myContextA.js`, remember a *Context* is just an special
     app.context('MyContextA', { //omitting the name indicates context:Default
         template: '...',
         guard: function(){
-            //return error to cancel navigation;
-            //return '', false, undefined to proceed;
+            //return error ('string') to cancel navigation;
+            //return nothing ('', false, undefined) to proceed;
         },
         //listeners: (after guard)
         onBeforeNavigateTo: function(){
@@ -418,21 +418,21 @@ When defining template for a context you can use one of the four ways we support
 * 'html string' -- single line html string;
 * ['html str1', 'html str2', ...] -- array of html strings;
 
-^^^callout callout-primary
+!!!callout callout-primary
 **Note:** To enable remote template support, you need to configure `viewTemplates` through `Application.setup()`.
-^^^
+!!!
 
-^^^callout callout-primary
+!!!callout callout-primary
 **Note:** Remote view templates will only be fetched once and then cached and reused within the client side application. Additional view instances using the same remote template will not trigger another loading process.
-^^^
+!!!
 
-^^^callout callout-primary
+!!!callout callout-primary
 **Note:** Remote templates should be combined into a single `all.json` file before going into production deployment. This is already supported by our build tool. Check your build configure file to enable this auto processing. You don *NOT* need to care about this `all.json` file. It is automatically loaded once you've set the `viewTemplates` configure.
-^^^
+!!!
 
-^^^callout callout-info
+!!!callout callout-info
 **Tip:** Combine remote templating with IDE tool (ZenCoding/(Emmet)[http://emmet.io]) will greatly improve your development speed.
-^^^
+!!!
 
 ##### Navigate between Contexts
 
@@ -499,9 +499,9 @@ If you defined a `guard` function as property in one of your contexts, it will b
 
 When the navigation is at `#navigate/MyContextA/SubViewA/SubViewB...` the router finds `navRegion` in `MyContextA` and shows `SubViewA` in it and then move on to `SubViewA` to show `SubViewB...` in its `navRegion`. If, somehow, it can not find the definition of `SubViewA`, the navigation stops on `MyContextA` and triggers `view:navigate-to` event with the remaining subpath starting with `SubViewA/...` on `MyContextA`. The same process happens on `SubViewA` if the router can not find `SubViewB...`.
 
-^^^callout callout-primary
+!!!callout callout-primary
 **Note:** All named Views can all appear in the navigation path if they have the `navRegion` property defined.
-^^^
+!!!
 
 You will learn how to create *View*s in the next section.
 
@@ -528,9 +528,9 @@ Create `/context-a/myRegionalA.js` like this:
 })(Application);
 ```
 
-^^^callout callout-info
+!!!callout callout-info
 **Tip:** You can nest *Views*s with the `view=""` attributes in the template. Only named views can be refered by the `view=` attribute on an HTML tag in template.
-^^^
+!!!
 
 You can define non-regional (un-named) views through the `Application.view()` API:
 ```
@@ -585,9 +585,9 @@ view.refresh() - re-fetch data if needed and re-render;
 
 ##### With app.remote()
 
-^^^callout callout-primary
+!!!callout callout-primary
 **Note:** Use normal `$.ajax()` calls for **NON-API** resources such as static `.json` files. You don't want to pick up `Application.config.baseAjaxURI` in these situations. Further, you should specify `dataType: 'json'` in your `$.ajax()` call configure explicitly for loading `*.json` files so that the data can be returned as expected locally on mobile platforms. (When there isn't a web server, `$.ajax()` get `*.json` files into text strings instead of parsed Javascript object due to incorrect MIME type.)
-^^^
+!!!
 
 Our recommended way of loading/persisting remote data is through:
 ```
@@ -687,17 +687,17 @@ Use `_bubble: true` if you want the click event to **propagate** to the parent v
 
 If you have locked the application with `Application.lock()` then the actions will not respond until the application becomes available again. This constrain is stronger than topic based locking throught the `lock="your lock name"` attribute on action tags.
 
-^^^callout callout-warning
+!!!callout callout-warning
 **Heads up**: Don't forget to unlock your lock, if specified through the `lock="..."` attribute, at the bottom of your action listener. 
-^^^
+!!!
 
-^^^callout callout-info
+!!!callout callout-info
 **Tip:** You can use `lock="*"` to lock the application globally.
-^^^
+!!!
 
-^^^callout callout-info
+!!!callout callout-info
 **Tip:** You can also use `unlock="..."` attribute to unlock the app or certain topic/action, this is in case that you want a pair of *Start/Stop* controls with app locking/unlocking splited into the 2 actions. 
-^^^
+!!!
 
 ### Events
 
@@ -753,7 +753,7 @@ app:success - [empty stub]
 app:error - [empty stub]
 
 //lock related
-app:blocked - [empty stub] (action/options, lock/(n/a))
+app:locked - [empty stub] (action/options, lock/(n/a))
 ```
 **Context** -- context:meta-event
 ```
@@ -780,20 +780,6 @@ view:page-changed
 ```
 
 Remember, you can always trigger a customized event `my-event-xyz` and implement it later on the object by creating `onMyEventXyz()`.
-
-Though you can not use customized meta-event on *regions*, there are still some helpers we provide on the regions:
-```
-//region:load-view
-anyregion.trigger('region:load-view', name[, options]);
-```
-The `region:load-view` event listener is implemented for you and can search through both the named *View* and *Widget* registry to find the view by name and show it on the region. You can pass in addition factory options to the event trigger. Remember it can also load up a remote template for you just to boost your prototyping process:
-```
-//in a region template
-<div view="@remote/template/abc.html"></div>
-
-//use 'region:load-view' event
-anyregion.trigger('region:load-view', '@remote/template/abc.html');
-```
 
 #### Use parentCt/Ctx/Region?
 
@@ -822,9 +808,9 @@ subViewA {
 }
 ```
 
-^^^callout callout-info
+!!!callout callout-info
 **Remember:** Always prefer *Events* over *APIs* while implementing collaborations.
-^^^
+!!!
 
 Besides `parentCt`, views shown in regions will also get a ref to `parentCtx` and `parentRegion`.
 
@@ -844,7 +830,9 @@ Application.available('*'); //false
 Application.unlock('*');
 Application.available('*'); //true
 ```
-Global lock will also disable your navigation.
+!!!callout callout-primary
+**Note:** Global lock will also **disable** your navigation.
+!!!
 
 Alternatively, you can choose to use topic based locking like we've introduced in the **Actions** section previously:
 ```
@@ -859,7 +847,9 @@ Application.lock();
 Application.lock('anything'); //false, since global lock is unavailable.
 Application.available('anything'); //false, since global lock is unavailable.
 ```
-You can't acquire topic locks if the global lock is currently unavailable.
+!!!callout callout-info
+**Remember:** You can't acquire topic locks if the global lock is currently unavailable.
+!!!
 
 ### Graphs (Canvas)
 
@@ -878,9 +868,9 @@ Don't worry about resizing, it is already prepared for you. The paper size will 
 
 If you require ready-made charts to be drawn, look through our monitored libraries under `/bower_components` there should be `d3/c3.js`, `Chart.js` and `peity` for exactly that.
 
-^^^callout callout-primary
+!!!callout callout-primary
 **Note:** HTML5 *Canvas* is not supported at the moment, you can use `Easel.js` or `paper.js` on your own effort.
-^^^
+!!!
 
 ### UX
 
@@ -910,23 +900,23 @@ Both *region* and *View* can have an `effect` configure to control the effect th
 ```
 Use the css animation class name you build or from the included *Animate.css* library.
 
-^^^callout callout-primary
+!!!callout callout-primary
 **Note:** If you are using a single effect name for both entering and exiting effects, do **NOT** write `In` and `Out` at the end of the name as they will be added automatically for you.
-^^^
+!!!
 
 Use `view.effect` to override region effects and `view.effect = false` to disable region effects.
 
-^^^callout callout-primary
+!!!callout callout-primary
 **Note:** All region effects are from *Animate.css* but all $.plugin effects are from jQuery UI. (e.g `view.overlay() using $.fn.overlay()`)
-^^^
+!!!
 
-^^^callout callout-warning
+!!!callout callout-warning
 **Don't:**
 * Create Model/Collection instances unless it is to generate views.
 * Wrap/Organize your view definitions into Class hierarchies.
 * Put more than 2 non-object params in any function signature.
 * Use direct method invocations for view-view, view-context, view-application collaborations.
-^^^
+!!!
 
 
 Inputs/Editors
@@ -1054,9 +1044,9 @@ editor.upload({
 //you can use this to trigger the upload process and submit additional data
 ```
 
-^^^callout callout-primary
+!!!callout callout-primary
 **Note:** The *select, radios and checkboxes* editors can be initialized without `options.data` configuration, these editors have an additional `setChoices()` API that you can use to set the available choices later. However it is recommended that you use the `options.remote` configure if the options data is from a remote data source.
-^^^
+!!!
 
 #### Add your own
 
@@ -1070,9 +1060,9 @@ Application.editor('[your editor name]', function(){
 ```
 You need to provide the `getVal`, `setVal`, `validate`, `status` and `disable` (+`isEnabled`) methods.
 
-^^^callout callout-warning
+!!!callout callout-warning
 **Important:** Do *NOT* write `onShow/onReady` in your editor definition. Use `onRender` instead so that your editor can support the `editor=""` template attributes for dynamic positioning.
-^^^
+!!!
 
 #### Validation
 
@@ -1141,9 +1131,9 @@ Application.editor.validator('my-validator-name', function(options, val, parentC
 ```
 alias: `Application.editor.rule()`.
 
-^^^callout callout-info
+!!!callout callout-info
 **Tip:** We included the [`validator-js`](https://github.com/chriso/validator.js) library for you in the framework through `dependencies.js`. You can use it as a base to implement your validations faster and easier.
-^^^
+!!!
 
 ### Compound
 
@@ -1170,13 +1160,13 @@ This has some disadvantages compare to registering an new editor via `app.editor
 
 If you still want `_global` (e.g appendTo) configure and `parentCt` (for editor events) to be passed to the editor, use `app.editor()` to register the view as a formal editor.
 
-^^^callout callout-primary
+!!!callout callout-primary
 **Note:** Compound editor has its child editors' eager validation feature disabled.
-^^^
+!!!
 
-^^^callout callout-info
+!!!callout callout-info
 **Tip:** Configure your child editor without the `label` config option.
-^^^
+!!!
 
 ### Fieldset
 
@@ -1215,9 +1205,9 @@ You can also control the nested editors through a dotted name path:
 parent.getEditor('sub-fieldset-x.abc'); //will get you editor `abc` in targeted fieldset.
 ```
 
-^^^callout callout-primary
+!!!callout callout-primary
 **Note:** Normally, if you don't need to collect values per group, you can omit the `fieldset` property in the view's definition. Values will be merged with those from the parent view.
-^^^
+!!!
 
 ### Build a form
 
@@ -1241,7 +1231,6 @@ Widgets
 -------
 To make your view definitions reusable, we offer a way of registering *Widget*s:
 ```
-//Widget name can be used in region:load-view meta event trigger
 Application.widget('MyWidgetName', 
 	function(){
 		var UI = Application.view({...});
@@ -1251,14 +1240,6 @@ Application.widget('MyWidgetName',
 )
 ```
 It is recommended to employ the **List'n'Container** technique when creating *Widget*s.
-
-To instantiate a *Widget*, use either `region.trigger('region:load-view', name, options)` or:
-```
-Application.widget('MyWidgetName', {
-	..., //rest of the init options, don't pass in a config named 'factory'. 
-})
-```
-
 
 ### Build your own
 
@@ -1305,7 +1286,7 @@ columns:
 ```
 ...
 //Scenario 1. configured
-this.region.trigger('region:load-view', 'Datagrid', {
+this.show('region', 'Datagrid', {
     className: 'table table-hover',
 
     data: Mock.mock(mockDataTpl).data, //optional, you can put data into the grid later.
@@ -1403,9 +1384,9 @@ otherView.listenTo(table, 'row:dblclicked', function(row){...});
 })(Application);
 ```
 
-^^^callout callout-primary
+!!!callout callout-primary
 **Note:** Don't forget to name your cells according to the naming convention. You don't have to give `tagName:td` or `tagName:th` to the cell definitions. Define them like normal views.
-^^^
+!!!
 
 **Built-in Cells**
 * action
@@ -1474,9 +1455,9 @@ onSelected: callback(meta, $el, e){
 }
 ```
 
-^^^callout callout-primary
+!!!callout callout-primary
 **Note:** You can *NOT* change sub-node array key to be other than 'children' at the moment. Other than the 'children' field, any named field can appear in the data as node properties. Add the names into the node template to display them.
-^^^
+!!!
 
 The default node template is like this:
 ```
@@ -1492,7 +1473,7 @@ So your data should have 'icon' and 'val' in each node's property.
 **Usage**:
 ```
 ...
-this.body.trigger('region:load-view', 'Tree', {
+this.show('body', 'Tree', {
     data: [...],
     onSelected: function(meta, $el, e){
         e.preventDefault();
@@ -1544,7 +1525,7 @@ pageWindowSize: //visible number of page indices (default to 5)
 ```
 ...
 var table = tableRegion.currentView;
-this.footer.trigger('region:load-view', 'Paginator', {
+this.show('footer', 'Paginator', {
     target: table.getBody(),
     className: 'pagination pagination-sm pull-right'
 });
@@ -1616,9 +1597,9 @@ $('body').overlay(false, {
 })
 ```
 
-^^^callout callout-primary
+!!!callout callout-primary
 **Note:** Repeatedly open overlays on the same $(el) will have no effect. Close the previous one first. There are also 3rd-party libraries available for creating simple overlays over `<a>` and `<img>` tags (e.g [colorbox](http://www.jacklmoore.com/colorbox/)).
-^^^
+!!!
 
 **Short-cut**: Use with custom views
 ```
@@ -1638,9 +1619,9 @@ view.close(); //this will close the overlay as well;
 ```
 This is the recommended way of using custom views as overlays.
 
-^^^callout callout-primary
+!!!callout callout-primary
 **Note:** After closing the overlayed view, remember to re-new it before showing as overlay again.
-^^^
+!!!
 
 ### ToC (Table-of-Content)
 
@@ -1811,23 +1792,23 @@ app.i18n({...}) //'key': {'ns1': 'trans1', ...} or 'trans'
 ```
 You can use `untransedOnly = true` in the above functions if you only want to get un-translated entries. This is a great way of collecting un-translated strings  for your localizer (by simply go through the application views).
 
-^^^callout callout-primary
+!!!callout callout-primary
 **Note:** If your view hasn't been shown in the application, the i18n keys for that view can not be collected by the above functions.
-^^^
+!!!
 
 
 Themes
 ------
 
-^^^callout callout-danger
+!!!callout callout-danger
 **Deprecated:** Dynamic Theme Rolling is now deprecated on the client side. Please specify your theme `main.css` directly in `index.html`.
-^^^
+!!!
 
 Please use the `themeprep` tool to create and refresh your themes. Note that you don't have to use the tool to regenerate the theme each time your change your `*.less` files. Your `devserver` automatically watches and recompiles the `*.less` files for you.
 
-^^^callout callout-primary
+!!!callout callout-primary
 **Note:** Only invoke the theme tool when you add new fonts or images to an old theme, or creating a new theme.
-^^^
+!!!
 
 ### Theme structure
 
@@ -1899,9 +1880,9 @@ stagejs build dist
 ```
 Find your built deployment under /tools/build/dist.
 
-^^^callout callout-primary
+!!!callout callout-primary
 **Note:** You might need to change the `config.dist.js` file if you want to include more files in deployment.
-^^^
+!!!
 
 By default, the command will look for `config.dist.js` and construct your deployment folder `dist` with folders and files accordingly.
 
@@ -1930,9 +1911,9 @@ Please see `/tools/devserver/profile/default.js`
 
 You can add more bots, profiles and most importantly routers into the server. Just add them into the folders respectively, they will be automatically loaded. Routers added will be mounted and available for all web roots.
 
-^^^callout callout-primary
+!!!callout callout-primary
 **Note:** By design, we only introduced *bots*(init/helper routines), *profiles*(configures), *middlewares*, *routers* and *channels* into the development server stack, you can also add *dbs* and other stuff into the server.
-^^^
+!!!
 
 Read more about [express.js](http://expressjs.com/) and [express-load](https://github.com/jarradseers/express-load) so you can make full use of this development server.
 
@@ -1952,9 +1933,9 @@ stagejs lib install <lib name on bower>
 stagejs lib use <lib name on bower>
 ```
 
-^^^callout callout-info
+!!!callout callout-info
 **Tip:** Alternatively, you can always use a *CDN* (Content Delivery Network) to load the JavaScript libraries into your index.html (e.g [jsDelivr](http://www.jsdelivr.com/)) However, this will affect the build process since these libraries will not be combined if they are not from local.
-^^^
+!!!
 
 ### Initialize/Update project
 
@@ -2055,11 +2036,13 @@ View Registery:
 
 View Options/Utils:
 * ['name', 'effect', 'template', 'templateHelpers', 'data'/'useParentData', 'ui', 'coop', 'actions', 'editors', 'tooltips', 'overlay', 'popover', 'svg']
-* view.overlay (anchor, options)
-* view.popup (anchor, options)
 * view.getViewIn (region)
 * view.lock (region, flag, options)
+* view.more (region, [data array], View)
+* view.show (region, View, options)
 * view.coop ()
+* view.overlay (anchor, options)
+* view.popup (anchor, options)
 
 Handling Data:
 * view.data - 'url string', {} or []

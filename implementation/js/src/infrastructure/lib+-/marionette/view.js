@@ -228,7 +228,7 @@
 				if(lockTopic && !app.lock(lockTopic)){
 					e.stopPropagation();
 					e.preventDefault();
-					app.trigger('app:blocked', action, lockTopic);
+					app.trigger('app:locked', action, lockTopic);
 					return;
 				}
 

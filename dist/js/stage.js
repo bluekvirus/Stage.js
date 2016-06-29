@@ -681,7 +681,7 @@
     var lexer = new marked.Lexer(options);
     _.extend(lexer.rules, {
       // Append the new added rules here
-      clsfences: /^ *(\^{3,}) *(\S+(?: +\S+)*)? *\n([\s\S]+?)\s*\1 *(?:\n+|$)/
+      clsfences: /^ *(\^{3,}|\!{3,}) *(\S+(?: +\S+)*)? *\n([\s\S]+?)\s*\1 *(?:\n+|$)/
     });
     return lexer.lex(src);
   };
@@ -2004,8 +2004,8 @@
 		//	^^^class class2 class3 ...
 		//	...
 		//	^^^
-		markdown: function(md, $target /*or options*/, options){
-			options = options || (!($target instanceof jQuery) && $target) || {};
+		markdown: function(md, $anchor /*or options*/, options){
+			options = options || (!($anchor instanceof jQuery) && $anchor) || {};
 			//render content
 			var html = marked(md, _.extend({
 				gfm: true,
@@ -2015,18 +2015,18 @@
 				sanitize: true,
 				smartLists: true,
 				smartypants: false //don't be too smart on the punctuations
-			}, options.marked)), hljs = window.hljs;
+			}, (options.marked && options.marked) || options, $anchor instanceof jQuery && $anchor.data('marked'))), hljs = window.hljs;
 			//highlight code (use ```language to specify type)
 			if(hljs){
-				hljs.configure(options.hljs);
+				hljs.configure(_.extend({}, options.hljs, $anchor instanceof jQuery && $anchor.data('hljs')));
 				var $html = $('<div>' + html + '</div>');
 				$html.find('pre code').each(function(){
 					hljs.highlightBlock(this);
 				});
 				html = $html.html();
 			}
-			if($target instanceof jQuery)
-				return $target.html(html).addClass('md-content');
+			if($anchor instanceof jQuery)
+				return $anchor.html(html).addClass('md-content');
 			return html;
 		},
 
@@ -5566,7 +5566,7 @@ module.exports = DeepModel;
 				if(lockTopic && !app.lock(lockTopic)){
 					e.stopPropagation();
 					e.preventDefault();
-					app.trigger('app:blocked', action, lockTopic);
+					app.trigger('app:locked', action, lockTopic);
 					return;
 				}
 
@@ -8643,4 +8643,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.9.3-1109 build 1466923750462";
+;;app.stagejs = "1.9.3-1111 build 1467216503495";

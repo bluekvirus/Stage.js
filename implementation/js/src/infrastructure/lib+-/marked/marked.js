@@ -49,7 +49,7 @@
     var lexer = new marked.Lexer(options);
     _.extend(lexer.rules, {
       // Append the new added rules here
-      clsfences: /^ *(\^{3,}) *(\S+(?: +\S+)*)? *\n([\s\S]+?)\s*\1 *(?:\n+|$)/
+      clsfences: /^ *(\^{3,}|\!{3,}) *(\S+(?: +\S+)*)? *\n([\s\S]+?)\s*\1 *(?:\n+|$)/
     });
     return lexer.lex(src);
   };
