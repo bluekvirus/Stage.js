@@ -9,6 +9,9 @@ Change Log
 5. Added app.poll(false) to stop all polling;
 6. Non-object ref-ed by `useParentData` will now be wrapped into object before assigning to this.data in a sub-view;
 7. Added view.show('region', ...) as an alternative to `region:load-view`; 
+8. Refined app.markdown() api to support 2 ways of getting options (direct, data-marked/hljs);
+9. Remapped all app:blocked events to app:locked;
+10. Added callout supporting symbol !!! in addition to ^^^ for markdowns;
 
 working on ...
 
@@ -24,7 +27,7 @@ working on ...
 * Separate modernizr/detectizr shiv bundles from deps;
 * Adding optional 2-way binders (stickit);
 * Adding `<canvas>` support in view (easel);
-* [cli] Enhance update cmd to also refresh mockups;
+* [cli] Enhance update cmd to also update mockups;
 * [cli] Add a `revive` cmd as an alias to `update`;
 
 
