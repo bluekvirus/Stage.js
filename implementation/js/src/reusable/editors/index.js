@@ -304,6 +304,9 @@
 						},
 						//3. implement [upload] button action
 						upload: function(){
+
+							//TBI: emit an event before upload.
+
 							var that = this;
 							this.upload(_.extend({
 								//stub success callback:

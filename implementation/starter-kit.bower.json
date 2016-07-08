@@ -1,5 +1,5 @@
 {
-	"name": "keep name here to use bower install, change if you prefer",
+	"name": "custom-project",
 	"private": true,
 	"devDependencies": {
 		"stage": "^1.9.3",
