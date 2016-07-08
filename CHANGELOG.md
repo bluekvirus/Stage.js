@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.10.0 (2016-06-25*)
+1.10.0 (2016-06-29*)
 --------------------
 1. Missing locale file will no longer raise exceptions;
 2. Updated flexlayout to be 0.2.3;
@@ -16,6 +16,7 @@ Change Log
 working on ...
 
 * preprocessed template: '*.md';
+* add pre 'upload' event to file editor;
 * view.tab();
 * view.poll();
 * view.datapush{};
