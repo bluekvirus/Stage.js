@@ -15,11 +15,11 @@ Change Log
 
 working on ...
 
-* preprocessed template: '*.md';
+* preprocessed views: '*.md';
+* pulled/pushed data coop events naming convention;
 * add pre 'upload' event to file editor;
 * view.tab();
-* view.poll();
-* view.datapush{};
+* upgrade to LESS 2.0 for wildcard includes;
 * Integrate stage-unideck into framework kit;
 * Adding more unit test in demos;
 * Adding cheatsheet;
