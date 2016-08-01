@@ -36,7 +36,8 @@ module.exports = {
 					download: 'static/resource/default/download'
 				},
 				'en-US': 'static/resource/en-US'
-			}
+			},
+			docs: '../docs'
 		},		
 		'index.html': true,
 		'HOWTO.md': 'HOWTO.md',

@@ -196,14 +196,25 @@
 						if(!name) return;
 
 						if(_.isString(name)){
-							//Template mockups (both inline and @remote)? (_ or A-Z starts a View name, no $ sign here sorry...)
+							//Template mockups?
 							if(!/^[_A-Z]/.test(name)){
+								//*.md 
+								if(_.string.endsWith(name, '.md')){
+									var that = this;
+									return app.remote(name).done(function(md){
+										app.markdown(md, that.$el);
+										that._parentLayout.trigger('view:markdown-rendered', name, region);
+									}).fail(function(jqXHR, settings, e){
+										throw new Error('DEV::Application::remote() can NOT load markdown for ' + name + ' - [' + e + ']');
+									});
+								}
+								//inline html string and @remote template
 								return this.show(app.view({
 									template: name,
 								}));
 							}
 							else{
-							//View name
+							//View name (_ or A-Z starts a View name, no $ sign here sorry...)
 								var Reusable = app.get(name, _.isPlainObject(options)?'Widget':'', true); //fallback to use view if widget not found.
 								if(Reusable){
 									//Caveat: don't forget to pick up overridable func & properties from options in your Widget.

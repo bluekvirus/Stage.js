@@ -40,7 +40,7 @@ Being *2-part* means that we design our client and server architectures separate
 
 [Warning]
 
-###**NEVER** try to merge the two sides
+### **NEVER** try to merge the two sides
 The client and server sides are different in purpose fundamentally. Thus, they should be designed and implemented differently. Shutting this door will preserve a significant amount of coding/maintenance energy for the application developer(s). The best software development practice encourages separation and delaying of implementation of related components so that each part can vary independently later. And to the author (me), abstraction should happen after categorization, or say, classification. This is why we are advising the developers (you) **NOT** to make an overly encapsulated framework with tools that try to bridge the gap for the developers. Trying to control everything using central planning is a human flaw, there is no silver-bullet for trying to solve web application building in 1 piece. It will always be 3 parties in the software application world:
 
 [Diagram 1] Human <-client/UI-> Panel <-server/Services-> Routines
@@ -49,7 +49,7 @@ As an engineer, the job is to find insights and solve problems between the 3 par
 
 [Software design and impl in general]
 
-###Rules of Thumb
+### Rules of Thumb
 * Keep things simple, especially the simple ones.
 * Categorization before abstraction.
 * Separate, Reuse and Pipeline.
@@ -64,7 +64,7 @@ The client side is made on top of Underscore, jQuery, Handlebars, Backbone, Mari
 
 We also maintain a list of 3rd party libraries for the developers to choose from (as utilities). The utility libs (e.g jquery-file-upload, store.js, uri.js, raphael.js, marked, moment.js...) are carefully selected from the many open-source Javascript libs out there to help with specific but generally-will-appear problems that a developer will encounter during the web application development process.
 
-###Why not AngularJS/EmberJS/Meteor or YUI/ExtJS
+### Why not AngularJS/EmberJS/Meteor or YUI/ExtJS
 If you can, **always favor libraries over frameworks**.
 
 We choose what we choose simply because we want total control over our product. There are often 2 types of framework to choose from when developing a web application:
@@ -73,7 +73,7 @@ We choose what we choose simply because we want total control over our product. 
 
 Backbone + Marionette can implement them all (Yes, any client side framework). We believe Meteor is a good idea implemented over a very bad platform (A.K.A the WEB) for now. And, if you need more evidence, YUI3 has the exact same concepts from Backbone implemented as its infrastructure.
 
-####Moving Away From ExtJS and All-in-One Frameworks
+#### Moving Away From ExtJS and All-in-One Frameworks
 
 We have been developing in ExtJS4 for almost 2 years, starting form the last version of 4.0 which is the promising 4.0.7. As our knowledge base expands, we felt that it is time to form our own blueprint of a modern data heavy web application to shorten the development cycles. Here are some of the main reasons:
 
@@ -85,12 +85,12 @@ We have been developing in ExtJS4 for almost 2 years, starting form the last ver
 
 We choose to move away from this heavy framework to avoid its complexity (tightly bound all-in-one solution) and to have more control over the component lifecycles, interactions and application container separately. An equally powerful yet still lightweight solution combining the best practices in the field is thus made. The following sections examine the core concepts and design involved.
 
-###Core Concepts
+### Core Concepts
 Since we render the UI dynamically through the user browsers instead of prepare-before-send on the server side, the traditional MVC concept applies differently in our situation here. Old web development process embraces the stateless characteristic of HTTP and promotes the url-to-page concept that was used to build JSP/PHP/RoR powered application. The *View* was (and still is) often referring to the server glue code that merge data (from *Model*) with a page template when called by the *Controller*. (*Controller* is still the url-page/route dispatcher)
 
 Modern web development breaks this big chunk MVC and blurs the line between V and C by putting dynamic view generation (e.g using Backbone and jQuery) into the user browser. Also, if using Backbone, a separately defined M is really unnecessary when you don't even need to specify the model attributes. This makes the client side data (or say, models) a snap-shot of the state of real user data on the server, which in turn makes the need of a strict MVC implementation unnecessary. We need a more fine-grind infrastructure allowing MVC to be only applied to widget building (a small piece of view with prepared data and specific UI purposes) and stop calling the infrastructure/framework an MVC one. 
 
-####The *Big Picture* (Problems)
+#### The *Big Picture* (Problems)
 
 [Diagram 2] Data <-remote api-> Ajax <-models/collections-> Widget(MVC) <-events co-op-> Widget/Module/Context(3 different levels of view or view groups)
 
@@ -103,7 +103,7 @@ Failing to address any of the 3 parts above will cost the project a significant 
 
 So, we have identified the core problems, how do we form our solutions to them?
 
-####What you *REALLY* need (Solution Design)
+#### What you *REALLY* need (Solution Design)
 1. Components:
 	* Data APIs Registry (remote data interfacing) - D-M
 	* Parts (editor, widget for making views in a layout) - M-VC
@@ -118,7 +118,7 @@ So, we have identified the core problems, how do we form our solutions to them?
 
 [Diagram 3]
 
-###Design Patterns Used
+### Design Patterns Used
 For cleaner and less code while implementing the architecture, we employed the following design patterns:
 
 1. Bridge + Observer Pattern (event co-op between widgets, modules and contexts or with the application container)
@@ -134,11 +134,11 @@ The goal is to achieve the following goals encouraged by software design pattern
 
 We will be examining the implementations in the following section.
 
-###Project Structure
+### Project Structure
 see separate.md file.
 
 
-###Quick Start
+### Quick Start
 see separate.md file.
 
 
@@ -150,13 +150,13 @@ see separate .md file.
 References
 ----------
 
-###Books
+### Books
 1. JavaScript: The Good Parts - Douglas Crockford
 2. Pro JavaScript Design Patterns - Ross Harmes and Dustin Diaz
 3. The Tangled Web - Michal Zalewski
 4. High Performance Web Sites: Essential Knowledge for Front-End Engineers - Steve Souders
 
-###Websites
+### Websites
 1. [Javascript Style Guide & Stuff](https://github.com/airbnb/javascript) - airbnb@github.com
 2. [Superhero.js](http://superherojs.com/) - Kim Joar Bekkelund, Mads Mobæk, & Olav Bjorkoy
 3. [Interview Qs](https://github.com/darcyclarke/Front-end-Developer-Interview-Questions) - darcyclarke@github.com

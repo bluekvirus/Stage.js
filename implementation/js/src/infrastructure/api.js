@@ -478,18 +478,10 @@
 		markdown: function(md, $anchor /*or options*/, options){
 			options = options || (!($anchor instanceof jQuery) && $anchor) || {};
 			//render content
-			var html = marked(md, _.extend({
-				gfm: true,
-				tables: true,
-				breaks: true,
-				pedantic: false, //don't use original markdown.pl choices
-				sanitize: true,
-				smartLists: true,
-				smartypants: false //don't be too smart on the punctuations
-			}, (options.marked && options.marked) || options, $anchor instanceof jQuery && $anchor.data('marked'))), hljs = window.hljs;
+			var html = marked(md, app.debug('marked options are', _.extend(app.config.marked, (options.marked && options.marked) || options, $anchor instanceof jQuery && $anchor.data('marked')))), hljs = window.hljs;
 			//highlight code (use ```language to specify type)
 			if(hljs){
-				hljs.configure(_.extend({}, options.hljs, $anchor instanceof jQuery && $anchor.data('hljs')));
+				hljs.configure(app.debug('hljs options are', _.extend(app.config.hljs, options.hljs, $anchor instanceof jQuery && $anchor.data('hljs'))));
 				var $html = $('<div>' + html + '</div>');
 				$html.find('pre code').each(function(){
 					hljs.highlightBlock(this);
@@ -569,10 +561,12 @@
 		},
 
 		//----------------debug----------------------
+		//Note: debug() will always return the last argument as return val. (for non-intrusive inline debug printing)
 		debug: function(){
 			var fn = console.debug || console.log;
 			if(app.param('debug') === 'true')
 				fn.apply(console, arguments);
+			return arguments.length && arguments[arguments.length - 1];
 		},
 
 		//find a view instance by name or its DOM element.

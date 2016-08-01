@@ -12,18 +12,19 @@ Change Log
 8. Refined app.markdown() api to support 2 ways of getting options (direct, data-marked/hljs);
 9. Remapped all app:blocked events to app:locked;
 10. Added callout supporting symbol !!! in addition to ^^^ for markdowns;
+11. Added `view="*.md"` preprocessed markdown regions and view:markdown-rendered event;
+12. app.debug() now returns the last argument while printing under `?debug=true`
 
 working on ...
 
-* preprocessed views: '*.md';
-* pulled/pushed data coop events naming convention;
-* add pre 'upload' event to file editor;
 * view.tab();
 * upgrade to LESS 2.0 for wildcard includes;
+* pulled/pushed data coop events naming convention;
+* add pre 'upload' event to file editor;
 * Integrate stage-unideck into framework kit;
-* Adding more unit test in demos;
+* Split/Update docs (around actions, data rendering, coop, dnd, effect, remote, ws, form, svg and prompt);
 * Adding cheatsheet;
-* Updating doc (around actions, data rendering, coop, dnd, effect, remote, ws, form, svg and prompt);
+* Adding more unit test in demos;
 * Breaking down 'Basic' editors;
 * Separate modernizr/detectizr shiv bundles from deps;
 * Adding optional 2-way binders (stickit);

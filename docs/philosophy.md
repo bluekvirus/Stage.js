@@ -1,4 +1,5 @@
-###Mental preparation
+### Mental preparation
+
 > Technique means nothing if people have no purposes in their mind. To prepare mentally to adapt something is to synchronize the mind around the subject domain so that insights can be developed while applying the technique. The ultimate goal is always to understand the subject (in our case the problem) better.
 
 > Make sure to ask enough questions, so you can quickly locate the core problem that a given technique is trying to solve efficiently. Then go apply the technique and try making changes. Soon enough, you will start to see things like the solution maker, and concepts and ideas start to come out naturally. True understanding is almost always developed this way. If you can't feel the needs and constrains, you can't see through the solution.
@@ -7,17 +8,18 @@
 
 Frameworks are ways of doing things, they are biased. If you don't feel like doing things *their* way, identify the core problems and solve them in a sequence that fits you, and that process will eventually turn into *your* own framework.
 
-###The Web app problem
+### The Web app problem
+
 Before start, you need to understand what is a *GUI application*, here is a brief diagram (casted upon the web realm):
 
-<img src="../implementation/static/resource/default/diagram/Diagram-1.png" alt="Web App Diagram" class="center-block"></img>
+![Web App Diagram](static/resource/default/diagram/Diagram-1.png)
 
 The client and server sides are different in purpose fundamentally. Thus, they should be designed and implemented differently. **Do NOT mix them**. Shutting this door will preserve a significant amount of coding/maintenance energy for the application developer(s). The best software development practice encourages separation and delaying of implementation of related components so that each part can vary independently later. And to the author, abstraction should happen after categorization (or say, classification). This is why we are advising the developers *NOT* to make an overly encapsulated framework with tools that try to bridge the gaps. Trying to control everything using central planning is a human flaw, there is no silver-bullet for trying to solve web application building in 1 piece. It will always be 3 parties in the software application world.
 
 As an engineer, the job is to find insights and solve problems between the 3 parties efficiently (profitably if you must insist...) so that the software/application serving the above system comes out correctly. This is hard. Specifically, You need to resolve 2 kinds of problem different in nature: *Interaction* and *Data Flow* in order to produce an application.
 A successful one requires both parts to employ careful design and feasible technique. We illustrate the *Interaction* problem's technical side here, since the framework is more about supporting a good design with cleaner implementation:
 
-<img src="../implementation/static/resource/default/diagram/Diagram-2.png" alt="UI/UX Problems" class="center-block"></img>
+![UI/UX Problems](static/resource/default/diagram/Diagram-2.png)
 
 As you can see from the above diagram, there are 4 problems here to address when implementing a UI/UX side for an application:
 
@@ -30,7 +32,8 @@ Failing to address any of the 4 parts above will cost the project a significant 
 
 So, how do we form our solution?
 
-###Moving away from ExtJS
+### Moving away from ExtJS
+
 We have been developing in ExtJS4 for 2+ years, starting form the last version of 4.0.x which is the promising 4.0.7. As our knowledge base expands, we felt that it is time to form our own blueprint of a modern data heavy web application to shorten the development cycles. Here are some of the main reasons:
 
 1. Although it is relatively fast to develop prototypes using an all-in-one framework like ExtJS, it is hard to maintain the code while keeping up with the changes required by new features and those that come from Sencha. The widgets are bound too tightly with the framework.
@@ -57,13 +60,16 @@ Whatever you do, *Do NOT* stack up abstraction layers over layers so further pro
 
 We choose to move away from this heavy framework to avoid its complexity and downside and to have more control over the component life-cycles, interactions and application container separately. An equally powerful yet still lightweight solution combining the best practices in the field is thus made. 
 
-###Essence of Design Patterns
+### Essence of Design Patterns
+
 As *Design Patterns* dictates, we need to code in a way to:
 
-<img src="../implementation/static/resource/default/diagram/Diagram-4.png" alt="Design Pattern Goals" class="center-block"></img>
+![Design Pattern Goals](static/resource/default/diagram/Diagram-4.png)
 
-###Rules of Thumb
-####General
+### Rules of Thumb
+
+#### General
+
 * Keep things simple, especially the simple ones.
 * Categorization before abstraction. Be purpose oriented.
 * Cleaner method signature. Options as the second parameter (1st one being the most common arg).
@@ -71,18 +77,21 @@ As *Design Patterns* dictates, we need to code in a way to:
 
 Start with user requirements/stories and focus on serving the customers' need (piggy back a feature feedback loop to your app core so it coherently fits with others). Use the 80/20 rule to pick out important features/functionalities and implement them first. Gradually refine code and documentation later (cut waste in steps, resources and communications). Remember to write down **why** before **how** in the code comments. !FOCUS!
 
-####GUI
+#### GUI
+
 * Concision - exact but nothing more
 * Expressiveness - allow useful possibilities be deducted
 * Ease & Transparency - low mnemonic load in user's mind for keeping track of states/layers of task, command sequence.
 * Script-ability - batch-able, automate-able
 
-####Product design
+#### Product design
+
 Goal-Driven! Design through the api-interaction-transition tuples.
 
            (Data) api --- interaction (UI) --- visual feedback (UX)
 
-####Bootstrapping Project
+#### Bootstrapping Project
+
 * Match a list of goals with a list of UIs (template: size, space, item, clickables)
 * Serve the list of UIs with a list of apis (data)
 * Link the UI actions apis (actions)

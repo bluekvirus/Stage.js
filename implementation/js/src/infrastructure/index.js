@@ -87,6 +87,19 @@
 			i18nLocale: '', //if you really want to force the app to certain locale other than browser preference. (Still override-able by ?locale=.. in url)
 			rapidEventDelay: 200, //in ms this is the rapid event delay control value shared within the application (e.g window resize, app.throttle, app.debounce).
 			timeout: 5 * 60 * 1000, //general communication timeout (ms). for app.remote and $.fileupload atm.
+			//------------------------------------------3rd-party options----------------------------------
+			marked: {
+				gfm: true,
+				tables: true,
+				breaks: true,
+				pedantic: false, //don't use original markdown.pl choices
+				sanitize: true,
+				smartLists: true,
+				smartypants: false //don't be too smart on the punctuations
+			},
+			hljs: {
+				languages: ['c', 'python', 'javascript', 'html', 'css']
+			}
 		}, config);
 		
 		//2. Global App Events Listener Dispatcher
