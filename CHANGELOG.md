@@ -17,16 +17,17 @@ Change Log
 
 working on ...
 
-* view.tab();
+* view.active-ables(like action= but for .active and event);
+* view.tab('region', View);
 * upgrade to LESS 2.0 for wildcard includes;
 * pulled/pushed data coop events naming convention;
-* add pre 'upload' event to file editor;
+* add pre 'upload' event to file editor?
 * Integrate stage-unideck into framework kit;
 * Split/Update docs (around actions, data rendering, coop, dnd, effect, remote, ws, form, svg and prompt);
 * Adding cheatsheet;
 * Adding more unit test in demos;
 * Breaking down 'Basic' editors;
-* Separate modernizr/detectizr shiv bundles from deps;
+* Separate modernizr+detectizr shiv bundles from deps;
 * Adding optional 2-way binders (stickit);
 * Adding `<canvas>` support in view (easel);
 * [cli] Enhance update cmd to also update mockups;

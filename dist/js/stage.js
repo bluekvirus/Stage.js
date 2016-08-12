@@ -1238,6 +1238,19 @@
 			i18nLocale: '', //if you really want to force the app to certain locale other than browser preference. (Still override-able by ?locale=.. in url)
 			rapidEventDelay: 200, //in ms this is the rapid event delay control value shared within the application (e.g window resize, app.throttle, app.debounce).
 			timeout: 5 * 60 * 1000, //general communication timeout (ms). for app.remote and $.fileupload atm.
+			//------------------------------------------3rd-party options----------------------------------
+			marked: {
+				gfm: true,
+				tables: true,
+				breaks: true,
+				pedantic: false, //don't use original markdown.pl choices
+				sanitize: true,
+				smartLists: true,
+				smartypants: false //don't be too smart on the punctuations
+			},
+			hljs: {
+				languages: ['c', 'python', 'javascript', 'html', 'css']
+			}
 		}, config);
 		
 		//2. Global App Events Listener Dispatcher
@@ -2007,18 +2020,10 @@
 		markdown: function(md, $anchor /*or options*/, options){
 			options = options || (!($anchor instanceof jQuery) && $anchor) || {};
 			//render content
-			var html = marked(md, _.extend({
-				gfm: true,
-				tables: true,
-				breaks: true,
-				pedantic: false, //don't use original markdown.pl choices
-				sanitize: true,
-				smartLists: true,
-				smartypants: false //don't be too smart on the punctuations
-			}, (options.marked && options.marked) || options, $anchor instanceof jQuery && $anchor.data('marked'))), hljs = window.hljs;
+			var html = marked(md, app.debug('marked options are', _.extend(app.config.marked, (options.marked && options.marked) || options, $anchor instanceof jQuery && $anchor.data('marked')))), hljs = window.hljs;
 			//highlight code (use ```language to specify type)
 			if(hljs){
-				hljs.configure(_.extend({}, options.hljs, $anchor instanceof jQuery && $anchor.data('hljs')));
+				hljs.configure(app.debug('hljs options are', _.extend(app.config.hljs, options.hljs, $anchor instanceof jQuery && $anchor.data('hljs'))));
 				var $html = $('<div>' + html + '</div>');
 				$html.find('pre code').each(function(){
 					hljs.highlightBlock(this);
@@ -2098,10 +2103,12 @@
 		},
 
 		//----------------debug----------------------
+		//Note: debug() will always return the last argument as return val. (for non-intrusive inline debug printing)
 		debug: function(){
 			var fn = console.debug || console.log;
 			if(app.param('debug') === 'true')
 				fn.apply(console, arguments);
+			return arguments.length && arguments[arguments.length - 1];
 		},
 
 		//find a view instance by name or its DOM element.
@@ -6582,14 +6589,25 @@ module.exports = DeepModel;
 						if(!name) return;
 
 						if(_.isString(name)){
-							//Template mockups (both inline and @remote)? (_ or A-Z starts a View name, no $ sign here sorry...)
+							//Template mockups?
 							if(!/^[_A-Z]/.test(name)){
+								//*.md 
+								if(_.string.endsWith(name, '.md')){
+									var that = this;
+									return app.remote(name).done(function(md){
+										app.markdown(md, that.$el);
+										that._parentLayout.trigger('view:markdown-rendered', name, region);
+									}).fail(function(jqXHR, settings, e){
+										throw new Error('DEV::Application::remote() can NOT load markdown for ' + name + ' - [' + e + ']');
+									});
+								}
+								//inline html string and @remote template
 								return this.show(app.view({
 									template: name,
 								}));
 							}
 							else{
-							//View name
+							//View name (_ or A-Z starts a View name, no $ sign here sorry...)
 								var Reusable = app.get(name, _.isPlainObject(options)?'Widget':'', true); //fallback to use view if widget not found.
 								if(Reusable){
 									//Caveat: don't forget to pick up overridable func & properties from options in your Widget.
@@ -7716,6 +7734,9 @@ var I18N = {};
 						},
 						//3. implement [upload] button action
 						upload: function(){
+
+							//TBI: emit an event before upload.
+
 							var that = this;
 							this.upload(_.extend({
 								//stub success callback:
@@ -8643,4 +8664,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.9.3-1111 build 1467216503495";
+;;app.stagejs = "1.9.3-1115 build 1470964766471";
