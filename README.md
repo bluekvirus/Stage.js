@@ -132,9 +132,9 @@ What's next?
 * Support optional reactive view building; (two-way bindings through MVVM) (:heavy_check_mark:)
 * Remove theming/templating deps on Bootstrap (easy to hook your own); (:heavy_check_mark:)
 * Port custom-made DevOps process pipeline onto Gulp; (:heavy_check_mark:)
-* Introduce data engine to App (separated app.remote() call in Views); (in progress)
+* Introduce data engine to App (auto polling and server-push channel handling); (:heavy_check_mark:)
+* WebRTC integration for peer-to-peer data/stream sharing; (in progress)
 * Introduce state machine into Views;
-* WebRTC integration for peer-to-peer data/stream sharing;
 * Give View action listeners a choice to go background (Web Worker);
 
 Optional:
