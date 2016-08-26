@@ -263,6 +263,60 @@
 		},
 
 		/**
+		 * Activation tags (similar to actions but only for a limited group of mouse events)
+		 *
+		 * Note that it only fires the `activated` events on the view and adds `.active` or user specified (after :...) classes to the tag
+		 * 
+		 * Usage
+		 * -----
+		 * 1. add activate="group-name[:classes]" to your div/li/span/input or any tags; (you can use activate-<trigger>="..." for other supported mouse triggers)
+		 * 2. use "*group-name[:classes]" for multi-activation otherwise it will be exclusive activation only (e.g one element with .active class);
+		 * 3. use deactivate="" and deactivate-<trigger>="" for auto reverse effect of the above; (only removes the classes)
+		 *
+		 * When it adds classes upon user io trigger, it also fires the `view:item-activated + view:group-name-activated` events on the view;
+		 * When it removes classes, it also fires the `view:item-deactivated + view:group-name-deactivated` events on the view;
+		 */
+		_enableActivationTags: function(){
+			this.events = this.events || {};
+			_.extend(this.events, {
+				//------------default------------------------------
+				'click [activate]': '_doActivation',
+				'click [deactivate]': '_doDeactivation',
+
+				//------------<any>--------------------------------
+				'click [activate-click]': '_doActivation',
+				'click [deactivate-click]': '_doDeactivation',
+				'dblclick [activate-dblclick]': '_doActivation',
+				'dblclick [deactivate-dblclick]': '_doDeactivation',
+				//asymm
+				'mouseover [activate-mouseover]': '_doActivation', //=enter but bubble
+				'mouseout [deactivate-mouseout]': '_doDeactivation', //=leave but bubble
+				'focusin [activate-focusin]': '_doActivation', //tabindex=seq or -1
+				'focusout [deactivate-focusout]': '_doDeactivation', //tabindex=seq or -1
+			});
+
+			this._doActivation = function(e){
+				var $el = $(e.currentTarget);
+				var activate = ($el.attr('activate') || $el.attr('activate-' + e.type)).split(':');
+				var group = activate[0], classes = activate[1];
+				//TODO: 
+				//0. if it never has the classes, set $el._cancelDeactivation[group-name+e] = true;
+				//1. add classes to $el;
+				//2. if group didn't starts with *, go remove all other in group $el's classes;
+				//3. fire the view:item-activated + view:group-name-activated events
+			};
+			this._doDeactivation = function(e){
+				var $el = $(e.currentTarget);
+				var deactivate = ($el.attr('deactivate') || $el.attr('deactivate-' + e.type)).split(':');
+				var group = deactivate[0], classes = deactivate[1];
+				//TODO:
+				//0. if $el._cancelDeactivation[group-name+e] == true, set it to false, return;
+				//1. remove classes from $el;
+				//2. fire the view:item-deactivated + view:group-name-deactivated events
+			};
+		},
+
+		/**
 		 * Overlay
 		 * options:
 		 * 1. anchor - css selector of parent html el
@@ -639,6 +693,9 @@
 				this.$el.selectable(defaults);
 			});
 		}
+
+		//de/activations
+		this._enableActivationTags();
 
 		//actions - 1 (bubble events that can be delegated)
 		if(this.actions) {

@@ -17,7 +17,7 @@ Change Log
 
 working on ...
 
-* view.active-ables(like action= but for .active and event);
+* view.activat-ables(like action= but for .active and event);
 * view.tab('region', View);
 * upgrade to LESS 2.0 for wildcard includes;
 * pulled/pushed data coop events naming convention;
