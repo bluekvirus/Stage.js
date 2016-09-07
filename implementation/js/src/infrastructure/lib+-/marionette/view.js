@@ -283,7 +283,7 @@
 		 *
 		 * Symmetrical:
 		 * 		click (default)
-		 *   	dbclick
+		 *   	dblclick
 		 *
 		 * Asymmetrical:
 		 * 		mouseover/mouseout

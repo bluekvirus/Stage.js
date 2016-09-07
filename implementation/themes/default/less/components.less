@@ -684,8 +684,13 @@
  * ===============================================
  */
 
+//Activation tags
+[activate], [activate-click], [activate-dblclick] {
+    cursor: pointer;
+}
+
 //Action tags
-[action] {
+[action], [action-click], [action-dblclick], [action-contextmenu], {
     cursor: pointer;
     &:hover,
     &.hover {
