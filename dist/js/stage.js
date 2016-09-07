@@ -1936,20 +1936,21 @@
 		},
 		
 		//----------------raw animation (DON'T mix with jQuery fx)---------------
-		//(specifically, don't call $.animate(), use $.css() instead if you must)
-		animation: function(update, condition, ctx){
+		//(specifically, don't call $.animate() inside updateFn)
+		//(you also can NOT control the rate the browser calls updateFn, its 60 FPS all the time...)
+		animation: function(updateFn, condition, ctx){
 			var id;
-			var step = function(t){
-				update.call(ctx);//...update...(1 tick)
+			var stepFn = function(t){
+				updateFn.call(ctx);//...update...(1 tick)
 				if(!condition || (condition && condition.call(ctx)))//...condition...(to continue)
 					move();
 			};
 			var move = function(){
 				if(id === undefined) return;
-				id = app.nextFrame(step);
+				id = app._nextFrame(stepFn);
 			};
 			var stop = function(){
-				app.cancelFrame(id);
+				app._cancelFrame(id);
 				id = undefined;
 			};
 			return {
@@ -1958,12 +1959,12 @@
 			};
 		},
 
-		nextFrame: function(step){
+		_nextFrame: function(stepFn){
 			//return request id
-			return window.requestAnimationFrame(step);
+			return window.requestAnimationFrame(stepFn);
 		},
 
-		cancelFrame: function(id){
+		_cancelFrame: function(id){
 			return window.cancelAnimationFrame(id);
 		},
 
@@ -2313,7 +2314,7 @@
 		//global action locks
 		'lock', 'unlock', 'available', 
 		//utils
-		'has', 'get', 'coop', 'navigate', 'icing/curtain', 'i18n', 'param', 'animation', 'nextFrame', 'cancelFrame', 'animateItems', 'throttle', 'debounce',
+		'has', 'get', 'coop', 'navigate', 'icing/curtain', 'i18n', 'param', 'animation', 'animateItems', 'throttle', 'debounce',
 		//com
 		'remote', 'download', 'ws', 'poll',
 		//3rd-party lib short-cut
@@ -5404,7 +5405,7 @@ module.exports = DeepModel;
  * @author Tim Lauv
  * @created 2014.02.25
  * @updated 2015.08.03
- * @updated 2016.02.01
+ * @updated 2016.09.06
  */
 
 
@@ -5564,7 +5565,7 @@ module.exports = DeepModel;
 
 				//**Caveat: non-bubble event will not change e.currentTarget to be current el (the one has [action-*])
 				var $el = $(e.currentTarget);
-				var action = $el.attr('action') || $el.attr('action-' + e.type) || ('_NON-BUBBLE_' + e.type);
+				var action = $el.attr('action-' + e.type) || $el.attr('action') || ('_NON-BUBBLE_' + e.type);
 				var lockTopic = $el.attr('lock'),
 				unlockTopic = $el.attr('unlock');
 
@@ -5586,7 +5587,8 @@ module.exports = DeepModel;
 				//Special: only triggering a meta event (e.g action-dblclick=view:method-name) without doing anything.
 				var eventForwarding = String(action).split(':');
 				if(eventForwarding.length >= 2) {
-					eventForwarding.shift();
+					while(eventForwarding.length > 2)
+						eventForwarding.shift();
 					e.stopPropagation(); //Important::This is to prevent confusing the parent view's action tag listeners.
 					return this.trigger(eventForwarding.join(':'));
 				}
@@ -5605,6 +5607,103 @@ module.exports = DeepModel;
 					throw new Error('DEV::' + (uiName || 'UI Component') + '::_enableActionTags() You have not yet implemented this action - [' + action + ']');
 				}
 			};		
+		},
+
+		/**
+		 * Activation tags (similar to actions but only for a limited group of mouse events)
+		 *
+		 * Note that it only fires the `activated` events on the view and adds `.active` or user specified classes (after :...) to the tag
+		 * 
+		 * Usage
+		 * -----
+		 * 1. add activate="group-name[:classes]" to your div/li/span/input or any tags;
+		 * 2. use "*group-name[:classes]" for multi-activation otherwise it will be exclusive activation only (e.g only one element with .active class at a given time);
+		 * 3. use deactivate="group-name" for auto reverse effect of the above; (only removes the classes on current tag)
+		 *
+		 * When it adds classes upon user io trigger, it also fires the `view:item-activated` event on the view;
+		 * When it removes classes, it also fires the `view:item-deactivated` event (only for click/dblclick atm ...>.<...) on the view;
+		 *
+		 * Supported e
+		 * -----------
+		 * You can use activate-<trigger e>="..." and deactivate-<trigger e>="..." for other supported mouse triggers
+		 *
+		 * Symmetrical:
+		 * 		click (default)
+		 *   	dbclick
+		 *
+		 * Asymmetrical:
+		 * 		mouseover/mouseout
+		 *   	focusin/focusout
+		 * 
+		 */
+		_enableActivationTags: function(){
+			this.events = this.events || {};
+			_.extend(this.events, {
+				//------------default------------------------------
+				'click [activate]': '_doActivation',
+				'click [deactivate]': '_doDeactivation',
+
+				//------------<any>--------------------------------
+				'click [activate-click]': '_doActivation',
+				'click [deactivate-click]': '_doDeactivation',
+				'dblclick [activate-dblclick]': '_doActivation',
+				'dblclick [deactivate-dblclick]': '_doDeactivation',
+				//asymm
+				'mouseover [activate-mouseover]': '_doActivation', //=enter but bubble
+				'mouseout [deactivate-mouseout]': '_doDeactivation', //=leave but bubble
+				'focusin [activate-focusin]': '_doActivation', //tabindex=seq or -1
+				'focusout [deactivate-focusout]': '_doDeactivation', //tabindex=seq or -1
+			});
+
+			//Note: Need to use $el.data instead of $el._var for persisting marks and states on el.
+			this._doActivation = function(e){
+				var $el = $(e.currentTarget);
+				var activate = ($el.attr('activate-' + e.type) || $el.attr('activate')).split(':');
+				var group = activate[0], classes = activate[1] || 'active';
+				if($el.data('deactivation-' + group)) return; //skip already activated item
+
+				//0. set $el._cancelDeactivation = true (single group single e.type) if it hasn't been;
+				if(!$el.data('cancel-deactivation'))
+					$el.data('cancel-deactivation', true);
+				//1. if group didn't starts with *, go remove all other in-group $el's classes (within this view.$el);
+				if(!_.string.startsWith(group, '*')){
+					this.$el.find('[activate^=' + group + ']').removeClass(classes).removeData('deactivation-' + group);
+					this.$el.find('[activate-' + e.type + '^=' + group + ']').removeClass(classes).removeData('deactivation-' + group);
+				}
+				//2. add classes to $el, mark the activated item;
+				$el.addClass(classes);
+				$el.data('deactivation-' + group, classes);
+				//3. fire the view:item-activated event
+				this.trigger('view:item-activated', $el, group, classes);
+
+				//finally
+				e.stopPropagation(); //Important::This is to prevent confusing the parent view's activation tag listener.
+			};
+
+			//Caveat: 'view:item-deactivated' only triggers on click and dblclick deactivations...(-?-)
+			this._doDeactivation = function(e){
+				var $el = $(e.currentTarget);
+				var group = $el.attr('deactivate-' + e.type) || $el.attr('deactivate');
+				if(!group) return; //abort
+
+				//0. if $el._cancelDeactivation remove it and abort, this is for not deactivate right after activate with deactivate="true"; 
+				if($el.data('cancel-deactivation')) {
+					$el.removeData('cancel-deactivation')
+					return;
+				}
+
+				//1. remove classes from $el;
+				var classes = $el.data('deactivation-' + group);
+				if(classes){
+					$el.removeClass(classes);
+					$el.removeData('deactivation-' + group);
+					//1. fire the view:item-deactivated event
+					this.trigger('view:item-deactivated', $el, group, classes);
+				}
+				
+				//finally
+				e.stopPropagation(); //Important::This is to prevent confusing the parent view's activation tag listener.
+			};
 		},
 
 		/**
@@ -5985,6 +6084,9 @@ module.exports = DeepModel;
 			});
 		}
 
+		//de/activations
+		this._enableActivationTags();
+
 		//actions - 1 (bubble events that can be delegated)
 		if(this.actions) {
 			this._enableActionTags(this.actions._bubble);
@@ -6019,7 +6121,7 @@ module.exports = DeepModel;
 
 		//--------------------+ready event---------------------------		
 		//ensure a ready event for static views (align with data and form views)
-		//Caveat: re-rendered static view will not trigger 'view:ready' again...
+		//Caveat: re-render a static view will not trigger 'view:ready' again...
 		this.listenTo(this, 'show', function(){
 			//call view:ready (if not waiting for data render after 1st `show`)
 			if(!this.data && !this.useParentData)
@@ -6576,7 +6678,14 @@ module.exports = DeepModel;
 				this.addRegions(this.regions); //rely on M.Layout._reInitializeRegions() in M.Layout.render();
 			});
 
-			//Giving region the ability to show a registered View/Widget or @remote.tpl.html through event 'region:load-view' (name [,options])
+			//Giving region the ability to show:
+			//1. a registered View/Widget by name and options
+			//2. @remote.tpl.html
+			//3. *.md
+			// 
+			//through
+			// 
+			//view="" or 'region:load-view' or this.show('region', ...)
 			this.listenTo(this, 'render', function(){
 				_.each(this.regions, function(selector, region){
 					//ensure region and container style
@@ -8664,4 +8773,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.9.3-1115 build 1470964766471";
+;;app.stagejs = "1.9.3-1119 build 1473210742043";
