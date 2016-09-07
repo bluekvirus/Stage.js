@@ -14,15 +14,18 @@ Change Log
 10. Added callout supporting symbol !!! in addition to ^^^ for markdowns;
 11. Added `view="*.md"` preprocessed markdown regions and view:markdown-rendered event;
 12. app.debug() now returns the last argument while printing under `?debug=true`
+13. Added `activate[-e]=group:classes` and `deactivate[-e]=group` supports for easy element activation by css classes;
+14. Removed app.nextFrame() and app.cancelFrame() apis;
 
 working on ...
 
-* view.active-ables(like action= but for .active and event);
 * view.tab('region', View);
+* ws pushed data global coop event;
+* wire I18N and Modernizr/Detectizr to app apis;
 * upgrade to LESS 2.0 for wildcard includes;
-* pulled/pushed data coop events naming convention;
-* add pre 'upload' event to file editor?
 * Integrate stage-unideck into framework kit;
+* align data-effect*= to effect*= for region animations;
+* add pre 'upload' event to file editor?
 * Split/Update docs (around actions, data rendering, coop, dnd, effect, remote, ws, form, svg and prompt);
 * Adding cheatsheet;
 * Adding more unit test in demos;
