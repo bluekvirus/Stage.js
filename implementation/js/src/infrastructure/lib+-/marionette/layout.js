@@ -183,7 +183,14 @@
 				this.addRegions(this.regions); //rely on M.Layout._reInitializeRegions() in M.Layout.render();
 			});
 
-			//Giving region the ability to show a registered View/Widget or @remote.tpl.html through event 'region:load-view' (name [,options])
+			//Giving region the ability to show:
+			//1. a registered View/Widget by name and options
+			//2. @remote.tpl.html
+			//3. *.md
+			// 
+			//through
+			// 
+			//view="" or 'region:load-view' or this.show('region', ...)
 			this.listenTo(this, 'render', function(){
 				_.each(this.regions, function(selector, region){
 					//ensure region and container style

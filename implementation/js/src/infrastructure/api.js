@@ -394,20 +394,21 @@
 		},
 		
 		//----------------raw animation (DON'T mix with jQuery fx)---------------
-		//(specifically, don't call $.animate(), use $.css() instead if you must)
-		animation: function(update, condition, ctx){
+		//(specifically, don't call $.animate() inside updateFn)
+		//(you also can NOT control the rate the browser calls updateFn, its 60 FPS all the time...)
+		animation: function(updateFn, condition, ctx){
 			var id;
-			var step = function(t){
-				update.call(ctx);//...update...(1 tick)
+			var stepFn = function(t){
+				updateFn.call(ctx);//...update...(1 tick)
 				if(!condition || (condition && condition.call(ctx)))//...condition...(to continue)
 					move();
 			};
 			var move = function(){
 				if(id === undefined) return;
-				id = app.nextFrame(step);
+				id = app._nextFrame(stepFn);
 			};
 			var stop = function(){
-				app.cancelFrame(id);
+				app._cancelFrame(id);
 				id = undefined;
 			};
 			return {
@@ -416,12 +417,12 @@
 			};
 		},
 
-		nextFrame: function(step){
+		_nextFrame: function(stepFn){
 			//return request id
-			return window.requestAnimationFrame(step);
+			return window.requestAnimationFrame(stepFn);
 		},
 
-		cancelFrame: function(id){
+		_cancelFrame: function(id){
 			return window.cancelAnimationFrame(id);
 		},
 
@@ -771,7 +772,7 @@
 		//global action locks
 		'lock', 'unlock', 'available', 
 		//utils
-		'has', 'get', 'coop', 'navigate', 'icing/curtain', 'i18n', 'param', 'animation', 'nextFrame', 'cancelFrame', 'animateItems', 'throttle', 'debounce',
+		'has', 'get', 'coop', 'navigate', 'icing/curtain', 'i18n', 'param', 'animation', 'animateItems', 'throttle', 'debounce',
 		//com
 		'remote', 'download', 'ws', 'poll',
 		//3rd-party lib short-cut

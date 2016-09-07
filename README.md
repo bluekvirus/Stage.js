@@ -25,11 +25,13 @@ Quick Start
 
 Use the devtools to get started quickly.
 ```
-1. prep
+1. Prep
+
 npm -g install stage-devtools
 stagejs env
 
-2. start
+2. Start
+
 mkdir <project dir>
 cd <project dir>
 stagejs init
@@ -51,23 +53,30 @@ Fork/Clone the project and tweak the code locally, then contribute by making a p
 ###Prepare
 After cloning the project, you should go to `/tools` and run these commands:
 ```
-//0. check your development environment
+0. Check your development environment
+
 stagejs env
 
-//1. prepare npm packages
+1. Prepare npm packages
+
 npm install
 
-//2. prepare bower packages
+2. Prepare bower packages
+
 ./lib-update.sh
 
-//3. prepare doc site theme packs (under ./themeprep)
+3. Prepare doc site theme packs (under ./themeprep)
+
 node run site
 node run site --fonts fontawesome
 
-//4.a fire up dev server (background logging by forever)
+4.a Fire up dev server (background logging by forever)
+
 ./start.sh
-//or
-//4.b fire up dev server (foreground logging by nodemon)
+
+or
+4.b Fire up dev server (foreground logging by nodemon)
+
 npm start
 ```
 This should fire-up the development server. It will serve the `/implementation` folder as web root on the port define by `/tools/devserver/profile/default`. Please go check the content of this profile config file before starting. It has some nice middlewares and auto-change-detectors there you can switch on/off to make the development a lot easier.
@@ -82,10 +91,10 @@ Look closely to the `/implementation/index.html` file, it not only defines the l
 ###Modify theme
 Please go check the `/implementation/themes/default` basic theme package and follow instructions in the `/less/main.less` over there. You can easily switch to use other base themes offered by [bootswatch](http://bootswatch.com/) (based on Bootstrap 3) to quickly build up your own.
 
-You can always refresh existing theme or start a new one by using the theme-prep tool under `/implementation/tools/themeprep`.
+You can always refresh existing theme or start a new one by using the theme-prep tool under `/implementation/tools/themeprep`. Note that this is the same as using the command-line tool `stagejs theme <name>` in your own projects. But since this is the framework project itself, the command-line tool can not be of assistance here.
 
-###Commit Info
-Use the following `git` command to see some brief info about repo commits
+###Checking commit history
+Use the following `git` command to see some brief history about repo commits
 ```
 git log --abbrev-commit --pretty=oneline -n 5
 git rev-list HEAD --count
@@ -96,22 +105,29 @@ Distribute
 ----------
 ###Build
 ```
-//0. change version numbers
-a. CHANGELOG.md and tools/libprep/bower.json
-//numbers in README.md, HOWTO.md are updated automatically.
+0. Change version numbers
 
-//1.a update libs & bower release version
+CHANGELOG.md
+tools/libprep/bower.json
+(README.md, HOWTO.md are updated automatically.)
+
+1.a Update libs & bower release version
+
 tools/lib-update.sh
-//or
-//1.b update bower release version only
+
+or
+1.b Update bower release version only
+
 tools/libprep/node run.js all
 
-//2. [optional] update themes (under tools/themeprep/)
-//**Stop the devserver by using `./stop.sh` under `tools` first!**
-node run 
-node run site
+2. [optional] Update themes
+(Stop the devserver by using `./stop.sh` under `tools` first!)
 
-//3. build distributions & doc site
+node tools/themeprep/run 
+node tools/themeprep/run site
+
+3. Build distributions & doc site
+
 tools/build.sh
 ```
 **Important**: If you see any of the `*.less` file contains `@import url("...")` remove them before you compile the theme. Try to bring that piece to local code base. (e.g Host the web font yourself.)

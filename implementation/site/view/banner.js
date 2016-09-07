@@ -59,6 +59,7 @@
                     '<li><a href="#navigate/Demo/Demo.Effect">In & Out Effects</a></li>',
                     '<li><a href="#navigate/Demo/Demo.Datahandling">Data</a></li>',
                     '<li><a href="#navigate/Demo/Demo.Action">Actions</a></li>',
+                    '<li><a href="#navigate/Demo/Demo.Activation">Activations</a></li>',
                     '<li><a href="#navigate/Demo/Demo.Selectable">Selectables</a></li>',
                     '<li><a href="#navigate/Demo/Demo.DND">Drag & Drop</a></li>',
                     '<li><a href="#navigate/Demo/Demo.Coop">Co-op</a></li>',
