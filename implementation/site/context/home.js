@@ -77,7 +77,7 @@
 						'Supported Browsers: ',
 						'<i class="fa fa-firefox cursor-hand" data-toggle="tooltip" data-placement="bottom" title="Firefox Latest"></i> ',
 						'<i class="fa fa-chrome cursor-hand" data-toggle="tooltip" data-placement="bottom" title="Chrome Latest"></i> ',
-						'<i class="fa fa-edge cursor-hand" data-toggle="tooltip" data-placement="bottom" title="IE Edge/10+"></i> ',
+						'<i class="fa fa-edge cursor-hand" data-toggle="tooltip" data-placement="bottom" title="IE Edge/11+"></i> ',
 						'<i class="fa fa-safari cursor-hand" data-toggle="tooltip" data-placement="bottom" title="Safari (experimental)"></i> ',
 						'<i class="fa fa-opera cursor-hand" data-toggle="tooltip" data-placement="bottom" title="Opera (experimental)"></i> ',
 					'<p>'

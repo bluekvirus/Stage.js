@@ -254,7 +254,7 @@
 					//opt b. use global coop event 'ws-data-[channel]' in views directly (default json contract)
 					try {
 						var data = JSON.parse(e.data);
-						app.coop('ws-data-' + data.channel, {websocket: app._websockets[socketPath], path: socketPath, data: data.payload});
+						app.coop('ws-data-' + data.channel, data.payload, {websocket: app._websockets[socketPath], path: socketPath});
 					}catch(ex){
 						console.warn('DEV::Application::ws() Websocket is getting non-default {channel: ..., payload: ...} json contract strings...');
 					}
@@ -327,7 +327,7 @@
 		                card.eof(data, card);
 		            //coop event
 		            else
-		                app.coop(card.eof, data, card);
+		                app.coop('poll-data-' + card.eof, data, card);
 		        }).fail(function() {
 		            card.failed++;
 		            //Warning: Hardcoded 3 attemps here!

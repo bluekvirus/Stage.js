@@ -1796,7 +1796,7 @@
 					//opt b. use global coop event 'ws-data-[channel]' in views directly (default json contract)
 					try {
 						var data = JSON.parse(e.data);
-						app.coop('ws-data-' + data.channel, {websocket: app._websockets[socketPath], path: socketPath, data: data.payload});
+						app.coop('ws-data-' + data.channel, data.payload, {websocket: app._websockets[socketPath], path: socketPath});
 					}catch(ex){
 						console.warn('DEV::Application::ws() Websocket is getting non-default {channel: ..., payload: ...} json contract strings...');
 					}
@@ -1869,7 +1869,7 @@
 		                card.eof(data, card);
 		            //coop event
 		            else
-		                app.coop(card.eof, data, card);
+		                app.coop('poll-data-' + card.eof, data, card);
 		        }).fail(function() {
 		            card.failed++;
 		            //Warning: Hardcoded 3 attemps here!
@@ -5629,7 +5629,7 @@ module.exports = DeepModel;
 		 *
 		 * Symmetrical:
 		 * 		click (default)
-		 *   	dbclick
+		 *   	dblclick
 		 *
 		 * Asymmetrical:
 		 * 		mouseover/mouseout
@@ -6739,9 +6739,10 @@ module.exports = DeepModel;
 				},this);
 			});
 
-			//Automatically shows the region's view="" attr indicated View or @remote.tpl.html
-			//Note: re-render a view will not re-render the regions. use data change or .show() will.
+			//Automatically shows the region's view="" attr indicated View or @remote.tpl.html or *.md
+			//Note: re-render a view will not re-render the regions. use .set() or .show() will.
 			//Note: 'all-region-shown' will sync on 'region:show' which in turn wait on enterEffects before sub-region 'view:show';
+			//Note: 'show' and 'all-region-shown' doesn't mean 'data-rendered' thus 'ready'. Data render only starts after 'show';
 			this.listenTo(this, 'show view:data-rendered', function(){
 				var pairs = [];
 				_.each(this.regions, function(selector, r){
@@ -8773,4 +8774,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.9.3-1119 build 1473210742043";
+;;app.stagejs = "1.9.3-1121 build 1473357244597";

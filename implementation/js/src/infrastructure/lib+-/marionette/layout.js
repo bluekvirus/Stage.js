@@ -244,9 +244,10 @@
 				},this);
 			});
 
-			//Automatically shows the region's view="" attr indicated View or @remote.tpl.html
-			//Note: re-render a view will not re-render the regions. use data change or .show() will.
+			//Automatically shows the region's view="" attr indicated View or @remote.tpl.html or *.md
+			//Note: re-render a view will not re-render the regions. use .set() or .show() will.
 			//Note: 'all-region-shown' will sync on 'region:show' which in turn wait on enterEffects before sub-region 'view:show';
+			//Note: 'show' and 'all-region-shown' doesn't mean 'data-rendered' thus 'ready'. Data render only starts after 'show';
 			this.listenTo(this, 'show view:data-rendered', function(){
 				var pairs = [];
 				_.each(this.regions, function(selector, r){

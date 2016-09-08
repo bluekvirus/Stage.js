@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.10.0 (2016-06-29*)
+1.10.0 (2016-09-08*)
 --------------------
 1. Missing locale file will no longer raise exceptions;
 2. Updated flexlayout to be 0.2.3;
@@ -16,25 +16,26 @@ Change Log
 12. app.debug() now returns the last argument while printing under `?debug=true`
 13. Added `activate[-e]=group:classes` and `deactivate[-e]=group` supports for easy element activation by css classes;
 14. Removed app.nextFrame() and app.cancelFrame() apis;
+15. Aligned data push (ws-data-channel) and poll (poll-data-e) global coop event formats;
 
 working on ...
 
-* view.tab('region', View);
-* ws pushed data global coop event;
-* wire I18N and Modernizr/Detectizr to app apis;
 * upgrade to LESS 2.0 for wildcard includes;
 * Integrate stage-unideck into framework kit;
 * align data-effect*= to effect*= for region animations;
-* add pre 'upload' event to file editor?
-* Split/Update docs (around actions, data rendering, coop, dnd, effect, remote, ws, form, svg and prompt);
-* Adding cheatsheet;
-* Adding more unit test in demos;
-* Breaking down 'Basic' editors;
+* add pre 'upload' event to file editor;
+* wire I18N and Modernizr/Detectizr to app apis;
 * Separate modernizr+detectizr shiv bundles from deps;
-* Adding optional 2-way binders (stickit);
-* Adding `<canvas>` support in view (easel);
-* [cli] Enhance update cmd to also update mockups;
+* view.tab('region', View);
+* view.activate('group', seq number/[attr=]/match fn);
+* Cheatsheet;
+* Split/Update docs (around actions, data rendering, coop, dnd, effect, remote, ws, form, svg and prompt);
+* Breaking down 'Basic' editors;
 * [cli] Add a `revive` cmd as an alias to `update`;
+* More unit tests in demos;
+* Optional 2-way binders (stickit)?
+* Direct `<canvas>` support in view (easel)?
+* [cli] Enhance update cmd to also update free mockups?
 
 
 1.9.2 (2016-05-25)
