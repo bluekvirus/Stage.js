@@ -55,6 +55,10 @@
 
 		onReady: function(){
 			_.each(this.mockups, function(m){
+				//////////////////////////////////////////////////
+				///Absolute manually managed view life cycle...///
+				//////////////////////////////////////////////////
+				//1. create it
 				var view = app.view({
 					className: 'wrapper-full',
 					template: '@mockups/' + m.tpl,
@@ -65,8 +69,11 @@
 						if(m.onReady) m.onReady.call(this);
 					}
 				}, true);
+				//2. render and insert it into DOM
 				this.$el.append(view.render().el);
-				view.trigger('view:show');
+				//3. connect the view life-cycle event seq: --render--[[show]]--ready 
+				view.triggerMethod('show'); 
+				//(ref: /lib+-/marionette/view.js, we refined the seq and added the ready e though.)
 
 			}, this);
 		}
