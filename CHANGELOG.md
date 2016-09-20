@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.10.0 (2016-09-08*)
+1.10.0 (2016-09-19*)
 --------------------
 1. Missing locale file will no longer raise exceptions;
 2. Updated flexlayout to be 0.2.3;
@@ -17,6 +17,7 @@ Change Log
 13. Added `activate[-e]=group:classes` and `deactivate[-e]=group` supports for easy element activation by css classes;
 14. Removed app.nextFrame() and app.cancelFrame() apis;
 15. Aligned data push (ws-data-channel) and poll (poll-data-e) global coop event formats;
+16. Registered View will now correctly adds category-name style class upon instantiation;
 
 working on ...
 
