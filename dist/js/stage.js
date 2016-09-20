@@ -2870,7 +2870,10 @@
 
 				//type 2: name and options
 				else if(_.isPlainObject(factory)){
-					options = _.extend({name: name}, factory);
+					options = _.extend(factory, {
+						name: name,
+						className: regName.toLowerCase() + ' ' + _.string.slugify(regName + '-' + name) + ' ' + (factory.className || ''),
+					});
 					factory = function(){
 						return Marionette[options.type || 'Layout'].extend(options);
 					};
@@ -2886,6 +2889,8 @@
 				//+metadata to instances
 				this.map[name].prototype.name = name;
 				this.map[name].prototype.category = regName;
+				if(!this.map[name].prototype.className)
+					this.map[name].prototype.className = regName.toLowerCase() + ' ' + _.string.slugify(regName + '-' + name);
 
 				//fire the coop event (e.g for auto menu entry injection)
 				app.trigger('app:reusable-registered', this.map[name], regName);
@@ -8774,4 +8779,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.9.3-1121 build 1473357244597";
+;;app.stagejs = "1.9.3-1123 build 1474337109723";
