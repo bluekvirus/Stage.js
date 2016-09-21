@@ -548,15 +548,14 @@
 		}
 
 		//extend ui collection after first render (to support inline [ui=""] mark in template)
-		//**Caveat: Don't put anything as [ui=] in {{#each}}, they will overlap. 
-		//			bindUIElements in item-view render() will not pick up changes made here. (we re-init [ui=]tags manually)
+		//**Caveat: bindUIElements in item-view render() will not pick up changes made here. (we re-init [ui=]tags manually)
 		this.listenTo(this, 'render', function(){
 			var that = this;
 			this.ui = this.ui || {};
-			this.$el.find('[ui]').each(function(index, el){
-				var $el = $(el);
-				var key = $el.attr('ui');
-				that.ui[key] = $el;
+			_.each(_.unique(this.$el.find('[ui]').map(function(){
+				return $(this).attr('ui');
+			})), function(key){
+				that.ui[key] = that.$el.find('[ui=' + key + ']');
 			});
 		});
 
