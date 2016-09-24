@@ -81,6 +81,17 @@
 		    }
 		},
 
+		// Build an `itemView` for a model in the collection. (inject parentCt)
+		buildItemView: function(item, ItemViewType, itemViewOptions) {
+			var options = _.extend({ model: item }, itemViewOptions);
+			var view = new ItemViewType(options);
+			if(this._moreItems === true)
+				view.parentCt = this.parentCt;
+			else
+				view.parentCt = this;
+			return view;
+		},
+
 		/////////////////////////////
 		onRenderData: function(data){
 			this.set(data);

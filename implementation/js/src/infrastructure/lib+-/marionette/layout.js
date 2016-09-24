@@ -87,6 +87,7 @@
 					type: 'CollectionView',
 					itemView: _.isString(View)? app.get(View) : View, //if !View then Error: An `itemView` must be specified
 				}));//to support 'action-scroll' in region.
+				this.getViewIn(region)._moreItems = true; //set parentCt bypass mode for items (see collection-view:buildItemView);
 				this.getViewIn(region).set(d);
 			}
 		},

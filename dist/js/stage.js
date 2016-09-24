@@ -6586,6 +6586,7 @@ module.exports = DeepModel;
 					type: 'CollectionView',
 					itemView: _.isString(View)? app.get(View) : View, //if !View then Error: An `itemView` must be specified
 				}));//to support 'action-scroll' in region.
+				this.getViewIn(region)._moreItems = true; //set parentCt bypass mode for items (see collection-view:buildItemView);
 				this.getViewIn(region).set(d);
 			}
 		},
@@ -6905,6 +6906,17 @@ module.exports = DeepModel;
 			        _cb && _cb();
 		        }
 		    }
+		},
+
+		// Build an `itemView` for a model in the collection. (inject parentCt)
+		buildItemView: function(item, ItemViewType, itemViewOptions) {
+			var options = _.extend({ model: item }, itemViewOptions);
+			var view = new ItemViewType(options);
+			if(this._moreItems === true)
+				view.parentCt = this.parentCt;
+			else
+				view.parentCt = this;
+			return view;
 		},
 
 		/////////////////////////////
@@ -8778,4 +8790,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.9.3-1124 build 1474420689287";
+;;app.stagejs = "1.9.3-1125 build 1474684049148";
