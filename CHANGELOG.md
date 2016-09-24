@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.10.0 (2016-09-20*)
+1.10.0 (2016-09-23*)
 --------------------
 1. Missing locale file will no longer raise exceptions;
 2. Updated flexlayout to be 0.2.3;
@@ -19,6 +19,7 @@ Change Log
 15. Aligned data push (ws-data-channel) and poll (poll-data-e) global coop event formats;
 16. Registered View will now correctly adds category-name style class upon instantiation;
 17. [ui=...] will now group all same-keyword marked elements instead of just one;
+18. Added .parentCt property to .more()-ed item views;
 
 working on ...
 
