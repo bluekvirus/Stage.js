@@ -5206,7 +5206,7 @@ module.exports = DeepModel;
  * 
  * use the css animation name as enter (show) & exit (close) effect name.
  * 1. 'lightSpeed' or {enter: 'lightSpeedIn', exit: '...'} in view definition
- * 2. data-effect="lightSpeed" or data-effect-enter="lightSpeedIn" data-effect-exit="..." on region tag
+ * 2. effect="lightSpeed" or effect-enter="lightSpeedIn" effect-exit="..." on region tag
  *
  * https://daneden.github.io/animate.css/
  * 
@@ -5297,7 +5297,7 @@ module.exports = DeepModel;
             }
 
             //play effect (before 'show')
-            var enterEffect = (_.isPlainObject(view.effect) ? view.effect.enter : (view.effect ? (view.effect + 'In') : '')) || (this.$el.data('effect')? (this.$el.data('effect') + 'In') : '') || this.$el.data('effectEnter');
+            var enterEffect = (_.isPlainObject(view.effect) ? view.effect.enter : (view.effect ? (view.effect + 'In') : '')) || (this.$el.attr('effect')? (this.$el.attr('effect') + 'In') : '') || this.$el.attr('effect-enter');
             if (enterEffect) {
                 view.$el.addClass(enterEffect + ' animated').one(app.ADE, function() {
                     view.$el.removeClass('animated ' + enterEffect);
@@ -5327,7 +5327,7 @@ module.exports = DeepModel;
                     _cb && _cb(); //for opening new view immediately (internal, see show());
                 }, this);
 
-                var exitEffect = (_.isPlainObject(view.effect) ? view.effect.exit : (view.effect ? (view.effect + 'Out') : '')) || (this.$el.data('effect')? (this.$el.data('effect') + 'Out'): '') || this.$el.data('effectExit');
+                var exitEffect = (_.isPlainObject(view.effect) ? view.effect.exit : (view.effect ? (view.effect + 'Out') : '')) || (this.$el.attr('effect')? (this.$el.attr('effect') + 'Out'): '') || this.$el.attr('effect-exit');
                 if (exitEffect) {
                     view.$el.addClass(exitEffect + ' animated')
                     .one(app.ADE, function(e) {
@@ -6534,9 +6534,15 @@ module.exports = DeepModel;
 			return r && r.currentView;
 		},
 
-		//handle closing regions, and then close the view itself.
-		//taking care of closing effect sync (reported on 'item:closed')
-		close: function(_cb){
+		//overriding view.close() to support:
+		//	closing 1 specific region by ('name').
+		//	handle closing regions, and then close the view itself.
+		//	taking care of closing effect sync (reported on 'item:closed')
+		close: function(_cb /*or region name*/){
+			if(_.isString(_cb)){
+				var region = this.getRegion(_cb);
+				return region && region.close();
+			}
 		    if(this.isClosed){
 		    	_cb && _cb();
 		        return;
@@ -8790,4 +8796,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.9.3-1125 build 1474684049148";
+;;app.stagejs = "1.9.3-1126 build 1476142875611";

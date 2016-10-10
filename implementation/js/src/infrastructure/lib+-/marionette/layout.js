@@ -35,9 +35,15 @@
 			return r && r.currentView;
 		},
 
-		//handle closing regions, and then close the view itself.
-		//taking care of closing effect sync (reported on 'item:closed')
-		close: function(_cb){
+		//overriding view.close() to support:
+		//	closing 1 specific region by ('name').
+		//	handle closing regions, and then close the view itself.
+		//	taking care of closing effect sync (reported on 'item:closed')
+		close: function(_cb /*or region name*/){
+			if(_.isString(_cb)){
+				var region = this.getRegion(_cb);
+				return region && region.close();
+			}
 		    if(this.isClosed){
 		    	_cb && _cb();
 		        return;

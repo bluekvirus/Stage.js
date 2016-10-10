@@ -8,7 +8,7 @@
 					'<div class="btn btn-primary" action="show_1">Show View1</div>',
 					'<div class="btn btn-warning" action="close_1">Close View1</div>',
 				'</div>',
-				'<div region="effect1" data-effect="fade"></div>',
+				'<div region="effect1" effect="fade"></div>',
 			'</div>',
 			'<div class="col-md-4">',
 				'<div style="text-align:center;">',
@@ -26,29 +26,29 @@
 			'</div>',
 		],
 		onReady: function(){
-			this.getRegion('effect1').show(new Effect1());
-			this.getRegion('effect2').show(new Effect2());
-			this.getRegion('effect3').show(new Effect3());
+			this.show('effect1', new Effect1());
+			this.show('effect2', new Effect2());
+			this.show('effect3', new Effect3());
 		},
 		actions: {
 			show_1: function(){
 				this.show('effect1', 'Effect1');
 			},
 			close_1: function(){
-				this.getRegion('effect1').close();
+				this.close('effect1');
 
 			},
 			show_2: function(){
 				this.show('effect2', Effect2);	
 			},
 			close_2: function(){
-				this.getRegion('effect2').close();
+				this.close('effect2');
 			},
 			show_3: function(){
 				this.show('effect3', new Effect3());	
 			},
 			close_3: function(){
-				this.getRegion('effect3').close();
+				this.close('effect3');
 			}
 		}
 	});
@@ -59,9 +59,9 @@
 		template: [
 			'<div style="height:30em;border: 1px solid #999;">',
 				'<div style="width:90%;position:relative;top:50%;left:50%;transform:translate(-50%,-50%);color:#626262;">',
-					'<div>You can define the effect by write data-effect attribute in the region definition.</div>',
+					'<div>You can define the effect by write the "effect=" attribute in the region definition.</div>',
 					'<div><br></div>',
-					'<div>&lt;div region="..." data-effect="fade" &gt;</div>',
+					'<div>&lt;div region="..." effect="fade" &gt;</div>',
 				'</div>',
 			'</div>',
 		]
