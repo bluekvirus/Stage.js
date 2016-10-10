@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.10.0 (2016-09-23*)
+1.10.0 (2016-10-10*)
 --------------------
 1. Missing locale file will no longer raise exceptions;
 2. Updated flexlayout to be 0.2.3;
@@ -20,25 +20,26 @@ Change Log
 16. Registered View will now correctly adds category-name style class upon instantiation;
 17. [ui=...] will now group all same-keyword marked elements instead of just one;
 18. Added .parentCt property to .more()-ed item views;
+19. this.close() now supports closing a specific region by ('name');
+20. Aligned data-effect*= to effect*= for region animations; (this might break your templates)
 
 working on ...
 
 * upgrade to LESS 2.0 for wildcard includes;
 * Integrate stage-unideck into framework kit;
-* align data-effect*= to effect*= for region animations;
 * add pre 'upload' event to file editor;
-* wire I18N and Modernizr/Detectizr to app apis;
-* Separate modernizr+detectizr shiv bundles from deps;
-* view.tab('region', View);
+* view.tab('region', View) - cached meta-region;
 * view.activate('group', seq number/[attr=]/match fn);
+* wire I18N and Modernizr/Detectizr to app apis;
 * Cheatsheet;
 * Split/Update docs (around actions, data rendering, coop, dnd, effect, remote, ws, form, svg and prompt);
+* Separate modernizr+detectizr shiv bundles from deps;
 * Breaking down 'Basic' editors;
-* [cli] Add a `revive` cmd as an alias to `update`;
-* More unit tests in demos;
+* [cli] Add a `revive` cmd as an alias to `update`?
 * Optional 2-way binders (stickit)?
 * Direct `<canvas>` support in view (easel)?
 * [cli] Enhance update cmd to also update free mockups?
+* More unit tests in demos;
 
 
 1.9.2 (2016-05-25)
