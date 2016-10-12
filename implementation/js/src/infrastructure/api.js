@@ -633,10 +633,12 @@
 				var result = app.locate(v), $container;
 				//add a container style
 				if(result.view.category !== 'Editor')
-					$container = result.view.parentRegion.$el;
+					$container = result.view.parentRegion && result.view.parentRegion.$el;
 				else
 					$container = result.view.$el;
 				//else return;
+				if(!$container) return;
+
 				$container.css({
 					'padding': '1.5em', 
 					'border': '1px dashed black'

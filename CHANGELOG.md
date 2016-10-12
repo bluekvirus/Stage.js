@@ -22,6 +22,9 @@ Change Log
 18. Added .parentCt property to .more()-ed item views;
 19. this.close() now supports closing a specific region by ('name');
 20. Aligned data-effect*= to effect*= for region animations; (this might break your templates)
+21. Fixed a regression in app.mark(); (e.g editors, .more()-ed views);
+22. Array typed data property in a View def will now be cloned before given to model.items;
+23. .more()-ed views will now have correct parentRegion as well as parentCt;
 
 working on ...
 

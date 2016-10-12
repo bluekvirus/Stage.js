@@ -101,8 +101,10 @@
 					return this.isInDOM() && this.refresh();
 				}
 				else if(_.isArray(data))
-					return this.model.set('items', data); 
+					return this.model.set('items', _.clone(data)); 
 					//conform to original Backbone/Marionette settings
+					//Caveat: Only shallow copy provided for data array here... 
+					//		  Individual changes to any item data still affects all instances of this View if 'data' is specified in def.
 			}
 			return this.model.set.apply(this.model, arguments);
 		},
@@ -260,9 +262,10 @@
 					config = _.extend({name: name, parentCt: this}, global);
 					editor = new Editor(config); //you need to implement event forwarding to parentCt like Basic.
 					editor.isCompound = true;
+					editor.category = 'Editor';
 				}
-				
 				this._editors[name] = editor.render();
+
 				//2. add it into view (specific, appendTo(editor cfg), appendTo(general cfg), append)
 				var $position = this.$('[editor="' + name + '"]');
 				if($position.length === 0 && config.appendTo)

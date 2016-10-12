@@ -190,14 +190,21 @@
 				this.addRegions(this.regions); //rely on M.Layout._reInitializeRegions() in M.Layout.render();
 			});
 
-			//Giving region the ability to show:
+			//Giving view/region the ability to show:
 			//1. a registered View/Widget by name and options
-			//2. @remote.tpl.html
-			//3. *.md
+			//2. direct templates
+			//	2.1 @*.html -- remote template in html
+			//	2.2 @*.md -- remote template in markdown
+			//	2.3 'raw html string'
+			//	2.4 ['raw html string1', 'raw html string2']
+			//	2.5 a '#id' marked DOM element 
+			//3. view def (class fn)
+			//4. view instance (object)
 			// 
-			//through
-			// 
-			//view="" or 'region:load-view' or this.show('region', ...)
+			//Through 
+			//	view="" in the template; (1, 2.1, 2.2, 2.5 only)
+			//  this.show('region', ...) in a view; (all 1-4)
+			//  'region:load-view' on a region; (all 1-4)
 			this.listenTo(this, 'render', function(){
 				_.each(this.regions, function(selector, region){
 					//ensure region and container style
@@ -205,8 +212,9 @@
 					this[region].$el.addClass('region region-' + _.string.slugify(region));
 					this[region]._parentLayout = this;
 
-					//+
-					this[region].listenTo(this[region], 'region:load-view', function(name /*or View*/, options){ //can load both view and widget.
+					//+since we don't have meta-e enhancement on regions, the 'region:load-view' impl is added here.
+					//meta-e are only available on app and view (and context)
+					this[region].listenTo(this[region], 'region:load-view', function(name /*or templates or View def/instance*/, options){ //can load both view and widget.
 						if(!name) return;
 
 						if(_.isString(name)){
@@ -251,7 +259,7 @@
 				},this);
 			});
 
-			//Automatically shows the region's view="" attr indicated View or @remote.tpl.html or *.md
+			//Automatically shows the region's view="" attr indicated View or @*.html/*.md
 			//Note: re-render a view will not re-render the regions. use .set() or .show() will.
 			//Note: 'all-region-shown' will sync on 'region:show' which in turn wait on enterEffects before sub-region 'view:show';
 			//Note: 'show' and 'all-region-shown' doesn't mean 'data-rendered' thus 'ready'. Data render only starts after 'show';

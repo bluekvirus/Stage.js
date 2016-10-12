@@ -85,8 +85,11 @@
 		buildItemView: function(item, ItemViewType, itemViewOptions) {
 			var options = _.extend({ model: item }, itemViewOptions);
 			var view = new ItemViewType(options);
-			if(this._moreItems === true)
+			if(this._moreItems === true){
+				//.more()-ed items will bypass this CollectionView and use 'grand parent' as parentCt.
 				view.parentCt = this.parentCt;
+				view.parentRegion = this.parentRegion;
+			}
 			else
 				view.parentCt = this;
 			return view;
