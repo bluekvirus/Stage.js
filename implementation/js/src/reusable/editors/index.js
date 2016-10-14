@@ -327,7 +327,7 @@
 						if(config.formData) 
 							config.formData = _.result(config, 'formData');
 						
-						//fix the url with app.config.baseAjaxURI
+						//fix the url with app.config.baseAjaxURI (since form uploading counts as data api)
 						if(app.config.baseAjaxURI)
 							config.url = [app.config.baseAjaxURI, config.url].join('/');
 

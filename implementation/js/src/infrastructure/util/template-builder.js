@@ -7,7 +7,7 @@
  * Usage (name as id)
  * -----
  * app.Util.Tpl.build(name, [</>, </>, ...]) / ([</>, </>, ...]) / ('</></>...</>')
- * app.Util.Tpl.remote(name, base, sync) - default on using app.config.viewTemplates as base
+ * app.Util.Tpl.remote(url, sync) - default on using app.config.viewTemplates as base before url, use '/' as start to skip
  *
  * @author Tim Lauv
  * @create 2013.12.20
@@ -52,20 +52,22 @@
 
 		//load all prepared/combined templates from server (*.json without CORS)
 		//or
-		//load individual tpl into (Note: that tplName can be name or path to html) 
-		remote: function(name, base, sync){
+		//load individual tpl
+		//all loaded tpl will be stored in cache (app.Util.Tpl.cache.templateCaches)
+		remote: function(name, sync){
 			var that = this;
-			if(_.string.startsWith(name, '@'))
-				name = name.substr(1);
 			if(!name) throw new Error('DEV::Util.Tpl::remote() your template name can NOT be empty!');
 
-			if(_.isBoolean(base)){
-				sync = base;
-				base = undefined;
+			var originalName = name;
+			if(_.string.startsWith(name, '@'))
+				name = name.slice(1);
+			var base = app.config.viewTemplates;
+			if(_.string.startsWith(name, '/')){
+				name = name.slice(1);
+				base = '.';
 			}
-
-			var url = (base || app.config.viewTemplates) + '/' + name;
-			if(_.string.endsWith(name, '.json')){
+			var url = base + '/' + name;
+			if(_.string.endsWith(url, '.json')){
 				//load all from preped .json
 				return $.ajax({
 					url: url,
@@ -83,7 +85,7 @@
 					dataType: 'html',
 					async: !sync
 				}).done(function(tpl){
-					Template.cache.make(name, tpl);
+					Template.cache.make(originalName, tpl);
 				}).fail(function(){
 					throw new Error('DEV::Util.Tpl::remote() Can not load template...' + url + ', re-check your app.config.viewTemplates setting');
 				});

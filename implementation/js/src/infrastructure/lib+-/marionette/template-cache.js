@@ -32,7 +32,7 @@
 
 		//1 Override the default raw-template retrieving method 
 		//(invoked by M.TemplateCache.get() by cache.load() if the cache doesn't have cache.compiledTemplate)
-		//We allow both #id or @*.html(remote) and template html string(or string array) as parameter.
+		//We allow both #id or @*.html/.md(remote) and template html string(or string array) as parameter.
 		//This method is only invoked with a template cache miss. So clear your cache if you have changed the template. (app.Util.Tpl.cache.clear(name))
 		loadTemplate: function(idOrTplString){
 			//local in-DOM template
@@ -40,14 +40,22 @@
 				return $(idOrTplString).html();
 			//remote template (with local stored map cache)
 			if(_.string.startsWith(idOrTplString, '@')) {
+				var rtpl;
+				//fetch from cache
+				if(this.rawTemplate){
+					rtpl = this.rawTemplate;
+				}
 				//fetch from remote: (might need server-side CORS support)
 				//**Caveat: triggering app.inject.tpl() will replace the cache object that triggered this loadTemplate() call.
-				if(this.rawTemplate)
-					return this.rawTemplate;
-				var rtpl; //sync mode injecting
-				app.inject.tpl(idOrTplString, true).done(function(tpl){
-					rtpl = tpl;
-				});
+				else
+					//sync mode injecting
+					app.inject.tpl(idOrTplString, true).done(function(tpl){
+						rtpl = tpl;
+					});
+
+				//pre-process the markdown if needed (put here to also support batched all.json tpl injected markdowns)
+				if(_.string.endsWith(idOrTplString, '.md'))
+					rtpl = app.markdown(rtpl);
 				return rtpl;
 			}
 			//string and string array

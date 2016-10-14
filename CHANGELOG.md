@@ -12,7 +12,7 @@ Change Log
 8. Refined app.markdown() api to support 2 ways of getting options (direct, data-marked/hljs);
 9. Remapped all app:blocked events to app:locked;
 10. Added callout supporting symbol !!! in addition to ^^^ for markdowns;
-11. Added `view="*.md"` preprocessed markdown regions and view:markdown-rendered event;
+11. Added `view="@*.md"` preprocessed markdown template support in addition to `view="@*.html"`;
 12. app.debug() now returns the last argument while printing under `?debug=true`
 13. Added `activate[-e]=group:classes` and `deactivate[-e]=group` supports for easy element activation by css classes;
 14. Removed app.nextFrame() and app.cancelFrame() apis;
@@ -25,15 +25,17 @@ Change Log
 21. Fixed a regression in app.mark(); (e.g editors, .more()-ed views);
 22. Array typed data property in a View def will now be cloned before given to model.items;
 23. .more()-ed views will now have correct parentRegion as well as parentCt;
+24. Refined template building/caching code to support both view and view="" in the same way; (e.g *.md and '/' for app.config.viewTemplates bypass in remote path)
+25. 'context-switched' global coop event will now emit with additional metadata as second param.
 
 working on ...
 
-* upgrade to LESS 2.0 for wildcard includes;
-* Integrate stage-unideck into framework kit;
-* add pre 'upload' event to file editor;
-* view.tab('region', View) - cached meta-region;
 * view.activate('group', seq number/[attr=]/match fn);
+* view.tab('region', View) - cached meta-region;
 * wire I18N and Modernizr/Detectizr to app apis;
+* add pre 'upload' event to file editor;
+* Integrate stage-unideck into framework kit;
+* upgrade to LESS 2.0 for wildcard includes;
 * Cheatsheet;
 * Split/Update docs (around actions, data rendering, coop, dnd, effect, remote, ws, form, svg and prompt);
 * Separate modernizr+detectizr shiv bundles from deps;

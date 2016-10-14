@@ -218,19 +218,8 @@
 						if(!name) return;
 
 						if(_.isString(name)){
-							//Template mockups?
+							//Template directly (static/mockup view)?
 							if(!/^[_A-Z]/.test(name)){
-								//*.md 
-								if(_.string.endsWith(name, '.md')){
-									var that = this;
-									return app.remote(name).done(function(md){
-										app.markdown(md, that.$el);
-										that._parentLayout.trigger('view:markdown-rendered', name, region);
-									}).fail(function(jqXHR, settings, e){
-										throw new Error('DEV::Application::remote() can NOT load markdown for ' + name + ' - [' + e + ']');
-									});
-								}
-								//inline html string and @remote template
 								return this.show(app.view({
 									template: name,
 								}));

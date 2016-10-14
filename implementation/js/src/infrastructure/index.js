@@ -170,7 +170,7 @@
 						app.currentContext = targetCtx;
 						//fire a notification to app as meta-event.
 						app.trigger('app:context-switched', app.currentContext.name);
-						app.coop('context-switched', app.currentContext.name);
+						app.coop('context-switched', app.currentContext.name, {ctx: app.currentContext, subpath: path.join('/')});
 						//notify regional views in the context (views further down in the nav chain)
 						app.currentContext.trigger('context:navigate-chain', path);
 					});

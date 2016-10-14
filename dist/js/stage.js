@@ -1321,7 +1321,7 @@
 						app.currentContext = targetCtx;
 						//fire a notification to app as meta-event.
 						app.trigger('app:context-switched', app.currentContext.name);
-						app.coop('context-switched', app.currentContext.name);
+						app.coop('context-switched', app.currentContext.name, {ctx: app.currentContext, subpath: path.join('/')});
 						//notify regional views in the context (views further down in the nav chain)
 						app.currentContext.trigger('context:navigate-chain', path);
 					});
@@ -2175,10 +2175,12 @@
 				var result = app.locate(v), $container;
 				//add a container style
 				if(result.view.category !== 'Editor')
-					$container = result.view.parentRegion.$el;
+					$container = result.view.parentRegion && result.view.parentRegion.$el;
 				else
 					$container = result.view.$el;
 				//else return;
+				if(!$container) return;
+
 				$container.css({
 					'padding': '1.5em', 
 					'border': '1px dashed black'
@@ -2410,7 +2412,7 @@
  * Usage (name as id)
  * -----
  * app.Util.Tpl.build(name, [</>, </>, ...]) / ([</>, </>, ...]) / ('</></>...</>')
- * app.Util.Tpl.remote(name, base, sync) - default on using app.config.viewTemplates as base
+ * app.Util.Tpl.remote(url, sync) - default on using app.config.viewTemplates as base before url, use '/' as start to skip
  *
  * @author Tim Lauv
  * @create 2013.12.20
@@ -2455,20 +2457,22 @@
 
 		//load all prepared/combined templates from server (*.json without CORS)
 		//or
-		//load individual tpl into (Note: that tplName can be name or path to html) 
-		remote: function(name, base, sync){
+		//load individual tpl
+		//all loaded tpl will be stored in cache (app.Util.Tpl.cache.templateCaches)
+		remote: function(name, sync){
 			var that = this;
-			if(_.string.startsWith(name, '@'))
-				name = name.substr(1);
 			if(!name) throw new Error('DEV::Util.Tpl::remote() your template name can NOT be empty!');
 
-			if(_.isBoolean(base)){
-				sync = base;
-				base = undefined;
+			var originalName = name;
+			if(_.string.startsWith(name, '@'))
+				name = name.slice(1);
+			var base = app.config.viewTemplates;
+			if(_.string.startsWith(name, '/')){
+				name = name.slice(1);
+				base = '.';
 			}
-
-			var url = (base || app.config.viewTemplates) + '/' + name;
-			if(_.string.endsWith(name, '.json')){
+			var url = base + '/' + name;
+			if(_.string.endsWith(url, '.json')){
 				//load all from preped .json
 				return $.ajax({
 					url: url,
@@ -2486,7 +2490,7 @@
 					dataType: 'html',
 					async: !sync
 				}).done(function(tpl){
-					Template.cache.make(name, tpl);
+					Template.cache.make(originalName, tpl);
 				}).fail(function(){
 					throw new Error('DEV::Util.Tpl::remote() Can not load template...' + url + ', re-check your app.config.viewTemplates setting');
 				});
@@ -5117,7 +5121,7 @@ module.exports = DeepModel;
 
 		//1 Override the default raw-template retrieving method 
 		//(invoked by M.TemplateCache.get() by cache.load() if the cache doesn't have cache.compiledTemplate)
-		//We allow both #id or @*.html(remote) and template html string(or string array) as parameter.
+		//We allow both #id or @*.html/.md(remote) and template html string(or string array) as parameter.
 		//This method is only invoked with a template cache miss. So clear your cache if you have changed the template. (app.Util.Tpl.cache.clear(name))
 		loadTemplate: function(idOrTplString){
 			//local in-DOM template
@@ -5125,14 +5129,22 @@ module.exports = DeepModel;
 				return $(idOrTplString).html();
 			//remote template (with local stored map cache)
 			if(_.string.startsWith(idOrTplString, '@')) {
+				var rtpl;
+				//fetch from cache
+				if(this.rawTemplate){
+					rtpl = this.rawTemplate;
+				}
 				//fetch from remote: (might need server-side CORS support)
 				//**Caveat: triggering app.inject.tpl() will replace the cache object that triggered this loadTemplate() call.
-				if(this.rawTemplate)
-					return this.rawTemplate;
-				var rtpl; //sync mode injecting
-				app.inject.tpl(idOrTplString, true).done(function(tpl){
-					rtpl = tpl;
-				});
+				else
+					//sync mode injecting
+					app.inject.tpl(idOrTplString, true).done(function(tpl){
+						rtpl = tpl;
+					});
+
+				//pre-process the markdown if needed (put here to also support batched all.json tpl injected markdowns)
+				if(_.string.endsWith(idOrTplString, '.md'))
+					rtpl = app.markdown(rtpl);
 				return rtpl;
 			}
 			//string and string array
@@ -6241,8 +6253,10 @@ module.exports = DeepModel;
 					return this.isInDOM() && this.refresh();
 				}
 				else if(_.isArray(data))
-					return this.model.set('items', data); 
+					return this.model.set('items', _.clone(data)); 
 					//conform to original Backbone/Marionette settings
+					//Caveat: Only shallow copy provided for data array here... 
+					//		  Individual changes to any item data still affects all instances of this View if 'data' is specified in def.
 			}
 			return this.model.set.apply(this.model, arguments);
 		},
@@ -6400,9 +6414,10 @@ module.exports = DeepModel;
 					config = _.extend({name: name, parentCt: this}, global);
 					editor = new Editor(config); //you need to implement event forwarding to parentCt like Basic.
 					editor.isCompound = true;
+					editor.category = 'Editor';
 				}
-				
 				this._editors[name] = editor.render();
+
 				//2. add it into view (specific, appendTo(editor cfg), appendTo(general cfg), append)
 				var $position = this.$('[editor="' + name + '"]');
 				if($position.length === 0 && config.appendTo)
@@ -6689,14 +6704,21 @@ module.exports = DeepModel;
 				this.addRegions(this.regions); //rely on M.Layout._reInitializeRegions() in M.Layout.render();
 			});
 
-			//Giving region the ability to show:
+			//Giving view/region the ability to show:
 			//1. a registered View/Widget by name and options
-			//2. @remote.tpl.html
-			//3. *.md
+			//2. direct templates
+			//	2.1 @*.html -- remote template in html
+			//	2.2 @*.md -- remote template in markdown
+			//	2.3 'raw html string'
+			//	2.4 ['raw html string1', 'raw html string2']
+			//	2.5 a '#id' marked DOM element 
+			//3. view def (class fn)
+			//4. view instance (object)
 			// 
-			//through
-			// 
-			//view="" or 'region:load-view' or this.show('region', ...)
+			//Through 
+			//	view="" in the template; (1, 2.1, 2.2, 2.5 only)
+			//  this.show('region', ...) in a view; (all 1-4)
+			//  'region:load-view' on a region; (all 1-4)
 			this.listenTo(this, 'render', function(){
 				_.each(this.regions, function(selector, region){
 					//ensure region and container style
@@ -6704,24 +6726,14 @@ module.exports = DeepModel;
 					this[region].$el.addClass('region region-' + _.string.slugify(region));
 					this[region]._parentLayout = this;
 
-					//+
-					this[region].listenTo(this[region], 'region:load-view', function(name /*or View*/, options){ //can load both view and widget.
+					//+since we don't have meta-e enhancement on regions, the 'region:load-view' impl is added here.
+					//meta-e are only available on app and view (and context)
+					this[region].listenTo(this[region], 'region:load-view', function(name /*or templates or View def/instance*/, options){ //can load both view and widget.
 						if(!name) return;
 
 						if(_.isString(name)){
-							//Template mockups?
+							//Template directly (static/mockup view)?
 							if(!/^[_A-Z]/.test(name)){
-								//*.md 
-								if(_.string.endsWith(name, '.md')){
-									var that = this;
-									return app.remote(name).done(function(md){
-										app.markdown(md, that.$el);
-										that._parentLayout.trigger('view:markdown-rendered', name, region);
-									}).fail(function(jqXHR, settings, e){
-										throw new Error('DEV::Application::remote() can NOT load markdown for ' + name + ' - [' + e + ']');
-									});
-								}
-								//inline html string and @remote template
 								return this.show(app.view({
 									template: name,
 								}));
@@ -6750,7 +6762,7 @@ module.exports = DeepModel;
 				},this);
 			});
 
-			//Automatically shows the region's view="" attr indicated View or @remote.tpl.html or *.md
+			//Automatically shows the region's view="" attr indicated View or @*.html/*.md
 			//Note: re-render a view will not re-render the regions. use .set() or .show() will.
 			//Note: 'all-region-shown' will sync on 'region:show' which in turn wait on enterEffects before sub-region 'view:show';
 			//Note: 'show' and 'all-region-shown' doesn't mean 'data-rendered' thus 'ready'. Data render only starts after 'show';
@@ -6918,8 +6930,11 @@ module.exports = DeepModel;
 		buildItemView: function(item, ItemViewType, itemViewOptions) {
 			var options = _.extend({ model: item }, itemViewOptions);
 			var view = new ItemViewType(options);
-			if(this._moreItems === true)
+			if(this._moreItems === true){
+				//.more()-ed items will bypass this CollectionView and use 'grand parent' as parentCt.
 				view.parentCt = this.parentCt;
+				view.parentRegion = this.parentRegion;
+			}
 			else
 				view.parentCt = this;
 			return view;
@@ -7889,7 +7904,7 @@ var I18N = {};
 						if(config.formData) 
 							config.formData = _.result(config, 'formData');
 						
-						//fix the url with app.config.baseAjaxURI
+						//fix the url with app.config.baseAjaxURI (since form uploading counts as data api)
 						if(app.config.baseAjaxURI)
 							config.url = [app.config.baseAjaxURI, config.url].join('/');
 
@@ -8796,4 +8811,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.9.3-1126 build 1476142875611";
+;;app.stagejs = "1.9.3-1128 build 1476415162757";
