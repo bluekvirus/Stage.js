@@ -27,10 +27,10 @@ Change Log
 23. .more()-ed views will now have correct parentRegion as well as parentCt;
 24. Refined template building/caching code to support both view and view="" in the same way; (e.g *.md and '/' for app.config.viewTemplates bypass in remote path)
 25. 'context-switched' global coop event will now emit with additional metadata as second param.
+26. Added view.activate(group, filterFn) for programmatic (silent feedback) activations;
 
 working on ...
 
-* view.activate('group', seq number/[attr=]/match fn);
 * view.tab('region', View) - cached meta-region;
 * wire I18N and Modernizr/Detectizr to app apis;
 * add pre 'upload' event to file editor;

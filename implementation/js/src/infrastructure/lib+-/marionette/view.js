@@ -310,7 +310,7 @@
 			});
 
 			//Note: Need to use $el.data instead of $el._var for persisting marks and states on el.
-			this._doActivation = function(e){
+			this._doActivation = function(e, silent){
 				var $el = $(e.currentTarget);
 				var activate = ($el.attr('activate-' + e.type) || $el.attr('activate')).split(':');
 				var group = activate[0], classes = activate[1] || 'active';
@@ -328,7 +328,8 @@
 				$el.addClass(classes);
 				$el.data('deactivation-' + group, classes);
 				//3. fire the view:item-activated event
-				this.trigger('view:item-activated', $el, group, classes);
+				if(!silent)
+					this.trigger('view:item-activated', $el, group, classes);
 
 				//finally
 				e.stopPropagation(); //Important::This is to prevent confusing the parent view's activation tag listener.
@@ -357,6 +358,25 @@
 				
 				//finally
 				e.stopPropagation(); //Important::This is to prevent confusing the parent view's activation tag listener.
+			};
+
+			//+Manual api (for silent feedback calls - no 'view:item-activated' event fired by default)
+			this.activate = function(group, matchFn /*or index or [attr=""] selector*/, loud){
+				var $items, attr, events = ['', 'click', 'dblclick', 'mouseover', 'focusin']; //Refactor: Cache it!
+				if(_.isNumber(matchFn)){
+					var index = matchFn;
+					matchFn = function(i){
+						return i == index;
+					};
+				}
+				//search for group (per event)
+				for(var i in events){
+					var e = events[i];
+					attr = e ? 'activate-' + e : 'activate';
+					$items = this.$el.find(app.debug('[' + attr + '^=' + group + ']'));
+					if($items.length)
+						return $items.filter(matchFn).trigger(e || 'click', !loud);
+				}
 			};
 		},
 
