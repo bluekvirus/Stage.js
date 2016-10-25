@@ -124,8 +124,9 @@
 	app.view('Home.BG', {
 		//template: ' ', //might need exception as .editors configured views.
 		svg: true,
-		data: '/static/resource/en-US/i18n.json', //a test, not used
-
+		data: '/static/resource/en-US/i18n.json', //a test, not used in view
+		//data: {local: true}, //a test, not used in view
+		
 		onReady: function(){
 			app.debug('Hidden (Home) svg data:', this.get());
 			this.trigger('view:draw');

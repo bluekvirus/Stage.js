@@ -5374,9 +5374,9 @@ module.exports = DeepModel;
 ;/**
  * This is where we extend and enhance the abilities of a View through init,lifecycle augmentation.
  * 
- * View life-cycle:
+ * View hierarchy:
  * ---------------
- * new View
+ * the View
  * 		|
  * 		is
  * 		|
@@ -5404,11 +5404,16 @@ module.exports = DeepModel;
  * 		|
  * ---------------
  *
- * View Render() implementation is in item-view.js:render()! This in turn will be triggered by model:change in Marionette v1.8
+ * View render() implementation is in item-view.js:render()! This in turn will be triggered by model:change in Marionette v1.8
  *
  * ---------------
+ *
+ * View life-cycle:
+ * ---------------
+ * new View(cfg) --> render()* +$el with template, events and enhancements --> show()* +DOM, svg and data --> ready() re-rendered with data.
  * 
  * Fixed enhancement:
+ * ---------------
  * +pick additional live options
  * +rewire get/set to getVal/setVal for Editor view.
  * +auto ui tags detection and register
@@ -5436,7 +5441,7 @@ module.exports = DeepModel;
  * @author Tim Lauv
  * @created 2014.02.25
  * @updated 2015.08.03
- * @updated 2016.09.06
+ * @updated 2016.10.25
  */
 
 
@@ -5925,7 +5930,7 @@ module.exports = DeepModel;
 	 	}
 	});
 
-	//*init, life-cycle
+	//*init cycle, 3 patching stages: new()* -- render($el)* -- show(DOM)* --> ready(data)
 	Backbone.Marionette.View.prototype.constructor = function(options){
 		options = options || {};
 
@@ -5996,23 +6001,6 @@ module.exports = DeepModel;
 		}
 		//recover local (same-ancestor) collaboration
 		this.coop = this._coop;
-
-		//data / useParentData ({}, [] or url for GET only)
-		this.listenToOnce(this, 'show', function() {
-		    //supports getting parent data from useParentData.
-		    if (this.parentCt && this.useParentData) {
-		        var tmp = this.parentCt.get(this.useParentData);
-		        //wrap non-object data into an object with same key indicated by .useParentData.
-		        if (!_.isUndefined(tmp) && !_.isPlainObject(tmp)) {
-		            var tmpwrap = {};
-		            tmpwrap[this.useParentData] = tmp;
-		            tmp = tmpwrap;
-		        }
-		        this.data = tmp;
-		    }
-		    if (this.data)
-		        this.set(this.data);
-		});
 
 		//enable i18n
 		if(I18N.locale) {
@@ -6179,6 +6167,23 @@ module.exports = DeepModel;
 			    //note that form view will not re-render on .set(data) so there should be no 2x view:ready triggered.
 		});
 
+		//data / useParentData ({}, [] or url for GET only)
+		this.listenToOnce(this, 'show', function() {
+		    //supports getting parent data from useParentData.
+		    if (this.parentCt && this.useParentData) {
+		        var tmp = this.parentCt.get(this.useParentData);
+		        //wrap non-object data into an object with same key indicated by .useParentData.
+		        if (!_.isUndefined(tmp) && !_.isPlainObject(tmp)) {
+		            var tmpwrap = {};
+		            tmpwrap[this.useParentData] = tmp;
+		            tmp = tmpwrap;
+		        }
+		        this.data = tmp;
+		    }
+		    if (this.data)
+		        this.set(this.data);
+		});
+
 		return Backbone.Marionette.View.apply(this, arguments);
 	};
 
@@ -6232,6 +6237,7 @@ module.exports = DeepModel;
 		    data = this.mixinTemplateHelpers(data);
 
 		    var template = this.getTemplate();
+		    //app.debug('Getting template for', this.name, template);
 		    var html = Marionette.Renderer.render(template, data);
 
 		    //+ skip empty template
@@ -8845,4 +8851,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.9.3-1131 build 1477425153554";
+;;app.stagejs = "1.9.3-1132 build 1477427350982";

@@ -46,6 +46,7 @@
 		    data = this.mixinTemplateHelpers(data);
 
 		    var template = this.getTemplate();
+		    //app.debug('Getting template for', this.name, template);
 		    var html = Marionette.Renderer.render(template, data);
 
 		    //+ skip empty template
