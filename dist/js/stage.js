@@ -1203,6 +1203,7 @@
 		app.config = _.extend({
 
 			//------------------------------------------app.mainView-------------------------------------------
+			//mainView has limited ability as a generic view (supports data/action, but can not be form, canvas or having co-ops)
 			template: undefined,
 			layout: undefined,
 			//e.g:: have a unified layout template.
@@ -1223,9 +1224,9 @@
 			 */
 			data: undefined,
 			actions: undefined,
-			contextRegion: 'contexts', //alias: navRegion
+			navRegion: 'contexts', //alias: contextRegion
 			//---------------------------------------------------------------------------------------------
-			defaultContext: undefined, //This is the context (name) the application will sit on upon loading.
+			defaultView: undefined, //alias: defaultContext, this is the context (name) the application will sit on upon loading.
 			icings: {}, //various fixed overlaying regions for visual prompts ('name': {top, bottom, height, left, right, width})
 						//alias -- curtains			
 			fullScreen: false, //This will put <body> to be full screen sized (window.innerHeight).
@@ -1300,13 +1301,11 @@
 					if(targetCtx.guard) guardError = targetCtx.guard();
 					if(guardError) {
 						app.trigger('app:context-guard-error', guardError, targetCtx.name);
-						return;
-					}
-					//allow context to check/do certain stuff before navigated to (similar to guard() above)
-					if(targetCtx.onBeforeNavigateTo &&  !targetCtx.onBeforeNavigateTo()){
 						app.trigger('app:navigation-aborted', targetCtx.name);
 						return;
 					}
+					//allow context to check/do certain stuff before navigated to
+					targetCtx.trigger('context:before-navigate-to');
 
 					//save your context state within onNavigateAway()
 					if(app.currentContext) app.currentContext.trigger('context:navigate-away'); 
@@ -1326,6 +1325,7 @@
 						app.currentContext.trigger('context:navigate-chain', path);
 					});
 					targetRegion.show(targetCtx);
+					//note that 'view:navigate-to' triggers after '(view:show -->) region:show';
 				}else
 					//notify regional views in the context (with old flag set to true)
 					app.currentContext.trigger('context:navigate-chain', path, true);
@@ -1399,6 +1399,7 @@
 				Backbone.history.start();
 
 			//d. Auto navigate to init context (view that gets put in mainView's navRegion)
+			app.config.defaultContext = app.config.defaultView || app.config.defaultContext;
 			if(!window.location.hash && app.config.defaultContext)
 				app.navigate(app.config.defaultContext);
 		});
@@ -8831,4 +8832,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.9.3-1129 build 1476939999038";
+;;app.stagejs = "1.9.3-1130 build 1477364407739";

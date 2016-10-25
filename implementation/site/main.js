@@ -10,8 +10,8 @@ NProgress.configure({showSpinner: false});
         icings: {
             feedback: {bottom: '2em', left: 0, right: 0, height: '3em'}
         },
-        contextRegion: 'center',
-        defaultContext: 'Home',
+        navRegion: 'center',
+        defaultView: 'Home',
         //websockets: ['/ws'],
         viewSrcs: 'site'
 

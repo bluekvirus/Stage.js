@@ -20,13 +20,13 @@ This lightweight framework is made to maximize developer efficiency by introduci
 
 #### What's Navigation?
 
-We achieve client-side multi-page-alike navigation through switching *Context*s on a pre-defined application region in respond to the URL hash fragment change event. You can also keep navigating beyond a *Context* by chaining view names in the hash. (e.g #navigate/Context/LvlOneSubView/LvlTwoSubView...)
+We achieve client-side multi-page-alike navigation through switching *View*s on a pre-defined application region in respond to the URL hash fragment change event. You can also keep navigating beyond the first level *View*s by chaining view names in the hash. (e.g `#navigate/Context/LvlOneSubView/LvlTwoSubView...`)
 
-By using named views and their `navRegion` properties, our navigation mechanism enables endless possibilities in combining views in hierarchies. You can also add transitional effects to the views when they enter and leave the regions.
+Those named views can set their `navRegion` properties to honor the navigation path by recursively presenting required views into their `navRegion`s. Without the `navRegion` you will also get a special event param (path) triggered to the `navigateTo` event on the view. Leaving you full flexibility on interpreting the rest of the path yourself. This unique navigation mechanism enables endless possibilities in combining views in hierarchies dynamically just through URI changes.
 
 #### What's a View?
 
-A *View* is a template with data, interactions and optionally a name. it is to be shown on a region in template of your application or another view instance (both contexts and normal views). Only named views can be used as template shortcuts (through anonymous region tag attribute `view="..."`).
+A *View* is a template with data, interactions and optionally a name. it is to be shown on a region in template of your application or another view instance. Only named views can be used as template shortcuts (through anonymous region tag attribute `view="..."`) or put into the navigation chain URI (e.g `#navigate/Context/LvlOneSubView/LvlTwoSubView...`).
 
 !!!callout callout-primary
 **Note:** As in v1.8+ We have merged the old *Regional* concept with *View* in general. Future releases will not distinguish between *Regional*s and named *View*s.
@@ -36,7 +36,7 @@ alias: Area, named View
 
 #### What's a Context?
 
-A *Context* is a special named *View* object. *Context*s only appear on the application's context region (each application can have only 1 such region). If you have more than 1 *Context*s defined, they will automatically swap on the context region in response to the navigation event. You will not have more than 1 active *Context* at any given time.
+A *Context* is a special named *View* object. *Context*s only appear on the application's navigation region (each application can have only 1 such region). If you have more than 1 *Context*s defined, they will automatically swap on the context region in response to the navigation event. You will not have more than 1 active *Context* at any given time.
 
 A *Context* can also guard itself from being viewed by certain user by utilizing the `guard` property (a function) before switched to in navigation. This is good for automatically jumping to other contexts if the targeted one requires authenticated user in session. 
 
@@ -94,10 +94,10 @@ Sometimes, with Ajax or other asynchronized operations (like timer related ones)
 
 #### Seems complicated...
 
-To focus, think of your application in terms of *Context*s and *Views*s (pages and areas). Like drawing a series of pictures, each page is a *Context* and you lay things out by sketching out regions (areas) first on each page then refine the details. Each *Context* can also be made state-aware through the same navigation mechanism that powers *Context* switching in the application container.
+To focus, think of your application in terms *View*s (pages and areas). Like drawing a series of pictures, each page is a *View* and you lay things out by sketching out regions (areas) first on each page then gradually refine the regional sub *View* details. Each *View* can also be made state-aware through the navigation notifying mechanism that powers the entire application container.
 
 !!!callout callout-info
-**Remember:** The goal of this framework is to keep you focused on building dynamic views without worrying about linking or organizing them into a manageable whole. It is very important that you understand the *region*, *navigation* and *events* concepts. So that you can maximize the efficiency offered by our unique workflow.
+**Remember:** The goal of this framework is to keep you focused on building dynamic views without worrying about linking or organizing them into a manageable whole. It is very important that you understand the *region*, *navigation* and *event* concepts. So that you can maximize the efficiency offered by our unique workflow.
 !!!
 
 ### Why not using...
@@ -111,7 +111,7 @@ We choose what we choose when designing this framework simply because we want to
 
 **The Backbone library can implement them all** (Yes, any client side framework). (Not 100% for Meteor though, since Meteor combines its server into a full-stack solution. You need nodejs in the picture, and we do have a dev-server package called **ajax-box-lite** in the toolset for just that based on the [express.js](http://expressjs.com/4x/) framework). And, if you need more evidence, YUI3 has the exact same concepts from Backbone implemented as its infrastructure. (Why did we mention YUI here? Because of Yahoo!'s JavaScript [Architect](http://www.crockford.com/))
 
-In order to accomplish more with less code using Backbone, we extended **Backbone.Marionette** as our pattern library base and mainly using its *module* and *region* concepts. We also removed the needs to work with the Model/Collection sync methods in the original *Backbone* library. The resulting framework accomplishes all the big frameworks have promised but with **a thiner and flattened structure**. We believe scripting languages are always going to be the perfect thin glue layer between mechanisms and policies. The JavaScript language were picked to glue HTML/CSS and UX but nothing more, it should not be overdosed and attempt to mimic Java. In other words, **only the burger is important**:
+In order to accomplish more with less code using Backbone, we extended **Backbone.Marionette** (a pattern library) and reusing its *region* concepts for view nesting. However, you do NOT need to read their documentation before using **Stage.js** neither do you need to be familiar with the different types of views required by that library. There is only one general **View** concept here. We also removed the needs to work directly with the Model/Collection methods in the original *Backbone* library when building views. The resulting framework accomplishes all the big frameworks have promised but with **a thiner and flattened structure**. We believe scripting languages are always going to be the perfect thin glue layer between mechanisms and policies. The JavaScript language were picked to glue HTML/CSS and UX but nothing more, it should not be overdosed and attempt to mimic something bloated like Java. In other words, **only the burger is important**:
 
 ![HTML is the burger](static/resource/default/diagram/Diagram-6.png)
 
@@ -183,7 +183,7 @@ Here is the recommended **workflow**. You should follow the steps each time you 
 
 #### Preparation
 
-##### Automatically
+##### Create new project
 
 1. Install the [`stage-devtools`](https://www.npmjs.com/package/stage-devtools) from `npm`:
 ```
@@ -208,6 +208,10 @@ stagejs update [--edge]
 stagejs serve [--port <number>]
 ```
 
+!!!callout callout-primary
+**Note:** It is recommended that you use the theme preparation tool to create a new theme before you continue to develop your project. This way, whenever the basic (default) theme updates, you can upgrade to it easily.
+!!!
+
 You can now use the `stagejs` command-line to create all the element needed in your application. Use the following cmd to see what you can create from the command-line:
 ```
 stagejs create -l
@@ -219,35 +223,24 @@ Read more about the `stagejs` [cli tool](https://github.com/bluekvirus/Stage-dev
 **Tip:** Use our development [**VM through Vagrant**](https://github.com/bluekvirus/vm-webdev) if you don't want to bother with setting up your own environment. Run the `stagejs` command-line tool inside this VM once it is up and running.
 !!!
 
-##### Manually
-
-Download the *Stage.js* [project-kit](static/resource/default/download/stagejs-starter-kit.tar.gz) and extract its content to your project folder of choice.
+##### Revive existing project
 
 Under your project folder, open up a console/terminal on your OS and do the following:
-1. Revive the project
+1. Revive the project libs
 ```
 stagejs update [-e]
 ```
-2. Create a new theme
+2. Re-compile the theme
 ```
 stagejs theme [project]
 ```
-!!!callout callout-primary
-**Note:** It is recommended that you use the theme preparation tool to create a new theme before you continue to develop your project. This way, whenever the basic (default) theme updates, you can upgrade to it easily.
-!!!
-
-3. Create a `main.js`
+3. Start the devserver
 ```
-stagejs create main
+stagejs serve [5000]
 ```
-4. Start the devserver
-```
-stagejs serve [port:5000]
-```
-You should now see a *blank* page without JavaScript error on http://localhost:5000/dev/.
 
 !!!callout callout-info
-**Remember:** Creating a web application is like drawing a picture. Start by laying things out and gradually refine the details. In our case, always start by defining the application template.
+**Remember:** Creating a web application is like drawing a picture. Start by laying things out and gradually refine the details. In our case, always start by defining the templates.
 !!!
 
 Now, let's start building a real web application.
@@ -267,7 +260,7 @@ Application.setup({
     /*----------------------configure-----------------------*/
     fullScreen: //false | true,
     icings/curtains: //fixed overlay regions,
-    defaultContext: //your default context name to show in navRegion,
+    defaultContext/defaultView: //your default context name to show in navRegion,
     baseAjaxURI: //your base url for using with Application.remote(),
     websockets: //websocket paths to initialize,
     viewSrcs: //view dynamic loading base path.
@@ -298,7 +291,7 @@ Application.setup({
 });
 ```
 
-Since your goal is to build a *multi-context* application, you will need some *regions* in the application template and a *Context Region*:
+Since your goal is to build a multi-view application, you will need some *regions* in the application template and a *Navigation Region*:
 ```javascript
 //main.js
 Application.setup({
@@ -308,7 +301,7 @@ Application.setup({
         '<div region="body"></div>',
         '<div region="footer"></div>'
     ],
-    contextRegion: 'body', //use region 'body' as the context region
+    navRegion: 'body', //use region 'body' as the navigation region
     ...
 }).run();
 ```
@@ -331,7 +324,7 @@ onReady: function(){
 **Important:** Views loaded by the `view=""` attribute should have no init options. If you do need to specify init options when showing a view, use the alternative `region:load-view` event or `view.show('region', View)` api.
 !!!
 
-If your application is a single-context application, you don't need to assign the application template. There will always be a region that wraps the whole application -- the *app* region. The **Default** *Context* will automatically show on region *app* if you did not specify `contextRegion` and `defaultContext`.
+If your application is a one-view application, you don't need to assign the application template. There will always be a region that wraps the whole application -- the *app* region. The **Default** view will automatically show on region *app* if you did not specify `navRegion` and `defaultView`.
 
 !!!callout callout-info
 **Tip:** You can omit `region=""` if that region is not needed in your application later to show other views.
@@ -352,7 +345,7 @@ Note that the ready event may vary in different hybrid app development package.
 
 ##### Customized bootstrapping
 
-The application bootstrapping sequence can be modified, since we are simply using the `Marionette.Application` object, you can add your own environment preparation code as initializers:
+The application bootstrapping sequence can be modified, you can add your own environment preparation code as initializers:
 ```
 Application.addInitializer(function(options){
     //go to check user's session
@@ -376,9 +369,7 @@ app:mainview-ready //fired after the application is shown
 **Tip:** You can swap application template using the `Application.setup()` call upon receiving the `app:before-mainview-ready` event to configure/layout your application differently on different platforms. (Use the `Modernizr` global variable for platform/feature detections.)
 !!!
 
-You can also make good use of the `app:navigate` event for context preparation in the initializers.
-
-Let's proceed to define your contexts so you have something to show after the application starts.
+Let's proceed to define your top-level views so you have something to show after the application starts.
 
 #### Step 2. Define Contexts
 
@@ -386,7 +377,7 @@ Create a new file named `myContextA.js`, remember a *Context* is just an special
 ```
 //myContextA.js
 (function(app) {
-    app.context('MyContextA', { //omitting the name indicates context:Default
+    app.view('MyContextA', { //omitting the name indicates context:Default
         template: '...',
         guard: function(){
             //return error ('string') to cancel navigation;
@@ -394,8 +385,7 @@ Create a new file named `myContextA.js`, remember a *Context* is just an special
         },
         //listeners: (after guard)
         onBeforeNavigateTo: function(){
-            //return true to proceed;
-            //return false, '', undefined to cancel navigation
+            //do something before navigation. 
         },
         onNavigateTo: function(path){
             //path == '', undefined means the navigation stopped here.
@@ -411,7 +401,7 @@ alias: `Application.page()`.
 
 ##### Template
 
-When defining template for a context you can use one of the four ways we support:
+When defining template for a view you can use one of the four ways we support:
 
 * \#id -- local html template by DOM id;
 * @\*\*/\*.html -- remote html templates;
@@ -434,11 +424,14 @@ When defining template for a context you can use one of the four ways we support
 **Tip:** Combine remote templating with IDE tool (ZenCoding/(Emmet)[http://emmet.io]) will greatly improve your development speed.
 !!!
 
-##### Navigate between Contexts
+##### Navigate between Views
 
-Use the `app:navigate` event on `Application` to actively switch between contexts.
+Use api or the `app:navigate` event on `Application` to actively switch between views.
 ```
-//full path mode
+//full path mode A: api
+Application.navigate('ABC/EFG/...');
+
+//full path mode B: event
 Application.trigger('app:navigate', 'ABC/EFG/...');
 
 //context, module/subpath mode
@@ -447,7 +440,7 @@ Application.trigger({
     subpath: 'EFG/...', //alias: module
 });
 ```
-You can also use the clicking event on an `<a>` anchor tag to switch context without any code involved:
+You can also use the clicking event on an `<a>` anchor tag to switch view without any code involved:
 ```
 <a href="#navigate/ABC/EFG/..."></a>
 ```
@@ -456,7 +449,7 @@ Or, brutally using the actual `window.location` object:
 window.location.hash = '#navigate/ABC/EFG/...';
 ```
 
-There is an `context:navigate-away` event triggered to call `onNavigateAway` method on a context when the application is switching away from one. Use this listener if you want to store some of the context state and recover later. We recommend that you use the localStorage feature of HTML5 and we have already include a library for you in the framework distribution. (see [store.js](https://github.com/marcuswestin/store.js) for more)
+There is an `navigate-away` event triggered to call `onNavigateAway` method on a context when the application is switching away from one. Use this listener if you want to store some of the context state and recover later. We recommend that you use the localStorage feature of HTML5 and we have already include a library for you in the framework distribution. (see [store.js](https://github.com/marcuswestin/store.js) for more)
 
 You can pass an additional *silent* argument with the `app:navigate` event to avoid changing the url hash path during the navigation:
 ```
@@ -472,7 +465,7 @@ If you defined a `guard` function as property in one of your contexts, it will b
 ```
 (function(app){
 
-    app.context('AccessDenied', {
+    app.view('AccessDenied', {
         template: '...',
         guard: function(){
             
@@ -757,6 +750,7 @@ app:locked - [empty stub] (action/options, lock/(n/a))
 ```
 **Context** -- context:meta-event
 ```
+context:before-navigate-to
 context:navigate-chain 
 context:navigate-away - [empty stub] - triggered before app:navigate
 ```
@@ -1983,7 +1977,7 @@ Remember, use tabs as last resort and only in templates, do *NOT* use dynamic ta
 
 ### Need recursively rendered tree-like View?
 
-You can always use **CompositeView** as the view type and use this *Marionette* way of building recursively rendered views. It is recommended to use the built-in **Tree** widget rather than building recursive views yourself. The `type` configure should **NOT** be needed in any occasions when building your application.
+It is recommended to use the built-in **Tree** widget rather than building recursive views yourself.
 
 ### Supporting crossdomain ajax?
 
@@ -2026,7 +2020,6 @@ Initialize:
 * Application.run ()
 
 View Registery:
-* Application.context ([name,] options) - alias: page()
 * Application.view (name/options, options/instance-flag)
 * Application.widget (name, options/factory)
 * Application.editor (name, options/factory)
