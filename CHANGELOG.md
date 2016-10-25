@@ -30,6 +30,7 @@ Change Log
 26. Added view.activate(group, filterFn) for programmatic (silent feedback) activations;
 27. Added app.config.defaultView as an alias to app.config.defaultContext;
 28. Added ctxConfig to app.navigate({path:..., ctxConfig:...});
+29. Aligned local/remote data ready event timing; (both now after this.paper ready)
 
 working on ...
 
