@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.10.0 (2016-10-10*)
+1.10.0 (2016-10-24*)
 --------------------
 1. Missing locale file will no longer raise exceptions;
 2. Updated flexlayout to be 0.2.3;
@@ -28,16 +28,17 @@ Change Log
 24. Refined template building/caching code to support both view and view="" in the same way; (e.g *.md and '/' for app.config.viewTemplates bypass in remote path)
 25. 'context-switched' global coop event will now emit with additional metadata as second param.
 26. Added view.activate(group, filterFn) for programmatic (silent feedback) activations;
+27. Added app.config.defaultView as an alias to app.config.defaultContext;
 
 working on ...
 
 * view.tab('region', View) - cached meta-region;
-* wire I18N and Modernizr/Detectizr to app apis;
-* add pre 'upload' event to file editor;
 * Integrate stage-unideck into framework kit;
 * upgrade to LESS 2.0 for wildcard includes;
+* wire I18N and Modernizr/Detectizr to app apis;
+* add pre 'upload' event and default progress bar to file editor;
 * Cheatsheet;
-* Split/Update docs (around actions, data rendering, coop, dnd, effect, remote, ws, form, svg and prompt);
+* Split/Update docs (around navigation, layout/nesting, region api, actions/locking, data rendering, coop, dnd/selection, effect/activation, remote/polling, ws, editors/form, svg, prompt/icing and i18n);
 * Separate modernizr+detectizr shiv bundles from deps;
 * Breaking down 'Basic' editors;
 * [cli] Add a `revive` cmd as an alias to `update`?
