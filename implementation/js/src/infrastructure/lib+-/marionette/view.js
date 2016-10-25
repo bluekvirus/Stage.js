@@ -30,6 +30,10 @@
  * 	 .delegateEvents() (pickup .events)
  * 		|
  * ---------------
+ *
+ * View Render() implementation is in item-view.js:render()! This in turn will be triggered by model:change in Marionette v1.8
+ *
+ * ---------------
  * 
  * Fixed enhancement:
  * +pick additional live options
@@ -76,7 +80,7 @@
 		//override to give default empty template
 		getTemplate: function(){
 			return Marionette.getOption(this, 'template') || (
-				(Marionette.getOption(this, 'editors') || Marionette.getOption(this, 'svg') || Marionette.getOption(this, 'layout'))? ' ' : '<div class="wrapper-full bg-warning"><p class="h3" style="margin:0;"><span class="label label-default" style="display:inline-block;">No Template</span> ' + this.name + '</p></div>'
+				(Marionette.getOption(this, 'editors') || Marionette.getOption(this, 'svg') || Marionette.getOption(this, 'layout'))? ' ' /*must have 1+ space*/ : '<div class="wrapper-full bg-warning"><p class="h3" style="margin:0;"><span class="label label-default" style="display:inline-block;">No Template</span> ' + this.name + '</p></div>'
 			);
 		},
 

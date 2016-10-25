@@ -29,6 +29,7 @@ Change Log
 25. 'context-switched' global coop event will now emit with additional metadata as second param.
 26. Added view.activate(group, filterFn) for programmatic (silent feedback) activations;
 27. Added app.config.defaultView as an alias to app.config.defaultContext;
+28. Added ctxConfig to app.navigate({path:..., ctxConfig:...});
 
 working on ...
 

@@ -1270,11 +1270,16 @@
 				path = opt;
 			}else {
 				//backward compatibility 
-				path = _.string.rtrim([opt.context || app.currentContext.name, opt.module || opt.subpath].join('/'), '/');
+				path = opt.path || _.string.rtrim([opt.context || app.currentContext.name, opt.module || opt.subpath].join('/'), '/');
 			}
+
+			//inject context config before navigate (e.g app.navigate({path: ..., ctxConfig: {}}, [silent]))
+			app._navCtxConfig = app._navCtxConfig || opt.ctxConfig;
+
 			if(silent || app.hybridEvent)
 				navigate(path);//hybrid app will navigate using the silent mode.
 			else
+				//note that, this will in turn call app.navigate() again which triggers a silent app:navigate again.
 				window.location.hash = 'navigate/' + path;
 		};
 
@@ -1284,6 +1289,10 @@
 
 		//---navigation worker---
 			function navigate(path){
+				//retrieve context config
+				var ctxConfig = app._navCtxConfig;
+				delete app._navCtxConfig;
+
 				path = _.compact(String(path).split('/'));
 				if(path.length <= 0) throw new Error('DEV::Application::navigate() Navigation path empty...');
 
@@ -1295,7 +1304,7 @@
 				if(!app.currentContext || app.currentContext.name !== context) {
 					
 					//re-create target context upon switching
-					var targetCtx = new TargetContext(), guardError;
+					var targetCtx = new TargetContext(app.debug('Context Configure for', context, ctxConfig)), guardError;
 
 					//allow context to guard itself (e.g for user authentication)
 					if(targetCtx.guard) guardError = targetCtx.guard();
@@ -1318,7 +1327,7 @@
 					//note that .show() is guaranteed to happen after region enter/exit effects
 					targetRegion.once('show', function(){
 						app.currentContext = targetCtx;
-						//fire a notification to app as meta-event.
+						//fire a notification to app as meta-event. (e.g menu view item highlighting)
 						app.trigger('app:context-switched', app.currentContext.name);
 						app.coop('context-switched', app.currentContext.name, {ctx: app.currentContext, subpath: path.join('/')});
 						//notify regional views in the context (views further down in the nav chain)
@@ -5394,6 +5403,10 @@ module.exports = DeepModel;
  * 	 .delegateEvents() (pickup .events)
  * 		|
  * ---------------
+ *
+ * View Render() implementation is in item-view.js:render()! This in turn will be triggered by model:change in Marionette v1.8
+ *
+ * ---------------
  * 
  * Fixed enhancement:
  * +pick additional live options
@@ -5440,7 +5453,7 @@ module.exports = DeepModel;
 		//override to give default empty template
 		getTemplate: function(){
 			return Marionette.getOption(this, 'template') || (
-				(Marionette.getOption(this, 'editors') || Marionette.getOption(this, 'svg') || Marionette.getOption(this, 'layout'))? ' ' : '<div class="wrapper-full bg-warning"><p class="h3" style="margin:0;"><span class="label label-default" style="display:inline-block;">No Template</span> ' + this.name + '</p></div>'
+				(Marionette.getOption(this, 'editors') || Marionette.getOption(this, 'svg') || Marionette.getOption(this, 'layout'))? ' ' /*must have 1+ space*/ : '<div class="wrapper-full bg-warning"><p class="h3" style="margin:0;"><span class="label label-default" style="display:inline-block;">No Template</span> ' + this.name + '</p></div>'
 			);
 		},
 
@@ -8832,4 +8845,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.9.3-1130 build 1477364407739";
+;;app.stagejs = "1.9.3-1131 build 1477425153554";

@@ -119,11 +119,16 @@
 				path = opt;
 			}else {
 				//backward compatibility 
-				path = _.string.rtrim([opt.context || app.currentContext.name, opt.module || opt.subpath].join('/'), '/');
+				path = opt.path || _.string.rtrim([opt.context || app.currentContext.name, opt.module || opt.subpath].join('/'), '/');
 			}
+
+			//inject context config before navigate (e.g app.navigate({path: ..., ctxConfig: {}}, [silent]))
+			app._navCtxConfig = app._navCtxConfig || opt.ctxConfig;
+
 			if(silent || app.hybridEvent)
 				navigate(path);//hybrid app will navigate using the silent mode.
 			else
+				//note that, this will in turn call app.navigate() again which triggers a silent app:navigate again.
 				window.location.hash = 'navigate/' + path;
 		};
 
@@ -133,6 +138,10 @@
 
 		//---navigation worker---
 			function navigate(path){
+				//retrieve context config
+				var ctxConfig = app._navCtxConfig;
+				delete app._navCtxConfig;
+
 				path = _.compact(String(path).split('/'));
 				if(path.length <= 0) throw new Error('DEV::Application::navigate() Navigation path empty...');
 
@@ -144,7 +153,7 @@
 				if(!app.currentContext || app.currentContext.name !== context) {
 					
 					//re-create target context upon switching
-					var targetCtx = new TargetContext(), guardError;
+					var targetCtx = new TargetContext(app.debug('Context Configure for', context, ctxConfig)), guardError;
 
 					//allow context to guard itself (e.g for user authentication)
 					if(targetCtx.guard) guardError = targetCtx.guard();
@@ -167,7 +176,7 @@
 					//note that .show() is guaranteed to happen after region enter/exit effects
 					targetRegion.once('show', function(){
 						app.currentContext = targetCtx;
-						//fire a notification to app as meta-event.
+						//fire a notification to app as meta-event. (e.g menu view item highlighting)
 						app.trigger('app:context-switched', app.currentContext.name);
 						app.coop('context-switched', app.currentContext.name, {ctx: app.currentContext, subpath: path.join('/')});
 						//notify regional views in the context (views further down in the nav chain)

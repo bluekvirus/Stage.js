@@ -124,8 +124,10 @@
 	app.view('Home.BG', {
 		//template: ' ', //might need exception as .editors configured views.
 		svg: true,
+		data: '/static/resource/en-US/i18n.json', //a test, not used
 
 		onReady: function(){
+			app.debug('Hidden (Home) svg data:', this.get());
 			this.trigger('view:draw');
 		},
 
