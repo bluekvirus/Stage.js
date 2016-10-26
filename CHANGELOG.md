@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.10.0 (2016-10-24*)
+1.10.0 (2016-10-25*)
 --------------------
 1. Missing locale file will no longer raise exceptions;
 2. Updated flexlayout to be 0.2.3;
@@ -29,7 +29,7 @@ Change Log
 25. 'context-switched' global coop event will now emit with additional metadata as second param.
 26. Added view.activate(group, filterFn) for programmatic (silent feedback) activations;
 27. Added app.config.defaultView as an alias to app.config.defaultContext;
-28. Added viewConfig to app.navigate({path:..., viewConfig:...}) as 2nd param for navigate-to;
+28. Added viewConfig to app.navigate({path:..., viewConfig:...}) as 2nd param to onNavigateTo();
 29. Aligned local/remote data ready event timing; (both after this.paper ready)
 30. Aligned navigate-to and ready event timing; (always be show-navito-ready for static, form, local/remote data views in a nav chain)
 
