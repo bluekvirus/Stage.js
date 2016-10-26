@@ -789,7 +789,7 @@
 		//Caveat: re-render a static view will not trigger 'view:ready' again...
 		this.listenTo(this, 'show', function(){
 			//call view:ready (if not waiting for data render after 1st `show`, static and local data view only)
-			if((this.data && _.isPlainObject(this.data)) || (!this.data && !this.useParentData)){
+			if(!this.data && !this.useParentData){
 				if(this.parentRegion)
 				    this.parentRegion.once('show', function(){
 				    	//this is to make sure local data ready always fires after navigation-chain completes (e.g after view:navigate-to)

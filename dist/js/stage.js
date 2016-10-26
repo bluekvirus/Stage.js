@@ -2168,11 +2168,13 @@
 			if(_.isString(name)){
 				var result = app.locate(name);
 				if(!result) return;
-				$body = result.view.parentRegion.$el;
+				$body = result.view.parentRegion && result.view.parentRegion.$el;
 			}else if(name){
 				$body = $(name);
 			}else
 				$body = $('body');
+			//else abort
+			if(!$body) return;
 
 			//clear all name tag
 			$body.find('.dev-support-view-name-tag').remove();
@@ -6159,7 +6161,7 @@ module.exports = DeepModel;
 		//Caveat: re-render a static view will not trigger 'view:ready' again...
 		this.listenTo(this, 'show', function(){
 			//call view:ready (if not waiting for data render after 1st `show`, static and local data view only)
-			if((this.data && _.isPlainObject(this.data)) || (!this.data && !this.useParentData)){
+			if(!this.data && !this.useParentData){
 				if(this.parentRegion)
 				    this.parentRegion.once('show', function(){
 				    	//this is to make sure local data ready always fires after navigation-chain completes (e.g after view:navigate-to)
@@ -7005,8 +7007,7 @@ module.exports = DeepModel;
 
 		    // build the view
 		    var view = this.buildItemView(item, ItemView, itemViewOptions);
-		    //+parentCt & parentRegion fix to align with framework view (Layout)
-		    view.parentRegion = this.parentRegion;
+		    //+parentCt fix to align with framework view (Layout)
 		    if (this._moreItems === true)
 		    //.more()-ed items will bypass this CollectionView and use 'grand parent' as parentCt.
 		        view.parentCt = this.parentCt;
@@ -8913,4 +8914,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.9.3-1134 build 1477457913333";
+;;app.stagejs = "1.9.3-1135 build 1477458898754";

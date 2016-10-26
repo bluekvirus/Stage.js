@@ -92,8 +92,7 @@
 
 		    // build the view
 		    var view = this.buildItemView(item, ItemView, itemViewOptions);
-		    //+parentCt & parentRegion fix to align with framework view (Layout)
-		    view.parentRegion = this.parentRegion;
+		    //+parentCt fix to align with framework view (Layout)
 		    if (this._moreItems === true)
 		    //.more()-ed items will bypass this CollectionView and use 'grand parent' as parentCt.
 		        view.parentCt = this.parentCt;

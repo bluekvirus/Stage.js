@@ -620,11 +620,13 @@
 			if(_.isString(name)){
 				var result = app.locate(name);
 				if(!result) return;
-				$body = result.view.parentRegion.$el;
+				$body = result.view.parentRegion && result.view.parentRegion.$el;
 			}else if(name){
 				$body = $(name);
 			}else
 				$body = $('body');
+			//else abort
+			if(!$body) return;
 
 			//clear all name tag
 			$body.find('.dev-support-view-name-tag').remove();
