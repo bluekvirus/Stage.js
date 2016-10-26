@@ -278,16 +278,24 @@
 				this.navRegion = options.navRegion || this.navRegion;
 				//if(this.navRegion)
 				this.onNavigateChain = function(pathArray, old){
+					//retrieve nav (last in path) view config
+					var viewConfig = app._navViewConfig;
+
 					if(!pathArray || pathArray.length === 0){
-						if(!old)
-							this.trigger('view:navigate-to');//use this to show the default view
+						if(!old){
+							delete app._navViewConfig;
+							this.trigger('view:navigate-to', '', viewConfig);//use this to show the default view
+						}
 						else {
 							if(this.navRegion) this.getRegion(this.navRegion).close();
 						}
 						return;	
 					}
 
-					if(!this.navRegion) return this.trigger('view:navigate-to', pathArray.join('/'));
+					if(!this.navRegion){
+						delete app._navViewConfig;
+						return this.trigger('view:navigate-to', pathArray.join('/'), viewConfig);
+					}
 
 					if(!this.regions[this.navRegion]){
 						console.warn('DEV::Layout+::onNavigateChain()', 'invalid navRegion', this.navRegion, 'in', this.name);
@@ -304,7 +312,7 @@
 							var view = new TargetView();
 							if(navRegion.currentView) navRegion.currentView.trigger('view:navigate-away');
 							
-							//chain on region:show (instead of view:show to let view use onShow() before chaining)
+							//chain on region:show (instead of view:show to let view finish 'show'ing effects before chaining)
 							navRegion.once('show', function(){
 								view.trigger('view:navigate-chain', pathArray);
 							});	
@@ -318,7 +326,8 @@
 
 					}else{
 						pathArray.unshift(targetViewName);
-						return this.trigger('view:navigate-to', pathArray.join('/'));	
+						delete app._navViewConfig;
+						return this.trigger('view:navigate-to', pathArray.join('/'), viewConfig);	
 					}
 
 				};

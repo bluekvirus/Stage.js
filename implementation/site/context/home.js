@@ -23,12 +23,19 @@
 			'<div style="position:absolute;bottom:0;width:100%" region="footer" view="Home.Footer"></div>'
 		],
 
+		data: {local: true}, //local data for testing navi-to and ready timing.
+		//data: '/static/resource/en-US/i18n.json',
+
 		coop: ['window-resized'],
 
 		onBeforeNavigateTo:function(){
 			app.debug('before navi to', this.name);
 			$('body').css('overflow', 'hidden');
 			return true;
+		},
+
+		onNavigateTo:function(path, vcfg){
+			app.debug('Home navi to', path, vcfg);
 		},
 
 		onNavigateAway: function(){
@@ -47,6 +54,7 @@
 		},
 
 		onReady: function(){
+			app.debug('Home ready');
 			//title + short desc
 			this.title.show(app.view({
 				tooltip: true,

@@ -122,8 +122,8 @@
 				path = opt.path || _.string.rtrim([opt.context || app.currentContext.name, opt.module || opt.subpath].join('/'), '/');
 			}
 
-			//inject context config before navigate (e.g app.navigate({path: ..., ctxConfig: {}}, [silent]))
-			app._navCtxConfig = app._navCtxConfig || opt.ctxConfig;
+			//inject context config before navigate (e.g app.navigate({path: ..., viewConfig: {}}, [silent]))
+			app._navViewConfig = app._navViewConfig || opt.ctxConfig || opt.viewConfig;
 
 			if(silent || app.hybridEvent)
 				navigate(path);//hybrid app will navigate using the silent mode.
@@ -138,10 +138,6 @@
 
 		//---navigation worker---
 			function navigate(path){
-				//retrieve context config
-				var ctxConfig = app._navCtxConfig;
-				delete app._navCtxConfig;
-
 				path = _.compact(String(path).split('/'));
 				if(path.length <= 0) throw new Error('DEV::Application::navigate() Navigation path empty...');
 
@@ -153,7 +149,7 @@
 				if(!app.currentContext || app.currentContext.name !== context) {
 					
 					//re-create target context upon switching
-					var targetCtx = new TargetContext(app.debug('Context Configure for', context, ctxConfig)), guardError;
+					var targetCtx = new TargetContext(), guardError;
 
 					//allow context to guard itself (e.g for user authentication)
 					if(targetCtx.guard) guardError = targetCtx.guard();
@@ -180,13 +176,13 @@
 						app.trigger('app:context-switched', app.currentContext.name);
 						app.coop('context-switched', app.currentContext.name, {ctx: app.currentContext, subpath: path.join('/')});
 						//notify regional views in the context (views further down in the nav chain)
-						app.currentContext.trigger('context:navigate-chain', path);
+						app.currentContext.trigger('context:navigate-chain', path); //see layout.js
 					});
 					targetRegion.show(targetCtx);
 					//note that 'view:navigate-to' triggers after '(view:show -->) region:show';
 				}else
 					//notify regional views in the context (with old flag set to true)
-					app.currentContext.trigger('context:navigate-chain', path, true);
+					app.currentContext.trigger('context:navigate-chain', path, true); //see layout.js
 
 			}
 		//-----------------------

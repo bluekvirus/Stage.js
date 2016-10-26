@@ -96,13 +96,13 @@
 	    	});
 	    },
 
-	    onNavigateTo: function(path){
-	    	app.debug('Datatable nav to', path);
+	    onNavigateTo: function(path, vcfg){
+	    	app.debug('Datatable navi to', path, vcfg);
 	    },
 
 	    //can only be detected if parentCt is still present.
 	    onNavigateAway: function(){
-	    	app.debug('Datatable nav away', this);
+	    	app.debug('Datatable navi away', this);
 	    }
 	});	
 

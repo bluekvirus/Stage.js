@@ -31,7 +31,7 @@
  * 		|
  * ---------------
  *
- * View render() implementation is in item-view.js:render()! This in turn will be triggered by model:change in Marionette v1.8
+ * View render() implementation is in item-view.js:set() and render()!
  *
  * ---------------
  *
@@ -788,10 +788,17 @@
 		//ensure a ready event for static views (align with data and form views)
 		//Caveat: re-render a static view will not trigger 'view:ready' again...
 		this.listenTo(this, 'show', function(){
-			//call view:ready (if not waiting for data render after 1st `show`)
-			if(!this.data && !this.useParentData)
-			    this.trigger('view:ready');
-			    //note that form view will not re-render on .set(data) so there should be no 2x view:ready triggered.
+			//call view:ready (if not waiting for data render after 1st `show`, static and local data view only)
+			if((this.data && _.isPlainObject(this.data)) || (!this.data && !this.useParentData)){
+				if(this.parentRegion)
+				    this.parentRegion.once('show', function(){
+				    	//this is to make sure local data ready always fires after navigation-chain completes (e.g after view:navigate-to)
+				    	this.currentView.trigger('view:ready');
+				    	//note that form view will not re-render on .set(data) so there should be no 2x view:ready triggered.
+				    });
+				else //a view should always have a parentRegion if shown by a region, but we do not enforce it when firing 'ready'.
+					this.trigger('view:ready');
+			}
 		});
 
 		//data / useParentData ({}, [] or url for GET only)

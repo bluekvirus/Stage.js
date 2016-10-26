@@ -1273,8 +1273,8 @@
 				path = opt.path || _.string.rtrim([opt.context || app.currentContext.name, opt.module || opt.subpath].join('/'), '/');
 			}
 
-			//inject context config before navigate (e.g app.navigate({path: ..., ctxConfig: {}}, [silent]))
-			app._navCtxConfig = app._navCtxConfig || opt.ctxConfig;
+			//inject context config before navigate (e.g app.navigate({path: ..., viewConfig: {}}, [silent]))
+			app._navViewConfig = app._navViewConfig || opt.ctxConfig || opt.viewConfig;
 
 			if(silent || app.hybridEvent)
 				navigate(path);//hybrid app will navigate using the silent mode.
@@ -1289,10 +1289,6 @@
 
 		//---navigation worker---
 			function navigate(path){
-				//retrieve context config
-				var ctxConfig = app._navCtxConfig;
-				delete app._navCtxConfig;
-
 				path = _.compact(String(path).split('/'));
 				if(path.length <= 0) throw new Error('DEV::Application::navigate() Navigation path empty...');
 
@@ -1304,7 +1300,7 @@
 				if(!app.currentContext || app.currentContext.name !== context) {
 					
 					//re-create target context upon switching
-					var targetCtx = new TargetContext(app.debug('Context Configure for', context, ctxConfig)), guardError;
+					var targetCtx = new TargetContext(), guardError;
 
 					//allow context to guard itself (e.g for user authentication)
 					if(targetCtx.guard) guardError = targetCtx.guard();
@@ -1331,13 +1327,13 @@
 						app.trigger('app:context-switched', app.currentContext.name);
 						app.coop('context-switched', app.currentContext.name, {ctx: app.currentContext, subpath: path.join('/')});
 						//notify regional views in the context (views further down in the nav chain)
-						app.currentContext.trigger('context:navigate-chain', path);
+						app.currentContext.trigger('context:navigate-chain', path); //see layout.js
 					});
 					targetRegion.show(targetCtx);
 					//note that 'view:navigate-to' triggers after '(view:show -->) region:show';
 				}else
 					//notify regional views in the context (with old flag set to true)
-					app.currentContext.trigger('context:navigate-chain', path, true);
+					app.currentContext.trigger('context:navigate-chain', path, true); //see layout.js
 
 			}
 		//-----------------------
@@ -5299,6 +5295,7 @@ module.exports = DeepModel;
             return this;
         },
 
+        //modified open method (so effects won't affect 'show' timing seq in both navigation-chain and view="" nesting)
         open: function(view, _cb) {
             var that = this;
 
@@ -5404,7 +5401,7 @@ module.exports = DeepModel;
  * 		|
  * ---------------
  *
- * View render() implementation is in item-view.js:render()! This in turn will be triggered by model:change in Marionette v1.8
+ * View render() implementation is in item-view.js:set() and render()!
  *
  * ---------------
  *
@@ -6161,10 +6158,17 @@ module.exports = DeepModel;
 		//ensure a ready event for static views (align with data and form views)
 		//Caveat: re-render a static view will not trigger 'view:ready' again...
 		this.listenTo(this, 'show', function(){
-			//call view:ready (if not waiting for data render after 1st `show`)
-			if(!this.data && !this.useParentData)
-			    this.trigger('view:ready');
-			    //note that form view will not re-render on .set(data) so there should be no 2x view:ready triggered.
+			//call view:ready (if not waiting for data render after 1st `show`, static and local data view only)
+			if((this.data && _.isPlainObject(this.data)) || (!this.data && !this.useParentData)){
+				if(this.parentRegion)
+				    this.parentRegion.once('show', function(){
+				    	//this is to make sure local data ready always fires after navigation-chain completes (e.g after view:navigate-to)
+				    	this.currentView.trigger('view:ready');
+				    	//note that form view will not re-render on .set(data) so there should be no 2x view:ready triggered.
+				    });
+				else //a view should always have a parentRegion if shown by a region, but we do not enforce it when firing 'ready'.
+					this.trigger('view:ready');
+			}
 		});
 
 		//data / useParentData ({}, [] or url for GET only)
@@ -6263,8 +6267,10 @@ module.exports = DeepModel;
 				//note that this will re-render the sub-regional views.
 				this.trigger('view:data-rendered');
 			}
-			//static view, data view and form all have onReady now...
-			this.trigger('view:ready');
+
+			//only trigger ready here if using remote data by url ('show' --> ajax --> 'change' --> ready)
+			if(_.isString(this.data))
+				this.trigger('view:ready');//data view and form all have onReady now... (static view ready see view.js:--bottom--)
 		},
 		
 		//Set & change the underlying data of the view.
@@ -6832,16 +6838,24 @@ module.exports = DeepModel;
 				this.navRegion = options.navRegion || this.navRegion;
 				//if(this.navRegion)
 				this.onNavigateChain = function(pathArray, old){
+					//retrieve nav (last in path) view config
+					var viewConfig = app._navViewConfig;
+
 					if(!pathArray || pathArray.length === 0){
-						if(!old)
-							this.trigger('view:navigate-to');//use this to show the default view
+						if(!old){
+							delete app._navViewConfig;
+							this.trigger('view:navigate-to', '', viewConfig);//use this to show the default view
+						}
 						else {
 							if(this.navRegion) this.getRegion(this.navRegion).close();
 						}
 						return;	
 					}
 
-					if(!this.navRegion) return this.trigger('view:navigate-to', pathArray.join('/'));
+					if(!this.navRegion){
+						delete app._navViewConfig;
+						return this.trigger('view:navigate-to', pathArray.join('/'), viewConfig);
+					}
 
 					if(!this.regions[this.navRegion]){
 						console.warn('DEV::Layout+::onNavigateChain()', 'invalid navRegion', this.navRegion, 'in', this.name);
@@ -6858,7 +6872,7 @@ module.exports = DeepModel;
 							var view = new TargetView();
 							if(navRegion.currentView) navRegion.currentView.trigger('view:navigate-away');
 							
-							//chain on region:show (instead of view:show to let view use onShow() before chaining)
+							//chain on region:show (instead of view:show to let view finish 'show'ing effects before chaining)
 							navRegion.once('show', function(){
 								view.trigger('view:navigate-chain', pathArray);
 							});	
@@ -6872,7 +6886,8 @@ module.exports = DeepModel;
 
 					}else{
 						pathArray.unshift(targetViewName);
-						return this.trigger('view:navigate-to', pathArray.join('/'));	
+						delete app._navViewConfig;
+						return this.trigger('view:navigate-to', pathArray.join('/'), viewConfig);	
 					}
 
 				};
@@ -6966,18 +6981,52 @@ module.exports = DeepModel;
 		    }
 		},
 
-		// Build an `itemView` for a model in the collection. (inject parentCt)
-		buildItemView: function(item, ItemViewType, itemViewOptions) {
-			var options = _.extend({ model: item }, itemViewOptions);
-			var view = new ItemViewType(options);
-			if(this._moreItems === true){
-				//.more()-ed items will bypass this CollectionView and use 'grand parent' as parentCt.
-				view.parentCt = this.parentCt;
-				view.parentRegion = this.parentRegion;
-			}
-			else
-				view.parentCt = this;
-			return view;
+		// Render the child item's view and add it to the
+		// HTML for the collection view.
+		addItemView: function(item, ItemView, index) {
+		    // get the itemViewOptions if any were specified
+		    var itemViewOptions = Marionette.getOption(this, "itemViewOptions");
+		    if (_.isFunction(itemViewOptions)) {
+		        itemViewOptions = itemViewOptions.call(this, item, index);
+		    }
+
+		    // build the view
+		    var view = this.buildItemView(item, ItemView, itemViewOptions);
+		    //+parentCt & parentRegion fix to align with framework view (Layout)
+		    view.parentRegion = this.parentRegion;
+		    if (this._moreItems === true)
+		    //.more()-ed items will bypass this CollectionView and use 'grand parent' as parentCt.
+		        view.parentCt = this.parentCt;
+		    else
+		        view.parentCt = this;
+
+		    // set up the child view event forwarding
+		    this.addChildViewEventForwarding(view);
+
+		    // this view is about to be added
+		    this.triggerMethod("before:item:added", view);
+
+		    // Store the child view itself so we can properly
+		    // remove and/or close it later
+		    this.children.add(view);
+
+		    // Render it and show it
+		    this.renderItemView(view, index);
+
+		    // call the "show" method if the collection view
+		    // has already been shown
+		    if (this._isShown && !this.isBuffering) {
+		        if (_.isFunction(view.triggerMethod)) {
+		            view.triggerMethod('show');
+		        } else {
+		            Marionette.triggerMethod.call(view, 'show');
+		        }
+		    }
+
+		    // this view was added
+		    this.triggerMethod("after:item:added", view);
+
+		    return view;
 		},
 
 		/////////////////////////////
@@ -8851,4 +8900,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.9.3-1132 build 1477427350982";
+;;app.stagejs = "1.9.3-1133 build 1477450604396";

@@ -88,6 +88,7 @@
             return this;
         },
 
+        //modified open method (so effects won't affect 'show' timing seq in both navigation-chain and view="" nesting)
         open: function(view, _cb) {
             var that = this;
 

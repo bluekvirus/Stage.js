@@ -81,18 +81,52 @@
 		    }
 		},
 
-		// Build an `itemView` for a model in the collection. (inject parentCt)
-		buildItemView: function(item, ItemViewType, itemViewOptions) {
-			var options = _.extend({ model: item }, itemViewOptions);
-			var view = new ItemViewType(options);
-			if(this._moreItems === true){
-				//.more()-ed items will bypass this CollectionView and use 'grand parent' as parentCt.
-				view.parentCt = this.parentCt;
-				view.parentRegion = this.parentRegion;
-			}
-			else
-				view.parentCt = this;
-			return view;
+		// Render the child item's view and add it to the
+		// HTML for the collection view.
+		addItemView: function(item, ItemView, index) {
+		    // get the itemViewOptions if any were specified
+		    var itemViewOptions = Marionette.getOption(this, "itemViewOptions");
+		    if (_.isFunction(itemViewOptions)) {
+		        itemViewOptions = itemViewOptions.call(this, item, index);
+		    }
+
+		    // build the view
+		    var view = this.buildItemView(item, ItemView, itemViewOptions);
+		    //+parentCt & parentRegion fix to align with framework view (Layout)
+		    view.parentRegion = this.parentRegion;
+		    if (this._moreItems === true)
+		    //.more()-ed items will bypass this CollectionView and use 'grand parent' as parentCt.
+		        view.parentCt = this.parentCt;
+		    else
+		        view.parentCt = this;
+
+		    // set up the child view event forwarding
+		    this.addChildViewEventForwarding(view);
+
+		    // this view is about to be added
+		    this.triggerMethod("before:item:added", view);
+
+		    // Store the child view itself so we can properly
+		    // remove and/or close it later
+		    this.children.add(view);
+
+		    // Render it and show it
+		    this.renderItemView(view, index);
+
+		    // call the "show" method if the collection view
+		    // has already been shown
+		    if (this._isShown && !this.isBuffering) {
+		        if (_.isFunction(view.triggerMethod)) {
+		            view.triggerMethod('show');
+		        } else {
+		            Marionette.triggerMethod.call(view, 'show');
+		        }
+		    }
+
+		    // this view was added
+		    this.triggerMethod("after:item:added", view);
+
+		    return view;
 		},
 
 		/////////////////////////////
