@@ -6166,7 +6166,9 @@ module.exports = DeepModel;
 				    	this.currentView.trigger('view:ready');
 				    	//note that form view will not re-render on .set(data) so there should be no 2x view:ready triggered.
 				    });
-				else //a view should always have a parentRegion if shown by a region, but we do not enforce it when firing 'ready'.
+				else 
+					//a view should always have a parentRegion (since shown by a region), but we do not enforce it when firing 'ready'.
+					//e.g manual view life-cycling (very rare)
 					this.trigger('view:ready');
 			}
 		});
@@ -6184,8 +6186,12 @@ module.exports = DeepModel;
 		        }
 		        this.data = tmp;
 		    }
-		    if (this.data)
+		    if (this.data){
+		    	//mark local data case, so first data ready can be fired after navigate-to (after region:show)
+				if(_.isPlainObject(this.data))
+					this._delayFirstTimeLocalDataReady = true;
 		        this.set(this.data);
+		    }
 		});
 
 		return Backbone.Marionette.View.apply(this, arguments);
@@ -6268,9 +6274,16 @@ module.exports = DeepModel;
 				this.trigger('view:data-rendered');
 			}
 
-			//only trigger ready here if using remote data by url ('show' --> ajax --> 'change' --> ready)
-			if(_.isString(this.data))
-				this.trigger('view:ready');//data view and form all have onReady now... (static view ready see view.js:--bottom--)
+			//data view and form all have onReady now... (static view ready see view.js:--bottom--)
+			if (this._delayFirstTimeLocalDataReady) {
+				delete this._delayFirstTimeLocalDataReady;
+				if(this.parentRegion)
+				    return this.parentRegion.once('show', function() {
+				        this.currentView.trigger('view:ready');
+				    });
+			} 
+			
+			this.trigger('view:ready');
 		},
 		
 		//Set & change the underlying data of the view.
@@ -8900,4 +8913,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.9.3-1133 build 1477450604396";
+;;app.stagejs = "1.9.3-1134 build 1477457913333";

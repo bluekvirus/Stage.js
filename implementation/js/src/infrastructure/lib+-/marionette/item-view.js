@@ -73,9 +73,16 @@
 				this.trigger('view:data-rendered');
 			}
 
-			//only trigger ready here if using remote data by url ('show' --> ajax --> 'change' --> ready)
-			if(_.isString(this.data))
-				this.trigger('view:ready');//data view and form all have onReady now... (static view ready see view.js:--bottom--)
+			//data view and form all have onReady now... (static view ready see view.js:--bottom--)
+			if (this._delayFirstTimeLocalDataReady) {
+				delete this._delayFirstTimeLocalDataReady;
+				if(this.parentRegion)
+				    return this.parentRegion.once('show', function() {
+				        this.currentView.trigger('view:ready');
+				    });
+			} 
+			
+			this.trigger('view:ready');
 		},
 		
 		//Set & change the underlying data of the view.

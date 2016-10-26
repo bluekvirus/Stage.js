@@ -796,7 +796,9 @@
 				    	this.currentView.trigger('view:ready');
 				    	//note that form view will not re-render on .set(data) so there should be no 2x view:ready triggered.
 				    });
-				else //a view should always have a parentRegion if shown by a region, but we do not enforce it when firing 'ready'.
+				else 
+					//a view should always have a parentRegion (since shown by a region), but we do not enforce it when firing 'ready'.
+					//e.g manual view life-cycling (very rare)
 					this.trigger('view:ready');
 			}
 		});
@@ -814,8 +816,12 @@
 		        }
 		        this.data = tmp;
 		    }
-		    if (this.data)
+		    if (this.data){
+		    	//mark local data case, so first data ready can be fired after navigate-to (after region:show)
+				if(_.isPlainObject(this.data))
+					this._delayFirstTimeLocalDataReady = true;
 		        this.set(this.data);
+		    }
 		});
 
 		return Backbone.Marionette.View.apply(this, arguments);
