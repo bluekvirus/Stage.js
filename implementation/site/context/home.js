@@ -24,7 +24,7 @@
 		],
 
 		data: {local: true}, //local data for testing navi-to and ready timing.
-		//data: '/static/resource/en-US/i18n.json',
+		//data: 'static/resource/en-US/i18n.json',
 
 		coop: ['window-resized'],
 
@@ -132,7 +132,7 @@
 	app.view('Home.BG', {
 		//template: ' ', //might need exception as .editors configured views.
 		svg: true,
-		data: '/static/resource/en-US/i18n.json', //a test, not used in view
+		data: 'static/resource/en-US/i18n.json', //a test, not used in view
 		//data: {local: true}, //a test, not used in view
 		
 		onReady: function(){
