@@ -54,7 +54,9 @@
 			});
 
 		//default options
-		_.extend(options, restOpt || {}, {
+		_.extend({
+			timeout: app.config.timeout,
+		}, options, restOpt || {}, {
 			type: undefined,
 			data: undefined,
 			processData: false,
@@ -62,7 +64,6 @@
 			//**Caveat**: we do NOT assume a json format response.---------------------------------------
 			//dataType: 'json', //need 'application/json; charset=utf-8' in response Content-Type header.
 			//-------------------------------------------------------------------------------------------
-			timeout: app.config.timeout,
 		});
 
 		//process _entity[_id][_method] and strip off options.querys(alias:params)
