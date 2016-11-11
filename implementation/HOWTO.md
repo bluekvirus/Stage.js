@@ -59,7 +59,7 @@ A *Widget* is a named *View* with `.reconfigure(options)` method that can change
 A *Canvas* is a *View* with the `.svg` property set to `true`, you will have an automatically expanded `this.paper` to draw upon with live height/width update on the `this.paper` property after shown plus auto clean/resize upon `onDraw()`.
 
 !!!callout callout-primary
-**Note:** *Canvas* is svg based and the `this.paper` drawing APIs are from the Raphaël.js/Snap.svg library, make sure you have them included in your `index.html`
+**Note:** *Canvas* is svg based and the `this.paper` drawing APIs are from the Raphaël.js/Snap.svg library, make sure you have one of them included.
 !!!
 
 We have not yet included support for *HTML5 Canvas*.
@@ -109,6 +109,10 @@ We choose what we choose when designing this framework simply because we want to
 * Development Framework - AngularJS/EmberJS/Meteor (infrastructure only)
 * Application Framework (All-in-One) - YUI/ExtJS (infrastructure plus widgets and tools)
 
+!!!callout callout-warning
+**Important:** There is no mentioning of **React.js**, **Vue.js** or **Ractive.js** because these are view engine libraries instead of frameworks. Put it this way, it is like having a `Backbone.View` but with the `.init() and .render()` implemented already together with `ui:{}` pre-defined and pre-wired. Don't confuse yourself with the concepts.
+!!!
+
 **The Backbone library can implement them all** (Yes, any client side framework). (Not 100% for Meteor though, since Meteor combines its server into a full-stack solution. You need nodejs in the picture, and we do have a dev-server package called **ajax-box-lite** in the toolset for just that based on the [express.js](http://expressjs.com/4x/) framework). And, if you need more evidence, YUI3 has the exact same concepts from Backbone implemented as its infrastructure. (Why did we mention YUI here? Because of Yahoo!'s JavaScript [Architect](http://www.crockford.com/))
 
 In order to accomplish more with less code using Backbone, we extended **Backbone.Marionette** (a pattern library) and reusing its *region* concepts for view nesting. However, you do NOT need to read their documentation before using **Stage.js** neither do you need to be familiar with the different types of views required by that library. There is only one general **View** concept here. We also removed the needs to work directly with the Model/Collection methods in the original *Backbone* library when building views. The resulting framework accomplishes all the big frameworks have promised but with **a thiner and flattened structure**. We believe scripting languages are always going to be the perfect thin glue layer between mechanisms and policies. The JavaScript language were picked to glue HTML/CSS and UX but nothing more, it should not be overdosed and attempt to mimic something bloated like Java. In other words, **only the burger is important**:
@@ -122,6 +126,10 @@ In order to accomplish more with less code using Backbone, we extended **Backbon
 !!!callout callout-primary
 **Note:** The **JQuery UI** library contained in this framework is a custom build (Core, Interaction and Effect). It is sufficient for you to create plugins and widgets and to use the `$.fn.position()` and `$.fn.animation()` methods. However, you will *NOT* be able to use any UIs in the original library.
 !!!
+
+And one last thing, NO, you don't need ES6 with babel or coffeescript/typescript or any syntax shiv/sugar or npm with browserify to start building your web application. Just `bower` and ES5 with Stage.js would do the job! If you prefer server side Javascript for the middleware, then by all means use ES6 with the latest Node.js runtime there (We recommend against using Javascript on the server side due to the limit of the language in var scope guarding and debugging). Also, unless you want to obsecure your code before deployment, you really don't need grunt/gulp/webpack for a full-blown build process setup to develop your application. 
+
+Still, we provide middleware, build and theme automation in the framework.
 
 Basics
 ------
