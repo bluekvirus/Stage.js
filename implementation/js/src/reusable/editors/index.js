@@ -52,12 +52,14 @@
  * validate (custom function and/or rules see core/parts/editors/basic/validations.js) - The validation function should return null or 'error string' to be used in status.
  * parentCt - event delegate.
  *
- * Events
+ * Events 
+ * (all editor:* events require manual .listenTo to catch, there is no meta event nor triggerMethod for e-name and method mapping)
  * ======
- * editor:change
- * editor:keyup
- * editor:focusin/out
- * view:editor-changed (parentCt)
+ * editor:change (self)
+ * editor:keyup (self)
+ * editor:focusin/out (self)
+ * editor:e (parentCt)
+ * view:editor-changed (parentCt) -- prefered
  *
  * Constrain
  * =========
@@ -94,6 +96,7 @@
 			//need to forward events if has this.parentCt
 			_triggerEvent: function(e){
 				var host = this;
+				//Caveat: .trigger is basic Backbone.EE method (so require manual .listenTo to catch), different than .triggerMethod which is Marionette and auto calls method by camelized event name.
 				host.trigger('editor:' + e.type, this.model.get('name'), this);
 				//host.trigger('editor:' + e.type + ':' + this.model.get('name'), this);
 
