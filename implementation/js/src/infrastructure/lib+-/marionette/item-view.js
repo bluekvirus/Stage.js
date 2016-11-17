@@ -283,10 +283,15 @@
 				if($position.length === 0)
 					$position = this.$el;
 				$position.append(editor.el);
+				//+'show' (internal, for editor writer only)
+				editor.trigger('view:show');
 				
-				//3. patch in default value
-				if(config.value)
+				//3. patch in default value (Note: Always provide a default value to trigger onReady()!)
+				if(config.value){
 					editor.setVal(config.value);
+					//+'ready' (internal, for editor writer only)
+					editor.trigger('view:ready');
+				}
 
 			}, this);
 
