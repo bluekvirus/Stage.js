@@ -58,8 +58,8 @@
  * editor:change (self)
  * editor:keyup (self)
  * editor:focusin/out (self)
- * editor:e (parentCt)
- * view:editor-changed (parentCt) -- prefered
+ * view:editor-changed (parentCt) -- change
+ * view:editor-e (parentCt) -- keyup, focusin/out
  *
  * Constrain
  * =========
@@ -71,6 +71,7 @@
  * @created 2013.11.10
  * @updated 2014.02.26 [Bootstrap 3.1+]
  * @updated 2015.12.07 [awesome-bootstrap-checkbox & radio]
+ * @updated 2016.11.16 
  * @version 1.2.1
  */
 
@@ -101,10 +102,10 @@
 				//host.trigger('editor:' + e.type + ':' + this.model.get('name'), this);
 
 				if(this.parentCt){
-					this.parentCt.trigger('editor:' + e.type, this.model.get('name'), this);
-					//this.parentCt.trigger('editor:' + e.type + ':' + this.model.get('name'), this);
 					if(e.type == 'change')
 						this.parentCt.trigger('view:editor-changed', this.model.get('name'), this);
+					else
+						this.parentCt.trigger('view:editor-' + e.type, this.model.get('name'), this);
 				}
 			},
 
