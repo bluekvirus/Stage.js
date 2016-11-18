@@ -287,7 +287,7 @@
 				editor.trigger('view:show');
 				
 				//3. patch in default value (Note: Always provide a default value to trigger onReady()!)
-				if(config.value){
+				if(config.value !== undefined){
 					editor.setVal(config.value);
 					//+'ready' (internal, for editor writer only)
 					editor.trigger('view:ready');

@@ -43,7 +43,7 @@
                     checkitout: true
                 }
             }
-        }        
+        }
     });
 
     app.view('FieldsetB', {
@@ -161,6 +161,15 @@
                 checked: 'enabled',
                 unchecked: 'disabled',
             },
+            range:{
+                label: 'Range',
+                type: 'range',
+                // min: 0,
+                // max: 100,
+                // value: 0,
+                // step: 5,
+                unitLabel: 'K',
+            },
             select: {
                 label: 'Select',
                 type: 'select',
@@ -187,7 +196,7 @@
                         url: 'sample/choices'
                     }
                 }
-            } 
+            }
         }
     });
 
@@ -218,7 +227,7 @@
                     field: 'col-sm-10'
                 },
                 appendTo: 'div.form',
-            },            
+            },
             'main.selectgroup': {
                 label: 'Group',
                 type: 'select',
@@ -327,7 +336,7 @@
                 if(editor.isEnabled()) {
                     editor.disable(true);
                     this.getEditor('fieldset-a.ab').disable();
-                    this.getEditor('fieldset-b.radios').disable();                    
+                    this.getEditor('fieldset-b.radios').disable();
                 }
                 else {
                     editor.disable(false);
@@ -353,4 +362,3 @@
     });
 
 })(Application);
-  
