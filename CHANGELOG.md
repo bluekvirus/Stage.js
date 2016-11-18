@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.10.0 (2016-11-03*)
+1.10.0 (2016-11-17*)
 --------------------
 1. Missing locale file will no longer raise exceptions;
 2. Updated flexlayout to be 0.2.3;
@@ -33,6 +33,9 @@ Change Log
 29. Aligned local/remote data ready event timing; (both after this.paper ready)
 30. Aligned navigate-to and ready event timing; (always be show-navito-ready for static, form, local/remote data views in a nav chain)
 31. timeout option is given back to app.remote() for overridding default app.config.timeout;
+32. Refined editor related meta-events mapping on parent (form) view;
+33. Added 'show' and 'ready' events to editors; (internal, for editor writer only);
+34. Added range editor;
 
 working on ...
 
