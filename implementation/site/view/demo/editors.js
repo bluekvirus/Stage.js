@@ -166,7 +166,7 @@
                 type: 'range',
                 // min: 0,
                 // max: 100,
-                // value: 20,
+                // value: 0,
                 // step: 5,
                 unitLabel: 'K',
             },
