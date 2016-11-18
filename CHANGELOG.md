@@ -35,6 +35,7 @@ Change Log
 31. timeout option is given back to app.remote() for overridding default app.config.timeout;
 32. Refined editor related meta-events mapping on parent (form) view;
 33. Added 'show' and 'ready' events to editors; (internal, for editor writer only);
+34. Added range editor;
 
 working on ...
 

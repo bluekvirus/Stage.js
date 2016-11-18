@@ -6487,10 +6487,15 @@ module.exports = DeepModel;
 				if($position.length === 0)
 					$position = this.$el;
 				$position.append(editor.el);
+				//+'show' (internal, for editor writer only)
+				editor.trigger('view:show');
 				
-				//3. patch in default value
-				if(config.value)
+				//3. patch in default value (Note: Always provide a default value to trigger onReady()!)
+				if(config.value !== undefined){
 					editor.setVal(config.value);
+					//+'ready' (internal, for editor writer only)
+					editor.trigger('view:ready');
+				}
 
 			}, this);
 
@@ -7696,9 +7701,9 @@ var I18N = {};
  * tooltip
  * placeholder
  * value: default value
- * 
+ *
  * //radios/selects/checkboxes only
- * options: { 
+ * options: {
  * 	inline: true|false (for radios and checkboxes only - note that the choice data should be prepared and passed in instead of using url or callbacks to fetch within the editor)
  * 	data: [] or {group:[], group2:[]} - (groups are for select only)
  * 	labelField
@@ -7713,8 +7718,8 @@ var I18N = {};
  *
  * //select only
  * multiple
- * 
- * //textarea only 
+ *
+ * //textarea only
  * rows
  *
  * //specifically for file only (see also fileeditor.upload(options))
@@ -7729,27 +7734,30 @@ var I18N = {};
  *  	done/fail/always/progress ... - see complete callback listing on [https://github.com/blueimp/jQuery-File-Upload/wiki/Options].
  *  }
  * }
- * 
+ *
  * validate (custom function and/or rules see core/parts/editors/basic/validations.js) - The validation function should return null or 'error string' to be used in status.
  * parentCt - event delegate.
  *
  * Events
+ * (all editor:* events require manual .listenTo to catch, there is no meta event nor triggerMethod for e-name and method mapping)
  * ======
- * editor:change
- * editor:keyup
- * editor:focusin/out
- * view:editor-changed (parentCt)
+ * editor:change (self)
+ * editor:keyup (self)
+ * editor:focusin/out (self)
+ * view:editor-changed (parentCt) -- change
+ * view:editor-e (parentCt) -- keyup, focusin/out
  *
  * Constrain
  * =========
  * Do addon/transform stuff in onRender() *Do NOT* use onShow() it won't be invoked by _enableEditors() enhancement in ItemView/Layout.
- * 
+ *
  *
  * @author Tim Lauv
  * @contributor Yan.Zhu
  * @created 2013.11.10
  * @updated 2014.02.26 [Bootstrap 3.1+]
  * @updated 2015.12.07 [awesome-bootstrap-checkbox & radio]
+ * @updated 2016.11.16
  * @version 1.2.1
  */
 
@@ -7766,30 +7774,31 @@ var I18N = {};
 
 			events: {
 				//fired on both parentCt and this editor
-				'change': '_triggerEvent', 
-				'keyup input, textarea': '_triggerEvent', 
-				'focusout': '_triggerEvent', 
-				'focusin': '_triggerEvent' 
+				'change': '_triggerEvent',
+				'keyup input, textarea': '_triggerEvent',
+				'focusout': '_triggerEvent',
+				'focusin': '_triggerEvent'
 			},
 
 			//need to forward events if has this.parentCt
 			_triggerEvent: function(e){
 				var host = this;
+				//Caveat: .trigger is basic Backbone.EE method (so require manual .listenTo to catch), different than .triggerMethod which is Marionette and auto calls method by camelized event name.
 				host.trigger('editor:' + e.type, this.model.get('name'), this);
 				//host.trigger('editor:' + e.type + ':' + this.model.get('name'), this);
 
 				if(this.parentCt){
-					this.parentCt.trigger('editor:' + e.type, this.model.get('name'), this);
-					//this.parentCt.trigger('editor:' + e.type + ':' + this.model.get('name'), this);
 					if(e.type == 'change')
 						this.parentCt.trigger('view:editor-changed', this.model.get('name'), this);
+					else
+						this.parentCt.trigger('view:editor-' + e.type, this.model.get('name'), this);
 				}
 			},
 
 			initialize: function(options){
 				//[parentCt](to fire events on) as delegate
 				this.parentCt = options.parentCt || this.parentCt;
-				
+
 				//prep the choices data for select/radios/checkboxes
 				if(options.type in {'select': true, 'radios': true, 'checkboxes': true}){
 					switch(options.type){
@@ -7849,7 +7858,7 @@ var I18N = {};
 						this.listenToOnce(this, 'render', function(){
 							var that = this;
 							app.remote(choices.remote).done(function(data){
-								
+
 								//Warning: to leave less config overhead, developers have no way to pre-process the choice data returned atm.
 								that.setChoices(data);
 							});
@@ -7867,7 +7876,7 @@ var I18N = {};
 				//prep basic editor display
 				var uuiid = _.uniqueId('basic-editor-'); //unique UI id
 				this.model = new Backbone.Model({
-					uiId: uuiid, 
+					uiId: uuiid,
 					layout: options.layout || '',
 					name: options.name, //*required
 					type: options.type, //default: text
@@ -7880,6 +7889,11 @@ var I18N = {};
 					help: options.help || '', //optional
 					tooltip: (_.isString(options.tooltip) && options.tooltip) || '', //optional
 					options: options.options || undefined, //optional {inline: true|false, data:[{label:'l', val:'v', ...}, {label:'ll', val:'vx', ...}] or ['v', 'v1', ...], labelField:..., valueField:...}
+					//specifically for a range field:
+					min: _.isNumber(options.min) ? options.min : 0,
+					max: _.isNumber(options.max) ? options.max : 100,
+					step: options.step || 1,
+					unitLabel: options.unitLabel || '',
 					//specifically for a single checkbox field:
 					boxLabel: options.boxLabel || '',
 					value: options.value,
@@ -7894,16 +7908,16 @@ var I18N = {};
 					this.validators = _.map(options.validate, function(validation, name){
 						if(_.isFunction(validation)){
 							return {fn: validation};
-						}else 
+						}else
 							return {rule: name, options:validation};
 					});
-					//forge the validation method of this editor				
+					//forge the validation method of this editor
 					this.validate = function(show){
 						if(!this.isEnabled()) return; //skip the disabled ones.
-						
+
 						var error;
 						if(_.isFunction(options.validate)) {
-							error = options.validate(this.getVal(), this.parentCt); 
+							error = options.validate(this.getVal(), this.parentCt);
 
 						}
 						else {
@@ -7919,10 +7933,10 @@ var I18N = {};
 							}
 						}
 						if(show) {
-							this._followup(error); //eager validation, will be disabled if used in Compound editor 
+							this._followup(error); //eager validation, will be disabled if used in Compound editor
 							//this.status(error);
 						}
-						return error;//return error msg or nothing						
+						return error;//return error msg or nothing
 					};
 
 					//internal helper function to group identical process (error -> eagerly validated)
@@ -7977,7 +7991,7 @@ var I18N = {};
 							}, this);
 						}
 					};
-					
+
 					_.extend(this.actions, {
 						//2. implement [clear] button action
 						clear: function(){
@@ -8005,9 +8019,9 @@ var I18N = {};
 					this.upload = function(config){
 						config = _.extend({}, options.upload, config);
 						//fix the formData value
-						if(config.formData) 
+						if(config.formData)
 							config.formData = _.result(config, 'formData');
-						
+
 						//fix the url with app.config.baseAjaxURI (since form uploading counts as data api)
 						if(app.config.baseAjaxURI)
 							config.url = [app.config.baseAjaxURI, config.url].join('/');
@@ -8019,6 +8033,14 @@ var I18N = {};
 						}, config));
 					};
 
+				//prep current value display if type === 'range'
+				}else if(options.type === 'range'){
+					this.listenTo(this, 'view:show editor:change', function(e){
+						if(options.label && this.ui.input.val() !== undefined){
+								this.ui.currentVal.text(this.ui.input.val() + (options.unitLabel || ''));
+								this.ui.currentValPostfix.text('\u00A0' + ("(current value)".i18n()));
+						}
+					});
 				}
 
 			},
@@ -8026,7 +8048,7 @@ var I18N = {};
 			isEnabled: function(){
 				return !this._inactive;
 			},
-			
+
 			disable: function(flag){
 
 				if(flag === false){
@@ -8087,7 +8109,7 @@ var I18N = {};
 					}
 					if(this.ui.input)
 						return this.ui.input.val();
-					
+
 					//skipping input-ro field val...
 				}
 			},
@@ -8095,7 +8117,7 @@ var I18N = {};
 			validate: _.noop,
 
 			status: function(options){
-			//options: 
+			//options:
 			//		- false/undefined: clear status
 			//		- object: {
 			//			type:
@@ -8216,15 +8238,30 @@ var I18N = {};
 							'{{#is type "ro"}}',//read-only
 								'<div ui="input-ro" data-value="{{{value}}}" class="form-control-static">{{value}}</div>',
 							'{{else}}',
-								'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" {{#isnt type "file"}}class="form-control"{{else}} style="display:inline;" {{/isnt}} type="{{type}}" id="{{uiId}}" placeholder="{{i18n placeholder}}" value="{{value}}"> <!--1 space-->',
-								'{{#is type "file"}}',
-									'<span action="upload" class="hidden file-upload-action-trigger" ui="upload" style="cursor:pointer;"><i class="glyphicon glyphicon-upload"></i> <!--1 space--></span>',
-									'<span action="clear" class="hidden file-upload-action-trigger" ui="clearfile"  style="cursor:pointer;"><i class="glyphicon glyphicon-remove-circle"></i></span>',
-									'<span ui="result" class="file-upload-result wrapper-horizontal"></span>',
-								'{{/is}}',							
+								'{{#is type "range"}}',
+									'<div class="clearfix">',
+										'{{#if label}}',
+											'<span ui="currentVal"></span><span ui="currentValPostfix" class="text-muted"></span>',
+										'{{/if}}',
+										'<input id="{{uiId}}" ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" type="range" value="{{value}}" min="{{min}}" max="{{max}}" step="{{step}}">',
+										'<span class="pull-left">{{min}}{{unitLabel}}</span>',
+										'<span class="pull-right">{{max}}{{unitLabel}}</span>',
+									'</div>',
+								'{{else}}',
+									'{{#is type "file"}}',
+										'<div class="clearfix">',
+											'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" style="display:inline;" type="{{type}}" id="{{uiId}}" placeholder="{{i18n placeholder}}" value="{{value}}"> <!--1 space-->',
+											'<span action="upload" class="hidden file-upload-action-trigger" ui="upload" style="cursor:pointer;"><i class="glyphicon glyphicon-upload"></i> <!--1 space--></span>',
+											'<span action="clear" class="hidden file-upload-action-trigger" ui="clearfile"  style="cursor:pointer;"><i class="glyphicon glyphicon-remove-circle"></i></span>',
+											'<span ui="result" class="file-upload-result wrapper-horizontal"></span>',
+										'</div>',
+									'{{else}}',
+										'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" class="form-control" type="{{type}}" id="{{uiId}}" placeholder="{{i18n placeholder}}" value="{{value}}"> <!--1 space-->',
+									'{{/is}}',
+								'{{/is}}',
 							'{{/is}}',
 						'{{/is}}',
-						'</div>',	
+						'</div>',
 					'{{/if}}',
 				'{{/is}}',
 			'{{/is}}',
@@ -8915,4 +8952,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.9.3-1136 build 1478214149660";
+;;app.stagejs = "1.9.3-1143 build 1479440300656";
