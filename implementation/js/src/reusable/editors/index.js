@@ -108,7 +108,11 @@
 						this.parentCt.trigger('view:editor-' + e.type, this.model.get('name'), this);
 				}
 			},
-
+			onShow: function(){
+				if(this.model.get('type') === 'range'){
+					this.trigger('editor:change');
+				}
+			},
 			initialize: function(options){
 				//[parentCt](to fire events on) as delegate
 				this.parentCt = options.parentCt || this.parentCt;
@@ -203,6 +207,11 @@
 					help: options.help || '', //optional
 					tooltip: (_.isString(options.tooltip) && options.tooltip) || '', //optional
 					options: options.options || undefined, //optional {inline: true|false, data:[{label:'l', val:'v', ...}, {label:'ll', val:'vx', ...}] or ['v', 'v1', ...], labelField:..., valueField:...}
+					//specifically for a range field:
+					min: options.min || '0',
+					max: options.max || '100',
+					step: options.step || '1',
+					unitLabel: options.unitLabel || '',
 					//specifically for a single checkbox field:
 					boxLabel: options.boxLabel || '',
 					value: options.value,
@@ -342,6 +351,13 @@
 						}, config));
 					};
 
+				}else if(options.type === 'range'){
+					this.listenTo(this, 'editor:change', function(e){
+						if(options.label && options.label !== '' && this.ui.input.val()){
+								this.ui.cur.text(this.ui.input.val() + (options.unitLabel || ''));
+								this.ui.curpostfix.text('\u00A0' + ("(current value)".i18n()));
+						}
+					});
 				}
 
 			},
@@ -539,12 +555,23 @@
 							'{{#is type "ro"}}',//read-only
 								'<div ui="input-ro" data-value="{{{value}}}" class="form-control-static">{{value}}</div>',
 							'{{else}}',
-								'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" {{#isnt type "file"}}class="form-control"{{else}} style="display:inline;" {{/isnt}} type="{{type}}" id="{{uiId}}" placeholder="{{i18n placeholder}}" value="{{value}}"> <!--1 space-->',
-								'{{#is type "file"}}',
-									'<span action="upload" class="hidden file-upload-action-trigger" ui="upload" style="cursor:pointer;"><i class="glyphicon glyphicon-upload"></i> <!--1 space--></span>',
-									'<span action="clear" class="hidden file-upload-action-trigger" ui="clearfile"  style="cursor:pointer;"><i class="glyphicon glyphicon-remove-circle"></i></span>',
-									'<span ui="result" class="file-upload-result wrapper-horizontal"></span>',
-								'{{/is}}',							
+								'{{#is type "range"}}',
+									'<div class="clearfix">',
+										'{{#if label}}',
+											'<span ui="cur">{{value}}</span><span ui="curpostfix" class="text-muted"></span>',
+										'{{/if}}',
+										'<input id="{{uiId}}" ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" type="range" value="{{value}}" min="{{min}}" max="{{max}}" step="{{step}}">',
+										'<span class="pull-left">{{min}}{{unitLabel}}</span>',
+										'<span class="pull-right">{{max}}{{unitLabel}}</span>',
+									'</div>',
+								'{{else}}',
+									'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" {{#isnt type "file"}}class="form-control"{{else}} style="display:inline;" {{/isnt}} type="{{type}}" id="{{uiId}}" placeholder="{{i18n placeholder}}" value="{{value}}"> <!--1 space-->',
+									'{{#is type "file"}}',
+										'<span action="upload" class="hidden file-upload-action-trigger" ui="upload" style="cursor:pointer;"><i class="glyphicon glyphicon-upload"></i> <!--1 space--></span>',
+										'<span action="clear" class="hidden file-upload-action-trigger" ui="clearfile"  style="cursor:pointer;"><i class="glyphicon glyphicon-remove-circle"></i></span>',
+										'<span ui="result" class="file-upload-result wrapper-horizontal"></span>',
+									'{{/is}}',
+								'{{/is}}',
 							'{{/is}}',
 						'{{/is}}',
 						'</div>',	
