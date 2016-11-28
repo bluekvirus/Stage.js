@@ -54,7 +54,7 @@
 			});
 
 		//default options
-		_.extend({
+		options = _.extend({
 			timeout: app.config.timeout,
 		}, options, restOpt || {}, {
 			type: undefined,

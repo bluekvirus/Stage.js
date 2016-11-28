@@ -2607,7 +2607,7 @@
 			});
 
 		//default options
-		_.extend({
+		options = _.extend({
 			timeout: app.config.timeout,
 		}, options, restOpt || {}, {
 			type: undefined,
@@ -8952,4 +8952,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.9.3-1143 build 1479440300656";
+;;app.stagejs = "1.9.3-1144 build 1480310686983";
