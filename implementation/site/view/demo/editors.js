@@ -196,8 +196,185 @@
                         url: 'sample/choices'
                     }
                 }
-            }
-        }
+            },
+            //date editors
+            date: app.view({
+                className: 'form-group',
+                template: [
+                    '<div class="col-sm-6">',
+                        '<div editor="date-from"></div>',
+                    '</div>',
+                    '<div class="col-sm-6">',
+                        '<div editor="date-to"></div>',
+                    '</div>',
+                ],
+                editors: {
+                    'date-from': {
+                        label: 'Date-From',
+                        type: 'date',
+                        startDate: '2/29/2012',
+                        layout: {
+                            label: 'col-sm-4',
+                            field: 'col-sm-8'
+                        },
+                    },
+                    'date-to': {
+                        label: 'Date-To (hidden\&click)',
+                        type: 'date',
+                        hidden: true,
+                        layout: {
+                            label: 'col-sm-4',
+                            field: 'col-sm-8'
+                        }
+                    },
+                }
+            }),
+            'date-methods': app.view({
+                className: 'form-group',
+                template: [
+                    '<div class="col-sm-6">',
+                        '<div editor="methods"></div>',
+                    '</div>',
+                    '<div class="col-sm-6">',
+                        '<div class="row">',
+                            '<div class="col-sm-8">',
+                                '<input type="text" id="date-interact-getVal" class="form-control" placeholder="get the value of editor in standard form."/>',
+                            '</div>',
+                            '<div class="col-sm-4">',
+                                '<div class="btn btn-block btn-primary" action="get-val">getVal</div>',
+                            '</div>',
+                        '</div>',
+                        '<div class="row" style="padding-top:1em;">',
+                            '<div class="col-sm-8">',
+                                '<input type="text" id="date-interact-getVal-true" class="form-control" placeholder="get the value of editor in milliseconds."/>',
+                            '</div>',
+                            '<div class="col-sm-4">',
+                                '<div class="btn btn-block btn-primary" action="get-val-true">getVal(true)</div>',
+                            '</div>',
+                        '</div>',
+                        '<div class="row wrapper-2x">',
+                            '<div class="col-sm-8">',
+                                '<input type="text" id="date-interact-setVal" class="form-control" placeholder="(m)m/(d)d/yyyy or milliseconds"/>',
+                            '</div>',
+                            '<div class="col-sm-4">',
+                                '<div class="btn btn-block btn-info" action="set-val">setVal</div>',
+                            '</div>',
+                        '</div>',
+                        '<div class="row">',
+                            '<div class="col-sm-6">',
+                                '<div class="btn btn-block btn-warning" action="disable">Disable</div>',
+                            '</div>',
+                            '<div class="col-sm-6">',
+                                '<div class="btn btn-block btn-success" action="enable">Enable</div>',
+                            '</div>',
+                        '</div>',
+                    '</div>',
+                ],
+                editors: {
+                    methods: {
+                        type: 'date',
+                        label: 'Date Methods',
+                        layout: {
+                            label: 'col-sm-4',
+                            field: 'col-sm-8'
+                        }
+                    },
+                },
+                actions: {
+                    'get-val': function(){
+                        var val = this.getEditor('methods').getVal();
+
+                        this.$el.find('#date-interact-getVal').val(val);
+                    },
+                    'get-val-true': function(){
+                        var val = this.getEditor('methods').getVal(true),
+                            date = new Date(val);
+
+                        this.$el.find('#date-interact-getVal-true').val(val);
+                    },
+                    'set-val': function(){
+                        var val = this.$el.find('#date-interact-setVal').val();
+
+                        if(_.contains(val, '/'))
+                            this.getEditor('methods').setVal(val);
+                        else
+                            this.getEditor('methods').setVal(parseInt(val));
+                    },
+                    disable: function(){
+                        this.getEditor('methods').disable();
+                    },
+                    enable: function(){
+                        this.getEditor('methods').disable(false);
+                    },
+                }
+            }),
+            'time-methods': app.view({
+                className: 'form-group',
+                template: [
+                    '<div class="col-sm-6">',
+                        '<div editor="time"></div>',
+                    '</div>',
+                    '<div class="col-sm-6">',
+                        '<div class="row">',
+                            '<div class="col-sm-8">',
+                                '<input type="text" id="date-interact-getVal" class="form-control" placeholder="get the value of editor in standard form."/>',
+                            '</div>',
+                            '<div class="col-sm-4">',
+                                '<div class="btn btn-block btn-primary" action="get-val">getVal()</div>',
+                            '</div>',
+                        '</div>',
+                        '<div class="row wrapper">',
+                            '<div class="col-sm-8">',
+                                '<input type="text" id="date-interact-setVal" class="form-control" placeholder="hh:mm:ss am/pm or milliseconds"/>',
+                            '</div>',
+                            '<div class="col-sm-4">',
+                                '<div class="btn btn-block btn-info" action="set-val">setVal</div>',
+                            '</div>',
+                        '</div>',
+                        '<div class="row">',
+                            '<div class="col-sm-6">',
+                                '<div class="btn btn-block btn-warning" action="disable">Disable</div>',
+                            '</div>',
+                            '<div class="col-sm-6">',
+                                '<div class="btn btn-block btn-success" action="enable">Enable</div>',
+                            '</div>',
+                        '</div>',
+                    '</div>',
+                ],
+                editors: {
+                    time: {
+                        label: 'Time Methods',
+                        type: 'time',
+                        startTime: 12345678900,
+                        layout: {
+                            label: 'col-sm-4',
+                            field: 'col-sm-8'
+                        }
+                    }
+                },
+                actions: {
+                    'get-val': function(){
+                        var val = this.getEditor('time').getVal();
+
+                        this.$el.find('#date-interact-getVal').val(val);
+                    },
+                    'set-val': function(){
+                        var val = this.$el.find('#date-interact-setVal').val();
+
+                        if(_.contains(val, ':'))
+                            this.getEditor('time').setVal(val);
+                        else
+                            this.getEditor('time').setVal(parseInt(val));
+                    },
+                    disable: function(){
+                        this.getEditor('time').disable();
+                    },
+                    enable: function(){
+                        this.getEditor('time').disable(false);
+                    },
+                }
+            }),
+        },
     });
 
     //////////Form/////////
@@ -287,7 +464,7 @@
                 setVal: function(val, loud) {
                     //set editor values
                 }
-            })
+            }),
         },
         onReady: function(){
 
@@ -295,7 +472,7 @@
             //     checkboxClass: 'icheckbox_square',
             //     radioClass: 'iradio_square',
             // });
-
+            
         },
         actions: {
             validate: function($btn){
