@@ -313,56 +313,32 @@
 							}, this);
 						}
 						
-						//make sure there is an options.upload.callback object
-						options.upload.callbacks = options.upload.callbacks || {};
-						//save a copy of user defined 'start'
-						var originalStart = options.upload.callbacks.start;
-						options.upload.callbacks.start = (function(original){
-							//execute original 'start' callback if exist
-							if(original)
-								original();
-							//reset and show progress bar
-							that.$el.bind('fileuploadstart', function(e){
-								//reset the width of progress bar
-								that.$el.find('.progress-bar').css({
-									width: '0%'
-								});
-								//show progress bar
-								that.$el.find('.progress').removeClass('hidden');
+						//Note: bind events with callback functions here will not overridden user defined callbacks
+						//reset progress bar width and show progress bar
+						this.$el.bind('fileuploadstart', function(e, data){
+							//reset the width of progress bar
+							that.$el.find('.progress-bar').css({
+								width: '0%'
 							});
-						})(originalStart);
+							//show progress bar
+							that.$el.find('.progress').removeClass('hidden');
+						});
 
-						//save a copy of user defined 'progress'
-						var originalProgress = options.upload.callbacks.progress;
-						options.upload.callbacks.progress = (function(original){
-							//execute original 'progress' callback if exist
-							if(original)
-								original();
-							//register progress event
-							that.$el.bind('fileuploadprogress', function(e, data){
-								var progress = parseInt(data.loaded / data.total * 100);
-
-								that.$el.find('.progress-bar').css({
-									width: progress + '%'
-								});
+						//for updating progress bar
+						this.$el.bind('fileuploadprogress', function(e, data){
+							var progress = parseInt(data.loaded / data.total * 100);
+							that.$el.find('.progress-bar').css({
+								width: progress + '%'
 							});
-
-						})(originalProgress);
-
-						//save a copy of user defined 'always'
-						var originalAlways = options.upload.callbacks.always;
-						options.upload.callbacks.always = (function(original){
-							//execute original 'always' callback if exist
-							if(original)
-								original();
-							//for hidding progress bar
-							that.$el.bind('fileuploadalways', function(e, data){
-								//hide progress bar after 6 seconds, same as result message
-								_.delay(function(){
-									that.$el.find('.progress').addClass('hidden');
-								}, 6000);
-							});
-						})(originalAlways);
+						});
+						
+						//for hidding progress bar
+						this.$el.bind('fileuploadalways', function(){
+							//hide progress bar after 6 seconds, same as result message
+							_.delay(function(){
+								that.$el.find('.progress').addClass('hidden');
+							}, 6000);
+						});
 					};
 
 					_.extend(this.actions, {
@@ -787,7 +763,8 @@
 					 */
 					var date, month, day, year;
 					
-					if(!val || (_.isNumber(val) && val < 0))
+					//Note: This kind of check is for the case that number 0 evaluates to false in JS
+					if((val !== 0 && !val) || (_.isNumber(val) && val < 0))
 							throw new Error('APP:Editor:Date:arguments for setVal is inValid.');
 
 					//check the type of val
@@ -846,7 +823,9 @@
 					 * 1). number: time in milliseconds
 					 * 2). string: with the style of 'hh:mm:ss am/pm'
 					 */
-					if(!val || (_.isNumber(val) && val < 0))
+
+					//Note: This kind of check is for the case that number 0 evaluates to false in JS
+					if((val !== 0 && !val) || (_.isNumber(val) && val < 0))
 							throw new Error('APP:Editor:Time:arguments for setVal is inValid.');
 
 					var temp, hour, minute, second, period;
