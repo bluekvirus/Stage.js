@@ -7126,7 +7126,7 @@ module.exports = DeepModel;
 		onLoadPageDone: function(args){
 			var result = args[0];
 			//render this page:
-			this.set(result[this._remote.dataKey]);
+			this.set(result[this._remote.dataKey], true); //always reset collection.
 			//signal other widget (e.g a paginator widget)
 			this.trigger('view:page-changed', {
 				current: this._remote.page,
@@ -8952,4 +8952,4 @@ var I18N = {};
 	});
 
 })(Application);
-;;app.stagejs = "1.9.3-1144 build 1480310686983";
+;;app.stagejs = "1.9.3-1145 build 1480999274968";

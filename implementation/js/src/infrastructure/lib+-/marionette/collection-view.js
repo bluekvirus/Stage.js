@@ -205,7 +205,7 @@
 		onLoadPageDone: function(args){
 			var result = args[0];
 			//render this page:
-			this.set(result[this._remote.dataKey]);
+			this.set(result[this._remote.dataKey], true); //always reset collection.
 			//signal other widget (e.g a paginator widget)
 			this.trigger('view:page-changed', {
 				current: this._remote.page,
