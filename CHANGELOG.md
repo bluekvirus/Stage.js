@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.10.0 (2016-11-17*)
+1.10.0 (2016-12-07*)
 --------------------
 1. Missing locale file will no longer raise exceptions;
 2. Updated flexlayout to be 0.2.3;
@@ -36,6 +36,9 @@ Change Log
 32. Refined editor related meta-events mapping on parent (form) view;
 33. Added 'show' and 'ready' events to editors; (internal, for editor writer only);
 34. Added range editor;
+35. Added date editor;
+36. Added time editor;
+37. Added progress bar to file editor;
 
 working on ...
 
