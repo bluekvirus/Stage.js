@@ -1032,3 +1032,149 @@ input[type="radio"] {
     }
   }
 }
+
+//specified styling for date editor
+.date .date-editor-holder{
+    cursor: default;
+    position: relative;
+    .date-currentvalue{
+        //for styling the current date value
+    }
+
+    .date-arrow-holder{
+        text-align: center;
+        width: 100%;
+        height: @grid-gutter-width;
+        .date-arrow{
+            border-left: @grid-gutter-width solid transparent;
+            border-right: @grid-gutter-width solid transparent;
+            border-bottom: @grid-gutter-width solid #ccc; //color is same as form-cotrol
+            width: 0;
+            height: 0;
+            display: inline-block;
+        }
+    }
+
+    .date-selector{
+        background-color: #fff;
+        //make some gap between selector and the arrow
+        margin-top: 1px;
+        //mimic form control, make editors have a unified look.
+        border: 1px solid #ccc;
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+        display: block;
+        padding: @grid-gutter-width / 2 0;
+        .date-selector-year{
+            >span{
+                padding: 0 @grid-gutter-width / 2;
+            }
+        }
+
+        .date-selector-month{
+            >span{
+                padding: 0 @grid-gutter-width / 2;
+            }
+        }
+
+        .date-selector-days{
+            .day-holder{
+                width: 14.2%;
+                float: left;
+                text-align: center;
+                padding: @grid-gutter-width / 4 0;
+                &.non-current{
+                    color: @gray-light;
+                }
+                &.current{
+                    &:hover{
+                        background-color: @brand-info;
+                    }
+                    &.active{
+                        background-color: @brand-primary;
+                    }
+                }
+                &.day-name{
+                    font-weight: 700;
+                    color: @gray;
+                }
+            }
+        }
+    }
+}
+
+//specified styling for time editor
+.time .time-editor-holder{
+    display: inline-block;
+    .colon-divider{
+        float: left;
+        padding-top: 25px;
+        >span{
+            font-size: 1.25em;
+            font-weight: 700;
+        }
+    }
+    .time-hour-holder,
+    .time-minute-holder,
+    .time-second-holder{
+        float: left;
+        .upper-arrow-holder,
+        .lower-arrow-holder{
+            >span{
+                display: inline-block;
+                -moz-transform:scale(2,1);
+                line-height: 1.25em;
+                >i{
+                    font-size: 1.25em;
+                }
+            }
+        }
+        .number-holder{
+            .left-number,
+            .right-number{
+                float: left;
+                .value{
+                    border: 1px solid #dedede;
+                    line-height: 1.25em;
+                    padding: @grid-gutter-width / 2 @grid-gutter-width / 4;
+                    >span{
+                        font-size: 1.25em;
+                        font-weight: 600;
+                    }
+                }
+            }
+            .left-number{
+                padding-right: @grid-gutter-width / 4;
+            }
+            .right-number{
+                padding-left: @grid-gutter-width / 4;
+            }
+        }
+    }
+    .time-period-holder{
+        float: left;
+        .am-holder,
+        .pm-holder{
+            .text{
+                border: 1px solid #dedede;
+                padding: @grid-gutter-width / 16 @grid-gutter-width;
+                >span{
+                    font-size: 0.8em;
+                    font-weight: 700;
+                }
+            }
+            &.active{
+                .text{
+                    background-color: @gray-light;
+                }
+            }
+        }
+        .pm-holder{
+            .text{
+                border-top: none;
+            }
+        }
+        .am-holder{
+            padding-top: 16px;
+        }
+    }
+}
