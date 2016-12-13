@@ -58,7 +58,6 @@
  * Tip:
  * All new View(opt) will have this.options = opt ready in initialize(), also this.*[all auto-picked properties above].
  * 
- * Note: that 'svg' is deprecated and will be changed in the future.
  * Note: override View.constructor to affect only decendents, e.g ItemView and CollectionView... 
  * (This is the Backbone way of extend...)
  * Note: this.name and this.category comes from core.reusable registry.

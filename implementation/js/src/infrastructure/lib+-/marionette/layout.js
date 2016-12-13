@@ -6,7 +6,6 @@
  * -----
  * auto region detect and register by region="" in template
  * auto regional view display by attribute view="" in template (+@mockup.html)
- * change a region's view by trigger 'region:load-view' on that region, then give it a view name. (registered through B.M.Layout.regional() or say app.create('Regional', ...))
  * 
  * 
  * Experimental (removed)
@@ -22,19 +21,14 @@
  * @update 2015.11.11 (+getViewIn('region'))
  * @update 2015.12.15 (navRegion chaining on region:show instead)
  * @update 2016.02.05 (close*(_cb) for region closing effect sync)
+ * @update 2016.12.12 (-'region:load-view' moved to region.js)
  */
 
 ;(function(app){
 
 	//+api view.getViewIn('region')
 	_.extend(Backbone.Marionette.Layout.prototype, {
-		getViewIn: function(region){
-			var r = this.getRegion(region);
-			if(!r)
-				throw new Error('DEV::Layout+::getViewIn() Region ' + region + ' is not available...');
-			return r && r.currentView;
-		},
-
+		
 		//overriding view.close() to support:
 		//	closing 1 specific region by ('name').
 		//	handle closing regions, and then close the view itself.
@@ -54,11 +48,28 @@
 		    }, this));
 		},
 
+		//overriding addRegion to add newly added region to this.regions
+		// Add a single region, by name, to the layout
+		addRegion: function(name, definition) {
+		  var regions = {};
+		  this.regions[name] = regions[name] = definition;
+		  return this._buildRegions(regions)[name];
+		},
+
+		//get a view instance in given region
+		getViewIn: function(region){
+			var r = this.getRegion(region);
+			if(!r)
+				throw new Error('DEV::Layout+::getViewIn() Region ' + region + ' is not available...');
+			return r && r.currentView;
+		},
+
 		//allow a .region.show() shortcut through .show('region', ...)
 		show: function(region /*name only*/, View /*or template or name or instance*/, options){
 			var r = this.getRegion(region);
-			if(r) 
-				return r.trigger('region:load-view', View, options);
+			if(!r)
+				throw new Error('DEV::Layout+::show() Region ' + region + ' is not available...'); 
+			return r.trigger('region:load-view', View, options);
 		},
 
 		//add more items into a specific region
@@ -96,6 +107,53 @@
 				this.getViewIn(region)._moreItems = true; //set parentCt bypass mode for items (see collection-view:buildItemView);
 				this.getViewIn(region).set(d);
 			}
+		},
+
+		//activate (by tabId) a tab view (other tabbed views are not closed)
+		tab: function(region /*name only*/, View /*or template or name or instance or false for tab remove*/, tabId /*required*/){
+			if(tabId === undefined){
+				tabId = View;
+				View = undefined;
+			}
+			if(tabId === undefined)
+				throw new Error('DEV::Layout+::tab() tabId is required...');
+
+			var cv = this.getViewIn(region);
+			if(!cv || !cv._tabbedViewWrapper){
+				//create a place-holder parent view containing 1 region (region-tabId)
+				this.show(region, '<span style="display:none;">tabbed regions wrapper view</span>');
+				cv = this.getViewIn(region);
+				cv._tabbedViewWrapper = true;
+			}
+
+			//if View is set to false, remove tab (region & view)
+			if(View === false){
+				cv.removeRegion(tabId); //this will in turn close() that tab region
+				this.trigger('view:tab-removed', tabId);
+				return;
+			}
+
+			//if there is no View supplied, activate tab only (hide all first)
+			_.each(cv.regions, function(opt, r){
+				cv.getRegion(r).$el.hide();
+			});
+
+			//see if we have this tabId in the wrapper view already
+			var tabRegion = cv.getRegion(tabId);
+			if(!tabRegion){
+				//No, create a tab region using the tabId, then show() the given View on it
+				cv.$el.append('<div region="tab-' + tabId + '"></div>');
+				cv.addRegion(tabId, {selector: '[region="tab-' + tabId + '"]'});
+				cv.show(tabId, View);
+				tabRegion = cv.getRegion(tabId);
+				tabRegion._parentLayout = this;//skip wrapper view
+				tabRegion.$el.addClass('region region-tab-' + tabId);//experimental
+				this.trigger('view:tab-added', tabId);
+			}else {
+				//Yes, display the specific tab region (show one later)
+				tabRegion.$el.show();
+			}
+			this.trigger('view:tab-activated', tabId);
 		},
 
 		//lock or unlock a region with overlayed spin/view (e.g waiting)
@@ -190,63 +248,15 @@
 				this.addRegions(this.regions); //rely on M.Layout._reInitializeRegions() in M.Layout.render();
 			});
 
-			//Giving view/region the ability to show:
-			//1. a registered View/Widget by name and options
-			//2. direct templates
-			//	2.1 @*.html -- remote template in html
-			//	2.2 @*.md -- remote template in markdown
-			//	2.3 'raw html string'
-			//	2.4 ['raw html string1', 'raw html string2']
-			//	2.5 a '#id' marked DOM element 
-			//3. view def (class fn)
-			//4. view instance (object)
-			// 
-			//Through 
-			//	view="" in the template; (1, 2.1, 2.2, 2.5 only)
-			//  this.show('region', ...) in a view; (all 1-4)
-			//  'region:load-view' on a region; (all 1-4)
-			this.listenTo(this, 'render', function(){
-				_.each(this.regions, function(selector, region){
-					//ensure region and container style
-					this[region].ensureEl();
-					this[region].$el.addClass('region region-' + _.string.slugify(region));
-					this[region]._parentLayout = this;
-
-					//+since we don't have meta-e enhancement on regions, the 'region:load-view' impl is added here.
-					//meta-e are only available on app and view (and context)
-					this[region].listenTo(this[region], 'region:load-view', function(name /*or templates or View def/instance*/, options){ //can load both view and widget.
-						if(!name) return;
-
-						if(_.isString(name)){
-							//Template directly (static/mockup view)?
-							if(!/^[_A-Z]/.test(name)){
-								return this.show(app.view({
-									template: name,
-								}));
-							}
-							else{
-							//View name (_ or A-Z starts a View name, no $ sign here sorry...)
-								var Reusable = app.get(name, _.isPlainObject(options)?'Widget':'', true); //fallback to use view if widget not found.
-								if(Reusable){
-									//Caveat: don't forget to pick up overridable func & properties from options in your Widget.
-									return this.show(new Reusable(options));
-								}else
-									console.warn('DEV::Layout+::region:load-view View required ' + name + ' can NOT be found...use app.view({name: ..., ...}).');					
-							}
-							return;
-						}
-
-						//View definition
-						if(_.isFunction(name))
-							return this.show(new name(options));
-
-						//View instance
-						if(_.isPlainObject(name))
-							return this.show(name);
-					});
-					
-				},this);
-			});
+			//+metadata to region (already aligned these with this.tab() created regions)
+            this.listenTo(this, 'render', function(){
+                _.each(this.regions, function(def, region){
+                    //ensure region and container style
+                    this[region].ensureEl();
+                    this[region].$el.addClass('region region-' + _.string.slugify(region));
+                    this[region]._parentLayout = this;
+                }, this);
+            });
 
 			//Automatically shows the region's view="" attr indicated View or @*.html/*.md
 			//Note: re-render a view will not re-render the regions. use .set() or .show() will.
@@ -254,7 +264,7 @@
 			//Note: 'show' and 'all-region-shown' doesn't mean 'data-rendered' thus 'ready'. Data render only starts after 'show';
 			this.listenTo(this, 'show view:data-rendered', function(){
 				var pairs = [];
-				_.each(this.regions, function(selector, r){
+				_.each(this.regions, function(def, r){
 					if(this.debug) this[r].$el.html('<p class="alert alert-info">Region <strong>' + r + '</strong></p>'); //give it a fake one.
 					var viewName = this[r].$el.attr('view');
 					if(viewName) //found in-line View name.
