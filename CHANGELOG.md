@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.10.0 (2016-11-17*)
+1.10.0 (2016-12-12*)
 --------------------
 1. Missing locale file will no longer raise exceptions;
 2. Updated flexlayout to be 0.2.3;
@@ -36,14 +36,16 @@ Change Log
 32. Refined editor related meta-events mapping on parent (form) view;
 33. Added 'show' and 'ready' events to editors; (internal, for editor writer only);
 34. Added range editor;
+35. Added date editor;
+36. Added time editor;
+37. Added progress bar to file editor;
+38. Added view.tab('region', View, tabId) api, also tab-added/removed/activated events on views;
 
 working on ...
 
-* view.tab('region', View) - cached meta-region;
 * Integrate stage-unideck into framework kit;
 * upgrade to LESS 2.0 for wildcard includes;
 * wire I18N and Modernizr/Detectizr to app apis;
-* add pre 'upload' event and default progress bar to file editor;
 * Cheatsheet;
 * Split/Update docs (around navigation, layout/nesting, region api, actions/locking, data rendering, coop, dnd/selection, effect/activation, remote/polling, ws, editors/form, svg, prompt/icing and i18n);
 * Separate modernizr+detectizr shiv bundles from deps;
