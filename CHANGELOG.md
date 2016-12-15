@@ -42,6 +42,7 @@ Change Log
 38. Added view.tab('region', View, tabId) api, also tab-added/removed/activated events on views;
 39. Added ?asfile= for mock apis to return download-able content;
 40. Refined app.download() api arguments;
+41. devserver now supports multiple root path per client base uri (auto fallback if root folder doesn't exist);
 
 working on ...
 

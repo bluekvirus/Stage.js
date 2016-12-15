@@ -23,7 +23,8 @@ morgan = require('morgan'),
 bodyParser = require('body-parser'),
 busboy = require('connect-busboy'),
 session = require('express-session'),
-cors = require('cors');
+cors = require('cors'),
+fs = require('fs-extra');
 
 module.exports = function(server){
 
@@ -43,7 +44,15 @@ module.exports = function(server){
 
 		//fix web root(s)' path(s)
 		_.each(profile.clients, function(filePath, uriName){
-			profile.clients[uriName] = server.resolve(filePath);
+			if(_.isArray(filePath)){
+				while(filePath.length && !fs.existsSync(server.resolve(filePath[0])))
+					filePath.shift();
+				filePath = filePath[0];
+			}
+			if(filePath)
+				profile.clients[uriName] = server.resolve(filePath);
+			else
+				delete profile.clients[uriName];
 		});
 		//mount web roots (static)
 		_.each(profile.clients, function(filePath, uriName){

@@ -5,6 +5,7 @@
  * @author Tim Lauv
  * @created 2014.4.18
  * @updated 2015.12.31
+ * @updated 2016.12.14
  */
 
 module.exports = {
@@ -55,7 +56,7 @@ module.exports = {
 	//mount the client webroot folders
 	//format - uri : webroot
 	clients: {
-		'/': '../build/dist/site', 
+		'/': ['../build/dist/site', '../../dist'], 
 		'/dev': '../../implementation', //this will be available under uri /dev
 		//'/devmobile': '../build/dist/mobile'
 	},
