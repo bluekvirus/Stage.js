@@ -28,8 +28,9 @@ module.exports = function(server){
 
 		//api (already in routes) -> json (xml, yaml, md) -> mock -> 404 fallback
 		_.each(profile.clients, function(filePath, uriName){ 
-			server.use(uriName, server.middlewares.unit.apiJsonMock404);
+			server.use(uriName, server.middlewares.unit.apiJsonMock404());
 		});
+
 		//overall error errorhandler
 		if(profile.errorpage){
 			server.use(errorhandler());

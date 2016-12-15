@@ -193,8 +193,8 @@
 				return app.Core.Remote.get(options, restOpt);
 		},
 		
-		download: function(ticket){
-			return app.Util.download(ticket);
+		download: function(ticket /*or url*/, options /*{params:{...}} only*/){
+			return app.Util.download(ticket, options);
 		},
 
 		//data push 

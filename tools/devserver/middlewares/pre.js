@@ -51,6 +51,9 @@ module.exports = function(server){
 			console.log('[www root]', uriName.yellow, '[', profile.clients[uriName], ']');
 		});
 		
+		//respond content as file through ?asfile=[local filename]
+		server.use(server.middlewares.unit.replyAsFile());
+		
 		//+server.use(server.middlewares.unit.your-middleware-factory())
 		//...
 
