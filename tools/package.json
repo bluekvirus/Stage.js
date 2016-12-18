@@ -26,7 +26,7 @@
     "globule": "^0.2.0",
     "gm": "^1.16.0",
     "http-proxy": "^1.1.6",
-    "less": "~1.x.x",
+    "less": "2.5.1",
     "merge-dirs": "0.0.2",
     "mkdirp": "~0.3.5",
     "mockjs": "~1.0.x",
