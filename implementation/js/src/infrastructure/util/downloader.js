@@ -3,21 +3,24 @@
  *
  * Usage
  * -----
- * 'string' - url
+ * app.download(url, {params:{...}})
+ * 	
  * 	or
- * {
+ * 
+ * app.download({
  * 	 url:
- * 	 ... (rest as url? query strings)
- * }
+ * 	 params: {...}
+ * })
  *
  * @author Tim Lauv
  * @created 2013.04.01
  * @updated 2013.11.08
  * @updated 2014.03.04
+ * @updated 2016.12.14
  */
 ;(function(app){
 
-	function downloader(ticket){
+	function downloader(ticket, options){
 	    var drone = $('#hidden-download-iframe');
 	    if(drone.length > 0){
 	    }else{
@@ -25,8 +28,16 @@
 	        drone = $('#hidden-download-iframe');
 	    }
 	    
-	    if(_.isString(ticket)) ticket = { url: ticket };
-	    drone.attr('src', (app.uri(ticket.url || '/').addQuery(_.omit(ticket, 'url'))).toString());
+	    //backward compatible ({url: ..., reset of keys as query params directly} still works)
+	    if(_.isPlainObject(ticket))
+	    	ticket.params = _.extend({}, ticket.params, ticket.querys, _.omit(ticket, 'url', 'params', 'querys'));
+
+	    if(_.isString(ticket)){
+	    	ticket = {url: ticket};
+	    	_.extend(ticket, options);
+	    }
+
+	    drone.attr('src', (app.uri(ticket.url || '/').addQuery(ticket.params)).toString());
 	}
 
 	app.Util.download = downloader;

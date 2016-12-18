@@ -1,6 +1,8 @@
 /**
  * Sample custom middleware script, expressjs 4.0+
  *
+ * (Don't forget to ADD it to ../post.js or ../pre.js)
+ *
  * @author Tim Lauv
  * @created 2014.06.11
  */

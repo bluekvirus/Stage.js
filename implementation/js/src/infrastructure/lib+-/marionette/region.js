@@ -6,9 +6,24 @@
  * a. consult view.effect animation names (from Animate.css or your own, not from jQuery ui) when showing a view;
  * b. inject parent view as parentCt to sub-regional view;
  *
- * 2. resize()
- * -----------
- * ...
+ * 2. 'region:load-view' and regional metadata
+ * ---------------------
+ * All .show() links to 'region:load-view' now. 
+ * Giving region the ability to show:
+ *     1. a registered View/Widget by name and options
+ *     2. direct templates
+ *         2.1 @*.html -- remote template in html
+ *         2.2 @*.md -- remote template in markdown
+ *         2.3 'raw html string'
+ *         2.4 ['raw html string1', 'raw html string2']
+ *         2.5 a '#id' marked DOM element 
+ *     3. view def (class fn)
+ *     4. view instance (object)
+ *     
+ * Through:
+ *     a. view="" in the template; (1, 2.1, 2.2, 2.5 only)
+ *     b. this.show('region', ...) in a view; (all 1-4)
+ *     c. 'region:load-view' on a region; (all 1-4)
  *
  *
  * Effect config
@@ -32,11 +47,49 @@
  * @updated 2015.08.10
  * @updated 2015.12.15
  * @updated 2015.02.03
+ * @updated 2016.12.12
  */
 
 ;(function(app) {
 
     _.extend(Backbone.Marionette.Region.prototype, {
+
+        //+region 'render' event listener for adding regional metadata and 'region:load-view' special listener.
+        initialize: function(){
+
+            //+since we don't have meta-e enhancement on regions, the 'region:load-view' impl is added here.
+            //meta-e are only available on app and view (and context)
+            this.listenTo(this, 'region:load-view', function(name /*or templates or View def/instance*/, options){ //can load both view and widget.
+                if(!name) return;
+
+                if(_.isString(name)){
+                    //Template directly (static/mockup view)?
+                    if(!/^[_A-Z]/.test(name)){
+                        return this.show(app.view({
+                            template: name,
+                        }));
+                    }
+                    else{
+                    //View name (_ or A-Z starts a View name, no $ sign here sorry...)
+                        var Reusable = app.get(name, _.isPlainObject(options)?'Widget':'', true); //fallback to use view if widget not found.
+                        if(Reusable){
+                            //Caveat: don't forget to pick up overridable func & properties from options in your Widget.
+                            return this.show(new Reusable(options));
+                        }else
+                            console.warn('DEV::Layout+::region:load-view View required ' + name + ' can NOT be found...use app.view({name: ..., ...}).');                   
+                    }
+                    return;
+                }
+
+                //View definition
+                if(_.isFunction(name))
+                    return this.show(new name(options));
+
+                //View instance
+                if(_.isPlainObject(name))
+                    return this.show(name);
+            });
+        },
 
         //'region:show', 'view:show' will always trigger after effect done.
         //note that, newView is always a view instance.
