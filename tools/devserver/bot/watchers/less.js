@@ -23,7 +23,8 @@ var _ = require('underscore'),
     colors = require('colors'),
     watch = require('watch'),
     globule = require('globule'),
-    compiler = require('../../../shared/less-css.js');
+    compiler = require('../../../shared/less-css.js'),
+    gaze = require('gaze');
 
 _.str = require('underscore.string');
 
@@ -32,12 +33,13 @@ module.exports = function(server) {
     var profile = server.get('profile');
     if (!profile.clients || !profile.lesswatch || profile.lesswatch.enabled === false || !profile.clients[profile.lesswatch.client]) return;
 
-    var themesFolder = path.join(profile.clients[profile.lesswatch.client], 'themes');
+    var themesFolder = path.join(profile.clients[profile.lesswatch.client], 'themes'),
+        collaborateFoler = path.join(themesFolder, profile.lesswatch.collaborate);
 
     function doCompile(e, f) {
         console.log('[Theme file'.yellow, e, ':'.yellow, f, ']'.yellow);
         var name = _.compact((f.replace(themesFolder, '')).split(path.sep)).shift();
-        compiler(path.join(themesFolder, name));
+        compiler(path.join(themesFolder, name), profile.lesswatch.main, collaborateFoler);
     }
 
     // watch the selected client themes folders that exist.
@@ -51,15 +53,21 @@ module.exports = function(server) {
     });
     globs = _.compact(globs);
 
-    watch.createMonitor(themesFolder, {
-        //filter isn't working...
-    }, function(monitor) {
+    //use gaze libaray to create watcher on *.less
+    gaze(globs, function(err, watcher){
+
+        //if error, return
+        if(err){
+            console.log('gaze watcher error.\n', err);
+        }
+
+        //echo watcher 
         console.log('[watcher]', ('Themes ' + validThemes).yellow, '-', ('lessjs v' + less.version.join('.')).grey);
-        _.each(['created', 'changed', 'removed'], function(e) {
-            monitor.on(e, function(f) {
-                if(globule.isMatch(globs, f))
-                    doCompile(e, f);
-            });
-        });
-    });    
+
+        //register file events. use throttle to prevent double triggering event, a fs.watch() bug might happen on some versions of Node.js.
+        this.on('all', _.throttle(function(e, f){
+            doCompile(e, f);
+        }, 200));
+    });
+
 };

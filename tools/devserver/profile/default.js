@@ -73,7 +73,11 @@ module.exports = {
 		//enabled: false,
 		client: '/dev',
 		//multiple themes can be monitored under the watched webroot.
-		themes: ['default', 'site', 'project'] 
+		themes: ['default', 'site', 'project'],
+		//default collaborate folder path
+		collaborate: 'specifics',
+		//default main less file path
+		main: 'main.less'
 	},
 
 	//use enabled: false to disable empty-ing all.json upon templates change.

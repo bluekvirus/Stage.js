@@ -11,6 +11,7 @@ var path = require('path'),
     os = require('os'),
     watch = require('watch'),
     fs = require('fs-extra'),
+    gaze = require('gaze'),
     _ = require('underscore');
 _.str = require('underscore.string');
 
@@ -29,16 +30,23 @@ module.exports = function(server) {
         console.log('['.yellow, 'all.json templates cleared'.cyan, ']'.yellow);
     }
 
-    watch.createMonitor(tplRoot, {
-        //.html filters not working...
-    }, function(monitor) {
+    var glob = path.join(tplRoot, '**', '*.html');
+    //use gaze libaray to create watcher on *.html
+    gaze(glob, function(err, watcher){
+
+        //if error, log error message and return.
+        if(err){
+            console.log('gaze watcher error.\n', err);
+        }
+
+        //echo watcher 
         console.log('[watcher]', 'Templates'.yellow, tplRoot.grey);
-        _.each(['created', 'changed', 'removed'], function(e) {
-            monitor.on(e, function(f) {
-                if (!_.str.endsWith(f, '.html')) return;
-                mergeIntoAllTplJson(e, f);
-            });
-        });
+
+        //register file events. use throttle to prevent double triggering event, a fs.watch() bug might happen on some versions of Node.js.
+        this.on('all', _.throttle(function(e, f){
+            mergeIntoAllTplJson(e, f);
+        }, 200));
+        
     });
 
 };

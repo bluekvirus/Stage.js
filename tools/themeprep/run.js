@@ -72,6 +72,8 @@ program
 			return _.string.trim(f);
 		});
 	}, ['icon', 'logo', 'pic'])
+	.option('-M --main <path>', 'default path for the main less file', 'main.less')
+	.option('-C --collaborate <path>', 'default path for the collaborate folder', 'specifics')
 	.parse(process.argv);
 
 //check target theme name, default to 'project' (transit to stage-devtools)
@@ -94,6 +96,8 @@ if(theme === 'ls'){
 }
 
 console.log('Preparing Theme:'.yellow, theme);
+console.log("The path of the main less file is set to ".yellow + "'" + program.main + "'");
+console.log("The path of the collaborate folder is set to ".yellow + "'" + program.collaborate + "'");
 if(!fs.existsSync(themeFolder)){
 	console.log('Creating new theme from'.yellow, baseTheme, '==>', theme);
 	if(!fs.existsSync(baseThemeFolder)) {
@@ -150,7 +154,7 @@ hammer.createFolderStructure({
 		return glob.sync(g).length === 0;
 	})){
 		//jump to 3. build the /css/main.css from /less/main.less
-		lessc(themeFolder);
+		lessc(themeFolder, program.main, program.collaborate);
 		return;
 	}
 
@@ -216,8 +220,7 @@ hammer.createFolderStructure({
 			fs.writeFile(examplesFilePath, html);
 
 			//3. build the /css/main.css from /less/main.less
-			lessc(themeFolder);
+			lessc(themeFolder, program.main, program.collaborate);
 		});			
 	});
 });
- 
