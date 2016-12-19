@@ -10,7 +10,6 @@
 
 var path = require('path'),
     os = require('os'),
-    watch = require('watch'),
     fs = require('fs-extra'),
     gaze = require('gaze'),
     _ = require('underscore');
@@ -43,8 +42,8 @@ module.exports = function(server) {
         //echo watcher 
         console.log('[watcher]', 'Templates'.yellow, tplRoot.grey);
 
-        //register file events. use throttle to prevent double triggering event, a fs.watch() bug might happen on some versions of Node.js.
-        this.on('all', _.throttle(function(e, f){
+        //register file events. use debounce to prevent double triggering event, a fs.watch() bug might happen on some versions of Node.js.
+        this.on('all', _.debounce(function(e, f){
             mergeIntoAllTplJson(e, f);
         }, 200));
         

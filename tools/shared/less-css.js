@@ -34,11 +34,14 @@ module.exports = function(root, main, collaborate){
 		data = data.toString(); 
 		//check if there is a collaborate path, if yes add all the less files for compling.
 		if(collaboratePath && fs.existsSync(collaboratePath)){
-			_.each(fs.walkSync(collaboratePath), function(sp){
-				//calculate relative path from main.less
-				var relpath = path.relative(mainFolder, sp);
-				//append those files into main.ess. two newline characters are just to prevent weird styling error.
-				data += '\n\n@import "' + relpath + '";';
+			_.each(fs.walkSync(collaboratePath), function(filePath){
+				//only imports *.less files
+				if(path.extname(filePath) === '.less'){
+					//calculate relative path from main.less
+					var relpath = path.relative(mainFolder, filePath);
+					//append those files into main.less. two newline characters are just to prevent weird styling error.
+					data += '\n\n@import "' + relpath + '";';
+				}
 			});
 		}
 
@@ -56,7 +59,7 @@ module.exports = function(root, main, collaborate){
 			//path for main.css
 			var mainCss = path.resolve(path.join(mainLess, '..', '..', 'css', 'main.css'));
 			//use autoprefixer(options).compile if needs be in the future.
-			var css = output.css;
+			var css = autoprefixer(/*options*/).process(output.css).css;
 			//fix the google-font issue (remove them)
 			css = css.replace(/@import url\(.*?fonts.*?\)/, '');
 			css = cleancss.minify(css);

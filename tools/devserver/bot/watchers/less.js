@@ -22,7 +22,6 @@ var _ = require('underscore'),
     fs = require('fs-extra'),
     less = require('less'),
     colors = require('colors'),
-    watch = require('watch'),
     globule = require('globule'),
     compiler = require('../../../shared/less-css.js'),
     gaze = require('gaze');
@@ -64,8 +63,8 @@ module.exports = function(server) {
         //echo watcher 
         console.log('[watcher]', ('Themes ' + validThemes).yellow, '-', ('lessjs v' + less.version.join('.')).grey);
 
-        //register file events. use throttle to prevent double triggering event, a fs.watch() bug might happen on some versions of Node.js.
-        this.on('all', _.throttle(function(e, f){
+        //register file events. use debounce to prevent double triggering event, a fs.watch() bug might happen on some versions of Node.js.
+        this.on('all', _.debounce(function(e, f){
             doCompile(e, f);
         }, 200));
     });
