@@ -5,6 +5,7 @@
  * @created 2014.07.26
  * @updated 2014.07.31 (Yan.Zhu + Windows support)
  * @updated 2015.12.31
+ * @updated 2016.12.18 (Patrick.Zhu)
  */
 
 var path = require('path'),

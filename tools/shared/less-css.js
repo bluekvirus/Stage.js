@@ -7,6 +7,7 @@
  *
  * @author Tim Lauv
  * @created 2014.04.18
+ * @updated 2016.12.18 (Patrick.Zhu)
  */
 
 var _ = require('underscore'),
@@ -19,7 +20,8 @@ cleancss = new (require('clean-css'))({keepSpecialComments: 0});
 
 module.exports = function(root, main, collaborate){
 	main = main || 'main.less';
-	var mainLess = path.join(root, 'less', main);
+	var mainLess = path.join(root, 'less', main),
+		collaboratePath = collaborate && path.join(root, 'less', collaborate);
 
 	//less.parser has been decrepted. use less.render instead for less.js 2.5.1
 	fs.readFile(mainLess, {encoding: 'utf-8'}, function(err, data){
@@ -31,7 +33,7 @@ module.exports = function(root, main, collaborate){
 		//stringfy data for later use
 		data = data.toString(); 
 		//check if there is a collaborate path, if yes add all the less files for compling.
-		if(collaborate && fs.existsSync(collaborate)){
+		if(collaboratePath && fs.existsSync(collaboratePath)){
 			_.each(fs.walkSync(collaboratePath), function(sp){
 				//calculate relative path from main.less
 				var relpath = path.relative(mainFolder, sp);

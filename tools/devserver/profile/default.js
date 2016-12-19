@@ -6,6 +6,7 @@
  * @created 2014.4.18
  * @updated 2015.12.31
  * @updated 2016.12.14
+ * @updated 2016.12.18 (Patrick.Zhu)
  */
 
 module.exports = {

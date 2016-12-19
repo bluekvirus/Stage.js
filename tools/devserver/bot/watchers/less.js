@@ -13,6 +13,7 @@
  * @updated 2014.04.18
  * @updated 2014.07.31 (Yan.Zhu + Windows support)
  * @updated 2015.12.31
+ * @updated 2016.12.18 (Patrick.Zhu)
  */
 
 var _ = require('underscore'),
@@ -33,13 +34,12 @@ module.exports = function(server) {
     var profile = server.get('profile');
     if (!profile.clients || !profile.lesswatch || profile.lesswatch.enabled === false || !profile.clients[profile.lesswatch.client]) return;
 
-    var themesFolder = path.join(profile.clients[profile.lesswatch.client], 'themes'),
-        collaborateFoler = path.join(themesFolder, profile.lesswatch.collaborate);
+    var themesFolder = path.join(profile.clients[profile.lesswatch.client], 'themes');
 
     function doCompile(e, f) {
         console.log('[Theme file'.yellow, e, ':'.yellow, f, ']'.yellow);
         var name = _.compact((f.replace(themesFolder, '')).split(path.sep)).shift();
-        compiler(path.join(themesFolder, name), profile.lesswatch.main, collaborateFoler);
+        compiler(path.join(themesFolder, name), profile.lesswatch.main, profile.lesswatch.collaborate);
     }
 
     // watch the selected client themes folders that exist.
