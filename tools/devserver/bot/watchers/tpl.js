@@ -5,11 +5,11 @@
  * @created 2014.07.26
  * @updated 2014.07.31 (Yan.Zhu + Windows support)
  * @updated 2015.12.31
+ * @updated 2016.12.18 (Patrick.Zhu)
  */
 
 var path = require('path'),
     os = require('os'),
-    watch = require('watch'),
     fs = require('fs-extra'),
     _ = require('underscore');
 _.str = require('underscore.string');
@@ -29,16 +29,58 @@ module.exports = function(server) {
         console.log('['.yellow, 'all.json templates cleared'.cyan, ']'.yellow);
     }
 
-    watch.createMonitor(tplRoot, {
-        //.html filters not working...
-    }, function(monitor) {
-        console.log('[watcher]', 'Templates'.yellow, tplRoot.grey);
-        _.each(['created', 'changed', 'removed'], function(e) {
-            monitor.on(e, function(f) {
-                if (!_.str.endsWith(f, '.html')) return;
-                mergeIntoAllTplJson(e, f);
-            });
-        });
-    });
+    /**
+     * Add watch to monitor file change for compiling the tempalte.
+     *
+     * !!Caveat: The recursicve:true option for 'fs.watch' is not supported in Linux environment. Therefore we recursively add watch on every folder ourself.
+     */
+    
+    //object to store currently actived watchers
+    var watchers = {};
+    //function for adding watcher on a given folder
+    function addWatch(folderPath/*absolute path*/){
 
+        //read through the folder. if it contains subfolder, add watcher on those too
+        _.each(fs.readdirSync(folderPath), function(filename, index){
+            var abs = path.join(folderPath, filename);
+            //check whether the file is a folder
+            if(fs.lstatSync(abs).isDirectory()){
+                addWatch(abs);
+            }
+                
+        });
+
+        var watcher = fs.watch(folderPath, _.debounce(function(event, filename){
+            //absolute path for the file
+            var abs = path.join(folderPath, filename);
+
+            //return, if a file is not folder and not .html
+            if(!watchers[abs] && !(fs.existsSync(abs) && fs.lstatSync(abs).isDirectory()) && path.extname(filename) !== '.html') return;
+
+            //events
+            if(fs.existsSync(abs)){//add or change
+
+                //check whether the newly added file is a folder
+                if(fs.lstatSync(abs).isDirectory() && !watchers[abs]){
+                    addWatch(abs);
+                }
+                mergeIntoAllTplJson((event === "rename") ? 'added' : 'changed', abs);
+            }else{//delete
+
+                //check whether the file is previously in the watchers obj
+                if(watchers[abs]){
+                    watchers[abs].close();
+                    delete watchers[abs];
+                }
+
+                mergeIntoAllTplJson('deleted', abs);
+            }
+        }, 200));
+
+        watchers[folderPath] = watcher;
+    }
+
+    //start watcher
+    addWatch(tplRoot);
+    console.log('[watcher]', 'Templates'.yellow, tplRoot.grey);
 };

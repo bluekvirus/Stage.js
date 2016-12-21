@@ -6,6 +6,7 @@
  * @created 2014.4.18
  * @updated 2015.12.31
  * @updated 2016.12.14
+ * @updated 2016.12.18 (Patrick.Zhu)
  */
 
 module.exports = {
@@ -73,7 +74,9 @@ module.exports = {
 		//enabled: false,
 		client: '/dev',
 		//multiple themes can be monitored under the watched webroot.
-		themes: ['default', 'site', 'project'] 
+		themes: ['default', 'site', 'project'],
+		//default primary less file path
+		main: 'main.less'
 	},
 
 	//use enabled: false to disable empty-ing all.json upon templates change.

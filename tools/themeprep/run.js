@@ -38,6 +38,7 @@
  * @author Tim Lauv
  * @created 2014.07.21
  * @updated 2014.07.31
+ * @updated 2016.12.18 (Patrick.Zhu)
  * 
  */
 
@@ -72,6 +73,7 @@ program
 			return _.string.trim(f);
 		});
 	}, ['icon', 'logo', 'pic'])
+	.option('-M --main <path>', 'default path for the main less file', 'main.less')
 	.parse(process.argv);
 
 //check target theme name, default to 'project' (transit to stage-devtools)
@@ -94,6 +96,7 @@ if(theme === 'ls'){
 }
 
 console.log('Preparing Theme:'.yellow, theme);
+console.log("The path of the primary less file is set to ".yellow + "'" + program.main + "'");
 if(!fs.existsSync(themeFolder)){
 	console.log('Creating new theme from'.yellow, baseTheme, '==>', theme);
 	if(!fs.existsSync(baseThemeFolder)) {
@@ -150,7 +153,7 @@ hammer.createFolderStructure({
 		return glob.sync(g).length === 0;
 	})){
 		//jump to 3. build the /css/main.css from /less/main.less
-		lessc(themeFolder);
+		lessc(themeFolder, program.main);
 		return;
 	}
 
@@ -216,8 +219,7 @@ hammer.createFolderStructure({
 			fs.writeFile(examplesFilePath, html);
 
 			//3. build the /css/main.css from /less/main.less
-			lessc(themeFolder);
+			lessc(themeFolder, program.main);
 		});			
 	});
 });
- 
