@@ -20,8 +20,7 @@ cleancss = new (require('clean-css'))({keepSpecialComments: 0});
 
 module.exports = function(root, main, collaborate){
 	main = main || 'main.less';
-	var mainLess = path.join(root, 'less', main),
-		collaboratePath = collaborate && path.join(root, 'less', collaborate);
+	var mainLess = path.join(root, 'less', main);
 
 	//less.parser has been decrepted. use less.render instead for less.js 2.5.1
 	fs.readFile(mainLess, {encoding: 'utf-8'}, function(err, data){
@@ -30,25 +29,12 @@ module.exports = function(root, main, collaborate){
 
 		//get main.less folder path and setup collaborate lesses path
 		var mainFolder = path.dirname(mainLess);
-		//stringfy data for later use
-		data = data.toString(); 
-		//check if there is a collaborate path, if yes add all the less files for compling.
-		if(collaboratePath && fs.existsSync(collaboratePath)){
-			_.each(fs.walkSync(collaboratePath), function(filePath){
-				//only imports *.less files
-				if(path.extname(filePath) === '.less'){
-					//calculate relative path from main.less
-					var relpath = path.relative(mainFolder, filePath);
-					//append those files into main.less. two newline characters are just to prevent weird styling error.
-					data += '\n\n@import "' + relpath + '";';
-				}
-			});
-		}
-
+		
 		//less.parser has been decrepted, use less.render for less.js 2.x.x
-		less.render(data, {
+		less.render(data.toString(), {
 			//give base paths for compling
-			paths: [path.join(root, 'less'), path.join(root, '..', '..', 'bower_components')]
+			paths: [path.join(root, 'less'), path.join(root, '..', '..', 'bower_components')],
+			plugins: [require('less-plugin-glob')]
 		}, function(error, output){
 			//if error, print error and return
 			if(error){

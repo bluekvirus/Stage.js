@@ -23,8 +23,7 @@ var _ = require('underscore'),
     less = require('less'),
     colors = require('colors'),
     globule = require('globule'),
-    compiler = require('../../../shared/less-css.js'),
-    gaze = require('gaze');
+    compiler = require('../../../shared/less-css.js');
 
 _.str = require('underscore.string');
 
@@ -41,32 +40,68 @@ module.exports = function(server) {
         compiler(path.join(themesFolder, name), profile.lesswatch.main, profile.lesswatch.collaborate);
     }
 
-    // watch the selected client themes folders that exist.
     var validThemes = [];
-    var globs = _.map(profile.lesswatch.themes, function(tname){
+    _.map(profile.lesswatch.themes, function(tname){
         if(fs.existsSync(path.join(themesFolder, tname))){
             validThemes.push(tname);
             return path.join(themesFolder, tname, '**', '*.less');
         }
         return;
     });
-    globs = _.compact(globs);
 
-    //use gaze libaray to create watcher on *.less
-    gaze(globs, function(err, watcher){
+   /**
+     * Add watch to monitor file change for compiling the tempalte.
+     *
+     * !!Caveat: The recursicve:ture option for 'fs.watch' is not supported in Linux environment. Therefore we recursively add watch on every folder ourself.
+     */
+    
+    //object to store currently actived watchers
+    var watchers = {};
+    //function for adding watcher on a given folder
+    function addWatch(folderPath/*absolute path*/){
 
-        //if error, return
-        if(err){
-            console.log('gaze watcher error.\n', err);
-        }
+        //read through the folder. if it contains subfolder, add watcher on those too
+        _.each(fs.readdirSync(folderPath), function(filename, index){
+            var abs = path.join(folderPath, filename);
+            //check whether the file is a folder
+            if(fs.lstatSync(abs).isDirectory()){
+                addWatch(abs);
+            }
+                
+        });
 
-        //echo watcher 
-        console.log('[watcher]', ('Themes ' + validThemes).yellow, '-', ('lessjs v' + less.version.join('.')).grey);
+        var watcher = fs.watch(folderPath, _.debounce(function(event, filename){
+            //absolute path for the file
+            var abs = path.join(folderPath, filename);
 
-        //register file events. use debounce to prevent double triggering event, a fs.watch() bug might happen on some versions of Node.js.
-        this.on('all', _.debounce(function(e, f){
-            doCompile(e, f);
+            //return, if a file is not folder and not .html
+            if(!watchers[abs] && !(fs.existsSync(abs) && fs.lstatSync(abs).isDirectory()) && path.extname(filename) !== '.less') return;
+
+            //events
+            if(fs.existsSync(abs)){//add or change
+
+                //check whether the newly added file is a folder
+                if(fs.lstatSync(abs).isDirectory() && !watchers[abs]){
+                    addWatch(abs);
+                }
+                doCompile((event === "rename") ? 'added' : 'changed', abs);
+            }else{//delete
+
+                //check whether the file is previously in the watchers obj
+                if(watchers[abs]){
+                    watchers[abs].close();
+                    delete watchers[abs];
+                }
+
+                doCompile('deleted', abs);
+            }
         }, 200));
-    });
+
+        watchers[folderPath] = watcher;
+    }
+
+    //start watcher
+    addWatch(themesFolder);
+    console.log('[watcher]', ('Themes ' + validThemes).yellow, '-', ('lessjs v' + less.version.join('.')).grey);
 
 };
