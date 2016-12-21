@@ -75,8 +75,6 @@ module.exports = {
 		client: '/dev',
 		//multiple themes can be monitored under the watched webroot.
 		themes: ['default', 'site', 'project'],
-		//auto imports folder path for collaborators
-		collaborate: 'specifics',
 		//default primary less file path
 		main: 'main.less'
 	},
