@@ -41,10 +41,10 @@ module.exports = function(server) {
     }
 
     var validThemes = [];
-    _.map(profile.lesswatch.themes, function(tname){
+    _.each(profile.lesswatch.themes, function(tname){
         if(fs.existsSync(path.join(themesFolder, tname))){
             validThemes.push(tname);
-            return path.join(themesFolder, tname, '**', '*.less');
+            //return path.join(themesFolder, tname, '**', '*.less');
         }
         return;
     });
@@ -101,7 +101,9 @@ module.exports = function(server) {
     }
 
     //start watcher
-    addWatch(themesFolder);
+    _.each(validThemes, function(t){
+        addWatch(path.join(themesFolder, t, 'less')); // <theme>/less/ folder only
+    });
     console.log('[watcher]', ('Themes ' + validThemes).yellow, '-', ('lessjs v' + less.version.join('.')).grey);
 
 };

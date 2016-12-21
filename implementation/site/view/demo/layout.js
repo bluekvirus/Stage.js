@@ -1,6 +1,6 @@
 ;(function(app){
 
-	app.regional('Demo.Layout', {
+	app.view('Demo.Layout', {
 		template: [
 			'<div class="col-md-6 wrapper-full" region="split-view1"></div>',
 			'<div class="col-md-6 wrapper-full" region="split-view2"></div>',

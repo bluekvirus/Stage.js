@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.10.0 (2016-12-14*)
+1.10.0 (2016-12-20*)
 --------------------
 1. Missing locale file will no longer raise exceptions;
 2. Updated flexlayout to be 0.2.3;
@@ -43,20 +43,20 @@ Change Log
 39. Added ?asfile= for mock apis to return download-able content;
 40. Refined app.download() api arguments;
 41. devserver now supports multiple root path per client base uri (auto fallback if root folder doesn't exist);
+42. Upgraded LESS to v2 and supporting glob/batch @import;
+43. Refined watcher mech in devserver;
+44. Added dynamic polyfill (JS) to index.html;
 
 working on ...
 
+* Separate modernizr+detectizr feature detect bundles from deps;
 * Integrate stage-unideck into framework kit;
-* upgrade to LESS 2.0 for wildcard includes;
-* wire I18N and Modernizr/Detectizr to app apis;
-* Separate modernizr+detectizr shiv bundles from deps;
-* Cheatsheet;
-* Split/Update docs (around navigation, layout/nesting, region api, actions/locking, data rendering, coop, dnd/selection, effect/activation, remote/polling, ws, editors/form, svg, prompt/icing and i18n);
+* wire more I18N/Detectizr methods to app apis;
+* Cheatsheet/API specs;
+* Split/Update docs;
 * Breaking down 'Basic' editors?
-* [cli] Add a `revive` cmd as an alias to `update`?
-* Optional 2-way binders (stickit)?
+* Backbone*(+d3, -jQueryv2/3.0, -Marionettev1.8), unideck, elements(-Bootstrapv3/4.0)?
 * Direct `<canvas>` support in view (easel)?
-* [cli] Enhance update cmd to also update free mockups?
 * More unit tests in demos;
 
 
