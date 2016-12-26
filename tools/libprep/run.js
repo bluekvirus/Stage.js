@@ -101,12 +101,53 @@ buildify.task({
 	name: 'min',
 	task: function(){
 		var config = {
-			'modernizr': 'modernizr.js'
+			//'modernizr': 'modernizr.js'
 		};
 
 		_.each(config, function(js, pack){
 			buildify().setDir(path.join(libBase, pack)).load(js).uglify().save([path.basename(js, '.js'), 'min', 'js'].join('.'));
 		});
+	}
+});
+
+//build task for combine modernizr and detectizr
+buildify.task({
+	name: 'modernizr-detectizr',
+	task: function(){
+		//get the path for modernizr and detectizr
+		var map = require('./map.json'),
+			fix = require('./map-fix.json'),
+			config = {//specify the js filename for modernizr and detectizr
+				'modernizr': 'modernizr.js',
+				'detectizr': 'detectizr.js'
+			};
+
+		var modernizrBase = map.modernizr,
+			detectizrBase = map.detectizr;
+
+		if(!modernizrBase || !detectizrBase){
+			console.log('libprep error::No vaild path for modernizr and detectizr.'.red);
+			return;
+		}
+
+		//check whether there is fix for both paths, and join the paths
+		var modernizrPath = (fix.modernizr) ? path.join(libBase, modernizrBase, fix.modernizr, config.modernizr) : path.join(libBase, modernizrBase, config.modernizr),
+			detectizrPath = (fix.detectizr) ? path.join(libBase, detectizrBase, fix.detectizr, config.detectizr) : path.join(libBase, detectizrBase, config.detectizr);
+
+		//build js, if both file exists
+		//Note: use original method to print size and version. No printing such information here.
+		if(fs.existsSync(modernizrPath) && fs.existsSync(detectizrPath)){
+			//build
+			buildify()
+				.setContent(';')
+				.concat([modernizrPath , detectizrPath])
+				.save(path.join(distFolder, 'modernizr-detectizr.js')) //full version
+				.uglify()
+				.save(path.join(distFolder, 'modernizr-detectizr.min.js')); //minified version
+		}else{
+			console.log('libprep error::No valid file for modernizr and detectizr according to the given path.'.red);
+		}
+
 	}
 });
 
@@ -177,6 +218,7 @@ function combine(bowerInfo, name){
 		list: []
 	};
 	_.each(list, function(lib){
+
 		if(libMap[lib]) {
 			var libBowerInfo, libPackageInfo;
 			try {
@@ -203,6 +245,12 @@ function combine(bowerInfo, name){
 			console.log(lib, ('not found! ' + libMap[lib]).red);
 			return;
 		}
+
+		//ignore modernizr and detectizr, avoid double build
+		//Note: put if statement here to save modernizr and detectizr in dependencies.json,
+		//		but ignore them in dependencies.js and dependencies.min.js
+		if(lib === 'modernizr' || lib === 'detectizr') return;
+
 		target.concat(libMap[lib], os.EOL + ';');
 	});
 	console.log('libs (selected/available):', (_.size(list) + '/' + String(_.size(libMap))).green, '[', ((_.size(list)/_.size(libMap)*100).toFixed(2) + '%').yellow, ']');
