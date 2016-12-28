@@ -2,8 +2,12 @@
  * This is the build script for building your web application front-end.
  *
  * 1. read build config;
- * 2. load target html and process libs on it; (we also support patching in the autoloaded scripts)
- * 3. output all-in-one.js and index.html and web client structure (resources, themes, config and statics...)
+ * 2. load target html and process js targets on it, producing a cached map of js targets -- see /shared/process-html.js; 
+ * 	  (we also support patching in the autoloaded scripts)
+ * 3. output <target>.js files, index.html and related folder structure based on config.structure -- see /shared/hammer.js;
+ *
+ * Note: this script use process-html.js to build js targets (cachedFiles) then use hammer.js with config.structure to copy/reveal the files
+ * into final deployment folder (config.output).
  *
  * @author Tim Lauv
  * @created 2013.09.26
@@ -50,15 +54,7 @@ config.src.root = program.base || config.src.root;
 config.src.root = path.join(_.string.startsWith(config.src.root, path.sep)?'':__dirname, config.src.root);
 console.log('Start building using config ['.yellow, configName, '] >> ['.yellow, outputFolder, ']'.yellow);
 
-//1. start processing index page
-var result = config.src.index ? processor.combine({
-	root: config.src.root,
-	html: config.src.index,
-	js: config.js,
-	cfgName: program.config
-}): {};
-
-//2. combine view templates into all.json
+//1. combine view templates into all.json
 if(config.src.templates){
 	var tplBase = path.join(config.src.root, config.src.templates);
 	if(fs.existsSync(tplBase)){
@@ -81,6 +77,14 @@ if(config.src.templates){
 
 
 }
+
+//2. start processing index page --> cachedFiles for later use by folder hammer.
+var result = config.src.index ? processor.combine({
+	root: config.src.root,
+	html: config.src.index,
+	js: config.js,
+	cfgName: program.config
+}): {};
 
 //3. hammer the output folder structure out
 hammer.createFolderStructure(_.extend({cachedFiles: result, output: outputFolder}, config), function(){

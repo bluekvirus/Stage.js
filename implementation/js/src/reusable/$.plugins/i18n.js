@@ -34,6 +34,7 @@
  * @created 2013-08-26
  * @updated 2014-08-06
  * @updated 2016.03.24 (I18N.init now returns a jqXHR object)
+ * @updated 2016.12.27 (removed Detectizr)
  * 
  */
 var I18N = {};
@@ -49,7 +50,7 @@ var I18N = {};
 	I18N.init = function(options){
 		_.extend(configure, options);
 		var params = app.uri(window.location.toString()).search(true);
-		locale = I18N.locale = params.locale || configure.locale || Detectizr.browser.language;
+		locale = I18N.locale = params.locale || configure.locale || navigator.userLanguage || navigator.language;
 
 		if (locale) {
 			// load resources from file

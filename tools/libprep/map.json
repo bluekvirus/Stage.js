@@ -18,7 +18,6 @@
   ],
   "bootswatch": "../../implementation/bower_components/bootswatch",
   "chai": "../../implementation/bower_components/chai/chai.js",
-  "detectizr": "../../implementation/bower_components/detectizr",
   "fastclick": "../../implementation/bower_components/fastclick/lib/fastclick.js",
   "flexlayout": "../../implementation/bower_components/flexlayout/flexlayout.js",
   "fontawesome": [

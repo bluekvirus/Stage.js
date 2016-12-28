@@ -38,7 +38,6 @@
   ],
   "devDependencies": {
     "modernizr": "~2.8.x",
-    "detectizr": "~2.x.x",
     "loadcss": "~0.2.x",
     "fastclick": "~1.x.x",
     "jquery": "~2.1.x",

@@ -8,6 +8,7 @@
  * 		default: [all.js] -- the default js target to combine into if there is no target="" attr on a <script/>
  * 		after: ...
  * 		min: ...
+ * 		dynamic: -- the dynamically loaded src folder by app.get() (app.config.viewSrcs)
  * 		targets: {
  * 			'abc.js': {
  * 				after: -- the position this target will be put after after script combining;
