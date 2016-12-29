@@ -13,17 +13,19 @@
  * 'index.html': true/false - cached index page after js combine, use 'true'/'false' to choose whether to use the gzip version.
  * 
  * Note: you can combine into multiple .js by using the [target="abc.js"] attr on the <script/> tags.
+ * If certain <script/> tag has an attibute of [target="xxx/xxx.js"], then itself will be redirected into that file path.
+ * Also the following <script/> tags until the next <script/> tag with [target="xxx/xxx.js"] attribute will be combined and redirected into that file path.
  * The js config block below controls whether to enable this mode and where to put the combined js after processing the html.
- * You can also set the default js target to combine into if you don't specify [target="...js"] on a <script/> tag.
  * 
- * NOte: Each combined js target will have both minified and non-minified versions produced. (you can use both .js and .min.js in the structure block later)
- * (If you omit the js config block, the default combine target will be all.js and all.min.js)
+ * Note: Each combined js target will have both minified and non-minified versions produced. (you can use both .js and .min.js in the structure block later)
+ * (If you omit the js config block, the default combine target will be all-head.js/all-head.min.js and all-body.js/all-body.min.js)
  * (If js.targets is falsey, the multi-js mode processing will be disabled, regardless of the [target="...js"] attributes on <script/> tags)
  * 
  * @author Tim Lauv
  * @created 2013.09.25
  * @updated 2014.03.04 (minimum output)
  * @updated 2014.08.12 (empty file, multi-folder merge, multi-js combine targets)
+ * @updated 2016.12.28 (modified js config block to accommodate the new js combine mechanism) @Patrick Zhu
  */
 
 module.exports = {
@@ -37,24 +39,8 @@ module.exports = {
 	//combine js (single/multiple mode)
 	
 	js: {
-		default: 'app.js',
-		dynamic: 'js', //path relative to root, auto include dynamically loaded scripts.
-	// 	after: '[region="app"]', or after: '[persist=true]:last-of-type',
-	// 	min: false, //use false to indicate you want app.js instead of app.min.js in the final index.html
-
-	// 	targets: { -- Use targets: false to turn off the multi-js-target mode.
-	// 		'abc.js': {
-	// 			after: ..., [default: append after previous target]
-	// 			min: ... [default: true]
-	// 		},
-	// 		'xyz.js': {
-	// 			...
-	// 		},
-	// 		'omitted.js': false, -- This will cause the build process to skip putting this js back after combine.
-	// 								Note that you can still obtain 'omitted.js', but it won't appear in the built index.html.
-	// 		...
-	// 	}
-
+		target: true, //honor target attribute on script tags
+		dynamic: 'js', //dynamic loading folder
 	},
 	
 	//output
