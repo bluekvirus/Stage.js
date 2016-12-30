@@ -47,7 +47,7 @@ module.exports = {
 			targets.push({
 				path: path.join(baseDir, key),
 				content: content,
-				key: key
+				key: key //path relative to baseDir, used to find cachedFiles (js targets) only.
 			});
 		});
 		
@@ -112,7 +112,7 @@ module.exports = {
 									targets.push({
 										path: path.join(currentTarget.path, subKey),
 										content: subContent,
-										key: subKey
+										key: path.join(currentTarget.key, subKey)
 									});
 								});						
 							}
