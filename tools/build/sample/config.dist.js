@@ -4,26 +4,41 @@
  * After processing, '*.js' and 'index.html' will be in buffer, 
  * output them to desired location together with a wanted folder structure using this config file.
  * 
- * +Structure
- * ----------------
- * name: {} - create folder with name
- * name: 'string' - copy file or folder as 
- * name: ['folderA', 'folderB'] - copy and merge folder content into 
- * '*.js': true/false - cached js combine target, use 'true'/'false' to choose whether to use the gzip version.
- * 'index.html': true/false - cached index page after js combine, use 'true'/'false' to choose whether to use the gzip version.
+ * format used in .structure {} -- output folder structure
+ * ----------------------------
+ * 		name: {} - create folder with name
+ *   	name: 'string' - copy file or folder as 
+ *    	name: ['folderA', 'folderB'] - copy and merge folder content into 
+ *     	'*.js': true/false - cached js combine target, use 'true'/'false' to choose whether to use the gzip version.
+ *      'index.html': true/false - cached index page after js combine, use 'true'/'false' to choose whether to use the gzip version.
+ *
+ * format used in .js {} 
+ * ---------------------
+ * target: true/false (default: false)
+ * dynamic: ''/['', ''] (default: '')
+ * min: true/false (default: true)
  * 
  * Note: you can combine into multiple .js by using the [target="abc.js"] attr on the <script/> tags.
- * The js config block below controls whether to enable this mode and where to put the combined js after processing the html.
- * You can also set the default js target to combine into if you don't specify [target="...js"] on a <script/> tag.
+ * 		 If certain <script/> tag has an attibute of [target="js/foo.js"], it will be combined into that file.
+ *    	 The following <script/> tags until the one with a different [target="js/bar.js"] attribute will also join the same file.
  * 
- * NOte: Each combined js target will have both minified and non-minified versions produced. (you can use both .js and .min.js in the structure block later)
- * (If you omit the js config block, the default combine target will be all.js and all.min.js)
- * (If js.targets is falsey, the multi-js mode processing will be disabled, regardless of the [target="...js"] attributes on <script/> tags)
+ * The js config block can be used to turn this multi-target mode off (by setting js.target : false). The [target="...js"] attributes on <script/> tags
+ * will be ignored.
+ * 
+ * Note: The default combine targets are all-head.js/all-head.min.js and all-body.js/all-body.min.js respectively.
+ * Note: Each combined js target will have both minified and non-minified versions produced and cached.
+ *
+ * format used in .src {}
+ * ----------------------
+ * root: '' -- project root
+ * index: '' -- the main index.html
+ * templates: '' -- where to find view templates (*.html)
  * 
  * @author Tim Lauv
  * @created 2013.09.25
  * @updated 2014.03.04 (minimum output)
  * @updated 2014.08.12 (empty file, multi-folder merge, multi-js combine targets)
+ * @updated 2016.12.28 (modified js config block to accommodate the new js combine mechanism) @Patrick Zhu
  */
 
 module.exports = {
@@ -37,24 +52,8 @@ module.exports = {
 	//combine js (single/multiple mode)
 	
 	js: {
-		default: 'app.js',
-		dynamic: 'js', //path relative to root, auto include dynamically loaded scripts.
-	// 	after: '[region="app"]', or after: '[persist=true]:last-of-type',
-	// 	min: false, //use false to indicate you want app.js instead of app.min.js in the final index.html
-
-	// 	targets: { -- Use targets: false to turn off the multi-js-target mode.
-	// 		'abc.js': {
-	// 			after: ..., [default: append after previous target]
-	// 			min: ... [default: true]
-	// 		},
-	// 		'xyz.js': {
-	// 			...
-	// 		},
-	// 		'omitted.js': false, -- This will cause the build process to skip putting this js back after combine.
-	// 								Note that you can still obtain 'omitted.js', but it won't appear in the built index.html.
-	// 		...
-	// 	}
-
+		target: true, //honor target attribute on script tags
+		dynamic: 'js', //dynamic loading folder
 	},
 	
 	//output

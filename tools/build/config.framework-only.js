@@ -4,19 +4,15 @@ module.exports = {
 		index: 'index.html' //path relative to root
 	},
 	js: {
-		default: 'stage.js',
-		after: '[persist=true]:last-of-type',
-		targets: false
+		targets: true
 	},
 	structure : { //path are relative to the distFolder and src.root above
 		js: {
 			lib: 'js/lib',
 			'stage.js': false,
 			'stage.min.js': false,
-			// 'stage-editors.js': false,
-			// 'stage-editors.min.js': false,
-			// 'stage-widgets.js': false,
-			// 'stage-widgets.min.js': false			
+			'stage-widgets.js': false,
+			'stage-widgets.min.js': false			
 		},
 		// static: {
 		// 	template: {

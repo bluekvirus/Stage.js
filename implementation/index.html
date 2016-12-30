@@ -27,7 +27,7 @@
     <link rel="stylesheet" href="themes/site/css/main.css">
 
     <!-- Browser feature detect -->  
-    <script src="bower_components/modernizr/modernizr.min.js" target="js/lib/modernizr.js"></script>
+    <script src="bower_components/modernizr/modernizr.js" target="js/lib/modernizr.js"></script>
 
 </head>
 
@@ -91,7 +91,7 @@
     <script src="js/src/reusable/$.plugins/i18n.js"></script>
     <script src="js/src/reusable/$.plugins/toc.js"></script>
     <script src="js/src/reusable/$.plugins/overlay.js"></script>
-    <script src="js/src/reusable/editors/index.js" target="js/stage-editors.js"></script>
+    <script src="js/src/reusable/editors/index.js"></script>
     <script src="js/src/reusable/editors/validations.js"></script>
     <script src="js/src/reusable/widgets/datagrid-lite/index.js" target="js/stage-widgets.js"></script>
     <script src="js/src/reusable/widgets/datagrid-lite/headers/string.js"></script>
@@ -114,6 +114,14 @@
     <script src="bower_components/chai/chai.js" include="site"></script>
     <script src="bower_components/mocha/mocha.js" include="site"></script>
 
+    <!--main.js-->
+    <script src="site/main.js" include="site"></script>
+    <!--Dynamically loaded scripts will be inserted here during build.-->
+    <script type="text/javascript" include="site" id="_entrypoint">
+        //do not change this script tag's id="" attr and position.
+        Application.run(/*deviceready - Cordova*/);
+    </script>
+
     <!-- Google Analytics -->
     <script>
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -121,15 +129,6 @@
         m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
         })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
         ga('create', 'UA-55859893-1', 'auto');ga('send', 'pageview');
-    </script>
-
-    <!--main.js-->
-    <script src="site/main.js" include="site"></script>
-    <!--Dynamically loaded scripts will be inserted here during build.-->
-    <script type="text/javascript" include="site">
-        //Make sure this is the last line in the last script!!! 
-        //Or dynamically injected views will fail during build (see tools/shared/process-html.js)
-        Application.run(/*deviceready - Cordova*/);
     </script>
 
 </body>

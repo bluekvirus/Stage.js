@@ -1,10 +1,11 @@
 /**
- * This is the build script for building your web application front-end.
+ * This is the build script for building your web application front-end. (for theme/css prep, see themeprep/)
  *
  * 1. read build config;
- * 2. load target html and process js targets on it, producing a cached map of js targets -- see /shared/process-html.js; 
- * 	  (we also support patching in the autoloaded scripts)
- * 3. output <target>.js files, index.html and related folder structure based on config.structure -- see /shared/hammer.js;
+ * 2. combine all the view templates (*.html) into all.json;
+ * 3. load target html and process js targets on it, producing a cached map of js targets -- through /shared/process-html.js; 
+ * 	  (we also support patching in the auto-loaded scripts)
+ * 4. output <target>.js files, index.html and related folder structure based on config.structure -- through /shared/hammer.js;
  *
  * Note: this script use process-html.js to build js targets (cachedFiles) then use hammer.js with config.structure to copy/reveal the files
  * into final deployment folder (config.output).

@@ -4,32 +4,18 @@
  * options: {
  * 	root: * -- web root path of the html page
  * 	html: [index.html] -- the target html page relative to the above root path
- * 	js: {
- * 		default: [all.js] -- the default js target to combine into if there is no target="" attr on a <script/>
- * 		after: ...
- * 		min: ...
- * 		dynamic: -- the dynamically loaded src folder by app.get() (app.config.viewSrcs)
- * 		targets: {
- * 			'abc.js': {
- * 				after: -- the position this target will be put after after script combining;
- * 						  use 'false' to omit putting the combined target back into the html;
- * 			 	min: -- whether to use the minified version when putting back;
- * 			},
- * 			'omitted.js': false, -- This will cause the build process to skip putting this js back after combine.
- * 									Note that you can still obtain 'omitted.js', but it won't appear in the built index.html.
- * 			,
- * 			...
- * 			
- * 			-- if you don't specify a target's 'after' config, it will be appended after the previous target
- * 		
- * 		}
- * 	}
+ * 	js: 'string' -- represents the path of the folder name for dynamic loading OR
+ * 		['string', 'string', ... ] -- represents the paths of the folder names for dynamic loading OR
+ * 		{ targets: true/false, dynamic: 'string' or ['string', 'string', '...'] }
+ * 			-- targets defines whether this processing script will honor target attribute on <script/> tags in index.html
+ * 			-- dynamic defines a single folder or an array of folders to be auto-included in the build.
  * }
  *
  * @author Tim Lauv
  * @created 2013.09.26
  * @updated 2014.03.13
  * @updated 2014.08.12 (+ exclude, include and target attr to <script/> tags)
+ * @updated 2016.12.28 (modified js combining mechanism) @Patrick Zhu
  */
 
 var buildify = require('buildify'),
@@ -51,20 +37,37 @@ module.exports = {
 			html: 'index.html',
 			cfgName: ''
 		}, options);
-		options.js = _.extend({
-			default: 'all.js',
-			after: '[region="app"]',
-			min: true,
-			targets: { //-- by default we turn the multi-js-target mode on
-				// 'abc.js': {
-				// 		//append settings
-				// 		after: '[region="app"]', //position after combining in html
-				// 		min: true //whether to use the minified version 
-				// 		//(note that both non-min and min versions will be produced by this tool regardless of the min setting above)
-				// },
-				//other js combine targets
-			}
-		}, options.js);
+
+		var dynamicJSFolder;
+		//check options.js type
+		if(!options.js){
+			options.js = {
+				targets: false, //default option does not honor the targets tag in index.html
+				dynamic: '',
+				min: true
+			};
+		}else if(_.isArray(options.js)){
+			dynamicJSFolder = options.js;
+			options.js = {
+				targets: false,
+				dynamic: dynamicJSFolder,
+				min: true
+			};
+		}else if(_.isString(options.js)){
+			dynamicJSFolder = options.js;
+			options.js = {
+				targets: false,
+				dynamic: dynamicJSFolder,
+				min: true
+			};
+		}else if(_.isObject(options.js) && !_.isFunction(options.js)){ //array and functions are also objects in JS
+			_.extend({
+				targets: false,
+				dynamic: '',
+			}, options.js, {min: true});
+		}else{
+			console.log('build error::configuration for JS is not supported.'.red);
+		}
 
 		var htmlPath = path.join(options.root, options.html);
 		console.log('Processing HTML...'.yellow + path.resolve(htmlPath));
@@ -83,121 +86,131 @@ module.exports = {
 			return true;
 		}
 
-		var getTargetJS;
-		//Note that no matter what target a <script/> tag has, options.js.targets must be truthy to enable multi-js mode.
-		if(options.js.targets){
-			options.js.targets = _.isObject(options.js.targets)?options.js.targets:{};
-			getTargetJS = function(name){
-				if(!targetJS[name]){
-					targetJS[name] = {
-						name: name,
-						script: buildify().setContent(';')
-					};
-					//find its setting
-					options.js.targets[name] = options.js.targets[name] || {min: true};
-					//console.log('js target detected:'.grey, name);
-				}
-				return targetJS[name];
-			};
-		}
-		else {
-			options.js.targets = {};
-			getTargetJS = function(){
-				return targetJS[options.js.default];
-			};
-		}
-
 		//process the html with <script/> tags
 		var content = fs.readFileSync(htmlPath, {encoding: 'utf8'});
 
 		//parse html		
 		var $ = cheerio.load(content);
 
-		//prepare the default js target
-		var targetJS = {};
-		if(!targetJS[options.js.default]) {
-			targetJS[options.js.default] = {
-				name: options.js.default,
-				script:buildify().setDir(options.root).setContent(';')
-			};
-			options.js.targets[options.js.default] = {
-				after: options.js.after,
-				min: options.js.min
-			};
-		}
-
 		//inject dynamically loaded scripts into the html (before last script tag which has app.run())
 		if(options.js.dynamic){
-			var $i = $('body > script').last();
-			_.each(globule.find(path.join(options.js.dynamic, '**/*.js'), {cwd: options.root}), function(jsFile){
-				if($('script[src="' + jsFile + '"]').length) return; //skipped
-				$i.before('<script src="' + jsFile + '"></script>');
-				console.log('[dynamically loaded script]'.grey, jsFile);
+			var $i = $('#_entrypoint');
+			if(!$i.length) 
+				$i = $('body > script').last();
+
+			//check whether options.js.dynamic is a string
+			if(_.isString(options.js.dynamic)) options.js.dynamic = [options.js.dynamic];
+
+			//dynamically loading js folders
+			_.each(options.js.dynamic, function(folder){
+				_.each(globule.find(path.join(folder, '**/*.js'), {cwd: options.root}), function(jsFile){
+					if($('script[src="' + jsFile + '"]').length) return; //skipped
+					$i.before('<script src="' + jsFile + '"></script>');
+					console.log('[dynamically loaded script]'.grey, jsFile);
+				});
 			});
 		}
+		//process srcipt tags in head
+		createJSTargets($('head > script'), 'js/all-head.js');
+		//process script tags in body
+		createJSTargets($('body > script'), 'js/all-body.js');
 
-		//go through script tags in the .html file.
-		var $script;
-		$('body > script').each(function(index, el){
-			$script = $(el);
-			var srcPath = $script.attr('src');
-			var target = $script.attr('target') || options.js.default;
-			if(shouldInclude($script)){
-				if(srcPath){
-					//ref-ed js, concat (separate with ;)
-					getTargetJS(target).script
-						//.perform(function(js){return js + ';';})
-						.concat(srcPath, os.EOL + ';');
-					console.log('[included:'.green + getTargetJS(target).name.grey +'] '.green + srcPath);
-				}else {
-					//in-line
-					getTargetJS(target).script.perform(function(js){
-						return js + ';' + $script.html() + ';';
-					});
-				}
-				$script.remove();
-			}else {
-				console.log('[excluded] '.yellow + srcPath);
-				if(!$script.attr('persist')) $script.remove();
-			}
-			
-		});
-		
-		//append combined target back according to the js config block
-		var $prev;
-		_.each(options.js.targets, function(setting, name){
-			
-			if(!setting) return;
-			
-			var script = '\n\t<script src="js/' + (setting.min?name.replace('.js', '.min.js'):name) + '"></script>';
-
-			if(setting.after) {
-				$prev = $(setting.after);
-				$prev.after(script);
-			}else {
-				if($prev) $prev.after(script);
-			}
-
-			if($prev) $prev = $prev.next();
-
-		});
-	
-		content = $.html();
-
+		//finialize and minify result JS's and index.html
 		console.log('Minifying...'.yellow);
-		result = {
-			'index.html': content.replace(/\n\s+\n/gm, '\n')
-		};
-		_.each(options.js.targets, function(setting, name){
-			if(!targetJS[name]) {
-				console.warn('js target'.red, name.grey, 'not found...'.red);
-				return;
-			} 
-			result[name] = targetJS[name].script.getContent();
-			result[name.replace('.js', '.min.js')] = targetJS[name].script.uglify().getContent() + ';';
+		//minify javascripts
+		_.each(result, function(js, path){
+			var minPath = !(new RegExp('.min.js').test(path)) && path.replace('.js', '.min.js'); //avoid infinite loop
+			result[minPath] = buildify().setContent(js).uglify().getContent();
 		});
+		//add index.html
+		result['index.html'] = $.html().replace(/\n\s+\n/gm, '\n');
 
 		return result;
+
+		//function that processes given array of scripts
+		function createJSTargets($scripts, defaultTarget){
+			result = result || {};
+
+			if(!$scripts){
+				console.log('error::process-html::createJSTargets has no argument.'.red);
+				return;
+			}
+
+			var $script,
+				$currentEl,
+				currentTarget = '',
+				cachedScript = ';';
+
+			$scripts.each(function(index, el){
+				$script = $(el);
+				var srcPath = $script.attr('src'),
+					target = $script.attr('target');
+
+				//check whether to include this script in the build
+				if(shouldInclude($script)){
+
+					//multi-target mode, with a target name
+					if(target && options.js.targets){
+
+						if(!currentTarget){//first element, no action needed
+							currentTarget = target;
+						}else{//not first element, save previously cached JS's into result
+
+							//save cached scripts into result
+							if(!result[currentTarget])
+								result[currentTarget] = cachedScript;
+							else
+								console.log('error::process-html::target name/path has conflict.'.red);
+
+							//modify $currentEl's attributes
+							$currentEl.attr('src', currentTarget).removeAttr('target').removeAttr('include').removeAttr('exclude').removeAttr('persist'); //removeAttr can only take one attribute at a time.;
+							//reset $currentEl, cachedScript and currentTarget
+							$currentEl = undefined; //use the branch outside later to setup new $currentEl
+							currentTarget = target;
+							cachedScript = ';';
+						}
+
+					}else{//no target or non multi-target mode;
+
+						//no current target, give default target as current target.
+						if(!currentTarget) currentTarget = defaultTarget;
+
+					}
+
+					//append javascript
+					if(srcPath){//loaded from file
+
+						cachedScript += buildify().setDir(options.root).load(srcPath).getContent().concat(os.EOL + ';');
+						//output info
+						console.log('[included:'.green + currentTarget +'] '.green + srcPath);
+
+					}else{//inline style
+						cachedScript += $script.html() + os.EOL + ';';
+					}
+
+					//save current object if there is no $currentEl, otherwise remove.
+					if(!$currentEl)
+						$currentEl = $script;
+					else
+						$script.remove();
+
+				}else{
+					console.log('[excluded] '.yellow + (srcPath || 'inline-styled script'));
+					if(!$script.attr('persist'))
+						$script.remove();
+				}
+			});
+
+			//!!Trim last bulk of scipts after .each
+			//!!Caveat: $scripts is an object, cannot use index to judge it is last or not.
+			if(!result[currentTarget])
+				result[currentTarget] = cachedScript;
+			else
+				console.log('error::process-html::target name/path has conflict.'.red);
+
+			//reset $currentEl attributes
+			$currentEl.attr('src', currentTarget).removeAttr('target').removeAttr('include').removeAttr('exclude').removeAttr('persist'); //removeAttr can only take one attribute at a time.;
+		}
 	}
 
 };
