@@ -8,7 +8,6 @@ module.exports = {
 	},
 	structure : { //path are relative to the distFolder and src.root above
 		js: {
-			lib: 'js/lib',
 			'stage.js': false,
 			'stage.min.js': false,
 			'stage-widgets.js': false,
