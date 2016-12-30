@@ -4,22 +4,35 @@
  * After processing, '*.js' and 'index.html' will be in buffer, 
  * output them to desired location together with a wanted folder structure using this config file.
  * 
- * +Structure
- * ----------------
- * name: {} - create folder with name
- * name: 'string' - copy file or folder as 
- * name: ['folderA', 'folderB'] - copy and merge folder content into 
- * '*.js': true/false - cached js combine target, use 'true'/'false' to choose whether to use the gzip version.
- * 'index.html': true/false - cached index page after js combine, use 'true'/'false' to choose whether to use the gzip version.
+ * format used in .structure {} -- output folder structure
+ * ----------------------------
+ * 		name: {} - create folder with name
+ *   	name: 'string' - copy file or folder as 
+ *    	name: ['folderA', 'folderB'] - copy and merge folder content into 
+ *     	'*.js': true/false - cached js combine target, use 'true'/'false' to choose whether to use the gzip version.
+ *      'index.html': true/false - cached index page after js combine, use 'true'/'false' to choose whether to use the gzip version.
+ *
+ * format used in .js {} 
+ * ---------------------
+ * target: true/false (default: false)
+ * dynamic: ''/['', ''] (default: '')
+ * min: true/false (default: true)
  * 
  * Note: you can combine into multiple .js by using the [target="abc.js"] attr on the <script/> tags.
- * If certain <script/> tag has an attibute of [target="xxx/xxx.js"], then itself will be redirected into that file path.
- * Also the following <script/> tags until the next <script/> tag with [target="xxx/xxx.js"] attribute will be combined and redirected into that file path.
- * The js config block below controls whether to enable this mode and where to put the combined js after processing the html.
+ * 		 If certain <script/> tag has an attibute of [target="js/foo.js"], it will be combined into that file.
+ *    	 The following <script/> tags until the one with a different [target="js/bar.js"] attribute will also join the same file.
  * 
- * Note: Each combined js target will have both minified and non-minified versions produced. (you can use both .js and .min.js in the structure block later)
- * (If you omit the js config block, the default combine target will be all-head.js/all-head.min.js and all-body.js/all-body.min.js)
- * (If js.targets is falsey, the multi-js mode processing will be disabled, regardless of the [target="...js"] attributes on <script/> tags)
+ * The js config block can be used to turn this multi-target mode off (by setting js.target : false). The [target="...js"] attributes on <script/> tags
+ * will be ignored.
+ * 
+ * Note: The default combine targets are all-head.js/all-head.min.js and all-body.js/all-body.min.js respectively.
+ * Note: Each combined js target will have both minified and non-minified versions produced and cached.
+ *
+ * format used in .src {}
+ * ----------------------
+ * root: '' -- project root
+ * index: '' -- the main index.html
+ * templates: '' -- where to find view templates (*.html)
  * 
  * @author Tim Lauv
  * @created 2013.09.25

@@ -8,7 +8,7 @@
  * 		['string', 'string', ... ] -- represents the paths of the folder names for dynamic loading OR
  * 		{ target: true/false, dynamic: 'string' or ['string', 'string', '...'] }
  * 			-- target defines whether this processing script will honor target attribute on <script/> tags in index.html
- * 			-- dynamic defines a single folder or a series of folders to be dynamically loaded.
+ * 			-- dynamic defines a single folder or an array of folders to be auto-included in the build.
  * }
  *
  * @author Tim Lauv
@@ -38,7 +38,7 @@ module.exports = {
 			cfgName: ''
 		}, options);
 
-		var tempDynamic;
+		var dynamicJSFolder;
 		//check options.js type
 		if(!options.js){
 			options.js = {
@@ -47,17 +47,17 @@ module.exports = {
 				min: true
 			};
 		}else if(_.isArray(options.js)){
-			tempDynamic = options.js;
+			dynamicJSFolder = options.js;
 			options.js = {
 				target: false,
-				dynamic: tempDynamic,
+				dynamic: dynamicJSFolder,
 				min: true
 			};
 		}else if(_.isString(options.js)){
-			tempDynamic = options.js;
+			dynamicJSFolder = options.js;
 			options.js = {
 				target: false,
-				dynamic: tempDynamic,
+				dynamic: dynamicJSFolder,
 				min: true
 			};
 		}else if(_.isObject(options.js) && !_.isFunction(options.js)){ //array and functions are also objects in JS
@@ -66,7 +66,7 @@ module.exports = {
 				dynamic: '',
 			}, options.js, {min: true});
 		}else{
-			console.log('build error::configuration for js is not supported.'.red);
+			console.log('build error::configuration for JS is not supported.'.red);
 		}
 
 		var htmlPath = path.join(options.root, options.html);
@@ -95,34 +95,23 @@ module.exports = {
 		//inject dynamically loaded scripts into the html (before last script tag which has app.run())
 		if(options.js.dynamic){
 			var $i = $('body > script').last();
-			//check whether dynamic is a string or an array
-			if(_.isArray(options.js.dynamic)){//array, a series of folders
 
-				_.each(options.js.dynamic, function(folder){
-					_.each(globule.find(path.join(folder, '**/*.js'), {cwd: options.root}), function(jsFile){
-						if($('script[src="' + jsFile + '"]').length) return; //skipped
-						$i.before('<script src="' + jsFile + '"></script>');
-						console.log('[dynamically loaded script]'.grey, jsFile);
-					});
-				});
+			//check whether options.js.dynamic is a string
+			if(_.isString(options.dynamic.js)) options.dynamic.js = [options.dynamic.js];
 
-			}else if(_.isString(options.js.dynamic)){//string, a single folder
-
-				_.each(globule.find(path.join(options.js.dynamic, '**/*.js'), {cwd: options.root}), function(jsFile){
+			//dynamically loading js folders
+			_.each(options.js.dynamic, function(folder){
+				_.each(globule.find(path.join(folder, '**/*.js'), {cwd: options.root}), function(jsFile){
 					if($('script[src="' + jsFile + '"]').length) return; //skipped
 					$i.before('<script src="' + jsFile + '"></script>');
 					console.log('[dynamically loaded script]'.grey, jsFile);
 				});
-
-			}else{//error
-				console.log('build error::the config for options.js.dynamic is not supported.'.red);
-			}
-
+			});
 		}
 		//process srcipt tags in head
-		processScripts($('head > script'), 'all-head.js');
+		createJSTargets($('head > script'), 'all-head.js');
 		//process script tags in body
-		processScripts($('body > script'), 'all-body.js');
+		createJSTargets($('body > script'), 'all-body.js');
 
 		//finialize and minify result JS's and index.html
 		console.log('Minifying...'.yellow);
@@ -137,11 +126,11 @@ module.exports = {
 		return result;
 
 		//function that processes given array of scripts
-		function processScripts($scripts, defaultTarget){
+		function createJSTargets($scripts, defaultTarget){
 			result = result || {};
 
 			if(!$scripts){
-				console.log('error::process-html::processScripts has no argument.'.red);
+				console.log('error::process-html::createJSTargets has no argument.'.red);
 				return;
 			}
 
