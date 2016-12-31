@@ -48,5 +48,6 @@ rm -r *
 cd -
 cp -r "$DIST"/* "$REPOSITORY"/
 cd "$REPOSITORY"
+git add --all
 git commit -am "Updated site and dev-kit to edge $EDGEVER"
 git push
