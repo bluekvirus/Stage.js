@@ -13,7 +13,7 @@ NProgress.configure({showSpinner: false});
         navRegion: 'center',
         defaultView: 'Home',
         //websockets: ['/ws'],
-        viewSrcs: 'site'
+        viewSrcs: 'js/site'
 
     });
 

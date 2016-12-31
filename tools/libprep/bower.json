@@ -36,19 +36,34 @@
     "tools",
     "README.md"
   ],
+  "dependencies": {
+    "jquery": "~2.1.x",
+    "underscore": "~1.8.x",
+    "raphael": "2.1.2"
+  },
+  "kitDevDependencies": {
+    "stage": "*",
+    "bootstrap": "~3.x.x",
+    "fontawesome": "~4.x.x",
+    "open-sans-fontface": "*"
+  },
+  "siteDependencies": {
+    "nprogress": "0.2.x",
+    "highlightjs": "8.x.x",
+    "mockjs": "0.1.x",
+    "bootswatch": "~3.x.x"
+  },
   "devDependencies": {
     "modernizr": "~2.8.x",
+    "underscore.string": "~3.x.x",
     "loadcss": "~0.2.x",
     "fastclick": "~1.x.x",
-    "jquery": "~2.1.x",
     "jquery-ui": "1.10.4",
     "jquery-color": "~2.1.x",
     "js-cookie": "~2.0.x",
     "amaranjs": "~0.5.x",
     "jquery-file-upload": "~9.x.x",
     "flexlayout": "0.2.x",
-    "underscore": "~1.8.x",
-    "underscore.string": "~3.x.x",
     "selectn": "~0.10.x",
     "validator-js": "~4.x.x",
     "backbone": "~1.x.x",
@@ -60,14 +75,17 @@
     "momentjs": "~2.x.x",
     "marked": "0.3.5",
     "later": "1.2.x",
-    "bootstrap": "~3.3.x"
-  },
-  "themeDependencies": {
-    "bootstrap": "~3.x.x",
-    "jquery-ui": "1.10.4",
-    "amaranjs": "~0.5.x",
+    "bootstrap": "~3.3.x",
     "animate.css": "~3.x.x",
-    "open-sans-fontface": "*"
+
+    "bootstrap": "~3.x.x",
+    "fontawesome": "~4.x.x",
+    "open-sans-fontface": "*",
+
+    "nprogress": "0.2.x",
+    "highlightjs": "8.x.x",
+    "mockjs": "0.1.x",
+    "bootswatch": "~3.x.x"
   },
   "monitored": {
     "velocity": "*",
@@ -82,11 +100,8 @@
     "owl.carousel": "*",
     "colorbox": "*",
     "switchery": "*",
-    "powerange": "*",
-    "pickadate": "*",
     "ace": "*",
     "highlightjs": "*",
-    "raphael": "2.1.2",
     "Snap.svg": "*",
     "paper": "*",
     "EaselJS": "*",
@@ -105,22 +120,9 @@
     "bootswatch": "*",
     "bootstrap-material-design": "*",
     "material-design-lite": "*",
-    "material-design-icons": "*",
-    "fontawesome": "*",    
+    "material-design-icons": "*",    
     "roboto-fontface": "*",
     "ubuntu-fontface": "*"
-  },
-  "dependencies": {
-    "nprogress": "0.2.x",
-    "highlightjs": "8.x.x",
-    "raphael": "2.1.2",
-    "bootswatch": "~3.x.x",
-    "fontawesome": "~4.x.x",
-    "open-sans-fontface": "*",
-    "animate.css": "~3.x.x",
-    "mockjs": "0.1.x",
-    "mocha": "~2.2.5",
-    "chai": "~3.2.0"
   },
   "resolutions": {
     "underscore": "~1.8.x",

@@ -1,15 +1,11 @@
 {
-	"name": "custom-project",
+	"name": "<Your project name>",
 	"private": true,
 	"devDependencies": {
 		"stage": "^1.9.3",
 		"bootstrap": "~3.x.x",
-		"jquery-ui": "1.10.4",
-		"amaranjs": "~0.5.x",
-		"animate.css": "~3.x.x",
-		"open-sans-fontface": "*",
-		"jquery": "~2.1.x",
-		"underscore": "~1.8.x"
+		"fontawesome": "~4.x.x",
+		"open-sans-fontface": "*"
 	},
 	"dependencies": {},
 	"open-source-libs": {
@@ -25,11 +21,8 @@
 		"owl.carousel": "*",
 		"colorbox": "*",
 		"switchery": "*",
-		"powerange": "*",
-		"pickadate": "*",
 		"ace": "*",
 		"highlightjs": "*",
-		"raphael": "2.1.2",
 		"Snap.svg": "*",
 		"paper": "*",
 		"EaselJS": "*",
@@ -49,7 +42,6 @@
 		"bootstrap-material-design": "*",
 		"material-design-lite": "*",
 		"material-design-icons": "*",
-		"fontawesome": "*",
 		"roboto-fontface": "*",
 		"ubuntu-fontface": "*"
 	}

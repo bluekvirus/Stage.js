@@ -36,31 +36,9 @@
 		"tools",
 		"README.md"
 	],
-	"devDependencies": {
-		"modernizr": "~2.8.x",
-		"detectizr": "~2.x.x",
-		"loadcss": "~0.2.x",
-		"fastclick": "~1.x.x",
+	"dependencies": {
 		"jquery": "~2.1.x",
-		"jquery-ui": "1.10.4",
-		"jquery-color": "~2.1.x",
-		"js-cookie": "~2.0.x",
-		"amaranjs": "~0.5.x",
-		"jquery-file-upload": "~9.x.x",
-		"flexlayout": "0.2.x",
 		"underscore": "~1.8.x",
-		"underscore.string": "~3.x.x",
-		"selectn": "~0.10.x",
-		"validator-js": "~4.x.x",
-		"backbone": "~1.x.x",
-		"marionette": "~1.8.x",
-		"handlebars": "~4.x.x",
-		"swag": "~0.7.x",
-		"uri.js": "~1.x.x",
-		"store.js": "~1.x.x",
-		"momentjs": "~2.x.x",
-		"marked": "0.3.5",
-		"later": "1.2.x",
-		"bootstrap": "~3.3.x"
+		"raphael": "2.1.2"
 	}
 }

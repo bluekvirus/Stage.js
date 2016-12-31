@@ -5,17 +5,13 @@ module.exports = {
 		templates: 'static/template', //path relative to root
 	},
 	js: {
-		dynamic: 'site',
+		dynamic: 'js/site',
 		targets: false
 	},
 	structure : { //path are relative to the distFolder and src.root above
-
 		js: {
 			'all-head.min.js': true,
 			'all-body.min.js': true,
-			lib: {
-				'dependencies.json': 'js/lib/dependencies.json'
-			}
 		},
 		themes: {
 			'site': {

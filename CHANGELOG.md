@@ -1,6 +1,6 @@
 Change Log
 ==========
-1.10.0 (2016-12-20*)
+1.10.0 (2016-12-30*)
 --------------------
 1. Missing locale file will no longer raise exceptions;
 2. Updated flexlayout to be 0.2.3;
@@ -46,16 +46,18 @@ Change Log
 42. Upgraded LESS to v2 and supporting glob/batch @import;
 43. Refined watcher mech in devserver;
 44. Added dynamic polyfill (JS) to index.html;
+45. Separated modernizr from deps;
+46. Refined build mech,config and theme process;
+47. Simplified framework project deps/dist management;
 
 working on ...
 
-* Separate modernizr+detectizr feature detect bundles from deps;
 * Integrate stage-unideck into framework kit;
-* wire more I18N/Detectizr methods to app apis;
+* Link more I18N methods to app apis;
 * Cheatsheet/API specs;
 * Split/Update docs;
 * Breaking down 'Basic' editors?
-* Backbone*(+d3, -jQueryv2/3.0, -Marionettev1.8), unideck, elements(-Bootstrapv3/4.0)?
+* Backbone*(+d3, -jQueryv2/3.0, -Marionettev1.8), elements(-Bootstrapv3/4.0)?
 * Direct `<canvas>` support in view (easel)?
 * More unit tests in demos;
 

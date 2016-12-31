@@ -3,49 +3,30 @@
  *
  * Start a new theme:
  * ------------------
- * 0. create a new folder under /themes
- * 1. copy the /less folder from this one into the new theme folder
- * 2. run `node tools/themeprep/run.js <your new theme name>`
- * 3. start tweaking the new theme
- * 4. re-run step.2 whenever you want to update /fonts or have added new icons into /img folders
+ * 1. run `node tools/themeprep/run.js <your new theme name>`
+ * 2. start tweaking the new theme
+ * 3. re-run step.1 whenever you want to update /fonts or have added new icons into /img folders
  *
  * @author Tim Lauv
  * @created 2014.03.09
  * @updated 2014.07.22
+ * @updated 2016.12.30
  */
 
-//jQuery UI minimum
-@import (inline) "jquery-ui/themes/base/jquery.ui.core.css";
-@import (inline) "jquery-ui/themes/base/jquery.ui.resizable.css";
-@import (inline) "jquery-ui/themes/base/jquery.ui.selectable.css";
+//Lib addon(s) default css
+@import (inline) "default/css/addon-defaults.css";
 
-//Base - Bootstrap + FontAwesome
-@import "fontawesome/less/font-awesome.less";
-@import "bootstrap/less/bootstrap.less";
+//Less Helpers
+//@import "mixins.less";
 
-//Base+ - Cosmo theme from Bootswatch
-@import "bootswatch/cosmo/bootswatch.less";
-@import "bootswatch/cosmo/variables.less";
+//Elements - Widgets/Editors/Plugins/Containers
+@import "default/less/components.less"; //- add more style to this one if added new components
+	//Base+ - Cosmo theme from Bootswatch
+	@import "bootswatch/cosmo/bootswatch.less";
+	@import "bootswatch/cosmo/variables.less"; 
 
-//Animation - animate.css
-@import (inline) "animate.css/animate.css";
-
-//Fonts
-//Note: Together with bootstrap and fontawesome icon-fonts, fonts are copied by the theme prep tool into /fonts)
-@import "open-sans-fontface/open-sans.less";
-
-//Notification - amaran.css
-@import (inline) "amaranjs/dist/css/amaran.min.css";
-
-//Logo/Icons
-@import "../img/img.less"; //this is produced by the theme prep tool.
-
-//Theming related (font-family, font-face path, color, size and effects)
-@import "vars.less"; //- reusable theme variables (colors, sizes and gaps), modify this to change your theme
-//@import "mixins.less"; //- add more short-cut funcz/stylez into this one
-
-//Framework - Widgets/Editors/Plugins/Containers
-@import "components.less"; //- add more style to this one if added new components
+//Fonts, Icons, Color, Gap, Stroke, Texture
+@import "default/less/vars.less"; //- reusable theme variables (colors, sizes and gaps), modify this to change your theme
 
 //Cordova app fix
 * {
@@ -61,12 +42,4 @@ input, select, textarea {
 //Put your context specific styles below this line:
 //==========================================================================================================
 
-
 @import "theme.less";
-
-//or put directly here:
-/*
-.context-abc {
-	//for context named Abc
-}
-*/

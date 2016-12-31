@@ -32,8 +32,8 @@ module.exports = function(root, main, collaborate){
 		
 		//less.parser has been decrepted, use less.render for less.js 2.x.x
 		less.render(data.toString(), {
-			//give base paths for compling
-			paths: [path.join(root, 'less'), path.join(root, '..', '..', 'bower_components')],
+			//give base paths for compling (./ > local > themes > bower)
+			paths: [path.join(root, 'less'), path.join(root), path.join(root, '..'), path.join(root, '..', '..', 'bower_components')],
 			plugins: [require('less-plugin-glob')]
 		}, function(error, output){
 			//if error, print error and return

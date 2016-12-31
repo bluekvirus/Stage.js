@@ -14,7 +14,7 @@
  *
  * format used in .js {} 
  * ---------------------
- * target: true/false (default: false)
+ * targets: true/false (default: false)
  * dynamic: ''/['', ''] (default: '')
  * min: true/false (default: true)
  * 
@@ -52,7 +52,7 @@ module.exports = {
 	//combine js (single/multiple mode)
 	
 	js: {
-		target: true, //honor target attribute on script tags
+		targets: true, //honor target attribute on script tags
 		dynamic: 'js', //dynamic loading folder
 	},
 	

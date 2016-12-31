@@ -2,11 +2,18 @@
  * Theme variables override
  * @author Tim Lauv
  * @updated 2014.07.24
+ * @updated 2016.12.30
  */
 
-//Icon Fonts [+ FontAwesome]
+//Fonts (don't forget to copy font files -- use stagejs theme <project> --fonts f1,f2,f3...)
+@import "open-sans-fontface/open-sans.less";
+@import "fontawesome/less/font-awesome.less";
+//Logo/non-svg Icons
+@import "img/img.less"; //this is produced by the theme prep tool.
+
+//Icon Fonts Path override
 @icon-font-path: "../fonts/bootstrap/";
-//@fa-font-path: "../fonts/fontawesome";
+@fa-font-path: "../fonts/fontawesome";
 
 //Fonts
 @OpenSansPath: "../fonts/open-sans-fontface";

@@ -6,7 +6,7 @@ module.exports = {
 		implementation: {
 			js: {
 				context: {
-					'mockups.js': 'site/context/mockups.js'
+					'mockups.js': 'js/site/context/mockups.js'
 				}
 			},
 			static: {

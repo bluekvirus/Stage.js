@@ -27,7 +27,7 @@
     <link rel="stylesheet" href="themes/site/css/main.css">
 
     <!-- Browser feature detect -->  
-    <script src="bower_components/modernizr/modernizr.js" target="js/lib/modernizr.js"></script>
+    <script src="bower_components/modernizr/modernizr.js" target="js/modernizr.js"></script>
 
 </head>
 
@@ -52,34 +52,38 @@
         -->
 
     <!--========Infrastructure Space: the framework======================================================-->
+
     <!--Deps-->
-    <script src="bower_components/jquery/dist/jquery.js" include="NONE" persist="true"></script>
-    <script src="bower_components/underscore/underscore.js" include="NONE" persist="true"></script>
-    <script src="bower_components/loadcss/loadCSS.js" target="js/stage.js"></script>
+    <script src="bower_components/underscore/underscore.js"></script>
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/raphael/raphael.js"></script>
+    <!--Libs-->
+    <script src="bower_components/underscore.string/dist/underscore.string.js" target="js/stage.js"></script>
+    <script src="bower_components/loadcss/loadCSS.js"></script>
     <script src="bower_components/fastclick/lib/fastclick.js"></script>
-    <script src="bower_components/jquery-ui/ui/jquery-ui.js"></script>
-    <script src="bower_components/jquery-color/jquery.color.js"></script>
+    <script src="bower_components/jquery-ui/dist/jquery-no-widget-ui.js"></script>
+    <script src="bower_components/jquery-color/dist/jquery-color-all.js"></script>
     <script src="bower_components/js-cookie/src/js.cookie.js"></script>
     <script src="bower_components/amaranjs/dist/js/jquery.amaran.js"></script>
-    <script src="bower_components/jquery-file-upload/js/jquery.fileupload.js"></script>
+    <script src="bower_components/jquery-file-upload/dist/jquery-file-upload-with-iframe.js"></script>
     <script src="bower_components/flexlayout/flexlayout.js"></script>
-    <script src="bower_components/underscore.string/dist/underscore.string.js"></script>
     <script src="bower_components/selectn/selectn.js"></script>
     <script src="bower_components/validator-js/validator.js"></script>
     <script src="bower_components/backbone/backbone.js"></script>
     <script src="bower_components/marionette/lib/backbone.marionette.js"></script>
     <script src="bower_components/handlebars/handlebars.js"></script>
     <script src="bower_components/swag/lib/swag.js"></script>
-    <script src="bower_components/uri.js/src/URI.js"></script>
+    <script src="bower_components/uri.js/dist/uri-all.js"></script>
     <script src="bower_components/store.js/store.js"></script>
     <script src="bower_components/momentjs/moment.js"></script>
     <script src="bower_components/marked/lib/marked.js"></script>
     <script src="bower_components/later/later.js"></script>
     <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
-    <!--Deps Enhancement-/+-->
+    <!--Lib mods-/+-->
     <script src="js/src/infrastructure/lib+-/bootstrap/tooltip.js"></script>
     <script src="bower_components/bootstrap/js/popover.js"></script>
     <script src="js/src/infrastructure/lib+-/marked/marked.js"></script>
+
     <!--Infrastructure-->
     <script src="js/src/infrastructure/env.js"></script>
     <script src="js/src/infrastructure/index.js"></script>
@@ -95,7 +99,6 @@
     <script src="js/src/infrastructure/core/remote-data.js"></script>
     <script src="js/src/infrastructure/core/lock.js"></script>
     <script src="js/src/infrastructure/core/reusable.js"></script>
-
     <!--View Enhancement-/+-->
     <script src="js/src/infrastructure/lib+-/backbone/backbone-deep-model.js"></script>
     <script src="js/src/infrastructure/lib+-/marionette/application.js"></script>
@@ -107,7 +110,6 @@
     <script src="js/src/infrastructure/lib+-/marionette/item-view.js"></script>
     <script src="js/src/infrastructure/lib+-/marionette/layout.js"></script>
     <script src="js/src/infrastructure/lib+-/marionette/collection-view.js"></script>
-
     <!--Predefined Goods(UI policy)-->
     <!--Basic (i18n, Table/Pager, Form/Editors, Overlay, MD, Notification...)-->
     <script src="js/src/reusable/$.plugins/i18n.js"></script>
@@ -126,25 +128,21 @@
     <!--=================================================================================================-->
 
     <!--Project Spec Libs: e.g
-            <script  src="bower_components/highcharts-release/highcharts.src.js"></script>
-            <script  src="bower_components/highcharts-release/highcharts-more.src.js"></script>
+        <script type="text/javascript" src="bower_components/d3/d3.js"></script>
     -->
     <script src="bower_components/mockjs/dist/mock.js" target="js/site.js" include="site"></script>
     <script src="bower_components/highlightjs/highlight.pack.js" include="site"></script>
     <script src="bower_components/nprogress/nprogress.js" include="site"></script>
-    <script src="bower_components/raphael/raphael.js" include="site"></script>
-    <script src="bower_components/chai/chai.js" include="site"></script>
-    <script src="bower_components/mocha/mocha.js" include="site"></script>
 
     <!--main.js-->
-    <script src="site/main.js" include="site"></script>
+    <script src="js/site/main.js" include="site"></script>
     <!--Dynamically loaded scripts will be inserted here during build.-->
     <script type="text/javascript" include="site" id="_entrypoint">
         //do not change this script tag's id="" attr and position.
         Application.run(/*deviceready - Cordova*/);
     </script>
 
-    <!-- Google Analytics -->
+    <!-- Google Analytics 
     <script>
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
         (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -152,6 +150,7 @@
         })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
         ga('create', 'UA-55859893-1', 'auto');ga('send', 'pageview');
     </script>
+    -->
 
 </body>
 
