@@ -41,19 +41,19 @@ stagejs serve [--port <number>]
 You can now start developing your app with Stage.js. Read the [command-line devtool](https://www.npmjs.com/package/stage-devtools) for more.
 
 
-Documentation
--------------
+How-to
+------
 Again, as an application developer you are encouraged read this [documentation](http://bluekvirus.github.io/Stage.js/#navigate/Document)
 
 
-Contribute
-----------
+Contribute to framework
+-----------------------
 Fork/Clone the project and tweak the code locally, then contribute by making a pull request so you can push the change in.
 
 ###Prepare
 After cloning the project, you should go to `/tools` and run these commands:
 ```
-0. Check your development environment
+0. Check your development environment (yes, you can still use the cli tool in this step)
 
 stagejs env
 
@@ -63,47 +63,42 @@ npm install
 
 2. Prepare bower packages
 
-./lib-update.sh
+./lib-prep.sh
 
 3. Prepare doc site theme packs (under ./themeprep)
 
 node run site
-node run site --fonts fontawesome
 
-4.a Fire up dev server (background logging by forever)
+4. Fire up dev server (background logging by forever)
 
-./start.sh
+./start.sh [-p port]
 
-or
-4.b Fire up dev server (foreground logging by nodemon)
+5. Check dev server logs
 
-npm start
+forever logs
+
 ```
 This should fire-up the development server. It will serve the `/implementation` folder as web root on the port define by `/tools/devserver/profile/default`. Please go check the content of this profile config file before starting. It has some nice middlewares and auto-change-detectors there you can switch on/off to make the development a lot easier.
 
 ###Develop, Demo & Test
-Change code under `/implementation/js/src` to test and contribute your ideas to this framework.
+Change code under `/implementation/js/src` to contribute your ideas to this framework.
 
-You can also change the code under `/implementation/site`, it is the application for **Stage.js**'s documentation site and it also holds all the tests and demos.
+Change the code under `/implementation/js/site` to test your ideas, it is the application for **Stage.js**'s documentation site and it also holds all the tests and demos.
 
-Look closely to the `/implementation/index.html` file, it not only defines the loading sequence of all the src files but also defines which one goes to which build target in the build process.
+Look closely at the `/implementation/index.html` file, it not only defines the loading sequence of all the js files but also defines which one goes to which build profile (framework, site) and bag target (all.js, stage.js) in the build process. `/implementation/starter-kit.html` goes into the starter-kit build as `index.html`. There is only 1 html file for loading the js/css files (which is `index.html`) the reset of `*.html` are templates and are loaded by the js view objects upon application runtime. This is the way of the single-page applications.
 
-###Modify theme
-Please go check the `/implementation/themes/default` basic theme package and follow instructions in the `/less/main.less` over there. You can easily switch to use other base themes offered by [bootswatch](http://bootswatch.com/) (based on Bootstrap 3) to quickly build up your own.
+###Modify base theme in framework
+`/implementation/themes/default` is the base theme package used whenever developer use `stagejs theme <name>`. Although it is often not necessary to modify this base theme. You can still improve it if you have a better idea or more UI components added into the framework that need styling. 
 
-You can always refresh existing theme or start a new one by using the theme-prep tool under `/implementation/tools/themeprep`. Note that this is the same as using the command-line tool `stagejs theme <name>` in your own projects. But since this is the framework project itself, the command-line tool can not be of assistance here.
+Follow instructions in the `/less/main.less`. You can easily switch to use other themes based on Bootstrap 3 or quickly build up your own. (check out themes offered by [bootswatch](http://bootswatch.com/))
 
-###Checking commit history
-Use the following `git` command to see some brief history about repo commits
-```
-git log --abbrev-commit --pretty=oneline -n 5
-git rev-list HEAD --count
-```
+You can start a new theme by using the theme-prep tool under `/implementation/tools/themeprep`. Note that this is the same as using the command-line tool `stagejs theme <name>` in your own projects. But since this is the framework project itself, the command-line tool can not be of assistance here. Chicken'n'Egg thing.
+
+As in your own projects, themes will be automatically watched and recompiled each time your *.less file changes.
 
 
-Distribute
-----------
-###Build
+Build
+-----
 ```
 0. Change version numbers
 
@@ -111,29 +106,15 @@ CHANGELOG.md
 tools/libprep/bower.json
 (README.md, HOWTO.md are updated automatically.)
 
-1.a Update libs & bower release version
+1. Update libs & bower release version
 
-tools/lib-update.sh
+tools/lib-prep.sh
 
-or
-1.b Update bower release version only
-
-tools/libprep/node run.js all
-
-2. [optional] Update themes
-(Stop the devserver by using `./stop.sh` under `tools` first!)
-
-node tools/themeprep/run 
-node tools/themeprep/run site
-
-3. Build distributions & doc site
+2. Build framework, starter-kit & doc site
 
 tools/build.sh
 ```
-**Important**: If you see any of the `*.less` file contains `@import url("...")` remove them before you compile the theme. Try to bring that piece to local code base. (e.g Host the web font yourself.)
-
-###Deploy
-See in `tools/build/dist` and `dist` for details. The shortcut command also builds the project site (as its github page).
+**Important**: If you see any of the `*.less` file contains `@import url("...")` remove them before you compile the theme. Try to bring that piece to local code base. (e.g Host the web-font yourself)
 
 
 What's next?
@@ -141,24 +122,21 @@ What's next?
 [:crystal_ball: Preview current progress](https://github.com/bluekvirus/Stage.js-ng/tree/master/libs/vendor/stagejsv2).
 
 2.0.0 Roadmap:
-* AMD support; (:heavy_check_mark:)
-* ECMAScript6 (2015-2016) support; (:heavy_check_mark:)
 * Build a lightweight framework core from scratch; (:heavy_check_mark:)
-* Handshake (Full-Async) mode for view init; (:heavy_check_mark:)
-* Support optional reactive view building; (two-way bindings through MVVM) (:heavy_check_mark:)
+* Handshake (Full-Async) mode for view init/data/nesting; (:heavy_check_mark:)
 * Remove theming/templating deps on Bootstrap (easy to hook your own); (:heavy_check_mark:)
 * Port custom-made DevOps process pipeline onto Gulp; (:heavy_check_mark:)
-* Introduce data engine to App (auto polling and server-push channel handling); (:heavy_check_mark:)
+* Optional AMD support; (:heavy_check_mark:)
+* Optional ECMAScript6 (2015-2016) support; (:heavy_check_mark:)
+* Optional reactive view building; (two-way bindings, like MVVM) (:heavy_check_mark:)
 * WebRTC integration for peer-to-peer data/stream sharing; (in progress)
-* Introduce state machine into Views;
 * Give View action listeners a choice to go background (Web Worker);
-
-Optional:
-* complete filter/sort/pagination in views (v1 has remote version only);
+* Introduce state machine into Views (app.view/actor());
+* Local filter/sort/pagination in Views (v1 has remote version only);
 
 
 License
 -------
-Copyright 2013 - 2016 Tim Lauv. 
+Copyright 2013 - 2017 Tim Lauv. 
 Under the [MIT](http://opensource.org/licenses/MIT) License.
 
