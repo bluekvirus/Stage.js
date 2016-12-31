@@ -24,19 +24,9 @@
     <!-- Theme -->
     <link rel="stylesheet" href="themes/site/css/main.css">
 
-    <!-- Shivs -->  
-    <!-- modernizr, detectizr currently included in deps -->
+    <!-- Browser feature detect -->  
+    <script src="js/all-head.min.js"></script>
 
-    <!-- Google Analytics -->
-    <script>
-        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-        ga('create', 'UA-55859893-1', 'auto');
-        ga('send', 'pageview');
-    </script>
 </head>
 
 <body>
@@ -48,37 +38,46 @@
     <!--Dynamic JS polyfill (client browser specific)-->
     <script src="https://cdn.polyfill.io/v2/polyfill.min.js" include="NONE" persist="true"></script>
     <div region="app"></div>
-	<script src="js/all.min.js"></script>
 
     <!--
             Bonus:: special <script/> attributes for build:
                 [include="buildA, buildB, ..."]: include this script only during these builds.
                 [exclude="buildA, buildB, ..."]: exclude this script only during these builds.
-                [build cfg name="false"/"true"]: whether to include this script for this specific build.
                 [target="xyz.js"]: combine this script into specified js file.
-                [persist="true"]: This is used for the build tool to persist this script tag in the produced index.html if it is ignored.
-            Note::
-                1. The build name is the same as your build config name used in the build command.
-                2. include > exclude > build cfg name if you use these attributes together on a single <script/>
+                [persist="true"]: This is used for the build tool to persist this script tag in the produced index.html if it is ignored in js targets.
+            Note:: include > exclude if you use these attributes together on a single <script/>
         -->
 
     <!--========Infrastructure Space: the framework======================================================-->
+
     <!--Deps-->
-    <!--Deps Enhancement-/+-->
+    <script src="js/all-body.min.js"></script>
+    <!--Libs-->
+    <!--Lib mods-/+-->
     <!--Infrastructure-->
+    <!--Build tag (automatically generated)-->
     <!--Util sub-modules-->
     <!--Core Modules-->
     <!--View Enhancement-/+-->
     <!--Predefined Goods(UI policy)-->
     <!--Basic (i18n, Table/Pager, Form/Editors, Overlay, MD, Notification...)-->
-    <!--Build tag (automatically generated)-->
     <!--=================================================================================================-->
 
     <!--Project Spec Libs: e.g
-            <script  src="bower_components/highcharts-release/highcharts.src.js"></script>
-            <script  src="bower_components/highcharts-release/highcharts-more.src.js"></script>
+        <script type="text/javascript" src="bower_components/d3/d3.js"></script>
     -->
     <!--main.js-->
+    <!--Dynamically loaded scripts will be inserted here during build.-->
+    <!-- Google Analytics 
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        ga('create', 'UA-55859893-1', 'auto');ga('send', 'pageview');
+    </script>
+    -->
+
 </body>
 
 </html>
