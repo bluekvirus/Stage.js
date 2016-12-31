@@ -7,7 +7,7 @@ node tag.js
 #----------------------------
 #2. build framework
 node run.js -C framework-only -G ../../implementation/static/resource/default/download/stagejs-edge.tar.gz 'dist/framework'
-rm -rf ../../dist
+rm -R ../../dist
 mv dist/framework ../../dist
 #remove duplicated info files
 rm ../../dist/*.md

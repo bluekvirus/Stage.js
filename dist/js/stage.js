@@ -40567,7 +40567,7 @@ if (typeof jQuery === 'undefined') {
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.9.3-1159 build 1483161341960";
+;;app.stagejs = "1.9.3-1164 build 1483214597914";
 ;/**
  * Util for adding meta-event programming ability to object
  *

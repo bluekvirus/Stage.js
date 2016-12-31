@@ -7,6 +7,10 @@ module.exports = {
 		targets: true
 	},
 	structure : { //path are relative to the distFolder and src.root above
+		css: {
+			'default.css':'themes/default/css/main.css'
+		},
+		fonts: 'themes/site/fonts',
 		js: {
 			'modernizr.js': false,
 			'modernizr.min.js': false,
