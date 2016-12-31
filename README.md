@@ -71,7 +71,7 @@ node run site
 
 4. Fire up dev server (background logging by forever)
 
-./start.sh [-p port]
+./start.sh [profile] [port]
 
 5. Check dev server logs
 
