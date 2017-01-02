@@ -6,13 +6,13 @@ Stage.js
 
 To get version, type `app.stagejs` in the console. Example output:
 ```
-app.stagejs (1.9.x-<commits> build <timestamp>)
+app.stagejs (1.10.x-<commits> build <timestamp>)
 ```
 You can compare this version number with the one you see on the [documentation site](http://bluekvirus.github.io/Stage.js/#navigate/Document) and see if an upgrade is recommended.
 
-**Announcement**: We are working on a fully upgraded live demo/document site for the v1 branch. We are also working on the v2 branch development. A complete feature listing is available. ([v2 plan](#whats-next)). Please note that v1 will **NOT be abandoned** even if v2 is released, they are different tech directions. v2 will be called `-ng`.
+**Announcement**: v1 api spec will be published soon with updated doc/demo site. We are also working on the `-ng` branch development. A preview is available here at ([-ng plan](#whats-next)). Please note that v1 will **NOT be abandoned** even if `-ng` is released, they are different tech directions and code organizations in the implementation, not in exposed apis.
 
-> <sup>\*</sup>The v1 branch serves as a benchmark for creating tests for features and for feedback gathering. We have now successfully released 6 web/cloud products offering intuitive control panels, complex monitoring dashboards, online/offline reports and excellent user interactions with full localization support through the v1 branch. More will come. 
+> <sup>\*</sup>The v1 branch serves as a benchmark for creating tests for features/apis and for feedback gathering. We have now successfully released 6 web/cloud products offering intuitive control panels, complex monitoring dashboards, online/offline reports and excellent user interactions with full localization support. More will come. 
 
 This project produces **Stage.js** - an infrastructure for building modern web application client with different contexts (e.g a data-heavy administration app). In other words, we solve this problem for you:
 
@@ -96,11 +96,13 @@ You can start a new theme by using the theme-prep tool under `/implementation/to
 
 As in your own projects, themes will be automatically watched and recompiled each time your *.less file changes.
 
+**Important**: If you see any of the `*.less` file contains `@import url("...")` it is better to remove them before you compile the theme. Try to bring that piece to local code base. (e.g Host the web-font yourself)
 
-Build
------
+**Note**: All `@import url("...")` lines which contains string `fonts` will be removed. If you don't know how to bring google webfonts to local, use [google-webfonts-helper](https://github.com/majodev/google-webfonts-helper).
+
+###Build everything
 ```
-0. Change version numbers
+0. Change the version numbers
 
 CHANGELOG.md
 tools/libprep/bower.json
@@ -114,14 +116,13 @@ tools/lib-prep.sh
 
 tools/build.sh
 ```
-**Important**: If you see any of the `*.less` file contains `@import url("...")` remove them before you compile the theme. Try to bring that piece to local code base. (e.g Host the web-font yourself)
 
 
 What's next?
 ------------
 [:crystal_ball: Preview current progress](https://github.com/bluekvirus/Stage.js-ng/tree/master/libs/vendor/stagejsv2).
 
-2.0.0 Roadmap:
+`-ng` Roadmap:
 * Build a lightweight framework core from scratch; (:heavy_check_mark:)
 * Handshake (Full-Async) mode for view init/data/nesting; (:heavy_check_mark:)
 * Remove theming/templating deps on Bootstrap (easy to hook your own); (:heavy_check_mark:)

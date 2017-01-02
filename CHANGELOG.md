@@ -1,6 +1,19 @@
 Change Log
 ==========
-1.10.0 (2016-12-30*)
+1.10.+ (2017-01-01)
+
+working on ...
+
+* Integrate stage-unideck into framework kit;
+* Cheatsheet/API specs;
+* Split/Update docs;
+* Breaking down 'Basic' editors?
+* Backbone*(+d3, -jQueryv2/3.0, -Marionettev1.8), elements(-Bootstrapv3/4.0)?
+* Direct `<canvas>` support in view (easel)?
+* More unit tests in demos;
+
+
+1.10.0 (2016-12-31)
 --------------------
 1. Missing locale file will no longer raise exceptions;
 2. Updated flexlayout to be 0.2.3;
@@ -49,17 +62,7 @@ Change Log
 45. Separated modernizr from deps;
 46. Refined build mech,config and theme process;
 47. Simplified framework project deps/dist management;
-
-working on ...
-
-* Integrate stage-unideck into framework kit;
-* Link more I18N methods to app apis;
-* Cheatsheet/API specs;
-* Split/Update docs;
-* Breaking down 'Basic' editors?
-* Backbone*(+d3, -jQueryv2/3.0, -Marionettev1.8), elements(-Bootstrapv3/4.0)?
-* Direct `<canvas>` support in view (easel)?
-* More unit tests in demos;
+48. Enhanced bower dist package for project jump start without stage-devtools;
 
 
 1.9.2 (2016-05-25)

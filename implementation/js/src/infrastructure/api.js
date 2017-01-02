@@ -558,7 +558,9 @@
 				//return a translation for specified key, ns/module
 				return String(key).i18n(ns);
 			}
-			return I18N.getResourceJSON(null, false); //collect available strings (so far) into an i18n object.
+
+			//otherwise, collect available strings (so far) into an i18n object.
+			return I18N.getResourceJSON(null, false);
 		},
 
 		//----------------debug----------------------
