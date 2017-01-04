@@ -23,6 +23,9 @@ module.exports = {
 			},
 			themes: {
 				'default': {
+					css: {
+						'addon-defaults.css': 'themes/default/css/addon-defaults.css'
+					},
 					less: 'themes/default/less'
 				}
 			},
