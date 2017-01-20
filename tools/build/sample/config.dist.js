@@ -60,8 +60,8 @@ module.exports = {
 	structure : { //path are relative to the output folder and the src.root above respectively.
 
 		js: {
-			//'app.js': false,
-			'app.min.js': true, //'app' is the name you set in the js config above.
+			'all-head.min.js': true,
+			'all-body.min.js': true,
 		},
 		static: { 
 			template: { 'all.json': 'static/template/all.json' },
