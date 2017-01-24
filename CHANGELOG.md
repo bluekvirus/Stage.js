@@ -4,7 +4,8 @@ Change Log
 
 working on ...
 
-* Integrate stage-unideck into framework kit;
+* Popover view close -> popover close;
+* CSRF token cookie name and Ajax header name in app.setup();
 * Cheatsheet/API specs;
 * Split/Update docs;
 * Breaking down 'Basic' editors?
