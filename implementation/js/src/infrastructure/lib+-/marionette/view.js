@@ -498,8 +498,11 @@
 	 			//check whether user has given the bond view
 	 			if(!options.bond)
 	 				console.warn('DEV::Popover::You have not provided a bond view. It might cause view close incorrectly');
-	 			else{
-	 				this.listenTo(options.bond, 'close', function(){
+	 			
+	 			//bind view/bond-view close --> popover close
+	 			_.each([this, options.bond], function(v){
+	 				if(!v) return;
+	 				this.listenTo(v, 'close', function(){
 						if($anchor.data('bs.popover')){
 							var tempID = $anchor.data('bs.popover').$tip[0].id;
 							//remove elements on anchor
@@ -508,7 +511,8 @@
 			 				$('#'+tempID).remove();	
 						}
 					});
-	 			}
+	 			}, this);
+	 			
 	 			//initialize the popover
 	 			$anchor.popover(options)
 	 			//add options.style (alias: css)
@@ -536,6 +540,7 @@
 					//that.trigger('show'); //Trigger 'show' doesn't invoke onShow, use triggerMethod the Marionette way!
 					that.triggerMethod('show'); //trigger event while invoking on{Event};
 				})
+				//bind popover close --> view close
 				.on('hidden.bs.popover', function(){
 					//trigger view close method
 					that.close();

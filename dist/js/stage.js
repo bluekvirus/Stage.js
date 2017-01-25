@@ -40569,7 +40569,7 @@ if (typeof jQuery === 'undefined') {
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.0-1165 build 1483321143766";
+;;app.stagejs = "1.10.0-1169 build 1485317422606";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -44160,8 +44160,11 @@ module.exports = DeepModel;
 	 			//check whether user has given the bond view
 	 			if(!options.bond)
 	 				console.warn('DEV::Popover::You have not provided a bond view. It might cause view close incorrectly');
-	 			else{
-	 				this.listenTo(options.bond, 'close', function(){
+	 			
+	 			//bind view/bond-view close --> popover close
+	 			_.each([this, options.bond], function(v){
+	 				if(!v) return;
+	 				this.listenTo(v, 'close', function(){
 						if($anchor.data('bs.popover')){
 							var tempID = $anchor.data('bs.popover').$tip[0].id;
 							//remove elements on anchor
@@ -44170,7 +44173,8 @@ module.exports = DeepModel;
 			 				$('#'+tempID).remove();	
 						}
 					});
-	 			}
+	 			}, this);
+	 			
 	 			//initialize the popover
 	 			$anchor.popover(options)
 	 			//add options.style (alias: css)
@@ -44198,6 +44202,7 @@ module.exports = DeepModel;
 					//that.trigger('show'); //Trigger 'show' doesn't invoke onShow, use triggerMethod the Marionette way!
 					that.triggerMethod('show'); //trigger event while invoking on{Event};
 				})
+				//bind popover close --> view close
 				.on('hidden.bs.popover', function(){
 					//trigger view close method
 					that.close();
