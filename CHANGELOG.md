@@ -1,10 +1,12 @@
 Change Log
 ==========
-1.10.+ (2017-01-01)
+1.10.1+ (2017-01-24)
+
+1. Popover view close will now cause popover to close in addition to by bond view close;
 
 working on ...
 
-* Integrate stage-unideck into framework kit;
+* CSRF token cookie name and Ajax header name in app.setup();
 * Cheatsheet/API specs;
 * Split/Update docs;
 * Breaking down 'Basic' editors?
