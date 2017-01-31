@@ -65,11 +65,6 @@
 			//dataType: 'json', //need 'application/json; charset=utf-8' in response Content-Type header.
 			//-------------------------------------------------------------------------------------------
 		});
-		//get csrftoken value from cookie and set to header.
-		//currently assuming backend as django. 
-		options.beforeSend = function(xhr){
-			xhr.setRequestHeader('X-CSRFToken', app.cookie.get('csrftoken');
-		};
 
 		//process _entity[_id][_method] and strip off options.querys(alias:params)
 		if(options.entity || options._entity){
@@ -106,6 +101,11 @@
 			// 	xhr.withCredentials = true;
 			// };
 		}
+
+		//get csrftoken value from cookie and set to header.
+		options.headers = _.extend(options.headers, { 
+			app.config.csrftoken.headername: app.cookie.get(app.config.csrftoken.cookiename) 
+		});
 
 		app.trigger('app:ajax', options);		
 		return options;

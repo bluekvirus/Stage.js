@@ -100,6 +100,10 @@
 			},
 			hljs: {
 				languages: ['c', 'python', 'javascript', 'html', 'css']
+			},
+			csrftoken: {
+				headername: "X-CSRFToken";
+				cookiename: "csrftoken";
 			}
 		}, config);
 		
