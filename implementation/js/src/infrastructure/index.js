@@ -102,8 +102,8 @@
 				languages: ['c', 'python', 'javascript', 'html', 'css']
 			},
 			csrftoken: {
-				headername: "X-CSRFToken";
-				cookiename: "csrftoken";
+				header: 'X-CSRFToken',
+				cookie: 'csrftoken'
 			}
 		}, config);
 		
