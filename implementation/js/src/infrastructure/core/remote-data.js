@@ -83,6 +83,29 @@
 			options.url = (app.uri(options.url)).search(options.params).toString();
 		}
 
+		//app.config.baseAjaxURI
+		if(app.config.baseAjaxURI)
+			options.url = options.url.match(/^[\/\.]/)? options.url : [app.config.baseAjaxURI, options.url].join('/');	
+
+		//crossdomain:
+		var crossdomain = options.xdomain;
+		if(crossdomain){
+			options.url = (crossdomain.protocol || 'http') + '://' + (crossdomain.host || 'localhost') + ((crossdomain.port && (':'+crossdomain.port)) || '') + (/^\//.test(options.url)?options.url:('/'+options.url));
+			options.crossDomain = true;
+			options.xhrFields = _.extend(options.xhrFields || {}, {
+				withCredentials: true //persists session cookies.
+			});
+			options.headers = _.extend(options.headers || {}, crossdomain.headers);
+			// Using another way of setting withCredentials flag to skip FF error in sycned CORS ajax - no cookies tho...:(
+			// options.beforeSend = function(xhr) {
+			// 	xhr.withCredentials = true;
+			// };
+		}
+
+		//get csrftoken value from cookie and set to header.
+		options.headers = options.headers || {};
+		options.headers[app.config.csrftoken.header] = app.cookie.get(app.config.csrftoken.cookie) || 'NOTOKEN';
+
 		app.trigger('app:ajax', options);		
 		return options;
 	}
@@ -145,33 +168,7 @@
 		app.trigger('app:ajax-inactive');
 	});
 
-	//Ajax Options Fix: (baseAjaxURI, CORS and cache)
-	app.onAjax = function(options){
 
-		//app.config.baseAjaxURI
-		if(app.config.baseAjaxURI)
-			options.url = options.url.match(/^[\/\.]/)? options.url : [app.config.baseAjaxURI, options.url].join('/');	
-
-		//crossdomain:
-		var crossdomain = options.xdomain;
-		if(crossdomain){
-			options.url = (crossdomain.protocol || 'http') + '://' + (crossdomain.host || 'localhost') + ((crossdomain.port && (':'+crossdomain.port)) || '') + (/^\//.test(options.url)?options.url:('/'+options.url));
-			options.crossDomain = true;
-			options.xhrFields = _.extend(options.xhrFields || {}, {
-				withCredentials: true //persists session cookies.
-			});
-			options.headers = _.extend(options.headers || {}, crossdomain.headers);
-			// Using another way of setting withCredentials flag to skip FF error in sycned CORS ajax - no cookies tho...:(
-			// options.beforeSend = function(xhr) {
-			// 	xhr.withCredentials = true;
-			// };
-		}
-
-		//cache:[disable it for IE only]
-		if(Modernizr.ie)
-			options.cache = false;
-	
-	};
 	
 
 })(Application, _, jQuery);
