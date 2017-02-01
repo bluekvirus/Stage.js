@@ -39451,9 +39451,13 @@ if (typeof jQuery === 'undefined') {
 			defaultView: undefined, //alias: defaultContext, this is the context (name) the application will sit on upon loading.
 			icings: {}, //various fixed overlaying regions for visual prompts ('name': {top, bottom, height, left, right, width})
 						//alias -- curtains			
-			fullScreen: false, //This will put <body> to be full screen sized (window.innerHeight).
-	        websockets: [], //Websocket paths to initialize with (single path with multi-channel prefered).
-	        baseAjaxURI: '', //Modify this to fit your own backend apis. e.g index.php?q= or '/api',
+			fullScreen: false, //this will put <body> to be full screen sized (window.innerHeight).
+	        websockets: [], //websocket paths to initialize with (single path with multi-channel prefered).
+	        baseAjaxURI: '', //modify this to fit your own backend apis. e.g index.php?q= or '/api',
+			csrftoken: {
+				header: 'X-CSRFToken', //http header to use to include the csrftoken val
+				cookie: 'csrftoken' //cookie name to look for the csrftoken val
+			},	        
 	        viewTemplates: 'static/template', //this is assisted by the build tool, combining all the *.html handlebars templates into one big json.
 			viewSrcs: undefined, //set this to enable reusable view dynamic loading.
 			i18nResources: 'static/resource', //this the the default location where our I18N plugin looks for locale translations.
@@ -40569,7 +40573,7 @@ if (typeof jQuery === 'undefined') {
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.0-1169 build 1485317422606";
+;;app.stagejs = "1.10.0-1171 build 1485910870860";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -40872,6 +40876,30 @@ if (typeof jQuery === 'undefined') {
 			options.url = (app.uri(options.url)).search(options.params).toString();
 		}
 
+		//app.config.baseAjaxURI
+		if(app.config.baseAjaxURI)
+			options.url = options.url.match(/^[\/\.]/)? options.url : [app.config.baseAjaxURI, options.url].join('/');	
+
+		//crossdomain:
+		var crossdomain = options.xdomain;
+		if(crossdomain){
+			options.url = (crossdomain.protocol || 'http') + '://' + (crossdomain.host || 'localhost') + ((crossdomain.port && (':'+crossdomain.port)) || '') + (/^\//.test(options.url)?options.url:('/'+options.url));
+			options.crossDomain = true;
+			options.xhrFields = _.extend(options.xhrFields || {}, {
+				withCredentials: true //persists session cookies.
+			});
+			options.headers = _.extend(options.headers || {}, crossdomain.headers);
+			// Using another way of setting withCredentials flag to skip FF error in sycned CORS ajax - no cookies tho...:(
+			// options.beforeSend = function(xhr) {
+			// 	xhr.withCredentials = true;
+			// };
+		}
+
+		//get csrftoken value from cookie and set to header.
+		options.headers = options.headers || {};
+		if(app.config.csrftoken && !options.headers[app.config.csrftoken.header])
+			options.headers[app.config.csrftoken.header] = app.cookie.get(app.config.csrftoken.cookie) || 'NOTOKEN';
+
 		app.trigger('app:ajax', options);		
 		return options;
 	}
@@ -40934,33 +40962,7 @@ if (typeof jQuery === 'undefined') {
 		app.trigger('app:ajax-inactive');
 	});
 
-	//Ajax Options Fix: (baseAjaxURI, CORS and cache)
-	app.onAjax = function(options){
 
-		//app.config.baseAjaxURI
-		if(app.config.baseAjaxURI)
-			options.url = options.url.match(/^[\/\.]/)? options.url : [app.config.baseAjaxURI, options.url].join('/');	
-
-		//crossdomain:
-		var crossdomain = options.xdomain;
-		if(crossdomain){
-			options.url = (crossdomain.protocol || 'http') + '://' + (crossdomain.host || 'localhost') + ((crossdomain.port && (':'+crossdomain.port)) || '') + (/^\//.test(options.url)?options.url:('/'+options.url));
-			options.crossDomain = true;
-			options.xhrFields = _.extend(options.xhrFields || {}, {
-				withCredentials: true //persists session cookies.
-			});
-			options.headers = _.extend(options.headers || {}, crossdomain.headers);
-			// Using another way of setting withCredentials flag to skip FF error in sycned CORS ajax - no cookies tho...:(
-			// options.beforeSend = function(xhr) {
-			// 	xhr.withCredentials = true;
-			// };
-		}
-
-		//cache:[disable it for IE only]
-		if(Modernizr.ie)
-			options.cache = false;
-	
-	};
 	
 
 })(Application, _, jQuery);

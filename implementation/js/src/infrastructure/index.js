@@ -78,9 +78,13 @@
 			defaultView: undefined, //alias: defaultContext, this is the context (name) the application will sit on upon loading.
 			icings: {}, //various fixed overlaying regions for visual prompts ('name': {top, bottom, height, left, right, width})
 						//alias -- curtains			
-			fullScreen: false, //This will put <body> to be full screen sized (window.innerHeight).
-	        websockets: [], //Websocket paths to initialize with (single path with multi-channel prefered).
-	        baseAjaxURI: '', //Modify this to fit your own backend apis. e.g index.php?q= or '/api',
+			fullScreen: false, //this will put <body> to be full screen sized (window.innerHeight).
+	        websockets: [], //websocket paths to initialize with (single path with multi-channel prefered).
+	        baseAjaxURI: '', //modify this to fit your own backend apis. e.g index.php?q= or '/api',
+			csrftoken: {
+				header: 'X-CSRFToken', //http header to use to include the csrftoken val
+				cookie: 'csrftoken' //cookie name to look for the csrftoken val
+			},	        
 	        viewTemplates: 'static/template', //this is assisted by the build tool, combining all the *.html handlebars templates into one big json.
 			viewSrcs: undefined, //set this to enable reusable view dynamic loading.
 			i18nResources: 'static/resource', //this the the default location where our I18N plugin looks for locale translations.
@@ -100,10 +104,6 @@
 			},
 			hljs: {
 				languages: ['c', 'python', 'javascript', 'html', 'css']
-			},
-			csrftoken: {
-				header: 'X-CSRFToken',
-				cookie: 'csrftoken'
 			}
 		}, config);
 		

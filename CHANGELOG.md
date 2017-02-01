@@ -1,12 +1,12 @@
 Change Log
 ==========
-1.10.1+ (2017-01-24)
+1.10.1+ (2017-01-31)
 
 1. Popover view close will now cause popover to close in addition to by bond view close;
+2. Added CSRF token support with cookie name and Ajax header name in app.setup();
 
 working on ...
 
-* CSRF token cookie name and Ajax header name in app.setup();
 * Cheatsheet/API specs;
 * Split/Update docs;
 * Breaking down 'Basic' editors?

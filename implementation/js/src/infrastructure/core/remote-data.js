@@ -104,7 +104,8 @@
 
 		//get csrftoken value from cookie and set to header.
 		options.headers = options.headers || {};
-		options.headers[app.config.csrftoken.header] = app.cookie.get(app.config.csrftoken.cookie) || 'NOTOKEN';
+		if(app.config.csrftoken && !options.headers[app.config.csrftoken.header])
+			options.headers[app.config.csrftoken.header] = app.cookie.get(app.config.csrftoken.cookie) || 'NOTOKEN';
 
 		app.trigger('app:ajax', options);		
 		return options;
