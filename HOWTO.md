@@ -18,12 +18,6 @@ This lightweight framework is made to maximize developer efficiency by introduci
 * Navigate through them as groups or individually by regions.
 !!!
 
-#### What's Navigation?
-
-We achieve client-side multi-page-alike navigation through switching *View*s on a pre-defined application region in respond to the URL hash fragment change event. You can also keep navigating beyond the first level *View*s by chaining view names in the hash. (e.g `#navigate/Context/LvlOneSubView/LvlTwoSubView...`)
-
-Those named views can set their `navRegion` properties to honor the navigation path by recursively presenting required views into their `navRegion`s. Without the `navRegion` you will also get a special event param (path) triggered to the `navigateTo` event on the view. Leaving you full flexibility on interpreting the rest of the path yourself. This unique navigation mechanism enables endless possibilities in combining views in hierarchies dynamically just through URI changes.
-
 #### What's a View?
 
 A *View* is a template with data, interactions and optionally a name. it is to be shown on a region in template of your application or another view instance. Only named views can be used as template shortcuts (through anonymous region tag attribute `view="..."`) or put into the navigation chain URI (e.g `#navigate/Context/LvlOneSubView/LvlTwoSubView...`).
@@ -32,19 +26,11 @@ A *View* is a template with data, interactions and optionally a name. it is to b
 **Note:** As in v1.8+ We have merged the old *Regional* concept with *View* in general. Future releases will not distinguish between *Regional*s and named *View*s.
 !!!
 
-alias: Area, named View
-
-#### What's a Context?
-
-A *Context* is a special named *View* object. *Context*s only appear on the application's navigation region (each application can have only 1 such region). If you have more than 1 *Context*s defined, they will automatically swap on the context region in response to the navigation event. You will not have more than 1 active *Context* at any given time.
-
-A *Context* can also guard itself from being viewed by certain user by utilizing the `guard` property (a function) before switched to in navigation. This is good for automatically jumping to other contexts if the targeted one requires authenticated user in session. 
+The **Context** concept is Deprecated.
 
 !!!callout callout-primary
 **Note:** As in v1.9+ We have merged the old *Context* concept with *View* in general. Future releases will not distinguish between *Context*s and named *View*s. The first-level views demanded by the navigation chain (#hash path) will automatically be treated as a *Context*. The `guard` function will be triggered if presented.
 !!!
-
-alias: Page
 
 #### What's an Editor?
 
@@ -54,9 +40,9 @@ An *Editor* is a named *View* with `.setVal()`, `.getVal()`, `.validate()`, `.st
 
 A *Widget* is a named *View* with `.reconfigure(options)` method that can change its layout and functional parts without a full re-creation of the *Widget*. A great example would be the **DataGrid** widget released as an bonus component with the framework together with **Tree** and **Paginator**.
 
-#### What's a Canvas?
+#### What's a SVG canvas?
 
-A *Canvas* is a *View* with the `.svg` property set to `true`, you will have an automatically expanded `this.paper` to draw upon with live height/width update on the `this.paper` property after shown plus auto clean/resize upon `onDraw()`.
+An SVG canvas is a *View* with the `.svg` property set to `true`, you will have an automatically expanded `this.paper` to draw upon with live height/width update on the `this.paper` property after shown plus auto clean/resize upon `onDraw()`.
 
 !!!callout callout-primary
 **Note:** *Canvas* is svg based and the `this.paper` drawing APIs are from the Raphaël.js/Snap.svg library, make sure you have one of them included.
@@ -64,7 +50,13 @@ A *Canvas* is a *View* with the `.svg` property set to `true`, you will have an 
 
 We have not yet included support for *HTML5 Canvas*.
 
-#### Remote data handling?
+#### What's Navigation?
+
+We achieve client-side multi-page-alike navigation through switching *View*s on a pre-defined application region in respond to the URL hash fragment change event. You can also keep navigating beyond the first level *View*s by chaining view names in the hash. (e.g `#navigate/Context/LvlOneSubView/LvlTwoSubView...`)
+
+Those named views can set their `navRegion` properties to honor the navigation path by recursively presenting required views into their `navRegion`s. Without the `navRegion` you will also get a special event param (path) triggered to the `navigateTo` event on the view. Leaving you full flexibility on interpreting the rest of the path yourself. This unique navigation mechanism enables endless possibilities in combining views in hierarchies dynamically just through URI changes.
+
+#### RESTful data handling?
 
 Modern web application generates views according to user data dynamically. This is why we picked *Backbone* as our view engine base. However, the way we handle remote data in the framework is a bit different than the original design in *Backbone*.
 
@@ -917,7 +909,7 @@ Use `view.effect` to override region effects and `view.effect = false` to disabl
 * Create Model/Collection instances unless it is to generate views.
 * Wrap/Organize your view definitions into Class hierarchies.
 * Put more than 2 non-object params in any function signature.
-* Use direct method invocations for view-view, view-context, view-application collaborations.
+* Use direct method invocations for view-view, view-application collaborations.
 !!!
 
 
