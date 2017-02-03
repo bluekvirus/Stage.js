@@ -86,7 +86,6 @@
                     template: that.doc.$el.data('toc').html,
                     actions: {
                         goTo: function($btn, e){
-                            e.preventDefault();
                             that.trigger('view:go-to-topic', $btn.data('id'));
                         }
                     }
@@ -138,7 +137,6 @@
                 $window.scrollTop(0);
             },
             goTo: function($btn, e){
-                e.preventDefault();
                 this.parentCt.trigger('view:go-to-topic', $btn.data('id'));
             },
             showSubItems: function($item){

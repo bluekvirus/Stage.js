@@ -54,8 +54,8 @@
 			//------------------------------------------app.mainView-------------------------------------------
 			//mainView has limited ability as a generic view (supports data/action, but can not be form, canvas or having co-ops)
 			template: undefined,
-			layout: undefined,
-			//e.g:: have a unified layout template.
+			layout: undefined, //honored only if template is undefined, also indicates app.config.fullScreen = true
+			//e.g:: have a unified layout as template.
 			/**
 			 * ------------------------
 			 * |		top 	      |
@@ -201,11 +201,12 @@
 			//Warning: calling ensureEl() on the app region will not work like regions in layouts.
 			//(Bug??: the additional <div> under the app region is somehow inevitable atm...)
 			app.trigger('app:before-mainview-ready');
-			if(!app.config.layout)
+			if(app.config.template || !app.config.layout)
 				app.mainView = app.mainView || app.view({
 					name: 'Main',
 					data: app.config.data,
 					actions: app.config.actions,
+					//put default template here so we can squeeze in app.config.navRegion as a region dynamically.
 					template: app.config.template || ('<div region="' + (app.config.navRegion || app.config.contextRegion) + '"></div>'),
 				}, true);
 			else
@@ -215,9 +216,10 @@
 					actions: app.config.actions,
 					layout: app.config.layout,
 				}, true);
+			app.mainView.onReady = function(){
+				app.trigger('app:mainview-ready');
+			};
 			app.getRegion('region-app').show(app.mainView).$el.css({height: '100%', width: '100%'});
-			//Caveat: if you use app.config.data, the mainview-ready event won't be the real `data-rendered ready`.
-			app.trigger('app:mainview-ready');
 
 			//b. Create the fixed overlaying regions according to app.config.icings (like a cake, yay!)
 			var icings = {};

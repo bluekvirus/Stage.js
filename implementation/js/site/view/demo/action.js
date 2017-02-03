@@ -121,7 +121,6 @@
 		actions: {
 			'right-click': function($el, e){
 				var that = this;
-				e.preventDefault();
 				this.$el.find("#temp-list").css({position: 'fixed',left: e.pageX, top: e.pageY, 'z-index': 999}).removeClass('hidden');
 				app.notify('Action triggered!', 'Right-Click action!', 'warning');
 			}

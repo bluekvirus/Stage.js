@@ -17,7 +17,6 @@
         },
         actions: {
             // download: function($btn, e){
-            //     e.preventDefault();
             //     var base = 'static/resource/default/download/';
             //     app.Util.download(base + $btn.attr('target'));  
             // },

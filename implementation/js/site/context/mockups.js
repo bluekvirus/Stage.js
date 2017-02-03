@@ -37,11 +37,8 @@
 				//navigators
 				{tpl: 'navs.html'},
 
-				//popups & dialogs
-				{tpl: 'dialogs.html', onReady: function(){
-					this.$el.find('[data-toggle="popover"]').popover();
-					this.$el.find('[data-toggle="tooltip"]').tooltip();
-				}},
+				//tooltips/popovers & modal
+				{tpl: 'dialogs.html'},
 
 				//table
 				{tpl: 'table.html'},
@@ -74,8 +71,11 @@
 				this.getRegion('mockups').$el.append(view.render().el);
 				//3. connect the view life-cycle event seq: --render--[[show]]--ready 
 				view.triggerMethod('show'); 
+				//4. tell the views to close themselves upon parent view close
+				view.listenTo(this, 'close', function(){
+					view.close();
+				});
 				//(ref: /lib+-/marionette/view.js, we refined the seq and added a ready e.)
-
 			}, this);
 		}
 

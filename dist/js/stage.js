@@ -39427,8 +39427,8 @@ if (typeof jQuery === 'undefined') {
 			//------------------------------------------app.mainView-------------------------------------------
 			//mainView has limited ability as a generic view (supports data/action, but can not be form, canvas or having co-ops)
 			template: undefined,
-			layout: undefined,
-			//e.g:: have a unified layout template.
+			layout: undefined, //honored only if template is undefined, also indicates app.config.fullScreen = true
+			//e.g:: have a unified layout as template.
 			/**
 			 * ------------------------
 			 * |		top 	      |
@@ -39574,11 +39574,12 @@ if (typeof jQuery === 'undefined') {
 			//Warning: calling ensureEl() on the app region will not work like regions in layouts.
 			//(Bug??: the additional <div> under the app region is somehow inevitable atm...)
 			app.trigger('app:before-mainview-ready');
-			if(!app.config.layout)
+			if(app.config.template || !app.config.layout)
 				app.mainView = app.mainView || app.view({
 					name: 'Main',
 					data: app.config.data,
 					actions: app.config.actions,
+					//put default template here so we can squeeze in app.config.navRegion as a region dynamically.
 					template: app.config.template || ('<div region="' + (app.config.navRegion || app.config.contextRegion) + '"></div>'),
 				}, true);
 			else
@@ -39588,9 +39589,10 @@ if (typeof jQuery === 'undefined') {
 					actions: app.config.actions,
 					layout: app.config.layout,
 				}, true);
+			app.mainView.onReady = function(){
+				app.trigger('app:mainview-ready');
+			};
 			app.getRegion('region-app').show(app.mainView).$el.css({height: '100%', width: '100%'});
-			//Caveat: if you use app.config.data, the mainview-ready event won't be the real `data-rendered ready`.
-			app.trigger('app:mainview-ready');
 
 			//b. Create the fixed overlaying regions according to app.config.icings (like a cake, yay!)
 			var icings = {};
@@ -40573,7 +40575,7 @@ if (typeof jQuery === 'undefined') {
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.0-1171 build 1485910870860";
+;;app.stagejs = "1.10.0-1172 build 1486108546973";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -43680,7 +43682,7 @@ module.exports = DeepModel;
  * 		|[use bindUIElements() in render()]
  * 		|
  * [M.View.prototype.constructor*] (this file, does NOT have render())
- * 		|+fixed enhancements, +ui recognition,
+ * 		|+fixed enhancements (see below)
  * 		|+pick and activate optional ones (b, see below List of view options...)
  * 		|
  * M.View.apply(this)
@@ -43706,18 +43708,22 @@ module.exports = DeepModel;
  * Fixed enhancement:
  * ---------------
  * +pick additional live options
- * +rewire get/set to getVal/setVal for Editor view.
- * +auto ui tags detection and register
+ * +actions
+ * +auto ui tags pickup
  * +meta event programming (view:* (event-name) - on* (camelized))
  * +coop e support
- * +useParentData support
  * +view name to $el metadata
- * (see ItemView for the rest of optional abilities, e.g template, data, actions, editors, tooltips, overlay, popover, ...)
+ * +twitter bootstrap 3 tooltips/popovers
+ * +use view as popover 
+ * +use view as overlay
+ * +dnd(with sortable)/selectable
+ * +activations
+ * (see ItemView/Layout/Region for the rest of abilities, e.g template/layout(render), data/useParentData, editors, svg, more, tab, lock, effect...)
  *
  * List of view options passed through new View(opt) that will be auto-merged as properties:
  * 		a. from Backbone.View ['model', 'collection', 'el', 'id', 'attributes', 'className', 'tagName', 'events'];
  * 		b*. from M.View ['templateHelpers']; (through M.getOption() -- tried both this and this.options)
- *   	c. from us ['effect', 'template', 'layout', 'data'/'useParentData', 'ui', 'coop', 'actions', 'editors', 'tooltips', 'overlay', 'popover', 'svg'];
+ *   	c. from us ['effect', 'template', 'layout', 'data/useParentData', 'ui', 'coop', 'actions', 'editors', 'tooltips/popovers', 'svg'];
  *
  * Tip:
  * All new View(opt) will have this.options = opt ready in initialize(), also this.*[all auto-picked properties above].
@@ -43732,6 +43738,7 @@ module.exports = DeepModel;
  * @created 2014.02.25
  * @updated 2015.08.03
  * @updated 2016.10.25
+ * @updated 2017.02.02
  */
 
 
@@ -43740,9 +43747,9 @@ module.exports = DeepModel;
 	//+api
 	_.extend(Backbone.Marionette.View.prototype, {
 		//expose isInDOM method (hidden in marionette.domRefresh.js)
-		isInDOM: function(){
-			if(!this.$el) return undefined;
-			return $.contains(document.documentElement, this.$el[0]);
+		isInDOM: function($el){
+			if(!$el && !this.$el) return undefined;
+			return $.contains(document.documentElement, ($el || this.$el)[0]);
 		},
 
 		//override to give default empty template
@@ -43759,11 +43766,14 @@ module.exports = DeepModel;
 			if(pCt) pCt[listener].apply(pCt, _.toArray(arguments).slice(1));
 		},
 
-		//activate tooltips (bootstrap version)
-		_enableTooltips: function(options){
+		//activate tooltip/popover (bootstrap version)
+		_enableBootstrapJS: function(type, options){
 			this.listenTo(this, 'render', function(){
-				//will activate tooltip with specific options object - see /libs/bower_components/bootstrap[x]/docs/javascript.html#tooltips
-				this.$('[data-toggle="tooltip"]').tooltip(options);
+				//will activate tooltip/popover with specific options object - see /libs/bower_components/bootstrap[x]/docs/javascript.html#tooltips or popovers
+				this.$('[data-toggle="' + type + '"]')[type](options);
+			});
+			this.listenTo(this, 'close', function(){
+				this.$('[data-toggle="' + type + '"]')[type]('destroy');
 			});
 		},
 
@@ -43794,7 +43804,6 @@ module.exports = DeepModel;
 		 * the view prototype will have all the action listeners bound to the wrong view object. This holds true to all nested functions, if you assign the bound version of the function back to itself
 		 * e.g. this.nest.func = _.bind(this.nest.func, this); - Do NOT do this in initialize()/constructor()!! Use Function.apply() for invocation instead!!!
 		 *
-		 * B. We only do e.stopPropagation for you, if you need e.preventDefault(), do it yourself in the action impl;
 		 */
 		_enableSpecialActionTags: function(){
 			var that = this;
@@ -43916,6 +43925,7 @@ module.exports = DeepModel;
 					while(eventForwarding.length > 2)
 						eventForwarding.shift();
 					e.stopPropagation(); //Important::This is to prevent confusing the parent view's action tag listeners.
+					e.preventDefault();
 					return this.trigger(eventForwarding.join(':'));
 				}
 
@@ -43923,12 +43933,14 @@ module.exports = DeepModel;
 				var doer = this.actions[action];
 				if(doer) {
 					e.stopPropagation(); //Important::This is to prevent confusing the parent view's action tag listeners.
+					e.preventDefault();
 					doer.apply(this, [$el, e, lockTopic]); //use 'this' view object as scope when applying the action listeners.
 				}else {
 					if(passOn){
 						return;
 					}else {
 						e.stopPropagation(); //Important::This is to prevent confusing the parent view's action tag listeners.
+						e.preventDefault();
 					}
 					throw new Error('DEV::' + (uiName || 'UI Component') + '::_enableActionTags() You have not yet implemented this action - [' + action + ']');
 				}
@@ -44167,13 +44179,13 @@ module.exports = DeepModel;
 	 			_.each([this, options.bond], function(v){
 	 				if(!v) return;
 	 				this.listenTo(v, 'close', function(){
-						if($anchor.data('bs.popover')){
+						if(this.isInDOM($anchor) && $anchor.data('bs.popover')){
 							var tempID = $anchor.data('bs.popover').$tip[0].id;
 							//remove elements on anchor
 			 				$anchor.popover('destroy');
-			 				//remove popover div
-			 				$('#'+tempID).remove();	
 						}
+		 				//remove popover div
+		 				$('#'+tempID).remove();
 					});
 	 			}, this);
 	 			
@@ -44210,7 +44222,7 @@ module.exports = DeepModel;
 					that.close();
 				})
 				.popover('toggle');
-				//possible solution for repositioning the visible popovers on window resize event (experimental)
+				//possible solution for repositioning the visible popover on window resize event (experimental)
  				/*$window.on("resize", function() {
 				    $(".popover").each(function() {
 				        var popover = $(this),
@@ -44236,7 +44248,7 @@ module.exports = DeepModel;
 
 		//----------------------fixed view enhancements---------------------
 		//auto-pick live init options
-		_.extend(this, _.pick(options, ['effect', 'template', 'layout', 'data', 'useParentData', 'ui', 'coop', 'actions', 'dnd', 'selectable', 'editors', 'tooltips', 'overlay', 'popover', 'svg', /*'canvas'*/]));
+		_.extend(this, _.pick(options, ['effect', 'template', 'layout', 'data', 'useParentData', 'ui', 'coop', 'actions', 'dnd', 'selectable', 'editors', 'tooltips', 'popovers', 'svg', /*'canvas'*/]));
 
 		//re-wire this.get()/set() to this.getVal()/setVal(), data model in editors is used as configure object.
 		if(this.category === 'Editor'){
@@ -44429,9 +44441,14 @@ module.exports = DeepModel;
 			});
 		}
 
-		//tooltip
-		if(this.tooltips) {
-			this._enableTooltips(this.tooltips);
+		//twitter bootstrap tooltips (default on)
+		if(this.tooltips !== false) {
+			this._enableBootstrapJS('tooltip', this.tooltips);
+		}
+
+		//twitter bootstrap popovers (default on)
+		if(this.popovers !== false) {
+			this._enableBootstrapJS('popover', this.popovers);
 		}
 
 		//overlay (use this view as overlay)

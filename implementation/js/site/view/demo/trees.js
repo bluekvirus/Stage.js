@@ -38,7 +38,6 @@
 	    	this.show('left', 'Tree', {
 	    		data: data,
 	    		onSelected: function(meta, $el, e){
-	    			e.preventDefault();
 	    			app.debug(meta);
 	    		}
 	    	});
@@ -101,7 +100,6 @@
 	    				this.show('body', 'Tree', {
 	    					data: this.model.get('children'),
 	    					onSelected: function(meta, $el, e){
-								e.preventDefault();
 								app.debug(meta.view.model, $el);
 	    					}
 	    				}).$el.hide();
