@@ -127,12 +127,15 @@
 			
 			//try remote, if we have app.viewSrcs set to load the View def dynamically
 			if(!Reusable && app.config && app.config.viewSrcs){
+				var targetJS = _.compact([app.config.viewSrcs, t.toLowerCase(), app.nameToPath(name)]).join('/') + '.js';
 				app.inject.js(
-					_.compact([app.config.viewSrcs, t.toLowerCase(), app.nameToPath(name)]).join('/') + '.js',
-					true //sync
+					targetJS, true //sync
 				).done(function(){
 					app.debug(t, name, 'injected', 'from', app.config.viewSrcs);
-					Reusable = app.get(name, t);
+					if(app.has(name, t))
+						Reusable = app.get(name, t);
+					else
+						throw new Error('DEV::Application::get() loaded definitions other than required ' + name + ' from ' + targetJS + ', please check your view name in that file!');
 				}).fail(function(jqXHR, settings, e){
 					if(!fallback || (t === 'View'))
 						throw new Error('DEV::Application::get() can NOT load definition for ' + name + ' - [' + e + ']');

@@ -1,7 +1,22 @@
 Change Log
 ==========
-1.10.1+ (2017-02-02)
 
+1.10.2+ (2017-02-03*)
+--------------------
+
+working on ...
+
+* Remove Swag helpers from libs;
+* Cheatsheet/API specs;
+* Split/Update docs;
+* Breaking down 'Basic' editors?
+* Backbone*(+d3, -jQueryv2/3.0, -Marionettev1.8), elements(-Bootstrapv3/4.0)?
+* Direct `<canvas>` support in view (easel)?
+* More unit tests in demos;
+
+
+1.10.1 (2017-02-03)
+--------------------
 1. Popover view close will now cause popover to close in addition to by bond view close;
 2. Added CSRF token support with cookie name and Ajax header name in app.setup();
 3. App mainView now honor template/layout in the right seq as other View objects; (template > layout)
@@ -9,15 +24,7 @@ Change Log
 5. All action="" tagged elements will now have e.preventDefault() by default;
 6. Fixed clean-up issue if $anchor missing when view used as popover;
 7. view.isInDOM() can now take 1 optional argument as the target $el instead of this.$el;
-
-working on ...
-
-* Cheatsheet/API specs;
-* Split/Update docs;
-* Breaking down 'Basic' editors?
-* Backbone*(+d3, -jQueryv2/3.0, -Marionettev1.8), elements(-Bootstrapv3/4.0)?
-* Direct `<canvas>` support in view (easel)?
-* More unit tests in demos;
+8. Fixed infinite loading error if script path didn't match defined view name inside it;
 
 
 1.10.0 (2016-12-31)
