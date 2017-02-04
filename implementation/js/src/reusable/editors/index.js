@@ -278,10 +278,6 @@
 
 				}
 
-				//prep tooltip upon rendered.
-				if(options.tooltip)
-					this._enableTooltips(_.isObject(options.tooltip)?options.tooltip:{});
-
 				//prep fileupload if type === 'file'
 				if(options.type === 'file'){
 					this._enableActionTags('Editor.File');

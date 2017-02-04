@@ -913,9 +913,9 @@ Use `view.effect` to override region effects and `view.effect = false` to disabl
 !!!
 
 
-Inputs/Editors
---------------
-We have already prepared the basic html editors for you in the framework. You don't have to code `<input>`, `<select>` or `<textarea>` in any of your view template. It is now very easy to build views to function as forms or to just add inputs to views. 
+Form Editors
+------------
+We have already prepared the basic html editors for you in the framework. You don't have to code `<input>`, `<select>` or `<textarea>` in any of your view template. It is now very easy to build views to function as forms or to just add editors to views. 
 
 You can also easily compose compound editors and fieldsets with the basic editors. This way you can reduce/combine values produced by the editors and collect them with a hierarchy/structure.
 
@@ -2015,11 +2015,12 @@ see [CHANGELOG.md](https://github.com/bluekvirus/Stage.js/blob/master/CHANGELOG.
 ### B. APIs
 To flatten and lower the initial learning curve of adaptation, there is only a handful of APIs to use:
 
-Initialize:
+Initialization:
 * Application.setup (options)
 * Application.run ()
+* Application.addInitializer ()
 
-View Registery:
+App registery:
 * Application.view (name/options, options/instance-flag)
 * Application.widget (name, options/factory)
 * Application.editor (name, options/factory)
@@ -2027,8 +2028,26 @@ View Registery:
 * Application.has (name, [type])
 * Application.get (name, [[type], fallback-flag])
 
-View Options/Utils:
-* ['name', 'effect', 'template', 'templateHelpers', 'data'/'useParentData', 'ui', 'coop', 'actions', 'editors', 'tooltips', 'overlay', 'popover', 'svg']
+View object options:
+* 'name'
+* 'effect'
+* 'template/layout/svg'
+* 'templateHelpers'
+* 'data' - 'url string', {} or []
+* 'useParentData' 
+* 'ui'
+* 'coop'
+* 'actions'
+* 'editors' - see available editors above in Form Editors 
+* 'dnd'
+* 'selectable'
+* 'tooltips/popovers' - in template bootstrap tips/pops
+
+View apis:
+* view.set () - infer view.setValues()
+* view.get () - infer view.getValues()
+* view.refresh ()
+* view.coop ()
 * view.getViewIn (region)
 * view.lock (region, flag, options)
 * view.more (region, [data array], View)
@@ -2036,24 +2055,23 @@ View Options/Utils:
 * view.show (region, View, options)
 * view.overlay (anchor, options)
 * view.popover (anchor, options)
-* view.coop ()
 
-Handling Data:
-* view.data - 'url string', {} or []
-* view.set () (infer View.setValues())
-* view.get () (infer View.getValues())
-* view.refresh ()
-* Application.remote (options)
-* Application.poll ()
-* Application.ws ()
-* Application.extract (keypath, obj)
+View actions mutual exclusion:
+* Application.lock ([topic/lock])
+* Application.unlock ([topic/lock])
+* Application.available ([topic/lock])
+
+App data handling helpers:
+* Application.remote (options) - ajax restful api
+* Application.poll () - ajax polling
+* Application.ws () - websocket
+* Application.download (url or +params) - download as attachment
 * Application.cookie.*
 * Application.store.*
+* Application.param ()
 
-Download:
-* Application.download (url or +params)
-
-Utils:
+App utils:
+* Application.navigate ()
 * Application.coop (e, [args])
 * Application.notify ()
 * Application.prompt ()
@@ -2063,29 +2081,26 @@ Utils:
 * Application.moment.*
 * Application.later.*
 * Application.uri.*
-* Application.param ()
 * Application.validator.*
 * Application.animateItems () //css mode
 * Application.animation () //js mode
 * Application.throttle ()
 * Application.debounce ()
-
-Mutual Exclusion:
-* Application.lock ([topic/lock])
-* Application.unlock ([topic/lock])
-* Application.available ([topic/lock])
-
-Script(s)/Template(s)/CSS Injection:
 * Application.inject.js ([path to js/json]) - util/script-inject.js
 * Application.inject.tpl ([path to html/json ]) - util/template-builder.js
 * Application.inject.css ([path to css], ...) - same arguments to loadCSS
+* Application.extract (keypath, obj)
 
-Dev support:
+App dev support:
 * Application.debug ()
 * Application.reload ()
 * Application.locate ()
 * Application.mark ()
 * Application.profile ()
+
+Editors:
+
+Global co-op events:
 
 ### C. Useful sites
 

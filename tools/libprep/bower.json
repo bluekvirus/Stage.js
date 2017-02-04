@@ -69,7 +69,6 @@
     "backbone": "~1.x.x",
     "marionette": "~1.8.x",
     "handlebars": "~4.x.x",
-    "swag": "~0.7.x",
     "uri.js": "~1.x.x",
     "store.js": "~1.x.x",
     "momentjs": "~2.x.x",

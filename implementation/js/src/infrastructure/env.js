@@ -4,7 +4,7 @@
  * @author Tim Lauv
  */
 
-;(function($, _, Swag, underscoreString, Marionette){
+;(function($, _, underscoreString, Marionette){
 
 	/**
 	 * Global shortcuts
@@ -20,17 +20,6 @@
 	_.each(['body', 'head'], function(coreDomWrap){
 		window['$' + coreDomWrap] = $(coreDomWrap);
 	});
-
-	/**
-	 * 3rd party lib init
-	 * ---------------------------------
-	 */
-	Swag.registerHelpers();
-	
-	_.isPlainObject = function(o){
-		return _.isObject(o) && !_.isFunction(o) && !_.isArray(o) && !_.isElement(o);
-	};
-	_.string = underscoreString;
 
 	/**
 	 * Define top level module containers
@@ -54,4 +43,4 @@
 		Application.module(coreModule);
 	});
 
-})(jQuery, _, Swag, s, Marionette);
+})(jQuery, _, s, Marionette);

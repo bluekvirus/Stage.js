@@ -1,12 +1,11 @@
 Change Log
 ==========
 
-1.10.2+ (2017-02-03*)
+1.10.2+ (2017-02-04*)
 --------------------
 
 working on ...
 
-* Remove Swag helpers from libs;
 * Cheatsheet/API specs;
 * Split/Update docs;
 * Breaking down 'Basic' editors?
@@ -15,7 +14,7 @@ working on ...
 * More unit tests in demos;
 
 
-1.10.1 (2017-02-03)
+1.10.1 (2017-02-04)
 --------------------
 1. Popover view close will now cause popover to close in addition to by bond view close;
 2. Added CSRF token support with cookie name and Ajax header name in app.setup();
@@ -25,6 +24,7 @@ working on ...
 6. Fixed clean-up issue if $anchor missing when view used as popover;
 7. view.isInDOM() can now take 1 optional argument as the target $el instead of this.$el;
 8. Fixed infinite loading error if script path didn't match defined view name inside it;
+9. Remove Swag helpers from libs;
 
 
 1.10.0 (2016-12-31)

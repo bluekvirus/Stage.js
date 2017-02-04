@@ -10,7 +10,7 @@ app.stagejs (1.10.x-<commits> build <timestamp>)
 ```
 You can compare this version number with the one you see on the [documentation site](http://bluekvirus.github.io/Stage.js/#navigate/Document) and see if an upgrade is recommended.
 
-**Announcement**: v1 api spec will be published soon with updated doc/demo site. We are also working on the `-ng` branch development. A preview is available here at ([-ng plan](#whats-next)). Please note that v1 will **NOT be abandoned** even if `-ng` is released, they are different tech directions and code organizations in the implementation, not in exposed apis.
+**Announcement**: v1 api spec will be published soon with updated doc/demo site. There is also an `-ng` branch development. A preview is available here at ([-ng plan](#whats-next)). Please note that v1 will **NOT be abandoned** even if `-ng` is released, they are implemented with different tech direction and code organization, but same exposed apis.
 
 > <sup>\*</sup>The v1 branch serves as a benchmark for creating tests for features/apis and for feedback gathering. We have now successfully released 6 web/cloud products offering intuitive control panels, complex monitoring dashboards, online/offline reports and excellent user interactions with full localization support. More will come. 
 
