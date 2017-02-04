@@ -105,7 +105,7 @@
 				className: 'text-right list-unstyled',
 				template: [
 					'{{#each items}}',
-						'<li><a href={{href}} class="home-navi-link">{{#icon}}<i class="{{.}}"></i> {{/icon}}{{uppercase name}}</a></li>',
+						'<li><a href={{href}} class="home-navi-link">{{#icon}}<i class="{{.}}"></i> {{/icon}}{{name}}</a></li>',
 					'{{/each}}'
 				],
 				data:[
