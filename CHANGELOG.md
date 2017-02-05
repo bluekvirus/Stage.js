@@ -24,8 +24,9 @@ working on ...
 6. Fixed clean-up issue if $anchor missing when view used as popover;
 7. view.isInDOM() can now take 1 optional argument as the target $el instead of this.$el;
 8. Fixed infinite loading error if script path didn't match defined view name inside it;
-9. Remove Swag helpers from libs;
-10. Initial api spec v1 collected and put into doc;
+9. Removed Swag helpers from libs;
+10. Fixed getVal()/setVal() default impl when view used as editor; 
+11. Initial api spec v1 collected and put into doc;
 
 
 1.10.0 (2016-12-31)
