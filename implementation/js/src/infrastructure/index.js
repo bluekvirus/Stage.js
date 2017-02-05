@@ -20,15 +20,19 @@
  * ------------
  * $window
  * $document
- * $body, $head
- * Application
+ * $body
+ * $head
+ * Application/app
  *
  * 
  * Global coop events
  * ------------
- * window-resized
- * window-scroll
- * context-switched
+ * 'ws-data-[channel]'
+ * 'poll-data-[e]'
+ * 'reusable-registered'
+ * 'context-switched'
+ * 'window-resized'
+ * 'window-scroll'
  * 
  *
  * @author Tim Lauv

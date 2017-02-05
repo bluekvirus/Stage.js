@@ -42,7 +42,7 @@ A *Widget* is a named *View* with `.reconfigure(options)` method that can change
 
 #### What's a SVG canvas?
 
-An SVG canvas is a *View* with the `.svg` property set to `true`, you will have an automatically expanded `this.paper` to draw upon with live height/width update on the `this.paper` property after shown plus auto clean/resize upon `onDraw()`.
+An SVG canvas is a *View* with the `.svg` property set to `true`, you will have an automatically expanded `this.paper` to draw upon with live height/width update on the `this.paper` property after shown plus auto clean/resize upon view `ready`. 
 
 !!!callout callout-primary
 **Note:** *Canvas* is svg based and the `this.paper` drawing APIs are from the Raphaël.js/Snap.svg library, make sure you have one of them included.
@@ -56,7 +56,7 @@ We achieve client-side multi-page-alike navigation through switching *View*s on 
 
 Those named views can set their `navRegion` properties to honor the navigation path by recursively presenting required views into their `navRegion`s. Without the `navRegion` you will also get a special event param (path) triggered to the `navigateTo` event on the view. Leaving you full flexibility on interpreting the rest of the path yourself. This unique navigation mechanism enables endless possibilities in combining views in hierarchies dynamically just through URI changes.
 
-#### RESTful data handling?
+#### RESTful / Websocket data handling?
 
 Modern web application generates views according to user data dynamically. This is why we picked *Backbone* as our view engine base. However, the way we handle remote data in the framework is a bit different than the original design in *Backbone*.
 
@@ -67,6 +67,10 @@ Since most of the application state comes from the server, managing locally cach
 !!!
 
 Remember, Model/Collection are only used as dumb data snapshot object on the client side to support views. The goal is to make the data interfacing layer *as thin as possible*. You will find more details in the **Quickstart/Handling Data** section.
+
+!!!callout callout-info
+**Tip:** You can also use `app.poll()` for Ajax based api polling periodically or `app.ws().then()` for Websocket based realtime server-push messaging. Both data operations offer cleanly defined global coop events for you to hook up listeners inside a view.
+!!!
 
 #### Reuse view definitions?
 
@@ -121,7 +125,7 @@ In order to accomplish more with less code using Backbone, we extended **Backbon
 
 And one last thing, NO, you don't need ES6 with babel or coffeescript/typescript or any syntax shiv/sugar or npm with browserify to start building your web application. Just `bower` and ES5 with Stage.js would do the job! If you prefer server side Javascript for the middleware, then by all means use ES6 with the latest Node.js runtime there (We recommend against using Javascript on the server side due to the limit of the language in var scope guarding and debugging). Also, unless you want to obsecure your code before deployment, you really don't need grunt/gulp/webpack for a full-blown build process setup to develop your application. 
 
-Still, we provide middleware, build and theme automation in the framework.
+Still, we provide RESTful and websocket middleware, build and theme automation in the framework.
 
 Basics
 ------
@@ -259,8 +263,8 @@ Go to your `main.js` and setup the application by using `Application.setup()`:
 Application.setup({
     /*----------------------configure-----------------------*/
     fullScreen: //false | true,
-    icings/curtains: //fixed overlay regions,
-    defaultContext/defaultView: //your default context name to show in navRegion,
+    curtains: //fixed overlay regions,
+    defaultView: //your default context name to show in navRegion,
     baseAjaxURI: //your base url for using with Application.remote(),
     websockets: //websocket paths to initialize,
     viewSrcs: //view dynamic loading base path.
@@ -269,9 +273,9 @@ Application.setup({
     rapidEventDelay: //for throttling window resize/scroll and app.throttle/debounce,
     timeout: //default data (ajax) operation timeout in ms,
     /*----------------------mainView-----------------------*/
-    template: //same as view template property, (or use layout)
-    layout: //same as view layout property, (or use template)
-    contextRegion/navRegion: //your region used for navigation chain,
+    template: //same as view template property,
+    layout: //same as view layout property, (if not using template)
+    navRegion: //your region used for navigation chain,
     data: //same as view data property,
     actions: //same as view actions property,
 }).run();
@@ -576,6 +580,10 @@ view.get() - get all data or per key
 view.refresh() - re-fetch data if needed and re-render;
 ```
 
+!!!callout callout-primary
+**Note:** When using the `.data` property on a view or using `view.set()`, the template will be re-rendered and trigger the `ready` event again. This is also true if a view happens to be an SVG canvas (`view.svg:true`), so that we can easily re-draw through `onReady()`. But, if the view happens to be a Form (`view.editors:{...}`), the template will **NOT** be re-rendered, only the editors will be reset by the data. This is to say that, data and data change will only affect presentation in none SVG/Form views. The special case with Form views can be thought as if the editors *intercepted* the given data before it can be passed to the template.
+!!!
+
 ##### With app.remote()
 
 !!!callout callout-primary
@@ -845,7 +853,7 @@ Application.available('anything'); //false, since global lock is unavailable.
 **Remember:** You can't acquire topic locks if the global lock is currently unavailable.
 !!!
 
-### Graphs (Canvas)
+### Graph (SVG canvas)
 
 We support graphs through SVG. Use of SVG library (Raphaël.js/Snap.svg) is **optional**. After including the library (NOT in dependencies.min.js), You can use `this.paper` in any *View* through:
 ```
@@ -2038,16 +2046,28 @@ View object options:
 * 'ui'
 * 'coop'
 * 'actions'
-* 'editors' - see available editors above in Form Editors 
+* 'editors' - see available editors below
 * 'dnd'
 * 'selectable'
 * 'tooltips/popovers' - in template bootstrap tips/pops
+* initialize ()
+* onReady ()
+
+View object properties:
+* this.paper - available if options.svg is true
+* this.$el
+* this.parentCt
+* this.parentRegion
 
 View apis:
-* view.set () - infer view.setValues()
-* view.get () - infer view.getValues()
+* view.set () - infer view.setValues() if options.editors is non empty
+* view.get () - infer view.getValues() if options.editors is non empty
+* view.getEditor () - available if options.editors is non empty
+* view.validate () - same as .getEditor()
+* view.status () - same as .getEditor()
 * view.refresh ()
-* view.coop ()
+* view.coop () - different than app.coop(), only calls for help from ancestors
+* view.isInDOM ()
 * view.getViewIn (region)
 * view.lock (region, flag, options)
 * view.more (region, [data array], View)
@@ -2055,6 +2075,7 @@ View apis:
 * view.show (region, View, options)
 * view.overlay (anchor, options)
 * view.popover (anchor, options)
+* view.close ()
 
 View actions mutual exclusion:
 * Application.lock ([topic/lock])
@@ -2072,20 +2093,22 @@ App data handling helpers:
 
 App utils:
 * Application.navigate ()
-* Application.coop (e, [args])
+* Application.coop (e, [args]) - calls for help from every interested view
 * Application.notify ()
 * Application.prompt ()
 * Application.icing/curtain ()
 * Application.markdown ()
-* Application.i18n ()
+* Application.i18n () - translation or key collection
 * Application.moment.*
 * Application.later.*
 * Application.uri.*
 * Application.validator.*
-* Application.animateItems () //css mode
-* Application.animation () //js mode
+* Application.animateItems () - css mode
+* Application.animation () - js mode
 * Application.throttle ()
 * Application.debounce ()
+* Application.nameToPath () - view name to autoload path
+* Application.pathToName () - reverse of .nameToPath()
 * Application.inject.js ([path to js/json]) - util/script-inject.js
 * Application.inject.tpl ([path to html/json ]) - util/template-builder.js
 * Application.inject.css ([path to css], ...) - same arguments to loadCSS
@@ -2098,9 +2121,44 @@ App dev support:
 * Application.mark ()
 * Application.profile ()
 
-Editors:
+Form Editors (type):
+* 'ro'
+* 'text'
+* 'textarea'
+* 'select'
+* 'file'
+* 'checkboxes'
+* 'checkbox'
+* 'radios'
+* 'hidden'
+* 'password'
+* 'range'
+* 'date'
+* 'time'
 
 Global co-op events:
+* 'ws-data-[channel]'
+* 'poll-data-[e]'
+* 'reusable-registered'
+* 'context-switched'
+* 'window-resized'
+* 'window-scroll'
+
+HTML (template) shortcut attributes:
+* region=""
+* effect=""
+* effect-enter/exit=""
+* view=""
+* action=""
+* action-[e]=""
+* lock=""
+* unlock=""
+* activation=""
+* activation-[e]=""
+* deactivation=""
+* data-i18n-key=""
+* data-i18n-module=""
+
 
 ### C. Useful sites
 

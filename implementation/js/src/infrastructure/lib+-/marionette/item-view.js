@@ -9,6 +9,7 @@
  * @created 2014.02.26
  * @updated 2015.08.03
  * @updated 2016.02.17
+ * @updated 2017.02.05
  */
 
 ;(function(app){
@@ -274,6 +275,13 @@
 					editor.isCompound = true;
 					editor.category = 'Editor';
 				}
+				//fix editor with default methods (required)
+				editor.getVal = editor.getVal || editor.get /*fall back to view's data*/ || _.noop;
+				editor.setVal = editor.setVal || editor.set /*fall back to view's data*/ || _.noop;
+				editor.validate = editor.validate || _.noop;
+				editor.status = editor.status || _.noop;
+				editor.disable = editor.disable || _.noop;
+				//render it in cache
 				this._editors[name] = editor.render();
 
 				//2. add it into view (specific, appendTo(editor cfg), appendTo(general cfg), append)

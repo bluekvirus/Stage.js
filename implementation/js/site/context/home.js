@@ -57,7 +57,6 @@
 			app.debug('Home ready');
 			//title + short desc
 			this.title.show(app.view({
-				tooltip: true,
 				template: [
 					'<i class="project-title" style="margin-bottom:20px;"></i>',
 					app.markdown([

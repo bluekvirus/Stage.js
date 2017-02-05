@@ -37346,7 +37346,7 @@ if (typeof jQuery === 'undefined') {
  * Custom api addons to Underscore.js
  * 
  * @author Tim Lauv
- * @created 2017-02-04
+ * @created 2017.02.04
  */
 
 (function(_, underscoreString){
@@ -38542,23 +38542,8 @@ if (typeof jQuery === 'undefined') {
 ;(function($, _, underscoreString, Marionette){
 
 	/**
-	 * Global shortcuts
-	 * ----------------
-	 * $window
-	 * $document
-	 * $head
-	 * $body
-	 */
-	_.each(['document', 'window'], function(coreDomObj){
-		window['$' + coreDomObj] = $(window[coreDomObj]);
-	});
-	_.each(['body', 'head'], function(coreDomWrap){
-		window['$' + coreDomWrap] = $(coreDomWrap);
-	});
-
-	/**
 	 * Define top level module containers
-	 * ----------------------------------
+	 * ---------------------------------- 
 	 * 				App
 	 * 				 |
 	 * 			   -----
@@ -38576,6 +38561,21 @@ if (typeof jQuery === 'undefined') {
 	window.app = window.Application = new Marionette.Application();
 	_.each(['Core', 'Util'], function(coreModule){
 		Application.module(coreModule);
+	});
+
+	/**
+	 * Global shortcuts
+	 * ----------------
+	 * $window
+	 * $document
+	 * $head
+	 * $body
+	 */
+	_.each(['document', 'window'], function(coreDomObj){
+		window['$' + coreDomObj] = $(window[coreDomObj]);
+	});
+	_.each(['body', 'head'], function(coreDomWrap){
+		window['$' + coreDomWrap] = $(coreDomWrap);
 	});
 
 })(jQuery, _, s, Marionette);
@@ -38602,15 +38602,19 @@ if (typeof jQuery === 'undefined') {
  * ------------
  * $window
  * $document
- * $body, $head
- * Application
+ * $body
+ * $head
+ * Application/app
  *
  * 
  * Global coop events
  * ------------
- * window-resized
- * window-scroll
- * context-switched
+ * 'ws-data-[channel]'
+ * 'poll-data-[e]'
+ * 'reusable-registered'
+ * 'context-switched'
+ * 'window-resized'
+ * 'window-scroll'
  * 
  *
  * @author Tim Lauv
@@ -39787,7 +39791,7 @@ if (typeof jQuery === 'undefined') {
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.1-1174 build 1486248404671";
+;;app.stagejs = "1.10.1-1176 build 1486284525275";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -43737,6 +43741,7 @@ module.exports = DeepModel;
  * @created 2014.02.26
  * @updated 2015.08.03
  * @updated 2016.02.17
+ * @updated 2017.02.05
  */
 
 ;(function(app){
@@ -44002,6 +44007,13 @@ module.exports = DeepModel;
 					editor.isCompound = true;
 					editor.category = 'Editor';
 				}
+				//fix editor with default methods (required)
+				editor.getVal = editor.getVal || editor.get /*fall back to view's data*/ || _.noop;
+				editor.setVal = editor.setVal || editor.set /*fall back to view's data*/ || _.noop;
+				editor.validate = editor.validate || _.noop;
+				editor.status = editor.status || _.noop;
+				editor.disable = editor.disable || _.noop;
+				//render it in cache
 				this._editors[name] = editor.render();
 
 				//2. add it into view (specific, appendTo(editor cfg), appendTo(general cfg), append)
@@ -45288,7 +45300,7 @@ var I18N = {};
  *
  *
  * @author Tim Lauv
- * @contributor Yan.Zhu
+ * @contributor Yan Zhu, Patrick Zhu, Andy Fan
  * @created 2013.11.10
  * @updated 2014.02.26 [Bootstrap 3.1+]
  * @updated 2015.12.07 [awesome-bootstrap-checkbox & radio]
@@ -46138,6 +46150,7 @@ var I18N = {};
 				}
 			},
 
+			//forged upon initialize()
 			validate: _.noop,
 
 			status: function(options){
@@ -46178,6 +46191,8 @@ var I18N = {};
 		});
 
 		UI.supported = {
+			
+			//framework built-in
 			'ro': true,
 			'text': true,
 			'textarea': true,
@@ -46188,16 +46203,18 @@ var I18N = {};
 			'radios': true,
 			'hidden': true,
 			'password': true,
+			'range': true,
 			'date': true,
 			'time': true,
-			//h5 only (use Modernizr checks)
+
+			//not implemented, h5 native only (use Modernizr checks)
+			'search': Modernizr.inputtypes.search,
+			'color': Modernizr.inputtypes.color,
 			'number': Modernizr.inputtypes.number,
-			'range': Modernizr.inputtypes.range,
+			//'range': Modernizr.inputtypes.range,
 			'email': Modernizr.inputtypes.email,
 			'tel': Modernizr.inputtypes.tel,
-			'search': Modernizr.inputtypes.search,
 			'url': Modernizr.inputtypes.url,
-			'color': Modernizr.inputtypes.color,
 			//'time': Modernizr.inputtypes.time,
 			//'date': Modernizr.inputtypes.date,
 			'datetime': Modernizr.inputtypes.datetime,

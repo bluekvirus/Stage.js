@@ -7,23 +7,8 @@
 ;(function($, _, underscoreString, Marionette){
 
 	/**
-	 * Global shortcuts
-	 * ----------------
-	 * $window
-	 * $document
-	 * $head
-	 * $body
-	 */
-	_.each(['document', 'window'], function(coreDomObj){
-		window['$' + coreDomObj] = $(window[coreDomObj]);
-	});
-	_.each(['body', 'head'], function(coreDomWrap){
-		window['$' + coreDomWrap] = $(coreDomWrap);
-	});
-
-	/**
 	 * Define top level module containers
-	 * ----------------------------------
+	 * ---------------------------------- 
 	 * 				App
 	 * 				 |
 	 * 			   -----
@@ -41,6 +26,21 @@
 	window.app = window.Application = new Marionette.Application();
 	_.each(['Core', 'Util'], function(coreModule){
 		Application.module(coreModule);
+	});
+
+	/**
+	 * Global shortcuts
+	 * ----------------
+	 * $window
+	 * $document
+	 * $head
+	 * $body
+	 */
+	_.each(['document', 'window'], function(coreDomObj){
+		window['$' + coreDomObj] = $(window[coreDomObj]);
+	});
+	_.each(['body', 'head'], function(coreDomWrap){
+		window['$' + coreDomWrap] = $(coreDomWrap);
 	});
 
 })(jQuery, _, s, Marionette);

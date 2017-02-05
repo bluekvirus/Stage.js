@@ -67,7 +67,7 @@
  *
  *
  * @author Tim Lauv
- * @contributor Yan.Zhu
+ * @contributor Yan Zhu, Patrick Zhu, Andy Fan
  * @created 2013.11.10
  * @updated 2014.02.26 [Bootstrap 3.1+]
  * @updated 2015.12.07 [awesome-bootstrap-checkbox & radio]
@@ -917,6 +917,7 @@
 				}
 			},
 
+			//forged upon initialize()
 			validate: _.noop,
 
 			status: function(options){
@@ -957,6 +958,8 @@
 		});
 
 		UI.supported = {
+			
+			//framework built-in
 			'ro': true,
 			'text': true,
 			'textarea': true,
@@ -967,16 +970,18 @@
 			'radios': true,
 			'hidden': true,
 			'password': true,
+			'range': true,
 			'date': true,
 			'time': true,
-			//h5 only (use Modernizr checks)
+
+			//not implemented, h5 native only (use Modernizr checks)
+			'search': Modernizr.inputtypes.search,
+			'color': Modernizr.inputtypes.color,
 			'number': Modernizr.inputtypes.number,
-			'range': Modernizr.inputtypes.range,
+			//'range': Modernizr.inputtypes.range,
 			'email': Modernizr.inputtypes.email,
 			'tel': Modernizr.inputtypes.tel,
-			'search': Modernizr.inputtypes.search,
 			'url': Modernizr.inputtypes.url,
-			'color': Modernizr.inputtypes.color,
 			//'time': Modernizr.inputtypes.time,
 			//'date': Modernizr.inputtypes.date,
 			'datetime': Modernizr.inputtypes.datetime,

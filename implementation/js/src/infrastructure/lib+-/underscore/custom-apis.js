@@ -2,7 +2,7 @@
  * Custom api addons to Underscore.js
  * 
  * @author Tim Lauv
- * @created 2017-02-04
+ * @created 2017.02.04
  */
 
 (function(_, underscoreString){
