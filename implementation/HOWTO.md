@@ -2146,9 +2146,10 @@ Global co-op events:
 
 HTML (template) shortcut attributes:
 * region=""
+* view=""
 * effect=""
 * effect-enter/exit=""
-* view=""
+* ui=""
 * action=""
 * action-[e]=""
 * lock=""
