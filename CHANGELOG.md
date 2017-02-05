@@ -6,8 +6,8 @@ Change Log
 
 working on ...
 
-* Cheatsheet/API specs;
-* Split/Update docs;
+* Cheatsheet;
+* Split docs;
 * Breaking down 'Basic' editors?
 * Backbone*(+d3, -jQueryv2/3.0, -Marionettev1.8), elements(-Bootstrapv3/4.0)?
 * Direct `<canvas>` support in view (easel)?
@@ -25,6 +25,7 @@ working on ...
 7. view.isInDOM() can now take 1 optional argument as the target $el instead of this.$el;
 8. Fixed infinite loading error if script path didn't match defined view name inside it;
 9. Remove Swag helpers from libs;
+10. Initial api spec v1 collected and put into doc;
 
 
 1.10.0 (2016-12-31)
