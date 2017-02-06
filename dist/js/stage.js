@@ -39791,7 +39791,7 @@ if (typeof jQuery === 'undefined') {
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.1-1176 build 1486284525275";
+;;app.stagejs = "1.10.1-1178 build 1486348507481";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -42954,7 +42954,7 @@ module.exports = DeepModel;
  * @created 2014.02.25
  * @updated 2015.08.03
  * @updated 2016.10.25
- * @updated 2017.02.02
+ * @updated 2017.02.05
  */
 
 
@@ -43486,7 +43486,9 @@ module.exports = DeepModel;
 
 		//add data-view-name meta attribute to view.$el and also view to view.$el.data('view')
 		this.listenToOnce(this, 'render', function(){
-			this.$el.attr('data-view-name', this.name || _.uniqueId('anonymous-view-'));
+			if(!this.name)
+				this._name = _.uniqueId('anonymous-view-');
+			this.$el.attr('data-view-name', this.name || this._name);
 			this.$el.data('view', this);
 		});
 
@@ -43675,14 +43677,17 @@ module.exports = DeepModel;
 		//unconditional 1.9.2+
 		this._enablePopover();
 
-		//editors -- doesn't re-activate upon re-render (usually used with non-data bound template or no template)
-		if(this.editors && this._activateEditors) this.listenToOnce(this, 'render', function(){
+		//editors
+		if(this.editors && this._activateEditors) this.listenTo(this, 'render', function(){
 			this._activateEditors(this.editors);
 		});
 
-		//svg (if rapheal.js is present) -- doesn't re-activate upon re-render (usually used with no template)
+		//svg (if rapheal.js is present)
+		//similar to sub-region re-show/ready upon data change, we need to re-create the .paper object
 		if(this.svg && this._enableSVG) {
-			this.listenToOnce(this, 'show', this._enableSVG);
+			this.listenTo(this, 'show view:data-rendered', function(){
+				this._enableSVG(this.svg);
+			});
 		}
 
 		//--------------------+ready event---------------------------		
@@ -43793,18 +43798,19 @@ module.exports = DeepModel;
 		    return this;
 		},
 
-		//Editors don't render according to the underlying backbone model.
-		_renderTplOrResetEditors: function(){
+		//Editors reset in addition to template re-render upon data change in the underlying backbone model.
+		_renderTplAndResetEditors: function(){
+
+			//always re-render template
+			this.render();
+
 			if(this._editors){
 				this.setValues(this.model.toJSON());
-				//note that as a form view, updating data does NOT refresh sub-regional views...
 				this.trigger('view:editors-updated');
 			}
-			else {
-				this.render();
-				//note that this will re-render the sub-regional views.
-				this.trigger('view:data-rendered');
-			}
+
+			//re-render the sub-regional views.
+			this.trigger('view:data-rendered');
 
 			//data view and form all have onReady now... (static view ready see view.js:--bottom--)
 			if (this._delayFirstTimeLocalDataReady) {
@@ -43830,7 +43836,7 @@ module.exports = DeepModel;
 			//check one-way binding
 			if(!this._oneWayBound){
 				this.listenTo(this.model, 'change', function(){
-					self._renderTplOrResetEditors();
+					self._renderTplAndResetEditors();
 				});
 				this._oneWayBound = true;			
 			}
@@ -43852,26 +43858,27 @@ module.exports = DeepModel;
 			return this.model.set.apply(this.model, arguments);
 		},
 
-		//Use this instead of this.model.attributes to get the underlying data of the view.
-		get: function(){
-			if(this._editors){
-				if(arguments.length) {
-					var editor = this.getEditor.apply(this, arguments);
-					if(editor)
-						return editor.getVal();
-					return;
-				}
-				return this.getValues();
-			}
+		//Use this to get the underlying data of the view.
+		//DON'T use this.model.attributes!
+		get: function(keypath){
 
-			if(!this.model) {
-				console.warn('DEV::ItemView+::get() You have not yet setup data in view ' + this.name);
-				return;
+			var vals = {};
+
+			//check editors
+			if(this._editors)
+				vals = this.getValues();
+
+			//check data
+			if(!this.model){
+				console.warn('DEV::ItemView+::get() You have not yet setup data in view ' + (this.name || this._name));
+			} else {
+				vals = _.extend(this.model.toJSON(), vals);
 			}
 			
-			if(arguments.length)
-				return this.model.get.apply(this.model, arguments);
-			return this.model.toJSON();
+			//return merged state
+			if(keypath)
+				return app.extract(keypath, vals);
+			return vals;
 		},
 
 		//Reload (if data: url) and re-render the view, or resetting the editors.
@@ -43895,14 +43902,15 @@ module.exports = DeepModel;
 		},
 
 		//Inject a svg canvas within view. (fully extended to parent region size)
-		_enableSVG: function(){
+		_enableSVG: function(selector){
 			if(!Raphael && !Snap) throw new Error('DEV::ItemView+::_enableSVG() You did NOT have Raphael.js/Snap.svg included...');
 			var SVG = Raphael || Snap;
 			this.$el.css({
 				'width': '100%',
 				'height': '100%',
 			});
-			this.paper = SVG(this.el);
+			this.$el.find('svg').remove();
+			this.paper = SVG(_.isBoolean(selector)? this.$el[0] : this.$el.find(selector)[0]);
 			this.$el.find('svg').attr({
 				'width': '100%',
 				'height': '100%',
@@ -43914,9 +43922,9 @@ module.exports = DeepModel;
 				that.paper.setSize(w || that.$el.width(), h || that.$el.height());
 			};
 			var tmp = this.paper.clear;
-			this.paper.clear = function(){
+			this.paper.clear = function(w, h){
 				tmp.apply(that.paper, arguments);
-				that.paper._fit();
+				that.paper._fit(w, h);
 			};
 			//just call this.paper.clear() when resize --> re-draw. so this.paper.width/height will be corrected.
 

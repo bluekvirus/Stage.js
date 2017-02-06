@@ -30,7 +30,6 @@
 
 		onBeforeNavigateTo:function(){
 			app.debug('before navi to', this.name);
-			$('body').css('overflow', 'hidden');
 			return true;
 		},
 
@@ -61,7 +60,7 @@
 					'<i class="project-title" style="margin-bottom:20px;"></i>',
 					app.markdown([
 						/////////////////Intro/////////////////
-						'Learned Backbone? Tried Marionette? Still searching for a complete **single-page** web application **workflow**? ',
+						'Learned Backbone? Tried Angular? Still searching for a complete **single-page** web application framework? ',
 						'Look no further...\n',
 						'With our thiner and flattened **architecture**, intuitive **api** and handy **tooling**, you can direct your next application like a play on stage.\n',
 						'Enjoy!',
@@ -123,7 +122,7 @@
 	app.view('Home.Footer', {
 		template: [
 			'<span class="pull-right github-link"><a href="https://github.com/bluekvirus/Stage.js/"><i class="fa fa-github"></i>View on Github</a></span>',	
-			'<span>Super-powered by Stage.js © 2013 - 2016</span> ',		
+			'<span>Super-powered by Stage.js © 2013 - 2017</span> ',		
 			'<p>Code licensed under The <a href="http://opensource.org/licenses/MIT">MIT</a> License. Documentation licensed under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>',
 		]
 	});
@@ -136,7 +135,13 @@
 		
 		onReady: function(){
 			app.debug('Hidden (Home) svg data:', this.get());
-			this.trigger('view:draw');
+			
+			//fixing the scrollbar problem in svg resizing. 
+			//(_.defer() after a $.css() change to wait for accurate sizing after browser re-paint)
+			$('body').css('overflow', 'hidden');
+			_.defer(_.bind(function(){
+				this.trigger('view:draw');
+			}, this));
 		},
 
 		//expose drawBg to view:draw.

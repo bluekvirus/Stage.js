@@ -72,7 +72,7 @@
  * @created 2014.02.25
  * @updated 2015.08.03
  * @updated 2016.10.25
- * @updated 2017.02.02
+ * @updated 2017.02.05
  */
 
 
@@ -604,7 +604,9 @@
 
 		//add data-view-name meta attribute to view.$el and also view to view.$el.data('view')
 		this.listenToOnce(this, 'render', function(){
-			this.$el.attr('data-view-name', this.name || _.uniqueId('anonymous-view-'));
+			if(!this.name)
+				this._name = _.uniqueId('anonymous-view-');
+			this.$el.attr('data-view-name', this.name || this._name);
 			this.$el.data('view', this);
 		});
 
@@ -793,14 +795,17 @@
 		//unconditional 1.9.2+
 		this._enablePopover();
 
-		//editors -- doesn't re-activate upon re-render (usually used with non-data bound template or no template)
-		if(this.editors && this._activateEditors) this.listenToOnce(this, 'render', function(){
+		//editors
+		if(this.editors && this._activateEditors) this.listenTo(this, 'render', function(){
 			this._activateEditors(this.editors);
 		});
 
-		//svg (if rapheal.js is present) -- doesn't re-activate upon re-render (usually used with no template)
+		//svg (if rapheal.js is present)
+		//similar to sub-region re-show/ready upon data change, we need to re-create the .paper object
 		if(this.svg && this._enableSVG) {
-			this.listenToOnce(this, 'show', this._enableSVG);
+			this.listenTo(this, 'show view:data-rendered', function(){
+				this._enableSVG(this.svg);
+			});
 		}
 
 		//--------------------+ready event---------------------------		

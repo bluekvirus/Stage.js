@@ -42,7 +42,7 @@ A *Widget* is a named *View* with `.reconfigure(options)` method that can change
 
 #### What's a SVG canvas?
 
-An SVG canvas is a *View* with the `.svg` property set to `true`, you will have an automatically expanded `this.paper` to draw upon with live height/width update on the `this.paper` property after shown plus auto clean/resize upon view `ready`. 
+An SVG canvas is a *View* with the `.svg` property set to `true` or a `css selector` identifying an HTML element in template, you will have an automatically expanded `this.paper` to draw upon with live height/width update on the `this.paper` property after shown plus auto clean/resize upon view `ready`. 
 
 !!!callout callout-primary
 **Note:** *Canvas* is svg based and the `this.paper` drawing APIs are from the Raphaël.js/Snap.svg library, make sure you have one of them included.
@@ -581,7 +581,7 @@ view.refresh() - re-fetch data if needed and re-render;
 ```
 
 !!!callout callout-primary
-**Note:** When using the `.data` property on a view or using `view.set()`, the template will be re-rendered and trigger the `ready` event again. This is also true if a view happens to be an SVG canvas (`view.svg:true`), so that we can easily re-draw through `onReady()`. But, if the view happens to be a Form (`view.editors:{...}`), the template will **NOT** be re-rendered, only the editors will be reset by the data. This is to say that, data and data change will only affect presentation in none SVG/Form views. The special case with Form views can be thought as if the editors *intercepted* the given data before it can be passed to the template.
+**Note:** When using the `.data` property on a view or using `view.set()`, the template will be re-rendered and trigger the `ready` event again. This is also true if a view happens to be an SVG canvas (`view.svg:true/'selector'`), or Form (`view.editors:{...}`).
 !!!
 
 ##### With app.remote()
