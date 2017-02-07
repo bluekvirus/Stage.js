@@ -1,5 +1,5 @@
 {
-	"name": "<Your project name>",
+	"name": "my.project",
 	"private": true,
 	"devDependencies": {
 		"stage": "^1.10.1",
