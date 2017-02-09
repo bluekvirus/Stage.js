@@ -1,11 +1,13 @@
 #!/bin/bash
 cd ./build
 
-#1. prepare version number with build number (commit count @HEAD -- current branch)
 echo ' '
-node tag.js
+if [ $1 = "tag" ]; then
+#1. prepare version number with build number (commit count @HEAD -- current branch)
+	node tag.js
+fi
 #----------------------------
-#2. build framework
+#2. build framework and edge pack
 node run.js -C framework-only -G ../../implementation/static/resource/default/download/stagejs-edge.tar.gz 'dist/framework'
 rm -R ../../dist
 mv dist/framework ../../dist

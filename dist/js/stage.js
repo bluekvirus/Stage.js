@@ -13122,7 +13122,7 @@ jQuery.extend( jQuery.Color.names, {
 }));
 
 ;/**
- * flexLayout v0.2.2, http://TBD
+ * flexLayout v0.2.4, http://TBD
  * ===================================
  * Highly customizable easy to use, light weight, layout/split jQuery plugin
  * 
@@ -13132,7 +13132,7 @@ jQuery.extend( jQuery.Color.names, {
 
 ;(function($){
 
-	$.fn.flexLayout = function(layout, opts/*,_cb TBI*/){
+	$.fn.flexLayout = function(layout, opts, _cb/*TBI*/){
 		var _options = {}, /*store options*/
 			_layoutArr = []; /*store array*/
 		//check whether layout is given
@@ -13187,7 +13187,7 @@ jQuery.extend( jQuery.Color.names, {
 			/*defines whether the width/height of created blocks can be adjusted or not, boolean or [boolean, boolean]*/
 			adjust: false,
 			/*defines the style of divide bars between created blocks, {...css object}, '...string of class name...', boolean or [..., ..., ..., ...]*/
-			bars: {flex: '0 0 1px', 'background-color': '#DEDEDE'}
+			bars: {flex: '0 0 2px', 'background-color': '#ddd'}
 		}
 	};
 
@@ -13296,9 +13296,7 @@ jQuery.extend( jQuery.Color.names, {
 	}
 
 	/**
-	 * Trim attributes given by user. 
-	 * If user uses selectors style(e.g. #, .), it can only appears at the beginning of the string. Otherwise it will be ignored.
-	 * 
+	 * Trim attributes given by user, if user uses selectors style(e.g. #, .)
 	 *
 	 * Note: if using selector style, the function performs under the assumption that only one 'id' exits.
 	 * 		 That is, there is only one '#' in the selector style string.
@@ -13310,7 +13308,7 @@ jQuery.extend( jQuery.Color.names, {
 		if(!attrStr)
 			return '';
 		//selector style
-		if(/(#|\.)/.test(attrStr.charAt(0))){
+		if(/(#|\.)/.test(attrStr) && !/(href)/.test(attrStr)){
 			//remove spaces
 			attrStr = attrStr.replace(/\s/g, '');
 			//id exists
@@ -23591,7 +23589,7 @@ return /******/ (function(modules) { // webpackBootstrap
 ;/*!
  * URI.js - Mutating URLs
  *
- * Version: 1.18.4
+ * Version: 1.18.5
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/
@@ -23651,6 +23649,12 @@ return /******/ (function(modules) { // webpackBootstrap
       }
     }
 
+    if (url === null) {
+      if (_urlSupplied) {
+        throw new TypeError('null is not a valid argument for URI');
+      }
+    }
+
     this.href(url);
 
     // resolve to base according to http://dvcs.w3.org/hg/url/raw-file/tip/Overview.html#constructor
@@ -23661,7 +23665,7 @@ return /******/ (function(modules) { // webpackBootstrap
     return this;
   }
 
-  URI.version = '1.18.4';
+  URI.version = '1.18.5';
 
   var p = URI.prototype;
   var hasOwn = Object.prototype.hasOwnProperty;
@@ -24568,7 +24572,7 @@ return /******/ (function(modules) { // webpackBootstrap
       }
 
       if (parensEnd > -1) {
-        slice = slice.slice(0, parensEnd) + slice.slice(parensEnd + 1).replace(_trim, '');
+        slice = slice.slice(0, parensEnd) + slice.slice(parensEnd).replace(_trim, '');
       } else {
         slice = slice.replace(_trim, '');
       }
@@ -25155,7 +25159,7 @@ return /******/ (function(modules) { // webpackBootstrap
       return v === undefined ? '' : this;
     }
 
-    if (v === undefined || v === true) {
+    if (typeof v !== 'string') {
       if (!this._parts.path || this._parts.path === '/') {
         return '';
       }
@@ -25832,7 +25836,7 @@ return /******/ (function(modules) { // webpackBootstrap
  * URI.js - Mutating URLs
  * IPv6 Support
  *
- * Version: 1.18.4
+ * Version: 1.18.5
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/
@@ -26018,7 +26022,7 @@ return /******/ (function(modules) { // webpackBootstrap
  * URI.js - Mutating URLs
  * Second Level Domain (SLD) Support
  *
- * Version: 1.18.4
+ * Version: 1.18.5
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/
@@ -26793,7 +26797,7 @@ return /******/ (function(modules) { // webpackBootstrap
  * URI.js - Mutating URLs
  * URI Template Support - http://tools.ietf.org/html/rfc6570
  *
- * Version: 1.18.4
+ * Version: 1.18.5
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/
@@ -27307,7 +27311,7 @@ return /******/ (function(modules) { // webpackBootstrap
  * URI.js - Mutating URLs
  * jQuery Plugin
  *
- * Version: 1.18.4
+ * Version: 1.18.5
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/jquery-uri-plugin.html
