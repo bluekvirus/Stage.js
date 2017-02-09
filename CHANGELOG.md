@@ -3,7 +3,7 @@ Change Log
 
 1.10.2+ (2017-02-05*)
 --------------------
-1. Refined render() seq in a view, data change will now always re-run render();
+1. Refined render() seq in a view, data change will now always re-run render() despite of category;
 2. Refined SVG canvas init code in view, the .svg option can be a css selector string now;
 3. Editors now share data model with template, view.get() will now smartly get both type of data with a dotted keypath.
 4. Refined view.paper.clear(), it can now take additional sizing argurments (w, h);
