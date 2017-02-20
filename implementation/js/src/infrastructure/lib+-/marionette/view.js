@@ -57,7 +57,7 @@
  * List of view options passed through new View(opt) that will be auto-merged as properties:
  * 		a. from Backbone.View ['model', 'collection', 'el', 'id', 'attributes', 'className', 'tagName', 'events'];
  * 		b*. from M.View ['templateHelpers']; (through M.getOption() -- tried both this and this.options)
- *   	c. from us ['effect', 'template', 'layout', 'data/useParentData', 'ui', 'coop', 'actions', 'editors', 'tooltips/popovers', 'svg'];
+ *   	c. from us ['effect', 'template', 'layout', 'data/useParentData', 'useFlatModel', 'ui', 'coop', 'actions', 'editors', 'tooltips/popovers', 'svg'];
  *
  * Tip:
  * All new View(opt) will have this.options = opt ready in initialize(), also this.*[all auto-picked properties above].
@@ -72,7 +72,7 @@
  * @created 2014.02.25
  * @updated 2015.08.03
  * @updated 2016.10.25
- * @updated 2017.02.05
+ * @updated 2017.02.20
  */
 
 
@@ -582,7 +582,7 @@
 
 		//----------------------fixed view enhancements---------------------
 		//auto-pick live init options
-		_.extend(this, _.pick(options, ['effect', 'template', 'layout', 'data', 'useParentData', 'ui', 'coop', 'actions', 'dnd', 'selectable', 'editors', 'tooltips', 'popovers', 'svg', /*'canvas'*/]));
+		_.extend(this, _.pick(options, ['effect', 'template', 'layout', 'data', 'useParentData', 'useFlatModel', 'ui', 'coop', 'actions', 'dnd', 'selectable', 'editors', 'tooltips', 'popovers', 'svg', /*'canvas'*/]));
 
 		//re-wire this.get()/set() to this.getVal()/setVal(), data model in editors is used as configure object.
 		if(this.category === 'Editor'){

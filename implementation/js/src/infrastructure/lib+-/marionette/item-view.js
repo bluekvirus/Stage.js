@@ -91,7 +91,7 @@
 		set: function(){
 
 			if(!this.model){
-				this.model = app.model();
+				this.model = app.model(this.useFlatModel);
 			}
 
 			var self = this;
@@ -325,7 +325,7 @@
 					if(v !== undefined && v !== null) vals[name] = v;
 				});
 				//Warning: Possible performance impact...
-				return app.model(vals).toJSON(); //construct a deep model for editor 'a.b.c' getVal();
+				return app.model(vals).toJSON(); //construct a deep model for editor 'a.b.c' getVal() to merge into correct level;
 				/////////////////////////////////////////
 			};
 

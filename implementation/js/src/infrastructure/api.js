@@ -371,9 +371,15 @@
 			return dispatcher;
 		}, reactor: function(){ return app.dispatcher.apply(this, arguments); }, //alias: reactor
 
-		model: function(data){
-			//return new Backbone.Model(data);
-			//Warning: Possible performance impact...
+		model: function(data, flat){
+			if(_.isBoolean(data)){
+				flat = data;
+				data = undefined;
+			}
+
+			if(flat)
+				return new Backbone.Model(data);
+			//Warning: Possible performance impact...(default)
 			return new Backbone.DeepModel(data);
 			/////////////////////////////////////////
 		},
