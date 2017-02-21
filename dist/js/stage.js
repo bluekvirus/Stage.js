@@ -13122,7 +13122,7 @@ jQuery.extend( jQuery.Color.names, {
 }));
 
 ;/**
- * flexLayout v0.2.4, http://TBD
+ * flexLayout v0.2.2, http://TBD
  * ===================================
  * Highly customizable easy to use, light weight, layout/split jQuery plugin
  * 
@@ -13132,7 +13132,7 @@ jQuery.extend( jQuery.Color.names, {
 
 ;(function($){
 
-	$.fn.flexLayout = function(layout, opts, _cb/*TBI*/){
+	$.fn.flexLayout = function(layout, opts/*,_cb TBI*/){
 		var _options = {}, /*store options*/
 			_layoutArr = []; /*store array*/
 		//check whether layout is given
@@ -13187,7 +13187,7 @@ jQuery.extend( jQuery.Color.names, {
 			/*defines whether the width/height of created blocks can be adjusted or not, boolean or [boolean, boolean]*/
 			adjust: false,
 			/*defines the style of divide bars between created blocks, {...css object}, '...string of class name...', boolean or [..., ..., ..., ...]*/
-			bars: {flex: '0 0 2px', 'background-color': '#ddd'}
+			bars: {flex: '0 0 1px', 'background-color': '#DEDEDE'}
 		}
 	};
 
@@ -13296,7 +13296,9 @@ jQuery.extend( jQuery.Color.names, {
 	}
 
 	/**
-	 * Trim attributes given by user, if user uses selectors style(e.g. #, .)
+	 * Trim attributes given by user. 
+	 * If user uses selectors style(e.g. #, .), it can only appears at the beginning of the string. Otherwise it will be ignored.
+	 * 
 	 *
 	 * Note: if using selector style, the function performs under the assumption that only one 'id' exits.
 	 * 		 That is, there is only one '#' in the selector style string.
@@ -13308,7 +13310,7 @@ jQuery.extend( jQuery.Color.names, {
 		if(!attrStr)
 			return '';
 		//selector style
-		if(/(#|\.)/.test(attrStr) && !/(href)/.test(attrStr)){
+		if(/(#|\.)/.test(attrStr.charAt(0))){
 			//remove spaces
 			attrStr = attrStr.replace(/\s/g, '');
 			//id exists
@@ -23589,7 +23591,7 @@ return /******/ (function(modules) { // webpackBootstrap
 ;/*!
  * URI.js - Mutating URLs
  *
- * Version: 1.18.5
+ * Version: 1.18.4
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/
@@ -23649,12 +23651,6 @@ return /******/ (function(modules) { // webpackBootstrap
       }
     }
 
-    if (url === null) {
-      if (_urlSupplied) {
-        throw new TypeError('null is not a valid argument for URI');
-      }
-    }
-
     this.href(url);
 
     // resolve to base according to http://dvcs.w3.org/hg/url/raw-file/tip/Overview.html#constructor
@@ -23665,7 +23661,7 @@ return /******/ (function(modules) { // webpackBootstrap
     return this;
   }
 
-  URI.version = '1.18.5';
+  URI.version = '1.18.4';
 
   var p = URI.prototype;
   var hasOwn = Object.prototype.hasOwnProperty;
@@ -24572,7 +24568,7 @@ return /******/ (function(modules) { // webpackBootstrap
       }
 
       if (parensEnd > -1) {
-        slice = slice.slice(0, parensEnd) + slice.slice(parensEnd).replace(_trim, '');
+        slice = slice.slice(0, parensEnd) + slice.slice(parensEnd + 1).replace(_trim, '');
       } else {
         slice = slice.replace(_trim, '');
       }
@@ -25159,7 +25155,7 @@ return /******/ (function(modules) { // webpackBootstrap
       return v === undefined ? '' : this;
     }
 
-    if (typeof v !== 'string') {
+    if (v === undefined || v === true) {
       if (!this._parts.path || this._parts.path === '/') {
         return '';
       }
@@ -25836,7 +25832,7 @@ return /******/ (function(modules) { // webpackBootstrap
  * URI.js - Mutating URLs
  * IPv6 Support
  *
- * Version: 1.18.5
+ * Version: 1.18.4
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/
@@ -26022,7 +26018,7 @@ return /******/ (function(modules) { // webpackBootstrap
  * URI.js - Mutating URLs
  * Second Level Domain (SLD) Support
  *
- * Version: 1.18.5
+ * Version: 1.18.4
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/
@@ -26797,7 +26793,7 @@ return /******/ (function(modules) { // webpackBootstrap
  * URI.js - Mutating URLs
  * URI Template Support - http://tools.ietf.org/html/rfc6570
  *
- * Version: 1.18.5
+ * Version: 1.18.4
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/
@@ -27311,7 +27307,7 @@ return /******/ (function(modules) { // webpackBootstrap
  * URI.js - Mutating URLs
  * jQuery Plugin
  *
- * Version: 1.18.5
+ * Version: 1.18.4
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/jquery-uri-plugin.html
@@ -39364,9 +39360,15 @@ if (typeof jQuery === 'undefined') {
 			return dispatcher;
 		}, reactor: function(){ return app.dispatcher.apply(this, arguments); }, //alias: reactor
 
-		model: function(data){
-			//return new Backbone.Model(data);
-			//Warning: Possible performance impact...
+		model: function(data, flat){
+			if(_.isBoolean(data)){
+				flat = data;
+				data = undefined;
+			}
+
+			if(flat)
+				return new Backbone.Model(data);
+			//Warning: Possible performance impact...(default)
 			return new Backbone.DeepModel(data);
 			/////////////////////////////////////////
 		},
@@ -42137,22 +42139,23 @@ var merge = require('lodash.merge');
  * @param  {Object}      Nested object e.g. { level1: { level2: 'value' } }
  * @return {Object}      Shallow object with path names e.g. { 'level1.level2': 'value' }
  */
-function objToPaths(obj, ignoreArray) { //Tim's Hack: added ignoreArray option!
+function objToPaths(obj, ignoreArray, lvlCap) { //Tim's Hack: added ignoreArray, lvlCap options!
 	var ret = {},
 		separator = DeepModel.keyPathSeparator;
 
 	for (var key in obj) {
 		var val = obj[key];
 
-		if (val && (val.constructor === Object || (!ignoreArray && val.constructor === Array)) && !_.isEmpty(val)) {
-			//Recursion for embedded objects
-			var obj2 = objToPaths(val, ignoreArray);
+		if ((lvlCap === undefined || lvlCap > 0) && val && (val.constructor === Object || (!ignoreArray && val.constructor === Array)) && !_.isEmpty(val)) {
+        //Recursion for embedded objects
+  			var obj2 = objToPaths(val, ignoreArray, _.isNumber(lvlCap)? lvlCap - 1 : lvlCap);
 
-			for (var key2 in obj2) {
-				var val2 = obj2[key2];
+  			for (var key2 in obj2) {
+  				var val2 = obj2[key2];
 
-				ret[key + separator + key2] = val2;
-			}
+  				ret[key + separator + key2] = val2;
+  			}
+
 		} else {
 			ret[key] = val;
 		}
@@ -42276,7 +42279,7 @@ var DeepModel = Backbone.Model.extend({
 	// Override set
 	// Supports nested attributes via the syntax 'obj.attr' e.g. 'author.user.name'
 	set: function(key, val, options) {
-		var attr, attrs, unset, changes, silent, changing, prev, current;
+		var attr, attrs, unset, changes, silent, replace, changing, prev, current;
 		if (key == null) return this;
 
 		// Handle both `"key", value` and `{key: value}` -style arguments.
@@ -42295,6 +42298,7 @@ var DeepModel = Backbone.Model.extend({
 		// Extract attributes and options.
 		unset = options.unset;
 		silent = options.silent;
+    replace = options.replace; //true, or the level of depth that replacement need to happen.
 		changes = [];
 		changing = this._changing;
 		this._changing = true;
@@ -42309,10 +42313,15 @@ var DeepModel = Backbone.Model.extend({
 		if (this.idAttribute in attrs) this.id = attrs[this.idAttribute];
 
 		//<custom code>
-		attrs = objToPaths(attrs, true);//Tim's Hack: activate ignoreArray option! no more array.0.xyz
-                                    //This is to fix the array 'shrink' problem with 'change':
-                                    //set('array', [1, 2, 3])
-                                    //set('array', [1]) will give no 'change' event.
+		attrs = objToPaths(attrs, true, replace? (_.isNumber(replace)? replace: 0) : undefined);
+    //Tim's Hack: 
+    //  1. Always use ignoreArray option! no more array.0.xyz
+    //     This is to fix the array 'shrink' not emitting 'change' problem:
+    //     set('array', [1, 2, 3])
+    //     set('array', [1]) would give no 'change' event previousely.
+    //     
+    //  2. Always honor the replace option! it can be `true` (indicates lvl 0) or a 1 ~ n level number
+    //     This is to allow finer control over the value replace/merge depth when given val is an object.
 		//</custom code>
 
 		// For each `set` attribute, update or delete the current value.
@@ -42943,7 +42952,7 @@ module.exports = DeepModel;
  * List of view options passed through new View(opt) that will be auto-merged as properties:
  * 		a. from Backbone.View ['model', 'collection', 'el', 'id', 'attributes', 'className', 'tagName', 'events'];
  * 		b*. from M.View ['templateHelpers']; (through M.getOption() -- tried both this and this.options)
- *   	c. from us ['effect', 'template', 'layout', 'data/useParentData', 'ui', 'coop', 'actions', 'editors', 'tooltips/popovers', 'svg'];
+ *   	c. from us ['effect', 'template', 'layout', 'data/useParentData', 'useFlatModel', 'ui', 'coop', 'dnd', 'selectable', 'actions', 'editors', 'tooltips/popovers', 'svg'];
  *
  * Tip:
  * All new View(opt) will have this.options = opt ready in initialize(), also this.*[all auto-picked properties above].
@@ -42958,7 +42967,7 @@ module.exports = DeepModel;
  * @created 2014.02.25
  * @updated 2015.08.03
  * @updated 2016.10.25
- * @updated 2017.02.05
+ * @updated 2017.02.20
  */
 
 
@@ -43468,7 +43477,7 @@ module.exports = DeepModel;
 
 		//----------------------fixed view enhancements---------------------
 		//auto-pick live init options
-		_.extend(this, _.pick(options, ['effect', 'template', 'layout', 'data', 'useParentData', 'ui', 'coop', 'actions', 'dnd', 'selectable', 'editors', 'tooltips', 'popovers', 'svg', /*'canvas'*/]));
+		_.extend(this, _.pick(options, ['effect', 'template', 'layout', 'data', 'useParentData', 'useFlatModel', 'ui', 'coop', 'actions', 'dnd', 'selectable', 'editors', 'tooltips', 'popovers', 'svg', /*'canvas'*/]));
 
 		//re-wire this.get()/set() to this.getVal()/setVal(), data model in editors is used as configure object.
 		if(this.category === 'Editor'){
@@ -43832,7 +43841,7 @@ module.exports = DeepModel;
 		set: function(){
 
 			if(!this.model){
-				this.model = app.model();
+				this.model = app.model(this.useFlatModel);
 			}
 
 			var self = this;
@@ -44066,7 +44075,7 @@ module.exports = DeepModel;
 					if(v !== undefined && v !== null) vals[name] = v;
 				});
 				//Warning: Possible performance impact...
-				return app.model(vals).toJSON(); //construct a deep model for editor 'a.b.c' getVal();
+				return app.model(vals).toJSON(); //construct a deep model for editor 'a.b.c' getVal() to merge into correct level;
 				/////////////////////////////////////////
 			};
 
