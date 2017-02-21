@@ -2037,6 +2037,17 @@ App registery:
 * Application.get (name, [[type], fallback-flag])
 
 View object options:
+classic:
+* 'model'
+* 'collection'
+* 'el'
+* 'id'
+* 'attributes'
+* 'className'
+* 'tagName'
+* 'events'
+
+enhanced:
 * 'name'
 * 'effect'
 * 'template/layout/svg'

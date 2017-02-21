@@ -57,7 +57,7 @@
  * List of view options passed through new View(opt) that will be auto-merged as properties:
  * 		a. from Backbone.View ['model', 'collection', 'el', 'id', 'attributes', 'className', 'tagName', 'events'];
  * 		b*. from M.View ['templateHelpers']; (through M.getOption() -- tried both this and this.options)
- *   	c. from us ['effect', 'template', 'layout', 'data/useParentData', 'useFlatModel', 'ui', 'coop', 'actions', 'editors', 'tooltips/popovers', 'svg'];
+ *   	c. from us ['effect', 'template', 'layout', 'data/useParentData', 'useFlatModel', 'ui', 'coop', 'dnd', 'selectable', 'actions', 'editors', 'tooltips/popovers', 'svg'];
  *
  * Tip:
  * All new View(opt) will have this.options = opt ready in initialize(), also this.*[all auto-picked properties above].
