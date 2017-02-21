@@ -8,6 +8,7 @@ Change Log
 3. Editors now share data model with template, view.get() will now smartly get both type of data with a dotted keypath.
 4. Refined view.paper.clear(), it can now take additional sizing argurments (w, h);
 5. Added flat and useFlatModel flags to app.model() and views respectively;
+6. Added replace (flag/level) option to view.set() for finer model data replace/merge control;
 
 working on ...
 
