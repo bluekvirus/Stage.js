@@ -38,11 +38,6 @@
 				if(_.isPlainObject(name)){
 					options = name;
 					name = options.name;
-					_.extend(/*{
-						...
-					},*/ options, {
-						className: regName.toLowerCase() + ' ' + _.string.slugify(regName + '-' + options.name) + ' ' + (options.className || ''),
-					});
 					factory = function(){
 						return Marionette[options.type || 'Layout'].extend(options);
 					};
@@ -52,30 +47,42 @@
 				else if(_.isPlainObject(factory)){
 					options = _.extend(factory, {
 						name: name,
-						className: regName.toLowerCase() + ' ' + _.string.slugify(regName + '-' + name) + ' ' + (factory.className || ''),
 					});
 					factory = function(){
 						return Marionette[options.type || 'Layout'].extend(options);
 					};
 				}
 
-				//type 3: name and a factory func (won't have preset className)
-				if(!_.isString(name) || !name) throw new Error('DEV::Reusable::register() You must specify a ' + regName + ' name to register.');
-				if(!_.isFunction(factory)) throw new Error('DEV::Reusable::register() You must specify a ' + regName + ' factory function to register ' + name + ' !');
+				if(!_.isFunction(factory)) throw new Error('DEV::Reusable::register() You must specify a ' + regName + ' factory function for ' + (name || 'Anonymous') + ' !');
+				var Reusable = factory();
 
-				if(this.has(name))
-					console.warn('DEV::Overriden::Reusable ' + regName + '.' + name);
-				this.map[name] = factory();
-				//+metadata to instances
-				this.map[name].prototype.name = name;
-				this.map[name].prototype.category = regName;
-				if(!this.map[name].prototype.className)
-					this.map[name].prototype.className = regName.toLowerCase() + ' ' + _.string.slugify(regName + '-' + name);
+				//only named def gets registered.
+				if(name){
+					//type 3: name and a factory func (won't have preset className)
+					if(!_.isString(name)) throw new Error('DEV::Reusable::register() You must specify a string name to register view in ' + regName + '.');
 
-				//fire the coop event (e.g for auto menu entry injection)
-				app.trigger('app:reusable-registered', this.map[name], regName);
-				app.coop('reusable-registered', this.map[name], regName);
-				return this.map[name];
+					if(this.has(name))
+						console.warn('DEV::Overriden::Reusable ' + regName + '.' + name);
+					
+					//+metadata to instances
+					Reusable.prototype.name = name;
+					Reusable.prototype.category = regName;
+					if(!Reusable.prototype.className)
+						Reusable.prototype.className = regName.toLowerCase() + ' ' + _.string.slugify(regName + '-' + name);
+
+					//fire the coop event (e.g for auto menu entry injection)
+					this.map[name] = Reusable;
+					app.trigger('app:reusable-registered', Reusable, regName);
+					app.coop('reusable-registered', Reusable, regName);
+				}
+
+				//patch it with a chaining method: (e.g for app.get('ViewName').create(options).overlay())
+				Reusable.create = function(options){
+					return new Reusable(options);
+				};
+
+				//both named and anonymous def gets returned.
+				return Reusable;
 
 			},
 
@@ -83,7 +90,7 @@
 				if(!_.isString(name) || !name) throw new Error('DEV::Reusable::create() You must specify the name of the ' + regName + ' to create.');
 				var Reusable = this.get(name);
 				if(Reusable)
-					return new Reusable(options || {});
+					return Reusable.create(options || {});
 				throw new Error('DEV::Reusable::create() Required definition [' + name + '] in ' + regName + ' not found...');
 			},
 

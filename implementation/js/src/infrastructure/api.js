@@ -25,21 +25,20 @@
 	_.extend(app, {
 
 		//----------------view------------------
-		//pass in [name,] options to define (named will be registered)
-		//pass in [name] to get (name can be of path form)
-		//pass in [name,] instance to create (named will be registered again)
+		//pass in [name,] options to define view (named view will be registered)
+		//pass in name to get registered view def
+		//pass in options, true to create anonymous view
 		view: function(name /*or options*/, options /*or instance flag*/){
-			if(_.isString(name)){
-				if(_.isBoolean(options) && options) return app.Core.View.create(name);
-				if(_.isPlainObject(options)) return app.Core.View.register(name, options);
+			if(_.isString(name) && _.isPlainObject(options)){
+				return app.Core.View.register(name, options);
 			}
 
 			if(_.isPlainObject(name)){
 				var instance = options;
 				options = name;
-				var Def = options.name ? app.Core.View.register(options) : Backbone.Marionette[options.type || 'Layout'].extend(options);
+				var Def = app.Core.View.register(options);
 
-				if(_.isBoolean(instance) && instance) return new Def();
+				if(_.isBoolean(instance) && instance) return Def.create();
 				return Def;
 			}
 
@@ -544,7 +543,7 @@
 			if(_.isFunction(view))
 				view = new view();
 			else if(_.isString(view))
-				view = new (app.get(view))();
+				view = app.get(view).create();
 
 			//is popover
 			if(_.isString(placement)){
@@ -715,7 +714,7 @@
 				app.Core[category].remove(name);
 				//re-show the new view
 				try{
-					var view = new (app.get(name, category))();
+					var view = app.get(name, category).create();
 					view.once('view:all-region-shown', function(){
 						app.mark(name);
 					});

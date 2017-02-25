@@ -1,7 +1,7 @@
 Change Log
 ==========
 
-1.10.2+ (2017-02-20*)
+1.10.2+ (2017-02-25*)
 --------------------
 1. Refined render() seq in a view, data change will now always re-run render() despite of category;
 2. Refined SVG canvas init code in view, the .svg option can be a css selector string now;
@@ -9,14 +9,13 @@ Change Log
 4. Refined view.paper.clear(), it can now take additional sizing argurments (w, h);
 5. Added flat and useFlatModel flags to app.model() and views respectively;
 6. Added replace (flag/level) option to view.set() for finer model data replace/merge control;
+7. Added View.create() chaining method for all Views (both named and anonymous);
 
 working on ...
 
-* Update doc regarding view:* events;
-* Multiple svg support in one view with .svg: {}; 
+* Multiple svg support in one view with .svg: {name: fn, ...,} and svg="name"; 
 * Add editors _global config appendMode: 'all'/'match-only';
 * Add app.spray() - tpl, editors, svg;
-* Add View.create();
 * Search/IP/Number editors;
 * Cheatsheet;
 * Split docs;

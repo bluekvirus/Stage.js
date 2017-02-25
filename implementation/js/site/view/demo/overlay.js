@@ -59,11 +59,11 @@
 		],
 		actions: {
 			'overlay-body': function(){
-				(new Overlay()).overlay();
+				Overlay.create().overlay();
 			},
 			'overlay-anchor': function(){
 				//(new Overlay()).overlay(document.getElementById('anchor'));
-				(new Overlay()).overlay('#anchor');
+				Overlay.create().overlay('#anchor');
 				//(new Overlay()).overlay($('#anchor'));
 				// (new Overlay()).overlay({
 				// 	anchor: '#anchor'

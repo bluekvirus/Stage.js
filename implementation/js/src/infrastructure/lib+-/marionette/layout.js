@@ -319,7 +319,7 @@
 						var navRegion = this.getRegion(this.navRegion);
 						if(!navRegion.currentView || TargetView.prototype.name !== navRegion.currentView.name){
 							//new
-							var view = new TargetView();
+							var view = TargetView.create();
 							if(navRegion.currentView) navRegion.currentView.trigger('view:navigate-away');
 							
 							//chain on region:show (instead of view:show to let view finish 'show'ing effects before chaining)

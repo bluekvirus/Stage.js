@@ -78,8 +78,9 @@
 
 ;(function(app){
 
-	//+api
+	//+obj api
 	_.extend(Backbone.Marionette.View.prototype, {
+
 		//expose isInDOM method (hidden in marionette.domRefresh.js)
 		isInDOM: function($el){
 			if(!$el && !this.$el) return undefined;

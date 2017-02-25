@@ -157,7 +157,7 @@
 				if(!app.currentContext || app.currentContext.name !== context) {
 					
 					//re-create target context upon switching
-					var targetCtx = new TargetContext(), guardError;
+					var targetCtx = TargetContext.create(), guardError;
 
 					//allow context to guard itself (e.g for user authentication)
 					if(targetCtx.guard) guardError = targetCtx.guard();

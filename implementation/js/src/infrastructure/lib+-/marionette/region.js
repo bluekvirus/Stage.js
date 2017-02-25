@@ -74,7 +74,7 @@
                         var Reusable = app.get(name, _.isPlainObject(options)?'Widget':'', true); //fallback to use view if widget not found.
                         if(Reusable){
                             //Caveat: don't forget to pick up overridable func & properties from options in your Widget.
-                            return this.show(new Reusable(options));
+                            return this.show(Reusable.create(options));
                         }else
                             console.warn('DEV::Layout+::region:load-view View required ' + name + ' can NOT be found...use app.view({name: ..., ...}).');                   
                     }

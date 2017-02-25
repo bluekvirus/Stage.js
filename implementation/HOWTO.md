@@ -2063,12 +2063,32 @@ enhanced:
 * 'tooltips/popovers' - in template bootstrap tips/pops
 * initialize ()
 * onReady ()
+* onClose ()
 
 View object properties:
 * this.paper - available if options.svg is true
 * this.$el
 * this.parentCt
 * this.parentRegion
+
+View meta events (triggered):
+* view:render (implicit)
+* view:show/all-region-shown
+* view:ready (view:data-rendered/editor-updated)
+* view:editor-changed
+* view:tab-removed/-added/-activated
+* view:navigate-to/-away
+* view:item-activated/-deactivated
+* view:drag/drop
+* view:sort/sort-change
+* view:item-selected/-unselected/-selecting/-unselecting
+* view:selection-done/-begin
+* view:close (implicit)
+
+Other meta events (accepted):
+* view:reconfigure
+* view:load-page/render-data
+* region:load-view
 
 View apis:
 * view.set () - infer view.setValues() if options.editors is non empty

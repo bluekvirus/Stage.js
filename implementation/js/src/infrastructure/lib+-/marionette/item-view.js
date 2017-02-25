@@ -268,13 +268,13 @@
 						delete config.type;
 					////////////////////////////////////////////////////////////////////////////////////////////////
 
-					editor = new Editor(config);					
+					editor = Editor.create(config);					
 				}else {
 					//if config is a view definition use it directly 
 					//(compound editor, e.g: app.view({template: ..., editors: ..., getVal: ..., setVal: ...}))
 					Editor = config;
 					config = _.extend({name: name, parentCt: this}, global);
-					editor = new Editor(config); //you need to implement event forwarding to parentCt like Basic.
+					editor = Editor.create(config); //you need to implement event forwarding to parentCt like Basic.
 					editor.isCompound = true;
 					editor.category = 'Editor';
 				}
