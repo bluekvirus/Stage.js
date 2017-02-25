@@ -12,6 +12,11 @@ Change Log
 
 working on ...
 
+* Update doc regarding view:* events;
+* Multiple svg support in one view with .svg: {}; 
+* Add editors _global config appendMode: 'all'/'match-only';
+* Add app.spray() - tpl, editors, svg;
+* Add View.create();
 * Search/IP/Number editors;
 * Cheatsheet;
 * Split docs;
