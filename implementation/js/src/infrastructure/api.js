@@ -4,6 +4,8 @@
  * Note: View APIs are in view.js (view - view.*)
  * 
  * @author Tim Lauv
+ * @created 2015.07.29
+ * @updated 2017.02.26
  */
 
 ;(function(app){
@@ -144,6 +146,38 @@
 			}
 
 			return Reusable;
+		},
+
+		spray: function($anchor, template, data/*, options*/){
+			var $el = $($anchor);
+
+			//clean up wall
+			var oldView = $el.data('view');
+			if(oldView){
+				oldView.undelegateEvents(); // = $anchor.on() DOM e (e.g view.events)
+				oldView.off(); //view.on('...')
+				oldView.stopListening(); //view.listenTo('...')
+				//note we didn't call .close() since it will remove our $anchor;
+			} else 
+				$el.off();
+
+			if(!_.string.trim(template))
+				$el.empty();
+
+			//spray new pic (through quick dirty anonymous view)
+			var v = app.view(_.extend({
+					el: $($anchor)[0], template: template, data: data
+				}/*, options*/), true).render();
+			v._sprayed = true;
+			v.triggerMethod('show');
+			return v;
+
+			//Caveat: (putting a view on screen without using region has a price to pay)
+			//1. Since there is no region built, options.effect will NOT be honored.
+			//2. Call v.stopListening() or v.close() manually if you want clean (mem) navigation.
+			//
+			//Thus, we have decided to turn options off and enforce an one-off data change to view render cycle.
+			
 		},
 
 		coop: function(event, options){
@@ -781,12 +815,12 @@
 	 */
 	app._apis = [
 		'dispatcher/reactor', 'model', 'collection',
-		//view related
+		//view registery
 		'context - @alias:page', 'view', 'widget', 'editor', 'editor.validator - @alias:editor.rule',
 		//global action locks
 		'lock', 'unlock', 'available', 
 		//utils
-		'has', 'get', 'coop', 'navigate', 'icing/curtain', 'i18n', 'param', 'animation', 'animateItems', 'throttle', 'debounce',
+		'has', 'get', 'spray', 'coop', 'navigate', 'icing/curtain', 'i18n', 'param', 'animation', 'animateItems', 'throttle', 'debounce',
 		//com
 		'remote', 'download', 'ws', 'poll',
 		//3rd-party lib short-cut

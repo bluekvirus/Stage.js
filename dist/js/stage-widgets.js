@@ -62,7 +62,7 @@
 			},
 			onShow: function(){
 				var that = this;
-				var body = new Body({
+				var body = Body.create({
 					//el can be css selector string, dom or $(dom)
 					el: this.body.$el 
 					//Note that a region's el !== $el[0], but a view's el === $el[0] in Marionette.

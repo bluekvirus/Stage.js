@@ -96,9 +96,11 @@
 
 			var self = this;
 
-			//check one-way binding
+			//check one-way binding, and honor change only once in app.spray()-ed views
 			if(!this._oneWayBound){
-				this.listenTo(this.model, 'change', function(){
+				var listeningMech = this._sprayed? 'listenToOnce' : 'listenTo';
+				
+				this[listeningMech](this.model, 'change', function(){
 					self._renderTplAndResetEditors();
 				});
 				this._oneWayBound = true;			

@@ -2,7 +2,7 @@
 cd ./build
 
 echo ' '
-if [ $1 = "tag" ]; then
+if [ "$1" = "tag" ]; then
 #1. prepare version number with build number (commit count @HEAD -- current branch)
 	node tag.js
 fi

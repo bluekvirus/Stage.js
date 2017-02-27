@@ -38739,7 +38739,7 @@ if (typeof jQuery === 'undefined') {
 				if(!app.currentContext || app.currentContext.name !== context) {
 					
 					//re-create target context upon switching
-					var targetCtx = new TargetContext(), guardError;
+					var targetCtx = TargetContext.create(), guardError;
 
 					//allow context to guard itself (e.g for user authentication)
 					if(targetCtx.guard) guardError = targetCtx.guard();
@@ -38993,6 +38993,8 @@ if (typeof jQuery === 'undefined') {
  * Note: View APIs are in view.js (view - view.*)
  * 
  * @author Tim Lauv
+ * @created 2015.07.29
+ * @updated 2017.02.26
  */
 
 ;(function(app){
@@ -39014,21 +39016,20 @@ if (typeof jQuery === 'undefined') {
 	_.extend(app, {
 
 		//----------------view------------------
-		//pass in [name,] options to define (named will be registered)
-		//pass in [name] to get (name can be of path form)
-		//pass in [name,] instance to create (named will be registered again)
+		//pass in [name,] options to define view (named view will be registered)
+		//pass in name to get registered view def
+		//pass in options, true to create anonymous view
 		view: function(name /*or options*/, options /*or instance flag*/){
-			if(_.isString(name)){
-				if(_.isBoolean(options) && options) return app.Core.View.create(name);
-				if(_.isPlainObject(options)) return app.Core.View.register(name, options);
+			if(_.isString(name) && _.isPlainObject(options)){
+				return app.Core.View.register(name, options);
 			}
 
 			if(_.isPlainObject(name)){
 				var instance = options;
 				options = name;
-				var Def = options.name ? app.Core.View.register(options) : Backbone.Marionette[options.type || 'Layout'].extend(options);
+				var Def = app.Core.View.register(options);
 
-				if(_.isBoolean(instance) && instance) return new Def();
+				if(_.isBoolean(instance) && instance) return Def.create();
 				return Def;
 			}
 
@@ -39134,6 +39135,38 @@ if (typeof jQuery === 'undefined') {
 			}
 
 			return Reusable;
+		},
+
+		spray: function($anchor, template, data/*, options*/){
+			var $el = $($anchor);
+
+			//clean up wall
+			var oldView = $el.data('view');
+			if(oldView){
+				oldView.undelegateEvents(); // = $anchor.on() DOM e (e.g view.events)
+				oldView.off(); //view.on('...')
+				oldView.stopListening(); //view.listenTo('...')
+				//note we didn't call .close() since it will remove our $anchor;
+			} else 
+				$el.off();
+
+			if(!_.string.trim(template))
+				$el.empty();
+
+			//spray new pic (through quick dirty anonymous view)
+			var v = app.view(_.extend({
+					el: $($anchor)[0], template: template, data: data
+				}/*, options*/), true).render();
+			v._sprayed = true;
+			v.triggerMethod('show');
+			return v;
+
+			//Caveat: (putting a view on screen without using region has a price to pay)
+			//1. Since there is no region built, options.effect will NOT be honored.
+			//2. Call v.stopListening() or v.close() manually if you want clean (mem) navigation.
+			//
+			//Thus, we have decided to turn options off and enforce an one-off data change to view render cycle.
+			
 		},
 
 		coop: function(event, options){
@@ -39533,7 +39566,7 @@ if (typeof jQuery === 'undefined') {
 			if(_.isFunction(view))
 				view = new view();
 			else if(_.isString(view))
-				view = new (app.get(view))();
+				view = app.get(view).create();
 
 			//is popover
 			if(_.isString(placement)){
@@ -39704,7 +39737,7 @@ if (typeof jQuery === 'undefined') {
 				app.Core[category].remove(name);
 				//re-show the new view
 				try{
-					var view = new (app.get(name, category))();
+					var view = app.get(name, category).create();
 					view.once('view:all-region-shown', function(){
 						app.mark(name);
 					});
@@ -39771,12 +39804,12 @@ if (typeof jQuery === 'undefined') {
 	 */
 	app._apis = [
 		'dispatcher/reactor', 'model', 'collection',
-		//view related
+		//view registery
 		'context - @alias:page', 'view', 'widget', 'editor', 'editor.validator - @alias:editor.rule',
 		//global action locks
 		'lock', 'unlock', 'available', 
 		//utils
-		'has', 'get', 'coop', 'navigate', 'icing/curtain', 'i18n', 'param', 'animation', 'animateItems', 'throttle', 'debounce',
+		'has', 'get', 'spray', 'coop', 'navigate', 'icing/curtain', 'i18n', 'param', 'animation', 'animateItems', 'throttle', 'debounce',
 		//com
 		'remote', 'download', 'ws', 'poll',
 		//3rd-party lib short-cut
@@ -39797,7 +39830,7 @@ if (typeof jQuery === 'undefined') {
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.1-1178 build 1486348507481";
+;;app.stagejs = "1.10.1-1189 build 1488181494083";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -40333,11 +40366,6 @@ if (typeof jQuery === 'undefined') {
 				if(_.isPlainObject(name)){
 					options = name;
 					name = options.name;
-					_.extend(/*{
-						...
-					},*/ options, {
-						className: regName.toLowerCase() + ' ' + _.string.slugify(regName + '-' + options.name) + ' ' + (options.className || ''),
-					});
 					factory = function(){
 						return Marionette[options.type || 'Layout'].extend(options);
 					};
@@ -40347,30 +40375,42 @@ if (typeof jQuery === 'undefined') {
 				else if(_.isPlainObject(factory)){
 					options = _.extend(factory, {
 						name: name,
-						className: regName.toLowerCase() + ' ' + _.string.slugify(regName + '-' + name) + ' ' + (factory.className || ''),
 					});
 					factory = function(){
 						return Marionette[options.type || 'Layout'].extend(options);
 					};
 				}
 
-				//type 3: name and a factory func (won't have preset className)
-				if(!_.isString(name) || !name) throw new Error('DEV::Reusable::register() You must specify a ' + regName + ' name to register.');
-				if(!_.isFunction(factory)) throw new Error('DEV::Reusable::register() You must specify a ' + regName + ' factory function to register ' + name + ' !');
+				if(!_.isFunction(factory)) throw new Error('DEV::Reusable::register() You must specify a ' + regName + ' factory function for ' + (name || 'Anonymous') + ' !');
+				var Reusable = factory();
 
-				if(this.has(name))
-					console.warn('DEV::Overriden::Reusable ' + regName + '.' + name);
-				this.map[name] = factory();
-				//+metadata to instances
-				this.map[name].prototype.name = name;
-				this.map[name].prototype.category = regName;
-				if(!this.map[name].prototype.className)
-					this.map[name].prototype.className = regName.toLowerCase() + ' ' + _.string.slugify(regName + '-' + name);
+				//only named def gets registered.
+				if(name){
+					//type 3: name and a factory func (won't have preset className)
+					if(!_.isString(name)) throw new Error('DEV::Reusable::register() You must specify a string name to register view in ' + regName + '.');
 
-				//fire the coop event (e.g for auto menu entry injection)
-				app.trigger('app:reusable-registered', this.map[name], regName);
-				app.coop('reusable-registered', this.map[name], regName);
-				return this.map[name];
+					if(this.has(name))
+						console.warn('DEV::Overriden::Reusable ' + regName + '.' + name);
+					
+					//+metadata to instances
+					Reusable.prototype.name = name;
+					Reusable.prototype.category = regName;
+					if(!Reusable.prototype.className)
+						Reusable.prototype.className = regName.toLowerCase() + ' ' + _.string.slugify(regName + '-' + name);
+
+					//fire the coop event (e.g for auto menu entry injection)
+					this.map[name] = Reusable;
+					app.trigger('app:reusable-registered', Reusable, regName);
+					app.coop('reusable-registered', Reusable, regName);
+				}
+
+				//patch it with a chaining method: (e.g for app.get('ViewName').create(options).overlay())
+				Reusable.create = function(options){
+					return new Reusable(options);
+				};
+
+				//both named and anonymous def gets returned.
+				return Reusable;
 
 			},
 
@@ -40378,7 +40418,7 @@ if (typeof jQuery === 'undefined') {
 				if(!_.isString(name) || !name) throw new Error('DEV::Reusable::create() You must specify the name of the ' + regName + ' to create.');
 				var Reusable = this.get(name);
 				if(Reusable)
-					return new Reusable(options || {});
+					return Reusable.create(options || {});
 				throw new Error('DEV::Reusable::create() Required definition [' + name + '] in ' + regName + ' not found...');
 			},
 
@@ -42715,7 +42755,7 @@ module.exports = DeepModel;
                         var Reusable = app.get(name, _.isPlainObject(options)?'Widget':'', true); //fallback to use view if widget not found.
                         if(Reusable){
                             //Caveat: don't forget to pick up overridable func & properties from options in your Widget.
-                            return this.show(new Reusable(options));
+                            return this.show(Reusable.create(options));
                         }else
                             console.warn('DEV::Layout+::region:load-view View required ' + name + ' can NOT be found...use app.view({name: ..., ...}).');                   
                     }
@@ -42973,8 +43013,9 @@ module.exports = DeepModel;
 
 ;(function(app){
 
-	//+api
+	//+obj api
 	_.extend(Backbone.Marionette.View.prototype, {
+
 		//expose isInDOM method (hidden in marionette.domRefresh.js)
 		isInDOM: function($el){
 			if(!$el && !this.$el) return undefined;
@@ -43519,6 +43560,7 @@ module.exports = DeepModel;
 		//global co-op (global events forwarding through app)
 		if(this.coop) {
 			this._postman = {};
+			this.coop = _.uniq(this.coop); //for possible double entry in the array.
 			//register
 			_.each(this.coop, function(e){
 				var self = this;
@@ -43698,8 +43740,29 @@ module.exports = DeepModel;
 		//svg (if rapheal.js is present)
 		//similar to sub-region re-show/ready upon data change, we need to re-create the .paper object
 		if(this.svg && this._enableSVG) {
-			this.listenTo(this, 'show view:data-rendered', function(){
-				this._enableSVG(this.svg);
+			this.listenTo(this, 'render', function(){
+				//draw functions given
+				if(_.isPlainObject(this.svg)){
+					var that = this;
+					this.$el.find('[svg]').map(function(){
+						var $svg = $(this), name = $svg.attr('svg');
+						var paper = that._enableSVG($svg, name);
+						//hook up the draw() function (_.defer-ed so you have a chance to call $.css upon view 'ready')
+						that.listenTo(that, 'view:ready view:window-resized', function(){
+							//note that _.defer() does NOT return the function.
+							_.defer(function(){
+								paper.clear();
+								(that.svg[name])(paper);
+							});
+						});
+
+						//Caveat: don't forget to put 'window-resized' in .coop [] array;
+
+					});
+				}
+				//no draw function (single canvas, manual ready and coop window-resized hook up)
+				else
+					this._enableSVG(_.isBoolean(this.svg)? '' : this.svg /*selector str*/);
 			});
 		}
 
@@ -43846,9 +43909,11 @@ module.exports = DeepModel;
 
 			var self = this;
 
-			//check one-way binding
+			//check one-way binding, and honor change only once in app.spray()-ed views
 			if(!this._oneWayBound){
-				this.listenTo(this.model, 'change', function(){
+				var listeningMech = this._sprayed? 'listenToOnce' : 'listenTo';
+				
+				this[listeningMech](this.model, 'change', function(){
 					self._renderTplAndResetEditors();
 				});
 				this._oneWayBound = true;			
@@ -43915,32 +43980,47 @@ module.exports = DeepModel;
 		},
 
 		//Inject a svg canvas within view. (fully extended to parent region size)
-		_enableSVG: function(selector){
+		_enableSVG: function(selector, paperName){
 			if(!Raphael && !Snap) throw new Error('DEV::ItemView+::_enableSVG() You did NOT have Raphael.js/Snap.svg included...');
 			var SVG = Raphael || Snap;
-			this.$el.css({
+
+			//1. locate and clean up $el
+			var $el = selector? this.$el.find(selector) : this.$el;
+			$el.css({
 				'width': '100%',
 				'height': '100%',
 			});
-			this.$el.find('svg').remove();
-			this.paper = SVG(_.isBoolean(selector)? this.$el[0] : this.$el.find(selector)[0]);
-			this.$el.find('svg').attr({
+			$el.find('svg').remove();
+
+			//2. inject svg canvas through SVG class, save paper
+			var paper = SVG($el[0]);
+			if(!paperName)
+				//single
+				this.paper = paper;
+			else {
+				//multiple
+				this.paper = this.paper || {};
+				this.paper[paperName] = paper;
+			}
+			$el.find('svg').attr({
 				'width': '100%',
 				'height': '100%',
 			});
 
-			var that = this;
-			//+._fit() to paper.clear() (since this.paper.height/width won't change with the above w/h:100% settings)
-			this.paper._fit = function(w, h){
-				that.paper.setSize(w || that.$el.width(), h || that.$el.height());
+			//3. give paper a proper .clear() method to call before each drawing
+			//+._fit() to paper.clear() (since paper.height/width won't change with the above w/h:100% settings)
+			paper._fit = function(w, h){
+				//there is no 0x0 so don't worry...
+				paper.setSize(w || $el.width(), h || $el.height());
 			};
-			var tmp = this.paper.clear;
-			this.paper.clear = function(w, h){
-				tmp.apply(that.paper, arguments);
-				that.paper._fit(w, h);
+			var tmp = paper.clear;
+			paper.clear = function(w, h){
+				tmp.apply(paper, arguments);
+				paper._fit(w, h);
 			};
-			//just call this.paper.clear() when resize --> re-draw. so this.paper.width/height will be corrected.
 
+			//Note: Manually call paper.clear() upon window resize or data change before re-draw. Paper.width/height will be corrected.
+			return paper;
 		},
 
 		/**
@@ -44018,13 +44098,13 @@ module.exports = DeepModel;
 						delete config.type;
 					////////////////////////////////////////////////////////////////////////////////////////////////
 
-					editor = new Editor(config);					
+					editor = Editor.create(config);					
 				}else {
 					//if config is a view definition use it directly 
 					//(compound editor, e.g: app.view({template: ..., editors: ..., getVal: ..., setVal: ...}))
 					Editor = config;
 					config = _.extend({name: name, parentCt: this}, global);
-					editor = new Editor(config); //you need to implement event forwarding to parentCt like Basic.
+					editor = Editor.create(config); //you need to implement event forwarding to parentCt like Basic.
 					editor.isCompound = true;
 					editor.category = 'Editor';
 				}
@@ -44038,11 +44118,17 @@ module.exports = DeepModel;
 				this._editors[name] = editor.render();
 
 				//2. add it into view (specific, appendTo(editor cfg), appendTo(general cfg), append)
+				//2. case A: specified by editor=""
 				var $position = this.$('[editor="' + name + '"]');
+				if($position.length === 0 && config.appendTo === false)
+					return; //e.g use appendTo = false in _global to skip editors without $el in template.
+				//2. case B: specified by cfg.appendTo
 				if($position.length === 0 && config.appendTo)
 					$position = this.$(config.appendTo);
+				//2. case C: append to bottom of view
 				if($position.length === 0)
 					$position = this.$el;
+
 				$position.append(editor.el);
 				//+'show' (internal, for editor writer only)
 				editor.trigger('view:show');
@@ -44457,7 +44543,7 @@ module.exports = DeepModel;
 						var navRegion = this.getRegion(this.navRegion);
 						if(!navRegion.currentView || TargetView.prototype.name !== navRegion.currentView.name){
 							//new
-							var view = new TargetView();
+							var view = TargetView.create();
 							if(navRegion.currentView) navRegion.currentView.trigger('view:navigate-away');
 							
 							//chain on region:show (instead of view:show to let view finish 'show'ing effects before chaining)
@@ -45314,10 +45400,6 @@ var I18N = {};
  * editor:focusin/out (self)
  * view:editor-changed (parentCt) -- change
  * view:editor-e (parentCt) -- keyup, focusin/out
- *
- * Constrain
- * =========
- * Do addon/transform stuff in onRender() *Do NOT* use onShow() it won't be invoked by _enableEditors() enhancement in ItemView/Layout.
  *
  *
  * @author Tim Lauv
@@ -46496,7 +46578,7 @@ var I18N = {};
 ;(function(app){
 
 
-	//preset rules
+	//pre-set rules
 	app.Core.Editor.rules = {
 
 		required: function(options, val, form){

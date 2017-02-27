@@ -114,7 +114,7 @@ tools/lib-prep.sh
 
 2. Build framework, starter-kit & doc site
 
-tools/build.sh
+tools/build.sh tag
 ```
 
 
