@@ -165,32 +165,47 @@
 		},
 
 		//Inject a svg canvas within view. (fully extended to parent region size)
-		_enableSVG: function(selector){
+		_enableSVG: function(selector, paperName){
 			if(!Raphael && !Snap) throw new Error('DEV::ItemView+::_enableSVG() You did NOT have Raphael.js/Snap.svg included...');
 			var SVG = Raphael || Snap;
-			this.$el.css({
+
+			//1. locate and clean up $el
+			var $el = selector? this.$el.find(selector) : this.$el;
+			$el.css({
 				'width': '100%',
 				'height': '100%',
 			});
-			this.$el.find('svg').remove();
-			this.paper = SVG(_.isBoolean(selector)? this.$el[0] : this.$el.find(selector)[0]);
-			this.$el.find('svg').attr({
+			$el.find('svg').remove();
+
+			//2. inject svg canvas through SVG class, save paper
+			var paper = SVG($el[0]);
+			if(!paperName)
+				//single
+				this.paper = paper;
+			else {
+				//multiple
+				this.paper = this.paper || {};
+				this.paper[paperName] = paper;
+			}
+			$el.find('svg').attr({
 				'width': '100%',
 				'height': '100%',
 			});
 
-			var that = this;
-			//+._fit() to paper.clear() (since this.paper.height/width won't change with the above w/h:100% settings)
-			this.paper._fit = function(w, h){
-				that.paper.setSize(w || that.$el.width(), h || that.$el.height());
+			//3. give paper a proper .clear() method to call before each drawing
+			//+._fit() to paper.clear() (since paper.height/width won't change with the above w/h:100% settings)
+			paper._fit = function(w, h){
+				//there is no 0x0 so don't worry...
+				paper.setSize(w || $el.width(), h || $el.height());
 			};
-			var tmp = this.paper.clear;
-			this.paper.clear = function(w, h){
-				tmp.apply(that.paper, arguments);
-				that.paper._fit(w, h);
+			var tmp = paper.clear;
+			paper.clear = function(w, h){
+				tmp.apply(paper, arguments);
+				paper._fit(w, h);
 			};
-			//just call this.paper.clear() when resize --> re-draw. so this.paper.width/height will be corrected.
 
+			//Note: Manually call paper.clear() upon window resize or data change before re-draw. Paper.width/height will be corrected.
+			return paper;
 		},
 
 		/**
@@ -288,11 +303,17 @@
 				this._editors[name] = editor.render();
 
 				//2. add it into view (specific, appendTo(editor cfg), appendTo(general cfg), append)
+				//2. case A: specified by editor=""
 				var $position = this.$('[editor="' + name + '"]');
+				if($position.length === 0 && config.appendTo === false)
+					return; //e.g use appendTo = false in _global to skip editors without $el in template.
+				//2. case B: specified by cfg.appendTo
 				if($position.length === 0 && config.appendTo)
 					$position = this.$(config.appendTo);
+				//2. case C: append to bottom of view
 				if($position.length === 0)
 					$position = this.$el;
+
 				$position.append(editor.el);
 				//+'show' (internal, for editor writer only)
 				editor.trigger('view:show');

@@ -2167,7 +2167,7 @@ Form Editors (type):
 * 'date'
 * 'time'
 
-Global co-op events:
+Global co-op events: (need to specify in .coop:[])
 * 'ws-data-[channel]'
 * 'poll-data-[e]'
 * 'reusable-registered'

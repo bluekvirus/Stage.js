@@ -61,10 +61,6 @@
  * view:editor-changed (parentCt) -- change
  * view:editor-e (parentCt) -- keyup, focusin/out
  *
- * Constrain
- * =========
- * Do addon/transform stuff in onRender() *Do NOT* use onShow() it won't be invoked by _enableEditors() enhancement in ItemView/Layout.
- *
  *
  * @author Tim Lauv
  * @contributor Yan Zhu, Patrick Zhu, Andy Fan

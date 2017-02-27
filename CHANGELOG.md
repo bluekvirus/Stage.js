@@ -10,12 +10,13 @@ Change Log
 5. Added flat and useFlatModel flags to app.model() and views respectively;
 6. Added replace (flag/level) option to view.set() for finer model data replace/merge control;
 7. Added View.create() chaining method for all Views (both named and anonymous);
+8. Removed .className default value if a view specifies its own;
+9. Added support to skip appending editors by saying `_global.appendTo = false`;
+10. Added multiple svg support in one view with .svg: {name: fn, ...,} and svg="name" tag attribute; (no need to call paper.clear() in fn) 
 
 working on ...
 
-* Multiple svg support in one view with .svg: {name: fn, ...,} and svg="name"; 
-* Add editors _global config appendMode: 'all'/'match-only';
-* Add app.spray() - tpl, editors, svg;
+* Add app.spray() - tpl;
 * Search/IP/Number editors;
 * Cheatsheet;
 * Split docs;

@@ -11,7 +11,7 @@
 
 		template: [
 			//very very important to have overflow:hidden for svg powered background
-			'<div overflow="hidden" region="bg" view="Home.BG" style="position:absolute;left:0;right:0;top:0;bottom:0;"></div>',
+			'<div overflow="hidden" svg="bg" style="position:absolute;left:0;right:0;top:0;bottom:0;"></div>',
 			'<div class="container-fluid">',
 				'<div class="row">',
 					'<div class="col-sm-offset-6 col-sm-4" region="title"></div>',
@@ -26,7 +26,57 @@
 		data: {local: true}, //local data for testing navi-to and ready timing.
 		//data: 'static/resource/en-US/i18n.json',
 
-		coop: ['window-resized'],
+		//coop: ['window-resized'],
+
+		svg: {
+			bg: function(paper){
+				var size = {
+					h: paper.height,
+					w: paper.width
+				};
+
+				var start = {
+					x: size.w * 0.46,
+					y: size.h * 0.44
+				};
+				paper.path(['M', start.x, ',', 0, 'V', size.h, 'L', size.w, ',', 0].join('')).attr({stroke: '#222'}); //none close
+
+				//green followspot
+				var g = paper.path(['M', 0, ',', 0, 'L', size.w, ',', size.h, 'V', start.y, 'z'].join('')).attr({stroke: 'none'});
+				var gMesh = g.clone();
+
+				g.attr({fill: '0-rgba(63,182,24)-rgba(39,117,29):25-rgba(27,87,31)'});
+				$(g.node).css('fill-opacity', 0.6);
+
+				gMesh.attr({fill: '0-rgba(255,255,255,0)-rgba(189,187,176,.5):15-rgba(72,66,36)'});
+				$(gMesh.node).css('fill-opacity', 0.25);			
+
+				//blue followspot
+				var b = paper.path(['M', start.x, ',', 0, 'L', 0, ',', start.y, 'V', size.h, 'z'].join('')).attr({stroke: 'none'});
+				var bMesh = b.clone();
+
+				b.attr({fill:'180-#007FFF-rgba(16,73,126):25-#183044'});
+				$(b.node).css('fill-opacity', 0.8);
+
+				bMesh.attr({fill: '0-rgba(255,255,255,0)-rgba(189,187,176,.5):15-rgba(72,66,36)'});
+				$(bMesh.node).css('fill-opacity', 0.3);	
+
+				//red followspot
+				var r = paper.path(['M', size.w, ',', start.y, 'L', 0, ',', size.h, 'V', start.y, 'z'].join('')).attr({stroke: 'none'});
+				var rMesh = r.clone();
+
+				r.attr({fill:'180-#FF0039-rgba(139,17,41,.5):45-#5B1823'});
+				$(r.node).css({
+					'opacity': 0.6
+				});
+
+				rMesh.attr({fill: '0-rgba(255,255,255,0)-rgba(189,187,176,.5):15-rgba(72,66,36)'});
+				$(rMesh.node).css({
+					opacity: 0.25,
+					'fill-opacity': 0.25
+				});			
+			}
+		},
 
 		onBeforeNavigateTo:function(){
 			app.debug('before navi to', this.name);
@@ -46,13 +96,14 @@
 		},
 
 		onWindowResized: function(){
-			var bgv = this.getViewIn('bg');
-			bgv && bgv.trigger('view:draw');
 			var titlev = this.getViewIn('title');
 			titlev && titlev.trigger('view:move-to-center');
 		},
 
 		onReady: function(){
+			//disable scroll bar in this context.
+			$('body').css('overflow', 'hidden');
+
 			app.debug('Home ready');
 			//title + short desc
 			this.title.show(app.view({
@@ -125,79 +176,6 @@
 			'<span>Super-powered by Stage.js © 2013 - 2017</span> ',		
 			'<p>Code licensed under The <a href="http://opensource.org/licenses/MIT">MIT</a> License. Documentation licensed under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>',
 		]
-	});
-
-	app.view('Home.BG', {
-		//template: ' ', //might need exception as .editors configured views.
-		svg: true,
-		data: 'static/resource/en-US/i18n.json', //a test, not used in view
-		//data: {local: true}, //a test, not used in view
-		
-		onReady: function(){
-			app.debug('Hidden (Home) svg data:', this.get());
-			
-			//fixing the scrollbar problem in svg resizing. 
-			//(_.defer() after a $.css() change to wait for accurate sizing after browser re-paint)
-			$('body').css('overflow', 'hidden');
-			_.defer(_.bind(function(){
-				this.trigger('view:draw');
-			}, this));
-		},
-
-		//expose drawBg to view:draw.
-		onDraw: function(){
-			this.drawBg();
-		},
-
-		drawBg: function(){
-			this.paper.clear();
-			var size = {
-				h: this.paper.height,
-				w: this.paper.width
-			};
-
-			var start = {
-				x: size.w * 0.46,
-				y: size.h * 0.44
-			};
-			this.paper.path(['M', start.x, ',', 0, 'V', size.h, 'L', size.w, ',', 0].join('')).attr({stroke: '#222'}); //none close
-
-			//green followspot
-			var g = this.paper.path(['M', 0, ',', 0, 'L', size.w, ',', size.h, 'V', start.y, 'z'].join('')).attr({stroke: 'none'});
-			var gMesh = g.clone();
-
-			g.attr({fill: '0-rgba(63,182,24)-rgba(39,117,29):25-rgba(27,87,31)'});
-			$(g.node).css('fill-opacity', 0.6);
-
-			gMesh.attr({fill: '0-rgba(255,255,255,0)-rgba(189,187,176,.5):15-rgba(72,66,36)'});
-			$(gMesh.node).css('fill-opacity', 0.25);			
-
-			//blue followspot
-			var b = this.paper.path(['M', start.x, ',', 0, 'L', 0, ',', start.y, 'V', size.h, 'z'].join('')).attr({stroke: 'none'});
-			var bMesh = b.clone();
-
-			b.attr({fill:'180-#007FFF-rgba(16,73,126):25-#183044'});
-			$(b.node).css('fill-opacity', 0.8);
-
-			bMesh.attr({fill: '0-rgba(255,255,255,0)-rgba(189,187,176,.5):15-rgba(72,66,36)'});
-			$(bMesh.node).css('fill-opacity', 0.3);	
-
-			//red followspot
-			var r = this.paper.path(['M', size.w, ',', start.y, 'L', 0, ',', size.h, 'V', start.y, 'z'].join('')).attr({stroke: 'none'});
-			var rMesh = r.clone();
-
-			r.attr({fill:'180-#FF0039-rgba(139,17,41,.5):45-#5B1823'});
-			$(r.node).css({
-				'opacity': 0.6
-			});
-
-			rMesh.attr({fill: '0-rgba(255,255,255,0)-rgba(189,187,176,.5):15-rgba(72,66,36)'});
-			$(rMesh.node).css({
-				opacity: 0.25,
-				'fill-opacity': 0.25
-			});			
-				
-		}		
 	});
 
 })(Application);

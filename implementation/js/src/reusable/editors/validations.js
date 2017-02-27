@@ -39,7 +39,7 @@
 ;(function(app){
 
 
-	//preset rules
+	//pre-set rules
 	app.Core.Editor.rules = {
 
 		required: function(options, val, form){
