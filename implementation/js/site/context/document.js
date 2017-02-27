@@ -1,7 +1,7 @@
 ;(function(app){
 
     app.context('Document', {
-        className: 'wrapper container-fluid',
+        className: 'wrapper container-fluid context-document',
         template: [
             '<div class="row">',
                 '<div class="col-sm-offset-1 col-sm-3">',
