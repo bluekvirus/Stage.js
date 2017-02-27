@@ -2050,19 +2050,22 @@ classic:
 enhanced:
 * 'name'
 * 'effect'
-* 'template/layout/svg'
+* 'layout'
+* 'template'
 * 'templateHelpers'
 * 'data' - 'url string', {} or []
 * 'useParentData' 
 * 'ui'
+* 'editors' - see available editors below
+* 'svg'
 * 'coop'
 * 'actions'
-* 'editors' - see available editors below
 * 'dnd'
 * 'selectable'
 * 'tooltips/popovers' - in template bootstrap tips/pops
 * initialize ()
 * onReady ()
+* onClose ()
 
 View object properties:
 * this.paper - available if options.svg is true
@@ -2070,7 +2073,27 @@ View object properties:
 * this.parentCt
 * this.parentRegion
 
+View meta events (triggered):
+* view:render (implicit)
+* view:show/all-region-shown
+* view:ready (view:data-rendered/editor-updated)
+* view:editor-changed
+* view:tab-removed/-added/-activated
+* view:navigate-to/-away
+* view:item-activated/-deactivated
+* view:drag/drop
+* view:sort/sort-change
+* view:item-selected/-unselected/-selecting/-unselecting
+* view:selection-done/-begin
+* view:close (implicit)
+
+Other meta events (accepted):
+* view:reconfigure
+* view:load-page/render-data
+* region:load-view
+
 View apis:
+* view.spray () - put a quick dirty anonymous view in a DOM el
 * view.set () - infer view.setValues() if options.editors is non empty
 * view.get () - infer view.getValues() if options.editors is non empty
 * view.getEditor () - available if options.editors is non empty
@@ -2147,7 +2170,7 @@ Form Editors (type):
 * 'date'
 * 'time'
 
-Global co-op events:
+Global co-op events: (need to specify in .coop:[])
 * 'ws-data-[channel]'
 * 'poll-data-[e]'
 * 'reusable-registered'
