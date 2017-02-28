@@ -1,7 +1,7 @@
 Change Log
 ==========
 
-1.10.2+ (2017-02-27*)
+1.10.2+ (2017-02-28*)
 --------------------
 1. Refined render() seq in a view, data change will now always re-run render() despite of category;
 2. Refined SVG canvas init code in view, the .svg option can be a css selector string now;
@@ -13,10 +13,12 @@ Change Log
 8. Fixed .className value error if a view specifies its own as a function;
 9. Added support to skip appending editors by saying `_global.appendTo = false`;
 10. Added multiple svg support in one view with .svg: {name: fn, ...,} and svg="name" tag attribute; (no need to call paper.clear() in fn) 
-11. Add app.spray($anchor, tpl, data);
+11. Added app.spray($anchor, tpl, data);
+12. Added view.getViewFromTab(tabId) after using view.tab(); 
 
 working on ...
 
+* Add app.spray($anchor, View, options, parentCt) super-mode;
 * Search/IP/Number editors;
 * Cheatsheet;
 * Split docs;

@@ -2106,6 +2106,7 @@ View apis:
 * view.lock (region, flag, options)
 * view.more (region, [data array], View)
 * view.tab (region, View, tabId)
+* view.getViewFromTab (tabId)
 * view.show (region, View, options)
 * view.overlay (anchor, options)
 * view.popover (anchor, options)
