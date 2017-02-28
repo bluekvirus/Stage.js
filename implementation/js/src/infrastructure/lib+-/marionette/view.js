@@ -57,7 +57,7 @@
  * List of view options passed through new View(opt) that will be auto-merged as properties:
  * 		a. from Backbone.View ['model', 'collection', 'el', 'id', 'attributes', 'className', 'tagName', 'events'];
  * 		b*. from M.View ['templateHelpers']; (through M.getOption() -- tried both this and this.options)
- *   	c. from us ['effect', 'template', 'layout', 'data/useParentData', 'useFlatModel', 'ui', 'coop', 'dnd', 'selectable', 'actions', 'editors', 'tooltips/popovers', 'svg'];
+ *   	c. from us ['effect', 'template', 'layout', 'data/useParentData', 'useFlatModel', 'coop', 'dnd', 'selectable', 'actions', 'editors', 'tooltips/popovers', 'svg'];
  *
  * Tip:
  * All new View(opt) will have this.options = opt ready in initialize(), also this.*[all auto-picked properties above].
@@ -90,7 +90,7 @@
 		//override to give default empty template
 		getTemplate: function(){
 			return Marionette.getOption(this, 'template') || (
-				(Marionette.getOption(this, 'editors') || Marionette.getOption(this, 'svg') || Marionette.getOption(this, 'layout'))? ' ' /*must have 1+ space*/ : '<div class="wrapper-full bg-warning"><p class="h3" style="margin:0;"><span class="label label-default" style="display:inline-block;">No Template</span> ' + this.name + '</p></div>'
+				(Marionette.getOption(this, 'editors') || Marionette.getOption(this, 'svg') || Marionette.getOption(this, 'layout'))? ' ' /*must have 1+ space*/ : '<div class="wrapper-full bg-warning"><p class="h3" style="margin:0;"><span class="label label-default" style="display:inline-block;">No Template</span> ' + this._name + '</p></div>'
 			);
 		},
 
@@ -126,7 +126,7 @@
 		 *
 		 * Options
 		 * -------
-		 * 1. uiName - [_UNKNOWN_.View] this is optional, mainly for better debugging msg;
+		 * 1. debugViewNameTag - this is optional, mainly for better debugging msg;
 		 * 2. passOn - [false] this is to let the event of action tags bubble up if an action listener is not found. 
 		 *
 		 * Caveat
@@ -168,11 +168,11 @@
 				});
 			}, this);
 		},
-		_enableActionTags: function(uiName, passOn){ //the uiName is just there to output meaningful dev msg if some actions haven't been implemented.
+		_enableActionTags: function(debugViewNameTag, passOn){ //the debugViewNameTag is just there to output meaningful dev msg if some actions haven't been implemented.
 
-			if(_.isBoolean(uiName)){
-				passOn = uiName;
-				uiName = '';
+			if(_.isBoolean(debugViewNameTag)){
+				passOn = debugViewNameTag;
+				debugViewNameTag = '';
 			}
 			passOn = passOn || false;
 			this.events = this.events || {};
@@ -228,7 +228,6 @@
 
 			});
 			this.actions = this.actions || {}; 	
-			uiName = uiName || this.name || '_UNKNOWN_.View';
 
 			//captured events will not bubble further up (due to e.stopPropagation)
 			this._doAction = function(e){
@@ -277,7 +276,7 @@
 						e.stopPropagation(); //Important::This is to prevent confusing the parent view's action tag listeners.
 						e.preventDefault();
 					}
-					throw new Error('DEV::' + (uiName || 'UI Component') + '::_enableActionTags() You have not yet implemented this action - [' + action + ']');
+					throw new Error('DEV::' + (debugViewNameTag || this._name) + '::_enableActionTags() You have not yet implemented this action - [' + action + ']');
 				}
 			};		
 		},
@@ -574,16 +573,18 @@
 
 	//*init cycle, 3 patching stages: new()* -- render($el)* -- show(DOM)* --> ready(data)
 	Backbone.Marionette.View.prototype.constructor = function(options){
+
 		options = options || {};
+		this._name = this.name || _.uniqueId('anonymous-view-');
 
 		//----------------------deprecated config---------------------------
 		if((this.type || options.type) && !this.forceViewType)
-			console.warn('DEV::View+::type is deprecated, please do not specify ' + (this.name?'in ' + this.name:''));
+			console.warn('DEV::View+::type is deprecated, please do not specify in ' + this._name);
 		//------------------------------------------------------------------
 
 		//----------------------fixed view enhancements---------------------
 		//auto-pick live init options
-		_.extend(this, _.pick(options, ['effect', 'template', 'layout', 'data', 'useParentData', 'useFlatModel', 'ui', 'coop', 'actions', 'dnd', 'selectable', 'editors', 'tooltips', 'popovers', 'svg', /*'canvas'*/]));
+		_.extend(this, _.pick(options, ['effect', 'template', 'layout', 'data', 'useParentData', 'useFlatModel', 'coop', 'actions', 'dnd', 'selectable', 'editors', 'tooltips', 'popovers', 'svg', /*'canvas'*/]));
 
 		//re-wire this.get()/set() to this.getVal()/setVal(), data model in editors is used as configure object.
 		if(this.category === 'Editor'){
@@ -591,24 +592,12 @@
 			this.set = this.setVal;
 		}
 
-		//extend ui collection after first render (to support inline [ui=""] mark in template)
-		//**Caveat: bindUIElements in item-view render() will not pick up changes made here. (we re-init [ui=]tags manually)
-		this.listenTo(this, 'render', function(){
-			var that = this;
-			this.ui = this.ui || {};
-			_.each(_.unique(this.$el.find('[ui]').map(function(){
-				return $(this).attr('ui');
-			})), function(key){
-				that.ui[key] = that.$el.find('[ui=' + key + ']');
-			});
-		});
-
 		//add data-view-name meta attribute to view.$el and also view to view.$el.data('view')
 		this.listenToOnce(this, 'render', function(){
-			if(!this.name)
-				this._name = _.uniqueId('anonymous-view-');
-			this.$el.attr('data-view-name', this.name || this._name);
+			this.$el.attr('data-view-name', this._name);
 			this.$el.data('view', this);
+			if(this.name)
+				this.$el.addClass(this.category.toLowerCase() + ' ' + _.string.slugify(this.category + '-' + this.name));
 		});
 
 		//add data-render-count meta attribute to view.$el
@@ -621,6 +610,18 @@
 
 		//meta-event programming ability
 		app.Util.addMetaEvent(this, 'view');
+
+		//extend ui collection after first render (to support inline [ui=""] mark in template)
+		//**Caveat: bindUIElements in item-view render() will not pick up changes made here. (we re-init [ui=]tags manually)
+		this.listenTo(this, 'render', function(){
+			var that = this;
+			this.ui = this.ui || {};
+			_.each(_.unique(this.$el.find('[ui]').map(function(){
+				return $(this).attr('ui');
+			})), function(key){
+				that.ui[key] = that.$el.find('[ui=' + key + ']');
+			});
+		});
 
 		//global co-op (global events forwarding through app)
 		if(this.coop) {

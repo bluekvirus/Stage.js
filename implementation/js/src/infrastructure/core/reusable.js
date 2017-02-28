@@ -67,8 +67,6 @@
 					//+metadata to instances
 					Reusable.prototype.name = name;
 					Reusable.prototype.category = regName;
-					if(!Reusable.prototype.className)
-						Reusable.prototype.className = regName.toLowerCase() + ' ' + _.string.slugify(regName + '-' + name);
 
 					//fire the coop event (e.g for auto menu entry injection)
 					this.map[name] = Reusable;

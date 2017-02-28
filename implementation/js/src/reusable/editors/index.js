@@ -186,7 +186,7 @@
 
 				//prep basic editor display
 				var uuiid = _.uniqueId('basic-editor-'); //unique UI id
-				this.model = new Backbone.Model({
+				this.model = app.model({
 					uiId: uuiid,
 					layout: options.layout || '',
 					name: options.name, //*required
@@ -216,9 +216,9 @@
 					//specifically for time
 					startTime: options.startTime || (function(){ return new Date().toLocaleTimeString().split(' ')[0];})(), //hh:mm:ss
 					startPeriod: (options.startPeriod && options.startPeriod.toLowerCase()) || (function(){ return new Date().toLocaleTimeString().split(' ')[1];})(), //am or pm
-				});
+				}, true);
 				//mark view name to be Basic.type.name (more specific than just Basic)
-				this.name = [this.name, options.type, options.name].join('.');
+				this._name = [this.name, options.type, options.name].join('.');
 
 				//prep validations
 				if(options.validate) {
@@ -576,7 +576,7 @@
 				//specified logic if type === 'time'
 				else if(options.type === 'time'){
 					//enable action tag before extending actions
-					this._enableActionTags('Editor.Date');
+					this._enableActionTags('Editor.Time');
 
 					this.onRender = function(){
 						//get initial values
@@ -589,7 +589,7 @@
 							
 							//assert
 							if(!_.contains(startTime, ':'))
-								throw new Error('APP:Editor:Time:the given startTime is inValid.');
+								throw new Error('Dev::Editor.Time::the given startTime is inValid.');
 
 							//turn strings into numbers
 							temp = _.map(startTime.split(':'), function(str){ return parseInt(str); });
@@ -617,14 +617,14 @@
 
 						//assert
 						if(hour < 1 || hour > 12 || minute < 0 || minute > 59 || second < 0 || second > 59)
-							throw new Error('APP:Editor:Time:the given startTime is inValid.');
+							throw new Error('Dev::Editor.Time::the given startTime is inValid.');
 						
 						//fill number
 						this.fillNum(hour, minute, second);
 
 						//assert
 						if(period !== 'am' && period !== 'pm')
-							throw new Error('APP:Editor:Time:the given periods inValid.');
+							throw new Error('Dev::Editor.Time::the given periods inValid.');
 						//active period
 						(period === 'am') ? this.$el.find('.am-holder').addClass('active') : this.$el.find('.pm-holder').addClass('active');
 					};
@@ -757,7 +757,7 @@
 					
 					//Note: This kind of check is for the case that number 0 evaluates to false in JS
 					if((val !== 0 && !val) || (_.isNumber(val) && val < 0))
-							throw new Error('APP:Editor:Date:arguments for setVal is inValid.');
+							throw new Error('Dev::Editor.Date::arguments for setVal is inValid.');
 
 					//check the type of val
 					if(_.isString(val)){//standard form
@@ -769,20 +769,20 @@
 						year = parseInt(date[2]);
 
 						if(month > 12 || month < 1){//check month
-							throw new Error('APP:Editor:Date:arguments for setVal is inValid.');
+							throw new Error('Dev::Editor.Date::arguments for setVal is inValid.');
 						}else{//check day
 							var monthDays = [29/*Feb. Leap Year*/, 31/*Jan*/, 28/*Feb*/, 31/*Mar*/, 30/*Apr.*/, 31/*May*/, 30/*Jun*/, 31/*Jul*/, 31/*Aug*/, 30/*Sep*/, 31/*Oct*/, 30/*Nov*/, 31/*Dec*/];
 
 							if(month !== 2 && (day < 1 || day > monthDays[month])){
-								throw new Error('APP:Editor:Date:month arguments for setVal is inValid.');
+								throw new Error('Dev::Editor.Date::month arguments for setVal is inValid.');
 							}else{
 								//check leap year or not
 								if(year % 4 === 0 || (year % 100 === 0 && year % 400 === 0)){//leap year
 									if((day < 1 || day > monthDays[0]))
-										throw new Error('APP:Editor:Date:day arguments for setVal is inValid.');
+										throw new Error('Dev::Editor.Date::day arguments for setVal is inValid.');
 								}else{
 									if((day < 1 || day > monthDays[2]))
-										throw new Error('APP:Editor:Date:day arguments for setVal is inValid.');
+										throw new Error('Dev::Editor.Date::day arguments for setVal is inValid.');
 								}
 							}
 						}
@@ -818,7 +818,7 @@
 
 					//Note: This kind of check is for the case that number 0 evaluates to false in JS
 					if((val !== 0 && !val) || (_.isNumber(val) && val < 0))
-							throw new Error('APP:Editor:Time:arguments for setVal is inValid.');
+							throw new Error('Dev::Editor.Time::arguments for setVal is inValid.');
 
 					var temp, hour, minute, second, period;
 
@@ -852,7 +852,7 @@
 
 					//assert
 					if(hour < 1 || hour > 12 || minute < 0 || minute > 59 || second < 0 || second > 59)
-						throw new Error('APP:Editor:Time:the given startTime is inValid');
+						throw new Error('Dev::Editor.Time::the given startTime is inValid');
 					
 					//fill number
 					this.fillNum(hour, minute, second);
@@ -860,7 +860,7 @@
 					//assert
 					period = period.toLowerCase();
 					if(period !== 'am' && period !== 'pm')
-						throw new Error('APP:Editor:Time:the given periods inValid.');
+						throw new Error('Dev::Editor.Time::the given periods inValid.');
 					//active period
 					(period === 'am') ? this.$el.find('.pm-holder').removeClass('active') && this.$el.find('.am-holder').addClass('active') 
 										: this.$el.find('.am-holder').removeClass('active') && this.$el.find('.pm-holder').addClass('active');

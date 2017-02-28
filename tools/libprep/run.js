@@ -161,7 +161,7 @@ buildify.task({
 
 		//produce starter-kit bower.json
 		buildify().setContent(JSON.stringify(_.extend({
-			name: '<Your project name>',
+			name: 'my.project',
 			private: true,
 			devDependencies: _.extend(bowerInfo.kitDevDependencies, {
 				stage: '^' + bowerInfo.version

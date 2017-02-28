@@ -308,7 +308,7 @@
 					}
 
 					if(!this.regions[this.navRegion]){
-						console.warn('DEV::Layout+::onNavigateChain()', 'invalid navRegion', this.navRegion, 'in', this.name);
+						console.warn('DEV::Layout+::onNavigateChain()', 'invalid navRegion', this.navRegion, 'in', this._name);
 						return;
 					}
 					

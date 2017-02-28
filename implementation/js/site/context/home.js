@@ -26,7 +26,7 @@
 		data: {local: true}, //local data for testing navi-to and ready timing.
 		//data: 'static/resource/en-US/i18n.json',
 
-		//coop: ['window-resized'],
+		coop: ['window-resized'],
 
 		svg: {
 			bg: function(paper){

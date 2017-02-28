@@ -47,7 +47,7 @@
 		    data = this.mixinTemplateHelpers(data);
 
 		    var template = this.getTemplate();
-		    //app.debug('Getting template for', this.name, template);
+		    //app.debug('Getting template for', this._name, template);
 		    var html = Marionette.Renderer.render(template, data);
 
 		    //+ skip empty template
@@ -135,7 +135,7 @@
 
 			//check data
 			if(!this.model){
-				console.warn('DEV::ItemView+::get() You have not yet setup data in view ' + (this.name || this._name));
+				console.warn('DEV::ItemView+::get() You have not yet setup data in view ' + this._name);
 			} else {
 				vals = _.extend(this.model.toJSON(), vals);
 			}
