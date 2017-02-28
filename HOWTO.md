@@ -2055,7 +2055,6 @@ enhanced:
 * 'templateHelpers'
 * 'data' - 'url string', {} or []
 * 'useParentData' 
-* 'ui'
 * 'editors' - see available editors below
 * 'svg'
 * 'coop'
@@ -2093,7 +2092,6 @@ Other meta events (accepted):
 * region:load-view
 
 View apis:
-* view.spray () - put a quick dirty anonymous view in a DOM el
 * view.set () - infer view.setValues() if options.editors is non empty
 * view.get () - infer view.getValues() if options.editors is non empty
 * view.getEditor () - available if options.editors is non empty
@@ -2127,6 +2125,7 @@ App data handling helpers:
 
 App utils:
 * Application.navigate ()
+* Application.spray () - put a quick dirty anonymous view in a DOM el
 * Application.coop (e, [args]) - calls for help from every interested view
 * Application.notify ()
 * Application.prompt ()
