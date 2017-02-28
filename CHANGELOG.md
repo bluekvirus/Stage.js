@@ -17,6 +17,7 @@ Change Log
 
 working on ...
 
+* Add app.spray($anchor, View, options, parentCt) super-mode;
 * Search/IP/Number editors;
 * Cheatsheet;
 * Split docs;

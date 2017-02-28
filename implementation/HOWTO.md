@@ -2100,7 +2100,9 @@ View apis:
 * view.refresh ()
 * view.coop () - different than app.coop(), only calls for help from ancestors
 * view.isInDOM ()
+* view.addRegion (name, def)
 * view.getViewIn (region)
+* view.activate (group, index)
 * view.lock (region, flag, options)
 * view.more (region, [data array], View)
 * view.tab (region, View, tabId)
