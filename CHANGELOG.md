@@ -1,7 +1,7 @@
 Change Log
 ==========
 
-1.10.2+ (2017-02-26*)
+1.10.2+ (2017-02-27*)
 --------------------
 1. Refined render() seq in a view, data change will now always re-run render() despite of category;
 2. Refined SVG canvas init code in view, the .svg option can be a css selector string now;
@@ -10,7 +10,7 @@ Change Log
 5. Added flat and useFlatModel flags to app.model() and views respectively;
 6. Added replace (flag/level) option to view.set() for finer model data replace/merge control;
 7. Added View.create() chaining method for all Views (both named and anonymous);
-8. Removed .className default value if a view specifies its own;
+8. Fixed .className value error if a view specifies its own as a function;
 9. Added support to skip appending editors by saying `_global.appendTo = false`;
 10. Added multiple svg support in one view with .svg: {name: fn, ...,} and svg="name" tag attribute; (no need to call paper.clear() in fn) 
 11. Add app.spray($anchor, tpl, data);
