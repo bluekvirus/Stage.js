@@ -20,7 +20,7 @@ Change Log
 15. Refined view.show()/'region:load-view' to allow anonymous view options;
 16. All views now starts with 'window-resized' coop by default if view.coop is not set to false;
 17. Added _.isjQueryObject() util function;
-18. Upgraded to use BB 1.3, jQuery 2.2 and rapheal 2.2;
+18. Upgraded to use BB 1.3, jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
 
 working on ...
 
