@@ -34,7 +34,7 @@ The **Context** concept is Deprecated.
 
 #### What's an Editor?
 
-An *Editor* is a named *View* with `.setVal()`, `.getVal()`, `.validate()`, `.status()` and `.enable()/.disable()/.isEnabled()` methods that caches its value through `<input>`,`<select>`and`<textarea>` contained in the template. Your *Editor* can have sub-views but the APIs required are not chained automatically.
+An *Editor* is a named *View* with `.setVal()`, `.getVal()`, `.validate()`, `.status()` and `.enable()/.disable()/.isEnabled()` methods that caches its value through `<input>`,`<select>`and`<textarea>` contained in the template. Note that, your *Editor* can have sub-views but the APIs required are not chained into its sub-regions automatically.
 
 #### What's a Widget?
 
@@ -494,7 +494,7 @@ If you defined a `guard` function as property in one of your contexts, it will b
 
 ##### Navigate beyond a Context
 
-When the navigation is at `#navigate/MyContextA/SubViewA/SubViewB...` the router finds `navRegion` in `MyContextA` and shows `SubViewA` in it and then move on to `SubViewA` to show `SubViewB...` in its `navRegion`. If, somehow, it can not find the definition of `SubViewA`, the navigation stops on `MyContextA` and triggers `view:navigate-to` event with the remaining subpath starting with `SubViewA/...` on `MyContextA`. The same process happens on `SubViewA` if the router can not find `SubViewB...`.
+When the navigation is at `#navigate/MyContextA/SubViewA/SubViewB...` the router finds `navRegion` in `MyContextA` and shows `SubViewA` in it and then move on to `SubViewA` to show `SubViewB...` in its `navRegion`. If, somehow, it can not find the definition of `SubViewA`, the navigation stops on `MyContextA` and triggers `view:navigate-to` event (after 'view:ready') with the remaining subpath starting with `SubViewA/...` on `MyContextA`. The same process happens on `SubViewA` if the router can not find `SubViewB...`.
 
 !!!callout callout-primary
 **Note:** All named Views can all appear in the navigation path if they have the `navRegion` property defined.
@@ -721,67 +721,14 @@ app.coop('eventA', options);
 It is like coding through interfaces in a object-oriented programming language but much more flexible. The goal is to let the developer code with events instead of APIs so the implementation can be delayed as much as possible. The underlying principle is very simple:
 ```
 //event format : namespace:worda-wordb-...
-object.trigger('object:meta-event', arguments);
+view.trigger('view:some-event', arguments);
+
 //will invoke listener : onWordaWordb...
-object.onMetaEvent(arguments);
+view.onSomeEvent(arguments);
 ```
-We have `Application (app:)`, `Context (context:)` and all the `View (view:)` enhanced to accept meta-event triggers. Some of the events are already listened/triggered for you:
+We have `Application (app:)`, `Context (context:)` and all the `View (view:)` enhanced to accept meta-event triggers. 
 
-**Application** -- app:meta-event
-```
-//bootstraping
-app:before-mainview-ready //fired before the application is shown
-app:mainview-ready //fired after the application is shown
-
-//navigation
-app:navigate (string) or ({context:..., module:...}, silent) - Application.onNavigate [pre-defined]
-app:context-guard-error (error, contextName) - [pre-defined]
-app:context-switched (contextName)  - [empty stub]
-
-//the followings are triggered by Application.remote():
-app:ajax - before ajax sent
-app:ajax-start - single progress
-app:ajax-stop - single progress
-app:ajax-active - overall
-app:ajax-inactive - overall
-
-//triggered by window
-app:resized - [empty stub]
-app:scroll - [empty stub]
-
-//global - for alerts and prompts
-app:success - [empty stub]
-app:error - [empty stub]
-
-//lock related
-app:locked - [empty stub] (action/options, lock/(n/a))
-```
-**Context** -- context:meta-event
-```
-context:before-navigate-to
-context:navigate-chain 
-context:navigate-away - [empty stub] - triggered before app:navigate
-```
-**View** -- view:meta-event
-```
-//General
-view:ready 
-    (same as view:show for static view)
-    (same as view:data-rendered for data view)
-    (same as view:editors-updated for form view)
-    view:ready doesn't guarantee sub-region view ready.
-
-//View with navRegion
-view:navigate-chain
-view:navigate-to
-view:navigate-away (if parentCt persists)
-
-//CollectionView only (Remote Data Pagination)
-view:load-page
-view:page-changed
-```
-
-Remember, you can always trigger a customized event `my-event-xyz` and implement it later on the object by creating `onMyEventXyz()`.
+Remember, you can always trigger a customized event `my-event-xyz` and implement it later on the object by creating `.onMyEventXyz = function(){}`.
 
 #### Use parentCt/Ctx/Region?
 
@@ -2078,8 +2025,9 @@ View meta events (triggered):
 * view:ready (view:data-rendered/editor-updated)
 * view:paper-cleared
 * view:editor-changed
+* view:page-changed (limited to Paginator widget bound view)
 * view:tab-removed/-added/-activated
-* view:navigate-to/-away
+* view:navigate-to/-away (also view:before-navigate-to)
 * view:item-activated/-deactivated
 * view:drag/drop
 * view:sort/sort-change
@@ -2201,6 +2149,27 @@ HTML (template) shortcut attributes:
 * data-i18n-key=""
 * data-i18n-module=""
 
+Application meta events: (less likely to use, see co-op e first)
+* app:initialized
+* app:before-mainview-ready
+* app:mainview-ready
+* app:navigate
+* app:context-guard-error
+* app:navigation-aborted
+* app:ajax - change global ajax options here
+* app:ajax-success - single progress
+* app:ajax-error - single progress
+* app:ajax-start - single progress
+* app:ajax-stop - single progress
+* app:ajax-active - overall
+* app:ajax-inactive - overall
+* app:remote-pre-get - fine grind op stub
+* app:remote-pre-change - fine grind op stub
+* app:locked
+* app:coop
+* app:error - limited to hybrid mode only
+
+Use `app:e` only when you want to extend certain part of the framework, like putting in a progress bar or notifications. All of the global co-op events also have an `app:e` version (not re-listed here though) on the `Application` object.
 
 ### C. Useful sites
 

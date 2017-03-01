@@ -159,6 +159,7 @@
 					
 					//re-create target context upon switching
 					var targetCtx = TargetContext.create(), guardError;
+					app.Util.addMetaEvent(targetCtx, 'context');//patch in 'context:e' meta events for backward compatibility.
 
 					//allow context to guard itself (e.g for user authentication)
 					if(targetCtx.guard) guardError = targetCtx.guard();
@@ -168,30 +169,29 @@
 						return;
 					}
 					//allow context to check/do certain stuff before navigated to
-					targetCtx.trigger('context:before-navigate-to');
+					targetCtx.trigger('view:before-navigate-to');
 
 					//save your context state within onNavigateAway()
-					if(app.currentContext) app.currentContext.trigger('context:navigate-away'); 
+					if(app.currentContext) app.currentContext.trigger('view:navigate-away'); 
 					//prepare and show this new context					
-					app.Util.addMetaEvent(targetCtx, 'context');
 					var navRegion = app.config.navRegion || app.config.contextRegion;
 					var targetRegion = app.mainView.getRegion(navRegion);
 					if(!targetRegion) throw new Error('DEV::Application::navigate() You don\'t have region \'' + navRegion + '\' defined');		
 					
-					//note that .show() is guaranteed to happen after region enter/exit effects
-					targetRegion.once('show', function(){
+					//note that 'ready' is guaranteed to happen after region enter/exit effects
+					targetCtx.once('view:ready', function(){
 						app.currentContext = targetCtx;
 						//fire a notification to app as meta-event. (e.g menu view item highlighting)
 						app.trigger('app:context-switched', app.currentContext.name);
 						app.coop('context-switched', app.currentContext.name, {ctx: app.currentContext, subpath: path.join('/')});
 						//notify regional views in the context (views further down in the nav chain)
-						app.currentContext.trigger('context:navigate-chain', path); //see layout.js
+						app.currentContext.trigger('view:navigate-chain', path); //see layout.js
 					});
 					targetRegion.show(targetCtx);
 					//note that 'view:navigate-to' triggers after '(view:show -->) region:show';
 				}else
 					//notify regional views in the context (with old flag set to true)
-					app.currentContext.trigger('context:navigate-chain', path, true); //see layout.js
+					app.currentContext.trigger('view:navigate-chain', path, true); //see layout.js
 
 			}
 		//-----------------------
