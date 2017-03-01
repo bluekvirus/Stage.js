@@ -3,7 +3,7 @@ Introduction
 This lightweight framework is made to maximize developer efficiency by introducing an intuitive workflow on top of a solid front-end architecture. You will be focusing on user interaction building without distraction. We even give you a full-featured *Javascript* web server as a reference implementation on the RESTful and Websocket services to start the development right away! Theming and packaging deployments are also a breeze through our tools.
 
 !!!callout callout-info
-**Tip:** Keep your *JavaScript* codes flat and *HTML* dynamic, style through *CSS* class.
+**Tip:** Keep your *JavaScript* code flat and *HTML* dynamic, style through *CSS* class.
 !!!
 
 ### Core concepts
@@ -2153,6 +2153,7 @@ App utils:
 * Application.extract (keypath, obj)
 * _.isPlainObject ()
 * _.isjQueryObject ()
+* _.deepClone ()
 
 App dev support:
 * Application.debug ()
