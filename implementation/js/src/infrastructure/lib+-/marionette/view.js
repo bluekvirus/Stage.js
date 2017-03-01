@@ -408,7 +408,7 @@
 			this._overlayConfig = _.isBoolean(this.overlay)? {}: this.overlay;
 			this.overlay = function(anchor, options){
 				var $anchor;
-				if(anchor instanceof jQuery)
+				if(_.isjQueryObject(anchor))
 					$anchor = anchor;
 				else if(_.isPlainObject(anchor)){
 					options = anchor;
@@ -462,7 +462,7 @@
 		 			},
 		 			$anchor;
 		 		//check para1(anchor point) is a jquery object or a DOM element
-	 			if(anchor instanceof jQuery)
+	 			if(_.isjQueryObject(anchor))
 	 				//jquery object
 	 				$anchor = anchor;
 				else if(_.isPlainObject(anchor)){
@@ -623,8 +623,12 @@
 			});
 		});
 
-		//global co-op (global events forwarding through app)
-		if(this.coop) {
+		//global co-op (global events forwarding through app), use false to ignore all global co-ops;
+		if(this.coop !== false)
+			this.coop = this.coop || [];
+		//by default all view starts with 1 global co-op event;
+		if(_.isArray(this.coop)) {
+			this.coop.push('window-resized'); //every one should have this.(easy .svg canvas auto-resizing)
 			this._postman = {};
 			this.coop = _.uniq(this.coop); //for possible double entry in the array.
 			//register

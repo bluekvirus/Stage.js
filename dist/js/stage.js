@@ -37681,14 +37681,19 @@ if (typeof jQuery === 'undefined') {
  * @created 2017.02.04
  */
 
-(function(_, underscoreString){
+(function(_, underscoreString, $){
 
 	_.isPlainObject = function(o){
 		return _.isObject(o) && !_.isFunction(o) && !_.isArray(o) && !_.isElement(o);
 	};
+
+	_.isjQueryObject = function(o){
+		return o instanceof $;
+	};
+
 	_.string = underscoreString;
 
-})(_, s);
+})(_, s, jQuery);
 
 ;/* ========================================================================
  * Bootstrap: tooltip.js v3.3.6
@@ -39048,10 +39053,11 @@ if (typeof jQuery === 'undefined') {
 			app._navViewConfig = app._navViewConfig || opt.ctxConfig || opt.viewConfig;
 
 			if(silent || app.hybridEvent)
-				navigate(path);//hybrid app will navigate using the silent mode.
+				navigate(path);//hybrid app will navigate using the silent mode. (sync mode, no #hashchange)
 			else
 				//note that, this will in turn call app.navigate() again which triggers a silent app:navigate again.
 				window.location.hash = 'navigate/' + path;
+				//wait for #hashchange to be captured by BB.History() --> BB.Router (async mode, app.coop()s might not work immediately)
 		};
 
 		app.onContextGuardError = function(error, ctxName){
@@ -39469,35 +39475,33 @@ if (typeof jQuery === 'undefined') {
 			return Reusable;
 		},
 
-		spray: function($anchor, template, data/*, options*/){
+		spray: function($anchor, View /*or template or name or instance or options or svg draw(paper){} func */, options, parentCt){
 			var $el = $($anchor);
+			parentCt = parentCt || app.currentContext;
 
-			//clean up wall
-			var oldView = $el.data('view');
-			if(oldView){
-				oldView.undelegateEvents(); // = $anchor.on() DOM e (e.g view.events)
-				oldView.off(); //view.on('...')
-				oldView.stopListening(); //view.listenTo('...')
-				//note we didn't call .close() since it will remove our $anchor;
-			} else 
-				$el.off();
+			//check if $anchor is already an anonymous region
+			var regionName = $el.attr('region');
+			if(!regionName){
+				regionName = _.uniqueId('anonymous-region-');
+				$el.attr('region', regionName);
+				parentCt.addRegion(regionName, '[region="' + regionName + '"]');
+			}
 
-			if(!_.string.trim(template))
-				$el.empty();
-
-			//spray new pic (through quick dirty anonymous view)
-			var v = app.view(_.extend({
-					el: $($anchor)[0], template: template, data: data
-				}/*, options*/), true).render();
-			v._sprayed = true;
-			v.triggerMethod('show');
-			return v;
-
-			//Caveat: (putting a view on screen without using region has a price to pay)
-			//1. Since there is no region built, options.effect will NOT be honored.
-			//2. Call v.stopListening() or v.close() manually if you want clean (mem) navigation.
-			//
-			//Thus, we have decided to turn options off and enforce an one-off data change to view render cycle.
+			//see if it is an svg draw(paper){} function
+			if(_.isFunction(View) && View.length === 1){
+				//svg
+				return parentCt.show(regionName, {
+					template: '<div svg="canvas"></div>',
+					svg: {
+						canvas: View
+					},
+					onPaperCleared: function(paper){
+						paper._fit($el);
+					},
+				});
+			}else
+				//view
+				return parentCt.show(regionName, View, options);
 			
 		},
 
@@ -39790,7 +39794,7 @@ if (typeof jQuery === 'undefined') {
 		},
 
 		//effects see https://daneden.github.io/animate.css/
-		//sample usage: 'view:data-rendered' --> app.animateItems();
+		//sample usage: 'view:ready' --> app.animateItems();
 		animateItems: function(selector /*or $items*/, effect, stagger){
 			var $selector = $(selector); 
 			if(_.isNumber(effect)){
@@ -39840,19 +39844,19 @@ if (typeof jQuery === 'undefined') {
 		//	...
 		//	^^^
 		markdown: function(md, $anchor /*or options*/, options){
-			options = options || (!($anchor instanceof jQuery) && $anchor) || {};
+			options = options || (!_.isjQueryObject($anchor) && $anchor) || {};
 			//render content
-			var html = marked(md, app.debug('marked options are', _.extend(app.config.marked, (options.marked && options.marked) || options, $anchor instanceof jQuery && $anchor.data('marked')))), hljs = window.hljs;
+			var html = marked(md, app.debug('marked options are', _.extend(app.config.marked, (options.marked && options.marked) || options, _.isjQueryObject($anchor) && $anchor.data('marked')))), hljs = window.hljs;
 			//highlight code (use ```language to specify type)
 			if(hljs){
-				hljs.configure(app.debug('hljs options are', _.extend(app.config.hljs, options.hljs, $anchor instanceof jQuery && $anchor.data('hljs'))));
+				hljs.configure(app.debug('hljs options are', _.extend(app.config.hljs, options.hljs, _.isjQueryObject($anchor) && $anchor.data('hljs'))));
 				var $html = $('<div>' + html + '</div>');
 				$html.find('pre code').each(function(){
 					hljs.highlightBlock(this);
 				});
 				html = $html.html();
 			}
-			if($anchor instanceof jQuery)
+			if(_.isjQueryObject($anchor))
 				return $anchor.html(html).addClass('md-content');
 			return html;
 		},
@@ -40162,7 +40166,7 @@ if (typeof jQuery === 'undefined') {
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.1-1192 build 1488252769253";
+;;app.stagejs = "1.10.1-1195 build 1488340187029";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -43019,17 +43023,17 @@ module.exports = DeepModel;
  *
  * 2. 'region:load-view' and regional metadata
  * ---------------------
- * All .show() links to 'region:load-view' now. 
+ * All view.show() links to 'region:load-view' now. Do NOT use region.show() directly!
  * Giving region the ability to show:
  *     1. a registered View/Widget by name and options
- *     2. direct templates
+ *     2. direct templates (same as given to view.template)
  *         2.1 @*.html -- remote template in html
  *         2.2 @*.md -- remote template in markdown
  *         2.3 'raw html string'
  *         2.4 ['raw html string1', 'raw html string2']
  *         2.5 a '#id' marked DOM element 
  *     3. view def (class fn)
- *     4. view instance (object)
+ *     4. view instance/options (object)
  *     
  * Through:
  *     a. view="" in the template; (1, 2.1, 2.2, 2.5 only)
@@ -43059,6 +43063,7 @@ module.exports = DeepModel;
  * @updated 2015.12.15
  * @updated 2015.02.03
  * @updated 2016.12.12
+ * @updated 2017.02.28
  */
 
 ;(function(app) {
@@ -43076,9 +43081,9 @@ module.exports = DeepModel;
                 if(_.isString(name)){
                     //Template directly (static/mockup view)?
                     if(!/^[_A-Z]/.test(name)){
-                        return this.show(app.view({
+                        return this.show(app.view(_.extend({
                             template: name,
-                        }));
+                        }, options)));
                     }
                     else{
                     //View name (_ or A-Z starts a View name, no $ sign here sorry...)
@@ -43096,9 +43101,15 @@ module.exports = DeepModel;
                 if(_.isFunction(name))
                     return this.show(new name(options));
 
-                //View instance
-                if(_.isPlainObject(name))
-                    return this.show(name);
+                //View instance (skip options) or anonymous view options
+                if(_.isPlainObject(name)){
+                    if(name.render)
+                        return this.show(name);
+                    else {
+                        options = name;
+                        return this.show(app.view(options));
+                    }
+                }
             });
         },
 
@@ -43673,7 +43684,7 @@ module.exports = DeepModel;
 			this._overlayConfig = _.isBoolean(this.overlay)? {}: this.overlay;
 			this.overlay = function(anchor, options){
 				var $anchor;
-				if(anchor instanceof jQuery)
+				if(_.isjQueryObject(anchor))
 					$anchor = anchor;
 				else if(_.isPlainObject(anchor)){
 					options = anchor;
@@ -43727,7 +43738,7 @@ module.exports = DeepModel;
 		 			},
 		 			$anchor;
 		 		//check para1(anchor point) is a jquery object or a DOM element
-	 			if(anchor instanceof jQuery)
+	 			if(_.isjQueryObject(anchor))
 	 				//jquery object
 	 				$anchor = anchor;
 				else if(_.isPlainObject(anchor)){
@@ -43888,8 +43899,12 @@ module.exports = DeepModel;
 			});
 		});
 
-		//global co-op (global events forwarding through app)
-		if(this.coop) {
+		//global co-op (global events forwarding through app), use false to ignore all global co-ops;
+		if(this.coop !== false)
+			this.coop = this.coop || [];
+		//by default all view starts with 1 global co-op event;
+		if(_.isArray(this.coop)) {
+			this.coop.push('window-resized'); //every one should have this.(easy .svg canvas auto-resizing)
 			this._postman = {};
 			this.coop = _.uniq(this.coop); //for possible double entry in the array.
 			//register
@@ -44340,14 +44355,20 @@ module.exports = DeepModel;
 
 			//3. give paper a proper .clear() method to call before each drawing
 			//+._fit() to paper.clear() (since paper.height/width won't change with the above w/h:100% settings)
-			paper._fit = function(w, h){
+			paper._fit = function(w /*or $anchor*/, h){
+				var $anchor = $el;
+				if(_.isjQueryObject(w)){
+					$anchor = w;
+					w = h = 0;
+				}
 				//there is no 0x0 so don't worry...
-				paper.setSize(w || $el.width(), h || $el.height());
+				paper.setSize(w || $anchor.width(), h || $anchor.height());
 			};
-			var tmp = paper.clear;
+			var tmp = paper.clear, that = this;
 			paper.clear = function(w, h){
 				tmp.apply(paper, arguments);
 				paper._fit(w, h);
+				that.trigger('view:paper-cleared', paper, {name: paperName, w: w, h: h});
 			};
 
 			//Note: Manually call paper.clear() upon window resize or data change before re-draw. Paper.width/height will be corrected.
@@ -44679,6 +44700,10 @@ module.exports = DeepModel;
 				this.show(region, '<span style="display:none;">tabbed regions wrapper view</span>');
 				cv = this.getViewIn(region);
 				cv._tabbedViewWrapper = true;
+				//add getTab api to view
+				this.getViewFromTab = function(tabId){
+					return cv.getViewIn(tabId);
+				}
 			}
 
 			//if View is set to false, remove tab (region & view)

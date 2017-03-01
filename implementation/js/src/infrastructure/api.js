@@ -148,35 +148,33 @@
 			return Reusable;
 		},
 
-		spray: function($anchor, template, data/*, options*/){
+		spray: function($anchor, View /*or template or name or instance or options or svg draw(paper){} func */, options, parentCt){
 			var $el = $($anchor);
+			parentCt = parentCt || app.currentContext;
 
-			//clean up wall
-			var oldView = $el.data('view');
-			if(oldView){
-				oldView.undelegateEvents(); // = $anchor.on() DOM e (e.g view.events)
-				oldView.off(); //view.on('...')
-				oldView.stopListening(); //view.listenTo('...')
-				//note we didn't call .close() since it will remove our $anchor;
-			} else 
-				$el.off();
+			//check if $anchor is already an anonymous region
+			var regionName = $el.attr('region');
+			if(!regionName){
+				regionName = _.uniqueId('anonymous-region-');
+				$el.attr('region', regionName);
+				parentCt.addRegion(regionName, '[region="' + regionName + '"]');
+			}
 
-			if(!_.string.trim(template))
-				$el.empty();
-
-			//spray new pic (through quick dirty anonymous view)
-			var v = app.view(_.extend({
-					el: $($anchor)[0], template: template, data: data
-				}/*, options*/), true).render();
-			v._sprayed = true;
-			v.triggerMethod('show');
-			return v;
-
-			//Caveat: (putting a view on screen without using region has a price to pay)
-			//1. Since there is no region built, options.effect will NOT be honored.
-			//2. Call v.stopListening() or v.close() manually if you want clean (mem) navigation.
-			//
-			//Thus, we have decided to turn options off and enforce an one-off data change to view render cycle.
+			//see if it is an svg draw(paper){} function
+			if(_.isFunction(View) && View.length === 1){
+				//svg
+				return parentCt.show(regionName, {
+					template: '<div svg="canvas"></div>',
+					svg: {
+						canvas: View
+					},
+					onPaperCleared: function(paper){
+						paper._fit($el);
+					},
+				});
+			}else
+				//view
+				return parentCt.show(regionName, View, options);
 			
 		},
 
@@ -469,7 +467,7 @@
 		},
 
 		//effects see https://daneden.github.io/animate.css/
-		//sample usage: 'view:data-rendered' --> app.animateItems();
+		//sample usage: 'view:ready' --> app.animateItems();
 		animateItems: function(selector /*or $items*/, effect, stagger){
 			var $selector = $(selector); 
 			if(_.isNumber(effect)){
@@ -519,19 +517,19 @@
 		//	...
 		//	^^^
 		markdown: function(md, $anchor /*or options*/, options){
-			options = options || (!($anchor instanceof jQuery) && $anchor) || {};
+			options = options || (!_.isjQueryObject($anchor) && $anchor) || {};
 			//render content
-			var html = marked(md, app.debug('marked options are', _.extend(app.config.marked, (options.marked && options.marked) || options, $anchor instanceof jQuery && $anchor.data('marked')))), hljs = window.hljs;
+			var html = marked(md, app.debug('marked options are', _.extend(app.config.marked, (options.marked && options.marked) || options, _.isjQueryObject($anchor) && $anchor.data('marked')))), hljs = window.hljs;
 			//highlight code (use ```language to specify type)
 			if(hljs){
-				hljs.configure(app.debug('hljs options are', _.extend(app.config.hljs, options.hljs, $anchor instanceof jQuery && $anchor.data('hljs'))));
+				hljs.configure(app.debug('hljs options are', _.extend(app.config.hljs, options.hljs, _.isjQueryObject($anchor) && $anchor.data('hljs'))));
 				var $html = $('<div>' + html + '</div>');
 				$html.find('pre code').each(function(){
 					hljs.highlightBlock(this);
 				});
 				html = $html.html();
 			}
-			if($anchor instanceof jQuery)
+			if(_.isjQueryObject($anchor))
 				return $anchor.html(html).addClass('md-content');
 			return html;
 		},

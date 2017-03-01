@@ -134,10 +134,11 @@
 			app._navViewConfig = app._navViewConfig || opt.ctxConfig || opt.viewConfig;
 
 			if(silent || app.hybridEvent)
-				navigate(path);//hybrid app will navigate using the silent mode.
+				navigate(path);//hybrid app will navigate using the silent mode. (sync mode, no #hashchange)
 			else
 				//note that, this will in turn call app.navigate() again which triggers a silent app:navigate again.
 				window.location.hash = 'navigate/' + path;
+				//wait for #hashchange to be captured by BB.History() --> BB.Router (async mode, app.coop()s might not work immediately)
 		};
 
 		app.onContextGuardError = function(error, ctxName){

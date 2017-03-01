@@ -196,14 +196,20 @@
 
 			//3. give paper a proper .clear() method to call before each drawing
 			//+._fit() to paper.clear() (since paper.height/width won't change with the above w/h:100% settings)
-			paper._fit = function(w, h){
+			paper._fit = function(w /*or $anchor*/, h){
+				var $anchor = $el;
+				if(_.isjQueryObject(w)){
+					$anchor = w;
+					w = h = 0;
+				}
 				//there is no 0x0 so don't worry...
-				paper.setSize(w || $el.width(), h || $el.height());
+				paper.setSize(w || $anchor.width(), h || $anchor.height());
 			};
-			var tmp = paper.clear;
+			var tmp = paper.clear, that = this;
 			paper.clear = function(w, h){
 				tmp.apply(paper, arguments);
 				paper._fit(w, h);
+				that.trigger('view:paper-cleared', paper, {name: paperName, w: w, h: h});
 			};
 
 			//Note: Manually call paper.clear() upon window resize or data change before re-draw. Paper.width/height will be corrected.

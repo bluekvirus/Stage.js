@@ -2076,6 +2076,7 @@ View meta events (triggered):
 * view:render (implicit)
 * view:show/all-region-shown
 * view:ready (view:data-rendered/editor-updated)
+* view:paper-cleared
 * view:editor-changed
 * view:tab-removed/-added/-activated
 * view:navigate-to/-away
@@ -2106,6 +2107,7 @@ View apis:
 * view.lock (region, flag, options)
 * view.more (region, [data array], View)
 * view.tab (region, View, tabId)
+* view.getViewFromTab (tabId)
 * view.show (region, View, options)
 * view.overlay (anchor, options)
 * view.popover (anchor, options)
@@ -2126,8 +2128,8 @@ App data handling helpers:
 * Application.param ()
 
 App utils:
-* Application.navigate ()
-* Application.spray () - put a quick dirty anonymous view in a DOM el
+* Application.navigate () - async #hashchange e, silent=true for sync mode
+* Application.spray () - put a quick dirty anonymous view/svg in a DOM el
 * Application.coop (e, [args]) - calls for help from every interested view
 * Application.notify ()
 * Application.prompt ()
@@ -2148,6 +2150,8 @@ App utils:
 * Application.inject.tpl ([path to html/json ]) - util/template-builder.js
 * Application.inject.css ([path to css], ...) - same arguments to loadCSS
 * Application.extract (keypath, obj)
+* _.isPlainObject ()
+* _.isjQueryObject ()
 
 App dev support:
 * Application.debug ()

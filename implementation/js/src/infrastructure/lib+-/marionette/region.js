@@ -8,17 +8,17 @@
  *
  * 2. 'region:load-view' and regional metadata
  * ---------------------
- * All .show() links to 'region:load-view' now. 
+ * All view.show() links to 'region:load-view' now. Do NOT use region.show() directly!
  * Giving region the ability to show:
  *     1. a registered View/Widget by name and options
- *     2. direct templates
+ *     2. direct templates (same as given to view.template)
  *         2.1 @*.html -- remote template in html
  *         2.2 @*.md -- remote template in markdown
  *         2.3 'raw html string'
  *         2.4 ['raw html string1', 'raw html string2']
  *         2.5 a '#id' marked DOM element 
  *     3. view def (class fn)
- *     4. view instance (object)
+ *     4. view instance/options (object)
  *     
  * Through:
  *     a. view="" in the template; (1, 2.1, 2.2, 2.5 only)
@@ -48,6 +48,7 @@
  * @updated 2015.12.15
  * @updated 2015.02.03
  * @updated 2016.12.12
+ * @updated 2017.02.28
  */
 
 ;(function(app) {
@@ -65,9 +66,9 @@
                 if(_.isString(name)){
                     //Template directly (static/mockup view)?
                     if(!/^[_A-Z]/.test(name)){
-                        return this.show(app.view({
+                        return this.show(app.view(_.extend({
                             template: name,
-                        }));
+                        }, options)));
                     }
                     else{
                     //View name (_ or A-Z starts a View name, no $ sign here sorry...)
@@ -85,9 +86,15 @@
                 if(_.isFunction(name))
                     return this.show(new name(options));
 
-                //View instance
-                if(_.isPlainObject(name))
-                    return this.show(name);
+                //View instance (skip options) or anonymous view options
+                if(_.isPlainObject(name)){
+                    if(name.render)
+                        return this.show(name);
+                    else {
+                        options = name;
+                        return this.show(app.view(options));
+                    }
+                }
             });
         },
 

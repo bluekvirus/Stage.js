@@ -124,6 +124,10 @@
 				this.show(region, '<span style="display:none;">tabbed regions wrapper view</span>');
 				cv = this.getViewIn(region);
 				cv._tabbedViewWrapper = true;
+				//add getTab api to view
+				this.getViewFromTab = function(tabId){
+					return cv.getViewIn(tabId);
+				}
 			}
 
 			//if View is set to false, remove tab (region & view)
