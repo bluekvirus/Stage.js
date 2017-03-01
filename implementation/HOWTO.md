@@ -2109,6 +2109,7 @@ View apis:
 * view.tab (region, View, tabId)
 * view.getViewFromTab (tabId)
 * view.show (region, View, options)
+* view.spray () - put a quick dirty anonymous view/svg in a DOM el (bound)
 * view.overlay (anchor, options)
 * view.popover (anchor, options)
 * view.close ()

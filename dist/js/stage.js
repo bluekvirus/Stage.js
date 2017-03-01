@@ -39483,7 +39483,7 @@ if (typeof jQuery === 'undefined') {
 
 		spray: function($anchor, View /*or template or name or instance or options or svg draw(paper){} func */, options, parentCt){
 			var $el = $($anchor);
-			parentCt = parentCt || app.currentContext;
+			parentCt = parentCt || app.mainView;
 
 			//check if $anchor is already an anonymous region
 			var regionName = $el.attr('region');
@@ -40172,7 +40172,7 @@ if (typeof jQuery === 'undefined') {
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.1-1195 build 1488343234704";
+;;app.stagejs = "1.10.1-1196 build 1488399146249";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -44740,6 +44740,11 @@ module.exports = DeepModel;
 				tabRegion.$el.show();
 			}
 			this.trigger('view:tab-activated', tabId);
+		},
+
+		//spray like app.spray but use this view as parentCt for $anchor region
+		spray: function($anchor, View /*or template or name or instance or options or svg draw(paper){} func */, options){
+			return app.spray($anchor, View, options, this);
 		},
 
 		//lock or unlock a region with overlayed spin/view (e.g waiting)

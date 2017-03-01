@@ -150,7 +150,7 @@
 
 		spray: function($anchor, View /*or template or name or instance or options or svg draw(paper){} func */, options, parentCt){
 			var $el = $($anchor);
-			parentCt = parentCt || app.currentContext;
+			parentCt = parentCt || app.mainView;
 
 			//check if $anchor is already an anonymous region
 			var regionName = $el.attr('region');
