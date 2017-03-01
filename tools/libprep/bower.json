@@ -48,9 +48,9 @@
     "open-sans-fontface": "*"
   },
   "siteDependencies": {
-    "nprogress": "0.2.x",
-    "highlightjs": "8.x.x",
-    "mockjs": "0.1.x",
+    "nprogress": "~0.2.x",
+    "highlightjs": "~8.x.x",
+    "mockjs": "~0.1.x",
     "bootswatch": "~3.x.x"
   },
   "devDependencies": {
@@ -63,7 +63,7 @@
     "js-cookie": "~2.0.x",
     "amaranjs": "~0.5.x",
     "jquery-file-upload": "~9.x.x",
-    "flexlayout": "0.2.x",
+    "flexlayout": "~0.3.x",
     "selectn": "~0.10.x",
     "validator-js": "~4.x.x",
     "backbone": "~1.3.x",
@@ -73,14 +73,14 @@
     "store.js": "~1.x.x",
     "momentjs": "~2.x.x",
     "marked": "0.3.5",
-    "later": "1.2.x",
+    "later": "~1.2.x",
     "bootstrap": "~3.x.x",
     "animate.css": "~3.x.x",
     "fontawesome": "~4.x.x",
     "open-sans-fontface": "*",
-    "nprogress": "0.2.x",
-    "highlightjs": "8.x.x",
-    "mockjs": "0.1.x",
+    "nprogress": "~0.2.x",
+    "highlightjs": "~8.x.x",
+    "mockjs": "~0.1.x",
     "bootswatch": "~3.x.x"
   },
   "monitored": {
