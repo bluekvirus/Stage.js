@@ -13197,7 +13197,9 @@ jQuery.extend( jQuery.Color.names, {
 			/*defines whether the width/height of created blocks can be adjusted or not, boolean or [boolean, boolean]*/
 			adjust: false,
 			/*defines the style of divide bars between created blocks, {...css object}, '...string of class name...', boolean or [..., ..., ..., ...]*/
-			bars: {flex: '0 0 2px', 'background-color': '#ddd'}
+			bars: {flex: '0 0 2px', 'background-color': '#ddd'},
+			/*append or rewrite selected div*/
+			append: false
 		}
 	};
 
@@ -13219,20 +13221,26 @@ jQuery.extend( jQuery.Color.names, {
 	 * main layout setup function
 	 */
 	function setLayout($el, layout, opts, _tq){
+		//check whether append, if not. empty first
+		if(!opts.append) $el.empty();
 		//check direction configure to setup flex-flow
 		var _flow = (($.isArray(opts.dir) ? opts.dir[0] : opts.dir) === 'v') ? 'row' : 'column';
 		//setup flex parameters
 		$el.css({display: 'flex', 'flex-flow': _flow,  'justify-content': $.fn.flexLayout.flexConfig['justify-content']});
 		//go through layout array
 		$.each(layout, function(index, config){
+			//split config before using. save calculation time.
+			var tempConfig = $.isArray(config) ? config[0].split(':') : config.split(':');
+			
+			//setup flexboxes
 				//get size
-			var _dimension = $.isArray(config) ? config[0].split(':')[0] : config.split(':')[0],
+			var _dimension = tempConfig[0],
 				//check whether fixed or flexible
 				_style = /(px|em)/.test(_dimension) ? 'style = "flex: 0 0 ' + _dimension + ';" ' : 'style="flex: ' + _dimension + ' 1 0;" ', 
 				//check attributes
-				_attribute = $.isArray(config) ? trimAttr(config[0].split(':')[1]) : trimAttr(config.split(':')[1]),
+				_attribute = trimAttr(tempConfig[1]),
 				//added for insert html string
-				_html = $.isArray(config) ? '' : ((config.split(':')[2]) ? config.split(':')[2].replace(/^"|^'/, '').replace(/"$|'$/, '') : ''),
+				_html = $.isArray(config) ? '' : ((tempConfig[2]) ? tempConfig[2].replace(/^"|^'|"$|'$/g, '') : ''),
 				//make block object
 				_$block = $('<div ' + _style + _attribute + '>' + _html + '</div>'),
 				//save a copy of arrays, it might be multiple same level of blocks; therefore do not 'shift' on original array
@@ -13311,53 +13319,71 @@ jQuery.extend( jQuery.Color.names, {
 	/**
 	 * Trim attributes given by user, if user uses selectors style(e.g. #, .)
 	 *
-	 * Note: if using selector style, the function performs under the assumption that only one 'id' exits.
-	 * 		 That is, there is only one '#' in the selector style string.
+	 * Note: Now the attributes takes variabes of style in one string, but separated with space.
+	 * E.g. .class1 #id .class2 region View ui="some-ui" foo="bar"
 	 */
 	function trimAttr(attrStr){
-		var _attr = '',
-			_classArr = [];
-		//empty
-		if(!attrStr)
+		var _attr = {},
+			_tempArr = [],
+			temp,
+			resultStr = ' ';
+		//empty or long string with spaces
+		if(!attrStr || !attrStr.replace(/^\s+|\s+$/g, ''))
 			return '';
-		//selector style
-		if(/(#|\.)/.test(attrStr) && !/(href)/.test(attrStr)){
-			//remove spaces
-			attrStr = attrStr.replace(/\s/g, '');
-			//id exists
-			if(/#.*?(?=\.|$)/i.test(attrStr)){
-				_attr += attrStr.match(/#.*?(?=\.|$)/i)[0].replace('#', 'id="') + '"';
-				//remove # part in the original string for later use
-				attrStr = attrStr.replace(attrStr.match(/#.*?(?=\.|$)/i)[0], '');
+
+		//not empty string, now takes attrubites separated with space.
+		//Note: need to ignore the spaces inside attributes like, foo="bar1 bar2"
+		_tempArr = attrStr.replace(/^\s+|\s+$/g, '').match(/(?:[^\s"]+|"[^"]*")+/g);
+
+		//loop through all the attributes
+		_tempArr.forEach(function(attr){
+			//start with a '#', means id, only one id exists, replace the old one
+			if(/^#/.test(attr)){
+				_attr.id = attr.slice(1);
 			}
-			if(attrStr){
-				//add classes to attribute string
-				_attr += ' class="';
-				_classArr = attrStr.split('.');
-				$.each(_classArr, function(index, str){
-					if(str)//ignore empty string caused by split
-						_attr += str + ((index === _classArr.length - 1) ? '' : ' ');
-				});
-				_attr +='"';
+			//start with a '.', means class. append
+			else if(/^\./.test(attr)){
+				(_attr.class) ? _attr.class.push(attr.slice(1)) : (_attr.class = [attr.slice(1)]);
 			}
-			return _attr;
-		}
-		//region and view
-		else if(!/(=)/.test(attrStr)){
-			//check whether capitalized(View)
-			if(attrStr.charAt(0) === attrStr.charAt(0).toUpperCase())
-				return 'view="' + attrStr + '" ';
-			else if(attrStr.charAt(0) === attrStr.charAt(0).toLowerCase())
-				return 'region="' + attrStr + '"';
-			else{
-				console.warn('please check your region/view name setting.');
-				return '';
+			//test whether contains "=". if yes, treat as attribute
+			else if(/=/.test(attr)){
+				temp = attr.split('=');
+				//trim double quotes added by split
+				temp[1] = temp[1].replace(/^"|^'|"$|'$/g, '');
+				//check whether it is class
+				//if yes, append
+				if(/^class/.test(attr)){
+					(_attr.class) ? _attr.class.push(temp[1]) : (_attr.class = [temp[1]]);
+				}
+				//if no, rewrite
+				else{
+					_attr[temp[0]] = temp[1];
+				}
+			}
+			//check whether starts with lower case letter, if yes region
+			else if(attr.charAt(0) === attr.charAt(0).toLowerCase()){
+				_attr.region = attr;
+			}
+			//check whether starts with upper case letter, if yes view
+			else if(attr.charAt(0) === attr.charAt(0).toUpperCase()){
+				_attr.view = attr;
+			}
+			//unknow type
+			else
+				console.warn('jQuery::flexlayout::unknow type of attributes');
+		});
+
+		//assemble return string		
+		for(var name in _attr){
+			if(name === 'class'){
+				resultStr += ' ' + name.toString() + '="' + _attr[name].join(' ') + '"';
+			}else{
+				resultStr += ' ' + name.toString() + '="' + _attr[name] + '"';
 			}
 		}
-		//inline style
-		else{
-			return attrStr;
-		}
+
+		//return result string
+		return resultStr;
 	}
 
 	/**
@@ -38886,1926 +38912,6 @@ if (typeof jQuery === 'undefined') {
 	});
 
 })(Handlebars);
-;/**
- * Environment setup (global)
- *
- * @author Tim Lauv
- */
-
-;(function($, _, underscoreString, Marionette){
-
-	/**
-	 * Define top level module containers
-	 * ---------------------------------- 
-	 * 				App
-	 * 				 |
-	 * 			   -----
-	 * 			  /     \
-	 * 			Core    Util
-	 * 			 |       |
-	 * 			 |      ...
-	 * 		Resuable
-	 * 		  |Context|
-	 * 		  |Widget | --fallback--> View (Regional)
-	 * 		  |Editor |
-	 * 		Remote (RESTful)
-	 * 		Lock
-	 */
-	window.app = window.Application = new Marionette.Application();
-	_.each(['Core', 'Util'], function(coreModule){
-		Application.module(coreModule);
-	});
-
-	/**
-	 * Global shortcuts
-	 * ----------------
-	 * $window
-	 * $document
-	 * $head
-	 * $body
-	 */
-	_.each(['document', 'window'], function(coreDomObj){
-		window['$' + coreDomObj] = $(window[coreDomObj]);
-	});
-	_.each(['body', 'head'], function(coreDomWrap){
-		window['$' + coreDomWrap] = $(coreDomWrap);
-	});
-
-})(jQuery, _, s, Marionette);
-
-;/*
- * Main application definition.
- *
- * Usage
- * -----------------------
- * ###How to start my app?
- * 
- * 1. app.setup({config});
- * 2. app.run([hybrid ready e]);
- * 
- * Suggested additional events are:
- *   	app:error - app.onError ==> window.onerror in hybrid mode.
- *    	app:login - app.onLogin [not-defined]
- *     	app:logout - app.onLogout [not-defined]
- *      app:server-push - app.onServerPush [not-defined]
- * You can define them in a fn through app.addInitializer(fn(options));
- * 
- * 
- * Global vars
- * ------------
- * $window
- * $document
- * $body
- * $head
- * Application/app
- *
- * 
- * Global coop events
- * ------------
- * 'ws-data-[channel]'
- * 'poll-data-[e]'
- * 'reusable-registered'
- * 'context-switched'
- * 'window-resized'
- * 'window-scroll'
- * 
- *
- * @author Tim Lauv
- * @created 2014.02.17
- * @updated 2015.08.03
- * @updated 2016.03.31
- */
-
-;(function(app){
-
-	//setup configures, navigation mechanisms (both ctx switch and #history) and 1st(main) view.
-	app.setup = function(config){
-		
-		//0. Re-run app.setup will only affect app.config variable.
-		if(app.config) {
-			_.extend(app.config, config);
-			return;
-		}
-
-		//1. Configure.
-		app.config = _.extend({
-
-			//------------------------------------------app.mainView-------------------------------------------
-			//mainView has limited ability as a generic view (supports data/action, but can not be form, canvas or having co-ops)
-			template: undefined,
-			layout: undefined, //honored only if template is undefined, also indicates app.config.fullScreen = true
-			//e.g:: have a unified layout as template.
-			/**
-			 * ------------------------
-			 * |		top 	      |
-			 * ------------------------
-			 * | left | center | right|
-			 * |	  |        |      |
-			 * |	  |        |      |
-			 * |	  |        |      |
-			 * |	  |        |      |
-			 * ------------------------
-			 * |		bottom 	      |
-			 * ------------------------		 
-			 * 
-			 * == --> layout: ['1:#top', ['5', ['1:left', '4:center', '1:right']], '1:.bottom, .bottom2, .bottom3']
-			 */
-			data: undefined,
-			actions: undefined,
-			navRegion: 'contexts', //alias: contextRegion
-			//---------------------------------------------------------------------------------------------
-			defaultView: undefined, //alias: defaultContext, this is the context (name) the application will sit on upon loading.
-			icings: {}, //various fixed overlaying regions for visual prompts ('name': {top, bottom, height, left, right, width})
-						//alias -- curtains			
-			fullScreen: false, //this will put <body> to be full screen sized (window.innerHeight).
-	        websockets: [], //websocket paths to initialize with (single path with multi-channel prefered).
-	        baseAjaxURI: '', //modify this to fit your own backend apis. e.g index.php?q= or '/api',
-			csrftoken: {
-				header: 'X-CSRFToken', //http header to use to include the csrftoken val
-				cookie: 'csrftoken' //cookie name to look for the csrftoken val
-			},	        
-	        viewTemplates: 'static/template', //this is assisted by the build tool, combining all the *.html handlebars templates into one big json.
-			viewSrcs: undefined, //set this to enable reusable view dynamic loading.
-			i18nResources: 'static/resource', //this the the default location where our I18N plugin looks for locale translations.
-			i18nTransFile: 'i18n.json', //can be {locale}.json
-			i18nLocale: '', //if you really want to force the app to certain locale other than browser preference. (Still override-able by ?locale=.. in url)
-			rapidEventDelay: 200, //in ms this is the rapid event delay control value shared within the application (e.g window resize, app.throttle, app.debounce).
-			timeout: 5 * 60 * 1000, //general communication timeout (ms). for app.remote and $.fileupload atm.
-			//------------------------------------------3rd-party options----------------------------------
-			marked: {
-				gfm: true,
-				tables: true,
-				breaks: true,
-				pedantic: false, //don't use original markdown.pl choices
-				sanitize: true,
-				smartLists: true,
-				smartypants: false //don't be too smart on the punctuations
-			},
-			hljs: {
-				languages: ['c', 'python', 'javascript', 'html', 'css']
-			}
-		}, config);
-		
-		//2. Global App Events Listener Dispatcher
-		app.Util.addMetaEvent(app, 'app');
-
-		//3. Setup the application with content routing (navigation).
-		// - use app:navigate (path) at all times when navigate between contexts & views.
-		app.onNavigate = function(options, silent){
-			if(!app.available()) {
-				app.trigger('app:locked', options);
-				return;
-			}
-
-			var path = '', opt = options || '';
-			if(_.isString(opt)){
-				path = opt;
-			}else {
-				//backward compatibility 
-				path = opt.path || _.string.rtrim([opt.context || app.currentContext.name, opt.module || opt.subpath].join('/'), '/');
-			}
-
-			//inject context config before navigate (e.g app.navigate({path: ..., viewConfig: {}}, [silent]))
-			app._navViewConfig = app._navViewConfig || opt.ctxConfig || opt.viewConfig;
-
-			if(silent || app.hybridEvent)
-				navigate(path);//hybrid app will navigate using the silent mode. (sync mode, no #hashchange)
-			else
-				//note that, this will in turn call app.navigate() again which triggers a silent app:navigate again.
-				window.location.hash = 'navigate/' + path;
-				//wait for #hashchange to be captured by BB.History() --> BB.Router (async mode, app.coop()s might not work immediately)
-		};
-
-		app.onContextGuardError = function(error, ctxName){
-			console.error('DEV:Context-Guard-Error:', ctxName, error);
-		};
-
-		//---navigation worker---
-			function navigate(path){
-				path = _.compact(String(path).split('/'));
-				if(path.length <= 0) throw new Error('DEV::Application::navigate() Navigation path empty...');
-
-				var context = path.shift();
-
-				if(!context) throw new Error('DEV::Application::navigate() Empty context/view name...');
-				var TargetContext = app.get(context, 'Context', true); //fallback to use view if context not found.
-				if(!TargetContext) throw new Error('DEV::Application::navigate() You must have the required context/view ' + context + ' defined...');			
-				if(!app.currentContext || app.currentContext.name !== context) {
-					
-					//re-create target context upon switching
-					var targetCtx = TargetContext.create(), guardError;
-					app.Util.addMetaEvent(targetCtx, 'context');//patch in 'context:e' meta events for backward compatibility.
-
-					//allow context to guard itself (e.g for user authentication)
-					if(targetCtx.guard) guardError = targetCtx.guard();
-					if(guardError) {
-						app.trigger('app:context-guard-error', guardError, targetCtx.name);
-						app.trigger('app:navigation-aborted', targetCtx.name);
-						return;
-					}
-					//allow context to check/do certain stuff before navigated to
-					targetCtx.trigger('view:before-navigate-to');
-
-					//save your context state within onNavigateAway()
-					if(app.currentContext) app.currentContext.trigger('view:navigate-away'); 
-					//prepare and show this new context					
-					var navRegion = app.config.navRegion || app.config.contextRegion;
-					var targetRegion = app.mainView.getRegion(navRegion);
-					if(!targetRegion) throw new Error('DEV::Application::navigate() You don\'t have region \'' + navRegion + '\' defined');		
-					
-					//note that 'ready' is guaranteed to happen after region enter/exit effects
-					targetCtx.once('view:ready', function(){
-						app.currentContext = targetCtx;
-						//fire a notification to app as meta-event. (e.g menu view item highlighting)
-						app.trigger('app:context-switched', app.currentContext.name);
-						app.coop('context-switched', app.currentContext.name, {ctx: app.currentContext, subpath: path.join('/')});
-						//notify regional views in the context (views further down in the nav chain)
-						app.currentContext.trigger('view:navigate-chain', path); //see layout.js
-					});
-					targetRegion.show(targetCtx);
-					//note that 'view:navigate-to' triggers after '(view:show -->) region:show';
-				}else
-					//notify regional views in the context (with old flag set to true)
-					app.currentContext.trigger('view:navigate-chain', path, true); //see layout.js
-
-			}
-		//-----------------------
-
-		//4 Put up Main View and activate Routing (href = #navigate/...) AFTER running all the initializers user has defined.
-		app.on("app:initialized", function(options){
-
-			//a. Put main template into position.
-			app.addRegions({
-				'region-app': '[region="app"]'
-			});
-			//Warning: calling ensureEl() on the app region will not work like regions in layouts.
-			//(Bug??: the additional <div> under the app region is somehow inevitable atm...)
-			app.trigger('app:before-mainview-ready');
-			if(app.config.template || !app.config.layout)
-				app.mainView = app.mainView || app.view({
-					name: 'Main',
-					data: app.config.data,
-					actions: app.config.actions,
-					//put default template here so we can squeeze in app.config.navRegion as a region dynamically.
-					template: app.config.template || ('<div region="' + (app.config.navRegion || app.config.contextRegion) + '"></div>'),
-				}, true);
-			else
-				app.mainView = app.mainView || app.view({
-					name: 'Main',
-					data: app.config.data,
-					actions: app.config.actions,
-					layout: app.config.layout,
-				}, true);
-			app.mainView.onReady = function(){
-				app.trigger('app:mainview-ready');
-			};
-			app.getRegion('region-app').show(app.mainView).$el.css({height: '100%', width: '100%'});
-
-			//b. Create the fixed overlaying regions according to app.config.icings (like a cake, yay!)
-			var icings = {};
-			_.each(_.extend({}, app.config.icings, app.config.curtains), function(cfg, name){
-				if(name === 'app') return;
-
-				var irUID = _.uniqueId('app-icing-');
-				$body.append($('<div id="' + irUID + '" style="position:fixed"></div>').css(cfg).hide()); //default on hidden
-				icings[['icing', 'region', name].join('-')] = '#' + irUID;
-			});
-			app.addRegions(icings);
-			app.icing = function(name, flag){
-				var ir = app.getRegion(['icing', 'region', name].join('-'));
-				ir.ensureEl();
-				if(flag === false)
-					ir.$el.hide();
-				else
-					ir.$el.show();
-				return ir;
-			}; 
-			app.curtain = app.icing; //alias: curtain()
-
-			//c. init client page router and history:
-			var Router = Backbone.Marionette.AppRouter.extend({
-				appRoutes: {
-					'navigate/*path' : 'navigateTo', //navigate to a context and signal it about *module (can be a path for further navigation within)
-				},
-				controller: {
-					navigateTo: function(path){
-						app.navigate(path, true); //will skip updating #hash since the router is triggered by #hash change.
-					},
-				}
-			});
-
-			app.router = new Router();
-			if(Backbone.history)
-				Backbone.history.start();
-
-			//d. Auto navigate to init context (view that gets put in mainView's navRegion)
-			app.config.defaultContext = app.config.defaultView || app.config.defaultContext;
-			if(!window.location.hash && app.config.defaultContext)
-				app.navigate(app.config.defaultContext);
-		});
-
-		return app;
-	};
-
-	/**
-	 * Define app init function upon doc.ready
-	 * -----------------------------------------
-	 * We support using stage.js in a hybrid app
-	 * 
-	 */
-	app.run = function(hybridEvent){
-
-		hybridEvent = (hybridEvent === true) ? 'deviceready' : hybridEvent;
-
-		//called upon doc.ready
-		function kickstart(){
-
-			//1. Check if we need 'fast-click' on mobile plateforms
-			if(Modernizr.mobile)
-				FastClick.attach(document.body);
-
-			//2. Track window resize
-			function trackScreenSize(e, silent){
-				var screenSize = {h: $window.height(), w: $window.width()};
-				if(!validScreenSize(screenSize)) return;
-
-				////////////////cache the screen size/////////////
-				app.screenSize = screenSize;
-				//////////////////////////////////////////////////
-				if(app.config.fullScreen){
-					$body.height(screenSize.h);
-					$body.width(screenSize.w);
-				}
-				if(!silent){
-					app.trigger('app:resized', screenSize);
-					app.coop('window-resized', screenSize);
-				}
-			}
-			function validScreenSize(size){
-				return size.h > 0 && size.w > 0;
-			}
-			$window.on('resize', app.debounce(trackScreenSize));
-			//check screen size, trigger app:resized and get app.screenSize ready.
-			app._ensureScreenSize = function(done){
-				trackScreenSize(); 
-				if(!app.screenSize) _.delay(app._ensureScreenSize, app.config.rapidEventDelay/4, done);
-				else done();
-			};
-			//align $body with screen size if app.config.fullScreen = true
-			if(app.config.layout)
-				app.config.fullScreen = true;
-			if(app.config.fullScreen){
-				$body.css({
-					overflow: 'hidden',
-					margin: 0,
-					padding: 0					
-				});
-			}
-
-			//3. Track window scroll
-			function trackScroll(){
-				var top = $window.scrollTop();
-				app.trigger('app:scroll', top);
-				app.coop('window-scroll', top);
-			}
-			$window.on('scroll', app.throttle(trackScroll));
-
-			//4 Load Theme css & View templates & i18n translations
-			var theme = app.uri(window.location.toString()).search(true).theme || app.config.theme;
-			//4.0 Dynamic theme (skipped)
-			if(theme){
-				console.warn('DEV::Application::theme is now deprecated, please use theme css directly in <head>');
-			}
-
-			//4.1 Inject template pack
-			app.addInitializer(function(){
-				//based on path in app.config.viewTemplates
-				return app.inject.tpl('all.json');
-			});
-
-			//4.2 Activate i18n
-			app.addInitializer(function(){
-				return I18N.init({
-					locale: app.config.i18nLocale,
-					resourcePath: app.config.i18nResources,
-					translationFile: app.config.i18nTransFile
-				});
-			});
-
-			//5 Register websockets
-			_.each(app.config.websockets, function(wspath){
-				app.ws(wspath); //we don't wait for websocket hand-shake
-			});
-
-			//6. Start the app --> pre init --> initializers --> post init(router setup)
-			app._ensureScreenSize(function(){
-				app.start();				
-			});
-
-		}
-
-		//hook up desktop/mobile doc.ready respectively.
-		if(hybridEvent){
-			//Mobile development
-			app.hybridEvent = hybridEvent; //window.cordova is probably true.
-			window.onerror = function(errorMsg, target, lineNum){
-				app.trigger('app:error', {
-					errorMsg: errorMsg,
-					target: target,
-					lineNum: lineNum
-				});
-			};
-		    app.onError = function(eMsg, target, lineNum){
-		    	//override this to have remote debugging assistant
-		        console.error(eMsg, target, lineNum);
-		    };
-			//!!VERY IMPORTANT!! Disable 'touchmove' on non .scrollable elements
-			document.addEventListener("touchmove", function(e) {
-			  if (!e.target.classList.contains('scrollable')) {
-			    // no more scrolling
-			    e.preventDefault();
-			  }
-			}, false);
-			document.addEventListener(hybridEvent, function(){
-				$document.ready(kickstart);
-			}, false);
-		}else
-			$document.ready(kickstart);
-
-		return app;
-
-	};
-
-})(Application);
-
-
-
-
-;/**
- * Framework APIs (global - app.*)
- *
- * Note: View APIs are in view.js (view - view.*)
- * 
- * @author Tim Lauv
- * @created 2015.07.29
- * @updated 2017.02.26
- */
-
-;(function(app){
-
-	/**
-	 * Universal app object creation api entry point
-	 * ----------------------------------------------------
-	 * @deprecated Use the detailed apis instead.
-	 */
-	app.create = function(type, config){
-		console.warn('DEV::Application::create() method is deprecated, use methods listed in ', app._apis, ' for alternatives');
-	};
-
-	/**
-	 * Detailed api entry point
-	 * ------------------------
-	 * If you don't want to use .create() there you go:
-	 */
-	_.extend(app, {
-
-		//----------------view------------------
-		//pass in [name,] options to define view (named view will be registered)
-		//pass in name to get registered view def
-		//pass in options, true to create anonymous view
-		view: function(name /*or options*/, options /*or instance flag*/){
-			if(_.isString(name) && _.isPlainObject(options)){
-				return app.Core.View.register(name, options);
-			}
-
-			if(_.isPlainObject(name)){
-				var instance = options;
-				options = name;
-				var Def = app.Core.View.register(options);
-
-				if(_.isBoolean(instance) && instance) return Def.create();
-				return Def;
-			}
-
-			return app.Core.View.get(name);
-		},
-
-		//pass in [name,] options to register (always requires a name)
-		//pass in [name] to get (name can be of path form)
-		context: function(name /*or options*/, options){
-			if(!options) {
-				if(_.isString(name) || !name)
-					return app.Core.Context.get(name);
-				else
-					options = name;
-			}
-			else
-				_.extend(options, {name: name});
-			return app.Core.Context.register(options);
-		},
-
-		//pass in name, factory to register
-		//pass in name, options to create
-		//pass in [name] to get (name can be of path form)
-		widget: function(name, options /*or factory*/){
-			if(!options) return app.Core.Widget.get(name);
-			if(_.isFunction(options))
-				//register
-				return app.Core.Widget.register(name, options);
-			return app.Core.Widget.create(name, options);
-			//you can not register the definition when providing name, options.
-		},
-
-		//pass in name, factory to register
-		//pass in name, options to create
-		//pass in [name] to get (name can be of path form)
-		editor: function(name, options /*or factory*/){
-			if(!options) return app.Core.Editor.get(name);
-			if(_.isFunction(options))
-				//register
-				return app.Core.Editor.register(name, options);
-			return app.Core.Editor.create(name, options);
-			//you can not register the definition when providing name, options.
-		},
-
-			//@deprecated---------------------
-			regional: function(name, options){
-				options = options || {};
-				if(_.isString(name))
-					_.extend(options, {name: name});
-				else
-					_.extend(options, name);
-				console.warn('DEV::Application::regional() method is deprecated, use .view() instead for', options.name || options /*as an indicator of anonymous view*/);
-				return app.view(options, !options.name);
-			},
-			//--------------------------------
-		
-		//(name can be of path form)
-		has: function(name, type){
-			if(type)
-				return app.Core[type] && app.Core[type].has(name);
-
-			_.each(['Context', 'View', 'Widget', 'Editor'], function(t){
-				if(!type && app.Core[t].has(name))
-					type = t;
-			});
-
-			return type;
-		},
-
-		//(name can be of path form)
-		//always return View definition.
-		get: function(name, type, fallback /*in effect only if you specify type*/){
-			if(!name)
-				return {
-					'Context': app.Core.Context.get(),
-					'View': app.Core.View.get(),
-					'Widget': app.Core.Widget.get(),
-					'Editor': app.Core.Editor.get()
-				};
-
-			var Reusable, t = type || 'View';
-
-			//try local
-			Reusable = (app.Core[t] && app.Core[t].get(name)) || (fallback && app.Core['View'].get(name));
-			
-			//try remote, if we have app.viewSrcs set to load the View def dynamically
-			if(!Reusable && app.config && app.config.viewSrcs){
-				var targetJS = _.compact([app.config.viewSrcs, t.toLowerCase(), app.nameToPath(name)]).join('/') + '.js';
-				app.inject.js(
-					targetJS, true //sync
-				).done(function(){
-					app.debug(t, name, 'injected', 'from', app.config.viewSrcs);
-					if(app.has(name, t))
-						Reusable = app.get(name, t);
-					else
-						throw new Error('DEV::Application::get() loaded definitions other than required ' + name + ' from ' + targetJS + ', please check your view name in that file!');
-				}).fail(function(jqXHR, settings, e){
-					if(!fallback || (t === 'View'))
-						throw new Error('DEV::Application::get() can NOT load definition for ' + name + ' - [' + e + ']');
-					else
-						Reusable = app.get(name, 'View');
-				});
-			}
-
-			return Reusable;
-		},
-
-		spray: function($anchor, View /*or template or name or instance or options or svg draw(paper){} func */, options, parentCt){
-			var $el = $($anchor);
-			parentCt = parentCt || app.mainView;
-
-			//check if $anchor is already an anonymous region
-			var regionName = $el.attr('region');
-			if(!regionName){
-				regionName = _.uniqueId('anonymous-region-');
-				$el.attr('region', regionName);
-				parentCt.addRegion(regionName, '[region="' + regionName + '"]');
-			}
-
-			//see if it is an svg draw(paper){} function
-			if(_.isFunction(View) && View.length === 1){
-				//svg
-				return parentCt.show(regionName, {
-					template: '<div svg="canvas"></div>',
-					svg: {
-						canvas: View
-					},
-					onPaperCleared: function(paper){
-						paper._fit($el);
-					},
-				});
-			}else
-				//view
-				return parentCt.show(regionName, View, options);
-			
-		},
-
-		coop: function(event, options){
-			app.trigger('app:coop', event, options);
-			app.trigger('app:coop-' + event, options);
-			return app;
-		},
-
-		pathToName: function(path){
-			if(!_.isString(path)) throw new Error('DEV::Application::pathToName() You must pass in a valid path string.');
-			if(_.contains(path, '.')) return path;
-			return path.split('/').map(_.string.humanize).map(_.string.classify).join('.');
-		},
-
-		nameToPath: function(name){
-			if(!_.isString(name)) throw new Error('DEV::Application::nameToPath() You must pass in a Reusable view name.');
-			if(_.contains(name, '/')) return name;
-			return name.split('.').map(_.string.humanize).map(_.string.slugify).join('/');
-		},
-
-		//----------------navigation-----------
-		navigate: function(options, silent){
-			return app.trigger('app:navigate', options, silent);
-		},	
-
-		//-----------------mutex---------------
-		lock: function(topic){
-			return app.Core.Lock.lock(topic);
-		},
-
-		unlock: function(topic){
-			return app.Core.Lock.unlock(topic);
-		},
-
-		available: function(topic){
-			return app.Core.Lock.available(topic);
-		},
-
-		//-----------------remote data------------
-		
-		//returns jqXHR object (use promise pls)
-		remote: function(options /*or url*/, payload, restOpt){
-			options = options || {};
-			if(options.payload || payload){
-				payload = options.payload || payload;
-				return app.Core.Remote.change(options, _.extend({payload: payload}, restOpt));
-			}
-			else
-				return app.Core.Remote.get(options, restOpt);
-		},
-		
-		download: function(ticket /*or url*/, options /*{params:{...}} only*/){
-			return app.Util.download(ticket, options);
-		},
-
-		//data push 
-		//(ws channels)
-		_websockets: {},
-		/**
-		 * returns a promise.
-		 * 
-		 * Usage
-		 * -----
-		 * register: app.config.websockets [] or app.ws(socketPath);
-		 * receive (e): view.coop['ws-data-[channel]'] or app.onWsData = custom fn;
-		 * send (json): app.ws(socketPath)
-		 * 								.then(function(ws){ws.channel(...).json({...});}); default per channel data
-		 * 								.then(function(ws){ws.send(); or ws.json();}); anything by any contract
-		 * e.websocket = ws in .then(function(ws){})
-		 *
-		 * Default messaging contract
-		 * --------------------------
-		 * json {channel: '..:..', payload: {.data.}} through ws.channel('..:..').json({.data.})
-		 */
-		ws: function(socketPath){
-			if(!Modernizr.websockets) throw new Error('DEV::Application::ws() Websocket is not supported by your browser!');
-			socketPath = socketPath || '/ws';
-			var d = $.Deferred();
-			if(!app._websockets[socketPath]) { 
-
-				app._websockets[socketPath] = new WebSocket("ws://" + location.host + socketPath);
-				//events: 'open', 'error', 'close', 'message' = e.data
-				//apis: send(), +json(), +channel().json(), close()
-
-				app._websockets[socketPath].json = function(data){
-					app._websockets[socketPath].send(JSON.stringify(data));
-				};
-				app._websockets[socketPath].channel = function(channel){
-					return {
-						json: function(data){
-							app._websockets[socketPath].json({
-								channel: channel,
-								payload: data
-							});
-						}
-					};
-				};
-				app._websockets[socketPath].onclose = function(){
-					app._websockets[socketPath] = undefined;
-				};
-				app._websockets[socketPath].onopen = function(){
-					return d.resolve(app._websockets[socketPath]);
-				};
-
-				//general ws data stub, override this through app.ws(path).then(function(ws){ws.onmessage=...});
-				//Dev Server will always send default json contract string {"channel": "...", "payload": "..."}
-				app._websockets[socketPath].onmessage = function(e){
-					//opt a. override app.onWsData to active otherwise
-					app.trigger('app:ws-data', {websocket: app._websockets[socketPath], path: socketPath, raw: e.data});
-					//opt b. use global coop event 'ws-data-[channel]' in views directly (default json contract)
-					try {
-						var data = JSON.parse(e.data);
-						app.coop('ws-data-' + data.channel, data.payload, {websocket: app._websockets[socketPath], path: socketPath});
-					}catch(ex){
-						console.warn('DEV::Application::ws() Websocket is getting non-default {channel: ..., payload: ...} json contract strings...');
-					}
-				};
-				
-			}else
-				d.resolve(app._websockets[socketPath]);
-			return d.promise();
-		},
-
-		//data polling 
-		//(through later.js) and emit data events/or invoke callback
-		_polls: {},
-		poll: function(url /*or {options} for app.remote()*/, occurrence, coopEvent /*or callback*/) {
-		    //stop everything
-		    if (url === false)
-		        return _.each(this._polls, function(card) {
-		            card.cancel();
-		        });
-
-		    var schedule;
-		    if (_.isString(occurrence)) {
-		        schedule = app.later.parse.text(occurrence);
-		        if (schedule.error !== -1)
-		            throw new Error('DEV::Application::poll() occurrence string unrecognizable...');
-		    } else if (_.isPlainObject(occurrence))
-		        schedule = occurrence;
-		    else //number
-		        schedule = Number(occurrence);
-
-		    //make a key from url, or {url: ..., params/querys}
-		    var key = url;
-		    if (_.isPlainObject(key))
-		        key = [key.url, _.reduce((_.map(key.params || key.querys, function(qV, qKey) {
-		            return [qKey, qV].join('='); 
-		        })).sort(), function(qSignature, more) {
-		            return [more, qSignature].join('&');
-		        }, '')].join('?');
-
-		    //cancel polling
-		    if (occurrence === false) {
-		        if (this._polls[key])
-		            return this._polls[key].cancel();
-		        console.warn('DEV::Application::poll() No polling card registered yet for ' + key);
-		        return;
-		    }
-
-		    //cancel previous polling
-		    if (this._polls[key])
-		        this._polls[key].cancel();
-
-		    //register polling card
-		    if (!occurrence || !coopEvent)
-		        throw new Error('DEV::Application::poll() You must specify an occurrence and a coop event or callback...');
-		    var card = {
-		        _key: key,
-		        url: url,
-		        eof: coopEvent,
-		        timerId: 'unknown',
-		        failed: 0,
-		        valid: true,
-		    };
-		    this._polls[key] = card;
-
-		    var call = _.isNumber(schedule) ? window.setTimeout : app.later.setTimeout;
-		    var worker = function() {
-		        app.remote(url).done(function(data) {
-		            //callback
-		            if (_.isFunction(card.eof))
-		                card.eof(data, card);
-		            //coop event
-		            else
-		                app.coop('poll-data-' + card.eof, data, card);
-		        }).fail(function() {
-		            card.failed++;
-		            //Warning: Hardcoded 3 attemps here!
-		            if (card.failed >= 3) card.cancel();
-		        }).always(function() {
-		            //go schedule the next call
-		            if (card.valid)
-		                card.timerId = call(worker, schedule);
-		        });
-		    };
-		    //+timerType
-		    card.timerType = (call === window.setTimeout) ? 'native' : 'later.js';
-		    //+timerId
-		    card.timerId = call(worker, schedule);
-		    //+cancel()
-		    var that = this;
-		    card.cancel = function() {
-		        if (this.timerType === 'native')
-		            window.clearTimeout(this.timerId);
-		        else
-		            this.timerId.clear();
-		        this.valid = false;
-		        delete that._polls[this._key];
-		    };
-		},
-
-		//-----------------dispatcher/observer/cache----------------
-		dispatcher: function(obj){ //+on/once, off; +listenTo/Once, stopListening; +trigger;
-			var dispatcher;
-			if(_.isPlainObject(obj))
-				dispatcher = _.extend(obj, Backbone.Events);
-			else
-				dispatcher = _.clone(Backbone.Events);
-			dispatcher.dispose = function(){
-				this.off();
-				this.stopListening();
-			};
-			return dispatcher;
-		}, reactor: function(){ return app.dispatcher.apply(this, arguments); }, //alias: reactor
-
-		model: function(data, flat){
-			if(_.isBoolean(data)){
-				flat = data;
-				data = undefined;
-			}
-
-			if(flat)
-				return new Backbone.Model(data);
-			//Warning: Possible performance impact...(default)
-			return new Backbone.DeepModel(data);
-			/////////////////////////////////////////
-		},
-
-		collection: function(data){
-			if(data && !_.isArray(data))
-				throw new Error('DEV::Application::collection You need to specify an array to init a collection');
-			return new Backbone.Collection(data);
-		},
-
-		//selectn
-		extract: function(keypath, from){
-			return selectn(keypath, from);
-		},
-
-		//----------------url params---------------------------------
-		param: function(key, defaultVal){
-			var params = URI.parseQuery(app.uri(window.location.href).search()) || {};
-			if(key) return params[key] || defaultVal;
-			return params;
-		},
-		
-		//----------------raw animation (DON'T mix with jQuery fx)---------------
-		//(specifically, don't call $.animate() inside updateFn)
-		//(you also can NOT control the rate the browser calls updateFn, its 60 FPS all the time...)
-		animation: function(updateFn, condition, ctx){
-			var id;
-			var stepFn = function(t){
-				updateFn.call(ctx);//...update...(1 tick)
-				if(!condition || (condition && condition.call(ctx)))//...condition...(to continue)
-					move();
-			};
-			var move = function(){
-				if(id === undefined) return;
-				id = app._nextFrame(stepFn);
-			};
-			var stop = function(){
-				app._cancelFrame(id);
-				id = undefined;
-			};
-			return {
-				start: function(){id = -1; move();},
-				stop: stop
-			};
-		},
-
-		_nextFrame: function(stepFn){
-			//return request id
-			return window.requestAnimationFrame(stepFn);
-		},
-
-		_cancelFrame: function(id){
-			return window.cancelAnimationFrame(id);
-		},
-
-		//effects see https://daneden.github.io/animate.css/
-		//sample usage: 'view:ready' --> app.animateItems();
-		animateItems: function(selector /*or $items*/, effect, stagger){
-			var $selector = $(selector); 
-			if(_.isNumber(effect)){
-				stagger = effect;
-				effect = undefined;
-			}
-			effect = effect || 'flipInX';
-			stagger = stagger || 150;
-			var inOrOut = /In/.test(effect)? 1: (/Out/.test(effect)? -1: 0);
-
-			$selector.each(function(i, el){
-				var $el = $(el);
-				//////////////////different than region.show effect because of stagger delay//////////////////
-				if(inOrOut)
-					if(inOrOut === 1) $el.css('opacity', 0);
-					else $el.css('opacity', 1);
-				//////////////////////////////////////////////////////////////////////////////////////////////
-				_.delay(function($el){
-					var fxName = effect + ' animated';
-					$el.one(app.ADE, function(){
-						$el.removeClass(fxName);
-					}).addClass(fxName);
-					///////////////reset opacity immediately, not after ADE///////////////
-					if(inOrOut)
-						if(inOrOut === 1) $el.css('opacity', 1);
-						else $el.css('opacity', 0);
-					//////////////////////////////////////////////////////////////////////
-				}, i * stagger, $el);
-			});
-		},
-		//----------------config.rapidEventDelay wrapped util--------------------
-		//**Caveat: must separate app.config() away from app.run(), put view def (anything)
-		//that uses app.config in between in your index.html. (the build tool automatically taken care of this)
-		throttle: function(fn, ms){
-			return _.throttle(fn, ms || app.config.rapidEventDelay);
-		},
-
-		debounce: function(fn, ms){
-			return _.debounce(fn, ms || app.config.rapidEventDelay);
-		},
-
-		//----------------markdown-------------------
-		//options.marked, options.hljs
-		//https://guides.github.com/features/mastering-markdown/
-		//our addition:
-		//	^^^class class2 class3 ...
-		//	...
-		//	^^^
-		markdown: function(md, $anchor /*or options*/, options){
-			options = options || (!_.isjQueryObject($anchor) && $anchor) || {};
-			//render content
-			var html = marked(md, app.debug('marked options are', _.extend(app.config.marked, (options.marked && options.marked) || options, _.isjQueryObject($anchor) && $anchor.data('marked')))), hljs = window.hljs;
-			//highlight code (use ```language to specify type)
-			if(hljs){
-				hljs.configure(app.debug('hljs options are', _.extend(app.config.hljs, options.hljs, _.isjQueryObject($anchor) && $anchor.data('hljs'))));
-				var $html = $('<div>' + html + '</div>');
-				$html.find('pre code').each(function(){
-					hljs.highlightBlock(this);
-				});
-				html = $html.html();
-			}
-			if(_.isjQueryObject($anchor))
-				return $anchor.html(html).addClass('md-content');
-			return html;
-		},
-
-		//----------------notify/overlay/popover---------------------
-		notify: function(title /*or options*/, msg, type /*or otherOptions*/, otherOptions){
-			if(_.isString(title)){
-				if(_.isPlainObject(type)){
-					otherOptions = type;
-					type = undefined;
-				}
-				if(otherOptions && otherOptions.icon){
-					//theme awesome ({.icon, .more})
-					$.amaran(_.extend({
-						theme: 'awesome ' + (type || 'ok'),
-						//see http://ersu.me/article/amaranjs/amaranjs-themes for types
-						content: {
-							title: title,
-							message: msg,
-							info: otherOptions.more || ' ',
-							icon: otherOptions.icon
-						}
-					}, otherOptions));
-				} else {
-					//custom theme
-					$.amaran(_.extend({
-						content: {
-							themeName: 'stagejs',
-							title: title,
-							message: msg, 
-							type: type || 'info',
-						},
-						themeTemplate: app.NOTIFYTPL
-					}, otherOptions));
-				}
-			}
-			else
-				$.amaran(title);
-		},
-
-		//overlay or popover
-		prompt: function(view, anchor, placement, options){
-			if(_.isFunction(view))
-				view = new view();
-			else if(_.isString(view))
-				view = app.get(view).create();
-
-			//is popover
-			if(_.isString(placement)){
-				options = options || {};
-				options.placement = placement;
-				return view.popover(anchor, options);
-			}
-
-			//is overlay
-			options = placement;
-			return view.overlay(anchor, options);
-		},
-
-		//----------------i18n-----------------------
-		i18n: function(key, ns){
-			if(key){
-				//insert translations to current locale
-				if(_.isPlainObject(key))
-					return I18N.insertTrans(key);
-				//return a translation for specified key, ns/module
-				return String(key).i18n(ns);
-			}
-
-			//otherwise, collect available strings (so far) into an i18n object.
-			return I18N.getResourceJSON(null, false);
-		},
-
-		//----------------debug----------------------
-		//Note: debug() will always return the last argument as return val. (for non-intrusive inline debug printing)
-		debug: function(){
-			var fn = console.debug || console.log;
-			if(app.param('debug') === 'true')
-				fn.apply(console, arguments);
-			return arguments.length && arguments[arguments.length - 1];
-		},
-
-		//find a view instance by name or its DOM element.
-		locate: function(name /*el or $el*/){
-			//el, $el for *contained* view names only
-			if(!_.isString(name)){
-				var all;
-				if(name)
-					all = $(name).find('[data-view-name]');
-				else
-					all = $('[data-view-name]');
-
-				all = all.map(function(index, el){
-					return $(el).attr('data-view-name');
-				}).get();
-				return all;
-			}
-
-			//name string, find the view instance and sub-view names
-			var view = $('[data-view-name="' + name + '"]').data('view');
-			return view && {view: view, 'sub-views': app.locate(view.$el)};
-		},
-
-		//output performance related meta info so far for a view by name or its DOM element.
-		profile: function(name /*el or $el*/){
-			//el, $el for *contained* views total count and rankings
-			if(!_.isString(name)){
-				var all;
-				if(name)
-				 	all = $(name).find('[data-render-count]');
-				else
-					all = $('[data-render-count]');
-
-				all = all.map(function(index, el){
-					var $el = $(el);
-					return {name: $el.data('view-name'), 'render-count': Number($el.data('render-count')), $el: $el};
-				}).get();
-				return {total: _.reduce(all, function(memo, num){ return memo + num['render-count']; }, 0), rankings: _.sortBy(all, 'render-count').reverse()};
-			}
-
-			//name string, profile the specific view and its sub-views
-			var result = app.locate(name), view;
-			if(result) view = result.view;
-			return view && {name: view.$el.data('view-name'), 'render-count': view.$el.data('render-count'), $el: view.$el, 'sub-views': app.profile(view.$el)};
-		},
-
-		//mark views on screen. (hard-coded style, experimental)
-		mark: function(name /*el or $el*/){
-			var nameTagPairing = [], $body;
-			if(_.isString(name)){
-				var result = app.locate(name);
-				if(!result) return;
-				$body = result.view.parentRegion && result.view.parentRegion.$el;
-			}else if(name){
-				$body = $(name);
-			}else
-				$body = $('body');
-			//else abort
-			if(!$body) return;
-
-			//clear all name tag
-			$body.find('.dev-support-view-name-tag').remove();
-			//round-1: generate border and name tags
-			_.each(app.locate($body), function(v){
-				var result = app.locate(v), $container;
-				//add a container style
-				if(result.view.category !== 'Editor')
-					$container = result.view.parentRegion && result.view.parentRegion.$el;
-				else
-					$container = result.view.$el;
-				//else return;
-				if(!$container) return;
-
-				$container.css({
-					'padding': '1.5em', 
-					'border': '1px dashed black'
-				});
-				//add a name tag (and live position it to container's top left)
-				var $nameTag = $('<span class="label label-default dev-support-view-name-tag" style="position:absolute;">' + result.view.$el.data('view-name') + '</span>');
-				//add click event to $nameTag
-				$nameTag.css({cursor: 'pointer'})
-				.on('click', function(){
-					app.reload(result.view.$el.data('view-name'), true);
-				});
-				$body.append($nameTag);
-				nameTagPairing.push({$tag: $nameTag, $ct: $container, view: result.view});
-			});
-			//round-2: position the name tags
-			$window.trigger('resize');//trigger a possible resizing globally.
-			_.defer(function(){
-				_.each(nameTagPairing, function(pair){
-					pair.$tag.position({
-						my: 'left top',
-						at: 'left top',
-						of: pair.$ct
-					});
-					pair.view.on('close', function(){
-						pair.$tag.remove();
-					});
-				});
-			});
-		},
-
-		//reload everything, or override a view with newer version.
-		reload: function(name, override/*optional*/){
-			//reload globally
-			if(!name)
-				return window.location.reload();
-
-			var result = app.locate(name);
-			if(!result){
-				app.mark();//highlight available views.
-				throw new Error('DEV::app.reload():: Can NOT find view with given name: ' + name);
-			}
-
-			var v = result.view,
-				region = v.parentRegion,
-				category;
-			//get type of the named object
-			_.each(app.get(), function(data, key){
-				if(data.indexOf(name) >= 0){
-					category = key;
-					return;
-				}
-			});
-			if(!category)
-				throw new Error('DEV::app.reload():: No category can be found with given view: ' + name);
-			override = override || false;
-			//override old view
-			if(override){
-				//clear template cache in cache
-				app.Util.Tpl.cache.clear(v.template);
-				//un-register the view
-				app.Core[category].remove(name);
-				//re-show the new view
-				try{
-					var view = app.get(name, category).create();
-					view.once('view:all-region-shown', function(){
-						app.mark(name);
-					});
-					region.show(view);
-				}catch(e){
-					console.warn('DEV::app.reload()::Abort, this', name, 'view is not defined alone, you need to find its source.', e);
-				}
-			}else{
-				//re-render the view
-				v.refresh();
-			}
-			//return this;
-		},
-
-		inject: {
-			js: function(){
-				return app.Util.inject.apply(null, arguments);
-			},
-
-			tpl: function(){
-				return app.Util.Tpl.remote.apply(app.Util.Tpl, arguments);
-			},
-
-			css: function(){
-				return loadCSS.apply(null, arguments);
-			}
-		},
-
-		//--------3rd party lib pass-through---------
-		
-		// js-cookie (former jquery-cookie)
-		//.set(), .get(), .remove()
-		cookie: Cookies,
-
-		// store.js (localStorage)
-		//.set(), .get(), .getAll(), .remove(), .clear()
-		store: store.enabled && store,
-
-		// validator.js (form data type,val,deps validation)
-		validator: validator,
-
-		// moment.js (date and time)
-		moment: moment,
-
-		// URI.js (uri,query and hash in the url)
-		uri: URI,
-
-		// later.js (schedule repeated workers, e.g poll RESTful data)
-		later: later,
-	});
-
-	//editor rules
-	app.editor.validator = app.editor.rule = function(name, fn){
-		if(!_.isString(name)) throw new Error('DEV::Validator:: You must specify a validator/rule name to use.');
-		return app.Core.Editor.addRule(name, fn);
-	};
-
-	//alias
-	app.page = app.context;
-	app.area = app.regional;
-
-	/**
-	 * API summary
-	 */
-	app._apis = [
-		'dispatcher/reactor', 'model', 'collection',
-		//view registery
-		'context - @alias:page', 'view', 'widget', 'editor', 'editor.validator - @alias:editor.rule',
-		//global action locks
-		'lock', 'unlock', 'available', 
-		//utils
-		'has', 'get', 'spray', 'coop', 'navigate', 'icing/curtain', 'i18n', 'param', 'animation', 'animateItems', 'throttle', 'debounce',
-		//com
-		'remote', 'download', 'ws', 'poll',
-		//3rd-party lib short-cut
-		'extract', 'markdown', 'notify', 'prompt', //wraps
-		'cookie', 'store', 'moment', 'uri', 'validator', 'later', //direct refs
-		//supportive
-		'debug', 'reload', 'locate', 'profile', 'mark', 'nameToPath', 'pathToName', 'inject.js', 'inject.tpl', 'inject.css',
-		//@deprecated
-		'create - @deprecated', 'regional - @deprecated'
-	];
-
-	/**
-	 * Statics
-	 */
-	//animation done events used in Animate.css
-	app.ADE = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
-	//notification template
-	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
-
-})(Application);
-;;app.stagejs = "1.10.1-1198 build 1488411628897";
-;/**
- * Util for adding meta-event programming ability to object
- *
- * Currently applied to: Application, Context and View.
- *
- * @author Tim Lauv
- * @created 2014.03.22
- * @updated 2016.03.31
- */
-
-;(function(app){
-
-	//e as event in meta-event domain:e without the domain: string
-	app.Util.metaEventToListenerName = function(e){
-		if(!e) throw new Error('DEV::Util::metaEventToListenerName() e an NOT be empty...');
-		return _.string.camelize('on-' + e.split(/[\.:-\s\/]/).join('-')); //IMPORTANT e --> fn rule
-	};
-
-	app.Util.addMetaEvent = function(target, namespace, delegate){
-		if(!delegate) delegate = target;
-		target.listenTo(target, 'all', function(eWithNamespace){
-			//separate the domain: string
-			var tmp = String(eWithNamespace).split(':');
-			if(tmp.length !== 2 || tmp[0] !== namespace) return;
-			//apply the e --> fn rule
-			var listener = app.Util.metaEventToListenerName(tmp[1]);
-			if(delegate[listener])
-				delegate[listener].apply(target, _.toArray(arguments).slice(1));
-		});
-	};
-
-})(Application);
-;/**
- * Application universal downloader
- *
- * Usage
- * -----
- * app.download(url, {params:{...}})
- * 	
- * 	or
- * 
- * app.download({
- * 	 url:
- * 	 params: {...}
- * })
- *
- * @author Tim Lauv
- * @created 2013.04.01
- * @updated 2013.11.08
- * @updated 2014.03.04
- * @updated 2016.12.14
- */
-;(function(app){
-
-	function downloader(ticket, options){
-	    var drone = $('#hidden-download-iframe');
-	    if(drone.length > 0){
-	    }else{
-	        $('body').append('<iframe id="hidden-download-iframe" style="display:none"></iframe>');
-	        drone = $('#hidden-download-iframe');
-	    }
-	    
-	    //backward compatible ({url: ..., reset of keys as query params directly} still works)
-	    if(_.isPlainObject(ticket))
-	    	ticket.params = _.extend({}, ticket.params, ticket.querys, _.omit(ticket, 'url', 'params', 'querys'));
-
-	    if(_.isString(ticket)){
-	    	ticket = {url: ticket};
-	    	_.extend(ticket, options);
-	    }
-
-	    drone.attr('src', (app.uri(ticket.url || '/').addQuery(ticket.params)).toString());
-	}
-
-	app.Util.download = downloader;
-
-})(Application);
-;/**
- * This is the template builder/registry util, making it easier to create new templates for View objects.
- * (used by M.TemplateCache* in template-cache.js)
- *
- * Note: use build() for local templates and remote() for remote ones
- *
- * Usage (name as id)
- * -----
- * app.Util.Tpl.build(name, [</>, </>, ...]) / ([</>, </>, ...]) / ('</></>...</>')
- * app.Util.Tpl.remote(url, sync) - default on using app.config.viewTemplates as base before url, use '/' as start to skip
- *
- * @author Tim Lauv
- * @create 2013.12.20
- * @updated 2014.10.25
- * @updated 2016.03.24
- */
-
-;(function(app){
-
-	var namefix = /[\.\/]/;
-	var Template = {
-
-		//normalize the tpl names so they can be used as html tag ids.
-		normalizeId: function(name){
-			return String(name).split(namefix).join('-');
-		},
-
-		cache: Backbone.Marionette.TemplateCache,
-
-		build: function (name, tplString){
-			if(arguments.length === 1) {
-				tplString = name;
-				name = null;
-			}
-			var tpl = _.isArray(tplString)?tplString.join(''):tplString;
-
-			if(name) {
-				//process name to be valid id string, use String() to force type conversion before using .split()
-				var id = this.normalizeId(name);
-				var $tag = $('head > script[id="' + id + '"]');
-				if($tag.length > 0) {
-					//override
-					$tag.html(tpl);
-					this.cache.clear('#' + name);
-					console.warn('DEV::Overriden::Template::', name);
-				}
-				else $('head').append(['<script type="text/tpl" id="', id, '">', tpl, '</script>'].join(''));
-			}
-
-			return tpl;
-		},
-
-		//load all prepared/combined templates from server (*.json without CORS)
-		//or
-		//load individual tpl
-		//all loaded tpl will be stored in cache (app.Util.Tpl.cache.templateCaches)
-		remote: function(name, sync){
-			var that = this;
-			if(!name) throw new Error('DEV::Util.Tpl::remote() your template name can NOT be empty!');
-
-			var originalName = name;
-			if(_.string.startsWith(name, '@'))
-				name = name.slice(1);
-			var base = app.config.viewTemplates;
-			if(_.string.startsWith(name, '/')){
-				name = name.slice(1);
-				base = '.';
-			}
-			var url = base + '/' + name;
-			if(_.string.endsWith(url, '.json')){
-				//load all from preped .json
-				return $.ajax({
-					url: url,
-					dataType: 'json', //force return data type.
-					async: !sync
-				}).done(function(tpls){
-					_.each(tpls, function(t, n){
-						Template.cache.make(n, t);
-					});
-				});//.json can be empty or missing.
-			}else {
-				//individual tpl
-				return $.ajax({
-					url: url,
-					dataType: 'html',
-					async: !sync
-				}).done(function(tpl){
-					Template.cache.make(originalName, tpl);
-				}).fail(function(){
-					throw new Error('DEV::Util.Tpl::remote() Can not load template...' + url + ', re-check your app.config.viewTemplates setting');
-				});
-			}
-		}
-	};
-
-	app.Util.Tpl = Template;
-
-})(Application);
-
-;/**
- * Script injecting util for [batch] reloading certain script[s] without refreshing app.
- *
- * batch mode: use a .json to describe the js listing
- * json format:
- * 1. ["scriptA.js", "lib/scriptB.js", "another-listing.json"]
- * 2. {
- * 		"base": "js",
- * 		"list": [ ... ] //same as 1
- * }
- *
- * @author Tim Lauv
- * @created 2014.10.08
- */
-
-;(function(app){
-
-	app.Util.inject = function(url, sync){
-
-		url = url || 'patch.json';
-
-		if(_.string.endsWith(url, '.js'))
-			return $.ajax({
-				url: url,
-				async: !sync,
-				dataType: 'script'
-			});
-		else
-			return $.getJSON(url, function(list){
-				var base = '';
-				if(!_.isArray(list)) {
-					base = list.base;
-					list = list.list;
-				}
-				_.each(list, function(js){
-					app.Util.inject((_.string.endsWith(base, '/')?base: (!base?'':(base + '/'))) + js, sync);
-				});
-			});
-	};
-
-})(Application);
-;/*
- * This is the Remote data interfacing core module of this application framework.
- * (Replacing the old Data API module)
- *
- * options:
- * --------
- * a. url string
- * or 
- * b. object:
- * 	1. + _entity[_id][_method] - string
- *  2. + params(alias:querys) - object
- *  3. + payload - object (payload._id overrides _id)
- *  4. $.ajax options (without -data, -type, -processData, -contentType)
- *
- *  Global CROSSDOMAIN Settings - *Deprecated*: set this in a per-request base or use server side proxy
- *  see MDN - https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS
- *  If you ever need crossdomain in development, we recommend that you TURN OFF local server's auth layer/middleware. 
- *  To use crossdomain ajax, in any of your request, add this option:
- *  xdomain: {
- *  	protocol: '', //https or not? default: '' -> http
- *   	host: '127.0.0.1', 
- *   	port: '5000',
- *   	headers: {
- *   		'Credential': 'user:pwd'/'token',
- *   		...
- *  }
- *  Again, it is always better to use server side proxy/forwarding instead of client side x-domain.
- *
- * events:
- * -------
- * app:ajax - change global ajax options here
- * app:ajax-success - single progress
- * app:ajax-error - single progress
- * app:ajax-start - single progress
- * app:ajax-stop - single progress
- * app:ajax-active - overall
- * app:ajax-inactive - overall
- * app:remote-pre-get - fine grind op stub
- * app:remote-pre-change - fine grind op stub
- * 
- * @author Tim Lauv
- * @created 2014.03.24
- */ 
-
-;(function(app, _, $){
-
-	var definition = app.module('Core.Remote');
-
-	function fixOptions(options, restOpt){
-		if(!options) throw new Error('DEV::Core.Remote::options empty, you need to pass in at least a url string');
-		if(_.isString(options)) 
-			options	= _.extend(restOpt || {}, { 
-				url: options
-			});
-
-		//default options
-		options = _.extend({
-			timeout: app.config.timeout,
-		}, options, restOpt || {}, {
-			type: undefined,
-			data: undefined,
-			processData: false,
-			contentType: 'application/json; charset=UTF-8', // req format
-			//**Caveat**: we do NOT assume a json format response.---------------------------------------
-			//dataType: 'json', //need 'application/json; charset=utf-8' in response Content-Type header.
-			//-------------------------------------------------------------------------------------------
-		});
-
-		//process _entity[_id][_method] and strip off options.querys(alias:params)
-		if(options.entity || options._entity){
-			var entity = options.entity || options._entity;
-			options.url = entity;
-		}
-		if(options.payload && options.payload._id){
-			options._id = options.payload._id;
-		}
-		if(options._id || options._method){
-			var url = app.uri(options.url);
-			options.url = url.path(_.compact([url.path(), options._id, options._method]).join('/')).toString();
-		}
-		options.params = _.extend(options.params || {}, options.querys);
-		if(options.params){
-			options.url = (app.uri(options.url)).search(options.params).toString();
-		}
-
-		//app.config.baseAjaxURI
-		if(app.config.baseAjaxURI)
-			options.url = options.url.match(/^[\/\.]/)? options.url : [app.config.baseAjaxURI, options.url].join('/');	
-
-		//crossdomain:
-		var crossdomain = options.xdomain;
-		if(crossdomain){
-			options.url = (crossdomain.protocol || 'http') + '://' + (crossdomain.host || 'localhost') + ((crossdomain.port && (':'+crossdomain.port)) || '') + (/^\//.test(options.url)?options.url:('/'+options.url));
-			options.crossDomain = true;
-			options.xhrFields = _.extend(options.xhrFields || {}, {
-				withCredentials: true //persists session cookies.
-			});
-			options.headers = _.extend(options.headers || {}, crossdomain.headers);
-			// Using another way of setting withCredentials flag to skip FF error in sycned CORS ajax - no cookies tho...:(
-			// options.beforeSend = function(xhr) {
-			// 	xhr.withCredentials = true;
-			// };
-		}
-
-		//get csrftoken value from cookie and set to header.
-		options.headers = options.headers || {};
-		if(app.config.csrftoken && !options.headers[app.config.csrftoken.header])
-			options.headers[app.config.csrftoken.header] = app.cookie.get(app.config.csrftoken.cookie) || 'NOTOKEN';
-
-		app.trigger('app:ajax', options);		
-		return options;
-	}
-
-	_.extend(definition, {
-
-		//GET
-		get: function(options, restOpt){
-			options = fixOptions(options, restOpt);
-			options.type = 'GET';
-			app.trigger('app:remote-pre-get', options);
-			return $.ajax(options);
-		},
-
-		//POST(no payload._id)/PUT/DELETE(payload = {_id: ...})
-		change: function(options, restOpt){
-			options = fixOptions(options, restOpt);
-			if(!options.payload) throw new Error('DEV::Core.Remote::payload empty, please use GET');
-			if(options.payload._id && _.size(options.payload) === 1) options.type = 'DELETE';
-			else {
-				if(!_.isObject(options.payload)) options.payload = { payload: options.payload };
-				if(!options.payload._id) options.type = 'POST';
-				else options.type = 'PUT';
-			}
-
-			if(options.type !== 'DELETE'){
-				//encode payload into json data
-				options.data = JSON.stringify(options.payload);
-			}
-
-			app.trigger('app:remote-pre-change', options);
-			return $.ajax(options);
-		}
-
-	});
-
-	//Global jQuery ajax event mappings to app:ajax-* events.
-	//swapped!
-	$document.ajaxSend(function(e, jqXHR, ajaxOptions) {
-		app.trigger('app:ajax-start', e, jqXHR, ajaxOptions);
-	});
-	//swapped!
-	$document.ajaxComplete(function(e, jqXHR, ajaxOptions) {
-		app.trigger('app:ajax-stop', e, jqXHR, ajaxOptions);
-	});
-	//same
-	$document.ajaxSuccess(function(e, jqXHR, ajaxOptions, data){
-		app.trigger('app:ajax-success', e, jqXHR, ajaxOptions, data);
-	});
-	//same
-	$document.ajaxError(function(e, jqXHR, ajaxOptions, error){
-		app.trigger('app:ajax-error', e, jqXHR, ajaxOptions, error);
-	});
-	//new name!
-	$document.ajaxStart(function() {
-		app.trigger('app:ajax-active');
-	});
-	//new name!
-	$document.ajaxStop(function() {
-		app.trigger('app:ajax-inactive');
-	});
-
-
-	
-
-})(Application, _, jQuery);
-;/**
- * Application locking mech for actions, events and <a href> navigations ...
- *
- * Usage
- * -----
- * create (name, number) -- topic and allowance;
- * lock (name) -- 	return true for locking successfully, false otherwise;
- * 					default on creating a (name, 1) lock for unknown name;
- * 					no name means to use the global lock;
- * unlock (name) -- unlock topic, does nothing by default;
- * 					no name means to use the global lock;
- * get(name) -- get specific lock topic info;
- * 				no name means to return all info;
- *
- * @author Tim Lauv
- * @created 2014.08.21
- */
-
-;(function(app){
-
-	var definition = app.module('Core.Lock');
-	var locks = {},
-	global = false; //true to lock globally, false otherwise.
-
-	_.extend(definition, {
-		create: function(topic, allowance){
-			if(!_.isString(topic) || !topic) throw new Error('DEV::Core.Lock::create() You must give this lock a name/topic ...');
-			if(locks[topic]) return false;
-
-			allowance = _.isNumber(allowance)? (allowance || 1) : 1;
-			locks[topic] = {
-				current: allowance,
-				allowance: allowance
-			};
-			return true;
-		},
-
-		get: function(topic){
-			if(!topic || topic === '*') return {
-				global: global,
-				locks: locks
-			};
-			else
-				return locks[topic];
-		},
-
-		//return true/false indicating op successful/unsuccessful
-		lock: function(topic){
-			if(global) return false;
-
-			if(!topic || topic === '*') {
-				//global
-				if(!global){ //not locked
-					global = true;
-					return true;
-				}else //locked already
-					return false;
-			}else {
-				if(_.isUndefined(locks[topic])){
-					this.create(topic, 1);
-					return this.lock(topic);
-				}else{
-					if(locks[topic].current > 0){
-						locks[topic].current --;
-						return true;
-					}else 
-						return false;
-				}
-			}
-		},
-
-		//return nothing...
-		unlock: function(topic){
-			if(!topic || topic === '*') {
-				//global
-				if(global){ //locked
-					global = false;
-				}
-			}else {
-				if(!_.isUndefined(locks[topic])){
-					if(locks[topic].current < locks[topic].allowance)
-						locks[topic].current ++;
-				}
-			}
-		},
-
-		available: function(topic){
-			if(global) return false;
-			
-			if(!topic || topic === '*')
-				return global === false;
-			else {
-				var status = this.get(topic);
-				if(status) return status.current > 0;
-				else return true;
-			} 
-				
-		}
-	});
-
-
-
-})(Application);
-;/**
- * Widget/Editor registry. With a regFacotry to control the registry mech.
- *
- * Important
- * =========
- * Use create() at all times if possible, use get()[deprecated...] definition with caution, instantiate only 1 instance per definition.
- * There is something fishy about the initialize() function (Backbone introduced), events binding only get to execute once with this.listenTo(), if multiple instances of a part
- * listens to a same object's events in their initialize(), only one copy of the group of listeners are active.
- * 
- *
- * @author Tim Lauv
- * @create 2013.11.10
- * @update 2014.03.03
- * @update 2015.07.29 (merged Regional, Context)
- */
-
-(function(_, app, Marionette){
-
-	function makeRegistry(regName){
-		regName = _.string.classify(regName);
-		var manager = app.module('Core.' + regName);
-		_.extend(manager, {
-
-			map: {},
-			has: function(name /*or path*/){
-				if(!_.isString(name) || !name) throw new Error('DEV::Reusable::has() You must specify the name of the ' + regName + ' to look for.');
-				if(this.map[name]) return name;
-				name = app.pathToName(name);
-				if(this.map[name]) return name;
-				return undefined;
-			},
-
-			//no auto pathToName conversion
-			register: function(name /*or options*/, factory /*or options or none*/){
-
-				//type 1: options only
-				var options;
-				if(_.isPlainObject(name)){
-					options = name;
-					name = options.name;
-					factory = function(){
-						return Marionette[options.type || 'Layout'].extend(options);
-					};
-				}
-
-				//type 2: name and options
-				else if(_.isPlainObject(factory)){
-					options = _.extend(factory, {
-						name: name,
-					});
-					factory = function(){
-						return Marionette[options.type || 'Layout'].extend(options);
-					};
-				}
-
-				if(!_.isFunction(factory)) throw new Error('DEV::Reusable::register() You must specify a ' + regName + ' factory function for ' + (name || 'Anonymous') + ' !');
-				var Reusable = factory();
-
-				//only named def gets registered.
-				if(name){
-					//type 3: name and a factory func (won't have preset className)
-					if(!_.isString(name)) throw new Error('DEV::Reusable::register() You must specify a string name to register view in ' + regName + '.');
-
-					if(this.has(name))
-						console.warn('DEV::Overriden::Reusable ' + regName + '.' + name);
-					
-					//+metadata to instances
-					Reusable.prototype.name = name;
-					Reusable.prototype.category = regName;
-
-					//fire the coop event (e.g for auto menu entry injection)
-					this.map[name] = Reusable;
-					app.trigger('app:reusable-registered', Reusable, regName);
-					app.coop('reusable-registered', Reusable, regName);
-				}
-
-				//patch it with a chaining method: (e.g for app.get('ViewName').create(options).overlay())
-				Reusable.create = function(options){
-					return new Reusable(options);
-				};
-
-				//both named and anonymous def gets returned.
-				return Reusable;
-
-			},
-
-			create: function(name /*or path*/, options){
-				if(!_.isString(name) || !name) throw new Error('DEV::Reusable::create() You must specify the name of the ' + regName + ' to create.');
-				var Reusable = this.get(name);
-				if(Reusable)
-					return Reusable.create(options || {});
-				throw new Error('DEV::Reusable::create() Required definition [' + name + '] in ' + regName + ' not found...');
-			},
-
-			get: function(name /*or path*/){
-				if(!name) return _.keys(this.map);
-				name = this.has(name);
-				if(name)
-					return this.map[name];
-			},
-
-			alter: function(name /*or path*/, options){
-				var Reusable = this.get(name);
-				if(Reusable){
-					Reusable = Reusable.extend(options);
-					return Reusable;
-				}
-				throw new Error('DEV::Reusable::alter() Required definition [' + name + '] in ' + regName + ' not found...');
-			},
-
-			remove: function(name /*or path*/){
-				if(name)
-					delete this.map[name];
-			},
-
-		});
-
-		return manager;
-
-	}
-
-	makeRegistry('Context'); //top level views (see infrastructure: navigation worker)
-	makeRegistry('Regional'); //general named views (e.g a form, a chart, a list, a customized detail)
-	app.Core.View = app.Core.Regional; //alias
-	makeRegistry('Widget'); //specialized named views (e.g a datagrid, a menu, ..., see reusable/widgets)
-	makeRegistry('Editor'); //specialized small views used in form views (see reusable/editors, lib+-/marionette/item-view,layout)
-
-})(_, Application, Marionette);
 ;(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 window.Backbone = window.Backbone || {};
 window.Backbone.DeepModel = require('.');
@@ -42853,6 +40959,1975 @@ module.exports = DeepModel;
 },{"backbone":undefined,"lodash.merge":2,"underscore":undefined}]},{},[1]);
 
 ;/**
+ * Similar to view.triggerMethod() but,
+ * modified to have view.triggerMethodInversed() call onE() before every registered on('e', fn) listeners,
+ * e.g view.triggerMethodInversed('ready') to always call onReady() before all other 'ready' listeners.
+ *
+ * @author Tim Lauv
+ * @created 2017.03.01
+ */
+
+// Trigger an event and/or a corresponding method name. Examples:
+//
+// `this.triggerMethod("foo")` will trigger the "foo" event and
+// call the "onFoo" method.
+//
+// `this.triggerMethod("foo:bar")` will trigger the "foo:bar" event and
+// call the "onFooBar" method.
+Marionette.triggerMethodInversed = (function(){
+
+  // split the event name on the ":"
+  var splitter = /(^|:)(\w)/gi;
+
+  // take the event section ("section1:section2:section3")
+  // and turn it in to uppercase name
+  function getEventName(match, prefix, eventName) {
+    return eventName.toUpperCase();
+  }
+
+  // actual triggerMethod implementation
+  var triggerMethod = function(event) {
+    // get the method name from the event name
+    var methodName = 'on' + event.replace(splitter, getEventName);
+    var method = this[methodName];
+
+    // 1st: call the onMethodName if it exists //Tim's Hack: onE() always runs before on('e', fn);
+    if (_.isFunction(method)) {
+      // pass all arguments, except the event name
+      method.apply(this, _.tail(arguments));
+    }
+
+    // 2nd: trigger the event, if a trigger method exists
+    if(_.isFunction(this.trigger)) {
+      this.trigger.apply(this, arguments);
+    }
+
+  };
+
+  return triggerMethod;
+})();
+
+;/**
+ * Environment setup (global)
+ *
+ * @author Tim Lauv
+ */
+
+;(function($, _, underscoreString, Marionette){
+
+	/**
+	 * Define top level module containers
+	 * ---------------------------------- 
+	 * 				App
+	 * 				 |
+	 * 			   -----
+	 * 			  /     \
+	 * 			Core    Util
+	 * 			 |       |
+	 * 			 |      ...
+	 * 		Resuable
+	 * 		  |Context|
+	 * 		  |Widget | --fallback--> View (Regional)
+	 * 		  |Editor |
+	 * 		Remote (RESTful)
+	 * 		Lock
+	 */
+	window.app = window.Application = new Marionette.Application();
+	_.each(['Core', 'Util'], function(coreModule){
+		Application.module(coreModule);
+	});
+
+	/**
+	 * Global shortcuts
+	 * ----------------
+	 * $window
+	 * $document
+	 * $head
+	 * $body
+	 */
+	_.each(['document', 'window'], function(coreDomObj){
+		window['$' + coreDomObj] = $(window[coreDomObj]);
+	});
+	_.each(['body', 'head'], function(coreDomWrap){
+		window['$' + coreDomWrap] = $(coreDomWrap);
+	});
+
+})(jQuery, _, s, Marionette);
+
+;/*
+ * Main application definition.
+ *
+ * Usage
+ * -----------------------
+ * ###How to start my app?
+ * 
+ * 1. app.setup({config});
+ * 2. app.run([hybrid ready e]);
+ * 
+ * Suggested additional events are:
+ *   	app:error - app.onError ==> window.onerror in hybrid mode.
+ *    	app:login - app.onLogin [not-defined]
+ *     	app:logout - app.onLogout [not-defined]
+ *      app:server-push - app.onServerPush [not-defined]
+ * You can define them in a fn through app.addInitializer(fn(options));
+ * 
+ * 
+ * Global vars
+ * ------------
+ * $window
+ * $document
+ * $body
+ * $head
+ * Application/app
+ *
+ * 
+ * Global coop events
+ * ------------
+ * 'ws-data-[channel]'
+ * 'poll-data-[e]'
+ * 'reusable-registered'
+ * 'context-switched'
+ * 'window-resized'
+ * 'window-scroll'
+ * 
+ *
+ * @author Tim Lauv
+ * @created 2014.02.17
+ * @updated 2015.08.03
+ * @updated 2016.03.31
+ */
+
+;(function(app){
+
+	//setup configures, navigation mechanisms (both ctx switch and #history) and 1st(main) view.
+	app.setup = function(config){
+		
+		//0. Re-run app.setup will only affect app.config variable.
+		if(app.config) {
+			_.extend(app.config, config);
+			return;
+		}
+
+		//1. Configure.
+		app.config = _.extend({
+
+			//------------------------------------------app.mainView-------------------------------------------
+			//mainView has limited ability as a generic view (supports data/action, but can not be form, canvas or having co-ops)
+			template: undefined,
+			layout: undefined, //honored only if template is undefined, also indicates app.config.fullScreen = true
+			//e.g:: have a unified layout as template.
+			/**
+			 * ------------------------
+			 * |		top 	      |
+			 * ------------------------
+			 * | left | center | right|
+			 * |	  |        |      |
+			 * |	  |        |      |
+			 * |	  |        |      |
+			 * |	  |        |      |
+			 * ------------------------
+			 * |		bottom 	      |
+			 * ------------------------		 
+			 * 
+			 * == --> layout: ['1:#top', ['5', ['1:left', '4:center', '1:right']], '1:.bottom, .bottom2, .bottom3']
+			 */
+			data: undefined,
+			actions: undefined,
+			navRegion: 'contexts', //alias: contextRegion
+			//---------------------------------------------------------------------------------------------
+			defaultView: undefined, //alias: defaultContext, this is the context (name) the application will sit on upon loading.
+			icings: {}, //various fixed overlaying regions for visual prompts ('name': {top, bottom, height, left, right, width})
+						//alias -- curtains			
+			fullScreen: false, //this will put <body> to be full screen sized (window.innerHeight).
+	        websockets: [], //websocket paths to initialize with (single path with multi-channel prefered).
+	        baseAjaxURI: '', //modify this to fit your own backend apis. e.g index.php?q= or '/api',
+			csrftoken: {
+				header: 'X-CSRFToken', //http header to use to include the csrftoken val
+				cookie: 'csrftoken' //cookie name to look for the csrftoken val
+			},	        
+	        viewTemplates: 'static/template', //this is assisted by the build tool, combining all the *.html handlebars templates into one big json.
+			viewSrcs: undefined, //set this to enable reusable view dynamic loading.
+			i18nResources: 'static/resource', //this the the default location where our I18N plugin looks for locale translations.
+			i18nTransFile: 'i18n.json', //can be {locale}.json
+			i18nLocale: '', //if you really want to force the app to certain locale other than browser preference. (Still override-able by ?locale=.. in url)
+			rapidEventDelay: 200, //in ms this is the rapid event delay control value shared within the application (e.g window resize, app.throttle, app.debounce).
+			timeout: 5 * 60 * 1000, //general communication timeout (ms). for app.remote and $.fileupload atm.
+			//------------------------------------------3rd-party options----------------------------------
+			marked: {
+				gfm: true,
+				tables: true,
+				breaks: true,
+				pedantic: false, //don't use original markdown.pl choices
+				sanitize: true,
+				smartLists: true,
+				smartypants: false //don't be too smart on the punctuations
+			},
+			hljs: {
+				languages: ['c', 'python', 'javascript', 'html', 'css']
+			}
+		}, config);
+		
+		//2. Global App Events Listener Dispatcher
+		app.Util.addMetaEvent(app, 'app');
+
+		//3. Setup the application with content routing (navigation).
+		// - use app:navigate (path) at all times when navigate between contexts & views.
+		app.onNavigate = function(options, silent){
+			if(!app.available()) {
+				app.trigger('app:locked', options);
+				return;
+			}
+
+			var path = '', opt = options || '';
+			if(_.isString(opt)){
+				path = opt;
+			}else {
+				//backward compatibility 
+				path = opt.path || _.string.rtrim([opt.context || app.currentContext.name, opt.module || opt.subpath].join('/'), '/');
+			}
+
+			//inject context config before navigate (e.g app.navigate({path: ..., viewConfig: {}}, [silent]))
+			app._navViewConfig = app._navViewConfig || opt.ctxConfig || opt.viewConfig;
+
+			if(silent || app.hybridEvent)
+				navigate(path);//hybrid app will navigate using the silent mode. (sync mode, no #hashchange)
+			else
+				//note that, this will in turn call app.navigate() again which triggers a silent app:navigate again.
+				window.location.hash = 'navigate/' + path;
+				//wait for #hashchange to be captured by BB.History() --> BB.Router (async mode, app.coop()s might not work immediately)
+		};
+
+		app.onContextGuardError = function(error, ctxName){
+			console.error('DEV:Context-Guard-Error:', ctxName, error);
+		};
+
+		//---navigation worker---
+			function navigate(path){
+				path = _.compact(String(path).split('/'));
+				if(path.length <= 0) throw new Error('DEV::Application::navigate() Navigation path empty...');
+
+				var context = path.shift();
+
+				if(!context) throw new Error('DEV::Application::navigate() Empty context/view name...');
+				var TargetContext = app.get(context, 'Context', true); //fallback to use view if context not found.
+				if(!TargetContext) throw new Error('DEV::Application::navigate() You must have the required context/view ' + context + ' defined...');			
+				if(!app.currentContext || app.currentContext.name !== context) {
+					
+					//re-create target context upon switching
+					var targetCtx = TargetContext.create(), guardError;
+					app.Util.addMetaEvent(targetCtx, 'context');//patch in 'context:e' meta events for backward compatibility.
+
+					//allow context to guard itself (e.g for user authentication)
+					if(targetCtx.guard) guardError = targetCtx.guard();
+					if(guardError) {
+						app.trigger('app:context-guard-error', guardError, targetCtx.name);
+						app.trigger('app:navigation-aborted', targetCtx.name);
+						return;
+					}
+					//allow context to check/do certain stuff before navigated to
+					targetCtx.trigger('view:before-navigate-to');
+
+					//save your context state within onNavigateAway()
+					if(app.currentContext) app.currentContext.trigger('view:navigate-away'); 
+					//prepare and show this new context					
+					var navRegion = app.config.navRegion || app.config.contextRegion;
+					var targetRegion = app.mainView.getRegion(navRegion);
+					if(!targetRegion) throw new Error('DEV::Application::navigate() You don\'t have region \'' + navRegion + '\' defined');		
+					
+					//note that 'ready' is guaranteed to happen after region enter/exit effects
+					targetCtx.once('ready', function(){
+						app.currentContext = targetCtx;
+						//fire a notification to app as meta-event. (e.g menu view item highlighting)
+						app.trigger('app:context-switched', app.currentContext.name);
+						app.coop('context-switched', app.currentContext.name, {ctx: app.currentContext, subpath: path.join('/')});
+						//notify regional views in the context (views further down in the nav chain)
+						app.currentContext.trigger('view:navigate-chain', path); //see layout.js
+					});
+					targetRegion.show(targetCtx);
+					//note that 'view:navigate-to' triggers after '(view:show -->) region:show';
+				}else
+					//notify regional views in the context (with old flag set to true)
+					app.currentContext.trigger('view:navigate-chain', path, true); //see layout.js
+
+			}
+		//-----------------------
+
+		//4 Put up Main View and activate Routing (href = #navigate/...) AFTER running all the initializers user has defined.
+		app.on("app:initialized", function(options){
+
+			//a. Put main template into position.
+			app.addRegions({
+				'region-app': '[region="app"]'
+			});
+			//Warning: calling ensureEl() on the app region will not work like regions in layouts.
+			//(Bug??: the additional <div> under the app region is somehow inevitable atm...)
+			app.trigger('app:before-mainview-ready');
+			if(app.config.template || !app.config.layout)
+				app.mainView = app.mainView || app.view({
+					name: 'Main',
+					data: app.config.data,
+					actions: app.config.actions,
+					//put default template here so we can squeeze in app.config.navRegion as a region dynamically.
+					template: app.config.template || ('<div region="' + (app.config.navRegion || app.config.contextRegion) + '"></div>'),
+				}, true);
+			else
+				app.mainView = app.mainView || app.view({
+					name: 'Main',
+					data: app.config.data,
+					actions: app.config.actions,
+					layout: app.config.layout,
+				}, true);
+			app.mainView.onReady = function(){
+				app.trigger('app:mainview-ready');
+			};
+			app.getRegion('region-app').show(app.mainView).$el.css({height: '100%', width: '100%'});
+
+			//b. Create the fixed overlaying regions according to app.config.icings (like a cake, yay!)
+			var icings = {};
+			_.each(_.extend({}, app.config.icings, app.config.curtains), function(cfg, name){
+				if(name === 'app') return;
+
+				var irUID = _.uniqueId('app-icing-');
+				$body.append($('<div id="' + irUID + '" style="position:fixed"></div>').css(cfg).hide()); //default on hidden
+				icings[['icing', 'region', name].join('-')] = '#' + irUID;
+			});
+			app.addRegions(icings);
+			app.icing = function(name, flag){
+				var ir = app.getRegion(['icing', 'region', name].join('-'));
+				ir.ensureEl();
+				if(flag === false)
+					ir.$el.hide();
+				else
+					ir.$el.show();
+				return ir;
+			}; 
+			app.curtain = app.icing; //alias: curtain()
+
+			//c. init client page router and history:
+			var Router = Backbone.Marionette.AppRouter.extend({
+				appRoutes: {
+					'navigate/*path' : 'navigateTo', //navigate to a context and signal it about *module (can be a path for further navigation within)
+				},
+				controller: {
+					navigateTo: function(path){
+						app.navigate(path, true); //will skip updating #hash since the router is triggered by #hash change.
+					},
+				}
+			});
+
+			app.router = new Router();
+			if(Backbone.history)
+				Backbone.history.start();
+
+			//d. Auto navigate to init context (view that gets put in mainView's navRegion)
+			app.config.defaultContext = app.config.defaultView || app.config.defaultContext;
+			if(!window.location.hash && app.config.defaultContext)
+				app.navigate(app.config.defaultContext);
+		});
+
+		return app;
+	};
+
+	/**
+	 * Define app init function upon doc.ready
+	 * -----------------------------------------
+	 * We support using stage.js in a hybrid app
+	 * 
+	 */
+	app.run = function(hybridEvent){
+
+		hybridEvent = (hybridEvent === true) ? 'deviceready' : hybridEvent;
+
+		//called upon doc.ready
+		function kickstart(){
+
+			//1. Check if we need 'fast-click' on mobile plateforms
+			if(Modernizr.mobile)
+				FastClick.attach(document.body);
+
+			//2. Track window resize
+			function trackScreenSize(e, silent){
+				var screenSize = {h: $window.height(), w: $window.width()};
+				if(!validScreenSize(screenSize)) return;
+
+				////////////////cache the screen size/////////////
+				app.screenSize = screenSize;
+				//////////////////////////////////////////////////
+				if(app.config.fullScreen){
+					$body.height(screenSize.h);
+					$body.width(screenSize.w);
+				}
+				if(!silent){
+					app.trigger('app:resized', screenSize);
+					app.coop('window-resized', screenSize);
+				}
+			}
+			function validScreenSize(size){
+				return size.h > 0 && size.w > 0;
+			}
+			$window.on('resize', app.debounce(trackScreenSize));
+			//check screen size, trigger app:resized and get app.screenSize ready.
+			app._ensureScreenSize = function(done){
+				trackScreenSize(); 
+				if(!app.screenSize) _.delay(app._ensureScreenSize, app.config.rapidEventDelay/4, done);
+				else done();
+			};
+			//align $body with screen size if app.config.fullScreen = true
+			if(app.config.layout)
+				app.config.fullScreen = true;
+			if(app.config.fullScreen){
+				$body.css({
+					overflow: 'hidden',
+					margin: 0,
+					padding: 0					
+				});
+			}
+
+			//3. Track window scroll
+			function trackScroll(){
+				var top = $window.scrollTop();
+				app.trigger('app:scroll', top);
+				app.coop('window-scroll', top);
+			}
+			$window.on('scroll', app.throttle(trackScroll));
+
+			//4 Load Theme css & View templates & i18n translations
+			var theme = app.uri(window.location.toString()).search(true).theme || app.config.theme;
+			//4.0 Dynamic theme (skipped)
+			if(theme){
+				console.warn('DEV::Application::theme is now deprecated, please use theme css directly in <head>');
+			}
+
+			//4.1 Inject template pack
+			app.addInitializer(function(){
+				//based on path in app.config.viewTemplates
+				return app.inject.tpl('all.json');
+			});
+
+			//4.2 Activate i18n
+			app.addInitializer(function(){
+				return I18N.init({
+					locale: app.config.i18nLocale,
+					resourcePath: app.config.i18nResources,
+					translationFile: app.config.i18nTransFile
+				});
+			});
+
+			//5 Register websockets
+			_.each(app.config.websockets, function(wspath){
+				app.ws(wspath); //we don't wait for websocket hand-shake
+			});
+
+			//6. Start the app --> pre init --> initializers --> post init(router setup)
+			app._ensureScreenSize(function(){
+				app.start();				
+			});
+
+		}
+
+		//hook up desktop/mobile doc.ready respectively.
+		if(hybridEvent){
+			//Mobile development
+			app.hybridEvent = hybridEvent; //window.cordova is probably true.
+			window.onerror = function(errorMsg, target, lineNum){
+				app.trigger('app:error', {
+					errorMsg: errorMsg,
+					target: target,
+					lineNum: lineNum
+				});
+			};
+		    app.onError = function(eMsg, target, lineNum){
+		    	//override this to have remote debugging assistant
+		        console.error(eMsg, target, lineNum);
+		    };
+			//!!VERY IMPORTANT!! Disable 'touchmove' on non .scrollable elements
+			document.addEventListener("touchmove", function(e) {
+			  if (!e.target.classList.contains('scrollable')) {
+			    // no more scrolling
+			    e.preventDefault();
+			  }
+			}, false);
+			document.addEventListener(hybridEvent, function(){
+				$document.ready(kickstart);
+			}, false);
+		}else
+			$document.ready(kickstart);
+
+		return app;
+
+	};
+
+})(Application);
+
+
+
+
+;/**
+ * Framework APIs (global - app.*)
+ *
+ * Note: View APIs are in view.js (view - view.*)
+ * 
+ * @author Tim Lauv
+ * @created 2015.07.29
+ * @updated 2017.02.26
+ */
+
+;(function(app){
+
+	/**
+	 * Universal app object creation api entry point
+	 * ----------------------------------------------------
+	 * @deprecated Use the detailed apis instead.
+	 */
+	app.create = function(type, config){
+		console.warn('DEV::Application::create() method is deprecated, use methods listed in ', app._apis, ' for alternatives');
+	};
+
+	/**
+	 * Detailed api entry point
+	 * ------------------------
+	 * If you don't want to use .create() there you go:
+	 */
+	_.extend(app, {
+
+		//----------------view------------------
+		//pass in [name,] options to define view (named view will be registered)
+		//pass in name to get registered view def
+		//pass in options, true to create anonymous view
+		view: function(name /*or options*/, options /*or instance flag*/){
+			if(_.isString(name) && _.isPlainObject(options)){
+				return app.Core.View.register(name, options);
+			}
+
+			if(_.isPlainObject(name)){
+				var instance = options;
+				options = name;
+				var Def = app.Core.View.register(options);
+
+				if(_.isBoolean(instance) && instance) return Def.create();
+				return Def;
+			}
+
+			return app.Core.View.get(name);
+		},
+
+		//pass in [name,] options to register (always requires a name)
+		//pass in [name] to get (name can be of path form)
+		context: function(name /*or options*/, options){
+			if(!options) {
+				if(_.isString(name) || !name)
+					return app.Core.Context.get(name);
+				else
+					options = name;
+			}
+			else
+				_.extend(options, {name: name});
+			return app.Core.Context.register(options);
+		},
+
+		//pass in name, factory to register
+		//pass in name, options to create
+		//pass in [name] to get (name can be of path form)
+		widget: function(name, options /*or factory*/){
+			if(!options) return app.Core.Widget.get(name);
+			if(_.isFunction(options))
+				//register
+				return app.Core.Widget.register(name, options);
+			return app.Core.Widget.create(name, options);
+			//you can not register the definition when providing name, options.
+		},
+
+		//pass in name, factory to register
+		//pass in name, options to create
+		//pass in [name] to get (name can be of path form)
+		editor: function(name, options /*or factory*/){
+			if(!options) return app.Core.Editor.get(name);
+			if(_.isFunction(options))
+				//register
+				return app.Core.Editor.register(name, options);
+			return app.Core.Editor.create(name, options);
+			//you can not register the definition when providing name, options.
+		},
+
+			//@deprecated---------------------
+			regional: function(name, options){
+				options = options || {};
+				if(_.isString(name))
+					_.extend(options, {name: name});
+				else
+					_.extend(options, name);
+				console.warn('DEV::Application::regional() method is deprecated, use .view() instead for', options.name || options /*as an indicator of anonymous view*/);
+				return app.view(options, !options.name);
+			},
+			//--------------------------------
+		
+		//(name can be of path form)
+		has: function(name, type){
+			if(type)
+				return app.Core[type] && app.Core[type].has(name);
+
+			_.each(['Context', 'View', 'Widget', 'Editor'], function(t){
+				if(!type && app.Core[t].has(name))
+					type = t;
+			});
+
+			return type;
+		},
+
+		//(name can be of path form)
+		//always return View definition.
+		get: function(name, type, fallback /*in effect only if you specify type*/){
+			if(!name)
+				return {
+					'Context': app.Core.Context.get(),
+					'View': app.Core.View.get(),
+					'Widget': app.Core.Widget.get(),
+					'Editor': app.Core.Editor.get()
+				};
+
+			var Reusable, t = type || 'View';
+
+			//try local
+			Reusable = (app.Core[t] && app.Core[t].get(name)) || (fallback && app.Core['View'].get(name));
+			
+			//try remote, if we have app.viewSrcs set to load the View def dynamically
+			if(!Reusable && app.config && app.config.viewSrcs){
+				var targetJS = _.compact([app.config.viewSrcs, t.toLowerCase(), app.nameToPath(name)]).join('/') + '.js';
+				app.inject.js(
+					targetJS, true //sync
+				).done(function(){
+					app.debug(t, name, 'injected', 'from', app.config.viewSrcs);
+					if(app.has(name, t))
+						Reusable = app.get(name, t);
+					else
+						throw new Error('DEV::Application::get() loaded definitions other than required ' + name + ' from ' + targetJS + ', please check your view name in that file!');
+				}).fail(function(jqXHR, settings, e){
+					if(!fallback || (t === 'View'))
+						throw new Error('DEV::Application::get() can NOT load definition for ' + name + ' - [' + e + ']');
+					else
+						Reusable = app.get(name, 'View');
+				});
+			}
+
+			return Reusable;
+		},
+
+		spray: function($anchor, View /*or template or name or instance or options or svg draw(paper){} func */, options, parentCt){
+			var $el = $($anchor);
+			parentCt = parentCt || app.mainView;
+
+			//check if $anchor is already an anonymous region
+			var regionName = $el.attr('region');
+			if(!regionName){
+				regionName = _.uniqueId('anonymous-region-');
+				$el.attr('region', regionName);
+				parentCt.addRegion(regionName, '[region="' + regionName + '"]');
+			}
+
+			//see if it is an svg draw(paper){} function
+			if(_.isFunction(View) && View.length === 1){
+				//svg
+				return parentCt.show(regionName, {
+					template: '<div svg="canvas"></div>',
+					svg: {
+						canvas: View
+					},
+					onPaperCleared: function(paper){
+						paper._fit($el);
+					},
+				});
+			}else
+				//view
+				return parentCt.show(regionName, View, options);
+			
+		},
+
+		coop: function(event, options){
+			app.trigger('app:coop', event, options);
+			app.trigger('app:coop-' + event, options);
+			return app;
+		},
+
+		pathToName: function(path){
+			if(!_.isString(path)) throw new Error('DEV::Application::pathToName() You must pass in a valid path string.');
+			if(_.contains(path, '.')) return path;
+			return path.split('/').map(_.string.humanize).map(_.string.classify).join('.');
+		},
+
+		nameToPath: function(name){
+			if(!_.isString(name)) throw new Error('DEV::Application::nameToPath() You must pass in a Reusable view name.');
+			if(_.contains(name, '/')) return name;
+			return name.split('.').map(_.string.humanize).map(_.string.slugify).join('/');
+		},
+
+		//----------------navigation-----------
+		navigate: function(options, silent){
+			return app.trigger('app:navigate', options, silent);
+		},	
+
+		//-----------------mutex---------------
+		lock: function(topic){
+			return app.Core.Lock.lock(topic);
+		},
+
+		unlock: function(topic){
+			return app.Core.Lock.unlock(topic);
+		},
+
+		available: function(topic){
+			return app.Core.Lock.available(topic);
+		},
+
+		//-----------------remote data------------
+		
+		//returns jqXHR object (use promise pls)
+		remote: function(options /*or url*/, payload, restOpt){
+			options = options || {};
+			if(options.payload || payload){
+				payload = options.payload || payload;
+				return app.Core.Remote.change(options, _.extend({payload: payload}, restOpt));
+			}
+			else
+				return app.Core.Remote.get(options, restOpt);
+		},
+		
+		download: function(ticket /*or url*/, options /*{params:{...}} only*/){
+			return app.Util.download(ticket, options);
+		},
+
+		//data push 
+		//(ws channels)
+		_websockets: {},
+		/**
+		 * returns a promise.
+		 * 
+		 * Usage
+		 * -----
+		 * register: app.config.websockets [] or app.ws(socketPath);
+		 * receive (e): view.coop['ws-data-[channel]'] or app.onWsData = custom fn;
+		 * send (json): app.ws(socketPath)
+		 * 								.then(function(ws){ws.channel(...).json({...});}); default per channel data
+		 * 								.then(function(ws){ws.send(); or ws.json();}); anything by any contract
+		 * e.websocket = ws in .then(function(ws){})
+		 *
+		 * Default messaging contract
+		 * --------------------------
+		 * json {channel: '..:..', payload: {.data.}} through ws.channel('..:..').json({.data.})
+		 */
+		ws: function(socketPath){
+			if(!Modernizr.websockets) throw new Error('DEV::Application::ws() Websocket is not supported by your browser!');
+			socketPath = socketPath || '/ws';
+			var d = $.Deferred();
+			if(!app._websockets[socketPath]) { 
+
+				app._websockets[socketPath] = new WebSocket("ws://" + location.host + socketPath);
+				//events: 'open', 'error', 'close', 'message' = e.data
+				//apis: send(), +json(), +channel().json(), close()
+
+				app._websockets[socketPath].json = function(data){
+					app._websockets[socketPath].send(JSON.stringify(data));
+				};
+				app._websockets[socketPath].channel = function(channel){
+					return {
+						json: function(data){
+							app._websockets[socketPath].json({
+								channel: channel,
+								payload: data
+							});
+						}
+					};
+				};
+				app._websockets[socketPath].onclose = function(){
+					app._websockets[socketPath] = undefined;
+				};
+				app._websockets[socketPath].onopen = function(){
+					return d.resolve(app._websockets[socketPath]);
+				};
+
+				//general ws data stub, override this through app.ws(path).then(function(ws){ws.onmessage=...});
+				//Dev Server will always send default json contract string {"channel": "...", "payload": "..."}
+				app._websockets[socketPath].onmessage = function(e){
+					//opt a. override app.onWsData to active otherwise
+					app.trigger('app:ws-data', {websocket: app._websockets[socketPath], path: socketPath, raw: e.data});
+					//opt b. use global coop event 'ws-data-[channel]' in views directly (default json contract)
+					try {
+						var data = JSON.parse(e.data);
+						app.coop('ws-data-' + data.channel, data.payload, {websocket: app._websockets[socketPath], path: socketPath});
+					}catch(ex){
+						console.warn('DEV::Application::ws() Websocket is getting non-default {channel: ..., payload: ...} json contract strings...');
+					}
+				};
+				
+			}else
+				d.resolve(app._websockets[socketPath]);
+			return d.promise();
+		},
+
+		//data polling 
+		//(through later.js) and emit data events/or invoke callback
+		_polls: {},
+		poll: function(url /*or {options} for app.remote()*/, occurrence, coopEvent /*or callback*/) {
+		    //stop everything
+		    if (url === false)
+		        return _.each(this._polls, function(card) {
+		            card.cancel();
+		        });
+
+		    var schedule;
+		    if (_.isString(occurrence)) {
+		        schedule = app.later.parse.text(occurrence);
+		        if (schedule.error !== -1)
+		            throw new Error('DEV::Application::poll() occurrence string unrecognizable...');
+		    } else if (_.isPlainObject(occurrence))
+		        schedule = occurrence;
+		    else //number
+		        schedule = Number(occurrence);
+
+		    //make a key from url, or {url: ..., params/querys}
+		    var key = url;
+		    if (_.isPlainObject(key))
+		        key = [key.url, _.reduce((_.map(key.params || key.querys, function(qV, qKey) {
+		            return [qKey, qV].join('='); 
+		        })).sort(), function(qSignature, more) {
+		            return [more, qSignature].join('&');
+		        }, '')].join('?');
+
+		    //cancel polling
+		    if (occurrence === false) {
+		        if (this._polls[key])
+		            return this._polls[key].cancel();
+		        console.warn('DEV::Application::poll() No polling card registered yet for ' + key);
+		        return;
+		    }
+
+		    //cancel previous polling
+		    if (this._polls[key])
+		        this._polls[key].cancel();
+
+		    //register polling card
+		    if (!occurrence || !coopEvent)
+		        throw new Error('DEV::Application::poll() You must specify an occurrence and a coop event or callback...');
+		    var card = {
+		        _key: key,
+		        url: url,
+		        eof: coopEvent,
+		        timerId: 'unknown',
+		        failed: 0,
+		        valid: true,
+		    };
+		    this._polls[key] = card;
+
+		    var call = _.isNumber(schedule) ? window.setTimeout : app.later.setTimeout;
+		    var worker = function() {
+		        app.remote(url).done(function(data) {
+		            //callback
+		            if (_.isFunction(card.eof))
+		                card.eof(data, card);
+		            //coop event
+		            else
+		                app.coop('poll-data-' + card.eof, data, card);
+		        }).fail(function() {
+		            card.failed++;
+		            //Warning: Hardcoded 3 attemps here!
+		            if (card.failed >= 3) card.cancel();
+		        }).always(function() {
+		            //go schedule the next call
+		            if (card.valid)
+		                card.timerId = call(worker, schedule);
+		        });
+		    };
+		    //+timerType
+		    card.timerType = (call === window.setTimeout) ? 'native' : 'later.js';
+		    //+timerId
+		    card.timerId = call(worker, schedule);
+		    //+cancel()
+		    var that = this;
+		    card.cancel = function() {
+		        if (this.timerType === 'native')
+		            window.clearTimeout(this.timerId);
+		        else
+		            this.timerId.clear();
+		        this.valid = false;
+		        delete that._polls[this._key];
+		    };
+		},
+
+		//-----------------dispatcher/observer/cache----------------
+		dispatcher: function(obj){ //+on/once, off; +listenTo/Once, stopListening; +trigger;
+			var dispatcher;
+			if(_.isPlainObject(obj))
+				dispatcher = _.extend(obj, Backbone.Events);
+			else
+				dispatcher = _.clone(Backbone.Events);
+			dispatcher.dispose = function(){
+				this.off();
+				this.stopListening();
+			};
+			return dispatcher;
+		}, reactor: function(){ return app.dispatcher.apply(this, arguments); }, //alias: reactor
+
+		model: function(data, flat){
+			if(_.isBoolean(data)){
+				flat = data;
+				data = undefined;
+			}
+
+			if(flat)
+				return new Backbone.Model(data);
+			//Warning: Possible performance impact...(default)
+			return new Backbone.DeepModel(data);
+			/////////////////////////////////////////
+		},
+
+		collection: function(data){
+			if(data && !_.isArray(data))
+				throw new Error('DEV::Application::collection You need to specify an array to init a collection');
+			return new Backbone.Collection(data);
+		},
+
+		//selectn
+		extract: function(keypath, from){
+			return selectn(keypath, from);
+		},
+
+		//----------------url params---------------------------------
+		param: function(key, defaultVal){
+			var params = URI.parseQuery(app.uri(window.location.href).search()) || {};
+			if(key) return params[key] || defaultVal;
+			return params;
+		},
+		
+		//----------------raw animation (DON'T mix with jQuery fx)---------------
+		//(specifically, don't call $.animate() inside updateFn)
+		//(you also can NOT control the rate the browser calls updateFn, its 60 FPS all the time...)
+		animation: function(updateFn, condition, ctx){
+			var id;
+			var stepFn = function(t){
+				updateFn.call(ctx);//...update...(1 tick)
+				if(!condition || (condition && condition.call(ctx)))//...condition...(to continue)
+					move();
+			};
+			var move = function(){
+				if(id === undefined) return;
+				id = app._nextFrame(stepFn);
+			};
+			var stop = function(){
+				app._cancelFrame(id);
+				id = undefined;
+			};
+			return {
+				start: function(){id = -1; move();},
+				stop: stop
+			};
+		},
+
+		_nextFrame: function(stepFn){
+			//return request id
+			return window.requestAnimationFrame(stepFn);
+		},
+
+		_cancelFrame: function(id){
+			return window.cancelAnimationFrame(id);
+		},
+
+		//effects see https://daneden.github.io/animate.css/
+		//sample usage: 'ready' --> app.animateItems();
+		animateItems: function(selector /*or $items*/, effect, stagger){
+			var $selector = $(selector); 
+			if(_.isNumber(effect)){
+				stagger = effect;
+				effect = undefined;
+			}
+			effect = effect || 'flipInX';
+			stagger = stagger || 150;
+			var inOrOut = /In/.test(effect)? 1: (/Out/.test(effect)? -1: 0);
+
+			$selector.each(function(i, el){
+				var $el = $(el);
+				//////////////////different than region.show effect because of stagger delay//////////////////
+				if(inOrOut)
+					if(inOrOut === 1) $el.css('opacity', 0);
+					else $el.css('opacity', 1);
+				//////////////////////////////////////////////////////////////////////////////////////////////
+				_.delay(function($el){
+					var fxName = effect + ' animated';
+					$el.one(app.ADE, function(){
+						$el.removeClass(fxName);
+					}).addClass(fxName);
+					///////////////reset opacity immediately, not after ADE///////////////
+					if(inOrOut)
+						if(inOrOut === 1) $el.css('opacity', 1);
+						else $el.css('opacity', 0);
+					//////////////////////////////////////////////////////////////////////
+				}, i * stagger, $el);
+			});
+		},
+		//----------------config.rapidEventDelay wrapped util--------------------
+		//**Caveat: must separate app.config() away from app.run(), put view def (anything)
+		//that uses app.config in between in your index.html. (the build tool automatically taken care of this)
+		throttle: function(fn, ms){
+			return _.throttle(fn, ms || app.config.rapidEventDelay);
+		},
+
+		debounce: function(fn, ms){
+			return _.debounce(fn, ms || app.config.rapidEventDelay);
+		},
+
+		//----------------markdown-------------------
+		//options.marked, options.hljs
+		//https://guides.github.com/features/mastering-markdown/
+		//our addition:
+		//	^^^class class2 class3 ...
+		//	...
+		//	^^^
+		markdown: function(md, $anchor /*or options*/, options){
+			options = options || (!_.isjQueryObject($anchor) && $anchor) || {};
+			//render content
+			var html = marked(md, app.debug('marked options are', _.extend(app.config.marked, (options.marked && options.marked) || options, _.isjQueryObject($anchor) && $anchor.data('marked')))), hljs = window.hljs;
+			//highlight code (use ```language to specify type)
+			if(hljs){
+				hljs.configure(app.debug('hljs options are', _.extend(app.config.hljs, options.hljs, _.isjQueryObject($anchor) && $anchor.data('hljs'))));
+				var $html = $('<div>' + html + '</div>');
+				$html.find('pre code').each(function(){
+					hljs.highlightBlock(this);
+				});
+				html = $html.html();
+			}
+			if(_.isjQueryObject($anchor))
+				return $anchor.html(html).addClass('md-content');
+			return html;
+		},
+
+		//----------------notify/overlay/popover---------------------
+		notify: function(title /*or options*/, msg, type /*or otherOptions*/, otherOptions){
+			if(_.isString(title)){
+				if(_.isPlainObject(type)){
+					otherOptions = type;
+					type = undefined;
+				}
+				if(otherOptions && otherOptions.icon){
+					//theme awesome ({.icon, .more})
+					$.amaran(_.extend({
+						theme: 'awesome ' + (type || 'ok'),
+						//see http://ersu.me/article/amaranjs/amaranjs-themes for types
+						content: {
+							title: title,
+							message: msg,
+							info: otherOptions.more || ' ',
+							icon: otherOptions.icon
+						}
+					}, otherOptions));
+				} else {
+					//custom theme
+					$.amaran(_.extend({
+						content: {
+							themeName: 'stagejs',
+							title: title,
+							message: msg, 
+							type: type || 'info',
+						},
+						themeTemplate: app.NOTIFYTPL
+					}, otherOptions));
+				}
+			}
+			else
+				$.amaran(title);
+		},
+
+		//overlay or popover
+		prompt: function(view, anchor, placement, options){
+			if(_.isFunction(view))
+				view = new view();
+			else if(_.isString(view))
+				view = app.get(view).create();
+
+			//is popover
+			if(_.isString(placement)){
+				options = options || {};
+				options.placement = placement;
+				return view.popover(anchor, options);
+			}
+
+			//is overlay
+			options = placement;
+			return view.overlay(anchor, options);
+		},
+
+		//----------------i18n-----------------------
+		i18n: function(key, ns){
+			if(key){
+				//insert translations to current locale
+				if(_.isPlainObject(key))
+					return I18N.insertTrans(key);
+				//return a translation for specified key, ns/module
+				return String(key).i18n(ns);
+			}
+
+			//otherwise, collect available strings (so far) into an i18n object.
+			return I18N.getResourceJSON(null, false);
+		},
+
+		//----------------debug----------------------
+		//Note: debug() will always return the last argument as return val. (for non-intrusive inline debug printing)
+		debug: function(){
+			var fn = console.debug || console.log;
+			if(app.param('debug') === 'true')
+				fn.apply(console, arguments);
+			return arguments.length && arguments[arguments.length - 1];
+		},
+
+		//find a view instance by name or its DOM element.
+		locate: function(name /*el or $el*/){
+			//el, $el for *contained* view names only
+			if(!_.isString(name)){
+				var all;
+				if(name)
+					all = $(name).find('[data-view-name]');
+				else
+					all = $('[data-view-name]');
+
+				all = all.map(function(index, el){
+					return $(el).attr('data-view-name');
+				}).get();
+				return all;
+			}
+
+			//name string, find the view instance and sub-view names
+			var view = $('[data-view-name="' + name + '"]').data('view');
+			return view && {view: view, 'sub-views': app.locate(view.$el)};
+		},
+
+		//output performance related meta info so far for a view by name or its DOM element.
+		profile: function(name /*el or $el*/){
+			//el, $el for *contained* views total count and rankings
+			if(!_.isString(name)){
+				var all;
+				if(name)
+				 	all = $(name).find('[data-render-count]');
+				else
+					all = $('[data-render-count]');
+
+				all = all.map(function(index, el){
+					var $el = $(el);
+					return {name: $el.data('view-name'), 'render-count': Number($el.data('render-count')), $el: $el};
+				}).get();
+				return {total: _.reduce(all, function(memo, num){ return memo + num['render-count']; }, 0), rankings: _.sortBy(all, 'render-count').reverse()};
+			}
+
+			//name string, profile the specific view and its sub-views
+			var result = app.locate(name), view;
+			if(result) view = result.view;
+			return view && {name: view.$el.data('view-name'), 'render-count': view.$el.data('render-count'), $el: view.$el, 'sub-views': app.profile(view.$el)};
+		},
+
+		//mark views on screen. (hard-coded style, experimental)
+		mark: function(name /*el or $el*/){
+			var nameTagPairing = [], $body;
+			if(_.isString(name)){
+				var result = app.locate(name);
+				if(!result) return;
+				$body = result.view.parentRegion && result.view.parentRegion.$el;
+			}else if(name){
+				$body = $(name);
+			}else
+				$body = $('body');
+			//else abort
+			if(!$body) return;
+
+			//clear all name tag
+			$body.find('.dev-support-view-name-tag').remove();
+			//round-1: generate border and name tags
+			_.each(app.locate($body), function(v){
+				var result = app.locate(v), $container;
+				//add a container style
+				if(result.view.category !== 'Editor')
+					$container = result.view.parentRegion && result.view.parentRegion.$el;
+				else
+					$container = result.view.$el;
+				//else return;
+				if(!$container) return;
+
+				$container.css({
+					'padding': '1.5em', 
+					'border': '1px dashed black'
+				});
+				//add a name tag (and live position it to container's top left)
+				var $nameTag = $('<span class="label label-default dev-support-view-name-tag" style="position:absolute;">' + result.view.$el.data('view-name') + '</span>');
+				//add click event to $nameTag
+				$nameTag.css({cursor: 'pointer'})
+				.on('click', function(){
+					app.reload(result.view.$el.data('view-name'), true);
+				});
+				$body.append($nameTag);
+				nameTagPairing.push({$tag: $nameTag, $ct: $container, view: result.view});
+			});
+			//round-2: position the name tags
+			$window.trigger('resize');//trigger a possible resizing globally.
+			_.defer(function(){
+				_.each(nameTagPairing, function(pair){
+					pair.$tag.position({
+						my: 'left top',
+						at: 'left top',
+						of: pair.$ct
+					});
+					pair.view.on('close', function(){
+						pair.$tag.remove();
+					});
+				});
+			});
+		},
+
+		//reload everything, or override a view with newer version.
+		reload: function(name, override/*optional*/){
+			//reload globally
+			if(!name)
+				return window.location.reload();
+
+			var result = app.locate(name);
+			if(!result){
+				app.mark();//highlight available views.
+				throw new Error('DEV::app.reload():: Can NOT find view with given name: ' + name);
+			}
+
+			var v = result.view,
+				region = v.parentRegion,
+				category;
+			//get type of the named object
+			_.each(app.get(), function(data, key){
+				if(data.indexOf(name) >= 0){
+					category = key;
+					return;
+				}
+			});
+			if(!category)
+				throw new Error('DEV::app.reload():: No category can be found with given view: ' + name);
+			override = override || false;
+			//override old view
+			if(override){
+				//clear template cache in cache
+				app.Util.Tpl.cache.clear(v.template);
+				//un-register the view
+				app.Core[category].remove(name);
+				//re-show the new view
+				try{
+					var view = app.get(name, category).create();
+					view.once('view:all-region-shown', function(){
+						app.mark(name);
+					});
+					region.show(view);
+				}catch(e){
+					console.warn('DEV::app.reload()::Abort, this', name, 'view is not defined alone, you need to find its source.', e);
+				}
+			}else{
+				//re-render the view
+				v.refresh();
+			}
+			//return this;
+		},
+
+		inject: {
+			js: function(){
+				return app.Util.inject.apply(null, arguments);
+			},
+
+			tpl: function(){
+				return app.Util.Tpl.remote.apply(app.Util.Tpl, arguments);
+			},
+
+			css: function(){
+				return loadCSS.apply(null, arguments);
+			}
+		},
+
+		//--------3rd party lib pass-through---------
+		
+		// js-cookie (former jquery-cookie)
+		//.set(), .get(), .remove()
+		cookie: Cookies,
+
+		// store.js (localStorage)
+		//.set(), .get(), .getAll(), .remove(), .clear()
+		store: store.enabled && store,
+
+		// validator.js (form data type,val,deps validation)
+		validator: validator,
+
+		// moment.js (date and time)
+		moment: moment,
+
+		// URI.js (uri,query and hash in the url)
+		uri: URI,
+
+		// later.js (schedule repeated workers, e.g poll RESTful data)
+		later: later,
+	});
+
+	//editor rules
+	app.editor.validator = app.editor.rule = function(name, fn){
+		if(!_.isString(name)) throw new Error('DEV::Validator:: You must specify a validator/rule name to use.');
+		return app.Core.Editor.addRule(name, fn);
+	};
+
+	//alias
+	app.page = app.context;
+	app.area = app.regional;
+
+	/**
+	 * API summary
+	 */
+	app._apis = [
+		'dispatcher/reactor', 'model', 'collection',
+		//view registery
+		'context - @alias:page', 'view', 'widget', 'editor', 'editor.validator - @alias:editor.rule',
+		//global action locks
+		'lock', 'unlock', 'available', 
+		//utils
+		'has', 'get', 'spray', 'coop', 'navigate', 'icing/curtain', 'i18n', 'param', 'animation', 'animateItems', 'throttle', 'debounce',
+		//com
+		'remote', 'download', 'ws', 'poll',
+		//3rd-party lib short-cut
+		'extract', 'markdown', 'notify', 'prompt', //wraps
+		'cookie', 'store', 'moment', 'uri', 'validator', 'later', //direct refs
+		//supportive
+		'debug', 'reload', 'locate', 'profile', 'mark', 'nameToPath', 'pathToName', 'inject.js', 'inject.tpl', 'inject.css',
+		//@deprecated
+		'create - @deprecated', 'regional - @deprecated'
+	];
+
+	/**
+	 * Statics
+	 */
+	//animation done events used in Animate.css
+	app.ADE = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+	//notification template
+	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
+
+})(Application);
+;;app.stagejs = "1.10.1-1200 build 1488423265698";
+;/**
+ * Util for adding meta-event programming ability to object
+ *
+ * Currently applied to: Application, Context and View.
+ *
+ * @author Tim Lauv
+ * @created 2014.03.22
+ * @updated 2016.03.31
+ */
+
+;(function(app){
+
+	//e as event in meta-event domain:e without the domain: string
+	app.Util.metaEventToListenerName = function(e){
+		if(!e) throw new Error('DEV::Util::metaEventToListenerName() e an NOT be empty...');
+		return _.string.camelize('on-' + e.split(/[\.:-\s\/]/).join('-')); //IMPORTANT e --> fn rule
+	};
+
+	app.Util.addMetaEvent = function(target, namespace, delegate){
+		if(!delegate) delegate = target;
+		target.listenTo(target, 'all', function(eWithNamespace){
+			//separate the domain: string
+			var tmp = String(eWithNamespace).split(':');
+			if(tmp.length !== 2 || tmp[0] !== namespace) return;
+			//apply the e --> fn rule
+			var listener = app.Util.metaEventToListenerName(tmp[1]);
+			if(delegate[listener])
+				delegate[listener].apply(target, _.toArray(arguments).slice(1));
+		});
+	};
+
+})(Application);
+;/**
+ * Application universal downloader
+ *
+ * Usage
+ * -----
+ * app.download(url, {params:{...}})
+ * 	
+ * 	or
+ * 
+ * app.download({
+ * 	 url:
+ * 	 params: {...}
+ * })
+ *
+ * @author Tim Lauv
+ * @created 2013.04.01
+ * @updated 2013.11.08
+ * @updated 2014.03.04
+ * @updated 2016.12.14
+ */
+;(function(app){
+
+	function downloader(ticket, options){
+	    var drone = $('#hidden-download-iframe');
+	    if(drone.length > 0){
+	    }else{
+	        $('body').append('<iframe id="hidden-download-iframe" style="display:none"></iframe>');
+	        drone = $('#hidden-download-iframe');
+	    }
+	    
+	    //backward compatible ({url: ..., reset of keys as query params directly} still works)
+	    if(_.isPlainObject(ticket))
+	    	ticket.params = _.extend({}, ticket.params, ticket.querys, _.omit(ticket, 'url', 'params', 'querys'));
+
+	    if(_.isString(ticket)){
+	    	ticket = {url: ticket};
+	    	_.extend(ticket, options);
+	    }
+
+	    drone.attr('src', (app.uri(ticket.url || '/').addQuery(ticket.params)).toString());
+	}
+
+	app.Util.download = downloader;
+
+})(Application);
+;/**
+ * This is the template builder/registry util, making it easier to create new templates for View objects.
+ * (used by M.TemplateCache* in template-cache.js)
+ *
+ * Note: use build() for local templates and remote() for remote ones
+ *
+ * Usage (name as id)
+ * -----
+ * app.Util.Tpl.build(name, [</>, </>, ...]) / ([</>, </>, ...]) / ('</></>...</>')
+ * app.Util.Tpl.remote(url, sync) - default on using app.config.viewTemplates as base before url, use '/' as start to skip
+ *
+ * @author Tim Lauv
+ * @create 2013.12.20
+ * @updated 2014.10.25
+ * @updated 2016.03.24
+ */
+
+;(function(app){
+
+	var namefix = /[\.\/]/;
+	var Template = {
+
+		//normalize the tpl names so they can be used as html tag ids.
+		normalizeId: function(name){
+			return String(name).split(namefix).join('-');
+		},
+
+		cache: Backbone.Marionette.TemplateCache,
+
+		build: function (name, tplString){
+			if(arguments.length === 1) {
+				tplString = name;
+				name = null;
+			}
+			var tpl = _.isArray(tplString)?tplString.join(''):tplString;
+
+			if(name) {
+				//process name to be valid id string, use String() to force type conversion before using .split()
+				var id = this.normalizeId(name);
+				var $tag = $('head > script[id="' + id + '"]');
+				if($tag.length > 0) {
+					//override
+					$tag.html(tpl);
+					this.cache.clear('#' + name);
+					console.warn('DEV::Overriden::Template::', name);
+				}
+				else $('head').append(['<script type="text/tpl" id="', id, '">', tpl, '</script>'].join(''));
+			}
+
+			return tpl;
+		},
+
+		//load all prepared/combined templates from server (*.json without CORS)
+		//or
+		//load individual tpl
+		//all loaded tpl will be stored in cache (app.Util.Tpl.cache.templateCaches)
+		remote: function(name, sync){
+			var that = this;
+			if(!name) throw new Error('DEV::Util.Tpl::remote() your template name can NOT be empty!');
+
+			var originalName = name;
+			if(_.string.startsWith(name, '@'))
+				name = name.slice(1);
+			var base = app.config.viewTemplates;
+			if(_.string.startsWith(name, '/')){
+				name = name.slice(1);
+				base = '.';
+			}
+			var url = base + '/' + name;
+			if(_.string.endsWith(url, '.json')){
+				//load all from preped .json
+				return $.ajax({
+					url: url,
+					dataType: 'json', //force return data type.
+					async: !sync
+				}).done(function(tpls){
+					_.each(tpls, function(t, n){
+						Template.cache.make(n, t);
+					});
+				});//.json can be empty or missing.
+			}else {
+				//individual tpl
+				return $.ajax({
+					url: url,
+					dataType: 'html',
+					async: !sync
+				}).done(function(tpl){
+					Template.cache.make(originalName, tpl);
+				}).fail(function(){
+					throw new Error('DEV::Util.Tpl::remote() Can not load template...' + url + ', re-check your app.config.viewTemplates setting');
+				});
+			}
+		}
+	};
+
+	app.Util.Tpl = Template;
+
+})(Application);
+
+;/**
+ * Script injecting util for [batch] reloading certain script[s] without refreshing app.
+ *
+ * batch mode: use a .json to describe the js listing
+ * json format:
+ * 1. ["scriptA.js", "lib/scriptB.js", "another-listing.json"]
+ * 2. {
+ * 		"base": "js",
+ * 		"list": [ ... ] //same as 1
+ * }
+ *
+ * @author Tim Lauv
+ * @created 2014.10.08
+ */
+
+;(function(app){
+
+	app.Util.inject = function(url, sync){
+
+		url = url || 'patch.json';
+
+		if(_.string.endsWith(url, '.js'))
+			return $.ajax({
+				url: url,
+				async: !sync,
+				dataType: 'script'
+			});
+		else
+			return $.getJSON(url, function(list){
+				var base = '';
+				if(!_.isArray(list)) {
+					base = list.base;
+					list = list.list;
+				}
+				_.each(list, function(js){
+					app.Util.inject((_.string.endsWith(base, '/')?base: (!base?'':(base + '/'))) + js, sync);
+				});
+			});
+	};
+
+})(Application);
+;/*
+ * This is the Remote data interfacing core module of this application framework.
+ * (Replacing the old Data API module)
+ *
+ * options:
+ * --------
+ * a. url string
+ * or 
+ * b. object:
+ * 	1. + _entity[_id][_method] - string
+ *  2. + params(alias:querys) - object
+ *  3. + payload - object (payload._id overrides _id)
+ *  4. $.ajax options (without -data, -type, -processData, -contentType)
+ *
+ *  Global CROSSDOMAIN Settings - *Deprecated*: set this in a per-request base or use server side proxy
+ *  see MDN - https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS
+ *  If you ever need crossdomain in development, we recommend that you TURN OFF local server's auth layer/middleware. 
+ *  To use crossdomain ajax, in any of your request, add this option:
+ *  xdomain: {
+ *  	protocol: '', //https or not? default: '' -> http
+ *   	host: '127.0.0.1', 
+ *   	port: '5000',
+ *   	headers: {
+ *   		'Credential': 'user:pwd'/'token',
+ *   		...
+ *  }
+ *  Again, it is always better to use server side proxy/forwarding instead of client side x-domain.
+ *
+ * events:
+ * -------
+ * app:ajax - change global ajax options here
+ * app:ajax-success - single progress
+ * app:ajax-error - single progress
+ * app:ajax-start - single progress
+ * app:ajax-stop - single progress
+ * app:ajax-active - overall
+ * app:ajax-inactive - overall
+ * app:remote-pre-get - fine grind op stub
+ * app:remote-pre-change - fine grind op stub
+ * 
+ * @author Tim Lauv
+ * @created 2014.03.24
+ */ 
+
+;(function(app, _, $){
+
+	var definition = app.module('Core.Remote');
+
+	function fixOptions(options, restOpt){
+		if(!options) throw new Error('DEV::Core.Remote::options empty, you need to pass in at least a url string');
+		if(_.isString(options)) 
+			options	= _.extend(restOpt || {}, { 
+				url: options
+			});
+
+		//default options
+		options = _.extend({
+			timeout: app.config.timeout,
+		}, options, restOpt || {}, {
+			type: undefined,
+			data: undefined,
+			processData: false,
+			contentType: 'application/json; charset=UTF-8', // req format
+			//**Caveat**: we do NOT assume a json format response.---------------------------------------
+			//dataType: 'json', //need 'application/json; charset=utf-8' in response Content-Type header.
+			//-------------------------------------------------------------------------------------------
+		});
+
+		//process _entity[_id][_method] and strip off options.querys(alias:params)
+		if(options.entity || options._entity){
+			var entity = options.entity || options._entity;
+			options.url = entity;
+		}
+		if(options.payload && options.payload._id){
+			options._id = options.payload._id;
+		}
+		if(options._id || options._method){
+			var url = app.uri(options.url);
+			options.url = url.path(_.compact([url.path(), options._id, options._method]).join('/')).toString();
+		}
+		options.params = _.extend(options.params || {}, options.querys);
+		if(options.params){
+			options.url = (app.uri(options.url)).search(options.params).toString();
+		}
+
+		//app.config.baseAjaxURI
+		if(app.config.baseAjaxURI)
+			options.url = options.url.match(/^[\/\.]/)? options.url : [app.config.baseAjaxURI, options.url].join('/');	
+
+		//crossdomain:
+		var crossdomain = options.xdomain;
+		if(crossdomain){
+			options.url = (crossdomain.protocol || 'http') + '://' + (crossdomain.host || 'localhost') + ((crossdomain.port && (':'+crossdomain.port)) || '') + (/^\//.test(options.url)?options.url:('/'+options.url));
+			options.crossDomain = true;
+			options.xhrFields = _.extend(options.xhrFields || {}, {
+				withCredentials: true //persists session cookies.
+			});
+			options.headers = _.extend(options.headers || {}, crossdomain.headers);
+			// Using another way of setting withCredentials flag to skip FF error in sycned CORS ajax - no cookies tho...:(
+			// options.beforeSend = function(xhr) {
+			// 	xhr.withCredentials = true;
+			// };
+		}
+
+		//get csrftoken value from cookie and set to header.
+		options.headers = options.headers || {};
+		if(app.config.csrftoken && !options.headers[app.config.csrftoken.header])
+			options.headers[app.config.csrftoken.header] = app.cookie.get(app.config.csrftoken.cookie) || 'NOTOKEN';
+
+		app.trigger('app:ajax', options);		
+		return options;
+	}
+
+	_.extend(definition, {
+
+		//GET
+		get: function(options, restOpt){
+			options = fixOptions(options, restOpt);
+			options.type = 'GET';
+			app.trigger('app:remote-pre-get', options);
+			return $.ajax(options);
+		},
+
+		//POST(no payload._id)/PUT/DELETE(payload = {_id: ...})
+		change: function(options, restOpt){
+			options = fixOptions(options, restOpt);
+			if(!options.payload) throw new Error('DEV::Core.Remote::payload empty, please use GET');
+			if(options.payload._id && _.size(options.payload) === 1) options.type = 'DELETE';
+			else {
+				if(!_.isObject(options.payload)) options.payload = { payload: options.payload };
+				if(!options.payload._id) options.type = 'POST';
+				else options.type = 'PUT';
+			}
+
+			if(options.type !== 'DELETE'){
+				//encode payload into json data
+				options.data = JSON.stringify(options.payload);
+			}
+
+			app.trigger('app:remote-pre-change', options);
+			return $.ajax(options);
+		}
+
+	});
+
+	//Global jQuery ajax event mappings to app:ajax-* events.
+	//swapped!
+	$document.ajaxSend(function(e, jqXHR, ajaxOptions) {
+		app.trigger('app:ajax-start', e, jqXHR, ajaxOptions);
+	});
+	//swapped!
+	$document.ajaxComplete(function(e, jqXHR, ajaxOptions) {
+		app.trigger('app:ajax-stop', e, jqXHR, ajaxOptions);
+	});
+	//same
+	$document.ajaxSuccess(function(e, jqXHR, ajaxOptions, data){
+		app.trigger('app:ajax-success', e, jqXHR, ajaxOptions, data);
+	});
+	//same
+	$document.ajaxError(function(e, jqXHR, ajaxOptions, error){
+		app.trigger('app:ajax-error', e, jqXHR, ajaxOptions, error);
+	});
+	//new name!
+	$document.ajaxStart(function() {
+		app.trigger('app:ajax-active');
+	});
+	//new name!
+	$document.ajaxStop(function() {
+		app.trigger('app:ajax-inactive');
+	});
+
+
+	
+
+})(Application, _, jQuery);
+;/**
+ * Application locking mech for actions, events and <a href> navigations ...
+ *
+ * Usage
+ * -----
+ * create (name, number) -- topic and allowance;
+ * lock (name) -- 	return true for locking successfully, false otherwise;
+ * 					default on creating a (name, 1) lock for unknown name;
+ * 					no name means to use the global lock;
+ * unlock (name) -- unlock topic, does nothing by default;
+ * 					no name means to use the global lock;
+ * get(name) -- get specific lock topic info;
+ * 				no name means to return all info;
+ *
+ * @author Tim Lauv
+ * @created 2014.08.21
+ */
+
+;(function(app){
+
+	var definition = app.module('Core.Lock');
+	var locks = {},
+	global = false; //true to lock globally, false otherwise.
+
+	_.extend(definition, {
+		create: function(topic, allowance){
+			if(!_.isString(topic) || !topic) throw new Error('DEV::Core.Lock::create() You must give this lock a name/topic ...');
+			if(locks[topic]) return false;
+
+			allowance = _.isNumber(allowance)? (allowance || 1) : 1;
+			locks[topic] = {
+				current: allowance,
+				allowance: allowance
+			};
+			return true;
+		},
+
+		get: function(topic){
+			if(!topic || topic === '*') return {
+				global: global,
+				locks: locks
+			};
+			else
+				return locks[topic];
+		},
+
+		//return true/false indicating op successful/unsuccessful
+		lock: function(topic){
+			if(global) return false;
+
+			if(!topic || topic === '*') {
+				//global
+				if(!global){ //not locked
+					global = true;
+					return true;
+				}else //locked already
+					return false;
+			}else {
+				if(_.isUndefined(locks[topic])){
+					this.create(topic, 1);
+					return this.lock(topic);
+				}else{
+					if(locks[topic].current > 0){
+						locks[topic].current --;
+						return true;
+					}else 
+						return false;
+				}
+			}
+		},
+
+		//return nothing...
+		unlock: function(topic){
+			if(!topic || topic === '*') {
+				//global
+				if(global){ //locked
+					global = false;
+				}
+			}else {
+				if(!_.isUndefined(locks[topic])){
+					if(locks[topic].current < locks[topic].allowance)
+						locks[topic].current ++;
+				}
+			}
+		},
+
+		available: function(topic){
+			if(global) return false;
+			
+			if(!topic || topic === '*')
+				return global === false;
+			else {
+				var status = this.get(topic);
+				if(status) return status.current > 0;
+				else return true;
+			} 
+				
+		}
+	});
+
+
+
+})(Application);
+;/**
+ * Widget/Editor registry. With a regFacotry to control the registry mech.
+ *
+ * Important
+ * =========
+ * Use create() at all times if possible, use get()[deprecated...] definition with caution, instantiate only 1 instance per definition.
+ * There is something fishy about the initialize() function (Backbone introduced), events binding only get to execute once with this.listenTo(), if multiple instances of a part
+ * listens to a same object's events in their initialize(), only one copy of the group of listeners are active.
+ * 
+ *
+ * @author Tim Lauv
+ * @create 2013.11.10
+ * @update 2014.03.03
+ * @update 2015.07.29 (merged Regional, Context)
+ */
+
+(function(_, app, Marionette){
+
+	function makeRegistry(regName){
+		regName = _.string.classify(regName);
+		var manager = app.module('Core.' + regName);
+		_.extend(manager, {
+
+			map: {},
+			has: function(name /*or path*/){
+				if(!_.isString(name) || !name) throw new Error('DEV::Reusable::has() You must specify the name of the ' + regName + ' to look for.');
+				if(this.map[name]) return name;
+				name = app.pathToName(name);
+				if(this.map[name]) return name;
+				return undefined;
+			},
+
+			//no auto pathToName conversion
+			register: function(name /*or options*/, factory /*or options or none*/){
+
+				//type 1: options only
+				var options;
+				if(_.isPlainObject(name)){
+					options = name;
+					name = options.name;
+					factory = function(){
+						return Marionette[options.type || 'Layout'].extend(options);
+					};
+				}
+
+				//type 2: name and options
+				else if(_.isPlainObject(factory)){
+					options = _.extend(factory, {
+						name: name,
+					});
+					factory = function(){
+						return Marionette[options.type || 'Layout'].extend(options);
+					};
+				}
+
+				if(!_.isFunction(factory)) throw new Error('DEV::Reusable::register() You must specify a ' + regName + ' factory function for ' + (name || 'Anonymous') + ' !');
+				var Reusable = factory();
+
+				//only named def gets registered.
+				if(name){
+					//type 3: name and a factory func (won't have preset className)
+					if(!_.isString(name)) throw new Error('DEV::Reusable::register() You must specify a string name to register view in ' + regName + '.');
+
+					if(this.has(name))
+						console.warn('DEV::Overriden::Reusable ' + regName + '.' + name);
+					
+					//+metadata to instances
+					Reusable.prototype.name = name;
+					Reusable.prototype.category = regName;
+
+					//fire the coop event (e.g for auto menu entry injection)
+					this.map[name] = Reusable;
+					app.trigger('app:reusable-registered', Reusable, regName);
+					app.coop('reusable-registered', Reusable, regName);
+				}
+
+				//patch it with a chaining method: (e.g for app.get('ViewName').create(options).overlay())
+				Reusable.create = function(options){
+					return new Reusable(options);
+				};
+
+				//both named and anonymous def gets returned.
+				return Reusable;
+
+			},
+
+			create: function(name /*or path*/, options){
+				if(!_.isString(name) || !name) throw new Error('DEV::Reusable::create() You must specify the name of the ' + regName + ' to create.');
+				var Reusable = this.get(name);
+				if(Reusable)
+					return Reusable.create(options || {});
+				throw new Error('DEV::Reusable::create() Required definition [' + name + '] in ' + regName + ' not found...');
+			},
+
+			get: function(name /*or path*/){
+				if(!name) return _.keys(this.map);
+				name = this.has(name);
+				if(name)
+					return this.map[name];
+			},
+
+			alter: function(name /*or path*/, options){
+				var Reusable = this.get(name);
+				if(Reusable){
+					Reusable = Reusable.extend(options);
+					return Reusable;
+				}
+				throw new Error('DEV::Reusable::alter() Required definition [' + name + '] in ' + regName + ' not found...');
+			},
+
+			remove: function(name /*or path*/){
+				if(name)
+					delete this.map[name];
+			},
+
+		});
+
+		return manager;
+
+	}
+
+	makeRegistry('Context'); //top level views (see infrastructure: navigation worker)
+	makeRegistry('Regional'); //general named views (e.g a form, a chart, a list, a customized detail)
+	app.Core.View = app.Core.Regional; //alias
+	makeRegistry('Widget'); //specialized named views (e.g a datagrid, a menu, ..., see reusable/widgets)
+	makeRegistry('Editor'); //specialized small views used in form views (see reusable/editors, lib+-/marionette/item-view,layout)
+
+})(_, Application, Marionette);
+;/**
  * Overriding the special M.Application module so that,
  *
  * It waits for `callbacks:all-done` event from its init chain and trigger `app:initialized`.
@@ -43385,6 +43460,9 @@ module.exports = DeepModel;
 				(Marionette.getOption(this, 'editors') || Marionette.getOption(this, 'svg') || Marionette.getOption(this, 'layout'))? ' ' /*must have 1+ space*/ : '<div class="wrapper-full bg-warning"><p class="h3" style="margin:0;"><span class="label label-default" style="display:inline-block;">No Template</span> ' + this._name + '</p></div>'
 			);
 		},
+
+		//override triggerMethod again to use our version (since it was registered through closure)
+		triggerMethodInversed: Marionette.triggerMethodInversed,
 
 		//local collaboration under the same parentCt (Trick: use this.coop() instead of this._coop())
 		_coop: function(){
@@ -44110,7 +44188,7 @@ module.exports = DeepModel;
 						var $svg = $(this), name = $svg.attr('svg');
 						var paper = that._enableSVG($svg, name);
 						//hook up the draw() function (_.defer-ed so you have a chance to call $.css upon view 'ready')
-						that.listenTo(that, 'view:ready view:window-resized', function(){
+						that.listenTo(that, 'ready view:window-resized', function(){
 							//note that _.defer() does NOT return the function.
 							_.defer(function(){
 								paper.clear();
@@ -44130,20 +44208,21 @@ module.exports = DeepModel;
 
 		//--------------------+ready event---------------------------		
 		//ensure a ready event for static views (align with data and form views)
-		//Caveat: re-render a static view will not trigger 'view:ready' again...
+		//Caveat: re-render a static view will not trigger 'ready' again...
 		this.listenTo(this, 'show', function(){
-			//call view:ready (if not waiting for data render after 1st `show`, static and local data view only)
+			//call view `ready` (if not waiting for data render after 1st `show`, static and local data view only)
 			if(!this.data && !this.useParentData){
 				if(this.parentRegion)
 				    this.parentRegion.once('show', function(){
 				    	//this is to make sure local data ready always fires after navigation-chain completes (e.g after view:navigate-to)
-				    	this.currentView.trigger('view:ready');
-				    	//note that form view will not re-render on .set(data) so there should be no 2x view:ready triggered.
+				    	this.currentView.triggerMethodInversed('ready');
+				    	//note that form view will not re-render on .set(data) so there should be no 2x view `ready` triggered.
 				    });
-				else 
+				else {
 					//a view should always have a parentRegion (since shown by a region), but we do not enforce it when firing 'ready'.
 					//e.g manual view life-cycling (very rare)
-					this.trigger('view:ready');
+					this.triggerMethodInversed('ready');
+				}
 			}
 		});
 
@@ -44255,11 +44334,11 @@ module.exports = DeepModel;
 				delete this._delayFirstTimeLocalDataReady;
 				if(this.parentRegion)
 				    return this.parentRegion.once('show', function() {
-				        this.currentView.trigger('view:ready');
+				    	this.currentView.triggerMethodInversed('ready');
 				    });
 			} 
 			
-			this.trigger('view:ready');
+			this.triggerMethodInversed('ready');
 		},
 		
 		//Set & change the underlying data of the view.
@@ -44395,9 +44474,8 @@ module.exports = DeepModel;
 		 * Editor Activation - do it once upon render()
 		 * 
 		 * Turn per field config into real editors.
-		 * You can activate editors in any Layout/ItemView object, it doesn't have to be a turnIntoForm() instrumented view.
-		 * You can also send a view with activated editors to a form by using addFormPart()[in onShow() or onRender()] it is turn(ed)IntoForm()
-		 *
+		 * You can activate editors in any Layout/ItemView object.
+		 * 
 		 * options
 		 * -------
 		 * _global: general config as a base for all editors, (overriden by individual editor config)
@@ -44437,9 +44515,6 @@ module.exports = DeepModel;
 		 * Remove current: Close this view to automatically clean up all the editors used.
 		 *
 		 * optionally you can implement setValues()/getValues()/validate() in your view, and that will get invoked by the outter form view if there is one.
-		 *
-		 * Warning:
-		 * activateEditors will not call on editor's onShow method, so don't put anything in it! Use onRender if needs be instead!!
 		 * 
 		 */
 		_activateEditors: function(options){
@@ -44499,13 +44574,13 @@ module.exports = DeepModel;
 
 				$position.append(editor.el);
 				//+'show' (internal, for editor writer only)
-				editor.trigger('view:show');
+				editor.triggerMethod('show');
 				
 				//3. patch in default value (Note: Always provide a default value to trigger onReady()!)
 				if(config.value !== undefined){
 					editor.setVal(config.value);
 					//+'ready' (internal, for editor writer only)
-					editor.trigger('view:ready');
+					editor.triggerMethodInversed('ready');
 				}
 
 			}, this);
@@ -45099,7 +45174,7 @@ module.exports = DeepModel;
 				this.collection.set(data, options);
 			//align with normal view's data rendered and ready events notification
 			this.trigger('view:data-rendered');
-			this.trigger('view:ready');
+			this.triggerMethodInversed('ready');
 			return this;
 		},
 
@@ -46094,7 +46169,7 @@ var I18N = {};
 
 				//prep current value display if type === 'range'
 				}else if(options.type === 'range'){
-					this.listenTo(this, 'view:show editor:change', function(e){
+					this.listenTo(this, 'show editor:change', function(e){
 						if(options.label && this.ui.input.val() !== undefined){
 								this.ui.currentVal.text(this.ui.input.val() + (options.unitLabel || ''));
 								this.ui.currentValPostfix.text('\u00A0' + ("(current value)".i18n()));
