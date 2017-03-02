@@ -494,7 +494,7 @@ If you defined a `guard` function as property in one of your contexts, it will b
 
 ##### Navigate beyond a Context
 
-When the navigation is at `#navigate/MyContextA/SubViewA/SubViewB...` the router finds `navRegion` in `MyContextA` and shows `SubViewA` in it and then move on to `SubViewA` to show `SubViewB...` in its `navRegion`. If, somehow, it can not find the definition of `SubViewA`, the navigation stops on `MyContextA` and triggers `view:navigate-to` event (after 'view:ready') with the remaining subpath starting with `SubViewA/...` on `MyContextA`. The same process happens on `SubViewA` if the router can not find `SubViewB...`.
+When the navigation is at `#navigate/MyContextA/SubViewA/SubViewB...` the router finds `navRegion` in `MyContextA` and shows `SubViewA` in it and then move on to `SubViewA` to show `SubViewB...` in its `navRegion`. If, somehow, it can not find the definition of `SubViewA`, the navigation stops on `MyContextA` and triggers `view:navigate-to` event (after 'ready') with the remaining subpath starting with `SubViewA/...` on `MyContextA`. The same process happens on `SubViewA` if the router can not find `SubViewB...`.
 
 !!!callout callout-primary
 **Note:** All named Views can all appear in the navigation path if they have the `navRegion` property defined.
@@ -2019,10 +2019,10 @@ View object properties:
 * this.parentCt
 * this.parentRegion
 
-View meta events (triggered):
-* view:render (implicit)
-* view:show/all-region-shown
-* view:ready (view:data-rendered/editor-updated)
+View meta events (trigger()-ed, implicit ones through triggerMethod*()):
+* view:render (implicit, means template rendered)
+* view:show (implicit, means region.$el.html(view.$el) called) /all-region-shown
+* view:ready (implicit - reversed, means data rendered) (view:data-rendered/editor-updated)
 * view:paper-cleared
 * view:editor-changed
 * view:page-changed (limited to Paginator widget bound view)
@@ -2061,6 +2061,8 @@ View apis:
 * view.overlay (anchor, options)
 * view.popover (anchor, options)
 * view.close ()
+* view.trigger ('meta:e')
+* view.triggerMethod* ('e')
 
 View actions mutual exclusion:
 * Application.lock ([topic/lock])
