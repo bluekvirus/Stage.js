@@ -467,7 +467,7 @@
 		},
 
 		//effects see https://daneden.github.io/animate.css/
-		//sample usage: 'view:ready' --> app.animateItems();
+		//sample usage: 'ready' --> app.animateItems();
 		animateItems: function(selector /*or $items*/, effect, stagger){
 			var $selector = $(selector); 
 			if(_.isNumber(effect)){

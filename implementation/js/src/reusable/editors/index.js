@@ -377,7 +377,7 @@
 
 				//prep current value display if type === 'range'
 				}else if(options.type === 'range'){
-					this.listenTo(this, 'view:show editor:change', function(e){
+					this.listenTo(this, 'show editor:change', function(e){
 						if(options.label && this.ui.input.val() !== undefined){
 								this.ui.currentVal.text(this.ui.input.val() + (options.unitLabel || ''));
 								this.ui.currentValPostfix.text('\u00A0' + ("(current value)".i18n()));

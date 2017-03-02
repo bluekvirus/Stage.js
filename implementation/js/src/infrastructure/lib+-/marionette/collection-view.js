@@ -148,7 +148,7 @@
 				this.collection.set(data, options);
 			//align with normal view's data rendered and ready events notification
 			this.trigger('view:data-rendered');
-			this.trigger('view:ready');
+			this.triggerMethodInversed('ready');
 			return this;
 		},
 

@@ -21,8 +21,9 @@ Change Log
 16. All views now starts with 'window-resized' coop by default if view.coop is not set to false;
 17. Added _.isjQueryObject() util function;
 18. Added _.deepClone*() util functions;
-19. Aligned 'view:navigate-to' to be after 'view:ready' instead of 'region:show';
-20. Upgraded to use BB 1.3, jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
+19. Added M/view.triggerMethodInversed() to always call onE() before all the 'e' on()s;
+20. Aligned 'view:navigate-to' to be after 'view:ready' instead of 'region:show';
+21. Upgraded to use BB 1.3, jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
 
 working on ...
 

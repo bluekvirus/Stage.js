@@ -94,6 +94,9 @@
 			);
 		},
 
+		//override triggerMethod again to use our version (since it was registered through closure)
+		triggerMethodInversed: Marionette.triggerMethodInversed,
+
 		//local collaboration under the same parentCt (Trick: use this.coop() instead of this._coop())
 		_coop: function(){
 			var pCt = this.parentCt, listener = app.Util.metaEventToListenerName(arguments[0]);
@@ -818,7 +821,7 @@
 						var $svg = $(this), name = $svg.attr('svg');
 						var paper = that._enableSVG($svg, name);
 						//hook up the draw() function (_.defer-ed so you have a chance to call $.css upon view 'ready')
-						that.listenTo(that, 'view:ready view:window-resized', function(){
+						that.listenTo(that, 'ready view:window-resized', function(){
 							//note that _.defer() does NOT return the function.
 							_.defer(function(){
 								paper.clear();
@@ -838,20 +841,21 @@
 
 		//--------------------+ready event---------------------------		
 		//ensure a ready event for static views (align with data and form views)
-		//Caveat: re-render a static view will not trigger 'view:ready' again...
+		//Caveat: re-render a static view will not trigger 'ready' again...
 		this.listenTo(this, 'show', function(){
-			//call view:ready (if not waiting for data render after 1st `show`, static and local data view only)
+			//call view `ready` (if not waiting for data render after 1st `show`, static and local data view only)
 			if(!this.data && !this.useParentData){
 				if(this.parentRegion)
 				    this.parentRegion.once('show', function(){
 				    	//this is to make sure local data ready always fires after navigation-chain completes (e.g after view:navigate-to)
-				    	this.currentView.trigger('view:ready');
-				    	//note that form view will not re-render on .set(data) so there should be no 2x view:ready triggered.
+				    	this.currentView.triggerMethodInversed('ready');
+				    	//note that form view will not re-render on .set(data) so there should be no 2x view `ready` triggered.
 				    });
-				else 
+				else {
 					//a view should always have a parentRegion (since shown by a region), but we do not enforce it when firing 'ready'.
 					//e.g manual view life-cycling (very rare)
-					this.trigger('view:ready');
+					this.triggerMethodInversed('ready');
+				}
 			}
 		});
 

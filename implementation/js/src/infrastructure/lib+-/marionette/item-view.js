@@ -80,11 +80,11 @@
 				delete this._delayFirstTimeLocalDataReady;
 				if(this.parentRegion)
 				    return this.parentRegion.once('show', function() {
-				        this.currentView.trigger('view:ready');
+				    	this.currentView.triggerMethodInversed('ready');
 				    });
 			} 
 			
-			this.trigger('view:ready');
+			this.triggerMethodInversed('ready');
 		},
 		
 		//Set & change the underlying data of the view.
@@ -220,9 +220,8 @@
 		 * Editor Activation - do it once upon render()
 		 * 
 		 * Turn per field config into real editors.
-		 * You can activate editors in any Layout/ItemView object, it doesn't have to be a turnIntoForm() instrumented view.
-		 * You can also send a view with activated editors to a form by using addFormPart()[in onShow() or onRender()] it is turn(ed)IntoForm()
-		 *
+		 * You can activate editors in any Layout/ItemView object.
+		 * 
 		 * options
 		 * -------
 		 * _global: general config as a base for all editors, (overriden by individual editor config)
@@ -262,9 +261,6 @@
 		 * Remove current: Close this view to automatically clean up all the editors used.
 		 *
 		 * optionally you can implement setValues()/getValues()/validate() in your view, and that will get invoked by the outter form view if there is one.
-		 *
-		 * Warning:
-		 * activateEditors will not call on editor's onShow method, so don't put anything in it! Use onRender if needs be instead!!
 		 * 
 		 */
 		_activateEditors: function(options){
@@ -324,13 +320,13 @@
 
 				$position.append(editor.el);
 				//+'show' (internal, for editor writer only)
-				editor.trigger('view:show');
+				editor.triggerMethod('show');
 				
 				//3. patch in default value (Note: Always provide a default value to trigger onReady()!)
 				if(config.value !== undefined){
 					editor.setVal(config.value);
 					//+'ready' (internal, for editor writer only)
-					editor.trigger('view:ready');
+					editor.triggerMethodInversed('ready');
 				}
 
 			}, this);
