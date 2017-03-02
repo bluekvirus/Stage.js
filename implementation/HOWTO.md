@@ -264,7 +264,7 @@ Application.setup({
     /*----------------------configure-----------------------*/
     fullScreen: //false | true,
     curtains: //fixed overlay regions,
-    defaultView: //your default context name to show in navRegion,
+    defaultView: //your default 1st lvl view name to show in main navRegion,
     baseAjaxURI: //your base url for using with Application.remote(),
     websockets: //websocket paths to initialize,
     viewSrcs: //view dynamic loading base path.
@@ -375,13 +375,13 @@ app:mainview-ready //fired after the application is shown
 
 Let's proceed to define your top-level views so you have something to show after the application starts.
 
-#### Step 2. Define Contexts
+#### Step 2. Define 1st level Views
 
-Create a new file named `myContextA.js`, remember a *Context* is just an special view object with additional special methods/listeners:
+Create a new file named `myContextA.js`, remember a *Context* is just a view object with additional events triggered when shown:
 ```
 //myContextA.js
 (function(app) {
-    app.view('MyContextA', { //omitting the name indicates context:Default
+    app.view('MyContextA', {
         template: '...',
         guard: function(){
             //return error ('string') to cancel navigation;
@@ -438,7 +438,7 @@ Application.navigate('ABC/EFG/...');
 //full path mode B: event
 Application.trigger('app:navigate', 'ABC/EFG/...');
 
-//context, module/subpath mode
+//context(1st lvl view), module/subpath mode
 Application.trigger({
     context: 'ABC',
     subpath: 'EFG/...', //alias: module
@@ -453,19 +453,19 @@ Or, brutally using the actual `window.location` object:
 window.location.hash = '#navigate/ABC/EFG/...';
 ```
 
-There is an `navigate-away` event triggered to call `onNavigateAway` method on a context when the application is switching away from one. Use this listener if you want to store some of the context state and recover later. We recommend that you use the localStorage feature of HTML5 and we have already include a library for you in the framework distribution. (see [store.js](https://github.com/marcuswestin/store.js) for more)
+There is an `navigate-away` event triggered to call `onNavigateAway` method on a view when the application is switching away from one. Use this listener if you want to store some of the view state and recover later. We recommend that you use the localStorage feature of HTML5 and we have already include a library for you in the framework distribution. (see [store.js](https://github.com/marcuswestin/store.js) for more)
 
 You can pass an additional *silent* argument with the `app:navigate` event to avoid changing the url hash path during the navigation:
 ```
 Application.trigger('app:navigate', {
-    context: context, //optional
-    subpath: subpath //omitting context will append subpath to current context
+    context: context, //optional 1st lvl view name
+    subpath: subpath //omitting context will append subpath to current #path
 }, true);
 //or
 Application.trigger('app:navigate', 'path string...', true);
 ```
 
-If you defined a `guard` function as property in one of your contexts, it will be called before the context gets switched to. If the `guard` function returns an error, `app:context-guard-error` will get triggered on the `Application` object with the returned error and context name. You can use this mechanism to guard your contexts from unauthenticated users and automatically jump to a pre-defined login context. 
+If you defined a `guard` function as property in one of your contexts (1st lvl views), it will be called before the context gets switched to. If the `guard` function returns an error, `app:context-guard-error` will get triggered on the `Application` object with the returned error and context name. You can use this mechanism to guard your contexts from unauthenticated users and automatically jump to a pre-defined login context. 
 ```
 (function(app){
 
@@ -492,7 +492,7 @@ If you defined a `guard` function as property in one of your contexts, it will b
 })(Application);
 ```
 
-##### Navigate beyond a Context
+##### Navigate beyond 1st level View
 
 When the navigation is at `#navigate/MyContextA/SubViewA/SubViewB...` the router finds `navRegion` in `MyContextA` and shows `SubViewA` in it and then move on to `SubViewA` to show `SubViewB...` in its `navRegion`. If, somehow, it can not find the definition of `SubViewA`, the navigation stops on `MyContextA` and triggers `view:navigate-to` event (after 'ready') with the remaining subpath starting with `SubViewA/...` on `MyContextA`. The same process happens on `SubViewA` if the router can not find `SubViewB...`.
 

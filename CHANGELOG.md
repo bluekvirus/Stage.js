@@ -23,7 +23,8 @@ Change Log
 18. Added _.deepClone*() util functions;
 19. Added M/view.triggerMethodInversed() to always call onE() before all the 'e' on()s;
 20. Aligned 'view:navigate-to' to be after 'view:ready' instead of 'region:show';
-21. Upgraded to use BB 1.3, jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
+21. Aligned view 'navigate-chain' listener and context swapping code in app.onNavigate(); 
+22. Upgraded to use BB 1.3, jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
 
 working on ...
 

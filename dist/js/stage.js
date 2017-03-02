@@ -42303,7 +42303,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.1-1200 build 1488423265698";
+;;app.stagejs = "1.10.1-1201 build 1488426095182";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -44996,10 +44996,12 @@ Marionette.triggerMethodInversed = (function(){
 						if(!navRegion.currentView || TargetView.prototype.name !== navRegion.currentView.name){
 							//new
 							var view = TargetView.create();
+							view.trigger('view:before-navigate-to');
+							
 							if(navRegion.currentView) navRegion.currentView.trigger('view:navigate-away');
 							
 							//chain on region:show (instead of view:show to let view finish 'show'ing effects before chaining)
-							navRegion.once('show', function(){
+							view.once('ready', function(){
 								view.trigger('view:navigate-chain', pathArray);
 							});	
 							navRegion.show(view);

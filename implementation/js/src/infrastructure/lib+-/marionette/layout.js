@@ -329,10 +329,12 @@
 						if(!navRegion.currentView || TargetView.prototype.name !== navRegion.currentView.name){
 							//new
 							var view = TargetView.create();
+							view.trigger('view:before-navigate-to');
+							
 							if(navRegion.currentView) navRegion.currentView.trigger('view:navigate-away');
 							
 							//chain on region:show (instead of view:show to let view finish 'show'ing effects before chaining)
-							navRegion.once('show', function(){
+							view.once('ready', function(){
 								view.trigger('view:navigate-chain', pathArray);
 							});	
 							navRegion.show(view);
