@@ -42303,7 +42303,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.1-1202 build 1488503248128";
+;;app.stagejs = "1.10.1-1203 build 1488505708129";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -43462,7 +43462,7 @@ Marionette.triggerMethodInversed = (function(){
 				);
 			else
 				//return the fully resolved HTML template string (non-cached version, cached version is a fn)
-				return Marionette.TemplateCache.loadTemplate(this.getTemplate());
+				return Marionette.TemplateCache.prototype.loadTemplate(this.getTemplate());
 		},
 
 		//override triggerMethod again to use our version (since it was registered through closure)

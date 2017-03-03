@@ -95,7 +95,7 @@
 				);
 			else
 				//return the fully resolved HTML template string (non-cached version, cached version is a fn)
-				return Marionette.TemplateCache.loadTemplate(this.getTemplate());
+				return Marionette.TemplateCache.prototype.loadTemplate(this.getTemplate());
 		},
 
 		//override triggerMethod again to use our version (since it was registered through closure)
