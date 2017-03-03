@@ -88,14 +88,14 @@
 		},
 
 		//override to give default empty template
-		getTemplate: function(asHTMLString){
+		getTemplate: function(asHTMLString, reload){
 			if(!asHTMLString)
 				return Marionette.getOption(this, 'template') || (
 					(Marionette.getOption(this, 'editors') || Marionette.getOption(this, 'svg') || Marionette.getOption(this, 'layout'))? ' ' /*must have 1+ space*/ : '<div class="wrapper-full bg-warning"><p class="h3" style="margin:0;"><span class="label label-default" style="display:inline-block;">No Template</span> ' + this._name + '</p></div>'
 				);
 			else
-				//return the fully resolved HTML template string (non-cached version, cached version is a fn)
-				return Marionette.TemplateCache.prototype.loadTemplate(this.getTemplate());
+				//return the fully resolved HTML template string (not as a cached tpl fn)
+				return app.Util.Tpl.Cache.get(this.getTemplate(), asHTMLString, reload);
 		},
 
 		//override triggerMethod again to use our version (since it was registered through closure)

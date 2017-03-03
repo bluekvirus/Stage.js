@@ -42303,7 +42303,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.1-1203 build 1488505708129";
+;;app.stagejs = "1.10.1-1204 build 1488514857329";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -42396,6 +42396,7 @@ Marionette.triggerMethodInversed = (function(){
  * @create 2013.12.20
  * @updated 2014.10.25
  * @updated 2016.03.24
+ * @updated 2017.03.02
  */
 
 ;(function(app){
@@ -42408,7 +42409,7 @@ Marionette.triggerMethodInversed = (function(){
 			return String(name).split(namefix).join('-');
 		},
 
-		cache: Backbone.Marionette.TemplateCache,
+		Cache: Backbone.Marionette.TemplateCache,
 
 		build: function (name, tplString){
 			if(arguments.length === 1) {
@@ -42424,7 +42425,7 @@ Marionette.triggerMethodInversed = (function(){
 				if($tag.length > 0) {
 					//override
 					$tag.html(tpl);
-					this.cache.clear('#' + name);
+					this.Cache.clear('#' + name);
 					console.warn('DEV::Overriden::Template::', name);
 				}
 				else $('head').append(['<script type="text/tpl" id="', id, '">', tpl, '</script>'].join(''));
@@ -42458,7 +42459,7 @@ Marionette.triggerMethodInversed = (function(){
 					async: !sync
 				}).done(function(tpls){
 					_.each(tpls, function(t, n){
-						Template.cache.make(n, t);
+						Template.Cache.make(n, t);
 					});
 				});//.json can be empty or missing.
 			}else {
@@ -42468,7 +42469,7 @@ Marionette.triggerMethodInversed = (function(){
 					dataType: 'html',
 					async: !sync
 				}).done(function(tpl){
-					Template.cache.make(originalName, tpl);
+					Template.Cache.make(originalName, tpl);
 				}).fail(function(){
 					throw new Error('DEV::Util.Tpl::remote() Can not load template...' + url + ', re-check your app.config.viewTemplates setting');
 				});
@@ -43036,6 +43037,7 @@ Marionette.triggerMethodInversed = (function(){
  * @author Tim Lauv
  * @created 2014.02.25
  * @updated 2016.03.24
+ * @updated 2017.03.02
  */
 ;(function(app){
 
@@ -43043,9 +43045,9 @@ Marionette.triggerMethodInversed = (function(){
 		// Get the specified template by id. Either
 		// retrieves the cached version, or loads it
 		// through cache.load
-		get: function(templateId) {
+		get: function(templateId, asHTMLText, reload) {
 		    var cachedTemplate = this.templateCaches[templateId] || this.make(templateId);
-		    return cachedTemplate.load(); //-> cache.loadTemplate()
+		    return cachedTemplate.load(asHTMLText, reload); //-> cache.loadTemplate()
 		},
 
 		//+ split out a make cache function from the original mono get()
@@ -43062,6 +43064,28 @@ Marionette.triggerMethodInversed = (function(){
 
 	_.extend(Backbone.Marionette.TemplateCache.prototype, {
 
+		// Internal method to load the template
+		// Modified to take 2 more arguments asHTMLText, reload;
+		load: function(asHTMLText, reload) {
+
+		    // Guard clause to prevent loading this template more than once
+		    if (reload) {
+		    	this.rawTemplate = '';
+		    	this.compiledTemplate = undefined;
+		    }
+
+		    // Find/Load the template
+		    this.rawTemplate = this.rawTemplate || this.loadTemplate(this.templateId);
+		    if (asHTMLText)
+		        return this.rawTemplate; //return as txt
+
+		    // and compile then return as fn
+		    if (!this.compiledTemplate)
+		    	this.compiledTemplate = this.compileTemplate(this.rawTemplate);
+
+		    return this.compiledTemplate;
+		},
+
 		//1 Override the default raw-template retrieving method 
 		//(invoked by M.TemplateCache.get() by cache.load() if the cache doesn't have cache.compiledTemplate)
 		//We allow both #id or @*.html/.md(remote) and template html string(or string array) as parameter.
@@ -43073,17 +43097,14 @@ Marionette.triggerMethodInversed = (function(){
 			//remote template (with local stored map cache)
 			if(_.string.startsWith(idOrTplString, '@')) {
 				var rtpl;
-				//fetch from cache
-				if(this.rawTemplate){
-					rtpl = this.rawTemplate;
-				}
+
 				//fetch from remote: (might need server-side CORS support)
 				//**Caveat: triggering app.inject.tpl() will replace the cache object that triggered this loadTemplate() call.
-				else
-					//sync mode injecting
-					app.inject.tpl(idOrTplString, true).done(function(tpl){
-						rtpl = tpl;
-					});
+
+				//sync mode injecting
+				app.inject.tpl(idOrTplString, true).done(function(tpl){
+					rtpl = tpl;
+				});
 
 				//pre-process the markdown if needed (put here to also support batched all.json tpl injected markdowns)
 				if(_.string.endsWith(idOrTplString, '.md'))
@@ -43455,14 +43476,14 @@ Marionette.triggerMethodInversed = (function(){
 		},
 
 		//override to give default empty template
-		getTemplate: function(asHTMLString){
+		getTemplate: function(asHTMLString, reload){
 			if(!asHTMLString)
 				return Marionette.getOption(this, 'template') || (
 					(Marionette.getOption(this, 'editors') || Marionette.getOption(this, 'svg') || Marionette.getOption(this, 'layout'))? ' ' /*must have 1+ space*/ : '<div class="wrapper-full bg-warning"><p class="h3" style="margin:0;"><span class="label label-default" style="display:inline-block;">No Template</span> ' + this._name + '</p></div>'
 				);
 			else
-				//return the fully resolved HTML template string (non-cached version, cached version is a fn)
-				return Marionette.TemplateCache.prototype.loadTemplate(this.getTemplate());
+				//return the fully resolved HTML template string (not as a cached tpl fn)
+				return app.Util.Tpl.Cache.get(this.getTemplate(), asHTMLString, reload);
 		},
 
 		//override triggerMethod again to use our version (since it was registered through closure)
@@ -44903,8 +44924,20 @@ Marionette.triggerMethodInversed = (function(){
 					}else
 						throw new Error('DEV::Layout+::layout can only be an array or an object.');
 
+					//replace special html string as nested tpl inserted by $.flexlayout (:#id, :@tpl.html, :@doc.md)
+					$el.find('div').map(function(){
+						var nestedTplId = $(this).text();
+						var tplCache;
+						if(nestedTplId){
+							tplCache = app.Util.Tpl.Cache.get(nestedTplId, true);
+							if(tplCache)
+								$(this).html(tplCache);
+						}
+					});
 					//assign $el.html() back to .template for proper render() with data
-					this.template = $el.html();
+					var templateId = _.uniqueId('flexlayout-gen-');
+					app.Util.Tpl.Cache.make(templateId, $el.html());
+					this.template = templateId;
 				});
 			
 			//find region marks after 1-render

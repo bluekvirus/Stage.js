@@ -61,7 +61,7 @@ if(config.src.templates){
 	if(fs.existsSync(tplBase)){
 		var tpls = wrench.readdirSyncRecursive(tplBase);
 		tpls = _.reject(tpls, function(name){
-			return !name.match(/\.html$/);
+			return !name.match(/(\.html|\.md)$/);
 		});
 		var all = {};
 		_.each(tpls, function(name){

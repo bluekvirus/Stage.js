@@ -232,8 +232,20 @@
 					}else
 						throw new Error('DEV::Layout+::layout can only be an array or an object.');
 
+					//replace special html string as nested tpl inserted by $.flexlayout (:#id, :@tpl.html, :@doc.md)
+					$el.find('div').map(function(){
+						var nestedTplId = $(this).text();
+						var tplCache;
+						if(nestedTplId){
+							tplCache = app.Util.Tpl.Cache.get(nestedTplId, true);
+							if(tplCache)
+								$(this).html(tplCache);
+						}
+					});
 					//assign $el.html() back to .template for proper render() with data
-					this.template = $el.html();
+					var templateId = _.uniqueId('flexlayout-gen-');
+					app.Util.Tpl.Cache.make(templateId, $el.html());
+					this.template = templateId;
 				});
 			
 			//find region marks after 1-render

@@ -13,6 +13,7 @@
  * @create 2013.12.20
  * @updated 2014.10.25
  * @updated 2016.03.24
+ * @updated 2017.03.02
  */
 
 ;(function(app){
@@ -25,7 +26,7 @@
 			return String(name).split(namefix).join('-');
 		},
 
-		cache: Backbone.Marionette.TemplateCache,
+		Cache: Backbone.Marionette.TemplateCache,
 
 		build: function (name, tplString){
 			if(arguments.length === 1) {
@@ -41,7 +42,7 @@
 				if($tag.length > 0) {
 					//override
 					$tag.html(tpl);
-					this.cache.clear('#' + name);
+					this.Cache.clear('#' + name);
 					console.warn('DEV::Overriden::Template::', name);
 				}
 				else $('head').append(['<script type="text/tpl" id="', id, '">', tpl, '</script>'].join(''));
@@ -75,7 +76,7 @@
 					async: !sync
 				}).done(function(tpls){
 					_.each(tpls, function(t, n){
-						Template.cache.make(n, t);
+						Template.Cache.make(n, t);
 					});
 				});//.json can be empty or missing.
 			}else {
@@ -85,7 +86,7 @@
 					dataType: 'html',
 					async: !sync
 				}).done(function(tpl){
-					Template.cache.make(originalName, tpl);
+					Template.Cache.make(originalName, tpl);
 				}).fail(function(){
 					throw new Error('DEV::Util.Tpl::remote() Can not load template...' + url + ', re-check your app.config.viewTemplates setting');
 				});

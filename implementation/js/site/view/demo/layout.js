@@ -86,15 +86,15 @@
 		template: '',
 		name: 'split-view1',
 		layout: {
-			split: ['1:region-1-1', '2:region-1-2'],
+			split: ['1:region-1-1:@test.md', '2:region-1-2'],
 		},
 		onReady: function(){
 			//set height
 			this.$el.css({height: '100%', border: '1px solid black'});
 			//show first view
-			this.getRegion('region-1-1').show(app.view({
-				template: '<div style="color:#626262;">This is a simply horizontally divided view, which contains two regions. <br>You can load any view to the regions as you like during the onReady event.</div>'
-			}, true));
+			// this.getRegion('region-1-1').show(app.view({
+			// 	template: '<div style="color:#626262;">This is a simply horizontally divided view, which contains two regions. <br>You can load any view to the regions as you like during the onReady event.</div>'
+			// }, true));
 			//show second view
 			this.getRegion('region-1-2').show(app.view({
 				template: [
