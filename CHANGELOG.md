@@ -25,8 +25,9 @@ Change Log
 20. Aligned 'view:navigate-to' to be after 'view:ready' instead of 'region:show';
 21. Aligned view 'navigate-chain' listener and context swapping code in app.onNavigate(); 
 22. Used of .layout now support dynamic html tpl in regions;
-23. Added view.getTemplate(true) for getting any tpl as a resolved HTML string;
-24. Upgraded to use BB 1.3, jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
+23. Added view.getTemplate(asHTMLTxt, reload) for getting any tpl as a resolved HTML string;
+24. Added support for special html str as nested tpl id in view.layout; 
+25. Upgraded to use BB 1.3, jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
 
 working on ...
 

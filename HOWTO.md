@@ -2049,7 +2049,7 @@ View apis:
 * view.refresh ()
 * view.coop () - different than app.coop(), only calls for help from ancestors
 * view.isInDOM ()
-* view.getTemplate (asHTMLString)
+* view.getTemplate (asHTMLString, forceReload)
 * view.addRegion (name, def)
 * view.getViewIn (region)
 * view.activate (group, index)
