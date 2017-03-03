@@ -42303,7 +42303,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.1-1204 build 1488514857329";
+;;app.stagejs = "1.10.1-1205 build 1488517507627";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -43071,13 +43071,22 @@ Marionette.triggerMethodInversed = (function(){
 		    // Guard clause to prevent loading this template more than once
 		    if (reload) {
 		    	this.rawTemplate = '';
+		    	this._mdProcessed = false;
 		    	this.compiledTemplate = undefined;
 		    }
 
 		    // Find/Load the template
 		    this.rawTemplate = this.rawTemplate || this.loadTemplate(this.templateId);
+
+		    // Preprocess as markdown txt if needed
+		    if(!this._mdProcessed && _.string.endsWith(this.templateId, '.md')){
+		    	//pre-process the markdown if needed (put here to also support batched all.json tpl injected markdowns)
+				this.rawTemplate = app.markdown(this.rawTemplate);
+				this._mdProcessed = true;
+			}
+
 		    if (asHTMLText)
-		        return this.rawTemplate; //return as txt
+		        return this.rawTemplate; //return always as html
 
 		    // and compile then return as fn
 		    if (!this.compiledTemplate)
@@ -43106,9 +43115,6 @@ Marionette.triggerMethodInversed = (function(){
 					rtpl = tpl;
 				});
 
-				//pre-process the markdown if needed (put here to also support batched all.json tpl injected markdowns)
-				if(_.string.endsWith(idOrTplString, '.md'))
-					rtpl = app.markdown(rtpl);
 				return rtpl;
 			}
 			//string and string array

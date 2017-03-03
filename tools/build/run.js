@@ -68,7 +68,10 @@ if(config.src.templates){
 			var tpl = fs.readFileSync(path.join(tplBase, name), {encoding: 'utf8'});
 			name = '@' + name.split(path.sep).join('/');//tag tpl name as @remote tpl, normalize file path from different OS
 			console.log('[template]'.green, name, '+'.green);
-			all[name] = tpl.replace(/[\n\t]/g, '');
+			if(_.string.endsWith(name, '.html'))
+				all[name] = tpl.replace(/[\n\t]/g, '');
+			else
+				all[name] = tpl;
 		});
 		var allJSON = path.join(tplBase, 'all.json');
 		fs.outputJSONSync(allJSON, all);
