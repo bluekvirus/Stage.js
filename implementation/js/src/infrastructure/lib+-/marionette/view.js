@@ -72,7 +72,7 @@
  * @created 2014.02.25
  * @updated 2015.08.03
  * @updated 2016.10.25
- * @updated 2017.02.20
+ * @updated 2017.03.02
  */
 
 
@@ -88,10 +88,14 @@
 		},
 
 		//override to give default empty template
-		getTemplate: function(){
-			return Marionette.getOption(this, 'template') || (
-				(Marionette.getOption(this, 'editors') || Marionette.getOption(this, 'svg') || Marionette.getOption(this, 'layout'))? ' ' /*must have 1+ space*/ : '<div class="wrapper-full bg-warning"><p class="h3" style="margin:0;"><span class="label label-default" style="display:inline-block;">No Template</span> ' + this._name + '</p></div>'
-			);
+		getTemplate: function(asHTMLString){
+			if(!asHTMLString)
+				return Marionette.getOption(this, 'template') || (
+					(Marionette.getOption(this, 'editors') || Marionette.getOption(this, 'svg') || Marionette.getOption(this, 'layout'))? ' ' /*must have 1+ space*/ : '<div class="wrapper-full bg-warning"><p class="h3" style="margin:0;"><span class="label label-default" style="display:inline-block;">No Template</span> ' + this._name + '</p></div>'
+				);
+			else
+				//return the fully resolved HTML template string (non-cached version, cached version is a fn)
+				return Marionette.TemplateCache.loadTemplate(this.getTemplate());
 		},
 
 		//override triggerMethod again to use our version (since it was registered through closure)

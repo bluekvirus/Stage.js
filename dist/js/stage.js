@@ -42303,7 +42303,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.1-1201 build 1488426095182";
+;;app.stagejs = "1.10.1-1202 build 1488503248128";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -43439,7 +43439,7 @@ Marionette.triggerMethodInversed = (function(){
  * @created 2014.02.25
  * @updated 2015.08.03
  * @updated 2016.10.25
- * @updated 2017.02.20
+ * @updated 2017.03.02
  */
 
 
@@ -43455,10 +43455,14 @@ Marionette.triggerMethodInversed = (function(){
 		},
 
 		//override to give default empty template
-		getTemplate: function(){
-			return Marionette.getOption(this, 'template') || (
-				(Marionette.getOption(this, 'editors') || Marionette.getOption(this, 'svg') || Marionette.getOption(this, 'layout'))? ' ' /*must have 1+ space*/ : '<div class="wrapper-full bg-warning"><p class="h3" style="margin:0;"><span class="label label-default" style="display:inline-block;">No Template</span> ' + this._name + '</p></div>'
-			);
+		getTemplate: function(asHTMLString){
+			if(!asHTMLString)
+				return Marionette.getOption(this, 'template') || (
+					(Marionette.getOption(this, 'editors') || Marionette.getOption(this, 'svg') || Marionette.getOption(this, 'layout'))? ' ' /*must have 1+ space*/ : '<div class="wrapper-full bg-warning"><p class="h3" style="margin:0;"><span class="label label-default" style="display:inline-block;">No Template</span> ' + this._name + '</p></div>'
+				);
+			else
+				//return the fully resolved HTML template string (non-cached version, cached version is a fn)
+				return Marionette.TemplateCache.loadTemplate(this.getTemplate());
 		},
 
 		//override triggerMethod again to use our version (since it was registered through closure)
@@ -44887,7 +44891,7 @@ Marionette.triggerMethodInversed = (function(){
 			//hornor layout configuration through $.split plug-in
 			if(this.layout)
 				this.listenToOnce(this, 'before:render', function(){
-					var $el = this.$el, //use View.$el to trigger jQuery plugin
+					var $el = this.$el, //use View.$el to trigger jQuery plugin $.fn.flexlayout()
 						_layoutConig = [];
 					if(_.isArray(this.layout)){
 						//this.layout is an array
@@ -44898,6 +44902,9 @@ Marionette.triggerMethodInversed = (function(){
 						$el.flexlayout(_layoutConig, _.result(this, 'layout'));
 					}else
 						throw new Error('DEV::Layout+::layout can only be an array or an object.');
+
+					//assign $el.html() back to .template for proper render() with data
+					this.template = $el.html();
 				});
 			
 			//find region marks after 1-render

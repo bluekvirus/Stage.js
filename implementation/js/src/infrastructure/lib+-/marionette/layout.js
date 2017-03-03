@@ -220,7 +220,7 @@
 			//hornor layout configuration through $.split plug-in
 			if(this.layout)
 				this.listenToOnce(this, 'before:render', function(){
-					var $el = this.$el, //use View.$el to trigger jQuery plugin
+					var $el = this.$el, //use View.$el to trigger jQuery plugin $.fn.flexlayout()
 						_layoutConig = [];
 					if(_.isArray(this.layout)){
 						//this.layout is an array
@@ -231,6 +231,9 @@
 						$el.flexlayout(_layoutConig, _.result(this, 'layout'));
 					}else
 						throw new Error('DEV::Layout+::layout can only be an array or an object.');
+
+					//assign $el.html() back to .template for proper render() with data
+					this.template = $el.html();
 				});
 			
 			//find region marks after 1-render
