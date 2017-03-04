@@ -28,7 +28,6 @@
 		"EaselJS": "*",
 		"Chart.js": "*",
 		"peity": "*",
-		"d3": "*",
 		"c3": "*",
 		"topojson": "*",
 		"soundmanager": "*",

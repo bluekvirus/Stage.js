@@ -42,10 +42,10 @@ A *Widget* is a named *View* with `.reconfigure(options)` method that can change
 
 #### What's a SVG canvas?
 
-An SVG canvas is a *View* with the `.svg` property set to `true` or a `css selector` identifying an HTML element in template, you will have an automatically expanded `this.paper` to draw upon with live height/width update on the `this.paper` property after shown plus auto clean/resize upon view `ready`. 
+An SVG canvas is a HTML tag marked by `svg="paper-name"` attribute in a view which automatically runs the corresponding draw function set through the `view.svg` property. you will have an automatically expanded paper `this.paper["paper-name"]` to draw upon with live height/width update after shown plus auto clean/resize/re-draw upon view data change. 
 
 !!!callout callout-primary
-**Note:** *Canvas* is svg based and the `this.paper` drawing APIs are from the Raphaël.js/Snap.svg library, make sure you have one of them included.
+**Note:** The drawing canvas is svg based and the APIs on a `paper` object are from the **Raphaël.js/Snap.svg** library, make sure you have one of them included. You can also use the **d3.js** library by including it in your index.html and use through `paper.d3` 
 !!!
 
 We have not yet included support for *HTML5 Canvas*.
@@ -581,7 +581,7 @@ view.refresh() - re-fetch data if needed and re-render;
 ```
 
 !!!callout callout-primary
-**Note:** When using the `.data` property on a view or using `view.set()`, the template will be re-rendered and trigger the `ready` event again. This is also true if a view happens to be an SVG canvas (`view.svg:true/'selector'`), or Form (`view.editors:{...}`).
+**Note:** When using the `.data` property on a view or using `view.set()`, the template will be re-rendered and trigger the `ready` event again. This is also true if a view happens to have SVG canvas (`view.svg:{...}`), or Form (`view.editors:{...}`).
 !!!
 
 ##### With app.remote()
@@ -802,20 +802,20 @@ Application.available('anything'); //false, since global lock is unavailable.
 
 ### Graph (SVG canvas)
 
-We support graphs through SVG. Use of SVG library (Raphaël.js/Snap.svg) is **optional**. After including the library (NOT in dependencies.min.js), You can use `this.paper` in any *View* through:
+We support graphs through SVG. Use of SVG library (**Raphaël.js/Snap.svg** and **D3.js**) is **optional**. After including the library, You can use `this.paper` in any *View* through:
 ```
 Application.view({
-    svg: true,
-    onReady: function(){
-        //call .clear() first to re-init canvas.
-        this.paper.clear();
-        //draw...
+    svg: {
+        'paper-name': function(paper){
+            //draw..., use paper.height/width as scales (in px)
+            //paper.d3 will be present if d3.js is included
+        }
     }
 });
 ```
-Don't worry about resizing, it is already prepared for you. The paper size will be set correctly to the containing region automatically. Just **DON'T forget** to call `this.paper.clear()` upon drawing and re-draw in your svg canvas.
+Don't worry about resizing, it is already prepared for you. The paper size will be set correctly to the containing region automatically.
 
-If you require ready-made charts to be drawn, look through our monitored libraries under `/bower_components` there should be `d3/c3.js`, `Chart.js` and `peity` for exactly that.
+If you require ready-made charts to be drawn, look through our monitored libraries under `/bower_components` there should be `d3/c3.js`, `Chart.js` and `peity` for drawing without papers.
 
 !!!callout callout-primary
 **Note:** HTML5 *Canvas* is not supported at the moment, you can use `Easel.js` or `paper.js` on your own effort.

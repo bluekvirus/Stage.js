@@ -11,18 +11,17 @@
 		"backbone",
 		"rich",
 		"front-end",
+		"single-page",
 		"application",
 		"framework",
 		"navigation",
-		"context",
-		"page",
 		"layout",
 		"view",
 		"widget",
 		"editor",
-		"real-time",
 		"co-op",
-		"restful"
+		"restful",
+		"websocket"
 	],
 	"license": "MIT",
 	"ignore": [
@@ -39,6 +38,7 @@
 	"dependencies": {
 		"jquery": "~2.2.x",
 		"underscore": "~1.8.x",
-		"raphael": "~2.2.x"
+		"raphael": "~2.2.x",
+		"d3": "~4.7.x"
 	}
 }

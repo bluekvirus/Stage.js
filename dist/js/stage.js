@@ -42303,7 +42303,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.1-1205 build 1488517507627";
+;;app.stagejs = "1.10.1-1206 build 1488586464531";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -44453,8 +44453,8 @@ Marionette.triggerMethodInversed = (function(){
 
 		//Inject a svg canvas within view. (fully extended to parent region size)
 		_enableSVG: function(selector, paperName){
-			if(!Raphael && !Snap) throw new Error('DEV::ItemView+::_enableSVG() You did NOT have Raphael.js/Snap.svg included...');
-			var SVG = Raphael || Snap;
+			if(!window.Raphael && !window.Snap) throw new Error('DEV::ItemView+::_enableSVG() You did NOT have Raphael.js/Snap.svg included...');
+			var SVG = window.Raphael || window.Snap;
 
 			//1. locate and clean up $el
 			var $el = selector? this.$el.find(selector) : this.$el;
@@ -44464,7 +44464,7 @@ Marionette.triggerMethodInversed = (function(){
 			});
 			$el.find('svg').remove();
 
-			//2. inject svg canvas through SVG class, save paper
+			//2. inject svg canvas through SVG class, save paper, $svg and optional d3.js selection entrypoint.
 			var paper = SVG($el[0]);
 			if(!paperName)
 				//single
@@ -44478,6 +44478,8 @@ Marionette.triggerMethodInversed = (function(){
 				'width': '100%',
 				'height': '100%',
 			});
+			if(window.d3)
+				paper.d3 = d3.select(paper.canvas);
 
 			//3. give paper a proper .clear() method to call before each drawing
 			//+._fit() to paper.clear() (since paper.height/width won't change with the above w/h:100% settings)
@@ -44489,6 +44491,7 @@ Marionette.triggerMethodInversed = (function(){
 				}
 				//there is no 0x0 so don't worry...
 				paper.setSize(w || $anchor.width(), h || $anchor.height());
+				//read back through paper.height/width in px;
 			};
 			var tmp = paper.clear, that = this;
 			paper.clear = function(w, h){
