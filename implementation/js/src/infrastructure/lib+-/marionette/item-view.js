@@ -168,8 +168,6 @@
 
 		//Inject a svg canvas within view. (fully extended to parent region size)
 		_enableSVG: function(selector, paperName){
-			if(!window.Raphael && !window.Snap) throw new Error('DEV::ItemView+::_enableSVG() You did NOT have Raphael.js/Snap.svg included...');
-			var SVG = window.Raphael || window.Snap;
 
 			//1. locate and clean up $el
 			var $el = selector? this.$el.find(selector) : this.$el;
@@ -179,8 +177,28 @@
 			});
 			$el.find('svg').remove();
 
-			//2. inject svg canvas through SVG class, save paper, $svg and optional d3.js selection entrypoint.
-			var paper = SVG($el[0]);
+			//2. inject svg canvas, save paper, and optional d3.js selection entrypoint.
+			var SVG = window.Raphael || window.Snap, paper;
+			if(SVG)
+				paper = SVG($el[0]);
+			else {
+				console.warn('DEV::ItemView+::_enableSVG() You did NOT have Raphaël.js/Snap.svg included...');
+				$el.append('<svg/>');
+				paper = {
+					canvas: $el.find('svg')[0],
+					setSize: function(w, h){
+						$(paper.canvas).attr('viewBox', [0, 0, w, h].join(' '));
+						paper.width = w;
+						paper.height = h;
+					},
+					clear: function(){
+						$(paper.canvas).empty();
+					}
+				};
+			}
+			if(window.d3)
+				paper.d3 = d3.select(paper.canvas);
+
 			if(!paperName)
 				//single
 				this.paper = paper;
@@ -193,8 +211,7 @@
 				'width': '100%',
 				'height': '100%',
 			});
-			if(window.d3)
-				paper.d3 = d3.select(paper.canvas);
+
 
 			//3. give paper a proper .clear() method to call before each drawing
 			//+._fit() to paper.clear() (since paper.height/width won't change with the above w/h:100% settings)

@@ -35,6 +35,9 @@
 					w: paper.width
 				};
 
+				//test draw without Raphaël.js/Snap.svg
+				//paper.d3.selectAll('circle').data([1]).enter().append('circle').attr('cx', size.w/2).attr('cy', size.h/2).attr('r', Math.min(size.w/2, size.h/2));
+
 				var start = {
 					x: size.w * 0.46,
 					y: size.h * 0.44
@@ -137,7 +140,7 @@
 						'<i class="fa fa-edge cursor-hand" data-toggle="tooltip" data-placement="bottom" title="IE Edge/11+"></i> ',
 						'<i class="fa fa-safari cursor-hand" data-toggle="tooltip" data-placement="bottom" title="Safari (experimental)"></i> ',
 						'<i class="fa fa-opera cursor-hand" data-toggle="tooltip" data-placement="bottom" title="Opera (experimental)"></i> ',
-					'<p>'
+					'</p>'
 				],
 		
 				onReady: function(){
