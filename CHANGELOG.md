@@ -28,17 +28,18 @@ Change Log
 23. Added view.getTemplate(asHTMLTxt, reload) for getting any tpl as a resolved HTML string;
 24. Added support for special html str as nested tpl id in view.layout;
 25. Added d3.js (v4) support as paper.d3 in svg draw functions if present;
-26. Upgraded to use BB 1.3, jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
+26. Refined svg support code to make Raphaël.js/Snap.svg and D3.js both optional;
+27. Upgraded to use BB 1.3, jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
 
 working on ...
 
-* Make .svg/.canvas --> fn(paper) prep layer to be plugin based; (+adaptors)
+* Add Canvas playground context in starter-kit in addition to Mockups;
 * Search/IP/Number editors;
+* Direct `<canvas>` support in view (easel) .canvas --> fn(paper) prep layer;
 * Cheatsheet;
 * Split docs;
 * Breaking down 'Basic' editors?
 * Backbone*(+d3, -jQueryv2/3.0, -Marionettev1.8), elements(-Bootstrapv3/4.0)?
-* Direct `<canvas>` support in view (easel)?
 * More unit tests in demos;
 
 
