@@ -178,9 +178,9 @@
 			
 		},
 
-		coop: function(event, options){
-			app.trigger('app:coop', event, options);
-			app.trigger('app:coop-' + event, options);
+		coop: function(event, msg){
+			app.trigger('app:coop', event, msg);
+			app.trigger('app:coop-' + event, msg);
 			return app;
 		},
 

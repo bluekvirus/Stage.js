@@ -26,10 +26,11 @@
 		data: {local: true}, //local data for testing navi-to and ready timing.
 		//data: 'static/resource/en-US/i18n.json',
 
-		coop: ['window-resized'],
-
 		svg: {
 			bg: function(paper){
+
+				app.debug('drawing canvas "bg" in view', this.name);
+
 				var size = {
 					h: paper.height,
 					w: paper.width

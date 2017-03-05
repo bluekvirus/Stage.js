@@ -636,25 +636,15 @@
 		//by default all view starts with 1 global co-op event;
 		if(_.isArray(this.coop)) {
 			this.coop.push('window-resized'); //every one should have this.(easy .svg canvas auto-resizing)
-			this._postman = {};
 			this.coop = _.uniq(this.coop); //for possible double entry in the array.
+
 			//register
 			_.each(this.coop, function(e){
 				var self = this;
-				this._postman[e] = function(options){
-					self.trigger('view:' + e, options);
-					//considering the parent-DOM-removed edge case
-					if(self.isInDOM() === false)
-						app.off('app:coop-' + e, self._postman[e]);
-				};
-				app.on('app:coop-' + e, this._postman[e]);
-			}, this);
-			//cleanup
-			this.listenTo(this, 'close', function(){
-				_.each(this._postman, function(fn, e){
-					app.off('app:coop-' + e, fn);
+				this.listenTo(app, 'app:coop-' + e, function(msg){
+					self.trigger('view:' + e, msg);
 				});
-			});
+			}, this);
 		}
 		//recover local (same-ancestor) collaboration
 		this.coop = this._coop;
@@ -814,7 +804,7 @@
 			this._activateEditors(this.editors);
 		});
 
-		//svg (if rapheal.js is present)
+		//svg
 		//similar to sub-region re-show/ready upon data change, we need to re-create the .paper object
 		if(this.svg && this._enableSVG) {
 			this.listenTo(this, 'render', function(){
@@ -824,22 +814,30 @@
 					this.$el.find('[svg]').map(function(){
 						var $svg = $(this), name = $svg.attr('svg');
 						var paper = that._enableSVG($svg, name);
-						//hook up the draw() function (_.defer-ed so you have a chance to call $.css upon view 'ready')
-						that.listenTo(that, 'ready view:window-resized', function(){
-							//note that _.defer() does NOT return the function.
-							_.defer(function(){
-								paper.clear();
-								(that.svg[name])(paper);
-							});
-						});
-
-						//Caveat: don't forget to put 'window-resized' in .coop [] array;
-
 					});
+					if(!this._svgPaperResizeBound){
+						//hook up the draw() function (_.defer-ed so you have a chance to call $.css upon view 'ready')
+						this.listenTo(this, 'ready view:window-resized', function(){
+							_.each(this.paper, function(paper, name){
+								//note that _.defer() does NOT return the function.
+								var that = this;
+								_.defer(function(){
+									paper.clear();
+									that.svg[name] && that.svg[name].call(that, paper); 
+									//so this.get() still accesses view data in draw() fn.
+								});
+							}, this);
+						});
+						this._svgPaperResizeBound = true;
+
+						//Note: since all view starts with 'window-resized' in its .coop [] array, 
+						//svg="" tagged canvas are always auto adjusted upon window resizing.
+					}
 				}
-				//no draw function (single canvas, manual ready and coop window-resized hook up)
+				//no draw function (single canvas this.paper, manual ready and coop window-resized hook up)
 				else
 					this._enableSVG(_.isBoolean(this.svg)? '' : this.svg /*selector str*/);
+
 			});
 		}
 

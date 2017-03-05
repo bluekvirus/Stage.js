@@ -1,7 +1,7 @@
 Change Log
 ==========
 
-1.10.2+ (2017-03-03*)
+1.10.2+ (2017-03-04*)
 --------------------
 1. Refined render() seq in a view, data change will now always re-run render() despite of category;
 2. Refined SVG canvas init code in view, the .svg option can be a css selector string now;
@@ -29,7 +29,8 @@ Change Log
 24. Added support for special html str as nested tpl id in view.layout;
 25. Added d3.js (v4) support as paper.d3 in svg draw functions if present;
 26. Refined svg support code to make Raphaël.js/Snap.svg and D3.js both optional;
-27. Upgraded to use BB 1.3, jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
+27. Refined view coop implementation (simplified);
+28. Upgraded to use BB 1.3, jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
 
 working on ...
 

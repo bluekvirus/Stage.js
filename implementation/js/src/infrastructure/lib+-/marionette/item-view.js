@@ -187,9 +187,17 @@
 				paper = {
 					canvas: $el.find('svg')[0],
 					setSize: function(w, h){
-						$(paper.canvas).attr('viewBox', [0, 0, w, h].join(' '));
+						$(paper.canvas)
+							.attr('width', w)
+							.attr('height', h);
 						paper.width = w;
 						paper.height = h;
+					},
+					setViewBox: function(x, y, w, h, align, meetOrSlice){
+						$(paper.canvas)
+							.attr('viewBox', [x, y, w, h].join(' '))
+							.attr('preserveAspectRatio', [align || 'xMidYMid', meetOrSlice || 'meet'].join(' '));
+						//ref https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/preserveAspectRatio
 					},
 					clear: function(){
 						$(paper.canvas).empty();
