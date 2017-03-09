@@ -126,13 +126,13 @@
 				cv._tabbedViewWrapper = true;
 				//add getTab api to view
 				this.getViewFromTab = function(tabId){
-					return cv.getViewIn(tabId);
+					return cv.getViewIn('tab-' + tabId);
 				};
 			}
 
 			//if View is set to false, remove tab (region & view)
 			if(View === false){
-				cv.removeRegion(tabId); //this will in turn close() that tab region
+				cv.removeRegion('tab-' + tabId); //this will in turn close() that tab region
 				this.trigger('view:tab-removed', tabId);
 				return;
 			}
@@ -143,18 +143,14 @@
 			});
 
 			//see if we have this tabId in the wrapper view already
-			var tabRegion = cv.getRegion(tabId);
+			var tabRegion = cv.getRegion('tab-' + tabId);
 			if(!tabRegion){
 				//No, create a tab region using the tabId, then show() the given View on it
-				cv.$el.append('<div region="tab-' + tabId + '"></div>');
-				cv.addRegion(tabId, {selector: '[region="tab-' + tabId + '"]'});
-				tabRegion = cv.getRegion(tabId);
-				tabRegion.ensureEl();
-				tabRegion.parentCt = this;//skip wrapper view
-				tabRegion.$el
-					.addClass('region region-tab-' + _.string.slugify(tabId))
-					.data('region', tabRegion);
-				cv.show(tabId, View);
+				var rname = 'tab-' + tabId;
+				cv.$el.append('<div region="' + rname + '"></div>');
+				tabRegion = cv.addRegion(rname, {selector: '[region="' + rname + '"]'});
+				tabRegion.ensureEl(this);
+				cv.show(rname, View);
 				this.trigger('view:tab-added', tabId);
 			}else {
 				//Yes, display the specific tab region (show one later)
@@ -278,12 +274,8 @@
 			//+metadata to region (already aligned these with this.tab() created regions)
             this.listenTo(this, 'render', function(){
                 _.each(this.regions, function(def, region){
-                    //ensure region and container style
-                    this[region].ensureEl();
-                    this[region].$el
-                    				.addClass('region region-' + _.string.slugify(region))
-                    				.data('region', this[region]);
-                    this[region].parentCt = this;
+                    //ensure region metadata
+                    this.getRegion(region).ensureEl(this);
                 }, this);
             });
 
@@ -294,8 +286,8 @@
 			this.listenTo(this, 'show view:data-rendered', function(){
 				var pairs = [];
 				_.each(this.regions, function(def, r){
-					if(this.debug) this[r].$el.html('<p class="alert alert-info">Region <strong>' + r + '</strong></p>'); //give it a fake one.
-					var viewName = this[r].$el.attr('view');
+					if(this.debug) this.getRegion(r).$el.html('<p class="alert alert-info">Region <strong>' + r + '</strong></p>'); //give it a fake one.
+					var viewName = this.getRegion(r).$el.attr('view');
 					if(viewName) //found in-line View name.
 						pairs.push({region: r, name: viewName}); 
 				}, this);

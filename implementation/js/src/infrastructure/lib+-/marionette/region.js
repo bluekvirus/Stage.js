@@ -56,7 +56,7 @@
     _.extend(Backbone.Marionette.Region.prototype, {
 
         //+region 'render' event listener for adding regional metadata and 'region:load-view' special listener.
-        initialize: function(){
+        initialize: function() {
 
             //+since we don't have meta-e enhancement on regions, the 'region:load-view' impl is added here.
             //meta-e are only available on app and view (and context)
@@ -98,9 +98,23 @@
             });
         },
 
+        //give ensureEl the ability to add css class and parentCt (view), data('region') (this) meta
+        ensureEl: function(parentCt, cssClass) {
+          if (!this.$el || this.$el.length === 0) {
+              this.$el = this.getEl(this.el);
+          }
+
+          if (parentCt)
+            this.parentCt = parentCt;
+          this.$el
+                .addClass(cssClass || 'region ' + _.string.slugify('region ' + this._name)) //_name added through regionMgr.addRegion()
+                .data('region', this);
+
+        },
+
         //'region:show', 'view:show' will always trigger after effect done.
         //note that, newView is always a view instance.
-    	show: function(newView, options){
+    	show: function(newView, options) {
             this.ensureEl();
             
             var view = this.currentView;

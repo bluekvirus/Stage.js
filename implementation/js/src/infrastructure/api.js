@@ -152,13 +152,15 @@
 			var $el = $($anchor);
 			parentCt = parentCt || app.mainView;
 
-			//check if $anchor is already an anonymous region
-			var regionName = $el.attr('region');
+			//check if $anchor is already a region
+			var region = $el.data('region');
+			var regionName = region && region._name;
 			if(!regionName){
 				regionName = _.uniqueId('anonymous-region-');
 				$el.attr('region', regionName);
 				parentCt.addRegion(regionName, '[region="' + regionName + '"]');
-			}
+			} else 
+				parentCt = region.parentCt;
 
 			//see if it is an svg draw(paper){} function
 			if(_.isFunction(View) && View.length === 1){
@@ -656,7 +658,7 @@
 			return view && {name: view.$el.data('view-name'), 'render-count': view.$el.data('render-count'), $el: view.$el, 'sub-views': app.profile(view.$el)};
 		},
 
-		//mark views on screen. (hard-coded style, experimental)
+		//mark views on screen. (hard-coded style, experimental with no clean-up upon navigate)
 		mark: function(name /*el or $el*/){
 			var nameTagPairing = [], $body;
 			if(_.isString(name)){

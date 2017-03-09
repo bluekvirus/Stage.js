@@ -235,10 +235,10 @@
 				$body.append($('<div id="' + irUID + '" style="position:fixed"></div>').css(cfg).hide()); //default on hidden
 				icings[['icing', 'region', name].join('-')] = '#' + irUID;
 			});
-			app.addRegions(icings);
+			app.mainView.addRegions(icings);
 			app.icing = function(name, flag){
-				var ir = app.getRegion(['icing', 'region', name].join('-'));
-				ir.ensureEl();
+				var ir = app.mainView.getRegion(['icing', 'region', name].join('-'));
+				ir.ensureEl(app.mainView);
 				if(flag === false)
 					ir.$el.hide();
 				else

@@ -22,7 +22,7 @@ Change Log
 17. Added _.isjQueryObject() util function;
 18. Added _.deepClone*() util functions;
 19. Added M/view.triggerMethodInversed() to always call onE() before all the 'e' on()s;
-20. Aligned 'view:navigate-to' to be after 'view:ready' instead of 'region:show';
+20. Aligned 'view:navigate-to' to be always after 1st 'view:ready' instead of 'region:show', also (only) your onReady() will always be called before onNavigateTo();
 21. Aligned view 'navigate-chain' listener and context swapping code in app.onNavigate(); 
 22. Used of .layout now support dynamic html tpl in regions;
 23. Added view.getTemplate(asHTMLTxt, reload) for getting any tpl as a resolved HTML string;
@@ -32,7 +32,10 @@ Change Log
 27. Refined view coop implementation (simplified);
 28. Exposed region.parentCt as parent view for any region;
 29. Added region.$el.data('region') to point to itself, just like a view;
-30. Upgraded to use BB 1.3, jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
+30. Refined region.ensureEl() method to take care of all the region metadata; 
+31. Icings/Curtains not bind as regions in app.mainView instead of app itself;
+32. view.more() now correctly attaches .parentRegion to the item views;
+33. Upgraded to use BB 1.3, jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
 
 working on ...
 

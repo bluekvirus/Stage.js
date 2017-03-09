@@ -76,14 +76,6 @@
 			this.trigger('view:data-rendered');
 
 			//data view and form all have onReady now... (static view ready see view.js:--bottom--)
-			if (this._delayFirstTimeLocalDataReady) {
-				delete this._delayFirstTimeLocalDataReady;
-				if(this.parentRegion)
-				    return this.parentRegion.once('show', function() {
-				    	this.currentView.triggerMethodInversed('ready');
-				    });
-			} 
-			
 			this.triggerMethodInversed('ready');
 		},
 		

@@ -40991,10 +40991,10 @@ Marionette.triggerMethodInversed = (function(){
 				$body.append($('<div id="' + irUID + '" style="position:fixed"></div>').css(cfg).hide()); //default on hidden
 				icings[['icing', 'region', name].join('-')] = '#' + irUID;
 			});
-			app.addRegions(icings);
+			app.mainView.addRegions(icings);
 			app.icing = function(name, flag){
-				var ir = app.getRegion(['icing', 'region', name].join('-'));
-				ir.ensureEl();
+				var ir = app.mainView.getRegion(['icing', 'region', name].join('-'));
+				ir.ensureEl(app.mainView);
 				if(flag === false)
 					ir.$el.hide();
 				else
@@ -41316,13 +41316,15 @@ Marionette.triggerMethodInversed = (function(){
 			var $el = $($anchor);
 			parentCt = parentCt || app.mainView;
 
-			//check if $anchor is already an anonymous region
-			var regionName = $el.attr('region');
+			//check if $anchor is already a region
+			var region = $el.data('region');
+			var regionName = region && region._name;
 			if(!regionName){
 				regionName = _.uniqueId('anonymous-region-');
 				$el.attr('region', regionName);
 				parentCt.addRegion(regionName, '[region="' + regionName + '"]');
-			}
+			} else 
+				parentCt = region.parentCt;
 
 			//see if it is an svg draw(paper){} function
 			if(_.isFunction(View) && View.length === 1){
@@ -41820,7 +41822,7 @@ Marionette.triggerMethodInversed = (function(){
 			return view && {name: view.$el.data('view-name'), 'render-count': view.$el.data('render-count'), $el: view.$el, 'sub-views': app.profile(view.$el)};
 		},
 
-		//mark views on screen. (hard-coded style, experimental)
+		//mark views on screen. (hard-coded style, experimental with no clean-up upon navigate)
 		mark: function(name /*el or $el*/){
 			var nameTagPairing = [], $body;
 			if(_.isString(name)){
@@ -42003,7 +42005,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.1-1209 build 1489048204618";
+;;app.stagejs = "1.10.1-1210 build 1489088267807";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -42889,7 +42891,7 @@ Marionette.triggerMethodInversed = (function(){
     _.extend(Backbone.Marionette.Region.prototype, {
 
         //+region 'render' event listener for adding regional metadata and 'region:load-view' special listener.
-        initialize: function(){
+        initialize: function() {
 
             //+since we don't have meta-e enhancement on regions, the 'region:load-view' impl is added here.
             //meta-e are only available on app and view (and context)
@@ -42931,9 +42933,23 @@ Marionette.triggerMethodInversed = (function(){
             });
         },
 
+        //give ensureEl the ability to add css class and parentCt (view), data('region') (this) meta
+        ensureEl: function(parentCt, cssClass) {
+          if (!this.$el || this.$el.length === 0) {
+              this.$el = this.getEl(this.el);
+          }
+
+          if (parentCt)
+            this.parentCt = parentCt;
+          this.$el
+                .addClass(cssClass || 'region ' + _.string.slugify('region ' + this._name)) //_name added through regionMgr.addRegion()
+                .data('region', this);
+
+        },
+
         //'region:show', 'view:show' will always trigger after effect done.
         //note that, newView is always a view instance.
-    	show: function(newView, options){
+    	show: function(newView, options) {
             this.ensureEl();
             
             var view = this.currentView;
@@ -43063,11 +43079,36 @@ Marionette.triggerMethodInversed = (function(){
  *
  * @author Tim Lauv
  * @created 2016.02.05
+ * @updated 2017.03.10
  */
 
 ;(function(app){
 
 	_.extend(Marionette.RegionManager.prototype, {
+
+		// Add an individual region to the region manager,
+		// and return the region instance
+		// +We give the region object its own name as the _name property.
+		addRegion: function(name, definition) {
+		    var region;
+
+		    var isObject = _.isObject(definition);
+		    var isString = _.isString(definition);
+		    var hasSelector = !!definition.selector;
+
+		    if (isString || (isObject && hasSelector)) {
+		        region = Marionette.Region.buildRegion(definition, Marionette.Region);
+		    } else if (_.isFunction(definition)) {
+		        region = Marionette.Region.buildRegion(definition, Marionette.Region);
+		    } else {
+		        region = definition;
+		    }
+
+		    region._name = name;
+		    this._store(name, region);
+		    this.triggerMethod("region:add", name, region);
+		    return region;
+		},
 
 	    // Close all regions in the region manager, but
 	    // leave them attached
@@ -43947,7 +43988,7 @@ Marionette.triggerMethodInversed = (function(){
 			if(!this.data && !this.useParentData){
 				if(this.parentRegion)
 				    this.parentRegion.once('show', function(){
-				    	//this is to make sure local data ready always fires after navigation-chain completes (e.g after view:navigate-to)
+				    	//this is to make sure local data ready always fires after region/view animation completes.
 				    	this.currentView.triggerMethodInversed('ready');
 				    	//note that form view will not re-render on .set(data) so there should be no 2x view `ready` triggered.
 				    });
@@ -43973,9 +44014,6 @@ Marionette.triggerMethodInversed = (function(){
 		        this.data = tmp;
 		    }
 		    if (this.data){
-		    	//mark local data case, so first data ready can be fired after navigate-to (after region:show)
-				if(_.isPlainObject(this.data))
-					this._delayFirstTimeLocalDataReady = true;
 		        this.set(this.data);
 		    }
 		});
@@ -44063,14 +44101,6 @@ Marionette.triggerMethodInversed = (function(){
 			this.trigger('view:data-rendered');
 
 			//data view and form all have onReady now... (static view ready see view.js:--bottom--)
-			if (this._delayFirstTimeLocalDataReady) {
-				delete this._delayFirstTimeLocalDataReady;
-				if(this.parentRegion)
-				    return this.parentRegion.once('show', function() {
-				    	this.currentView.triggerMethodInversed('ready');
-				    });
-			} 
-			
 			this.triggerMethodInversed('ready');
 		},
 		
@@ -44554,13 +44584,13 @@ Marionette.triggerMethodInversed = (function(){
 				cv._tabbedViewWrapper = true;
 				//add getTab api to view
 				this.getViewFromTab = function(tabId){
-					return cv.getViewIn(tabId);
+					return cv.getViewIn('tab-' + tabId);
 				};
 			}
 
 			//if View is set to false, remove tab (region & view)
 			if(View === false){
-				cv.removeRegion(tabId); //this will in turn close() that tab region
+				cv.removeRegion('tab-' + tabId); //this will in turn close() that tab region
 				this.trigger('view:tab-removed', tabId);
 				return;
 			}
@@ -44571,18 +44601,14 @@ Marionette.triggerMethodInversed = (function(){
 			});
 
 			//see if we have this tabId in the wrapper view already
-			var tabRegion = cv.getRegion(tabId);
+			var tabRegion = cv.getRegion('tab-' + tabId);
 			if(!tabRegion){
 				//No, create a tab region using the tabId, then show() the given View on it
-				cv.$el.append('<div region="tab-' + tabId + '"></div>');
-				cv.addRegion(tabId, {selector: '[region="tab-' + tabId + '"]'});
-				tabRegion = cv.getRegion(tabId);
-				tabRegion.ensureEl();
-				tabRegion.parentCt = this;//skip wrapper view
-				tabRegion.$el
-					.addClass('region region-tab-' + _.string.slugify(tabId))
-					.data('region', tabRegion);
-				cv.show(tabId, View);
+				var rname = 'tab-' + tabId;
+				cv.$el.append('<div region="' + rname + '"></div>');
+				tabRegion = cv.addRegion(rname, {selector: '[region="' + rname + '"]'});
+				tabRegion.ensureEl(this);
+				cv.show(rname, View);
 				this.trigger('view:tab-added', tabId);
 			}else {
 				//Yes, display the specific tab region (show one later)
@@ -44706,12 +44732,8 @@ Marionette.triggerMethodInversed = (function(){
 			//+metadata to region (already aligned these with this.tab() created regions)
             this.listenTo(this, 'render', function(){
                 _.each(this.regions, function(def, region){
-                    //ensure region and container style
-                    this[region].ensureEl();
-                    this[region].$el
-                    				.addClass('region region-' + _.string.slugify(region))
-                    				.data('region', this[region]);
-                    this[region].parentCt = this;
+                    //ensure region metadata
+                    this.getRegion(region).ensureEl(this);
                 }, this);
             });
 
@@ -44722,8 +44744,8 @@ Marionette.triggerMethodInversed = (function(){
 			this.listenTo(this, 'show view:data-rendered', function(){
 				var pairs = [];
 				_.each(this.regions, function(def, r){
-					if(this.debug) this[r].$el.html('<p class="alert alert-info">Region <strong>' + r + '</strong></p>'); //give it a fake one.
-					var viewName = this[r].$el.attr('view');
+					if(this.debug) this.getRegion(r).$el.html('<p class="alert alert-info">Region <strong>' + r + '</strong></p>'); //give it a fake one.
+					var viewName = this.getRegion(r).$el.attr('view');
 					if(viewName) //found in-line View name.
 						pairs.push({region: r, name: viewName}); 
 				}, this);
@@ -44902,9 +44924,11 @@ Marionette.triggerMethodInversed = (function(){
 		    // build the view
 		    var view = this.buildItemView(item, ItemView, itemViewOptions);
 		    //+parentCt fix to align with framework view (Layout)
-		    if (this._moreItems === true)
+		    if (this._moreItems === true) {
 		    //.more()-ed items will bypass this CollectionView and use 'grand parent' as parentCt.
 		        view.parentCt = this.parentCt;
+		        view.parentRegion = this.parentRegion;
+		    }
 		    else
 		        view.parentCt = this;
 
