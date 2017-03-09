@@ -30,7 +30,9 @@ Change Log
 25. Added d3.js (v4) support as paper.d3 in svg draw functions if present;
 26. Refined svg support code to make Raphaël.js/Snap.svg and D3.js both optional;
 27. Refined view coop implementation (simplified);
-28. Upgraded to use BB 1.3, jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
+28. Exposed region.parentCt as parent View for any region;
+29. Added region.$el.data('region') to point to itself, just like a view;
+30. Upgraded to use BB 1.3, jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
 
 working on ...
 
