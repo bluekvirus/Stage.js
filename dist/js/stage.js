@@ -42003,7 +42003,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.1-1208 build 1488683157918";
+;;app.stagejs = "1.10.1-1209 build 1489048204618";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -42881,7 +42881,7 @@ Marionette.triggerMethodInversed = (function(){
  * @updated 2015.12.15
  * @updated 2015.02.03
  * @updated 2016.12.12
- * @updated 2017.02.28
+ * @updated 2017.03.09
  */
 
 ;(function(app) {
@@ -42989,16 +42989,20 @@ Marionette.triggerMethodInversed = (function(){
             this.$el.empty().append(view.el);
             //-----------------------------------------
             
+            //fix $.flexlayout/view.layout forged region sub view $el height:
+            if(/flex:.*?;/.test(this.$el.attr('style')))
+                view.$el.css('height', '100%');
+
             //mark currentView, parentRegion
             this.currentView = view;
             view.parentRegion = this;
 
             //inject parent view container through region into the regional views
-            if (this._parentLayout) {
-                view.parentCt = this._parentLayout;
+            if (this.parentCt) {
+                view.parentCt = this.parentCt;
                 //also passing down the name of the outter-most context container.
-                if (this._parentLayout.category === 'Context') view.parentCtx = this._parentLayout;
-                else if (this._parentLayout.parentCtx) view.parentCtx = this._parentLayout.parentCtx;
+                if (this.parentCt.category === 'Context') view.parentCtx = this.parentCt;
+                else if (this.parentCt.parentCtx) view.parentCtx = this.parentCt.parentCtx;
             }
 
             //play effect (before 'show')
@@ -44551,7 +44555,7 @@ Marionette.triggerMethodInversed = (function(){
 				//add getTab api to view
 				this.getViewFromTab = function(tabId){
 					return cv.getViewIn(tabId);
-				}
+				};
 			}
 
 			//if View is set to false, remove tab (region & view)
@@ -44572,10 +44576,13 @@ Marionette.triggerMethodInversed = (function(){
 				//No, create a tab region using the tabId, then show() the given View on it
 				cv.$el.append('<div region="tab-' + tabId + '"></div>');
 				cv.addRegion(tabId, {selector: '[region="tab-' + tabId + '"]'});
-				cv.show(tabId, View);
 				tabRegion = cv.getRegion(tabId);
-				tabRegion._parentLayout = this;//skip wrapper view
-				tabRegion.$el.addClass('region region-tab-' + tabId);//experimental
+				tabRegion.ensureEl();
+				tabRegion.parentCt = this;//skip wrapper view
+				tabRegion.$el
+					.addClass('region region-tab-' + _.string.slugify(tabId))
+					.data('region', tabRegion);
+				cv.show(tabId, View);
 				this.trigger('view:tab-added', tabId);
 			}else {
 				//Yes, display the specific tab region (show one later)
@@ -44701,8 +44708,10 @@ Marionette.triggerMethodInversed = (function(){
                 _.each(this.regions, function(def, region){
                     //ensure region and container style
                     this[region].ensureEl();
-                    this[region].$el.addClass('region region-' + _.string.slugify(region));
-                    this[region]._parentLayout = this;
+                    this[region].$el
+                    				.addClass('region region-' + _.string.slugify(region))
+                    				.data('region', this[region]);
+                    this[region].parentCt = this;
                 }, this);
             });
 

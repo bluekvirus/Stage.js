@@ -48,7 +48,7 @@
  * @updated 2015.12.15
  * @updated 2015.02.03
  * @updated 2016.12.12
- * @updated 2017.02.28
+ * @updated 2017.03.09
  */
 
 ;(function(app) {
@@ -156,16 +156,20 @@
             this.$el.empty().append(view.el);
             //-----------------------------------------
             
+            //fix $.flexlayout/view.layout forged region sub view $el height:
+            if(/flex:.*?;/.test(this.$el.attr('style')))
+                view.$el.css('height', '100%');
+
             //mark currentView, parentRegion
             this.currentView = view;
             view.parentRegion = this;
 
             //inject parent view container through region into the regional views
-            if (this._parentLayout) {
-                view.parentCt = this._parentLayout;
+            if (this.parentCt) {
+                view.parentCt = this.parentCt;
                 //also passing down the name of the outter-most context container.
-                if (this._parentLayout.category === 'Context') view.parentCtx = this._parentLayout;
-                else if (this._parentLayout.parentCtx) view.parentCtx = this._parentLayout.parentCtx;
+                if (this.parentCt.category === 'Context') view.parentCtx = this.parentCt;
+                else if (this.parentCt.parentCtx) view.parentCtx = this.parentCt.parentCtx;
             }
 
             //play effect (before 'show')

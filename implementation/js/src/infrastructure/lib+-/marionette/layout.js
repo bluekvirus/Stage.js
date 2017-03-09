@@ -127,7 +127,7 @@
 				//add getTab api to view
 				this.getViewFromTab = function(tabId){
 					return cv.getViewIn(tabId);
-				}
+				};
 			}
 
 			//if View is set to false, remove tab (region & view)
@@ -148,10 +148,13 @@
 				//No, create a tab region using the tabId, then show() the given View on it
 				cv.$el.append('<div region="tab-' + tabId + '"></div>');
 				cv.addRegion(tabId, {selector: '[region="tab-' + tabId + '"]'});
-				cv.show(tabId, View);
 				tabRegion = cv.getRegion(tabId);
-				tabRegion._parentLayout = this;//skip wrapper view
-				tabRegion.$el.addClass('region region-tab-' + tabId);//experimental
+				tabRegion.ensureEl();
+				tabRegion.parentCt = this;//skip wrapper view
+				tabRegion.$el
+					.addClass('region region-tab-' + _.string.slugify(tabId))
+					.data('region', tabRegion);
+				cv.show(tabId, View);
 				this.trigger('view:tab-added', tabId);
 			}else {
 				//Yes, display the specific tab region (show one later)
@@ -277,8 +280,10 @@
                 _.each(this.regions, function(def, region){
                     //ensure region and container style
                     this[region].ensureEl();
-                    this[region].$el.addClass('region region-' + _.string.slugify(region));
-                    this[region]._parentLayout = this;
+                    this[region].$el
+                    				.addClass('region region-' + _.string.slugify(region))
+                    				.data('region', this[region]);
+                    this[region].parentCt = this;
                 }, this);
             });
 
