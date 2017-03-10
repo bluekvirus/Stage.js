@@ -2027,6 +2027,7 @@ View meta events (trigger()-ed, implicit ones through triggerMethod*()):
 * view:ready (implicit - reversed, means data rendered) (view:data-rendered/editor-updated)
 * view:paper-cleared
 * view:editor-changed
+* view:editor-e (e: keyup, focusin/out)
 * view:page-changed (limited to Paginator widget bound view)
 * view:tab-removed/-added/-activated
 * view:navigate-to/-away (also view:before-navigate-to)
