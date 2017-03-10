@@ -180,9 +180,13 @@
 			
 		},
 
-		coop: function(event, msg){
-			app.trigger('app:coop', event, msg);
-			app.trigger('app:coop-' + event, msg);
+		coop: function(event){
+			var args = _.toArray(arguments);
+			args.unshift('app:coop');
+			app.trigger.apply(app, args);
+			args = args.slice(2);
+			args.unshift('app:coop-' + event);
+			app.trigger(app, args);
 			return app;
 		},
 

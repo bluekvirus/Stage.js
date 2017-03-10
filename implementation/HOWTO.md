@@ -2026,6 +2026,7 @@ View meta events (trigger()-ed, implicit ones through triggerMethod*()):
 * view:show (implicit, means region.$el.html(view.$el) called) /all-region-shown
 * view:ready (implicit - reversed, means data rendered) (view:data-rendered/editor-updated)
 * view:paper-cleared
+* view:channel-hooked
 * view:editor-changed
 * view:editor-e (e: keyup, focusin/out)
 * view:page-changed (limited to Paginator widget bound view)

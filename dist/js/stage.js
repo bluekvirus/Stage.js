@@ -23974,7 +23974,7 @@ return /******/ (function(modules) { // webpackBootstrap
 ;/*!
  * URI.js - Mutating URLs
  *
- * Version: 1.18.8
+ * Version: 1.18.9
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/
@@ -24050,7 +24050,7 @@ return /******/ (function(modules) { // webpackBootstrap
     return this;
   }
 
-  URI.version = '1.18.8';
+  URI.version = '1.18.9';
 
   var p = URI.prototype;
   var hasOwn = Object.prototype.hasOwnProperty;
@@ -26230,7 +26230,7 @@ return /******/ (function(modules) { // webpackBootstrap
  * URI.js - Mutating URLs
  * IPv6 Support
  *
- * Version: 1.18.8
+ * Version: 1.18.9
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/
@@ -26416,7 +26416,7 @@ return /******/ (function(modules) { // webpackBootstrap
  * URI.js - Mutating URLs
  * Second Level Domain (SLD) Support
  *
- * Version: 1.18.8
+ * Version: 1.18.9
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/
@@ -27191,7 +27191,7 @@ return /******/ (function(modules) { // webpackBootstrap
  * URI.js - Mutating URLs
  * URI Template Support - http://tools.ietf.org/html/rfc6570
  *
- * Version: 1.18.8
+ * Version: 1.18.9
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/
@@ -27329,7 +27329,7 @@ return /******/ (function(modules) { // webpackBootstrap
   URITemplate.LITERAL_PATTERN = /[<>{}"`^| \\]/;
 
   // expand parsed expression (expression, not template!)
-  URITemplate.expand = function(expression, data) {
+  URITemplate.expand = function(expression, data, opts) {
     // container for defined options for the given operator
     var options = operators[expression.operator];
     // expansion type (include keys or not)
@@ -27343,6 +27343,9 @@ return /******/ (function(modules) { // webpackBootstrap
     for (i = 0; (variable = variables[i]); i++) {
       // fetch simplified data source
       d = data.get(variable.name);
+      if (d.type === 0 && opts && opts.strict) {
+          throw new Error('Missing expansion value for variable "' + variable.name + '"');
+      }
       if (!d.val.length) {
         if (d.type) {
           // empty variables (empty string)
@@ -27509,7 +27512,7 @@ return /******/ (function(modules) { // webpackBootstrap
   };
 
   // expand template through given data map
-  p.expand = function(data) {
+  p.expand = function(data, opts) {
     var result = '';
 
     if (!this.parts || !this.parts.length) {
@@ -27529,7 +27532,7 @@ return /******/ (function(modules) { // webpackBootstrap
         // literal string
         ? this.parts[i]
         // expression
-        : URITemplate.expand(this.parts[i], data);
+        : URITemplate.expand(this.parts[i], data, opts);
       /*jshint laxbreak: false */
     }
 
@@ -27705,7 +27708,7 @@ return /******/ (function(modules) { // webpackBootstrap
  * URI.js - Mutating URLs
  * jQuery Plugin
  *
- * Version: 1.18.8
+ * Version: 1.18.9
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/jquery-uri-plugin.html
@@ -41679,9 +41682,13 @@ Marionette.triggerMethodInversed = (function(){
 			
 		},
 
-		coop: function(event, msg){
-			app.trigger('app:coop', event, msg);
-			app.trigger('app:coop-' + event, msg);
+		coop: function(event){
+			var args = _.toArray(arguments);
+			args.unshift('app:coop');
+			app.trigger.apply(app, args);
+			args = args.slice(2);
+			args.unshift('app:coop-' + event);
+			app.trigger(app, args);
 			return app;
 		},
 
@@ -42340,7 +42347,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.1-1212 build 1489120171959";
+;;app.stagejs = "1.10.1-1214 build 1489140311365";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -43526,6 +43533,8 @@ Marionette.triggerMethodInversed = (function(){
  * +use view as overlay
  * +dnd(with sortable)/selectable
  * +activations
+ * +poll
+ * +channels
  * (see ItemView/Layout/Region for the rest of abilities, e.g template/layout(render), data/useParentData, editors, svg, more, tab, lock, effect...)
  *
  * List of view options passed through new View(opt) that will be auto-merged as properties:
@@ -43546,7 +43555,7 @@ Marionette.triggerMethodInversed = (function(){
  * @created 2014.02.25
  * @updated 2015.08.03
  * @updated 2016.10.25
- * @updated 2017.03.02
+ * @updated 2017.03.10
  */
 
 
@@ -43582,10 +43591,14 @@ Marionette.triggerMethodInversed = (function(){
 			if(pCt) pCt[listener].apply(pCt, _.toArray(arguments).slice(1));
 		},
 
-		//enable global coop e
-		_enableGlobalCoopEvent: function(e){
-			this.listenTo(app, 'app:coop-' + e, function(msg){
-				this.trigger('view:' + e, msg);
+		//enable global coop e (callback is optional)
+		_enableGlobalCoopEvent: function(e, callback){
+			this.listenTo(app, 'app:coop-' + e, function(){
+				if(_.isFunction(callback))
+					callback.apply(this, arguments);
+				var args = _.toArray(arguments);
+				args.unshift('view:' + e);
+				this.trigger.apply(this, args);
 			});
 		},
 
@@ -44119,10 +44132,10 @@ Marionette.triggerMethodInversed = (function(){
 			this.coop.push('window-resized'); //every one should have this.(easy .svg canvas auto-resizing)
 			this.coop = _.uniq(this.coop); //for possible double entry in the array.
 
-			//register
+			//register (Caveat: due to this._coop api recovery timing, we register coop listening even before view render)
 			_.each(this.coop, this._enableGlobalCoopEvent, this);
 		}
-		//recover local (same-ancestor) collaboration
+		//recover local (same-ancestor) collaboration (@deprecate soon > 1.10)
 		this.coop = this._coop;
 
 		//enable i18n
@@ -44349,7 +44362,7 @@ Marionette.triggerMethodInversed = (function(){
 					else if (eomorf) //e
 						this._enableGlobalCoopEvent('poll-data-' + eomorf);
 					else //occur only, then use default f, which sets view's model data.
-						eomorf = _.bind(function(data){
+						eomorf = _.bind(function(data, card){
 							this.set(data);
 						}, this);
 
@@ -44365,6 +44378,34 @@ Marionette.triggerMethodInversed = (function(){
 		}
 
 		//websocket channels
+		//{'channel': true/m/fn(data)/{ws: 'path', callback: m/fn(data)}, ...}
+		if(this.channels){
+			var defaultOp = function(data){
+				this.set(data);
+			};
+			this.listenToOnce(this, 'ready', function(){
+				_.each(this.channels, function(optOrF, channel){
+					var meta = optOrF;
+					if(_.isFunction(meta))
+						meta = {callback: meta};
+					else if (_.isString(meta))
+						meta = {callback: this[meta] || defaultOp};
+					else if (_.isPlainObject(meta) && _.isString(meta.callback))
+						meta.callback = this[meta.callback] || defaultOp;
+					else
+						meta = {callback: defaultOp};
+
+					this._enableGlobalCoopEvent('ws-data-' + channel, function(data, wsinfo){
+						if(meta.ws && meta.ws !== wsinfo.path)
+							return;
+
+						meta.callback.apply(arguments);
+						this.trigger('view:channel-hooked', wsinfo.websocket.channel(channel), wsinfo);
+					});
+
+				}, this);
+			});
+		}
 
 		//--------------------+ready event---------------------------		
 		//ensure a ready event for static views (align with data and form views)

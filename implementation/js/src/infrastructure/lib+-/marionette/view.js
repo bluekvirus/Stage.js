@@ -52,6 +52,8 @@
  * +use view as overlay
  * +dnd(with sortable)/selectable
  * +activations
+ * +poll
+ * +channels
  * (see ItemView/Layout/Region for the rest of abilities, e.g template/layout(render), data/useParentData, editors, svg, more, tab, lock, effect...)
  *
  * List of view options passed through new View(opt) that will be auto-merged as properties:
@@ -72,7 +74,7 @@
  * @created 2014.02.25
  * @updated 2015.08.03
  * @updated 2016.10.25
- * @updated 2017.03.02
+ * @updated 2017.03.10
  */
 
 
@@ -108,10 +110,14 @@
 			if(pCt) pCt[listener].apply(pCt, _.toArray(arguments).slice(1));
 		},
 
-		//enable global coop e
-		_enableGlobalCoopEvent: function(e){
-			this.listenTo(app, 'app:coop-' + e, function(msg){
-				this.trigger('view:' + e, msg);
+		//enable global coop e (callback is optional)
+		_enableGlobalCoopEvent: function(e, callback){
+			this.listenTo(app, 'app:coop-' + e, function(){
+				if(_.isFunction(callback))
+					callback.apply(this, arguments);
+				var args = _.toArray(arguments);
+				args.unshift('view:' + e);
+				this.trigger.apply(this, args);
 			});
 		},
 
@@ -645,10 +651,10 @@
 			this.coop.push('window-resized'); //every one should have this.(easy .svg canvas auto-resizing)
 			this.coop = _.uniq(this.coop); //for possible double entry in the array.
 
-			//register
+			//register (Caveat: due to this._coop api recovery timing, we register coop listening even before view render)
 			_.each(this.coop, this._enableGlobalCoopEvent, this);
 		}
-		//recover local (same-ancestor) collaboration
+		//recover local (same-ancestor) collaboration (@deprecate soon > 1.10)
 		this.coop = this._coop;
 
 		//enable i18n
@@ -875,7 +881,7 @@
 					else if (eomorf) //e
 						this._enableGlobalCoopEvent('poll-data-' + eomorf);
 					else //occur only, then use default f, which sets view's model data.
-						eomorf = _.bind(function(data){
+						eomorf = _.bind(function(data, card){
 							this.set(data);
 						}, this);
 
@@ -891,6 +897,34 @@
 		}
 
 		//websocket channels
+		//{'channel': true/m/fn(data)/{ws: 'path', callback: m/fn(data)}, ...}
+		if(this.channels){
+			var defaultOp = function(data){
+				this.set(data);
+			};
+			this.listenToOnce(this, 'ready', function(){
+				_.each(this.channels, function(optOrF, channel){
+					var meta = optOrF;
+					if(_.isFunction(meta))
+						meta = {callback: meta};
+					else if (_.isString(meta))
+						meta = {callback: this[meta] || defaultOp};
+					else if (_.isPlainObject(meta) && _.isString(meta.callback))
+						meta.callback = this[meta.callback] || defaultOp;
+					else
+						meta = {callback: defaultOp};
+
+					this._enableGlobalCoopEvent('ws-data-' + channel, function(data, wsinfo){
+						if(meta.ws && meta.ws !== wsinfo.path)
+							return;
+
+						meta.callback.apply(arguments);
+						this.trigger('view:channel-hooked', wsinfo.websocket.channel(channel), wsinfo);
+					});
+
+				}, this);
+			});
+		}
 
 		//--------------------+ready event---------------------------		
 		//ensure a ready event for static views (align with data and form views)

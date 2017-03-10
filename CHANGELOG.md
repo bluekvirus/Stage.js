@@ -36,7 +36,9 @@ Change Log
 31. Icings/Curtains not bind as regions in app.mainView instead of app itself;
 32. view.more() now correctly attaches .parentRegion to the item views;
 33. Added view.poll option with app.config.dataPollingDelay for hooking up auto remote data pulling;
-34. Upgraded to use BB 1.3, jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
+34. Refined app.coop(e, ...), it now takes arbitrary arguments after e;
+35. Added view.channels option with 'view:channel-hooked' meta event;
+36. Upgraded to use BB 1.3, jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
 
 working on ...
 
