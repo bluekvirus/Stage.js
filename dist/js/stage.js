@@ -41185,6 +41185,7 @@ Marionette.triggerMethodInversed = (function(){
 			i18nTransFile: 'i18n.json', //can be {locale}.json
 			i18nLocale: '', //if you really want to force the app to certain locale other than browser preference. (Still override-able by ?locale=.. in url)
 			rapidEventDelay: 200, //in ms this is the rapid event delay control value shared within the application (e.g window resize, app.throttle, app.debounce).
+			dataPollingDelay: 5 * 1000, //in ms this is the default polling delay for app.poll()
 			timeout: 5 * 60 * 1000, //general communication timeout (ms). for app.remote and $.fileupload atm.
 			//------------------------------------------3rd-party options----------------------------------
 			marked: {
@@ -41752,7 +41753,7 @@ Marionette.triggerMethodInversed = (function(){
 		 */
 		ws: function(socketPath){
 			if(!Modernizr.websockets) throw new Error('DEV::Application::ws() Websocket is not supported by your browser!');
-			socketPath = socketPath || '/ws';
+			socketPath = socketPath || app.config.websockets[0] || '/ws';
 			var d = $.Deferred();
 			if(!app._websockets[socketPath]) { 
 
@@ -41810,7 +41811,7 @@ Marionette.triggerMethodInversed = (function(){
 		        });
 
 		    var schedule;
-		    if (_.isString(occurrence)) {
+		    if (_.isString(occurrence) && !Number.parseInt(occurrence)) {
 		        schedule = app.later.parse.text(occurrence);
 		        if (schedule.error !== -1)
 		            throw new Error('DEV::Application::poll() occurrence string unrecognizable...');
@@ -42339,7 +42340,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.1-1211 build 1489106751449";
+;;app.stagejs = "1.10.1-1212 build 1489120171959";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -43530,7 +43531,7 @@ Marionette.triggerMethodInversed = (function(){
  * List of view options passed through new View(opt) that will be auto-merged as properties:
  * 		a. from Backbone.View ['model', 'collection', 'el', 'id', 'attributes', 'className', 'tagName', 'events'];
  * 		b*. from M.View ['templateHelpers']; (through M.getOption() -- tried both this and this.options)
- *   	c. from us ['effect', 'template', 'layout', 'data/useParentData', 'useFlatModel', 'coop', 'dnd', 'selectable', 'actions', 'editors', 'tooltips/popovers', 'svg'];
+ *   	c. from us ['effect', 'template', 'layout', 'data/useParentData', 'useFlatModel', 'coop', 'dnd', 'selectable', 'actions', 'editors', 'tooltips/popovers', 'svg', 'poll', 'channels'];
  *
  * Tip:
  * All new View(opt) will have this.options = opt ready in initialize(), also this.*[all auto-picked properties above].
@@ -43579,6 +43580,13 @@ Marionette.triggerMethodInversed = (function(){
 			var pCt = this.parentCt, listener = app.Util.metaEventToListenerName(arguments[0]);
 			while (pCt && !pCt[listener]) pCt = pCt.parentCt;
 			if(pCt) pCt[listener].apply(pCt, _.toArray(arguments).slice(1));
+		},
+
+		//enable global coop e
+		_enableGlobalCoopEvent: function(e){
+			this.listenTo(app, 'app:coop-' + e, function(msg){
+				this.trigger('view:' + e, msg);
+			});
 		},
 
 		//activate tooltip/popover (bootstrap version)
@@ -44064,7 +44072,7 @@ Marionette.triggerMethodInversed = (function(){
 
 		//----------------------fixed view enhancements---------------------
 		//auto-pick live init options
-		_.extend(this, _.pick(options, ['effect', 'template', 'layout', 'data', 'useParentData', 'useFlatModel', 'coop', 'actions', 'dnd', 'selectable', 'editors', 'tooltips', 'popovers', 'svg', /*'canvas'*/]));
+		_.extend(this, _.pick(options, ['effect', 'template', 'layout', 'data', 'useParentData', 'useFlatModel', 'coop', 'actions', 'dnd', 'selectable', 'editors', 'tooltips', 'popovers', 'svg', /*'canvas', */, 'poll', 'channels']));
 
 		//re-wire this.get()/set() to this.getVal()/setVal(), data model in editors is used as configure object.
 		if(this.category === 'Editor'){
@@ -44112,12 +44120,7 @@ Marionette.triggerMethodInversed = (function(){
 			this.coop = _.uniq(this.coop); //for possible double entry in the array.
 
 			//register
-			_.each(this.coop, function(e){
-				var self = this;
-				this.listenTo(app, 'app:coop-' + e, function(msg){
-					self.trigger('view:' + e, msg);
-				});
-			}, this);
+			_.each(this.coop, this._enableGlobalCoopEvent, this);
 		}
 		//recover local (same-ancestor) collaboration
 		this.coop = this._coop;
@@ -44313,6 +44316,55 @@ Marionette.triggerMethodInversed = (function(){
 
 			});
 		}
+
+		//data pollings
+		//true, 'every 5 sec [| onFooBar/coop e]', 250, '250 [|onFooBar/coop e]' fn, or {'url1': 'occurance[|coop e or fn name]'/fn, ...}
+		//Caveat: there is no 'every 0.5 sec'.
+		if(this.poll){
+			this.listenToOnce(this, 'ready', function(){
+				if(!_.isPlainObject(this.poll) && _.isString(this.data)){
+					var tmp = this.poll;
+					this.poll = {};
+					this.poll[this.data] = _.isBoolean(tmp)? app.config.dataPollingDelay : tmp;
+				}
+				_.each(this.poll, function(occurrenceAndEoMorF, url){
+					var occurrence, eomorf;
+					if(_.isString(occurrenceAndEoMorF)){
+						var tmp = occurrenceAndEoMorF.split('|');
+						occurrence = _.string.trim(tmp[0]);
+						eomorf = _.string.trim(tmp[1]); //eom
+					} else {
+						if(_.isFunction(occurrenceAndEoMorF)){
+							occurrence = app.config.dataPollingDelay;
+							eomorf = occurrenceAndEoMorF; //f
+						} else {
+							occurrence = occurrenceAndEoMorF;//occur only
+						}
+					}
+
+					if(_.isFunction(eomorf)) //f
+						eomorf = _.bind(eomorf, this);
+					else if (eomorf && _.isFunction(this[eomorf])) //m
+						eomorf = _.bind(this[eomorf], this);
+					else if (eomorf) //e
+						this._enableGlobalCoopEvent('poll-data-' + eomorf);
+					else //occur only, then use default f, which sets view's model data.
+						eomorf = _.bind(function(data){
+							this.set(data);
+						}, this);
+
+					app.poll(url, occurrence, eomorf);
+				}, this);
+			});
+
+			this.listenTo(this, 'close', function(){
+				_.each(this.poll, function(occurrenceAndEoMoF, url){
+					app.poll(url, false);
+				}, this);
+			});
+		}
+
+		//websocket channels
 
 		//--------------------+ready event---------------------------		
 		//ensure a ready event for static views (align with data and form views)
@@ -44952,11 +45004,6 @@ Marionette.triggerMethodInversed = (function(){
 			this.trigger('view:tab-activated', tabId);
 		},
 
-		//spray like app.spray but use this view as parentCt for $anchor region
-		spray: function($anchor, View /*or template or name or instance or options or svg draw(paper){} func */, options){
-			return app.spray($anchor, View, options, this);
-		},
-
 		//lock or unlock a region with overlayed spin/view (e.g waiting)
 		lock: function(region /*name only*/, flag /*true or false*/, View /*or icon name for .fa-spin or {object for overlay configuration}*/){
 			//check whether region is a string
@@ -44993,6 +45040,12 @@ Marionette.triggerMethodInversed = (function(){
 				$anchor.overlay();
 			}
 		},
+
+		//spray like app.spray but use this view as parentCt for $anchor region
+		spray: function($anchor, View /*or template or name or instance or options or svg draw(paper){} func */, options){
+			return app.spray($anchor, View, options, this);
+		},
+
 	});
 
 	/**
@@ -46195,14 +46248,14 @@ var I18N = {};
 						if(!_.isEmpty(error)){
 							this.status(error);
 							//become eagerly validated
-							this.eagerValidation = true;
+							this._eagerValidation = true;
 						}else {
 							this.status();
-							this.eagerValidation = false;
+							this._eagerValidation = false;
 						}
 					};
 					this.listenTo(this, 'editor:change editor:keyup', function(){
-						if(this.eagerValidation)
+						if(this._eagerValidation)
 							this.validate(true);
 					});
 

@@ -57,7 +57,7 @@
  * List of view options passed through new View(opt) that will be auto-merged as properties:
  * 		a. from Backbone.View ['model', 'collection', 'el', 'id', 'attributes', 'className', 'tagName', 'events'];
  * 		b*. from M.View ['templateHelpers']; (through M.getOption() -- tried both this and this.options)
- *   	c. from us ['effect', 'template', 'layout', 'data/useParentData', 'useFlatModel', 'coop', 'dnd', 'selectable', 'actions', 'editors', 'tooltips/popovers', 'svg'];
+ *   	c. from us ['effect', 'template', 'layout', 'data/useParentData', 'useFlatModel', 'coop', 'dnd', 'selectable', 'actions', 'editors', 'tooltips/popovers', 'svg', 'poll', 'channels'];
  *
  * Tip:
  * All new View(opt) will have this.options = opt ready in initialize(), also this.*[all auto-picked properties above].
@@ -106,6 +106,13 @@
 			var pCt = this.parentCt, listener = app.Util.metaEventToListenerName(arguments[0]);
 			while (pCt && !pCt[listener]) pCt = pCt.parentCt;
 			if(pCt) pCt[listener].apply(pCt, _.toArray(arguments).slice(1));
+		},
+
+		//enable global coop e
+		_enableGlobalCoopEvent: function(e){
+			this.listenTo(app, 'app:coop-' + e, function(msg){
+				this.trigger('view:' + e, msg);
+			});
 		},
 
 		//activate tooltip/popover (bootstrap version)
@@ -591,7 +598,7 @@
 
 		//----------------------fixed view enhancements---------------------
 		//auto-pick live init options
-		_.extend(this, _.pick(options, ['effect', 'template', 'layout', 'data', 'useParentData', 'useFlatModel', 'coop', 'actions', 'dnd', 'selectable', 'editors', 'tooltips', 'popovers', 'svg', /*'canvas'*/]));
+		_.extend(this, _.pick(options, ['effect', 'template', 'layout', 'data', 'useParentData', 'useFlatModel', 'coop', 'actions', 'dnd', 'selectable', 'editors', 'tooltips', 'popovers', 'svg', /*'canvas', */, 'poll', 'channels']));
 
 		//re-wire this.get()/set() to this.getVal()/setVal(), data model in editors is used as configure object.
 		if(this.category === 'Editor'){
@@ -639,12 +646,7 @@
 			this.coop = _.uniq(this.coop); //for possible double entry in the array.
 
 			//register
-			_.each(this.coop, function(e){
-				var self = this;
-				this.listenTo(app, 'app:coop-' + e, function(msg){
-					self.trigger('view:' + e, msg);
-				});
-			}, this);
+			_.each(this.coop, this._enableGlobalCoopEvent, this);
 		}
 		//recover local (same-ancestor) collaboration
 		this.coop = this._coop;
@@ -840,6 +842,55 @@
 
 			});
 		}
+
+		//data pollings
+		//true, 'every 5 sec [| onFooBar/coop e]', 250, '250 [|onFooBar/coop e]' fn, or {'url1': 'occurance[|coop e or fn name]'/fn, ...}
+		//Caveat: there is no 'every 0.5 sec'.
+		if(this.poll){
+			this.listenToOnce(this, 'ready', function(){
+				if(!_.isPlainObject(this.poll) && _.isString(this.data)){
+					var tmp = this.poll;
+					this.poll = {};
+					this.poll[this.data] = _.isBoolean(tmp)? app.config.dataPollingDelay : tmp;
+				}
+				_.each(this.poll, function(occurrenceAndEoMorF, url){
+					var occurrence, eomorf;
+					if(_.isString(occurrenceAndEoMorF)){
+						var tmp = occurrenceAndEoMorF.split('|');
+						occurrence = _.string.trim(tmp[0]);
+						eomorf = _.string.trim(tmp[1]); //eom
+					} else {
+						if(_.isFunction(occurrenceAndEoMorF)){
+							occurrence = app.config.dataPollingDelay;
+							eomorf = occurrenceAndEoMorF; //f
+						} else {
+							occurrence = occurrenceAndEoMorF;//occur only
+						}
+					}
+
+					if(_.isFunction(eomorf)) //f
+						eomorf = _.bind(eomorf, this);
+					else if (eomorf && _.isFunction(this[eomorf])) //m
+						eomorf = _.bind(this[eomorf], this);
+					else if (eomorf) //e
+						this._enableGlobalCoopEvent('poll-data-' + eomorf);
+					else //occur only, then use default f, which sets view's model data.
+						eomorf = _.bind(function(data){
+							this.set(data);
+						}, this);
+
+					app.poll(url, occurrence, eomorf);
+				}, this);
+			});
+
+			this.listenTo(this, 'close', function(){
+				_.each(this.poll, function(occurrenceAndEoMoF, url){
+					app.poll(url, false);
+				}, this);
+			});
+		}
+
+		//websocket channels
 
 		//--------------------+ready event---------------------------		
 		//ensure a ready event for static views (align with data and form views)

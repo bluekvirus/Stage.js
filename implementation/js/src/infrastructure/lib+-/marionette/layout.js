@@ -160,11 +160,6 @@
 			this.trigger('view:tab-activated', tabId);
 		},
 
-		//spray like app.spray but use this view as parentCt for $anchor region
-		spray: function($anchor, View /*or template or name or instance or options or svg draw(paper){} func */, options){
-			return app.spray($anchor, View, options, this);
-		},
-
 		//lock or unlock a region with overlayed spin/view (e.g waiting)
 		lock: function(region /*name only*/, flag /*true or false*/, View /*or icon name for .fa-spin or {object for overlay configuration}*/){
 			//check whether region is a string
@@ -201,6 +196,12 @@
 				$anchor.overlay();
 			}
 		},
+
+		//spray like app.spray but use this view as parentCt for $anchor region
+		spray: function($anchor, View /*or template or name or instance or options or svg draw(paper){} func */, options){
+			return app.spray($anchor, View, options, this);
+		},
+
 	});
 
 	/**

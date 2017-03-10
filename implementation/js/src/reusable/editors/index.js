@@ -261,14 +261,14 @@
 						if(!_.isEmpty(error)){
 							this.status(error);
 							//become eagerly validated
-							this.eagerValidation = true;
+							this._eagerValidation = true;
 						}else {
 							this.status();
-							this.eagerValidation = false;
+							this._eagerValidation = false;
 						}
 					};
 					this.listenTo(this, 'editor:change editor:keyup', function(){
-						if(this.eagerValidation)
+						if(this._eagerValidation)
 							this.validate(true);
 					});
 

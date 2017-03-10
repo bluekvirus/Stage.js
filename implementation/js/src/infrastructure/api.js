@@ -254,7 +254,7 @@
 		 */
 		ws: function(socketPath){
 			if(!Modernizr.websockets) throw new Error('DEV::Application::ws() Websocket is not supported by your browser!');
-			socketPath = socketPath || '/ws';
+			socketPath = socketPath || app.config.websockets[0] || '/ws';
 			var d = $.Deferred();
 			if(!app._websockets[socketPath]) { 
 
@@ -312,7 +312,7 @@
 		        });
 
 		    var schedule;
-		    if (_.isString(occurrence)) {
+		    if (_.isString(occurrence) && !Number.parseInt(occurrence)) {
 		        schedule = app.later.parse.text(occurrence);
 		        if (schedule.error !== -1)
 		            throw new Error('DEV::Application::poll() occurrence string unrecognizable...');

@@ -271,6 +271,7 @@ Application.setup({
     i18nTransFile: //the translation file name/pattern under i18nResources,
     i18nLocale: //force the app to certain locale,
     rapidEventDelay: //for throttling window resize/scroll and app.throttle/debounce,
+    dataPollingDelay: //for default data polling interval
     timeout: //default data (ajax) operation timeout in ms,
     /*----------------------mainView-----------------------*/
     template: //same as view template property,
@@ -891,11 +892,11 @@ Application.view({
             placeholder: 'abc...',
             value: 'default',
             validate: { //validators are executed in sequence:
-                required: { //named validator
-                    msg: 'Hey input something!', //options for the validator function
+                required: { //pre-made validator's options
+                    msg: 'Hey input something!',
                     ...,
                 },
-                fn: function(val, parentCt){ //anonymous validator
+                fn: function(val, parentCt){ //custom validator
                     if(!_.string.startsWith(val, 'A')) return 'You must start with an A';
                 }
             }
@@ -962,7 +963,7 @@ You will also get the following APIs attached to the **view** instance object on
 this.getEditor(name); 
 this.getValues(); //or this.get()
 this.setValues(vals, loud); //or this.set()
-this.validate(true|false); //true for showing the validation errors.
+this.validate(true|false); //true for egerly showing the validation errors.
 this.status(status, messages); //for highlighting status per editor. no arguments means to clear.
 ```
 
@@ -2002,6 +2003,7 @@ enhanced:
 * 'templateHelpers'
 * 'data' - 'url string', {} or []
 * 'useParentData' 
+* 'poll'
 * 'editors' - see available editors below
 * 'svg'
 * 'coop'
@@ -2044,9 +2046,9 @@ View apis:
 * view.set () - infer view.setValues() if options.editors is non empty
 * view.get () - infer view.getValues() if options.editors is non empty
 * view.getEditor () - available if options.editors is non empty
-* view.validate () - same as .getEditor()
-* view.status () - same as .getEditor()
-* view.refresh ()
+* view.validate () - use .validate(true) to eagerly show errors 
+* view.status () - shows editor msg manually in its status area
+* view.refresh () - reload data and re-render
 * view.coop () - different than app.coop(), only calls for help from ancestors
 * view.isInDOM ()
 * view.getTemplate (asHTMLString, forceReload)

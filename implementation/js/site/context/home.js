@@ -23,8 +23,11 @@
 			'<div style="position:absolute;bottom:0;width:100%" region="footer" view="Home.Footer"></div>'
 		],
 
-		data: {local: true}, //local data for testing navi-to and ready timing.
-		//data: 'static/resource/en-US/i18n.json',
+		//data: {local: true}, //local data for testing navi-to and ready timing.
+		data: 'static/resource/en-US/i18n.json',
+		//poll: '2000 | onPollDataAbc',
+		//poll: 'every 2 sec',
+		//poll: function(data){app.debug('data pulled', data)},
 
 		svg: {
 			bg: function(paper){
@@ -97,6 +100,10 @@
 				'overflowX': 'hidden',
 				'overflowY': 'auto'
 			});
+		},
+
+		onPollDataAbc: function(data){
+			app.debug('Home polled data', data);
 		},
 
 		onWindowResized: function(){

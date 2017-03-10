@@ -95,6 +95,7 @@
 			i18nTransFile: 'i18n.json', //can be {locale}.json
 			i18nLocale: '', //if you really want to force the app to certain locale other than browser preference. (Still override-able by ?locale=.. in url)
 			rapidEventDelay: 200, //in ms this is the rapid event delay control value shared within the application (e.g window resize, app.throttle, app.debounce).
+			dataPollingDelay: 5 * 1000, //in ms this is the default polling delay for app.poll()
 			timeout: 5 * 60 * 1000, //general communication timeout (ms). for app.remote and $.fileupload atm.
 			//------------------------------------------3rd-party options----------------------------------
 			marked: {
