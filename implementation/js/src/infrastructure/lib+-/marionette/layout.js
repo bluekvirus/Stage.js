@@ -150,7 +150,8 @@
 				cv.$el.append('<div region="' + rname + '"></div>');
 				tabRegion = cv.addRegion(rname, {selector: '[region="' + rname + '"]'});
 				tabRegion.ensureEl(this);
-				cv.show(rname, View);
+				cv.show(rname, View);//view will pick up tabRegion's parentCt,
+				this.getViewFromTab(tabId).parentRegion = cv.parentRegion; //then, give up tabRegion as parentRegion.
 				this.trigger('view:tab-added', tabId);
 			}else {
 				//Yes, display the specific tab region (show one later)
