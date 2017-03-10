@@ -1,7 +1,7 @@
 Change Log
 ==========
 
-1.10.2+ (2017-03-04*)
+1.10.2+ (2017-03-09*)
 --------------------
 1. Refined render() seq in a view, data change will now always re-run render() despite of category;
 2. Refined SVG canvas init code in view, the .svg option can be a css selector string now;
@@ -35,7 +35,8 @@ Change Log
 30. Refined region.ensureEl() method to take care of all the region metadata; 
 31. Icings/Curtains not bind as regions in app.mainView instead of app itself;
 32. view.more() now correctly attaches .parentRegion to the item views;
-33. Upgraded to use BB 1.3, jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
+33. Added view.poll option with app.config.dataPollingDelay for hooking up auto remote data pulling;
+34. Upgraded to use BB 1.3, jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
 
 working on ...
 
