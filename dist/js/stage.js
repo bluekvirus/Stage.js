@@ -23974,7 +23974,7 @@ return /******/ (function(modules) { // webpackBootstrap
 ;/*!
  * URI.js - Mutating URLs
  *
- * Version: 1.18.9
+ * Version: 1.18.8
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/
@@ -24050,7 +24050,7 @@ return /******/ (function(modules) { // webpackBootstrap
     return this;
   }
 
-  URI.version = '1.18.9';
+  URI.version = '1.18.8';
 
   var p = URI.prototype;
   var hasOwn = Object.prototype.hasOwnProperty;
@@ -26230,7 +26230,7 @@ return /******/ (function(modules) { // webpackBootstrap
  * URI.js - Mutating URLs
  * IPv6 Support
  *
- * Version: 1.18.9
+ * Version: 1.18.8
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/
@@ -26416,7 +26416,7 @@ return /******/ (function(modules) { // webpackBootstrap
  * URI.js - Mutating URLs
  * Second Level Domain (SLD) Support
  *
- * Version: 1.18.9
+ * Version: 1.18.8
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/
@@ -27191,7 +27191,7 @@ return /******/ (function(modules) { // webpackBootstrap
  * URI.js - Mutating URLs
  * URI Template Support - http://tools.ietf.org/html/rfc6570
  *
- * Version: 1.18.9
+ * Version: 1.18.8
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/
@@ -27329,7 +27329,7 @@ return /******/ (function(modules) { // webpackBootstrap
   URITemplate.LITERAL_PATTERN = /[<>{}"`^| \\]/;
 
   // expand parsed expression (expression, not template!)
-  URITemplate.expand = function(expression, data, opts) {
+  URITemplate.expand = function(expression, data) {
     // container for defined options for the given operator
     var options = operators[expression.operator];
     // expansion type (include keys or not)
@@ -27343,9 +27343,6 @@ return /******/ (function(modules) { // webpackBootstrap
     for (i = 0; (variable = variables[i]); i++) {
       // fetch simplified data source
       d = data.get(variable.name);
-      if (d.type === 0 && opts && opts.strict) {
-          throw new Error('Missing expansion value for variable "' + variable.name + '"');
-      }
       if (!d.val.length) {
         if (d.type) {
           // empty variables (empty string)
@@ -27512,7 +27509,7 @@ return /******/ (function(modules) { // webpackBootstrap
   };
 
   // expand template through given data map
-  p.expand = function(data, opts) {
+  p.expand = function(data) {
     var result = '';
 
     if (!this.parts || !this.parts.length) {
@@ -27532,7 +27529,7 @@ return /******/ (function(modules) { // webpackBootstrap
         // literal string
         ? this.parts[i]
         // expression
-        : URITemplate.expand(this.parts[i], data, opts);
+        : URITemplate.expand(this.parts[i], data);
       /*jshint laxbreak: false */
     }
 
@@ -27708,7 +27705,7 @@ return /******/ (function(modules) { // webpackBootstrap
  * URI.js - Mutating URLs
  * jQuery Plugin
  *
- * Version: 1.18.9
+ * Version: 1.18.8
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/jquery-uri-plugin.html
@@ -41688,7 +41685,7 @@ Marionette.triggerMethodInversed = (function(){
 			app.trigger.apply(app, args);
 			args = args.slice(2);
 			args.unshift('app:coop-' + event);
-			app.trigger(app, args);
+			app.trigger.apply(app, args);
 			return app;
 		},
 
@@ -41765,6 +41762,7 @@ Marionette.triggerMethodInversed = (function(){
 			if(!app._websockets[socketPath]) { 
 
 				app._websockets[socketPath] = new WebSocket("ws://" + location.host + socketPath);
+				app._websockets[socketPath].path = socketPath;
 				//events: 'open', 'error', 'close', 'message' = e.data
 				//apis: send(), +json(), +channel().json(), close()
 
@@ -41773,6 +41771,8 @@ Marionette.triggerMethodInversed = (function(){
 				};
 				app._websockets[socketPath].channel = function(channel){
 					return {
+						name: channel,
+						websocket: app._websockets[socketPath],
 						json: function(data){
 							app._websockets[socketPath].json({
 								channel: channel,
@@ -41792,11 +41792,11 @@ Marionette.triggerMethodInversed = (function(){
 				//Dev Server will always send default json contract string {"channel": "...", "payload": "..."}
 				app._websockets[socketPath].onmessage = function(e){
 					//opt a. override app.onWsData to active otherwise
-					app.trigger('app:ws-data', {websocket: app._websockets[socketPath], path: socketPath, raw: e.data});
+					app.trigger('app:ws-data', {websocket: app._websockets[socketPath], raw: e.data});
 					//opt b. use global coop event 'ws-data-[channel]' in views directly (default json contract)
 					try {
 						var data = JSON.parse(e.data);
-						app.coop('ws-data-' + data.channel, data.payload, {websocket: app._websockets[socketPath], path: socketPath});
+						app.coop('ws-data-' + data.channel, data.payload, app._websockets[socketPath].channel(data.channel));
 					}catch(ex){
 						console.warn('DEV::Application::ws() Websocket is getting non-default {channel: ..., payload: ...} json contract strings...');
 					}
@@ -42347,7 +42347,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.1-1214 build 1489140311365";
+;;app.stagejs = "1.10.1-1215 build 1489195515564";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -44378,13 +44378,13 @@ Marionette.triggerMethodInversed = (function(){
 		}
 
 		//websocket channels
-		//{'channel': true/m/fn(data)/{ws: 'path', callback: m/fn(data)}, ...}
+		//{'channel': true/m/fn(data, channel)/{ws: 'path', callback: m/fn(data, channel)}, ...}
 		if(this.channels){
 			var defaultOp = function(data){
 				this.set(data);
 			};
 			this.listenToOnce(this, 'ready', function(){
-				_.each(this.channels, function(optOrF, channel){
+				_.each(this.channels, function(optOrF, channelName){
 					var meta = optOrF;
 					if(_.isFunction(meta))
 						meta = {callback: meta};
@@ -44395,13 +44395,12 @@ Marionette.triggerMethodInversed = (function(){
 					else
 						meta = {callback: defaultOp};
 
-					this._enableGlobalCoopEvent('ws-data-' + channel, function(data, wsinfo){
-						if(meta.ws && meta.ws !== wsinfo.path)
-							return;
-
-						meta.callback.apply(arguments);
-						this.trigger('view:channel-hooked', wsinfo.websocket.channel(channel), wsinfo);
-					});
+					app.ws(meta.ws).done(_.bind(function(websocket){
+						this._enableGlobalCoopEvent('ws-data-' + channelName, function(data, wschannel){
+							meta.callback.apply(this, arguments);
+						});
+						this.trigger('view:channel-hooked', websocket.channel(channelName));
+					}, this));
 
 				}, this);
 			});

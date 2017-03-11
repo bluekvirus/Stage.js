@@ -897,13 +897,13 @@
 		}
 
 		//websocket channels
-		//{'channel': true/m/fn(data)/{ws: 'path', callback: m/fn(data)}, ...}
+		//{'channel': true/m/fn(data, channel)/{ws: 'path', callback: m/fn(data, channel)}, ...}
 		if(this.channels){
 			var defaultOp = function(data){
 				this.set(data);
 			};
 			this.listenToOnce(this, 'ready', function(){
-				_.each(this.channels, function(optOrF, channel){
+				_.each(this.channels, function(optOrF, channelName){
 					var meta = optOrF;
 					if(_.isFunction(meta))
 						meta = {callback: meta};
@@ -914,13 +914,12 @@
 					else
 						meta = {callback: defaultOp};
 
-					this._enableGlobalCoopEvent('ws-data-' + channel, function(data, wsinfo){
-						if(meta.ws && meta.ws !== wsinfo.path)
-							return;
-
-						meta.callback.apply(arguments);
-						this.trigger('view:channel-hooked', wsinfo.websocket.channel(channel), wsinfo);
-					});
+					app.ws(meta.ws).done(_.bind(function(websocket){
+						this._enableGlobalCoopEvent('ws-data-' + channelName, function(data, wschannel){
+							meta.callback.apply(this, arguments);
+						});
+						this.trigger('view:channel-hooked', websocket.channel(channelName));
+					}, this));
 
 				}, this);
 			});

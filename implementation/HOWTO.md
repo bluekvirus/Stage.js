@@ -2004,6 +2004,7 @@ enhanced:
 * 'data' - 'url string', {} or []
 * 'useParentData' 
 * 'poll'
+* 'channels'
 * 'editors' - see available editors below
 * 'svg'
 * 'coop'

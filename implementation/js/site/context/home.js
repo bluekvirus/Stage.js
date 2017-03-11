@@ -27,7 +27,8 @@
 		data: 'static/resource/en-US/i18n.json',
 		//poll: '2000 | onPollDataAbc',
 		//poll: 'every 2 sec',
-		//poll: function(data){app.debug('data pulled', data)},
+		//poll: function(data){app.debug('data pulled', data);},
+		//channels: {'room:public': function(data, channel){app.debug('data pushed', data);}},
 
 		svg: {
 			bg: function(paper){
@@ -104,6 +105,11 @@
 
 		onPollDataAbc: function(data){
 			app.debug('Home polled data', data);
+		},
+
+		onChannelHooked: function(channel){
+			channel.json({action: 'join'});
+			app.debug('Home using channel', channel.name, 'from websocket', channel.websocket.url);
 		},
 
 		onWindowResized: function(){

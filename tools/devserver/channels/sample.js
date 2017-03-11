@@ -38,6 +38,8 @@ module.exports = function(server){
 	//channel, socketPath, handler
 	server.tuneTo('room:public', '*', function(channel, payload, clientSock, serverSock){
 		
+		console.log('[realtime]', channel, payload);
+
 		//example: switch on payload.action (client use ws.channel('room:public').json({action: ..., ...});)
 		switch(payload.action){
 			case 'join':

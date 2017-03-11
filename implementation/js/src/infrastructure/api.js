@@ -186,7 +186,7 @@
 			app.trigger.apply(app, args);
 			args = args.slice(2);
 			args.unshift('app:coop-' + event);
-			app.trigger(app, args);
+			app.trigger.apply(app, args);
 			return app;
 		},
 
@@ -263,6 +263,7 @@
 			if(!app._websockets[socketPath]) { 
 
 				app._websockets[socketPath] = new WebSocket("ws://" + location.host + socketPath);
+				app._websockets[socketPath].path = socketPath;
 				//events: 'open', 'error', 'close', 'message' = e.data
 				//apis: send(), +json(), +channel().json(), close()
 
@@ -271,6 +272,8 @@
 				};
 				app._websockets[socketPath].channel = function(channel){
 					return {
+						name: channel,
+						websocket: app._websockets[socketPath],
 						json: function(data){
 							app._websockets[socketPath].json({
 								channel: channel,
@@ -290,11 +293,11 @@
 				//Dev Server will always send default json contract string {"channel": "...", "payload": "..."}
 				app._websockets[socketPath].onmessage = function(e){
 					//opt a. override app.onWsData to active otherwise
-					app.trigger('app:ws-data', {websocket: app._websockets[socketPath], path: socketPath, raw: e.data});
+					app.trigger('app:ws-data', {websocket: app._websockets[socketPath], raw: e.data});
 					//opt b. use global coop event 'ws-data-[channel]' in views directly (default json contract)
 					try {
 						var data = JSON.parse(e.data);
-						app.coop('ws-data-' + data.channel, data.payload, {websocket: app._websockets[socketPath], path: socketPath});
+						app.coop('ws-data-' + data.channel, data.payload, app._websockets[socketPath].channel(data.channel));
 					}catch(ex){
 						console.warn('DEV::Application::ws() Websocket is getting non-default {channel: ..., payload: ...} json contract strings...');
 					}
