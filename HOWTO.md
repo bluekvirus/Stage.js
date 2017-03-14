@@ -2002,7 +2002,8 @@ enhanced:
 * 'template'
 * 'templateHelpers'
 * 'data' - 'url string', {} or []
-* 'useParentData' 
+* 'useParentData'
+* 'useFlatModel' 
 * 'poll'
 * 'channels'
 * 'editors' - see available editors below

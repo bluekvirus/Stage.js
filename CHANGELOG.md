@@ -1,7 +1,7 @@
 Change Log
 ==========
 
-1.10.2+ (2017-03-09*)
+1.10.2+ (2017-03-13*)
 --------------------
 1. Refined render() seq in a view, data change will now always re-run render() despite of category;
 2. Refined SVG canvas init code in view, the .svg option can be a css selector string now;
@@ -38,7 +38,8 @@ Change Log
 33. Added view.poll option with app.config.dataPollingDelay for hooking up auto remote data pulling;
 34. Refined app.coop(e, ...), it now takes arbitrary arguments after e;
 35. Added view.channels option with 'view:channel-hooked' meta event;
-36. Upgraded to use BB 1.3, jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
+36. Improved view 'ready' timing when given {}/[] empty data; 
+37. Upgraded to use BB 1.3, jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
 
 working on ...
 
