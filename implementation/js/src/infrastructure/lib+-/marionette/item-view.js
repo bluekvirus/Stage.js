@@ -75,11 +75,9 @@
 			//re-render the sub-regional views.
 			this.trigger('view:data-rendered');
 
-			//data view and form all have onReady now... (static view ready see view.js:--bottom--)
-			this.triggerMethodInversed('ready');
 		},
 		
-		//Set & change the underlying data of the view.
+		//set & change the underlying data of the view.
 		set: function(){
 
 			if(!this.model){
@@ -88,31 +86,36 @@
 
 			var self = this;
 
-			//check one-way binding, and honor change only once in app.spray()-ed views
-			if(!this._oneWayBound){
-				var listeningMech = this._sprayed? 'listenToOnce' : 'listenTo';
-				
-				this[listeningMech](this.model, 'change', function(){
+			//check one-way binding
+			if(!this._oneWayBound){				
+				this.listenTo(this.model, 'change', function(){
 					self._renderTplAndResetEditors();
 				});
-				this._oneWayBound = true;			
+				this._oneWayBound = true;
 			}
 
-			//bypassing Model/Collection setup in Backbone.
-			if(arguments.length === 1){
-				var data = arguments[0];
-				if(_.isString(data)){
-					this.data = data;
-					//to prevent from calling refresh() in initialize()
-					return this.isInDOM() && this.refresh();
-				}
-				else if(_.isArray(data))
-					return this.model.set('items', _.clone(data)); 
-					//conform to original Backbone/Marionette settings
-					//Caveat: Only shallow copy provided for data array here... 
-					//		  Individual changes to any item data still affects all instances of this View if 'data' is specified in def.
+			//check if we are setting another remote data url.
+			var data = arguments[0];
+			if(_.isString(data)){
+				this.data = data;
+				//to prevent from calling refresh() in initialize()
+				return this.isInDOM() && this.refresh();
 			}
-			return this.model.set.apply(this.model, arguments);
+
+			//array data are treated as sub-key 'items' in the model and your template.
+			if(_.isArray(data))
+				this.model.set('items', _.clone(data)); 
+				//conform to original Backbone/Marionette settings
+				//Caveat: Only shallow copy provided for data array here... 
+				//		  Individual changes to any item data still affects all instances of this View if 'data' is specified in def.
+			else
+				//apply whole data object to model
+				this.model.set.apply(this.model, arguments);
+			
+			//data view, including those that have form and svg all have 'ready' e now... (static view ready see view.js:--bottom--)
+			this.triggerMethodInversed('ready');
+
+			return this;
 		},
 
 		//Use this to get the underlying data of the view.

@@ -23974,7 +23974,7 @@ return /******/ (function(modules) { // webpackBootstrap
 ;/*!
  * URI.js - Mutating URLs
  *
- * Version: 1.18.8
+ * Version: 1.18.9
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/
@@ -24050,7 +24050,7 @@ return /******/ (function(modules) { // webpackBootstrap
     return this;
   }
 
-  URI.version = '1.18.8';
+  URI.version = '1.18.9';
 
   var p = URI.prototype;
   var hasOwn = Object.prototype.hasOwnProperty;
@@ -26230,7 +26230,7 @@ return /******/ (function(modules) { // webpackBootstrap
  * URI.js - Mutating URLs
  * IPv6 Support
  *
- * Version: 1.18.8
+ * Version: 1.18.9
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/
@@ -26416,7 +26416,7 @@ return /******/ (function(modules) { // webpackBootstrap
  * URI.js - Mutating URLs
  * Second Level Domain (SLD) Support
  *
- * Version: 1.18.8
+ * Version: 1.18.9
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/
@@ -27191,7 +27191,7 @@ return /******/ (function(modules) { // webpackBootstrap
  * URI.js - Mutating URLs
  * URI Template Support - http://tools.ietf.org/html/rfc6570
  *
- * Version: 1.18.8
+ * Version: 1.18.9
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/
@@ -27329,7 +27329,7 @@ return /******/ (function(modules) { // webpackBootstrap
   URITemplate.LITERAL_PATTERN = /[<>{}"`^| \\]/;
 
   // expand parsed expression (expression, not template!)
-  URITemplate.expand = function(expression, data) {
+  URITemplate.expand = function(expression, data, opts) {
     // container for defined options for the given operator
     var options = operators[expression.operator];
     // expansion type (include keys or not)
@@ -27343,6 +27343,9 @@ return /******/ (function(modules) { // webpackBootstrap
     for (i = 0; (variable = variables[i]); i++) {
       // fetch simplified data source
       d = data.get(variable.name);
+      if (d.type === 0 && opts && opts.strict) {
+          throw new Error('Missing expansion value for variable "' + variable.name + '"');
+      }
       if (!d.val.length) {
         if (d.type) {
           // empty variables (empty string)
@@ -27509,7 +27512,7 @@ return /******/ (function(modules) { // webpackBootstrap
   };
 
   // expand template through given data map
-  p.expand = function(data) {
+  p.expand = function(data, opts) {
     var result = '';
 
     if (!this.parts || !this.parts.length) {
@@ -27529,7 +27532,7 @@ return /******/ (function(modules) { // webpackBootstrap
         // literal string
         ? this.parts[i]
         // expression
-        : URITemplate.expand(this.parts[i], data);
+        : URITemplate.expand(this.parts[i], data, opts);
       /*jshint laxbreak: false */
     }
 
@@ -27705,7 +27708,7 @@ return /******/ (function(modules) { // webpackBootstrap
  * URI.js - Mutating URLs
  * jQuery Plugin
  *
- * Version: 1.18.8
+ * Version: 1.18.9
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/jquery-uri-plugin.html
@@ -42347,7 +42350,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.1-1215 build 1489195515564";
+;;app.stagejs = "1.10.1-1216 build 1489465287508";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -44526,11 +44529,9 @@ Marionette.triggerMethodInversed = (function(){
 			//re-render the sub-regional views.
 			this.trigger('view:data-rendered');
 
-			//data view and form all have onReady now... (static view ready see view.js:--bottom--)
-			this.triggerMethodInversed('ready');
 		},
 		
-		//Set & change the underlying data of the view.
+		//set & change the underlying data of the view.
 		set: function(){
 
 			if(!this.model){
@@ -44539,31 +44540,36 @@ Marionette.triggerMethodInversed = (function(){
 
 			var self = this;
 
-			//check one-way binding, and honor change only once in app.spray()-ed views
-			if(!this._oneWayBound){
-				var listeningMech = this._sprayed? 'listenToOnce' : 'listenTo';
-				
-				this[listeningMech](this.model, 'change', function(){
+			//check one-way binding
+			if(!this._oneWayBound){				
+				this.listenTo(this.model, 'change', function(){
 					self._renderTplAndResetEditors();
 				});
-				this._oneWayBound = true;			
+				this._oneWayBound = true;
 			}
 
-			//bypassing Model/Collection setup in Backbone.
-			if(arguments.length === 1){
-				var data = arguments[0];
-				if(_.isString(data)){
-					this.data = data;
-					//to prevent from calling refresh() in initialize()
-					return this.isInDOM() && this.refresh();
-				}
-				else if(_.isArray(data))
-					return this.model.set('items', _.clone(data)); 
-					//conform to original Backbone/Marionette settings
-					//Caveat: Only shallow copy provided for data array here... 
-					//		  Individual changes to any item data still affects all instances of this View if 'data' is specified in def.
+			//check if we are setting another remote data url.
+			var data = arguments[0];
+			if(_.isString(data)){
+				this.data = data;
+				//to prevent from calling refresh() in initialize()
+				return this.isInDOM() && this.refresh();
 			}
-			return this.model.set.apply(this.model, arguments);
+
+			//array data are treated as sub-key 'items' in the model and your template.
+			if(_.isArray(data))
+				this.model.set('items', _.clone(data)); 
+				//conform to original Backbone/Marionette settings
+				//Caveat: Only shallow copy provided for data array here... 
+				//		  Individual changes to any item data still affects all instances of this View if 'data' is specified in def.
+			else
+				//apply whole data object to model
+				this.model.set.apply(this.model, arguments);
+			
+			//data view, including those that have form and svg all have 'ready' e now... (static view ready see view.js:--bottom--)
+			this.triggerMethodInversed('ready');
+
+			return this;
 		},
 
 		//Use this to get the underlying data of the view.
