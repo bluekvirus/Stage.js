@@ -28,7 +28,7 @@
  * --------------
  * You can change the content in onShow($el, $overlay) by $overlay.data('content').html(...)
  * or
- * You can pass in view.render().el if you have backbone based view as content. 
+ * You can pass in view.render().$el if you have backbone based view as content. 
  * Note that in order to prevent *Ghost View* you need to close()/clean-up your view object in onClose callback.
  * 
  *

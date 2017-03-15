@@ -167,7 +167,7 @@
             var that = this;
 
             //from original open() method in Marionette
-            this.$el.empty().append(view.el);
+            this.$el.empty().append(view.$el);
             //-----------------------------------------
             
             //fix $.flexlayout/view.layout forged region sub view $el height:

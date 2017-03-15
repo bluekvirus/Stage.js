@@ -39,7 +39,7 @@ Change Log
 34. Refined app.coop(e, ...), it now takes arbitrary arguments after e;
 35. Added view.channels option with 'view:channel-hooked' meta event;
 36. Improved view 'ready' timing when given {}/[] empty data; 
-37. Upgraded to use BB 1.3, jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
+37. Upgraded to jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
 
 working on ...
 

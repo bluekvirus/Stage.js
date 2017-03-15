@@ -447,7 +447,7 @@
 				});
 				$anchor.overlay(_.extend(this._overlayConfig || {}, options, {
 					content: function(){
-						return that.render().el;
+						return that.render().$el;
 					},
 					onShow: function(){
 						//that.trigger('show'); //Trigger 'show' doesn't invoke onShow, use triggerMethod the Marionette way!

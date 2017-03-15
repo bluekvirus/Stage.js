@@ -341,7 +341,7 @@
 				if($position.length === 0)
 					$position = this.$el;
 
-				$position.append(editor.el);
+				$position.append(editor.$el);
 				//+'show' (internal, for editor writer only)
 				editor.triggerMethod('show');
 				
