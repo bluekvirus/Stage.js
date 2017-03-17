@@ -2080,7 +2080,8 @@ App data handling helpers:
 * Application.remote (options) - ajax restful api
 * Application.poll () - ajax polling
 * Application.ws () - websocket
-* Application.download (url or +params) - download as attachment
+* Application.download (url, or +params) - download as attachment
+* Application.upload (url, or +data)
 * Application.cookie.*
 * Application.store.*
 * Application.param ()
