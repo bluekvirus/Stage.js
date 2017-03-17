@@ -237,6 +237,10 @@
 			return app.Util.download(ticket, options);
 		},
 
+		upload: function(url, options){
+			return app.Util.upload(url, options);
+		},
+
 		//data push 
 		//(ws channels)
 		_websockets: {},
@@ -829,7 +833,7 @@
 		//utils
 		'has', 'get', 'spray', 'coop', 'navigate', 'icing/curtain', 'i18n', 'param', 'animation', 'animateItems', 'throttle', 'debounce',
 		//com
-		'remote', 'download', 'ws', 'poll',
+		'remote', 'download', 'upload', 'ws', 'poll',
 		//3rd-party lib short-cut
 		'extract', 'markdown', 'notify', 'prompt', //wraps
 		'cookie', 'store', 'moment', 'uri', 'validator', 'later', //direct refs

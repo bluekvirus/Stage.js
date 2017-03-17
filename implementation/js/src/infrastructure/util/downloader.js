@@ -21,11 +21,11 @@
 ;(function(app){
 
 	function downloader(ticket, options){
-	    var drone = $('#hidden-download-iframe');
-	    if(drone.length > 0){
+	    var $drone = $('#hidden-download-iframe');
+	    if($drone.length > 0){
 	    }else{
 	        $('body').append('<iframe id="hidden-download-iframe" style="display:none"></iframe>');
-	        drone = $('#hidden-download-iframe');
+	        $drone = $('#hidden-download-iframe');
 	    }
 	    
 	    //backward compatible ({url: ..., reset of keys as query params directly} still works)
@@ -37,7 +37,7 @@
 	    	_.extend(ticket, options);
 	    }
 
-	    drone.attr('src', (app.uri(ticket.url || '/').addQuery(ticket.params)).toString());
+	    $drone.attr('src', (app.uri(ticket.url || '/').addQuery(ticket.params)).toString());
 	}
 
 	app.Util.download = downloader;

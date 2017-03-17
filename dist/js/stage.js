@@ -41427,6 +41427,10 @@ Marionette.triggerMethodInversed = (function(){
 			return app.Util.download(ticket, options);
 		},
 
+		upload: function(url, options){
+			return app.Util.upload(url, options);
+		},
+
 		//data push 
 		//(ws channels)
 		_websockets: {},
@@ -42019,7 +42023,7 @@ Marionette.triggerMethodInversed = (function(){
 		//utils
 		'has', 'get', 'spray', 'coop', 'navigate', 'icing/curtain', 'i18n', 'param', 'animation', 'animateItems', 'throttle', 'debounce',
 		//com
-		'remote', 'download', 'ws', 'poll',
+		'remote', 'download', 'upload', 'ws', 'poll',
 		//3rd-party lib short-cut
 		'extract', 'markdown', 'notify', 'prompt', //wraps
 		'cookie', 'store', 'moment', 'uri', 'validator', 'later', //direct refs
@@ -42038,7 +42042,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.1-1217 build 1489618592673";
+;;app.stagejs = "1.10.1-1218 build 1489722922707";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -42094,11 +42098,11 @@ Marionette.triggerMethodInversed = (function(){
 ;(function(app){
 
 	function downloader(ticket, options){
-	    var drone = $('#hidden-download-iframe');
-	    if(drone.length > 0){
+	    var $drone = $('#hidden-download-iframe');
+	    if($drone.length > 0){
 	    }else{
 	        $('body').append('<iframe id="hidden-download-iframe" style="display:none"></iframe>');
-	        drone = $('#hidden-download-iframe');
+	        $drone = $('#hidden-download-iframe');
 	    }
 	    
 	    //backward compatible ({url: ..., reset of keys as query params directly} still works)
@@ -42110,10 +42114,46 @@ Marionette.triggerMethodInversed = (function(){
 	    	_.extend(ticket, options);
 	    }
 
-	    drone.attr('src', (app.uri(ticket.url || '/').addQuery(ticket.params)).toString());
+	    $drone.attr('src', (app.uri(ticket.url || '/').addQuery(ticket.params)).toString());
 	}
 
 	app.Util.download = downloader;
+
+})(Application);
+;/**
+ * Application universal uploader
+ *
+ * Usage
+ * -----
+ * app.upload(url, {data:{...}})
+ *
+ * @author Tim Lauv
+ * @created 2017.03.16
+ */
+;(function(app){
+
+	function uploader(url, options){
+		options = options || {};
+
+		//create hidden file input
+	    var $drone = $('#hidden-uploader-input');
+	    if($drone.length > 0){
+	    }else{
+	        $('body').append(
+	        	'<input id="hidden-uploader-input" type="file" name="files[]" multiple>'
+    		);
+	        $drone = $('#hidden-uploader-input');
+	        $drone.fileupload();
+	    }
+
+	    //change options (fixing options.data error (jQuery.FileUploader BUG??))
+	    var extraData = options.formData || options.data;
+		$drone.fileupload('option', _.extend(_.without(options, 'data'), {url: url, formData: extraData}));
+
+	    return $drone.click();
+	}
+
+	app.Util.upload = uploader;
 
 })(Application);
 ;/**

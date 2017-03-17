@@ -29,7 +29,6 @@ module.exports = function(server){
 	//use truncate -s 100M dummy.pdf to test on linux
 	router.post('/file', function(req, res, next){
 		req.busboy.on('file', function(fieldname, file, fname, encoding, mimetype){
-
 			var dist = path.join(server.resolve(path.join(profile.upload.path, fname)));
 			fs.ensureFileSync(dist);
 			file.pipe(fs.createWriteStream(dist));
@@ -43,6 +42,9 @@ module.exports = function(server){
 				}, 25 * 1000);
 			});
 		});
+		req.busboy.on('field', function(fieldname, val, fieldnameTruncated, valTruncated) {
+      		console.log('field [' + fieldname + ']: ' + val);
+    	});
 		//req.busboy.on('finish', function(){});
 		req.pipe(req.busboy);
 	});
