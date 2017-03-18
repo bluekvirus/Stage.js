@@ -42042,7 +42042,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.1-1218 build 1489722922707";
+;;app.stagejs = "1.10.1-1219 build 1489798974537";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -42140,7 +42140,7 @@ Marionette.triggerMethodInversed = (function(){
 	    if($drone.length > 0){
 	    }else{
 	        $('body').append(
-	        	'<input id="hidden-uploader-input" type="file" name="files[]" multiple>'
+	        	'<input id="hidden-uploader-input" style="display:none;" type="file" name="files[]" multiple>'
     		);
 	        $drone = $('#hidden-uploader-input');
 	        $drone.fileupload();
