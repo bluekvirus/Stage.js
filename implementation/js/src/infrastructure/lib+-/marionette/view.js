@@ -37,7 +37,7 @@
  *
  * View life-cycle:
  * ---------------
- * new View(cfg) --> render()* +$el with template, events and enhancements --> show()* +DOM, svg and data --> ready() re-rendered with data.
+ * new View(cfg) --> render()* +$el with template, events and enhancements --> show()* +DOM, data --> ready() call onReady(), +navigation-chain, svg, poll, channels upon re-rendered with data.
  * 
  * Fixed enhancement:
  * ---------------
@@ -928,20 +928,14 @@
 		//--------------------+ready event---------------------------		
 		//ensure a ready event for static views (align with data and form views)
 		//Caveat: re-render a static view will not trigger 'ready' again...
-		this.listenTo(this, 'show', function(){
+		this.listenToOnce(this, 'show', function(){
 			//call view `ready` (if not waiting for data render after 1st `show`, static and local data view only)
 			if(!this.data && !this.useParentData){
-				if(this.parentRegion)
-				    this.parentRegion.once('show', function(){
-				    	//this is to make sure local data ready always fires after region/view animation completes.
-				    	this.currentView.triggerMethodInversed('ready');
-				    	//note that form view will not re-render on .set(data) so there should be no 2x view `ready` triggered.
-				    });
-				else {
-					//a view should always have a parentRegion (since shown by a region), but we do not enforce it when firing 'ready'.
-					//e.g manual view life-cycling (very rare)
+				//a view should always have a parentRegion (since shown by a region), but we do not enforce it when firing 'ready'.
+				//e.g manual view life-cycling (very rare)
+				_.defer(_.bind(function(){
 					this.triggerMethodInversed('ready');
-				}
+				}, this));//fake as ajax-ed data view;
 			}
 		});
 

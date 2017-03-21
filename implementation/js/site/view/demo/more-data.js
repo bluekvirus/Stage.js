@@ -8,7 +8,7 @@
 		],
 		onReady: function(){
 			this.more('items', ['bluetooth', 'edge', 'shopping-basket', 'bluetooth', 'edge', 'shopping-basket'], app.view({
-				template: '<i class="fa fa-{{value}}" style="margin:1em;"></i>'
+				template: '<i class="fa fa-{{value}}" style="margin:1em;"></i>',
 			}));
 		},
 		actions: {

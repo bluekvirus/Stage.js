@@ -92,14 +92,6 @@
 
 		    // build the view
 		    var view = this.buildItemView(item, ItemView, itemViewOptions);
-		    //+parentCt fix to align with framework view (Layout)
-		    if (this._moreItems === true) {
-		    //.more()-ed items will bypass this CollectionView and use 'grand parent' as parentCt.
-		        view.parentCt = this.parentCt;
-		        view.parentRegion = this.parentRegion;
-		    }
-		    else
-		        view.parentCt = this;
 
 		    // set up the child view event forwarding
 		    this.addChildViewEventForwarding(view);
@@ -123,6 +115,15 @@
 		            Marionette.triggerMethod.call(view, 'show');
 		        }
 		    }
+
+		    //+parentCt fix to align with framework view (Layout)
+		    if (this._moreItems === true) {
+		    //.more()-ed items will bypass this CollectionView and use 'grand parent' as parentCt.
+		        view.parentCt = this.parentCt;
+		        view.parentRegion = this.parentRegion;
+		    }
+		    else
+		        view.parentCt = this;
 
 		    // this view was added
 		    this.triggerMethod("after:item:added", view);
@@ -150,7 +151,9 @@
 				this.collection.set(data, options);
 			//align with normal view's data rendered and ready events notification
 			this.trigger('view:data-rendered');
-			this.triggerMethodInversed('ready');
+			_.defer(_.bind(function(){
+				this.triggerMethodInversed('ready');
+			}, this));
 			return this;
 		},
 

@@ -42223,7 +42223,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.1-1221 build 1490067433832";
+;;app.stagejs = "1.10.1-1222 build 1490072732235";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -43430,7 +43430,7 @@ Marionette.triggerMethodInversed = (function(){
  *
  * View life-cycle:
  * ---------------
- * new View(cfg) --> render()* +$el with template, events and enhancements --> show()* +DOM, svg and data --> ready() re-rendered with data.
+ * new View(cfg) --> render()* +$el with template, events and enhancements --> show()* +DOM, data --> ready() call onReady(), +navigation-chain, svg, poll, channels upon re-rendered with data.
  * 
  * Fixed enhancement:
  * ---------------
@@ -44321,20 +44321,14 @@ Marionette.triggerMethodInversed = (function(){
 		//--------------------+ready event---------------------------		
 		//ensure a ready event for static views (align with data and form views)
 		//Caveat: re-render a static view will not trigger 'ready' again...
-		this.listenTo(this, 'show', function(){
+		this.listenToOnce(this, 'show', function(){
 			//call view `ready` (if not waiting for data render after 1st `show`, static and local data view only)
 			if(!this.data && !this.useParentData){
-				if(this.parentRegion)
-				    this.parentRegion.once('show', function(){
-				    	//this is to make sure local data ready always fires after region/view animation completes.
-				    	this.currentView.triggerMethodInversed('ready');
-				    	//note that form view will not re-render on .set(data) so there should be no 2x view `ready` triggered.
-				    });
-				else {
-					//a view should always have a parentRegion (since shown by a region), but we do not enforce it when firing 'ready'.
-					//e.g manual view life-cycling (very rare)
+				//a view should always have a parentRegion (since shown by a region), but we do not enforce it when firing 'ready'.
+				//e.g manual view life-cycling (very rare)
+				_.defer(_.bind(function(){
 					this.triggerMethodInversed('ready');
-				}
+				}, this));//fake as ajax-ed data view;
 			}
 		});
 
@@ -44476,7 +44470,9 @@ Marionette.triggerMethodInversed = (function(){
 				this.model.set.apply(this.model, arguments);
 			
 			//data view, including those that have form and svg all have 'ready' e now... (static view ready see view.js:--bottom--)
-			this.triggerMethodInversed('ready');
+			_.defer(_.bind(function(){
+				this.triggerMethodInversed('ready');
+			}, this));
 
 			return this;
 		},
@@ -44712,7 +44708,9 @@ Marionette.triggerMethodInversed = (function(){
 				if(config.value !== undefined){
 					editor.setVal(config.value);
 					//+'ready' (internal, for editor writer only)
-					editor.triggerMethodInversed('ready');
+					_.defer(_.bind(function(){
+						editor.triggerMethodInversed('ready');
+					}, editor));
 				}
 
 			}, this);
@@ -44948,8 +44946,8 @@ Marionette.triggerMethodInversed = (function(){
 				var rname = 'tab-' + tabId;
 				cv.$el.append('<div region="' + rname + '"></div>');
 				tabRegion = cv.addRegion(rname, {selector: '[region="' + rname + '"]'});
-				tabRegion.ensureEl(this);
-				cv.show(rname, View);//view will pick up tabRegion's parentCt,
+				tabRegion.ensureEl(this); //rebind tabRegions's parentCt
+				cv.show(rname, View);//view will pick up tabRegion's parentCt
 				this.getViewFromTab(tabId).parentRegion = cv.parentRegion; //then, give up tabRegion as parentRegion.
 				this.trigger('view:tab-added', tabId);
 			}else {
@@ -45267,14 +45265,6 @@ Marionette.triggerMethodInversed = (function(){
 
 		    // build the view
 		    var view = this.buildItemView(item, ItemView, itemViewOptions);
-		    //+parentCt fix to align with framework view (Layout)
-		    if (this._moreItems === true) {
-		    //.more()-ed items will bypass this CollectionView and use 'grand parent' as parentCt.
-		        view.parentCt = this.parentCt;
-		        view.parentRegion = this.parentRegion;
-		    }
-		    else
-		        view.parentCt = this;
 
 		    // set up the child view event forwarding
 		    this.addChildViewEventForwarding(view);
@@ -45298,6 +45288,15 @@ Marionette.triggerMethodInversed = (function(){
 		            Marionette.triggerMethod.call(view, 'show');
 		        }
 		    }
+
+		    //+parentCt fix to align with framework view (Layout)
+		    if (this._moreItems === true) {
+		    //.more()-ed items will bypass this CollectionView and use 'grand parent' as parentCt.
+		        view.parentCt = this.parentCt;
+		        view.parentRegion = this.parentRegion;
+		    }
+		    else
+		        view.parentCt = this;
 
 		    // this view was added
 		    this.triggerMethod("after:item:added", view);
@@ -45325,7 +45324,9 @@ Marionette.triggerMethodInversed = (function(){
 				this.collection.set(data, options);
 			//align with normal view's data rendered and ready events notification
 			this.trigger('view:data-rendered');
-			this.triggerMethodInversed('ready');
+			_.defer(_.bind(function(){
+				this.triggerMethodInversed('ready');
+			}, this));
 			return this;
 		},
 

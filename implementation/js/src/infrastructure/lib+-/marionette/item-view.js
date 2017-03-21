@@ -113,7 +113,9 @@
 				this.model.set.apply(this.model, arguments);
 			
 			//data view, including those that have form and svg all have 'ready' e now... (static view ready see view.js:--bottom--)
-			this.triggerMethodInversed('ready');
+			_.defer(_.bind(function(){
+				this.triggerMethodInversed('ready');
+			}, this));
 
 			return this;
 		},
@@ -349,7 +351,9 @@
 				if(config.value !== undefined){
 					editor.setVal(config.value);
 					//+'ready' (internal, for editor writer only)
-					editor.triggerMethodInversed('ready');
+					_.defer(_.bind(function(){
+						editor.triggerMethodInversed('ready');
+					}, editor));
 				}
 
 			}, this);
