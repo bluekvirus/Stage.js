@@ -1982,7 +1982,7 @@ App registery:
 * Application.editor (name, options/factory)
 * Application.editor.validator (name, fn) - alias: editor.rule()
 * Application.has (name, [type])
-* Application.get (name, [[type], fallback-flag])
+* Application.get (name, [[type], options{fallback, override}])
 
 View object options:
 classic:

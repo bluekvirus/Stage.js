@@ -1,7 +1,7 @@
 Change Log
 ==========
 
-1.10.2+ (2017-03-13*)
+1.10.2+ (2017-03-20*)
 --------------------
 1. Refined render() seq in a view, data change will now always re-run render() despite of category;
 2. Refined SVG canvas init code in view, the .svg option can be a css selector string now;
@@ -30,7 +30,7 @@ Change Log
 25. Added d3.js (v4) support as paper.d3 in svg draw functions if present;
 26. Refined svg support code to make Raphaël.js/Snap.svg and D3.js both optional;
 27. Refined view coop implementation (simplified);
-28. Exposed region.parentCt as parent view for any region;
+28. Exposed region.parentCt (through .ensureEl(view)) as parent view for any region;
 29. Added region.$el.data('region') to point to itself, just like a view;
 30. Refined region.ensureEl() method to take care of all the region metadata; 
 31. Icings/Curtains not bind as regions in app.mainView instead of app itself;
@@ -40,7 +40,10 @@ Change Log
 35. Added view.channels option with 'view:channel-hooked' meta event;
 36. Improved view 'ready' timing when given {}/[] empty data; 
 37. Added app.upload() api for direct file upload without editor;
-38. Upgraded to jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
+38. Added fallback/override options to app.get(name, type, options);
+39. Refined flexlayout created regions's sub-view height/position;
+40. Refined app.throttle/debounce implementation (+fn cache);
+41. Upgraded to jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
 
 working on ...
 

@@ -51,6 +51,7 @@
     "nprogress": "~0.2.x",
     "highlightjs": "~8.x.x",
     "mockjs": "~0.1.x",
+    "ace-builds": "~1.2.x",
     "bootswatch": "~3.x.x"
   },
   "devDependencies": {
@@ -81,6 +82,7 @@
     "nprogress": "~0.2.x",
     "highlightjs": "~8.x.x",
     "mockjs": "~0.1.x",
+    "ace-builds": "~1.2.x",
     "bootswatch": "~3.x.x"
   },
   "monitored": {
@@ -96,7 +98,7 @@
     "owl.carousel": "*",
     "colorbox": "*",
     "switchery": "*",
-    "ace": "*",
+    "ace-builds": "*",
     "highlightjs": "*",
     "Snap.svg": "*",
     "paper": "*",

@@ -72,7 +72,7 @@
                     }
                     else{
                     //View name (_ or A-Z starts a View name, no $ sign here sorry...)
-                        var Reusable = app.get(name, _.isPlainObject(options)?'Widget':'', true); //fallback to use view if widget not found.
+                        var Reusable = app.get(name, _.isPlainObject(options)?'Widget':'', {fallback: true}); //fallback to use view if widget not found.
                         if(Reusable){
                             //Caveat: don't forget to pick up overridable func & properties from options in your Widget.
                             return this.show(Reusable.create(options));
@@ -170,9 +170,9 @@
             this.$el.empty().append(view.$el);
             //-----------------------------------------
             
-            //fix $.flexlayout/view.layout forged region sub view $el height:
+            //fix $.flexlayout/view.layout forged region sub view $el height and sub el positioning:
             if(/flex:.*?;/.test(this.$el.attr('style')))
-                view.$el.css('height', '100%');
+                view.$el.css({'height': '100%', 'position': 'relative'});
 
             //mark currentView, parentRegion
             this.currentView = view;

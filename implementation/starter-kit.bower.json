@@ -21,7 +21,7 @@
 		"owl.carousel": "*",
 		"colorbox": "*",
 		"switchery": "*",
-		"ace": "*",
+		"ace-builds": "*",
 		"highlightjs": "*",
 		"Snap.svg": "*",
 		"paper": "*",

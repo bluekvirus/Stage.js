@@ -99,7 +99,8 @@
 		
 		//(name can be of path form)
 		has: function(name, type){
-			if(type)
+			type = type || 'View';
+			if(name)
 				return app.Core[type] && app.Core[type].has(name);
 
 			_.each(['Context', 'View', 'Widget', 'Editor'], function(t){
@@ -112,7 +113,7 @@
 
 		//(name can be of path form)
 		//always return View definition.
-		get: function(name, type, fallback /*in effect only if you specify type*/){
+		get: function(name, type, options){
 			if(!name)
 				return {
 					'Context': app.Core.Context.get(),
@@ -121,24 +122,31 @@
 					'Editor': app.Core.Editor.get()
 				};
 
+			if(_.isPlainObject(type)){
+				options = type;
+				type = undefined;
+			}
+
 			var Reusable, t = type || 'View';
+			options = _.extend({fallback: false, override: false}, options);
 
 			//try local
-			Reusable = (app.Core[t] && app.Core[t].get(name)) || (fallback && app.Core['View'].get(name));
+			if(!options.override)
+				Reusable = (app.Core[t] && app.Core[t].get(name)) || (options.fallback && app.Core['View'].get(name));
 			
 			//try remote, if we have app.viewSrcs set to load the View def dynamically
 			if(!Reusable && app.config && app.config.viewSrcs){
-				var targetJS = _.compact([app.config.viewSrcs, t.toLowerCase(), app.nameToPath(name)]).join('/') + '.js';
+				var targetJS = _.compact([app.config.viewSrcs, t.toLowerCase()/*not view.category yet*/, app.nameToPath(name)]).join('/') + '.js';
 				app.inject.js(
 					targetJS, true //sync
 				).done(function(){
 					app.debug(t, name, 'injected', 'from', app.config.viewSrcs);
-					if(app.has(name, t))
-						Reusable = app.get(name, t);
+					if(app.has(name, t) || (options.fallback && app.has(name)))
+						Reusable = app.get(name, t, {fallback: true});
 					else
-						throw new Error('DEV::Application::get() loaded definitions other than required ' + name + ' from ' + targetJS + ', please check your view name in that file!');
+						throw new Error('DEV::Application::get() loaded definitions other than required ' + name + ' of type ' + t + ' from ' + targetJS + ', please check your view name in that file!');
 				}).fail(function(jqXHR, settings, e){
-					if(!fallback || (t === 'View'))
+					if(!options.fallback || (t === 'View'))
 						throw new Error('DEV::Application::get() can NOT load definition for ' + name + ' - [' + e + ']');
 					else
 						Reusable = app.get(name, 'View');
@@ -158,7 +166,8 @@
 			if(!regionName){
 				regionName = _.uniqueId('anonymous-region-');
 				$el.attr('region', regionName);
-				parentCt.addRegion(regionName, '[region="' + regionName + '"]');
+				region = parentCt.addRegion(regionName, '[region="' + regionName + '"]');
+				region.ensureEl(parentCt);
 			} else 
 				parentCt = region.parentCt;
 
@@ -176,7 +185,7 @@
 				});
 			}else
 				//view
-				return parentCt.show(regionName, View, options);
+				return parentCt.show(regionName, View, options); //returns the region obj by region.show()
 			
 		},
 
@@ -515,11 +524,21 @@
 		//**Caveat: must separate app.config() away from app.run(), put view def (anything)
 		//that uses app.config in between in your index.html. (the build tool automatically taken care of this)
 		throttle: function(fn, ms){
-			return _.throttle(fn, ms || app.config.rapidEventDelay);
+			this._tamedFns = this._tamedFns || {};
+			ms = ms || app.config.rapidEventDelay;
+			var key = fn + 'throttle' + ms;
+			if(!this._tamedFns[key])
+				this._tamedFns[key] = _.throttle(fn, ms);
+			return this._tamedFns[key];
 		},
 
 		debounce: function(fn, ms){
-			return _.debounce(fn, ms || app.config.rapidEventDelay);
+			this._tamedFns = this._tamedFns || {};
+			ms = ms || app.config.rapidEventDelay;
+			var key = fn + 'debounce' + ms;
+			if(!this._tamedFns[key])
+				this._tamedFns[key] = _.debounce(fn, ms);
+			return this._tamedFns[key];
 		},
 
 		//----------------markdown-------------------

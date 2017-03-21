@@ -273,10 +273,11 @@
 				this.addRegions(this.regions); //rely on M.Layout._reInitializeRegions() in M.Layout.render();
 			});
 
-			//+metadata to region (already aligned these with this.tab() created regions)
+			//+metadata to region (align the normally rendered regions with .tab()/.spray()/app.icing added regions for +.parentCt)
             this.listenTo(this, 'render', function(){
                 _.each(this.regions, function(def, region){
-                    //ensure region metadata
+                    //ensure region metadata 
+                    //**Caveat**: You need to call .ensureEl(view) explicitly after an explicit call to .addRegion();
                     this.getRegion(region).ensureEl(this);
                 }, this);
             });

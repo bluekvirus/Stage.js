@@ -2,19 +2,7 @@
 
     //Shared - Regionals
     app.view('Banner', {
-        initialize: function(){
-            this.listenTo(app, 'app:context-switched', function(name){
-                this.$el.find('[context]').each(function(index, el){
-                    var $this = $(this);
-                    if($this.attr('context') === name)
-                        $this.addClass('active');
-                    else
-                        $this.removeClass('active');
-                });
-                if(name !== 'Home') this.$el.removeClass('hidden');
-                else this.$el.addClass('hidden');
-            });
-        },
+        coop: ['context-switched'],
         actions: {
             // download: function($btn, e){
             //     var base = 'static/resource/default/download/';
@@ -28,6 +16,18 @@
                 $tag.toggleClass('open', false);
             }
         },
+        onContextSwitched: function(name){
+            this.$el.find('[context]').each(function(index, el){
+                var $this = $(this);
+                if($this.attr('context') === name)
+                    $this.addClass('active');
+                else
+                    $this.removeClass('active');
+            });
+            if(name !== 'Home' && name !== 'Canvas') this.$el.removeClass('hidden');
+            else this.$el.addClass('hidden');
+        },
+
         className: 'navbar navbar-default hidden',
         template: [
             '<div class="navbar-header">',//A
