@@ -1,7 +1,7 @@
 Change Log
 ==========
 
-1.10.2+ (2017-03-20*)
+1.10.2+ (2017-03-21*)
 --------------------
 1. Refined render() seq in a view, data change will now always re-run render() despite of category;
 2. Refined SVG canvas init code in view, the .svg option can be a css selector string now;
@@ -25,7 +25,7 @@ Change Log
 20. Aligned 'view:navigate-to' to be always after 1st 'view:ready' instead of 'region:show', also (only) your onReady() will always be called before onNavigateTo();
 21. Aligned view 'navigate-chain' listener and context swapping code in app.onNavigate(); 
 22. Used of .layout now support dynamic html tpl in regions;
-23. Added view.getTemplate(asHTMLTxt, reload) for getting any tpl as a resolved HTML string;
+23. Added view.getTemplate(asHTMLTxt) for getting any tpl as a resolved HTML string;
 24. Added support for special html str as nested tpl id in view.layout;
 25. Added d3.js (v4) support as paper.d3 in svg draw functions if present;
 26. Refined svg support code to make Raphaël.js/Snap.svg and D3.js both optional;
@@ -43,7 +43,8 @@ Change Log
 38. Added fallback/override options to app.get(name, type, options);
 39. Refined flexlayout created regions's sub-view height/position;
 40. Refined app.throttle/debounce implementation (+fn cache);
-41. Upgraded to jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
+41. Fixed template cache clean-up upon app.get() View override;
+42. Upgraded to jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
 
 working on ...
 
