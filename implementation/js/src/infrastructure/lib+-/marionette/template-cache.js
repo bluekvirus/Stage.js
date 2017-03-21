@@ -9,12 +9,11 @@
 ;(function(app){
 
 	_.extend(Backbone.Marionette.TemplateCache, {
-		// Get the specified template by id. Either
-		// retrieves the cached version, or loads it
-		// through cache.load
-		get: function(templateId, asHTMLText, reload) {
+		// Get the specified template by id.
+		// retrieves the cached tpl obj and load the compiled/text version
+		get: function(templateId, asHTMLText) {
 		    var cachedTemplate = this.templateCaches[templateId] || this.make(templateId);
-		    return cachedTemplate.load(asHTMLText, reload); //-> cache.loadTemplate()
+		    return cachedTemplate.load(asHTMLText); //-> cache.loadTemplate()
 		},
 
 		//+ split out a make cache function from the original mono get()
@@ -32,15 +31,8 @@
 	_.extend(Backbone.Marionette.TemplateCache.prototype, {
 
 		// Internal method to load the template
-		// Modified to take 2 more arguments asHTMLText, reload;
-		load: function(asHTMLText, reload) {
-
-		    // Guard clause to prevent loading this template more than once
-		    if (reload) {
-		    	this.rawTemplate = '';
-		    	this._mdProcessed = false;
-		    	this.compiledTemplate = undefined;
-		    }
+		// Modified to take 1 more arguments asHTMLText;
+		load: function(asHTMLText) {
 
 		    // Find/Load the template
 		    this.rawTemplate = this.rawTemplate || this.loadTemplate(this.templateId);

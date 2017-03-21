@@ -61,9 +61,14 @@
 					//type 3: name and a factory func (won't have preset className)
 					if(!_.isString(name)) throw new Error('DEV::Reusable::register() You must specify a string name to register view in ' + regName + '.');
 
-					if(this.has(name))
-						console.warn('DEV::Overriden::Reusable ' + regName + '.' + name);
-					
+					if(this.has(name)){
+					    if(Reusable.prototype.template){
+					        app.Util.Tpl.Cache.clear(Reusable.prototype.template);
+					        console.warn('DEV::Overriden::Template::', name);
+					    }
+					    console.warn('DEV::Overriden::Reusable::' + regName + '.' + name);
+					}
+
 					//+metadata to instances
 					Reusable.prototype.name = name;
 					Reusable.prototype.category = regName;

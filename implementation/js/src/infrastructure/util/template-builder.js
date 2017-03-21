@@ -28,6 +28,7 @@
 
 		Cache: Backbone.Marionette.TemplateCache,
 
+		//used upon inserting all.json templates (view-less)
 		build: function (name, tplString){
 			if(arguments.length === 1) {
 				tplString = name;

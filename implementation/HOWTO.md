@@ -2055,8 +2055,9 @@ View apis:
 * view.refresh () - reload data and re-render
 * view.coop () - different than app.coop(), only calls for help from ancestors
 * view.isInDOM ()
-* view.getTemplate (asHTMLString, forceReload)
+* view.getTemplate (asHTMLString)
 * view.addRegion (name, def)
+* region.ensureEl (parentCt, classes)
 * view.getViewIn (region)
 * view.activate (group, index)
 * view.lock (region, flag, options)
