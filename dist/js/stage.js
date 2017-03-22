@@ -41875,8 +41875,8 @@ Marionette.triggerMethodInversed = (function(){
 			});
 		},
 		//----------------config.rapidEventDelay wrapped util--------------------
-		//**Caveat: must separate app.config() away from app.run(), put view def (anything)
-		//that uses app.config in between in your index.html. (the build tool automatically taken care of this)
+		//**Caveat**: if using cached version, pass `this` and other upper scope vars into fn as arguments, else
+		//these in fn will be cached forever and might no longer exist or point to the right thing when called...
 		throttle: function(fn, ms, cacheId){
 			
 			ms = ms || app.config.rapidEventDelay;
@@ -42236,7 +42236,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.1-1224 build 1490159865674";
+;;app.stagejs = "1.10.1-1225 build 1490219936950";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -44010,12 +44010,6 @@ Marionette.triggerMethodInversed = (function(){
 		//auto-pick live init options
 		_.extend(this, _.pick(options, ['effect', 'template', 'layout', 'data', 'useParentData', 'useFlatModel', 'coop', 'actions', 'dnd', 'selectable', 'editors', 'tooltips', 'popovers', 'svg', /*'canvas', */, 'poll', 'channels']));
 
-		//re-wire this.get()/set() to this.getVal()/setVal(), data model in editors is used as configure object.
-		if(this.category === 'Editor'){
-			this.get = this.getVal;
-			this.set = this.setVal;
-		}
-
 		//add data-view-name meta attribute to view.$el and also view to view.$el.data('view')
 		this.listenToOnce(this, 'render', function(){
 			this.$el.attr('data-view-name', this._name);
@@ -44703,6 +44697,8 @@ Marionette.triggerMethodInversed = (function(){
 				//fix editor with default methods (required)
 				editor.getVal = editor.getVal || editor.get /*fall back to view's data*/ || _.noop;
 				editor.setVal = editor.setVal || editor.set /*fall back to view's data*/ || _.noop;
+				editor.get = editor.getVal; //short-cut, mask model access (might be editor config)
+				editor.set = editor.setVal; //short-cut mask model access (might be editor config)
 				editor.validate = editor.validate || _.noop;
 				editor.status = editor.status || _.noop;
 				editor.disable = editor.disable || _.noop;
@@ -46038,7 +46034,7 @@ var I18N = {};
 
 ;(function(app){
 
-	app.Core.Editor.register('Basic', function(){
+	app.editor('Basic', function(){
 
 		var UI = app.view({
 
@@ -46050,7 +46046,7 @@ var I18N = {};
 			events: {
 				//fired on both parentCt and this editor
 				'change': '_triggerEvent',
-				'keyup input, textarea': '_triggerEvent',
+				'keyup input, textarea': '_triggerEvent', //skipping keydown
 				'focusout': '_triggerEvent',
 				'focusin': '_triggerEvent'
 			},

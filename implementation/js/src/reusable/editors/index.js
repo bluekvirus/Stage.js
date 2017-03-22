@@ -73,7 +73,7 @@
 
 ;(function(app){
 
-	app.Core.Editor.register('Basic', function(){
+	app.editor('Basic', function(){
 
 		var UI = app.view({
 
@@ -85,7 +85,7 @@
 			events: {
 				//fired on both parentCt and this editor
 				'change': '_triggerEvent',
-				'keyup input, textarea': '_triggerEvent',
+				'keyup input, textarea': '_triggerEvent', //skipping keydown
 				'focusout': '_triggerEvent',
 				'focusin': '_triggerEvent'
 			},

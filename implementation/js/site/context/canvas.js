@@ -48,27 +48,15 @@
 			});
 		},
 
-		onEditorChanged: function(name, editor){
+		onEditorKeyup: app.debounce(function(name, editor){
 			switch(name){
 				case 'remote':
-					var url = editor.get();
-					if(_.string.startsWith('ws://')){
-						//websocket
-					} else {
-						//http(s)
-						var that = this;
-						app.remote(url).done(function(data){
-							that.codepads['data-editor'].setValue(JSON.stringify(data, '\t', 3));
-							that.ui.status.html('<p class="text-success">Remote data loaded from ' + url + '</p>');
-						}).fail(function(jqXHR, settings, e){
-							that.ui.status.html('<p class="text-danger">Remote data ' + url + ' ' + e + '</p>');
-						});
-					}
+					this._fetchRemoteUrl();
 				break;
 				default:
 				break;
 			}
-		},
+		}, 600),
 
 		onPadChanged: function(pad, name){
 			switch(name){
@@ -78,7 +66,7 @@
 					}, this);
 					var svgFn = new Function('paper', pad.getValue());
 					this.spray(this.ui.preview, svgFn, {
-						data: app.debug(JSON.parse(this.codepads['data-editor'].getValue())) || {},
+						data: JSON.parse(this.codepads['data-editor'].getValue()) || {},
 					}).currentView.once('ready', _.bind(function(){
 						this.ui.status.html('<p class="text-success">Canvas rendered.</p>');
 					}, this));
@@ -96,6 +84,22 @@
 			}
 		},
 
+		_fetchRemoteUrl: function(){
+			var url = _.string.trim(this.getEditor('remote').get());
+			if(_.string.startsWith('ws://')){
+				//websocket (we might not need this one yet, skipping atm...)
+			} else {
+				//http(s)
+				var that = this;
+				app.remote(url).done(function(data){
+					that.codepads['data-editor'].setValue(JSON.stringify(data, '\t', 3));
+					that.ui.status.html('<p class="text-success">Remote data loaded from ' + url + '</p>');
+				}).fail(function(jqXHR, settings, e){
+					that.ui.status.html('<p class="text-danger">Remote data ' + url + ' ' + e + '</p>');
+				});
+			}
+		},
+
 		_createCodePad: function(domID, options){
 			this.codepads = this.codepads || {};
 			var pad = ace.edit(domID);
@@ -109,11 +113,12 @@
 			//wire
 			var that = this;
 			pad.getSession().on('change', function(e){
-				app.debounce(function(){
+				app.debounce(function(canvas, pad, cacheKey, domID){
 					var cache = pad.getValue();
 					app.store.set(cacheKey, cache);
-					that.trigger('view:pad-changed', pad, domID);
-				}, 600, domID)();//use cached debounce wrapper fn
+					canvas.trigger('view:pad-changed', pad, domID);
+				}, 600, domID)(that, pad, cacheKey, domID); //use cached debounce wrapper fn.
+															//(can't use `this` and any upper scope var in cached fn impl, they will be cached)
 			});
 			//restore
 			pad.setValue(app.store.get(cacheKey, ''), 1); //set code text and move cursor to the end (-1 for start)

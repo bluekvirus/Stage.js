@@ -335,6 +335,8 @@
 				//fix editor with default methods (required)
 				editor.getVal = editor.getVal || editor.get /*fall back to view's data*/ || _.noop;
 				editor.setVal = editor.setVal || editor.set /*fall back to view's data*/ || _.noop;
+				editor.get = editor.getVal; //short-cut, mask model access (might be editor config)
+				editor.set = editor.setVal; //short-cut mask model access (might be editor config)
 				editor.validate = editor.validate || _.noop;
 				editor.status = editor.status || _.noop;
 				editor.disable = editor.disable || _.noop;

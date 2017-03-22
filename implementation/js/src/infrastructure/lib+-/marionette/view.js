@@ -606,12 +606,6 @@
 		//auto-pick live init options
 		_.extend(this, _.pick(options, ['effect', 'template', 'layout', 'data', 'useParentData', 'useFlatModel', 'coop', 'actions', 'dnd', 'selectable', 'editors', 'tooltips', 'popovers', 'svg', /*'canvas', */, 'poll', 'channels']));
 
-		//re-wire this.get()/set() to this.getVal()/setVal(), data model in editors is used as configure object.
-		if(this.category === 'Editor'){
-			this.get = this.getVal;
-			this.set = this.setVal;
-		}
-
 		//add data-view-name meta attribute to view.$el and also view to view.$el.data('view')
 		this.listenToOnce(this, 'render', function(){
 			this.$el.attr('data-view-name', this._name);

@@ -523,8 +523,8 @@
 			});
 		},
 		//----------------config.rapidEventDelay wrapped util--------------------
-		//**Caveat: must separate app.config() away from app.run(), put view def (anything)
-		//that uses app.config in between in your index.html. (the build tool automatically taken care of this)
+		//**Caveat**: if using cached version, pass `this` and other upper scope vars into fn as arguments, else
+		//these in fn will be cached forever and might no longer exist or point to the right thing when called...
 		throttle: function(fn, ms, cacheId){
 			
 			ms = ms || app.config.rapidEventDelay;

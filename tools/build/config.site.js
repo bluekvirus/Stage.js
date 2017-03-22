@@ -9,6 +9,8 @@ module.exports = {
 		targets: false
 	},
 	structure : { //path are relative to the distFolder and src.root above
+		'worker-json.js': 'bower_components/ace-builds/src-noconflict/worker-json.js',
+		'worker-javascript.js': 'bower_components/ace-builds/src-noconflict/worker-javascript.js',
 		js: {
 			'all-head.min.js': true,
 			'all-body.min.js': true,
