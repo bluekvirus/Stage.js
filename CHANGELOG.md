@@ -1,11 +1,11 @@
 Change Log
 ==========
 
-1.10.2+ (2017-03-21*)
+1.10.2+ (2017-03-22*)
 --------------------
 1. Refined render() seq in a view, data change will now always re-run render() despite of category;
 2. Refined SVG canvas init code in view, the .svg option can be a css selector string now;
-3. Editors now share data model with template, view.get() will now smartly get both type of data with a dotted keypath.
+3. Editors now share data model with template, view.get() will now smartly get both types (normal, form) of data with an optional dotted keypath, editor.set/get() as an alias to editor.set/getVal().
 4. Refined view.paper.clear(), it can now take additional sizing argurments (w, h);
 5. Added flat and useFlatModel flags to app.model() and views respectively;
 6. Added `replace` (flag/level) option to view.set() for finer model data replace/merge control, alias `override`;
@@ -46,11 +46,11 @@ Change Log
 41. Fixed template cache clean-up upon app.get() View override;
 42. Added options.reset to view.set() to clear model before setting new data;
 43. Added default val to view.get('key', default);
-44. Upgraded to jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
+44. Add Canvas playground context in addition to Mockups;
+45. Upgraded to jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
 
 working on ...
 
-* Add Canvas playground context in starter-kit in addition to Mockups;
 * Search/IP/Number editors;
 * Direct `<canvas>` support in view (easel) .canvas --> fn(paper) prep layer;
 * Cheatsheet;
