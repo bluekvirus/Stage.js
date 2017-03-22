@@ -2048,7 +2048,7 @@ Other meta events (accepted):
 
 View apis:
 * view.set () - infer view.setValues() if options.editors is non empty
-* view.get () - infer view.getValues() if options.editors is non empty
+* view.get ('key', default) - infer view.getValues() if options.editors is non empty
 * view.getEditor () - available if options.editors is non empty
 * view.validate () - use .validate(true) to eagerly show errors 
 * view.status () - shows editor msg manually in its status area

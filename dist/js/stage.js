@@ -40681,7 +40681,7 @@ var DeepModel = Backbone.Model.extend({
 		// Extract attributes and options.
 		unset = options.unset;
 		silent = options.silent;
-    replace = options.replace; //true, or the level of depth that replacement need to happen.
+    replace = options.replace || options.override; //true, or the level of depth that replacement need to happen.
 		changes = [];
 		changing = this._changing;
 		this._changing = true;
@@ -41508,6 +41508,7 @@ Marionette.triggerMethodInversed = (function(){
 			return Reusable;
 		},
 
+		//**Caveat**: spray returns the region (created on $anchor), upon returning, its 'show' event has already passed.
 		spray: function($anchor, View /*or template or name or instance or options or svg draw(paper){} func */, options, parentCt){
 			var $el = $($anchor);
 			parentCt = parentCt || app.mainView;
@@ -41528,6 +41529,7 @@ Marionette.triggerMethodInversed = (function(){
 				//svg
 				return parentCt.show(regionName, {
 					template: '<div svg="canvas"></div>',
+					data: options && options.data, //only honor options.data if passed in.
 					svg: {
 						canvas: View
 					},
@@ -41875,21 +41877,32 @@ Marionette.triggerMethodInversed = (function(){
 		//----------------config.rapidEventDelay wrapped util--------------------
 		//**Caveat: must separate app.config() away from app.run(), put view def (anything)
 		//that uses app.config in between in your index.html. (the build tool automatically taken care of this)
-		throttle: function(fn, ms){
-			this._tamedFns = this._tamedFns || {};
+		throttle: function(fn, ms, cacheId){
+			
 			ms = ms || app.config.rapidEventDelay;
-			var key = fn + 'throttle' + ms;
+			fn = _.throttle(fn, ms);
+			if(!cacheId)
+				return fn;
+
+			//cached version (so you can call right after wrapping it)
+			this._tamedFns = this._tamedFns || {};
+			var key = fn + cacheId + '-throttle' + ms;
 			if(!this._tamedFns[key])
-				this._tamedFns[key] = _.throttle(fn, ms);
+				this._tamedFns[key] = fn;
 			return this._tamedFns[key];
 		},
 
-		debounce: function(fn, ms){
-			this._tamedFns = this._tamedFns || {};
+		debounce: function(fn, ms, cacheId){
 			ms = ms || app.config.rapidEventDelay;
-			var key = fn + 'debounce' + ms;
+			fn = _.debounce(fn, ms);
+			if(!cacheId)
+				return fn;
+
+			//cached version (so you can call right after wrapping it)
+			this._tamedFns = this._tamedFns || {};
+			var key = fn + cacheId + '-debounce' + ms;
 			if(!this._tamedFns[key])
-				this._tamedFns[key] = _.debounce(fn, ms);
+				this._tamedFns[key] = fn;
 			return this._tamedFns[key];
 		},
 
@@ -42223,7 +42236,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.1-1223 build 1490128467501";
+;;app.stagejs = "1.10.1-1224 build 1490159865674";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -44433,7 +44446,7 @@ Marionette.triggerMethodInversed = (function(){
 		},
 		
 		//set & change the underlying data of the view.
-		set: function(){
+		set: function(keyOrVal, valOrOpt, options){
 
 			if(!this.model){
 				this.model = app.model(this.useFlatModel);
@@ -44450,22 +44463,28 @@ Marionette.triggerMethodInversed = (function(){
 			}
 
 			//check if we are setting another remote data url.
-			var data = arguments[0];
-			if(_.isString(data)){
+			var data = keyOrVal;
+			if(_.isString(data) && !valOrOpt){
 				this.data = data;
 				//to prevent from calling refresh() in initialize()
 				return this.isInDOM() && this.refresh();
 			}
 
+			if(_.isObject(data))//both array and plain obj
+				options = valOrOpt || {};
+
 			//array data are treated as sub-key 'items' in the model and your template.
 			if(_.isArray(data))
-				this.model.set('items', _.clone(data)); 
+				this.model.set('items', _.clone(data), options); 
 				//conform to original Backbone/Marionette settings
 				//Caveat: Only shallow copy provided for data array here... 
 				//		  Individual changes to any item data still affects all instances of this View if 'data' is specified in def.
-			else
-				//apply whole data object to model
+			else {
+				if(options.reset)
+					this.model.clear({silent: true});
+				//apply whole arguments to model (A: key, val, [options] or B: val, [options], [dup opt])
 				this.model.set.apply(this.model, arguments);
+			}
 			
 			//data view, including those that have form and svg all have 'ready' e now... (static view ready see view.js:--bottom--)
 			_.defer(_.bind(function(){
@@ -44477,7 +44496,7 @@ Marionette.triggerMethodInversed = (function(){
 
 		//Use this to get the underlying data of the view.
 		//DON'T use this.model.attributes!
-		get: function(keypath){
+		get: function(keypath, defaultVal){
 
 			var vals = {};
 
@@ -44493,8 +44512,12 @@ Marionette.triggerMethodInversed = (function(){
 			}
 			
 			//return merged state
-			if(keypath)
-				return app.extract(keypath, vals);
+			if(keypath){
+				var val = app.extract(keypath, vals);
+				if(val === undefined)
+					return defaultVal;
+				return val;
+			}
 			return vals;
 		},
 

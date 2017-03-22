@@ -156,6 +156,7 @@
 			return Reusable;
 		},
 
+		//**Caveat**: spray returns the region (created on $anchor), upon returning, its 'show' event has already passed.
 		spray: function($anchor, View /*or template or name or instance or options or svg draw(paper){} func */, options, parentCt){
 			var $el = $($anchor);
 			parentCt = parentCt || app.mainView;
@@ -176,6 +177,7 @@
 				//svg
 				return parentCt.show(regionName, {
 					template: '<div svg="canvas"></div>',
+					data: options && options.data, //only honor options.data if passed in.
 					svg: {
 						canvas: View
 					},
@@ -523,21 +525,32 @@
 		//----------------config.rapidEventDelay wrapped util--------------------
 		//**Caveat: must separate app.config() away from app.run(), put view def (anything)
 		//that uses app.config in between in your index.html. (the build tool automatically taken care of this)
-		throttle: function(fn, ms){
-			this._tamedFns = this._tamedFns || {};
+		throttle: function(fn, ms, cacheId){
+			
 			ms = ms || app.config.rapidEventDelay;
-			var key = fn + 'throttle' + ms;
+			fn = _.throttle(fn, ms);
+			if(!cacheId)
+				return fn;
+
+			//cached version (so you can call right after wrapping it)
+			this._tamedFns = this._tamedFns || {};
+			var key = fn + cacheId + '-throttle' + ms;
 			if(!this._tamedFns[key])
-				this._tamedFns[key] = _.throttle(fn, ms);
+				this._tamedFns[key] = fn;
 			return this._tamedFns[key];
 		},
 
-		debounce: function(fn, ms){
-			this._tamedFns = this._tamedFns || {};
+		debounce: function(fn, ms, cacheId){
 			ms = ms || app.config.rapidEventDelay;
-			var key = fn + 'debounce' + ms;
+			fn = _.debounce(fn, ms);
+			if(!cacheId)
+				return fn;
+
+			//cached version (so you can call right after wrapping it)
+			this._tamedFns = this._tamedFns || {};
+			var key = fn + cacheId + '-debounce' + ms;
 			if(!this._tamedFns[key])
-				this._tamedFns[key] = _.debounce(fn, ms);
+				this._tamedFns[key] = fn;
 			return this._tamedFns[key];
 		},
 

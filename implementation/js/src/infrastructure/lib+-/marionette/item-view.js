@@ -78,7 +78,7 @@
 		},
 		
 		//set & change the underlying data of the view.
-		set: function(){
+		set: function(keyOrVal, valOrOpt, options){
 
 			if(!this.model){
 				this.model = app.model(this.useFlatModel);
@@ -95,22 +95,28 @@
 			}
 
 			//check if we are setting another remote data url.
-			var data = arguments[0];
-			if(_.isString(data)){
+			var data = keyOrVal;
+			if(_.isString(data) && !valOrOpt){
 				this.data = data;
 				//to prevent from calling refresh() in initialize()
 				return this.isInDOM() && this.refresh();
 			}
 
+			if(_.isObject(data))//both array and plain obj
+				options = valOrOpt || {};
+
 			//array data are treated as sub-key 'items' in the model and your template.
 			if(_.isArray(data))
-				this.model.set('items', _.clone(data)); 
+				this.model.set('items', _.clone(data), options); 
 				//conform to original Backbone/Marionette settings
 				//Caveat: Only shallow copy provided for data array here... 
 				//		  Individual changes to any item data still affects all instances of this View if 'data' is specified in def.
-			else
-				//apply whole data object to model
+			else {
+				if(options.reset)
+					this.model.clear({silent: true});
+				//apply whole arguments to model (A: key, val, [options] or B: val, [options], [dup opt])
 				this.model.set.apply(this.model, arguments);
+			}
 			
 			//data view, including those that have form and svg all have 'ready' e now... (static view ready see view.js:--bottom--)
 			_.defer(_.bind(function(){
@@ -122,7 +128,7 @@
 
 		//Use this to get the underlying data of the view.
 		//DON'T use this.model.attributes!
-		get: function(keypath){
+		get: function(keypath, defaultVal){
 
 			var vals = {};
 
@@ -138,8 +144,12 @@
 			}
 			
 			//return merged state
-			if(keypath)
-				return app.extract(keypath, vals);
+			if(keypath){
+				var val = app.extract(keypath, vals);
+				if(val === undefined)
+					return defaultVal;
+				return val;
+			}
 			return vals;
 		},
 

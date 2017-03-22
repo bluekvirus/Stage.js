@@ -1880,7 +1880,7 @@ var DeepModel = Backbone.Model.extend({
 		// Extract attributes and options.
 		unset = options.unset;
 		silent = options.silent;
-    replace = options.replace; //true, or the level of depth that replacement need to happen.
+    replace = options.replace || options.override; //true, or the level of depth that replacement need to happen.
 		changes = [];
 		changing = this._changing;
 		this._changing = true;

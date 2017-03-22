@@ -2,6 +2,8 @@
 
 	app.context('Canvas', {
 
+		_cacheKeyPrefix: 'Canvas-',
+
 		template: [
 			'<div ui="preview" style="position: absolute; bottom: 394px; left: 0; right: 0; top: 0;"></div>',
 			//toolbar
@@ -33,34 +35,61 @@
 		},
 
 		onReady: function(){
-			//init svg code editor
-			this._createCodePad('svg-editor', {
-				theme: 'monokai',
-				mode: 'javascript'
-			});
-
 			//init data json editor
 			this._createCodePad('data-editor', {
 				theme: 'github',
 				mode: 'json'
 			});
+
+			//init svg code editor
+			this._createCodePad('svg-editor', {
+				theme: 'monokai',
+				mode: 'javascript'
+			});
+		},
+
+		onEditorChanged: function(name, editor){
+			switch(name){
+				case 'remote':
+					var url = editor.get();
+					if(_.string.startsWith('ws://')){
+						//websocket
+					} else {
+						//http(s)
+						var that = this;
+						app.remote(url).done(function(data){
+							that.codepads['data-editor'].setValue(JSON.stringify(data, '\t', 3));
+							that.ui.status.html('<p class="text-success">Remote data loaded from ' + url + '</p>');
+						}).fail(function(jqXHR, settings, e){
+							that.ui.status.html('<p class="text-danger">Remote data ' + url + ' ' + e + '</p>');
+						});
+					}
+				break;
+				default:
+				break;
+			}
 		},
 
 		onPadChanged: function(pad, name){
-			this.ui.status.empty();
-
 			switch(name){
 				case 'svg-editor':
 					window.onerror = _.bind(function(e){
 						this.ui.status.html('<p class="text-danger">' + e + '</p>');
 					}, this);
-					var code = new Function('paper', pad.getValue());
-					this.spray(this.ui.preview, code).once('show', _.bind(function(){
+					var svgFn = new Function('paper', pad.getValue());
+					this.spray(this.ui.preview, svgFn, {
+						data: app.debug(JSON.parse(this.codepads['data-editor'].getValue())) || {},
+					}).currentView.once('ready', _.bind(function(){
 						this.ui.status.html('<p class="text-success">Canvas rendered.</p>');
 					}, this));
 				break;
 				case 'data-editor':
-					//TBI
+					var svgView = this.ui.preview.data('region') && this.ui.preview.data('region').currentView;
+					if(svgView){
+						//svgView.set(JSON.parse(pad.getValue()), {override: true, unset: true});//deep model only
+						svgView.set(JSON.parse(pad.getValue()), {reset: true});//works on both types of models (flat/deep)
+						this.ui.status.html('<p class="text-success">Canvas rendered...again.</p>');
+					}
 				break;
 				default:
 				break;
@@ -70,18 +99,24 @@
 		_createCodePad: function(domID, options){
 			this.codepads = this.codepads || {};
 			var pad = ace.edit(domID);
+			var cacheKey = this._cacheKeyPrefix + domID + '-cache';
 			//config
 			pad.setTheme(options.theme && ('ace/theme/' + options.theme));
 			pad.setFontSize(options.fontsize || 14);
 			pad.getSession().setMode(options.mode && ('ace/mode/' + options.mode));
+			pad.$blockScrolling = Infinity;
 			this.codepads[domID] = pad;
 			//wire
 			var that = this;
 			pad.getSession().on('change', function(e){
 				app.debounce(function(){
+					var cache = pad.getValue();
+					app.store.set(cacheKey, cache);
 					that.trigger('view:pad-changed', pad, domID);
-				}, 600)();
+				}, 600, domID)();//use cached debounce wrapper fn
 			});
+			//restore
+			pad.setValue(app.store.get(cacheKey, ''), 1); //set code text and move cursor to the end (-1 for start)
 			return pad;
 		}
 
