@@ -8,7 +8,7 @@ Change Log
 3. Editors now share data model with template, view.get() will now smartly get both type of data with a dotted keypath.
 4. Refined view.paper.clear(), it can now take additional sizing argurments (w, h);
 5. Added flat and useFlatModel flags to app.model() and views respectively;
-6. Added replace (flag/level) option to view.set() for finer model data replace/merge control;
+6. Added `replace` (flag/level) option to view.set() for finer model data replace/merge control, alias `override`;
 7. Added View.create() chaining method for all Views (both named and anonymous);
 8. Fixed .className value error if a view specifies its own as a function;
 9. Added support to skip appending editors by saying `_global.appendTo = false`;
@@ -42,9 +42,11 @@ Change Log
 37. Added app.upload() api for direct file upload without editor;
 38. Added fallback/override options to app.get(name, type, options);
 39. Refined flexlayout created regions's sub-view height/position;
-40. Refined app.throttle/debounce implementation (+fn cache);
+40. Refined app.throttle/debounce implementation (+fn cacheId);
 41. Fixed template cache clean-up upon app.get() View override;
-42. Upgraded to jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
+42. Added options.reset to view.set() to clear model before setting new data;
+43. Added default val to view.get('key', default);
+44. Upgraded to jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
 
 working on ...
 
