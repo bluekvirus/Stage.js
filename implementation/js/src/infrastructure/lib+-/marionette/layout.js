@@ -22,6 +22,7 @@
  * @update 2015.12.15 (navRegion chaining on region:show instead)
  * @update 2016.02.05 (close*(_cb) for region closing effect sync)
  * @update 2016.12.12 (-'region:load-view' moved to region.js)
+ * @update 2017.03.22 (*[region=/view=] pickup after 'show/data-rendered')
  */
 
 ;(function(app){
@@ -249,8 +250,12 @@
 					this.template = templateId;
 				});
 			
-			//find region marks after 1-render
-			this.listenToOnce(this, 'render', function(){
+			//Automatically shows the region's view="" attr indicated View or @*.html/*.md
+			//Note: call render() to re-render a view will not re-render the regions. use .set() or .show() will.
+			//Note: 'all-region-shown' will sync on 'region:show' which in turn wait on enterEffects before sub-region 'view:show';
+			//Note: 'show' and 'all-region-shown' doesn't mean 'data-rendered' or further 'ready'. Data render only starts after 'show';
+			//Note: [region=] and [view=] pickup happens after 'show' and 'data-rendered', this allows dynamic region/view assignments by data;
+			this.listenTo(this, 'show view:data-rendered', function(){
 				var that = this;
 				//a. named regions (for dynamic navigation)
 				this.$el.find('[region]').each(function(index, el){
@@ -271,25 +276,13 @@
 					};
 				});
 				this.addRegions(this.regions); //rely on M.Layout._reInitializeRegions() in M.Layout.render();
-			});
+				//**Note**: You need to call .ensureEl(view) explicitly if manually made an explicit call to .addRegion();
 
-			//+metadata to region (align the normally rendered regions with .tab()/.spray()/app.icing added regions for +.parentCt)
-            this.listenTo(this, 'render', function(){
-                _.each(this.regions, function(def, region){
-                    //ensure region metadata 
-                    //**Caveat**: You need to call .ensureEl(view) explicitly after an explicit call to .addRegion();
-                    this.getRegion(region).ensureEl(this);
-                }, this);
-            });
-
-			//Automatically shows the region's view="" attr indicated View or @*.html/*.md
-			//Note: re-render a view will not re-render the regions. use .set() or .show() will.
-			//Note: 'all-region-shown' will sync on 'region:show' which in turn wait on enterEffects before sub-region 'view:show';
-			//Note: 'show' and 'all-region-shown' doesn't mean 'data-rendered' thus 'ready'. Data render only starts after 'show';
-			this.listenTo(this, 'show view:data-rendered', function(){
 				var pairs = [];
 				_.each(this.regions, function(def, r){
-					if(this.debug) this.getRegion(r).$el.html('<p class="alert alert-info">Region <strong>' + r + '</strong></p>'); //give it a fake one.
+					//+metadata to region (align the normally rendered regions with .tab()/.spray()/app.icing added regions for +.parentCt)
+					this.getRegion(r).ensureEl(this);
+					if(this.debug) this.getRegion(r).$el.html('<p class="alert alert-info">Region <strong>' + r + '</strong></p>'); //give it a debugging placeholder content.
 					var viewName = this.getRegion(r).$el.attr('view');
 					if(viewName) //found in-line View name.
 						pairs.push({region: r, name: viewName}); 
