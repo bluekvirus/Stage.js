@@ -39,7 +39,7 @@ Change Log
 34. Refined app.coop(e, ...), it now takes arbitrary arguments after e;
 35. Added view.channels option with 'view:channel-hooked' meta event;
 36. Improved view 'ready' timing (deferred) when given no data, {}/[] empty data or locally available data; 
-37. Added app.upload() api for direct file upload without editor;
+37. Added app.upload() api for direct file upload without editor (default fieldname = files[]);
 38. Added fallback/override options to app.get(name, type, options);
 39. Refined flexlayout created regions's sub-view height/position;
 40. Refined app.throttle/debounce implementation (+fn cacheId);
@@ -48,7 +48,8 @@ Change Log
 43. Added default val to view.get('key', default);
 44. Add Canvas playground context in addition to Mockups;
 45. Refined [region=/view=] pickup timing to be after show/data-rendered to allow dynamic region/view assignments by data;
-46. Upgraded to jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
+46. File editors now have options.name as their default fieldname upon file upload (instead of a random uuid);
+47. Upgraded to jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
 
 working on ...
 
