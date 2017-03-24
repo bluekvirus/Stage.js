@@ -326,10 +326,11 @@
 						
 						//for hidding progress bar
 						this.$el.bind('fileuploadalways', function(){
-							//hide progress bar after 6 seconds, same as result message
+							//reset status after 2 seconds
 							_.delay(function(){
 								that.$el.find('.progress').addClass('hidden');
-							}, 6000);
+								that.status();
+							}, 1000);
 						});
 					};
 
@@ -346,13 +347,14 @@
 							this.ui.clearfile.addClass('hidden').hide();
 
 							this.upload(_.extend({
-								//stub success callback:
+								//stub success callback: (!Override this in production!)
 								success: function(reply){
-									that.ui.result.html(_.isString(reply)?reply.i18n():JSON.stringify(reply));
-									_.delay(function(){
-										that.ui.result.empty();
-									}, 6000);
-								}
+									that.status({
+										type: 'success',
+										msg: reply.msg
+									});
+								},
+								paramName: (options.fieldname || options.name) + '[]',
 							}, options.upload));
 						}
 					});
@@ -1000,7 +1002,7 @@
 
 			//1. select
 			'{{#is type "select"}}',
-				'<select ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" class="form-control" id="{{uiId}}" {{#if multiple}}multiple="multiple"{{/if}} style="margin-bottom:0">',
+				'<select ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" class="form-control" id="{{uiId}}" {{#if multiple}}multiple{{/if}} style="margin-bottom:0">',
 					'{{#if options.grouped}}',
 						'{{#each options.data}}',
 						'<optgroup label="{{i18n @key}}">',
@@ -1059,7 +1061,6 @@
 											'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" style="display:inline;" type="{{type}}" id="{{uiId}}" placeholder="{{i18n placeholder}}" value="{{value}}"> <!--1 space-->',
 											'<span action="upload" class="hidden file-upload-action-trigger" ui="upload" style="cursor:pointer;"><i class="glyphicon glyphicon-upload"></i> <!--1 space--></span>',
 											'<span action="clear" class="hidden file-upload-action-trigger" ui="clearfile"  style="cursor:pointer;"><i class="glyphicon glyphicon-remove-circle"></i></span>',
-											'<span ui="result" class="file-upload-result wrapper-horizontal"></span>',
 										'</div>',
 										'<div class="hidden {{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}-progress-bar progress progress-striped active">',
 											'<div class="progress-bar"></div>',

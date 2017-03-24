@@ -42236,7 +42236,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.1-1226 build 1490235600602";
+;;app.stagejs = "1.10.1-1227 build 1490325563520";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -42319,7 +42319,7 @@ Marionette.triggerMethodInversed = (function(){
  *
  * Usage
  * -----
- * app.upload(url, {data:{...}})
+ * app.upload(url, {data:{...}, fieldname: 'files[]', multiple: false})
  *
  * @author Tim Lauv
  * @created 2017.03.16
@@ -42334,7 +42334,7 @@ Marionette.triggerMethodInversed = (function(){
 	    if($drone.length > 0){
 	    }else{
 	        $('body').append(
-	        	'<input id="hidden-uploader-input" style="display:none;" type="file" name="files[]" multiple>'
+	        	'<input id="hidden-uploader-input" style="display:none;" type="file" name="files[]">'
     		);
 	        $drone = $('#hidden-uploader-input');
 	        $drone.fileupload();
@@ -42342,7 +42342,11 @@ Marionette.triggerMethodInversed = (function(){
 
 	    //change options (fixing options.data error (jQuery.FileUploader BUG??))
 	    var extraData = options.formData || options.data;
-		$drone.fileupload('option', _.extend(_.without(options, 'data'), {url: url, formData: extraData}));
+		$drone.fileupload('option', _.extend(_.without(options, 'data'), {url: url, formData: extraData, paramName: options.paramName || options.fieldname}));
+		if(options.multiple)
+			$drone.attr('multiple', 'true');
+		else
+			$drone.removeAttr('multiple');
 
 	    return $drone.click();
 	}
@@ -46280,10 +46284,11 @@ var I18N = {};
 						
 						//for hidding progress bar
 						this.$el.bind('fileuploadalways', function(){
-							//hide progress bar after 6 seconds, same as result message
+							//reset status after 2 seconds
 							_.delay(function(){
 								that.$el.find('.progress').addClass('hidden');
-							}, 6000);
+								that.status();
+							}, 1000);
 						});
 					};
 
@@ -46300,13 +46305,14 @@ var I18N = {};
 							this.ui.clearfile.addClass('hidden').hide();
 
 							this.upload(_.extend({
-								//stub success callback:
+								//stub success callback: (!Override this in production!)
 								success: function(reply){
-									that.ui.result.html(_.isString(reply)?reply.i18n():JSON.stringify(reply));
-									_.delay(function(){
-										that.ui.result.empty();
-									}, 6000);
-								}
+									that.status({
+										type: 'success',
+										msg: reply.msg
+									});
+								},
+								paramName: (options.fieldname || options.name) + '[]',
 							}, options.upload));
 						}
 					});
@@ -46954,7 +46960,7 @@ var I18N = {};
 
 			//1. select
 			'{{#is type "select"}}',
-				'<select ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" class="form-control" id="{{uiId}}" {{#if multiple}}multiple="multiple"{{/if}} style="margin-bottom:0">',
+				'<select ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" class="form-control" id="{{uiId}}" {{#if multiple}}multiple{{/if}} style="margin-bottom:0">',
 					'{{#if options.grouped}}',
 						'{{#each options.data}}',
 						'<optgroup label="{{i18n @key}}">',
@@ -47013,7 +47019,6 @@ var I18N = {};
 											'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" style="display:inline;" type="{{type}}" id="{{uiId}}" placeholder="{{i18n placeholder}}" value="{{value}}"> <!--1 space-->',
 											'<span action="upload" class="hidden file-upload-action-trigger" ui="upload" style="cursor:pointer;"><i class="glyphicon glyphicon-upload"></i> <!--1 space--></span>',
 											'<span action="clear" class="hidden file-upload-action-trigger" ui="clearfile"  style="cursor:pointer;"><i class="glyphicon glyphicon-remove-circle"></i></span>',
-											'<span ui="result" class="file-upload-result wrapper-horizontal"></span>',
 										'</div>',
 										'<div class="hidden {{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}-progress-bar progress progress-striped active">',
 											'<div class="progress-bar"></div>',

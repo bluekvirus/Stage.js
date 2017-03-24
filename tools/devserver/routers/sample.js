@@ -34,12 +34,12 @@ module.exports = function(server){
 			file.pipe(fs.createWriteStream(dist));
 
 			file.on('end', function(){
-				res.json({msg: 'upload processed ' + (fs.statSync(dist).size/1024/1024).toFixed(2) + ' MB'});
-				console.log('tmp file:', dist.grey, 'received'.yellow);
+				res.json({msg: 'upload processed ' + (fs.statSync(dist).size/1024/1024).toFixed(3) + ' MB'});
+				console.log('tmp file:', dist.grey, 'received'.yellow, 'under fieldname:', fieldname);
 				_.delay(function(){
-					fs.delete(dist);
-					console.log('tmp file:', dist.grey, 'removed'.yellow);
-				}, 25 * 1000);
+					fs.remove(dist);
+					console.log('tmp file:', dist.grey, 'removed after 5 sec.'.yellow);
+				}, 5 * 1000);
 			});
 		});
 		req.busboy.on('field', function(fieldname, val, fieldnameTruncated, valTruncated) {
