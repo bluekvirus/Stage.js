@@ -50,7 +50,7 @@ Contribute to framework
 -----------------------
 Fork/Clone the project and tweak the code locally, then contribute by making a pull request so you can push the change in.
 
-###Prepare
+### Prepare
 After cloning the project, you should go to `/tools` and run these commands:
 ```
 0. Check your development environment (yes, you can still use the cli tool in this step)
@@ -80,14 +80,14 @@ forever logs
 ```
 This should fire-up the development server. It will serve the `/implementation` folder as web root on the port define by `/tools/devserver/profile/default`. Please go check the content of this profile config file before starting. It has some nice middlewares and auto-change-detectors there you can switch on/off to make the development a lot easier.
 
-###Develop, Demo & Test
+### Develop, Demo & Test
 Change code under `/implementation/js/src` to contribute your ideas to this framework.
 
 Change the code under `/implementation/js/site` to test your ideas, it is the application for **Stage.js**'s documentation site and it also holds all the tests and demos.
 
 Look closely at the `/implementation/index.html` file, it not only defines the loading sequence of all the js files but also defines which one goes to which build profile (framework, site) and bag target (all.js, stage.js) in the build process. `/implementation/starter-kit.html` goes into the starter-kit build as `index.html`. There is only 1 html file for loading the js/css files (which is `index.html`) the reset of `*.html` are templates and are loaded by the js view objects upon application runtime. This is the way of the single-page applications.
 
-###Modify base theme in framework
+### Modify base theme in framework
 `/implementation/themes/default` is the base theme package used whenever developer use `stagejs theme <name>`. Although it is often not necessary to modify this base theme. You can still improve it if you have a better idea or more UI components added into the framework that need styling. 
 
 Follow instructions in the `/less/main.less`. You can easily switch to use other themes based on Bootstrap 3 or quickly build up your own. (check out themes offered by [bootswatch](http://bootswatch.com/))
@@ -100,7 +100,7 @@ As in your own projects, themes will be automatically watched and recompiled eac
 
 **Note**: All `@import url("...")` lines which contains string `fonts` will be removed. If you don't know how to bring google webfonts to local, use [google-webfonts-helper](https://github.com/majodev/google-webfonts-helper).
 
-###Build everything
+### Build everything
 ```
 0. Change the version numbers
 
