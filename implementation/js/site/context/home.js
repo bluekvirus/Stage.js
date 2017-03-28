@@ -49,38 +49,39 @@
 					x: size.w * 0.46,
 					y: size.h * 0.44
 				};
-				paper.path(['M', start.x, ',', 0, 'V', size.h, 'L', size.w, ',', 0].join('')).attr({stroke: '#222'}); //none close
+				paper.path(['M', start.x, ',', 0, 'V', size.h, 'L', size.w, ',', 0].join('')).attr({stroke: '#222', fill: 'none'}); //none close
 
 				//green followspot
 				var g = paper.path(['M', 0, ',', 0, 'L', size.w, ',', size.h, 'V', start.y, 'z'].join('')).attr({stroke: 'none'});
 				var gMesh = g.clone();
 
-				g.attr({fill: '0-rgba(63,182,24)-rgba(39,117,29):25-rgba(27,87,31)'});
+				//g.attr({fill: '0-rgba(63,182,24)-rgba(39,117,29):25-rgba(27,87,31)'});
+				g.attr({fill: app.debug(paper.gradient('l(0,0, 1,0)rgba(63,182,24)-rgba(39,117,29):25-rgba(27,87,31)'))});
 				$(g.node).css('fill-opacity', 0.6);
 
-				gMesh.attr({fill: '0-rgba(255,255,255,0)-rgba(189,187,176,.5):15-rgba(72,66,36)'});
+				gMesh.attr({fill: paper.gradient('l(0,0, 1,0)rgba(255,255,255,0)-rgba(189,187,176,.5):15-rgba(72,66,36)')});
 				$(gMesh.node).css('fill-opacity', 0.25);			
 
 				//blue followspot
 				var b = paper.path(['M', start.x, ',', 0, 'L', 0, ',', start.y, 'V', size.h, 'z'].join('')).attr({stroke: 'none'});
 				var bMesh = b.clone();
 
-				b.attr({fill:'180-#007FFF-rgba(16,73,126):25-#183044'});
+				b.attr({fill:paper.gradient('l(0,0, -1,0)#007FFF-rgba(16,73,126):25-#183044')});
 				$(b.node).css('fill-opacity', 0.8);
 
-				bMesh.attr({fill: '0-rgba(255,255,255,0)-rgba(189,187,176,.5):15-rgba(72,66,36)'});
+				bMesh.attr({fill: paper.gradient('l(0,0, 1,0)rgba(255,255,255,0)-rgba(189,187,176,.5):15-rgba(72,66,36)')});
 				$(bMesh.node).css('fill-opacity', 0.3);	
 
 				//red followspot
 				var r = paper.path(['M', size.w, ',', start.y, 'L', 0, ',', size.h, 'V', start.y, 'z'].join('')).attr({stroke: 'none'});
 				var rMesh = r.clone();
 
-				r.attr({fill:'180-#FF0039-rgba(139,17,41,.5):45-#5B1823'});
+				r.attr({fill:paper.gradient('l(0,0, -1,0)#FF0039-rgba(139,17,41,.5):45-#5B1823')});
 				$(r.node).css({
 					'opacity': 0.6
 				});
 
-				rMesh.attr({fill: '0-rgba(255,255,255,0)-rgba(189,187,176,.5):15-rgba(72,66,36)'});
+				rMesh.attr({fill: paper.gradient('l(0,0, 1,0)rgba(255,255,255,0)-rgba(189,187,176,.5):15-rgba(72,66,36)')});
 				$(rMesh.node).css({
 					opacity: 0.25,
 					'fill-opacity': 0.25

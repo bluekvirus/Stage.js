@@ -52,7 +52,8 @@
     "highlightjs": "~8.x.x",
     "mockjs": "~0.1.x",
     "ace-builds": "~1.2.x",
-    "bootswatch": "~3.x.x"
+    "bootswatch": "~3.x.x",
+    "Snap.svg": "~0.5.x"
   },
   "devDependencies": {
     "modernizr": "~2.8.x",
@@ -83,7 +84,8 @@
     "highlightjs": "~8.x.x",
     "mockjs": "~0.1.x",
     "ace-builds": "~1.2.x",
-    "bootswatch": "~3.x.x"
+    "bootswatch": "~3.x.x",
+    "Snap.svg": "~0.5.x"
   },
   "monitored": {
     "velocity": "*",

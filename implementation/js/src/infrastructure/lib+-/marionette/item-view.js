@@ -186,20 +186,40 @@
 
 			//2. inject svg canvas, save paper, and optional d3.js selection entrypoint.
 			var SVG = window.Raphael || window.Snap, paper;
-			if(SVG)
-				paper = SVG($el[0]);
+			if(SVG){
+				if(SVG === window.Raphael){
+					paper = SVG($el[0]); //Raphael will automatically create the inner svg DOM el;
+					paper.gradient = function(format){ //back-porting paper.gradient()
+						var type = format.match(/([LlRr])\((.+?)\)/);
+						var coord = _.map(type[2].split(','), function(n){return parseFloat(n);});
+						switch(type[1]){
+							case 'L': case 'l':
+								var edge = Math.sqrt(Math.pow(coord[3] - coord[1], 2) + Math.pow(coord[2] - coord[0], 2));
+								var deltaX = coord[2] - coord[0];
+								var degree = Math.asin((coord[3] - coord[1]) / edge);
+								type[2] = (degree ? degree : (deltaX >= 0 ? 0 : 180)) + '-'; //turn into angle
+							break;
+							case 'R': case 'r':
+								type[2] = 'r(' + (coord[3] || 0) + ',' + (coord[4] || 0) + ')'; //skip cx, cy, r
+							break;
+							default:
+							break;
+						}
+						return format.replace(type[0], type[2]);
+					}
+				}
+				else {
+					$el.append('<svg/>');
+					var el = $el.find('svg')[0];
+					paper = SVG(el);
+					paper.canvas = el; //ensure Snap.svg has this for d3.js
+				}
+			}
 			else {
 				console.warn('DEV::ItemView+::_enableSVG() You did NOT have Raphaël.js/Snap.svg included...');
 				$el.append('<svg/>');
 				paper = {
 					canvas: $el.find('svg')[0],
-					setSize: function(w, h){
-						$(paper.canvas)
-							.attr('width', w)
-							.attr('height', h);
-						paper.width = w;
-						paper.height = h;
-					},
 					setViewBox: function(x, y, w, h, align, meetOrSlice){
 						$(paper.canvas)
 							.attr('viewBox', [x, y, w, h].join(' '))
@@ -213,6 +233,7 @@
 			}
 			if(window.d3)
 				paper.d3 = d3.select(paper.canvas);
+				//Caveat: now with paper.d3, you can NOT call .select() anymore, use .selectAll() like a pro;
 
 			if(!paperName)
 				//single
@@ -228,7 +249,14 @@
 			});
 
 
-			//3. give paper a proper .clear() method to call before each drawing
+			//3. give paper a proper .setSize() and .clear() method to call before each drawing
+			paper.setSize = paper.setSize || function(w, h){
+				$(paper.canvas)
+					.attr('width', w)
+					.attr('height', h);
+				paper.width = w;
+				paper.height = h;
+			};
 			//+._fit() to paper.clear() (since paper.height/width won't change with the above w/h:100% settings)
 			paper._fit = function(w /*or $anchor*/, h){
 				var $anchor = $el;

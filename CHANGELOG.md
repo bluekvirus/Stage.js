@@ -49,7 +49,8 @@ Change Log
 44. Add Canvas playground context in addition to Mockups;
 45. Refined [region=/view=] pickup timing to be after show/data-rendered to allow dynamic region/view assignments by data;
 46. File editors now have options.name as their default fieldname upon file upload (instead of a random uuid);
-47. Upgraded to jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
+47. Added SVG drawing (canvas creation, gradient filling, resizing) compatibility layer in `paper` objects;
+48. Upgraded to jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
 
 working on ...
 
