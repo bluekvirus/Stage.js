@@ -66,7 +66,7 @@
 					}, this);
 					var svgFn = new Function('paper', pad.getValue());
 					this.spray(this.ui.preview, svgFn, {
-						data: JSON.parse(this.codepads['data-editor'].getValue()) || {},
+						data: this.codepads['data-editor'].getJSONVal(),
 					}).currentView.once('ready', _.bind(function(){
 						this.ui.status.html('<p class="text-success">Canvas rendered.</p>');
 					}, this));
@@ -75,7 +75,7 @@
 					var svgView = this.ui.preview.data('region') && this.ui.preview.data('region').currentView;
 					if(svgView){
 						//svgView.set(JSON.parse(pad.getValue()), {override: true, unset: true});//deep model only
-						svgView.set(JSON.parse(pad.getValue()), {reset: true});//works on both types of models (flat/deep)
+						svgView.set(pad.getJSONVal(), {reset: true});//works on both types of models (flat/deep)
 						this.ui.status.html('<p class="text-success">Canvas rendered...again.</p>');
 					}
 				break;
@@ -122,6 +122,14 @@
 			});
 			//restore
 			pad.setValue(app.store.get(cacheKey, ''), 1); //set code text and move cursor to the end (-1 for start)
+			//patch
+			pad.getJSONVal = function(){
+				try {
+					return JSON.parse(this.getValue());
+				} catch (e) {
+					return {};
+				}
+			}
 			return pad;
 		}
 
