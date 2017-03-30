@@ -3,7 +3,7 @@
  *
  * Usage
  * -----
- * app.upload(url, {data:{...}, fieldname: 'files[]', multiple: false})
+ * app.upload(url, {data:{...}, fieldname: 'files', multiple: false})
  *
  * @author Tim Lauv
  * @created 2017.03.16
@@ -18,7 +18,7 @@
 	    if($drone.length > 0){
 	    }else{
 	        $('body').append(
-	        	'<input id="hidden-uploader-input" style="display:none;" type="file" name="files[]">'
+	        	'<input id="hidden-uploader-input" style="display:none;" type="file" name="files">'
     		);
 	        $drone = $('#hidden-uploader-input');
 	        $drone.fileupload();

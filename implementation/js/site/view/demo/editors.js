@@ -84,7 +84,7 @@
                         return {a: 1, b: 2};
                     },
                     //formData: {a: 1, b: 2},
-                    url: 'file/Blog2/',
+                    url: 'sample/file/',
                     callbacks: {
                         always: function(e, info){
                             app.debug(e, info);
@@ -97,6 +97,7 @@
                 type: 'file',
                 help: 'Please choose your abc to upload.',
                 //fieldname: 'files[]',
+                multiple: true,
                 upload: {
                     standalone: true,
                     formData: function(){

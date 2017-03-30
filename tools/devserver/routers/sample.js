@@ -28,14 +28,20 @@ module.exports = function(server){
 	//b. file upload
 	//use truncate -s 100M dummy.pdf to test on linux
 	router.post('/file', function(req, res, next){
+		var reply = 0;
+		var callback = _.after(2, function(){
+			res.json({msg: 'Upload processed...' + reply + ' MB'});
+		});
+		
 		req.busboy.on('file', function(fieldname, file, fname, encoding, mimetype){
 			var dist = path.join(server.resolve(path.join(profile.upload.path, fname)));
 			fs.ensureFileSync(dist);
 			file.pipe(fs.createWriteStream(dist));
 
 			file.on('end', function(){
-				res.json({msg: 'upload processed ' + (fs.statSync(dist).size/1024/1024).toFixed(3) + ' MB'});
+				reply += (fs.statSync(dist).size/1024/1024).toFixed(3);
 				console.log('tmp file:', dist.grey, 'received'.yellow, 'under fieldname:', fieldname);
+				callback();
 				_.delay(function(){
 					fs.remove(dist);
 					console.log('tmp file:', dist.grey, 'removed after 5 sec.'.yellow);

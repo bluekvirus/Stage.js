@@ -42236,7 +42236,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.1-1229 build 1490674079493";
+;;app.stagejs = "1.10.1-1231 build 1490844392218";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -42319,7 +42319,7 @@ Marionette.triggerMethodInversed = (function(){
  *
  * Usage
  * -----
- * app.upload(url, {data:{...}, fieldname: 'files[]', multiple: false})
+ * app.upload(url, {data:{...}, fieldname: 'files', multiple: false})
  *
  * @author Tim Lauv
  * @created 2017.03.16
@@ -42334,7 +42334,7 @@ Marionette.triggerMethodInversed = (function(){
 	    if($drone.length > 0){
 	    }else{
 	        $('body').append(
-	        	'<input id="hidden-uploader-input" style="display:none;" type="file" name="files[]">'
+	        	'<input id="hidden-uploader-input" style="display:none;" type="file" name="files">'
     		);
 	        $drone = $('#hidden-uploader-input');
 	        $drone.fileupload();
@@ -46016,7 +46016,7 @@ var I18N = {};
  * checked: '...' - checked value
  * unchecked: '...' - unchecked value
  *
- * //select only
+ * //select, file, only
  * multiple
  *
  * //textarea only
@@ -46026,7 +46026,7 @@ var I18N = {};
  * upload: {
  * 	standalone: false/true - whether or not to display a stand-alone upload button for this field.
  * 	formData: - an {} or function to return additional data to be submitted together with the file.
- * 	fileInput: - a jQuery collection of input[type=file][name=file[]] objects. (for multi-file upload through one editor api)
+ * 	fileInput: - a jQuery collection of input[type=file][name=file] objects. (for multi-file upload through one editor api)
  * 	url - a string indicating where to upload the file to.
  * 	...  see complete option listing on [https://github.com/blueimp/jQuery-File-Upload/wiki/Options].
  *
@@ -46340,7 +46340,7 @@ var I18N = {};
 										msg: reply.msg
 									});
 								},
-								paramName: (options.fieldname || options.name) + '[]',
+								paramName: options.fieldname || options.name,
 							}, options.upload));
 						}
 					});
@@ -47044,7 +47044,7 @@ var I18N = {};
 								'{{else}}',
 									'{{#is type "file"}}',
 										'<div class="clearfix">',
-											'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" style="display:inline;" type="{{type}}" id="{{uiId}}" placeholder="{{i18n placeholder}}" value="{{value}}"> <!--1 space-->',
+											'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" style="display:inline;" type="{{type}}" id="{{uiId}}" placeholder="{{i18n placeholder}}" value="{{value}}" {{#if multiple}}multiple{{/if}}> <!--1 space-->',
 											'<span action="upload" class="hidden file-upload-action-trigger" ui="upload" style="cursor:pointer;"><i class="glyphicon glyphicon-upload"></i> <!--1 space--></span>',
 											'<span action="clear" class="hidden file-upload-action-trigger" ui="clearfile"  style="cursor:pointer;"><i class="glyphicon glyphicon-remove-circle"></i></span>',
 										'</div>',
