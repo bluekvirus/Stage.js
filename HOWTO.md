@@ -683,9 +683,9 @@ Any *View* can have its actions configure block activated like this (2 easy step
     });
 })(Application);
 ```
-Note that only 'single-click' actions can be registered like this at the moment. As you can see from the example, optionally, you can lock the action tags with topic based application locks through the `lock="..."` attribute.
+As you can see from the example, optionally, you can lock the action tags with topic based application locks through the `lock="..."` attribute. We have other `action-*=` tags for double clicking, focus and other interaction events in addition to single clicking action. All `action=` tagged listeners have `e.stopPropagation()` and `e.preventDefault()` by default.
 
-Use `_bubble: true` if you want the click event to **propagate** to the parent view/container. `e.preventDefault()` needs to be specified in the action listeners if you don't want a clicking on `<a href="#xyz" action="another"></a>` tag to affect the navigation.
+Use `_bubble: true` if you want the click event to **propagate** to the parent view/container. Also, setting `_bubble` to `true` indicates `e.preventDefault()` needs to be specified in the action listeners if you don't want a clicking on `<a href="#xyz" action="another"></a>` tag to affect the navigation.
 
 If you have locked the application with `Application.lock()` then the actions will not respond until the application becomes available again. This constrain is stronger than topic based locking throught the `lock="your lock name"` attribute on action tags.
 
@@ -1608,7 +1608,6 @@ that.toc.show(Application.view({
     template: $el.data('toc').html,
     actions: {
         goTo: function($btn, e){
-            e.preventDefault();
             that.trigger('view:go-to-topic', $btn.data('id'));
         }
     }
