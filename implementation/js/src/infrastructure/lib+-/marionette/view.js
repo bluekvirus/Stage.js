@@ -262,14 +262,14 @@
 
 				if(lockTopic && !app.lock(lockTopic)){
 					e.stopPropagation();
-					e.preventDefault();
+					app.preventDefaultE(e);
 					app.trigger('app:locked', action, lockTopic);
 					return;
 				}
 
 				if($el.hasClass('disabled') || $el.parent().hasClass('disabled')) {
 					e.stopPropagation();
-					e.preventDefault();					
+					app.preventDefaultE(e);					
 					return;
 				}
 
@@ -279,7 +279,7 @@
 					while(eventForwarding.length > 2)
 						eventForwarding.shift();
 					e.stopPropagation(); //Important::This is to prevent confusing the parent view's action tag listeners.
-					e.preventDefault();
+					app.preventDefaultE(e);
 					return this.trigger(eventForwarding.join(':'));
 				}
 
@@ -287,14 +287,14 @@
 				var doer = this.actions[action];
 				if(doer) {
 					e.stopPropagation(); //Important::This is to prevent confusing the parent view's action tag listeners.
-					e.preventDefault();
+					app.preventDefaultE(e);
 					doer.apply(this, [$el, e, lockTopic]); //use 'this' view object as scope when applying the action listeners.
 				}else {
 					if(passOn){
 						return;
 					}else {
 						e.stopPropagation(); //Important::This is to prevent confusing the parent view's action tag listeners.
-						e.preventDefault();
+						app.preventDefaultE(e); //kill <a> with no href= but let go <a href=...>, <input>, <select> and <textarea> 
 					}
 					throw new Error('DEV::' + (debugViewNameTag || this._name) + '::_enableActionTags() You have not yet implemented this action - [' + action + ']');
 				}

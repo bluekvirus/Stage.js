@@ -48,8 +48,15 @@
 
     app.view('FieldsetB', {
         className: 'well well-sm',
+        template: '<div action="testb"></div>',
+        actions: {
+            testb: function(){
+                app.debug('test action ct clicked...');
+            }
+        },
         editors: {
             _global: {
+                appendTo: '[action="testb"]',
                 layout: {
                     label: 'col-sm-2',
                     field: 'col-sm-10'

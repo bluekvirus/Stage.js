@@ -554,6 +554,14 @@
 			return this._tamedFns[key];
 		},
 
+		//app wide e.preventDefault() util
+		preventDefaultE: function(e){
+			var $el = $(e.target);
+			if($el.is('input') || $el.is('textarea') || $el.is('select') || ($el.is('a') && $el.attr('href')))
+				return;
+			e.preventDefault();
+		},
+
 		//----------------markdown-------------------
 		//options.marked, options.hljs
 		//https://guides.github.com/features/mastering-markdown/
@@ -863,7 +871,7 @@
 		//global action locks
 		'lock', 'unlock', 'available', 
 		//utils
-		'has', 'get', 'spray', 'coop', 'navigate', 'icing/curtain', 'i18n', 'param', 'animation', 'animateItems', 'throttle', 'debounce',
+		'has', 'get', 'spray', 'coop', 'navigate', 'icing/curtain', 'i18n', 'param', 'animation', 'animateItems', 'throttle', 'debounce', 'preventDefaultE',
 		//com
 		'remote', 'download', 'upload', 'ws', 'poll',
 		//3rd-party lib short-cut

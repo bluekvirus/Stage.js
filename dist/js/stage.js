@@ -41906,6 +41906,14 @@ Marionette.triggerMethodInversed = (function(){
 			return this._tamedFns[key];
 		},
 
+		//app wide e.preventDefault() util
+		preventDefaultE: function(e){
+			var $el = $(e.target);
+			if($el.is('input') || $el.is('textarea') || $el.is('select') || ($el.is('a') && $el.attr('href')))
+				return;
+			e.preventDefault();
+		},
+
 		//----------------markdown-------------------
 		//options.marked, options.hljs
 		//https://guides.github.com/features/mastering-markdown/
@@ -42215,7 +42223,7 @@ Marionette.triggerMethodInversed = (function(){
 		//global action locks
 		'lock', 'unlock', 'available', 
 		//utils
-		'has', 'get', 'spray', 'coop', 'navigate', 'icing/curtain', 'i18n', 'param', 'animation', 'animateItems', 'throttle', 'debounce',
+		'has', 'get', 'spray', 'coop', 'navigate', 'icing/curtain', 'i18n', 'param', 'animation', 'animateItems', 'throttle', 'debounce', 'preventDefaultE',
 		//com
 		'remote', 'download', 'upload', 'ws', 'poll',
 		//3rd-party lib short-cut
@@ -42236,7 +42244,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.1-1231 build 1490844392218";
+;;app.stagejs = "1.10.1-1232 build 1491022968716";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -43670,14 +43678,14 @@ Marionette.triggerMethodInversed = (function(){
 
 				if(lockTopic && !app.lock(lockTopic)){
 					e.stopPropagation();
-					e.preventDefault();
+					app.preventDefaultE(e);
 					app.trigger('app:locked', action, lockTopic);
 					return;
 				}
 
 				if($el.hasClass('disabled') || $el.parent().hasClass('disabled')) {
 					e.stopPropagation();
-					e.preventDefault();					
+					app.preventDefaultE(e);					
 					return;
 				}
 
@@ -43687,7 +43695,7 @@ Marionette.triggerMethodInversed = (function(){
 					while(eventForwarding.length > 2)
 						eventForwarding.shift();
 					e.stopPropagation(); //Important::This is to prevent confusing the parent view's action tag listeners.
-					e.preventDefault();
+					app.preventDefaultE(e);
 					return this.trigger(eventForwarding.join(':'));
 				}
 
@@ -43695,14 +43703,14 @@ Marionette.triggerMethodInversed = (function(){
 				var doer = this.actions[action];
 				if(doer) {
 					e.stopPropagation(); //Important::This is to prevent confusing the parent view's action tag listeners.
-					e.preventDefault();
+					app.preventDefaultE(e);
 					doer.apply(this, [$el, e, lockTopic]); //use 'this' view object as scope when applying the action listeners.
 				}else {
 					if(passOn){
 						return;
 					}else {
 						e.stopPropagation(); //Important::This is to prevent confusing the parent view's action tag listeners.
-						e.preventDefault();
+						app.preventDefaultE(e); //kill <a> with no href= but let go <a href=...>, <input>, <select> and <textarea> 
 					}
 					throw new Error('DEV::' + (debugViewNameTag || this._name) + '::_enableActionTags() You have not yet implemented this action - [' + action + ']');
 				}

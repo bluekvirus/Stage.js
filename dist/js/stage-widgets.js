@@ -555,23 +555,19 @@
 			},
 			actions: {
 				goToPage: function($btn, e){
-					e.preventDefault();
 					var page = $btn.data('page');
 					if(page === this._options.currentPage) return;
 
 					this.trigger('view:change-page', page);
 				},
 				goToFirstPage: function($btn, e){
-					e.preventDefault();
 					this.trigger('view:change-page', 1);
 				},
 				goToLastPage: function($btn, e){
-					e.preventDefault();
 					this.trigger('view:change-page', this._options.totalPages);
 				},
 				//Skipped atm.../////////////////////////
 				// goToAdjacentPage: function($btn, e){
-				// 	e.preventDefault();
 				// 	var pNum = this._options.currentPage;
 				// 	var op = $btn.data('page');
 				// 	if(op === '+')
@@ -586,7 +582,6 @@
 				// },
 				/////////////////////////////////////////
 				goToAdjacentWindow: function($btn, e){
-					e.preventDefault();
 					var pWin = this._options.currentWindow;
 					var op = $btn.data('window');
 					if(op === '+')
