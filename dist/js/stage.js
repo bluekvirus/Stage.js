@@ -42264,7 +42264,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.1-1233 build 1491348355462";
+;;app.stagejs = "1.10.1-1234 build 1491349596781";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -44340,9 +44340,10 @@ Marionette.triggerMethodInversed = (function(){
 						meta = {callback: meta};
 					else if (_.isString(meta))
 						meta = {callback: this[meta] || defaultOp};
-					else if (_.isPlainObject(meta))
+					else if (_.isPlainObject(meta)){ //<---very important { here
 						if(_.isString(meta.callback))
 							meta.callback = this[meta.callback] || defaultOp;
+					} //<---very important } here
 					else
 						meta = {callback: defaultOp};
 

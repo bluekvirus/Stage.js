@@ -904,9 +904,10 @@
 						meta = {callback: meta};
 					else if (_.isString(meta))
 						meta = {callback: this[meta] || defaultOp};
-					else if (_.isPlainObject(meta))
+					else if (_.isPlainObject(meta)){ //<---very important { here
 						if(_.isString(meta.callback))
 							meta.callback = this[meta.callback] || defaultOp;
+					} //<---very important } here
 					else
 						meta = {callback: defaultOp};
 
