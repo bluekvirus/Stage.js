@@ -5,7 +5,7 @@
  * 
  * @author Tim Lauv
  * @created 2015.07.29
- * @updated 2017.02.26
+ * @updated 2017.04.04
  */
 
 ;(function(app){
@@ -260,7 +260,7 @@
 		 * 
 		 * Usage
 		 * -----
-		 * register: app.config.websockets [] or app.ws(socketPath);
+		 * register: app.config.defaultWebsocket or app.ws(socketPath);
 		 * receive (e): view.coop['ws-data-[channel]'] or app.onWsData = custom fn;
 		 * send (json): app.ws(socketPath)
 		 * 								.then(function(ws){ws.channel(...).json({...});}); default per channel data
@@ -269,16 +269,28 @@
 		 *
 		 * Default messaging contract
 		 * --------------------------
-		 * json {channel: '..:..', payload: {.data.}} through ws.channel('..:..').json({.data.})
+		 * Nodejs /devserver: json {channel: '..:..', payload: {..data..}} through ws.channel('..:..').json({..data..})
+		 * Python ASGI: json {stream: '...', payload: {..data..}} through ws.stream('...').json({..data..})
+		 *
+		 * Reconnecting websockets
+		 * -----------------------
+		 * websocket path ends with '+' will be reconnecting websocket when created. 
+		 * 
 		 */
 		ws: function(socketPath){
 			if(!Modernizr.websockets) throw new Error('DEV::Application::ws() Websocket is not supported by your browser!');
-			socketPath = socketPath || app.config.websockets[0] || '/ws';
+			socketPath = socketPath || app.config.defaultWebsocket || '/ws';
+			var reconnect = false;
+			if(_.string.endsWith(socketPath, '+')){
+				socketPath = socketPath.slice(0, socketPath.length - 1);
+				reconnect = true;
+			}
 			var d = $.Deferred();
 			if(!app._websockets[socketPath]) { 
 
 				app._websockets[socketPath] = new WebSocket("ws://" + location.host + socketPath);
 				app._websockets[socketPath].path = socketPath;
+				app._websockets[socketPath].reconnect = reconnect;
 				//events: 'open', 'error', 'close', 'message' = e.data
 				//apis: send(), +json(), +channel().json(), close()
 
@@ -292,27 +304,34 @@
 						json: function(data){
 							app._websockets[socketPath].json({
 								channel: channel,
+								stream: channel, //alias for ASGI backends
 								payload: data
 							});
 						}
 					};
 				};
+				app._websockets[socketPath].stream = app._websockets[socketPath].channel; //alias for ASGI backends
 				app._websockets[socketPath].onclose = function(){
-					app._websockets[socketPath] = undefined;
+					var ws = app._websockets[socketPath];
+					delete app._websockets[socketPath];
+
+					if(ws.reconnect)
+						app.ws(ws.path + '+');
 				};
 				app._websockets[socketPath].onopen = function(){
 					return d.resolve(app._websockets[socketPath]);
 				};
 
-				//general ws data stub, override this through app.ws(path).then(function(ws){ws.onmessage=...});
-				//Dev Server will always send default json contract string {"channel": "...", "payload": "..."}
+				//general ws data stub
+				//server need to always send default json contract string {"channel/stream": "...", "payload": "..."}
+				//Opt: override this through app.ws(path).then(function(ws){ws.onmessage=...});
 				app._websockets[socketPath].onmessage = function(e){
 					//opt a. override app.onWsData to active otherwise
 					app.trigger('app:ws-data', {websocket: app._websockets[socketPath], raw: e.data});
 					//opt b. use global coop event 'ws-data-[channel]' in views directly (default json contract)
 					try {
 						var data = JSON.parse(e.data);
-						app.coop('ws-data-' + data.channel, data.payload, app._websockets[socketPath].channel(data.channel));
+						app.coop('ws-data-' + (data.channel || data.stream), data.payload, app._websockets[socketPath].channel(data.channel || data.stream));
 					}catch(ex){
 						console.warn('DEV::Application::ws() Websocket is getting non-default {channel: ..., payload: ...} json contract strings...');
 					}

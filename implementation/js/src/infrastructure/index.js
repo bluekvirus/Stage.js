@@ -83,7 +83,7 @@
 			icings: {}, //various fixed overlaying regions for visual prompts ('name': {top, bottom, height, left, right, width})
 						//alias -- curtains			
 			fullScreen: false, //this will put <body> to be full screen sized (window.innerHeight).
-	        websockets: [], //websocket paths to initialize with (single path with multi-channel prefered).
+	        defaultWebsocket: undefined, //websocket path to initialize with (single path with multi-channel/stream prefered).
 	        baseAjaxURI: '', //modify this to fit your own backend apis. e.g index.php?q= or '/api',
 			csrftoken: {
 				header: 'X-CSRFToken', //http header to use to include the csrftoken val
@@ -358,9 +358,10 @@
 				});
 			});
 
-			//5 Register websockets
-			_.each(app.config.websockets, function(wspath){
-				app.ws(wspath); //we don't wait for websocket hand-shake
+			//5 Register default websocket
+			app.addInitializer(function(){
+				if(app.config.defaultWebsocket)
+					return app.ws(app.config.defaultWebsocket);
 			});
 
 			//6. Start the app --> pre init --> initializers --> post init(router setup)

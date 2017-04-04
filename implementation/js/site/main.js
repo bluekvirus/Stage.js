@@ -12,8 +12,8 @@ NProgress.configure({showSpinner: false});
         },
         navRegion: 'center',
         defaultView: 'Home',
-        //websockets: ['/ws'],
-        viewSrcs: 'js/site'
+        viewSrcs: 'js/site',
+        //defaultWebsocket: '/ws+', ends with + means using reconnecting ws.
 
     });
 

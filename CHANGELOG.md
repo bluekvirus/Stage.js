@@ -1,7 +1,7 @@
 Change Log
 ==========
 
-1.10.2+ (2017-03-31*)
+1.10.2+ (2017-04-04*)
 --------------------
 1. Refined render() seq in a view, data change will now always re-run render() despite of category;
 2. Refined SVG canvas init code in view, the .svg option can be a css selector string now;
@@ -52,7 +52,10 @@ Change Log
 47. Added SVG drawing (canvas creation, gradient filling, resizing) compatibility layer in `paper` objects;
 48. Added options.multiple to file editor;
 49. 'action=' tags will no longer hold back inner `<input>, <select>, <textarea>, <a href="...">` tag default e;
-50. Upgraded to jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
+50. Replaced app.config.websockets with app.config.defaultWebsocket;
+51. Added Django ASGI JSON Websocket Demultiplexer support in view.channels;
+52. Added support to use auto reconnecting websockets; (with `path+`)
+53. Upgraded to jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
 
 working on ...
 

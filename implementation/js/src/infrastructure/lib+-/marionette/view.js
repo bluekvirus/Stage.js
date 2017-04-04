@@ -891,8 +891,9 @@
 		}
 
 		//websocket channels
-		//{'channel': true/m/fn(data, channel)/{ws: 'path', callback: m/fn(data, channel)}, ...}
+		//{'channel': true/m/fn(data, channel)/{websocket: 'path', callback: m/fn(data, channel)}, ...}
 		if(this.channels){
+			//if you say 'channel': true, we hook you with the default op here,
 			var defaultOp = function(data){
 				this.set(data);
 			};
@@ -903,12 +904,13 @@
 						meta = {callback: meta};
 					else if (_.isString(meta))
 						meta = {callback: this[meta] || defaultOp};
-					else if (_.isPlainObject(meta) && _.isString(meta.callback))
-						meta.callback = this[meta.callback] || defaultOp;
+					else if (_.isPlainObject(meta))
+						if(_.isString(meta.callback))
+							meta.callback = this[meta.callback] || defaultOp;
 					else
 						meta = {callback: defaultOp};
 
-					app.ws(meta.ws).done(_.bind(function(websocket){
+					app.ws(meta.websocket).done(_.bind(function(websocket){
 						this._enableGlobalCoopEvent('ws-data-' + channelName, function(data, wschannel){
 							meta.callback.apply(this, arguments);
 						});

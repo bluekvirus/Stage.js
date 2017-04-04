@@ -41026,7 +41026,7 @@ Marionette.triggerMethodInversed = (function(){
 			icings: {}, //various fixed overlaying regions for visual prompts ('name': {top, bottom, height, left, right, width})
 						//alias -- curtains			
 			fullScreen: false, //this will put <body> to be full screen sized (window.innerHeight).
-	        websockets: [], //websocket paths to initialize with (single path with multi-channel prefered).
+	        defaultWebsocket: undefined, //websocket path to initialize with (single path with multi-channel/stream prefered).
 	        baseAjaxURI: '', //modify this to fit your own backend apis. e.g index.php?q= or '/api',
 			csrftoken: {
 				header: 'X-CSRFToken', //http header to use to include the csrftoken val
@@ -41301,9 +41301,10 @@ Marionette.triggerMethodInversed = (function(){
 				});
 			});
 
-			//5 Register websockets
-			_.each(app.config.websockets, function(wspath){
-				app.ws(wspath); //we don't wait for websocket hand-shake
+			//5 Register default websocket
+			app.addInitializer(function(){
+				if(app.config.defaultWebsocket)
+					return app.ws(app.config.defaultWebsocket);
 			});
 
 			//6. Start the app --> pre init --> initializers --> post init(router setup)
@@ -41357,7 +41358,7 @@ Marionette.triggerMethodInversed = (function(){
  * 
  * @author Tim Lauv
  * @created 2015.07.29
- * @updated 2017.02.26
+ * @updated 2017.04.04
  */
 
 ;(function(app){
@@ -41612,7 +41613,7 @@ Marionette.triggerMethodInversed = (function(){
 		 * 
 		 * Usage
 		 * -----
-		 * register: app.config.websockets [] or app.ws(socketPath);
+		 * register: app.config.defaultWebsocket or app.ws(socketPath);
 		 * receive (e): view.coop['ws-data-[channel]'] or app.onWsData = custom fn;
 		 * send (json): app.ws(socketPath)
 		 * 								.then(function(ws){ws.channel(...).json({...});}); default per channel data
@@ -41621,16 +41622,28 @@ Marionette.triggerMethodInversed = (function(){
 		 *
 		 * Default messaging contract
 		 * --------------------------
-		 * json {channel: '..:..', payload: {.data.}} through ws.channel('..:..').json({.data.})
+		 * Nodejs /devserver: json {channel: '..:..', payload: {..data..}} through ws.channel('..:..').json({..data..})
+		 * Python ASGI: json {stream: '...', payload: {..data..}} through ws.stream('...').json({..data..})
+		 *
+		 * Reconnecting websockets
+		 * -----------------------
+		 * websocket path ends with '+' will be reconnecting websocket when created. 
+		 * 
 		 */
 		ws: function(socketPath){
 			if(!Modernizr.websockets) throw new Error('DEV::Application::ws() Websocket is not supported by your browser!');
-			socketPath = socketPath || app.config.websockets[0] || '/ws';
+			socketPath = socketPath || app.config.defaultWebsocket || '/ws';
+			var reconnect = false;
+			if(_.string.endsWith(socketPath, '+')){
+				socketPath = socketPath.slice(0, socketPath.length - 1);
+				reconnect = true;
+			}
 			var d = $.Deferred();
 			if(!app._websockets[socketPath]) { 
 
 				app._websockets[socketPath] = new WebSocket("ws://" + location.host + socketPath);
 				app._websockets[socketPath].path = socketPath;
+				app._websockets[socketPath].reconnect = reconnect;
 				//events: 'open', 'error', 'close', 'message' = e.data
 				//apis: send(), +json(), +channel().json(), close()
 
@@ -41644,27 +41657,34 @@ Marionette.triggerMethodInversed = (function(){
 						json: function(data){
 							app._websockets[socketPath].json({
 								channel: channel,
+								stream: channel, //alias for ASGI backends
 								payload: data
 							});
 						}
 					};
 				};
+				app._websockets[socketPath].stream = app._websockets[socketPath].channel; //alias for ASGI backends
 				app._websockets[socketPath].onclose = function(){
-					app._websockets[socketPath] = undefined;
+					var ws = app._websockets[socketPath];
+					delete app._websockets[socketPath];
+
+					if(ws.reconnect)
+						app.ws(ws.path + '+');
 				};
 				app._websockets[socketPath].onopen = function(){
 					return d.resolve(app._websockets[socketPath]);
 				};
 
-				//general ws data stub, override this through app.ws(path).then(function(ws){ws.onmessage=...});
-				//Dev Server will always send default json contract string {"channel": "...", "payload": "..."}
+				//general ws data stub
+				//server need to always send default json contract string {"channel/stream": "...", "payload": "..."}
+				//Opt: override this through app.ws(path).then(function(ws){ws.onmessage=...});
 				app._websockets[socketPath].onmessage = function(e){
 					//opt a. override app.onWsData to active otherwise
 					app.trigger('app:ws-data', {websocket: app._websockets[socketPath], raw: e.data});
 					//opt b. use global coop event 'ws-data-[channel]' in views directly (default json contract)
 					try {
 						var data = JSON.parse(e.data);
-						app.coop('ws-data-' + data.channel, data.payload, app._websockets[socketPath].channel(data.channel));
+						app.coop('ws-data-' + (data.channel || data.stream), data.payload, app._websockets[socketPath].channel(data.channel || data.stream));
 					}catch(ex){
 						console.warn('DEV::Application::ws() Websocket is getting non-default {channel: ..., payload: ...} json contract strings...');
 					}
@@ -42244,7 +42264,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.1-1232 build 1491022968716";
+;;app.stagejs = "1.10.1-1233 build 1491348355462";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -44307,8 +44327,9 @@ Marionette.triggerMethodInversed = (function(){
 		}
 
 		//websocket channels
-		//{'channel': true/m/fn(data, channel)/{ws: 'path', callback: m/fn(data, channel)}, ...}
+		//{'channel': true/m/fn(data, channel)/{websocket: 'path', callback: m/fn(data, channel)}, ...}
 		if(this.channels){
+			//if you say 'channel': true, we hook you with the default op here,
 			var defaultOp = function(data){
 				this.set(data);
 			};
@@ -44319,12 +44340,13 @@ Marionette.triggerMethodInversed = (function(){
 						meta = {callback: meta};
 					else if (_.isString(meta))
 						meta = {callback: this[meta] || defaultOp};
-					else if (_.isPlainObject(meta) && _.isString(meta.callback))
-						meta.callback = this[meta.callback] || defaultOp;
+					else if (_.isPlainObject(meta))
+						if(_.isString(meta.callback))
+							meta.callback = this[meta.callback] || defaultOp;
 					else
 						meta = {callback: defaultOp};
 
-					app.ws(meta.ws).done(_.bind(function(websocket){
+					app.ws(meta.websocket).done(_.bind(function(websocket){
 						this._enableGlobalCoopEvent('ws-data-' + channelName, function(data, wschannel){
 							meta.callback.apply(this, arguments);
 						});
