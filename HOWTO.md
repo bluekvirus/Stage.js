@@ -266,7 +266,7 @@ Application.setup({
     curtains: //fixed overlay regions,
     defaultView: //your default 1st lvl view name to show in main navRegion,
     baseAjaxURI: //your base url for using with Application.remote(),
-    websockets: //websocket paths to initialize,
+    defaultWebsocket: //websocket path to initialize with,
     viewSrcs: //view dynamic loading base path.
     i18nTransFile: //the translation file name/pattern under i18nResources,
     i18nLocale: //force the app to certain locale,
