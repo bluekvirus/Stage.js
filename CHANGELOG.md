@@ -59,6 +59,7 @@ Change Log
 
 working on ...
 
+* add app.submit(url, view/[data, files]) in addition to app.upload(); (align both standalone and normal file editors upload with csrf token inject)
 * Search/IP/Number editors;
 * Direct `<canvas>` support in view (easel) .canvas --> fn(paper) prep layer;
 * Cheatsheet;
