@@ -55,11 +55,12 @@ Change Log
 50. Replaced app.config.websockets with app.config.defaultWebsocket;
 51. Added Django ASGI JSON Websocket Demultiplexer support in view.channels;
 52. Added support to use auto reconnecting websockets; (with `path+`)
-53. Upgraded to jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
+53. Fixed csrf token auto injection error for file upload editors;
+54. Upgraded to jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
 
 working on ...
 
-* add app.submit(url, view/[data, files]) in addition to app.upload(); (align both standalone and normal file editors upload with csrf token inject)
+* add app.submit(url, view/[data, files]) in addition to app.upload(); (align both standalone and normal file editors upload with same auto csrf token inject)
 * Search/IP/Number editors;
 * Direct `<canvas>` support in view (easel) .canvas --> fn(paper) prep layer;
 * Cheatsheet;
