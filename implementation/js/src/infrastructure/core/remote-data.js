@@ -102,7 +102,7 @@
 			// };
 		}
 
-		//get csrftoken value from cookie and set to header.
+		//get csrftoken value from cookie and set to header. (don't forget to set for $.fileupload editor x2 as well)
 		options.headers = options.headers || {};
 		if(app.config.csrftoken && !options.headers[app.config.csrftoken.header])
 			options.headers[app.config.csrftoken.header] = app.cookie.get(app.config.csrftoken.cookie) || 'NOTOKEN';

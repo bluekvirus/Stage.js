@@ -42264,7 +42264,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.1-1234 build 1491349596781";
+;;app.stagejs = "1.10.1-1235 build 1491368924545";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -42370,7 +42370,15 @@ Marionette.triggerMethodInversed = (function(){
 
 	    //change options (fixing options.data error (jQuery.FileUploader BUG??))
 	    var extraData = options.formData || options.data;
-		$drone.fileupload('option', _.extend(_.without(options, 'data'), {url: url, formData: extraData, paramName: options.paramName || options.fieldname}));
+	    options.headers = options.headers || {};
+	    options.headers[app.config.csrftoken.header] = app.cookie.get(app.config.csrftoken.cookie) || 'NOTOKEN';
+
+	    //Caveat: do NOT use _.without() in place of _.omit() as it will return an array...
+		$drone.fileupload('option', _.extend(_.omit(options, 'data'), {
+			url: url, 
+			formData: extraData, 
+			paramName: options.paramName || options.fieldname, 
+		}));
 		if(options.multiple)
 			$drone.attr('multiple', 'true');
 		else
@@ -42628,7 +42636,7 @@ Marionette.triggerMethodInversed = (function(){
 			// };
 		}
 
-		//get csrftoken value from cookie and set to header.
+		//get csrftoken value from cookie and set to header. (don't forget to set for $.fileupload editor x2 as well)
 		options.headers = options.headers || {};
 		if(app.config.csrftoken && !options.headers[app.config.csrftoken.header])
 			options.headers[app.config.csrftoken.header] = app.cookie.get(app.config.csrftoken.cookie) || 'NOTOKEN';
@@ -46295,6 +46303,10 @@ var I18N = {};
 				if(options.type === 'file'){
 					this._enableActionTags('Editor.File');
 					if(!options.upload || !options.upload.url) throw new Error('DEV::Editor.Basic.File::You need options.upload.url to point to where to upload the file.');
+
+					//0. inject csrf token
+					options.upload.headers = options.upload.headers || {};
+					options.upload.headers[app.config.csrftoken.header] = app.cookie.get(app.config.csrftoken.cookie) || 'NOTOKEN';
 
 					//1. listen to editor:change so we can reveal [upload] and [clear] buttons
 					this.listenTo(this, 'editor:change', function(){

@@ -279,6 +279,10 @@
 					this._enableActionTags('Editor.File');
 					if(!options.upload || !options.upload.url) throw new Error('DEV::Editor.Basic.File::You need options.upload.url to point to where to upload the file.');
 
+					//0. inject csrf token
+					options.upload.headers = options.upload.headers || {};
+					options.upload.headers[app.config.csrftoken.header] = app.cookie.get(app.config.csrftoken.cookie) || 'NOTOKEN';
+
 					//1. listen to editor:change so we can reveal [upload] and [clear] buttons
 					this.listenTo(this, 'editor:change', function(){
 						if(this.ui.input.val()){

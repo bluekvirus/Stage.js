@@ -26,7 +26,15 @@
 
 	    //change options (fixing options.data error (jQuery.FileUploader BUG??))
 	    var extraData = options.formData || options.data;
-		$drone.fileupload('option', _.extend(_.without(options, 'data'), {url: url, formData: extraData, paramName: options.paramName || options.fieldname}));
+	    options.headers = options.headers || {};
+	    options.headers[app.config.csrftoken.header] = app.cookie.get(app.config.csrftoken.cookie) || 'NOTOKEN';
+
+	    //Caveat: do NOT use _.without() in place of _.omit() as it will return an array...
+		$drone.fileupload('option', _.extend(_.omit(options, 'data'), {
+			url: url, 
+			formData: extraData, 
+			paramName: options.paramName || options.fieldname, 
+		}));
 		if(options.multiple)
 			$drone.attr('multiple', 'true');
 		else
