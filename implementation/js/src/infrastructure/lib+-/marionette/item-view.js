@@ -388,7 +388,7 @@
 				editor.triggerMethod('show');
 				
 				//3. patch in default value (Note: Always provide a default value to trigger onReady()!)
-				if(config.value !== undefined){
+				if(config.value !== undefined || config.value !== null /*for SQL DB data*/){
 					editor.setVal(config.value);
 					//+'ready' (internal, for editor writer only)
 					_.defer(_.bind(function(){
