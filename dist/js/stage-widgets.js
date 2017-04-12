@@ -60,60 +60,51 @@
 					columns: []
 				}, options);
 			},
-			onShow: function(){
-				var that = this;
-				var body = Body.create({
-					//el can be css selector string, dom or $(dom)
-					el: this.body.$el 
-					//Note that a region's el !== $el[0], but a view's el === $el[0] in Marionette.
-				}).on('all', function(e){
-					//setup data/page related events forwarding
-					if(/page-/.test(e) || /data-/.test(e))
-						that.trigger.apply(that, arguments);
-				});
-
-				this.header.show(HeaderRow);
-				this.body.show(body);
-				this.trigger('view:reconfigure', this._options);
+			onReady: function(){
+				this.trigger('view:reconfigure', _.extend(this._options, {data: this.get('items', [])}));
 			},
 			onReconfigure: function(options){
 				options = options || {};
-				//1. reconfigure data and columns into this._options
+				//1-1. reconfigure data and columns into this._options
 				this._options = _.extend(this._options, options);
 
-				//2. rebuild header cells - let it rerender with new column array
+				//1-2. rebuild header cell options - let it rerender with new column array
 				_.each(this._options.columns, function(column){
 					column.header = column.header || 'string';
 					column.cell = column.cell || column.header || 'string';
 					column.label = column.label || _.string.titleize(column.name);
 				});
 
-				////////////////Note that the ifs here are for early 'show' --> .set() when using local .data////////////////
-				if(this.header.currentView) //update column headers region				
-					this.header.currentView.set(this._options.columns);
-				if(this.body.currentView)
-					this.body.currentView._options = this._options;
-				/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-				this.trigger('view:render-data', this._options.data);
-			},
-			onRenderData: function(data){
-				if(this.body.currentView){
-					//3. rebuild body rows - let it rerender with new data array
-					this.body.currentView.trigger('view:render-data', data);
+				//2. ensure header and body views
+				if(!this.header.currentView)
+					this.header.show(HeaderRow);
+				if(!this.body.currentView){
+					var that = this;
+					var body = Body.create({
+						//el can be css selector string, dom or $(dom)
+						el: this.body.$el 
+						//Note that a region's el !== $el[0], but a view's el === $el[0] in Marionette.
+					}).on('all', function(e){
+						//setup page related events forwarding (page-changed, page-not-changed)
+						if(/page-/.test(e))
+							that.trigger.apply(that, arguments);
+					});
+					this.body.show(body);
 				}
+
+				////////////////Note that the ifs here are for early 'show' --> .set() when using local .data////////////////			
+				this.header.currentView.set(this._options.columns);
+				this.body.currentView._options = this._options;
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				this.trigger('view:set-grid-data', this._options.data);
+			},
+			onSetGridData: function(data){
+				//3. rebuild body rows - let it rerender with new data array
+				this.body.currentView.set(data);
+
 			},
 			onLoadPage: function(options){
-				if(this.body.currentView){
-					this.body.currentView.trigger('view:load-page', options);
-				}
-			},
-			set: function(data){
-				//override the default data rendering meta-event responder
-				this.trigger('view:reconfigure', {data: data});
-				//this is just to answer the 'view:render-data' event
-			},
-			get: function(){
-				return this.getBody().get();
+				this.body.currentView.trigger('view:load-page', options);
 			},
 			getBody: function(){
 				return this.body.currentView;

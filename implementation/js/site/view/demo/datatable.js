@@ -27,8 +27,6 @@
 	    onReady: function(){
 	    	var datagrid = new (app.widget('Datagrid'))({
 	    		className: 'table table-hover',
-
-	    		data: Mock.mock(mockDataTpl).payload,
 	    		columns: [
 	    			{
 	    				name: '_id',
@@ -66,34 +64,46 @@
 	    			}
 	    		]
 	    	});
+	    	datagrid.on('all', function(){
+	    		app.debug('e:', arguments);
+	    	});
 	    	datagrid.on('row:clicked', function(row){
 	    		app.debug('selected/focused on', row);
 	    	});
 	    	datagrid.on('row:dblclicked', function(row){
 	    		app.debug('drilled in', row);
 	    	});
-	    	datagrid.on('view:data-rendered', function(){
-	    		app.animateItems('tbody tr');
-	    	});
-			this.grid.show(datagrid);
-
-			//load data grid page from server using a Paginator
-			var self = this;
-	    	this.show('footer', 'Paginator', {
-	    		target: datagrid.getBody(),
-	    		className: 'pagination pagination-sm pull-right',
-	    		pageWindowSize: 3
-	    	});
 	    	datagrid.onPageChanged = function(){
 	    		self.ui.spin.hide();
 	    	};
-	    	datagrid.trigger('view:load-page', {
-	    		url: 'sample/user',
-	    		page: 1,
-	    		querys: {
-	    			status: 'active'
-	    		}
+	    	var self = this;
+	    	datagrid.once('ready', function(){
+				//load data grid page from server using a Paginator
+		    	self.show('footer', 'Paginator', {
+		    		target: datagrid.getBody(),
+		    		className: 'pagination pagination-sm pull-right',
+		    		pageWindowSize: 3
+		    	});
+
+		    	//hook up good data animation
+				datagrid.on('view:page-changed', function(data){
+					app.animateItems('tbody tr');
+				});
+
+				//hook up bad data backup mock data
+				datagrid.on('view:page-not-changed', function(errStatus){
+					datagrid.set(Mock.mock(mockDataTpl).payload);
+				});
+
+		    	datagrid.trigger('view:load-page', {
+		    		url: 'sample/user',
+		    		page: 1,
+		    		querys: {
+		    			status: 'active'
+		    		}
+		    	});
 	    	});
+			this.grid.show(datagrid);
 	    },
 
 	    onNavigateTo: function(path, vcfg){

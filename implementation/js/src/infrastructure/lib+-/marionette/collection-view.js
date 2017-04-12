@@ -211,11 +211,15 @@
 			var result = args[0];
 			//render this page:
 			this.set(result[this._remote.dataKey], true); //always reset collection.
-			//signal other widget (e.g a paginator widget)
+			//signal other widget (e.g a Paginator widget)
 			this.trigger('view:page-changed', {
 				current: this._remote.page,
 				total: Math.ceil(result[this._remote.totalKey]/this._remote.pageSize), //total page-count
 			});
+		},
+
+		onLoadPageFail: function(args){
+			this.trigger('view:page-not-changed', args[1]); //forward error text status.
 		}
 	});
 

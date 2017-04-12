@@ -42264,7 +42264,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.1-1237 build 1491611470890";
+;;app.stagejs = "1.10.1-1238 build 1491970109951";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -45465,11 +45465,15 @@ Marionette.triggerMethodInversed = (function(){
 			var result = args[0];
 			//render this page:
 			this.set(result[this._remote.dataKey], true); //always reset collection.
-			//signal other widget (e.g a paginator widget)
+			//signal other widget (e.g a Paginator widget)
 			this.trigger('view:page-changed', {
 				current: this._remote.page,
 				total: Math.ceil(result[this._remote.totalKey]/this._remote.pageSize), //total page-count
 			});
+		},
+
+		onLoadPageFail: function(args){
+			this.trigger('view:page-not-changed', args[1]); //forward error text status.
 		}
 	});
 
