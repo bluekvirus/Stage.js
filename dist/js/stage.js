@@ -42264,7 +42264,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.1-1238 build 1491970109951";
+;;app.stagejs = "1.10.1-1239 build 1492132500990";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -44976,23 +44976,25 @@ Marionette.triggerMethodInversed = (function(){
 			}
 
 			var cv = this.getViewIn(region);
-			if(replace && View)
-				cv.itemView = _.isString(View)? app.get(View) : View;
-			if(cv && cv.collection){
-				if(replace)
-					cv.set(d);
-				else
-					cv.collection.add(d);
+			if (!cv) {
+			    this.getRegion(region).show(app.view({
+			        forceViewType: true,
+			        type: 'CollectionView',
+			        itemView: _.isString(View) ? app.get(View) : View, //if !View then Error: An `itemView` must be specified
+			    })); //to support 'action-scroll' in region.
+			    cv = this.getViewIn(region);
+			    cv._moreItems = true; //set parentCt bypass mode for items (see collection-view:buildItemView);
+			    cv.set(d);
 			}
-			else {
-				this.getRegion(region).show(app.view({
-					forceViewType: true,
-					type: 'CollectionView',
-					itemView: _.isString(View)? app.get(View) : View, //if !View then Error: An `itemView` must be specified
-				}));//to support 'action-scroll' in region.
-				this.getViewIn(region)._moreItems = true; //set parentCt bypass mode for items (see collection-view:buildItemView);
-				this.getViewIn(region).set(d);
+			if (replace && View)
+			    cv.itemView = _.isString(View) ? app.get(View) : View;
+			if (cv && cv.collection) {
+			    if (replace)
+			        cv.collection.reset(d);
+			    else
+			        cv.collection.add(d);
 			}
+
 		},
 
 		//activate (by tabId) a tab view (other tabbed views are not closed)

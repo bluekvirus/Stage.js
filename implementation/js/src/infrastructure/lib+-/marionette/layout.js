@@ -91,23 +91,25 @@
 			}
 
 			var cv = this.getViewIn(region);
-			if(replace && View)
-				cv.itemView = _.isString(View)? app.get(View) : View;
-			if(cv && cv.collection){
-				if(replace)
-					cv.set(d);
-				else
-					cv.collection.add(d);
+			if (!cv) {
+			    this.getRegion(region).show(app.view({
+			        forceViewType: true,
+			        type: 'CollectionView',
+			        itemView: _.isString(View) ? app.get(View) : View, //if !View then Error: An `itemView` must be specified
+			    })); //to support 'action-scroll' in region.
+			    cv = this.getViewIn(region);
+			    cv._moreItems = true; //set parentCt bypass mode for items (see collection-view:buildItemView);
+			    cv.set(d);
 			}
-			else {
-				this.getRegion(region).show(app.view({
-					forceViewType: true,
-					type: 'CollectionView',
-					itemView: _.isString(View)? app.get(View) : View, //if !View then Error: An `itemView` must be specified
-				}));//to support 'action-scroll' in region.
-				this.getViewIn(region)._moreItems = true; //set parentCt bypass mode for items (see collection-view:buildItemView);
-				this.getViewIn(region).set(d);
+			if (replace && View)
+			    cv.itemView = _.isString(View) ? app.get(View) : View;
+			if (cv && cv.collection) {
+			    if (replace)
+			        cv.collection.reset(d);
+			    else
+			        cv.collection.add(d);
 			}
+
 		},
 
 		//activate (by tabId) a tab view (other tabbed views are not closed)

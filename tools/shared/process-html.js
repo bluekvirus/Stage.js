@@ -112,6 +112,20 @@ module.exports = {
 		//process script tags in body
 		result = createJSTargets(result, $, 'body > script', 'js/all-body.js', options);
 
+		//enhance [src=] and [href=] tags with ?_=Date.now() for killing browser or proxy caches.
+		$('[src], [href]').each(function(index, el){
+			var $el = $(el);
+			var path = $el.attr('src') || $el.attr('href');
+			if(path.indexOf('?') !== -1)
+				path = path + '&_=' + Date.now(); //do NOT panic when you see this translates to &amp; in index.html;
+			else
+				path = path + '?_=' + Date.now();
+			if($el.attr('src'))
+				$el.attr('src', path);
+			else
+				$el.attr('href', path);
+		});
+		
 		//finialize and minify result JS's and index.html
 		console.log('Minifying...'.yellow);
 		//minify javascripts

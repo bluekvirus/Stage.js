@@ -57,7 +57,9 @@ Change Log
 52. Added support to use auto reconnecting websockets; (with `path+`)
 53. Fixed csrf token auto injection error for file upload editors;
 54. Refined DataGrid widget implementation to honor refined view life-cycle; 
-55. Upgraded to jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
+55. Refined view.more() api implementation when presenting with the replace flag;
+56. Refined html processing to add `src=`/`href=` timestamps (?_=...) for cracking client/proxy caches for built projects;
+57. Upgraded to jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
 
 working on ...
 
