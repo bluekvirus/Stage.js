@@ -2058,7 +2058,7 @@ View apis:
 * view.addRegion (name, def)
 * region.ensureEl (parentCt, classes)
 * view.getViewIn (region)
-* view.activate (group, index)
+* view.activate (group, index, silent)
 * view.lock (region, flag, options)
 * view.more (region, [data array], View)
 * view.tab (region, View, tabId)
@@ -2139,7 +2139,7 @@ Global co-op events: (need to specify in .coop:[])
 * 'ws-data-[channel]'
 * 'poll-data-[e]'
 * 'reusable-registered'
-* 'context-switched'
+* 'navigation-changed'
 * 'window-resized'
 * 'window-scroll'
 
