@@ -398,8 +398,8 @@
 				e.stopPropagation(); //Important::This is to prevent confusing the parent view's activation tag listener.
 			};
 
-			//+Manual api (for silent feedback calls - no 'view:item-activated' event fired by default)
-			this.activate = function(group, matchFn /*or index or [attr=""] selector*/, loud){
+			//+Manual api (for silent feedback calls - no 'view:item-activated' event fired when given `silent`)
+			this.activate = function(group, matchFn /*or index or [attr=""] selector*/, silent){
 				var $items, attr, events = ['', 'click', 'dblclick', 'mouseover', 'focusin']; //Refactor: Cache it!
 				if(_.isNumber(matchFn)){
 					var index = matchFn;
@@ -413,7 +413,7 @@
 					attr = e ? 'activate-' + e : 'activate';
 					$items = this.$el.find(app.debug('[' + attr + '^=' + group + ']'));
 					if($items.length)
-						return $items.filter(matchFn).trigger(e || 'click', !loud);
+						return $items.filter(matchFn).trigger(e || 'click', silent);
 				}
 			};
 		},

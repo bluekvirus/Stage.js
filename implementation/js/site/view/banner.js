@@ -2,7 +2,7 @@
 
     //Shared - Regionals
     app.view('Banner', {
-        coop: ['context-switched'],
+        coop: ['navigation-changed'],
         actions: {
             // download: function($btn, e){
             //     var base = 'static/resource/default/download/';
@@ -16,7 +16,9 @@
                 $tag.toggleClass('open', false);
             }
         },
-        onContextSwitched: function(name){
+        onNavigationChanged: function(pathArray){
+            app.debug('navigation-changed', pathArray);
+            var name = pathArray[0];
             this.$el.find('[context]').each(function(index, el){
                 var $this = $(this);
                 if($this.attr('context') === name)

@@ -216,7 +216,11 @@
 		//----------------navigation-----------
 		navigate: function(options, silent){
 			return app.trigger('app:navigate', options, silent);
-		},	
+		},
+
+		navPathArray: function(){
+			return _.compact(window.location.hash.replace('#navigate', '').split('/'));
+		},
 
 		//-----------------mutex---------------
 		lock: function(topic){
@@ -890,7 +894,7 @@
 		//global action locks
 		'lock', 'unlock', 'available', 
 		//utils
-		'has', 'get', 'spray', 'coop', 'navigate', 'icing/curtain', 'i18n', 'param', 'animation', 'animateItems', 'throttle', 'debounce', 'preventDefaultE',
+		'has', 'get', 'spray', 'coop', 'navigate', 'navPathArray', 'icing/curtain', 'i18n', 'param', 'animation', 'animateItems', 'throttle', 'debounce', 'preventDefaultE',
 		//com
 		'remote', 'download', 'upload', 'ws', 'poll',
 		//3rd-party lib short-cut

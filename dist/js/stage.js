@@ -40973,7 +40973,7 @@ Marionette.triggerMethodInversed = (function(){
  * 'ws-data-[channel]'
  * 'poll-data-[e]'
  * 'reusable-registered'
- * 'context-switched'
+ * 'navigation-changed'
  * 'window-resized'
  * 'window-scroll'
  * 
@@ -41127,7 +41127,6 @@ Marionette.triggerMethodInversed = (function(){
 						app.currentContext = targetCtx;
 						//fire a notification to app as meta-event. (e.g menu view item highlighting)
 						app.trigger('app:context-switched', app.currentContext.name);
-						app.coop('context-switched', app.currentContext.name, {ctx: app.currentContext, subpath: path.join('/')});
 						//notify regional views in the context (views further down in the nav chain)
 						app.currentContext.trigger('view:navigate-chain', path); //see layout.js
 					});
@@ -41569,7 +41568,11 @@ Marionette.triggerMethodInversed = (function(){
 		//----------------navigation-----------
 		navigate: function(options, silent){
 			return app.trigger('app:navigate', options, silent);
-		},	
+		},
+
+		navPathArray: function(){
+			return _.compact(window.location.hash.replace('#navigate', '').split('/'));
+		},
 
 		//-----------------mutex---------------
 		lock: function(topic){
@@ -42243,7 +42246,7 @@ Marionette.triggerMethodInversed = (function(){
 		//global action locks
 		'lock', 'unlock', 'available', 
 		//utils
-		'has', 'get', 'spray', 'coop', 'navigate', 'icing/curtain', 'i18n', 'param', 'animation', 'animateItems', 'throttle', 'debounce', 'preventDefaultE',
+		'has', 'get', 'spray', 'coop', 'navigate', 'navPathArray', 'icing/curtain', 'i18n', 'param', 'animation', 'animateItems', 'throttle', 'debounce', 'preventDefaultE',
 		//com
 		'remote', 'download', 'upload', 'ws', 'poll',
 		//3rd-party lib short-cut
@@ -42264,7 +42267,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.1-1239 build 1492132500990";
+;;app.stagejs = "1.10.1-1240 build 1492566261223";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -43842,8 +43845,8 @@ Marionette.triggerMethodInversed = (function(){
 				e.stopPropagation(); //Important::This is to prevent confusing the parent view's activation tag listener.
 			};
 
-			//+Manual api (for silent feedback calls - no 'view:item-activated' event fired by default)
-			this.activate = function(group, matchFn /*or index or [attr=""] selector*/, loud){
+			//+Manual api (for silent feedback calls - no 'view:item-activated' event fired when given `silent`)
+			this.activate = function(group, matchFn /*or index or [attr=""] selector*/, silent){
 				var $items, attr, events = ['', 'click', 'dblclick', 'mouseover', 'focusin']; //Refactor: Cache it!
 				if(_.isNumber(matchFn)){
 					var index = matchFn;
@@ -43857,7 +43860,7 @@ Marionette.triggerMethodInversed = (function(){
 					attr = e ? 'activate-' + e : 'activate';
 					$items = this.$el.find(app.debug('[' + attr + '^=' + group + ']'));
 					if($items.length)
-						return $items.filter(matchFn).trigger(e || 'click', !loud);
+						return $items.filter(matchFn).trigger(e || 'click', silent);
 				}
 			};
 		},
@@ -45198,6 +45201,7 @@ Marionette.triggerMethodInversed = (function(){
 					if(!pathArray || pathArray.length === 0){
 						if(!old){
 							delete app._navViewConfig;
+							app.coop('navigation-changed', app.navPathArray());
 							this.trigger('view:navigate-to', '', viewConfig);//use this to show the default view
 						}
 						else {
@@ -45208,6 +45212,7 @@ Marionette.triggerMethodInversed = (function(){
 
 					if(!this.navRegion){
 						delete app._navViewConfig;
+						app.coop('navigation-changed', app.navPathArray());
 						return this.trigger('view:navigate-to', pathArray.join('/'), viewConfig);
 					}
 
@@ -45243,6 +45248,7 @@ Marionette.triggerMethodInversed = (function(){
 					}else{
 						pathArray.unshift(targetViewName);
 						delete app._navViewConfig;
+						app.coop('navigation-changed', app.navPathArray());
 						return this.trigger('view:navigate-to', pathArray.join('/'), viewConfig);	
 					}
 

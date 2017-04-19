@@ -59,7 +59,10 @@ Change Log
 54. Refined DataGrid widget implementation to honor refined view life-cycle; 
 55. Refined view.more() api implementation when presenting with the replace flag;
 56. Refined html processing to add `src=`/`href=` timestamps (?_=...) for cracking client/proxy caches for built projects;
-57. Upgraded to jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
+57. view.activate() will by default trigger `view:item-activated` event instead of being silent;
+58. Added 'navigation-changed' coop event in place of 'context-switched';
+59. Added app.navPathArray() api to obtain current navigation path partials as an array;
+60. Upgraded to jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
 
 working on ...
 

@@ -313,6 +313,7 @@
 					if(!pathArray || pathArray.length === 0){
 						if(!old){
 							delete app._navViewConfig;
+							app.coop('navigation-changed', app.navPathArray());
 							this.trigger('view:navigate-to', '', viewConfig);//use this to show the default view
 						}
 						else {
@@ -323,6 +324,7 @@
 
 					if(!this.navRegion){
 						delete app._navViewConfig;
+						app.coop('navigation-changed', app.navPathArray());
 						return this.trigger('view:navigate-to', pathArray.join('/'), viewConfig);
 					}
 
@@ -358,6 +360,7 @@
 					}else{
 						pathArray.unshift(targetViewName);
 						delete app._navViewConfig;
+						app.coop('navigation-changed', app.navPathArray());
 						return this.trigger('view:navigate-to', pathArray.join('/'), viewConfig);	
 					}
 

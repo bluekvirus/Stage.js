@@ -30,7 +30,7 @@
  * 'ws-data-[channel]'
  * 'poll-data-[e]'
  * 'reusable-registered'
- * 'context-switched'
+ * 'navigation-changed'
  * 'window-resized'
  * 'window-scroll'
  * 
@@ -184,7 +184,6 @@
 						app.currentContext = targetCtx;
 						//fire a notification to app as meta-event. (e.g menu view item highlighting)
 						app.trigger('app:context-switched', app.currentContext.name);
-						app.coop('context-switched', app.currentContext.name, {ctx: app.currentContext, subpath: path.join('/')});
 						//notify regional views in the context (views further down in the nav chain)
 						app.currentContext.trigger('view:navigate-chain', path); //see layout.js
 					});
