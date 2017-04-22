@@ -1,8 +1,23 @@
 Change Log
 ==========
 
-1.10.2+ (2017-04-04*)
---------------------
+1.10.3+ (2017-04*)
+------------------
+
+working on ...
+
+* add app.submit(url, view/[data, files]) in addition to app.upload(); (align both standalone and normal file editors upload with same auto csrf token inject)
+* Search/IP/Number editors;
+* Direct `<canvas>` support in view (easel) .canvas --> fn(paper) prep layer;
+* Cheatsheet;
+* Split docs;
+* Breaking down 'Basic' editors?
+* Backbone*(+d3, -jQueryv2/3.0, -Marionettev1.8), elements(-Bootstrapv3/4.0)?
+* More unit tests in demos;
+
+
+1.10.2 (2017-04-21)
+-------------------
 1. Refined render() seq in a view, data change will now always re-run render() despite of category;
 2. Refined SVG canvas init code in view, the .svg option can be a css selector string now;
 3. Editors now share data model with template, view.get() will now smartly get both types (normal, form) of data with an optional dotted keypath, editor.set/get() as an alias to editor.set/getVal().
@@ -62,18 +77,8 @@ Change Log
 57. view.activate() will by default trigger `view:item-activated` event instead of being silent;
 58. Added 'navigation-changed' coop event in place of 'context-switched';
 59. Added app.navPathArray() api to obtain current navigation path partials as an array;
-60. Upgraded to jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
-
-working on ...
-
-* add app.submit(url, view/[data, files]) in addition to app.upload(); (align both standalone and normal file editors upload with same auto csrf token inject)
-* Search/IP/Number editors;
-* Direct `<canvas>` support in view (easel) .canvas --> fn(paper) prep layer;
-* Cheatsheet;
-* Split docs;
-* Breaking down 'Basic' editors?
-* Backbone*(+d3, -jQueryv2/3.0, -Marionettev1.8), elements(-Bootstrapv3/4.0)?
-* More unit tests in demos;
+60. app.markdown() now support `headerPrefix` as a function in its options;
+61. Upgraded to jQuery 2.2, rapheal 2.2 and flexlayout 0.3;
 
 
 1.10.1 (2017-02-04)
