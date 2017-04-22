@@ -23662,7 +23662,7 @@ return /******/ (function(modules) { // webpackBootstrap
 ;/*!
  * URI.js - Mutating URLs
  *
- * Version: 1.18.9
+ * Version: 1.18.10
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/
@@ -23738,7 +23738,7 @@ return /******/ (function(modules) { // webpackBootstrap
     return this;
   }
 
-  URI.version = '1.18.9';
+  URI.version = '1.18.10';
 
   var p = URI.prototype;
   var hasOwn = Object.prototype.hasOwnProperty;
@@ -25918,7 +25918,7 @@ return /******/ (function(modules) { // webpackBootstrap
  * URI.js - Mutating URLs
  * IPv6 Support
  *
- * Version: 1.18.9
+ * Version: 1.18.10
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/
@@ -26104,7 +26104,7 @@ return /******/ (function(modules) { // webpackBootstrap
  * URI.js - Mutating URLs
  * Second Level Domain (SLD) Support
  *
- * Version: 1.18.9
+ * Version: 1.18.10
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/
@@ -26275,7 +26275,12 @@ return /******/ (function(modules) { // webpackBootstrap
       'ye':' co com gov ltd me net org plc ',
       'yu':' ac co edu gov org ',
       'za':' ac agric alt bourse city co cybernet db edu gov grondar iaccess imt inca landesign law mil net ngo nis nom olivetti org pix school tm web ',
-      'zm':' ac co com edu gov net org sch '
+      'zm':' ac co com edu gov net org sch ',
+      // https://en.wikipedia.org/wiki/CentralNic#Second-level_domains
+      'com': 'ar br cn de eu gb gr hu jpn kr no qc ru sa se uk us uy za ',
+      'net': 'gb jp se uk ',
+      'org': 'ae',
+      'de': 'com '
     },
     // gorhill 2013-10-25: Using indexOf() instead Regexp(). Significant boost
     // in both performance and memory footprint. No initialization required.
@@ -26879,7 +26884,7 @@ return /******/ (function(modules) { // webpackBootstrap
  * URI.js - Mutating URLs
  * URI Template Support - http://tools.ietf.org/html/rfc6570
  *
- * Version: 1.18.9
+ * Version: 1.18.10
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/
@@ -27396,7 +27401,7 @@ return /******/ (function(modules) { // webpackBootstrap
  * URI.js - Mutating URLs
  * jQuery Plugin
  *
- * Version: 1.18.9
+ * Version: 1.18.10
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/jquery-uri-plugin.html
@@ -38715,6 +38720,15 @@ if (typeof jQuery === 'undefined') {
     }
   });
 
+  /**
+   * Extend the Renderer heading id-ing method to take headerPrefix option as a fn
+   */
+  _.extend(marked.Renderer.prototype, {
+      heading: function(text, level, raw) {
+          return '<h' + level + ' id="' + _.result(this.options, 'headerPrefix') + raw.toLowerCase().replace(/[^\w]+/g, '-') + '">' + text + '</h' + level + '>\n';
+      }
+  });
+
 })();
 ;/**
  * Common template helpers for Handlebars.
@@ -42267,7 +42281,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.1-1240 build 1492566261223";
+;;app.stagejs = "1.10.2-1241 build 1492829176087";
 ;/**
  * Util for adding meta-event programming ability to object
  *

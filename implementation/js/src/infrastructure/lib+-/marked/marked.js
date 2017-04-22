@@ -458,4 +458,13 @@
     }
   });
 
+  /**
+   * Extend the Renderer heading id-ing method to take headerPrefix option as a fn
+   */
+  _.extend(marked.Renderer.prototype, {
+      heading: function(text, level, raw) {
+          return '<h' + level + ' id="' + _.result(this.options, 'headerPrefix') + raw.toLowerCase().replace(/[^\w]+/g, '-') + '">' + text + '</h' + level + '>\n';
+      }
+  });
+
 })();
