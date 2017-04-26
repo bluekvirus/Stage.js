@@ -42071,6 +42071,7 @@ Marionette.triggerMethodInversed = (function(){
 			}
 
 			//name string, find the view instance and sub-view names
+			//Caveat: only the first instance of the same-named view on screen will be returned atm...
 			var view = $('[data-view-name="' + name + '"]').data('view');
 			return view && {view: view, 'sub-views': app.locate(view.$el)};
 		},

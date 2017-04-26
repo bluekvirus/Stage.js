@@ -6,6 +6,7 @@ Change Log
 
 working on ...
 
+* fix app.locate() debug api to support returning multiple view instances with the same name;
 * add app.submit(url, view/[data, files]) in addition to app.upload(); (align both standalone and normal file editors upload with same auto csrf token inject)
 * Search/IP/Number editors;
 * Direct `<canvas>` support in view (easel) .canvas --> fn(paper) prep layer;

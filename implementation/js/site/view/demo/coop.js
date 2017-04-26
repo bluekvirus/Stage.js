@@ -15,8 +15,8 @@
 			'</div>',
 		],
 		onReady: function(){
-			this.getRegion('view-left').show(new ViewLeft());
-			this.getRegion('view-right').show(new viewRight());
+			this.show('view-left', ViewLeft);
+			this.show('view-right', ViewRight);
 		},
 		onUpdateLeft: function(options){
 			this.getViewIn('view-left').getRegion('temp').show(app.view({
@@ -65,7 +65,7 @@
 		},
 	});
 
-	var viewRight = app.view({
+	var ViewRight = app.view({
 		className: 'coop-right',
 		template: [
 			'<div style="height:50%;width:100%;">',
