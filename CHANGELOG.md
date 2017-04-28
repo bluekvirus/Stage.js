@@ -3,6 +3,9 @@ Change Log
 
 1.10.3+ (2017-04*)
 ------------------
+1. labels/tooltips/help/status for editors and editor data options can now use raw html within them; (e.g using `<i>` icon tags together with texts) 
+2. app.preventDefault(e) now allows `<label>` tag default behavior to pass to browser;
+3. Added `options.extract` to select/radios/checkboxes editors for finer control over remotely fetched choices;
 
 working on ...
 

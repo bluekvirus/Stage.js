@@ -580,7 +580,7 @@
 		//app wide e.preventDefault() util
 		preventDefaultE: function(e){
 			var $el = $(e.target);
-			if($el.is('input') || $el.is('textarea') || $el.is('select') || ($el.is('a') && $el.attr('href')))
+			if($el.is('label') || $el.is('input') || $el.is('textarea') || $el.is('select') || ($el.is('a') && $el.attr('href')))
 				return;
 			e.preventDefault();
 		},

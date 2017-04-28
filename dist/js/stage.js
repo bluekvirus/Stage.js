@@ -41946,7 +41946,7 @@ Marionette.triggerMethodInversed = (function(){
 		//app wide e.preventDefault() util
 		preventDefaultE: function(e){
 			var $el = $(e.target);
-			if($el.is('input') || $el.is('textarea') || $el.is('select') || ($el.is('a') && $el.attr('href')))
+			if($el.is('label') || $el.is('input') || $el.is('textarea') || $el.is('select') || ($el.is('a') && $el.attr('href')))
 				return;
 			e.preventDefault();
 		},
@@ -42282,7 +42282,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.2-1241 build 1492829176087";
+;;app.stagejs = "1.10.2-1243 build 1493354760812";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -43756,7 +43756,7 @@ Marionette.triggerMethodInversed = (function(){
 						return;
 					}else {
 						e.stopPropagation(); //Important::This is to prevent confusing the parent view's action tag listeners.
-						app.preventDefaultE(e); //kill <a> with no href= but let go <a href=...>, <input>, <select> and <textarea> 
+						app.preventDefaultE(e); //kill <a> with no href= but let go <a href=...>, <label>, <input>, <select> and <textarea> 
 					}
 					throw new Error('DEV::' + (debugViewNameTag || this._name) + '::_enableActionTags() You have not yet implemented this action - [' + action + ']');
 				}
@@ -46062,9 +46062,9 @@ var I18N = {};
  * 		field: ...
  * }
  * type (see predefined/parts/editors/README.md)
- * label
- * help
- * tooltip
+ * label (not sanitized)
+ * help (not sanitized)
+ * tooltip (not sanitized)
  * placeholder
  * value: default value
  *
@@ -46075,6 +46075,7 @@ var I18N = {};
  * 	labelField
  * 	valueField
  * 	remote: app.remote() options for fetching the options.data
+ * 	extract: 'key.sub.path.' or fn to get data array from remote
  * }
  *
  * //single checkbox only
@@ -46120,6 +46121,7 @@ var I18N = {};
  * @updated 2014.02.26 [Bootstrap 3.1+]
  * @updated 2015.12.07 [awesome-bootstrap-checkbox & radio]
  * @updated 2016.11.16
+ * @updated 2017.04.27
  * @version 1.2.1
  */
 
@@ -46182,13 +46184,15 @@ var I18N = {};
 						labelField: 'label'
 					}, options.options);
 
-					var choices = options.options; //for easy reference within extractChoices()
-					var extractChoices = function (data){
+					var choices = options.options; //for easy reference within getKVChoices()
+					var getKVChoices = function (data){
 						if(_.isObject(data[0])){
+							//a. pick kv from each object in array
 							data = _.map(data, function(c){
 								return {value: c[choices.valueField], label: c[choices.labelField]};
 							});
 						}else {
+							//b. generate k from each v in array
 							data = _.map(data, function(c){
 								return {value: c, label: _.string.titleize(c)};
 							});
@@ -46197,7 +46201,17 @@ var I18N = {};
 					};
 
 					var prepareChoices = function (choices){
+						//extract real choices from data obj (non-array)
+						if(choices.extract){
+							if(!_.isArray(choices.data)){
+								if(_.isString(choices.extract))
+									choices.data = app.extract(choices.extract, choices.data);
+								else if(_.isFunction(choices.extract))
+									choices.data = choices.extract(choices.data);							
+							}							
+						}
 
+						//see if (extracted) data is grouped (auto-detect)
 						if(!_.isArray(choices.data)){
 							choices.grouped = true;
 						}
@@ -46205,11 +46219,11 @@ var I18N = {};
 						if(choices.grouped){
 							//select (grouped)
 							_.each(choices.data, function(array, group){
-								choices.data[group] = extractChoices(array);
+								choices.data[group] = getKVChoices(array);
 							});
 						}else {
 							//select, radios, checkboxes
-							choices.data = extractChoices(choices.data);
+							choices.data = getKVChoices(choices.data);
 						}
 
 						return choices;
@@ -46221,7 +46235,6 @@ var I18N = {};
 						this.listenToOnce(this, 'render', function(){
 							var that = this;
 							app.remote(choices.remote).done(function(data){
-
 								//Warning: to leave less config overhead, developers have no way to pre-process the choice data returned atm.
 								that.setChoices(data);
 							});
@@ -46998,7 +47011,7 @@ var I18N = {};
 						.removeClass(this.$el.data('type-class'))
 						.addClass(className)
 						.data('type-class', className);
-					this.ui.msg.html(msg.i18n());
+					this.ui.msg.html(msg.i18n()); //not sanitized
 
 				}else {
 					//clear
@@ -47052,9 +47065,9 @@ var I18N = {};
 
 	app.Util.Tpl.build('editor-basic-tpl', [
 		'{{#if label}}',
-			'<label class="control-label {{#if layout}}{{layout.label}}{{/if}}" for="{{uiId}}">{{i18n label}}</label>',
+			'<label class="control-label {{#if layout}}{{layout.label}}{{/if}}" for="{{uiId}}">{{{i18n label}}}</label>',
 		'{{/if}}',
-		'<div class="{{#if layout}}{{layout.field}}{{/if}}" data-toggle="tooltip" title="{{i18n tooltip}}">', //for positioning with the label.
+		'<div class="{{#if layout}}{{layout.field}}{{/if}}" data-toggle="tooltip" title="{{{i18n tooltip}}}">', //for positioning with the label.
 
 			//1. select
 			'{{#is type "select"}}',
@@ -47063,13 +47076,13 @@ var I18N = {};
 						'{{#each options.data}}',
 						'<optgroup label="{{i18n @key}}">',
 							'{{#each this}}',
-							'<option value="{{value}}">{{i18n label}}</option>',
+							'<option value="{{value}}">{{{i18n label}}}</option>',
 							'{{/each}}',
 						'</optgroup>',
 						'{{/each}}',
 					'{{else}}',
 						'{{#each options.data}}',
-						'<option value="{{value}}">{{i18n label}}</option>',
+						'<option value="{{value}}">{{{i18n label}}}</option>',
 						'{{/each}}',
 					'{{/if}}',
 				'</select>',
@@ -47086,7 +47099,7 @@ var I18N = {};
 							'<div class="{{../type}} {{#if ../options.inline}}{{../type}}-inline{{/if}}">',
 								//note that the {{if}} within a {{each}} will no longer impose +1 level down in the content scope. (after Handlebars v4)
 								'<input id="{{../uiId}}-{{@index}}" ui="input" name="{{#if ../fieldname}}{{../fieldname}}{{else}}{{../name}}{{/if}}{{#is ../type "checkbox"}}[]{{/is}}" type="{{../type}}" value={{value}}> ',
-								'<label for="{{../uiId}}-{{@index}}">{{i18n label}}</label>',
+								'<label for="{{../uiId}}-{{@index}}">{{{i18n label}}}</label>',
 							'</div>',
 						'{{/each}}',
 						'</div>',
@@ -47096,7 +47109,7 @@ var I18N = {};
 						'{{#is type "checkbox"}}',
 							//single checkbox
 							'<input id="{{uiId}}" ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" type="checkbox" value="{{value}}"> ',
-							'<label for="{{uiId}}">{{i18n boxLabel}}</label>',
+							'<label for="{{uiId}}">{{{i18n boxLabel}}}</label>',
 						'{{else}}',
 							//normal field
 							'{{#is type "ro"}}',//read-only
@@ -47247,8 +47260,8 @@ var I18N = {};
 			'{{/is}}',
 
 			//msg & help
-			'{{#if help}}<span class="help-block editor-help-text" style="margin-bottom:0"><small>{{i18n help}}</small></span>{{/if}}',
-			'<span class="help-block editor-status-text input-error" ui="msg">{{i18n msg}}</span>',
+			'{{#if help}}<span class="help-block editor-help-text" style="margin-bottom:0"><small>{{{i18n help}}}</small></span>{{/if}}',
+			'<span class="help-block editor-status-text input-error" ui="msg">{{{i18n msg}}}</span>',
 		'</div>'
 	]);
 

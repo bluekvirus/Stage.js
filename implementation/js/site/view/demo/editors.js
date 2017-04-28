@@ -202,7 +202,13 @@
                 options: {
                     remote: {
                         url: 'sample/choices'
-                    }
+                    },
+                    extract: 'payload',
+                    // extract: function(data){
+                    //     return {a: [{x:1, y:2}, {x:3, y:4}, {x:0, y:5}], b: [5,6,78]};
+                    // },
+                    // labelField: 'x',
+                    // valueField: 'y',
                 }
             },
             //date editors
