@@ -2153,7 +2153,7 @@ HTML (template) shortcut attributes:
 * action-[e]=""
 * lock=""
 * unlock=""
-* activation=""
+* activation="[*multi flag] group name"
 * activation-[e]=""
 * deactivation=""
 * data-i18n-key=""

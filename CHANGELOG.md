@@ -3,9 +3,13 @@ Change Log
 
 1.10.3+ (2017-04*)
 ------------------
+1. labels/tooltips/help/status for editors and editor data options can now use raw html within them; (e.g using `<i>` icon tags together with texts) 
+2. app.preventDefault(e) now allows `<label>` tag default behavior to pass to browser;
+3. Added `options.extract` to select/radios/checkboxes editors for finer control over remotely fetched choices;
 
 working on ...
 
+* fix app.locate() debug api to support returning multiple view instances with the same name;
 * add app.submit(url, view/[data, files]) in addition to app.upload(); (align both standalone and normal file editors upload with same auto csrf token inject)
 * Search/IP/Number editors;
 * Direct `<canvas>` support in view (easel) .canvas --> fn(paper) prep layer;
