@@ -294,7 +294,7 @@
 						return;
 					}else {
 						e.stopPropagation(); //Important::This is to prevent confusing the parent view's action tag listeners.
-						app.preventDefaultE(e); //kill <a> with no href= but let go <a href=...>, <label>, <input>, <select> and <textarea> 
+						app.preventDefaultE(e); //kill <a> with no href= but let go <a href=...>, <label>(and inner <i>, <img>, <span>), <input>, <select> and <textarea> 
 					}
 					throw new Error('DEV::' + (debugViewNameTag || this._name) + '::_enableActionTags() You have not yet implemented this action - [' + action + ']');
 				}

@@ -41946,7 +41946,8 @@ Marionette.triggerMethodInversed = (function(){
 		//app wide e.preventDefault() util
 		preventDefaultE: function(e){
 			var $el = $(e.target);
-			if($el.is('label') || $el.is('input') || $el.is('textarea') || $el.is('select') || ($el.is('a') && $el.attr('href')))
+			//Caveat: this clumsy bit here is due to the in-ability to check on the 'action-*' attributes on e.target...
+			if($el.is('label') || $el.is('i') || $el.is('img') || $el.is('span') || $el.is('input') || $el.is('textarea') || $el.is('select') || ($el.is('a') && $el.attr('href')))
 				return;
 			e.preventDefault();
 		},
@@ -42282,7 +42283,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.2-1243 build 1493354760812";
+;;app.stagejs = "1.10.2-1244 build 1493414878118";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -43756,7 +43757,7 @@ Marionette.triggerMethodInversed = (function(){
 						return;
 					}else {
 						e.stopPropagation(); //Important::This is to prevent confusing the parent view's action tag listeners.
-						app.preventDefaultE(e); //kill <a> with no href= but let go <a href=...>, <label>, <input>, <select> and <textarea> 
+						app.preventDefaultE(e); //kill <a> with no href= but let go <a href=...>, <label>(and inner <i>, <img>, <span>), <input>, <select> and <textarea> 
 					}
 					throw new Error('DEV::' + (debugViewNameTag || this._name) + '::_enableActionTags() You have not yet implemented this action - [' + action + ']');
 				}

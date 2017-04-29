@@ -580,7 +580,8 @@
 		//app wide e.preventDefault() util
 		preventDefaultE: function(e){
 			var $el = $(e.target);
-			if($el.is('label') || $el.is('input') || $el.is('textarea') || $el.is('select') || ($el.is('a') && $el.attr('href')))
+			//Caveat: this clumsy bit here is due to the in-ability to check on the 'action-*' attributes on e.target...
+			if($el.is('label') || $el.is('i') || $el.is('img') || $el.is('span') || $el.is('input') || $el.is('textarea') || $el.is('select') || ($el.is('a') && $el.attr('href')))
 				return;
 			e.preventDefault();
 		},
