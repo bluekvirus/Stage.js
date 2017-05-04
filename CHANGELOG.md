@@ -8,6 +8,8 @@ Change Log
 3. Added `options.extract` to select/radios/checkboxes editors for finer control over remotely fetched choices;
 4. Replaced app.dispatcher/reactor with app.ee(state, e-map);
 5. Added app.until api for aligning on async events among a array of targets;
+6. Refined view.show() to return the sub-regional view obj instead of region obj; (affecting the returned obj for app.spray as well)
+7. Refined app.spray() to honor [region="..."] names in template upon creating new regions;
 
 working on ...
 
