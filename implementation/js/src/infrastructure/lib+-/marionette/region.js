@@ -68,14 +68,14 @@
                     if(!/^[_A-Z]/.test(name)){
                         return this.show(app.view(_.extend({
                             template: name,
-                        }, options)));
+                        }, options))).currentView;
                     }
                     else{
                     //View name (_ or A-Z starts a View name, no $ sign here sorry...)
                         var Reusable = app.get(name, _.isPlainObject(options)?'Widget':'', {fallback: true}); //fallback to use view if widget not found.
                         if(Reusable){
                             //Caveat: don't forget to pick up overridable func & properties from options in your Widget.
-                            return this.show(Reusable.create(options));
+                            return this.show(Reusable.create(options)).currentView;
                         }else
                             console.warn('DEV::Layout+::region:load-view View required ' + name + ' can NOT be found...use app.view({name: ..., ...}).');                   
                     }
@@ -84,15 +84,15 @@
 
                 //View definition
                 if(_.isFunction(name))
-                    return this.show(new name(options));
+                    return this.show(new name(options)).currentView;
 
                 //View instance (skip options) or anonymous view options
                 if(_.isPlainObject(name)){
                     if(name.render)
-                        return this.show(name);
+                        return this.show(name).currentView;
                     else {
                         options = name;
-                        return this.show(app.view(options));
+                        return this.show(app.view(options)).currentView;
                     }
                 }
             });

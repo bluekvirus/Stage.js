@@ -41762,7 +41762,7 @@ Marionette.triggerMethodInversed = (function(){
 			var region = $el.data('region');
 			var regionName = region && region._name;
 			if(!regionName){
-				regionName = _.uniqueId('anonymous-region-');
+				regionName = $el.attr('region') || _.uniqueId('anonymous-region-');
 				$el.attr('region', regionName);
 				region = parentCt.addRegion(regionName, '[region="' + regionName + '"]');
 				region.ensureEl(parentCt);
@@ -41784,7 +41784,7 @@ Marionette.triggerMethodInversed = (function(){
 				});
 			}else
 				//view
-				return parentCt.show(regionName, View, options); //returns the region obj by region.show()
+				return parentCt.show(regionName, View, options); //returns the sub-regional view.
 			
 		},
 
@@ -42541,7 +42541,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.2-1245 build 1493887706620";
+;;app.stagejs = "1.10.2-1246 build 1493938343699";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -43485,14 +43485,14 @@ Marionette.triggerMethodInversed = (function(){
                     if(!/^[_A-Z]/.test(name)){
                         return this.show(app.view(_.extend({
                             template: name,
-                        }, options)));
+                        }, options))).currentView;
                     }
                     else{
                     //View name (_ or A-Z starts a View name, no $ sign here sorry...)
                         var Reusable = app.get(name, _.isPlainObject(options)?'Widget':'', {fallback: true}); //fallback to use view if widget not found.
                         if(Reusable){
                             //Caveat: don't forget to pick up overridable func & properties from options in your Widget.
-                            return this.show(Reusable.create(options));
+                            return this.show(Reusable.create(options)).currentView;
                         }else
                             console.warn('DEV::Layout+::region:load-view View required ' + name + ' can NOT be found...use app.view({name: ..., ...}).');                   
                     }
@@ -43501,15 +43501,15 @@ Marionette.triggerMethodInversed = (function(){
 
                 //View definition
                 if(_.isFunction(name))
-                    return this.show(new name(options));
+                    return this.show(new name(options)).currentView;
 
                 //View instance (skip options) or anonymous view options
                 if(_.isPlainObject(name)){
                     if(name.render)
-                        return this.show(name);
+                        return this.show(name).currentView;
                     else {
                         options = name;
-                        return this.show(app.view(options));
+                        return this.show(app.view(options)).currentView;
                     }
                 }
             });

@@ -165,7 +165,7 @@
 			var region = $el.data('region');
 			var regionName = region && region._name;
 			if(!regionName){
-				regionName = _.uniqueId('anonymous-region-');
+				regionName = $el.attr('region') || _.uniqueId('anonymous-region-');
 				$el.attr('region', regionName);
 				region = parentCt.addRegion(regionName, '[region="' + regionName + '"]');
 				region.ensureEl(parentCt);
@@ -187,7 +187,7 @@
 				});
 			}else
 				//view
-				return parentCt.show(regionName, View, options); //returns the region obj by region.show()
+				return parentCt.show(regionName, View, options); //returns the sub-regional view.
 			
 		},
 
