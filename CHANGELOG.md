@@ -6,6 +6,8 @@ Change Log
 1. labels/tooltips/help/status for editors and editor data options can now use raw html within them; (e.g using `<i>` icon tags together with texts) 
 2. app.preventDefault(e) now allows `<label>` tag default behavior to pass to browser;
 3. Added `options.extract` to select/radios/checkboxes editors for finer control over remotely fetched choices;
+4. Replaced app.dispatcher/reactor with app.ee(state, e-map);
+5. Added app.until api for aligning on async events among a array of targets;
 
 working on ...
 

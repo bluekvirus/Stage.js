@@ -435,19 +435,35 @@
 		    };
 		},
 
-		//-----------------dispatcher/observer/cache----------------
-		dispatcher: function(obj){ //+on/once, off; +listenTo/Once, stopListening; +trigger;
+		//-----------------ee/observer----------------
+		ee: function(state, evtmap){ //+on/once, off, +dispose; +listenTo/Once, stopListening; +trigger;
 			var dispatcher;
-			if(_.isPlainObject(obj))
-				dispatcher = _.extend(obj, Backbone.Events);
-			else
-				dispatcher = _.clone(Backbone.Events);
+			if(!evtmap){
+				evtmap = state;
+				state = undefined;
+			}
+			state = state || {cid: _.uniqueId('ee')};
+			evtmap = _.extend({
+				'initialize': _.noop,
+			}, evtmap);
+			dispatcher = _.extend(state, Backbone.Events);
+
+			//add a clean-up method;
 			dispatcher.dispose = function(){
 				this.off();
 				this.stopListening();
 			};
+
+			//register event listeners
+			_.each(evtmap, function(listener, e){
+				//TBI: listener is a sub-evtmap, use ee as a state-machine?
+				state.on(e, listener);
+			});
+
+			dispatcher.trigger('initialize');
+
 			return dispatcher;
-		}, reactor: function(){ return app.dispatcher.apply(this, arguments); }, //alias: reactor
+		},
 
 		model: function(data, flat){
 			if(_.isBoolean(data)){
@@ -468,7 +484,7 @@
 			return new Backbone.Collection(data);
 		},
 
-		//selectn
+		//selectn (dotted.key.path.val.extraction from any obj)
 		extract: function(keypath, from){
 			return selectn(keypath, from);
 		},
@@ -584,6 +600,17 @@
 			if($el.is('label') || $el.is('i') || $el.is('img') || $el.is('span') || $el.is('input') || $el.is('textarea') || $el.is('select') || ($el.is('a') && $el.attr('href')))
 				return;
 			e.preventDefault();
+		},
+
+		//wait until all targets fires e (asynchronously) then call the callback with targets (e.g [this.show(), ...], ready)
+		until: function(targets, e, callback){
+			targets = _.compact(targets);
+			cb = _.after(targets.length, function(){
+				callback(targets);
+			});
+			_.each(targets, function(t){
+				t.once(e, cb);
+			});
 		},
 
 		//----------------markdown-------------------
@@ -890,13 +917,13 @@
 	 * API summary
 	 */
 	app._apis = [
-		'dispatcher/reactor', 'model', 'collection',
+		'ee', 'model', 'collection',
 		//view registery
 		'context - @alias:page', 'view', 'widget', 'editor', 'editor.validator - @alias:editor.rule',
 		//global action locks
 		'lock', 'unlock', 'available', 
 		//utils
-		'has', 'get', 'spray', 'coop', 'navigate', 'navPathArray', 'icing/curtain', 'i18n', 'param', 'animation', 'animateItems', 'throttle', 'debounce', 'preventDefaultE',
+		'has', 'get', 'spray', 'coop', 'navigate', 'navPathArray', 'icing/curtain', 'i18n', 'param', 'animation', 'animateItems', 'throttle', 'debounce', 'preventDefaultE', 'until',
 		//com
 		'remote', 'download', 'upload', 'ws', 'poll',
 		//3rd-party lib short-cut
