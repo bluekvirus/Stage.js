@@ -70,7 +70,8 @@
 			var r = this.getRegion(region);
 			if(!r)
 				throw new Error('DEV::Layout+::show() Region ' + region + ' is not available...'); 
-			return r.trigger('region:load-view', View, options);
+			r.trigger('region:load-view', View, options);
+			return r.currentView;
 		},
 
 		//add more items into a specific region
