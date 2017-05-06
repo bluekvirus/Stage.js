@@ -2023,9 +2023,9 @@ View object properties:
 * this.parentRegion
 
 View meta events (trigger()-ed, implicit ones through triggerMethod*()):
-* view:render (implicit, means template rendered)
-* view:show (implicit, means region.$el.html(view.$el) called) /all-region-shown
-* view:ready (implicit - reversed, means data rendered) (view:data-rendered/editor-updated)
+* render (implicit, means template rendered)
+* show (implicit, means region.$el.html(view.$el) called)
+* ready (implicit - reversed, means data rendered) (view:data-rendered/editor-updated)
 * view:paper-cleared
 * view:channel-hooked
 * view:editor-changed

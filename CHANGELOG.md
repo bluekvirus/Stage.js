@@ -10,6 +10,11 @@ Change Log
 5. Added app.until api for aligning on async events among a array of targets;
 6. Refined view.show() to return the sub-regional view obj instead of region obj; (affecting the returned obj for app.spray as well)
 7. Refined app.spray() to honor [region="..."] names in template upon creating new regions;
+8. Replaced view.poll configure with view.pollings; (renamed)
+9. Removed 'view:all-region-shown' event in favor of 'ready'; (all sub region 'ready' synchronized and waited upon, except for navRegion)
+10. Removed 'ready' event on `$.val()` powered editors;
+11. Refined svg canvas drawing to happen before 'ready'; (only 'navigate-to', pollings and channels setup happens after 'ready')
+12. Refined DataGrid widget to dynamically load its header and body cells; (just like form view editors)
 
 working on ...
 
