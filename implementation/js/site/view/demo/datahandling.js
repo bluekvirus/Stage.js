@@ -94,7 +94,7 @@
 			'<div region="parent2"></div>'
 		],
 		data: '/mockdata',
-		onDataRendered: function(){
+		onReady: function(){
 			this.getRegion('parent1').show(app.view({
 				template: [
 					'<div class="wrapper-full">',

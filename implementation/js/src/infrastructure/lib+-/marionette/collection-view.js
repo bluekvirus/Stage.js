@@ -150,9 +150,9 @@
 			else 
 				this.collection.set(data, options);
 			//align with normal view's data rendered and ready events notification
-			this.trigger('view:data-rendered');
+			
 			_.defer(_.bind(function(){
-				this.triggerMethodInversed('ready');
+				this.trigger('view:data-rendered');
 			}, this));
 			return this;
 		},

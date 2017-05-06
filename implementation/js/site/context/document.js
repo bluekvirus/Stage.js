@@ -66,7 +66,7 @@
                 this.trigger('view:reload-doc');
             }
         },
-        onShow: function(){
+        onReady: function(){
             //inject the highlight js configure to markdown $anchor.
             this.getRegion('doc').$el.data('hljs', {
                 languages: ['javascript', 'html']

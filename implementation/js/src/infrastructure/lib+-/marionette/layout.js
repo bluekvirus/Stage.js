@@ -19,10 +19,9 @@
  * @update 2014.07.28 (+view="@mockup.html" support)
  * @update 2015.11.03 (-form nesting on regions)
  * @update 2015.11.11 (+getViewIn('region'))
- * @update 2015.12.15 (navRegion chaining on region:show instead)
  * @update 2016.02.05 (close*(_cb) for region closing effect sync)
  * @update 2016.12.12 (-'region:load-view' moved to region.js)
- * @update 2017.03.22 (*[region=/view=] pickup after 'show/data-rendered')
+ * @update 2017.03.22 (*[region=/view=] pickup after 'view:data-rendered')
  */
 
 ;(function(app){
@@ -255,10 +254,10 @@
 			
 			//Automatically shows the region's view="" attr indicated View or @*.html/*.md
 			//Note: call render() to re-render a view will not re-render the regions. use .set() or .show() will.
-			//Note: 'all-region-shown' will sync on 'region:show' which in turn wait on enterEffects before sub-region 'view:show';
-			//Note: 'show' and 'all-region-shown' doesn't mean 'data-rendered' or further 'ready'. Data render only starts after 'show';
-			//Note: [region=] and [view=] pickup happens after 'show' and 'data-rendered', this allows dynamic region/view assignments by data;
-			this.listenTo(this, 'show view:data-rendered', function(){
+			//Note: 'ready' will sync on 'region:show' which in turn wait on enterEffects before sub-region 'view:show';
+			//Note: 'show' doesn't mean 'view:data-rendered' or further 'ready'. Data render only starts after 'show';
+			//Note: [region=] and [view=] pickup happens only after 'view:data-rendered', view without data has a fake 'view:data-rendered' e;
+			this.listenTo(this, 'view:data-rendered', function(){
 				var that = this;
 				//a. named regions (for dynamic navigation)
 				this.$el.find('[region]').each(function(index, el){
@@ -291,13 +290,13 @@
 						pairs.push({region: r, name: viewName}); 
 				}, this);
 				if(!pairs.length)
-					return this.trigger('view:all-region-shown');
+					return this.triggerMethodInversed('ready');
 
 				var callback = _.after(pairs.length, _.bind(function(){
-					this.trigger('view:all-region-shown');
+					this.triggerMethodInversed('ready');;
 				}, this));
 				_.each(pairs, function(p){
-					this[p.region].on('show', callback);
+					this[p.region].once('ready', callback);
 					this[p.region].trigger('region:load-view', p.name);
 				}, this);
 				

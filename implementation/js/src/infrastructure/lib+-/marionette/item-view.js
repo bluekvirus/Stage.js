@@ -73,7 +73,9 @@
 			}
 
 			//re-render the sub-regional views.
-			this.trigger('view:data-rendered');
+			_.defer(_.bind(function(){
+				this.trigger('view:data-rendered');
+			}, this));
 
 		},
 		
@@ -117,11 +119,6 @@
 				//apply whole arguments to model (A: key, val, [options] or B: val, [options], [dup opt])
 				this.model.set.apply(this.model, arguments);
 			}
-			
-			//data view, including those that have form and svg all have 'ready' e now... (static view ready see view.js:--bottom--)
-			_.defer(_.bind(function(){
-				this.triggerMethodInversed('ready');
-			}, this));
 
 			return this;
 		},
@@ -384,16 +381,12 @@
 					$position = this.$el;
 
 				$position.append(editor.$el);
-				//+'show' (internal, for editor writer only)
+				//+'show' (internal, for editor writer only, mostly for $.val() powered editors)
 				editor.triggerMethod('show');
 				
-				//3. patch in default value (Note: Always provide a default value to trigger onReady()!)
+				//3. patch in default value (Note: $.val() powered editors don't have 'ready' and 'onReady' upon .setVal())
 				if(config.value !== undefined && config.value !== null /*for SQL DB data*/){
 					editor.setVal(config.value);
-					//+'ready' (internal, for editor writer only)
-					_.defer(_.bind(function(){
-						editor.triggerMethodInversed('ready');
-					}, editor));
 				}
 
 			}, this);

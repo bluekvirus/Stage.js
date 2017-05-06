@@ -177,7 +177,7 @@
 					//prepare and show this new context					
 					var navRegion = app.config.navRegion || app.config.contextRegion;
 					var targetRegion = app.mainView.getRegion(navRegion);
-					if(!targetRegion) throw new Error('DEV::Application::navigate() You don\'t have region \'' + navRegion + '\' defined');		
+					if(!targetRegion) throw new Error('DEV::Application::navigate() You don\'t have navRegion \'' + navRegion + '\' defined in main.');		
 					
 					//note that 'ready' is guaranteed to happen after region enter/exit effects
 					targetCtx.once('ready', function(){
@@ -221,9 +221,6 @@
 					actions: app.config.actions,
 					layout: app.config.layout,
 				}, true);
-			app.mainView.onReady = function(){
-				app.trigger('app:mainview-ready');
-			};
 			app.getRegion('region-app').show(app.mainView).$el.css({height: '100%', width: '100%'});
 
 			//b. Create the fixed overlaying regions according to app.config.icings (like a cake, yay!)
@@ -247,7 +244,7 @@
 			}; 
 			app.curtain = app.icing; //alias: curtain()
 
-			//c. init client page router and history:
+			//c. init client page router and start history:
 			var Router = Backbone.Marionette.AppRouter.extend({
 				appRoutes: {
 					'navigate/*path' : 'navigateTo', //navigate to a context and signal it about *module (can be a path for further navigation within)
@@ -258,15 +255,18 @@
 					},
 				}
 			});
-
 			app.router = new Router();
-			if(Backbone.history)
-				Backbone.history.start();
 
-			//d. Auto navigate to init context (view that gets put in mainView's navRegion)
+			//[deferred]d. Auto navigate to init context (view that gets put in mainView's navRegion)
 			app.config.defaultContext = app.config.defaultView || app.config.defaultContext;
-			if(!window.location.hash && app.config.defaultContext)
-				app.navigate(app.config.defaultContext);
+			app.mainView.onReady = function(){
+				if(Backbone.history)
+					Backbone.history.start();
+				if(!window.location.hash && app.config.defaultContext)
+					app.navigate(app.config.defaultContext);				
+				app.trigger('app:mainview-ready');
+			};
+
 		});
 
 		return app;

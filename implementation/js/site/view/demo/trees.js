@@ -63,9 +63,6 @@
 							]
 			    		}
   					});
-  					// tree.onDataRendered = function(){
-  					// 	app.debug('ready');
-  					// }
   					this.show('tree', tree);
   				}
 	    	}));

@@ -852,7 +852,7 @@
 				//re-show the new view
 				try{
 					var view = app.get(name, category).create();
-					view.once('view:all-region-shown', function(){
+					view.once('ready', function(){
 						app.mark(name);
 					});
 					region.show(view);

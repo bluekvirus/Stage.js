@@ -37,7 +37,7 @@
  *
  * View life-cycle:
  * ---------------
- * new View(cfg) --> render()* +$el with template, events and enhancements --> show()* +DOM, data --> ready() call onReady(), +navigation-chain, svg, poll, channels upon re-rendered with data.
+ * new View(cfg) --> render()* +$el with template, events and enhancements --> show()* +DOM, data --> ready() call onReady(), +navigation-chain, svg, pollings, channels upon re-rendered with data.
  * 
  * Fixed enhancement:
  * ---------------
@@ -52,14 +52,14 @@
  * +use view as overlay
  * +dnd(with sortable)/selectable
  * +activations
- * +poll
+ * +pollings
  * +channels
  * (see ItemView/Layout/Region for the rest of abilities, e.g template/layout(render), data/useParentData, editors, svg, more, tab, lock, effect...)
  *
  * List of view options passed through new View(opt) that will be auto-merged as properties:
  * 		a. from Backbone.View ['model', 'collection', 'el', 'id', 'attributes', 'className', 'tagName', 'events'];
  * 		b*. from M.View ['templateHelpers']; (through M.getOption() -- tried both this and this.options)
- *   	c. from us ['effect', 'template', 'layout', 'data/useParentData', 'useFlatModel', 'coop', 'dnd', 'selectable', 'actions', 'editors', 'tooltips/popovers', 'svg', 'poll', 'channels'];
+ *   	c. from us ['effect', 'template', 'layout', 'data/useParentData', 'useFlatModel', 'coop', 'dnd', 'selectable', 'actions', 'editors', 'tooltips/popovers', 'svg', 'pollings', 'channels'];
  *
  * Tip:
  * All new View(opt) will have this.options = opt ready in initialize(), also this.*[all auto-picked properties above].
@@ -604,7 +604,7 @@
 
 		//----------------------fixed view enhancements---------------------
 		//auto-pick live init options
-		_.extend(this, _.pick(options, ['effect', 'template', 'layout', 'data', 'useParentData', 'useFlatModel', 'coop', 'actions', 'dnd', 'selectable', 'editors', 'tooltips', 'popovers', 'svg', /*'canvas', */, 'poll', 'channels']));
+		_.extend(this, _.pick(options, ['effect', 'template', 'layout', 'data', 'useParentData', 'useFlatModel', 'coop', 'actions', 'dnd', 'selectable', 'editors', 'tooltips', 'popovers', 'svg', /*'canvas', */, 'pollings', 'channels']));
 
 		//add data-view-name meta attribute to view.$el and also view to view.$el.data('view')
 		this.listenToOnce(this, 'render', function(){
@@ -819,7 +819,7 @@
 					});
 					if(!this._svgPaperResizeBound){
 						//hook up the draw() function (_.defer-ed so you have a chance to call $.css upon view 'ready')
-						this.listenTo(this, 'ready view:window-resized', function(){
+						this.listenTo(this, 'view:data-rendered view:window-resized', function(){
 							_.each(this.paper, function(paper, name){
 								//note that _.defer() does NOT return the function.
 								var that = this;
@@ -846,14 +846,14 @@
 		//data pollings
 		//true, 'every 5 sec [| onFooBar/coop e]', 250, '250 [|onFooBar/coop e]' fn, or {'url1': 'occurance[|coop e or fn name]'/fn, ...}
 		//Caveat: there is no 'every 0.5 sec'.
-		if(this.poll){
+		if(this.pollings){
 			this.listenToOnce(this, 'ready', function(){
-				if(!_.isPlainObject(this.poll) && _.isString(this.data)){
-					var tmp = this.poll;
-					this.poll = {};
-					this.poll[this.data] = _.isBoolean(tmp)? app.config.dataPollingDelay : tmp;
+				if(!_.isPlainObject(this.pollings) && _.isString(this.data)){
+					var tmp = this.pollings;
+					this.pollings = {};
+					this.pollings[this.data] = _.isBoolean(tmp)? app.config.dataPollingDelay : tmp;
 				}
-				_.each(this.poll, function(occurrenceAndEoMorF, url){
+				_.each(this.pollings, function(occurrenceAndEoMorF, url){
 					var occurrence, eomorf;
 					if(_.isString(occurrenceAndEoMorF)){
 						var tmp = occurrenceAndEoMorF.split('|');
@@ -872,9 +872,10 @@
 						eomorf = _.bind(eomorf, this);
 					else if (eomorf && _.isFunction(this[eomorf])) //m
 						eomorf = _.bind(this[eomorf], this);
-					else if (eomorf) //e
-						this._enableGlobalCoopEvent('poll-data-' + eomorf);
-					else //occur only, then use default f, which sets view's model data.
+					else if (eomorf){ //e
+						this._enableGlobalCoopEvent('poll-data-' + eomorf); //notify this view and others as well (coop e)
+					}
+					else //otherwise, use default f, which sets view's model data.
 						eomorf = _.bind(function(data, card){
 							this.set(data);
 						}, this);
@@ -884,7 +885,7 @@
 			});
 
 			this.listenTo(this, 'close', function(){
-				_.each(this.poll, function(occurrenceAndEoMoF, url){
+				_.each(this.pollings, function(occurrenceAndEoMoF, url){
 					app.poll(url, false);
 				}, this);
 			});
@@ -922,16 +923,15 @@
 			});
 		}
 
-		//--------------------+ready event---------------------------		
+		//--------------------+ready event---------------------------
 		//ensure a ready event for static views (align with data and form views)
 		//Caveat: re-render a static view will not trigger 'ready' again...
 		this.listenToOnce(this, 'show', function(){
 			//call view `ready` (if not waiting for data render after 1st `show`, static and local data view only)
 			if(!this.data && !this.useParentData){
-				//a view should always have a parentRegion (since shown by a region), but we do not enforce it when firing 'ready'.
 				//e.g manual view life-cycling (very rare)
 				_.defer(_.bind(function(){
-					this.triggerMethodInversed('ready');
+					this.trigger('view:data-rendered');
 				}, this));//fake as ajax-ed data view;
 			}
 		});
@@ -952,6 +952,14 @@
 		    if (this.data){
 		        this.set(this.data);
 		    }
+		});
+
+		//capture static,item/collection view 'view:data-rendered' for firing ready, layout view wait till sub-regional ready (see layout.js)
+		this.listenTo(this, 'view:data-rendered', function(){
+			//Note: even though we delay adding regions until another 'view:data-rendered' in Regional (layout) views,
+			//due to class inheritance order, thus the event reg seq, this.region would have already been populated. 
+			if(!this.regions)
+				this.triggerMethodInversed('ready');
 		});
 
 		return Backbone.Marionette.View.apply(this, arguments);

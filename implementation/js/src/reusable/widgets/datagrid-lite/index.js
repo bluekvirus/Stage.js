@@ -125,7 +125,8 @@
 			},
 			//buildItemView - select proper header cell
 			buildItemView: function(item, ItemViewType, itemViewOptions){
-				return app.widget(_.string.classify([item.get('header'), 'header', 'cell'].join('-')), {
+				var HCell = app.get(_.string.classify([item.get('header'), 'header', 'cell'].join('-')), 'Widget');
+				return HCell.create({
 					model: item,
 					tagName: 'th',
 
@@ -155,7 +156,8 @@
 			},
 			//buildItemView - select proper cell
 			buildItemView: function(item, ItemViewType, itemViewOptions){
-				return app.widget(_.string.classify([item.get('cell'), 'cell'].join('-')), {
+				var Cell = app.get(_.string.classify([item.get('cell'), 'cell'].join('-')), 'Widget');
+				return Cell.create({
 					tagName: 'td',
 					model: item,
 

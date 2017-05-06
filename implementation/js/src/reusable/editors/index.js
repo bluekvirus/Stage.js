@@ -759,6 +759,7 @@
 				}
 			},
 
+			//Note: setVal() does not affect internal model of $.val() powered editor view;
 			setVal: function(val, loud){
 				if(this.ui.inputs){
 					//radios/checkboxes

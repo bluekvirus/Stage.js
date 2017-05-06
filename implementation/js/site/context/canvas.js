@@ -67,7 +67,7 @@
 					var svgFn = new Function('paper', pad.getValue());
 					this.spray(this.ui.preview, svgFn, {
 						data: this.codepads['data-editor'].getJSONVal(),
-					}).currentView.once('ready', _.bind(function(){
+					}).once('ready', _.bind(function(){
 						this.ui.status.html('<p class="text-success">Canvas rendered.</p>');
 					}, this));
 				break;

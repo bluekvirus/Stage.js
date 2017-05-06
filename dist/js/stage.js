@@ -41365,7 +41365,7 @@ Marionette.triggerMethodInversed = (function(){
 					//prepare and show this new context					
 					var navRegion = app.config.navRegion || app.config.contextRegion;
 					var targetRegion = app.mainView.getRegion(navRegion);
-					if(!targetRegion) throw new Error('DEV::Application::navigate() You don\'t have region \'' + navRegion + '\' defined');		
+					if(!targetRegion) throw new Error('DEV::Application::navigate() You don\'t have navRegion \'' + navRegion + '\' defined in main.');		
 					
 					//note that 'ready' is guaranteed to happen after region enter/exit effects
 					targetCtx.once('ready', function(){
@@ -41409,9 +41409,6 @@ Marionette.triggerMethodInversed = (function(){
 					actions: app.config.actions,
 					layout: app.config.layout,
 				}, true);
-			app.mainView.onReady = function(){
-				app.trigger('app:mainview-ready');
-			};
 			app.getRegion('region-app').show(app.mainView).$el.css({height: '100%', width: '100%'});
 
 			//b. Create the fixed overlaying regions according to app.config.icings (like a cake, yay!)
@@ -41435,7 +41432,7 @@ Marionette.triggerMethodInversed = (function(){
 			}; 
 			app.curtain = app.icing; //alias: curtain()
 
-			//c. init client page router and history:
+			//c. init client page router and start history:
 			var Router = Backbone.Marionette.AppRouter.extend({
 				appRoutes: {
 					'navigate/*path' : 'navigateTo', //navigate to a context and signal it about *module (can be a path for further navigation within)
@@ -41446,15 +41443,18 @@ Marionette.triggerMethodInversed = (function(){
 					},
 				}
 			});
-
 			app.router = new Router();
-			if(Backbone.history)
-				Backbone.history.start();
 
-			//d. Auto navigate to init context (view that gets put in mainView's navRegion)
+			//[deferred]d. Auto navigate to init context (view that gets put in mainView's navRegion)
 			app.config.defaultContext = app.config.defaultView || app.config.defaultContext;
-			if(!window.location.hash && app.config.defaultContext)
-				app.navigate(app.config.defaultContext);
+			app.mainView.onReady = function(){
+				if(Backbone.history)
+					Backbone.history.start();
+				if(!window.location.hash && app.config.defaultContext)
+					app.navigate(app.config.defaultContext);				
+				app.trigger('app:mainview-ready');
+			};
+
 		});
 
 		return app;
@@ -42449,7 +42449,7 @@ Marionette.triggerMethodInversed = (function(){
 				//re-show the new view
 				try{
 					var view = app.get(name, category).create();
-					view.once('view:all-region-shown', function(){
+					view.once('ready', function(){
 						app.mark(name);
 					});
 					region.show(view);
@@ -42541,7 +42541,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.2-1247 build 1493949130017";
+;;app.stagejs = "1.10.2-1248 build 1494047617257";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -43461,11 +43461,9 @@ Marionette.triggerMethodInversed = (function(){
  * 
  * @author Tim Lauv
  * @updated 2014.03.03
- * @updated 2015.08.10
  * @updated 2015.12.15
- * @updated 2015.02.03
  * @updated 2016.12.12
- * @updated 2017.03.09
+ * @updated 2017.05.05
  */
 
 ;(function(app) {
@@ -43594,6 +43592,9 @@ Marionette.triggerMethodInversed = (function(){
             //mark currentView, parentRegion
             this.currentView = view;
             view.parentRegion = this;
+            view.on('ready', function(){
+                this.parentRegion.trigger('ready');
+            }, view);
 
             //inject parent view container through region into the regional views
             if (this.parentCt) {
@@ -43758,7 +43759,7 @@ Marionette.triggerMethodInversed = (function(){
  *
  * View life-cycle:
  * ---------------
- * new View(cfg) --> render()* +$el with template, events and enhancements --> show()* +DOM, data --> ready() call onReady(), +navigation-chain, svg, poll, channels upon re-rendered with data.
+ * new View(cfg) --> render()* +$el with template, events and enhancements --> show()* +DOM, data --> ready() call onReady(), +navigation-chain, svg, pollings, channels upon re-rendered with data.
  * 
  * Fixed enhancement:
  * ---------------
@@ -43773,14 +43774,14 @@ Marionette.triggerMethodInversed = (function(){
  * +use view as overlay
  * +dnd(with sortable)/selectable
  * +activations
- * +poll
+ * +pollings
  * +channels
  * (see ItemView/Layout/Region for the rest of abilities, e.g template/layout(render), data/useParentData, editors, svg, more, tab, lock, effect...)
  *
  * List of view options passed through new View(opt) that will be auto-merged as properties:
  * 		a. from Backbone.View ['model', 'collection', 'el', 'id', 'attributes', 'className', 'tagName', 'events'];
  * 		b*. from M.View ['templateHelpers']; (through M.getOption() -- tried both this and this.options)
- *   	c. from us ['effect', 'template', 'layout', 'data/useParentData', 'useFlatModel', 'coop', 'dnd', 'selectable', 'actions', 'editors', 'tooltips/popovers', 'svg', 'poll', 'channels'];
+ *   	c. from us ['effect', 'template', 'layout', 'data/useParentData', 'useFlatModel', 'coop', 'dnd', 'selectable', 'actions', 'editors', 'tooltips/popovers', 'svg', 'pollings', 'channels'];
  *
  * Tip:
  * All new View(opt) will have this.options = opt ready in initialize(), also this.*[all auto-picked properties above].
@@ -44325,7 +44326,7 @@ Marionette.triggerMethodInversed = (function(){
 
 		//----------------------fixed view enhancements---------------------
 		//auto-pick live init options
-		_.extend(this, _.pick(options, ['effect', 'template', 'layout', 'data', 'useParentData', 'useFlatModel', 'coop', 'actions', 'dnd', 'selectable', 'editors', 'tooltips', 'popovers', 'svg', /*'canvas', */, 'poll', 'channels']));
+		_.extend(this, _.pick(options, ['effect', 'template', 'layout', 'data', 'useParentData', 'useFlatModel', 'coop', 'actions', 'dnd', 'selectable', 'editors', 'tooltips', 'popovers', 'svg', /*'canvas', */, 'pollings', 'channels']));
 
 		//add data-view-name meta attribute to view.$el and also view to view.$el.data('view')
 		this.listenToOnce(this, 'render', function(){
@@ -44540,7 +44541,7 @@ Marionette.triggerMethodInversed = (function(){
 					});
 					if(!this._svgPaperResizeBound){
 						//hook up the draw() function (_.defer-ed so you have a chance to call $.css upon view 'ready')
-						this.listenTo(this, 'ready view:window-resized', function(){
+						this.listenTo(this, 'view:data-rendered view:window-resized', function(){
 							_.each(this.paper, function(paper, name){
 								//note that _.defer() does NOT return the function.
 								var that = this;
@@ -44567,14 +44568,14 @@ Marionette.triggerMethodInversed = (function(){
 		//data pollings
 		//true, 'every 5 sec [| onFooBar/coop e]', 250, '250 [|onFooBar/coop e]' fn, or {'url1': 'occurance[|coop e or fn name]'/fn, ...}
 		//Caveat: there is no 'every 0.5 sec'.
-		if(this.poll){
+		if(this.pollings){
 			this.listenToOnce(this, 'ready', function(){
-				if(!_.isPlainObject(this.poll) && _.isString(this.data)){
-					var tmp = this.poll;
-					this.poll = {};
-					this.poll[this.data] = _.isBoolean(tmp)? app.config.dataPollingDelay : tmp;
+				if(!_.isPlainObject(this.pollings) && _.isString(this.data)){
+					var tmp = this.pollings;
+					this.pollings = {};
+					this.pollings[this.data] = _.isBoolean(tmp)? app.config.dataPollingDelay : tmp;
 				}
-				_.each(this.poll, function(occurrenceAndEoMorF, url){
+				_.each(this.pollings, function(occurrenceAndEoMorF, url){
 					var occurrence, eomorf;
 					if(_.isString(occurrenceAndEoMorF)){
 						var tmp = occurrenceAndEoMorF.split('|');
@@ -44593,9 +44594,10 @@ Marionette.triggerMethodInversed = (function(){
 						eomorf = _.bind(eomorf, this);
 					else if (eomorf && _.isFunction(this[eomorf])) //m
 						eomorf = _.bind(this[eomorf], this);
-					else if (eomorf) //e
-						this._enableGlobalCoopEvent('poll-data-' + eomorf);
-					else //occur only, then use default f, which sets view's model data.
+					else if (eomorf){ //e
+						this._enableGlobalCoopEvent('poll-data-' + eomorf); //notify this view and others as well (coop e)
+					}
+					else //otherwise, use default f, which sets view's model data.
 						eomorf = _.bind(function(data, card){
 							this.set(data);
 						}, this);
@@ -44605,7 +44607,7 @@ Marionette.triggerMethodInversed = (function(){
 			});
 
 			this.listenTo(this, 'close', function(){
-				_.each(this.poll, function(occurrenceAndEoMoF, url){
+				_.each(this.pollings, function(occurrenceAndEoMoF, url){
 					app.poll(url, false);
 				}, this);
 			});
@@ -44643,16 +44645,15 @@ Marionette.triggerMethodInversed = (function(){
 			});
 		}
 
-		//--------------------+ready event---------------------------		
+		//--------------------+ready event---------------------------
 		//ensure a ready event for static views (align with data and form views)
 		//Caveat: re-render a static view will not trigger 'ready' again...
 		this.listenToOnce(this, 'show', function(){
 			//call view `ready` (if not waiting for data render after 1st `show`, static and local data view only)
 			if(!this.data && !this.useParentData){
-				//a view should always have a parentRegion (since shown by a region), but we do not enforce it when firing 'ready'.
 				//e.g manual view life-cycling (very rare)
 				_.defer(_.bind(function(){
-					this.triggerMethodInversed('ready');
+					this.trigger('view:data-rendered');
 				}, this));//fake as ajax-ed data view;
 			}
 		});
@@ -44673,6 +44674,14 @@ Marionette.triggerMethodInversed = (function(){
 		    if (this.data){
 		        this.set(this.data);
 		    }
+		});
+
+		//capture static,item/collection view 'view:data-rendered' for firing ready, layout view wait till sub-regional ready (see layout.js)
+		this.listenTo(this, 'view:data-rendered', function(){
+			//Note: even though we delay adding regions until another 'view:data-rendered' in Regional (layout) views,
+			//due to class inheritance order, thus the event reg seq, this.region would have already been populated. 
+			if(!this.regions)
+				this.triggerMethodInversed('ready');
 		});
 
 		return Backbone.Marionette.View.apply(this, arguments);
@@ -44755,7 +44764,9 @@ Marionette.triggerMethodInversed = (function(){
 			}
 
 			//re-render the sub-regional views.
-			this.trigger('view:data-rendered');
+			_.defer(_.bind(function(){
+				this.trigger('view:data-rendered');
+			}, this));
 
 		},
 		
@@ -44799,11 +44810,6 @@ Marionette.triggerMethodInversed = (function(){
 				//apply whole arguments to model (A: key, val, [options] or B: val, [options], [dup opt])
 				this.model.set.apply(this.model, arguments);
 			}
-			
-			//data view, including those that have form and svg all have 'ready' e now... (static view ready see view.js:--bottom--)
-			_.defer(_.bind(function(){
-				this.triggerMethodInversed('ready');
-			}, this));
 
 			return this;
 		},
@@ -45066,16 +45072,12 @@ Marionette.triggerMethodInversed = (function(){
 					$position = this.$el;
 
 				$position.append(editor.$el);
-				//+'show' (internal, for editor writer only)
+				//+'show' (internal, for editor writer only, mostly for $.val() powered editors)
 				editor.triggerMethod('show');
 				
-				//3. patch in default value (Note: Always provide a default value to trigger onReady()!)
+				//3. patch in default value (Note: $.val() powered editors don't have 'ready' and 'onReady' upon .setVal())
 				if(config.value !== undefined && config.value !== null /*for SQL DB data*/){
 					editor.setVal(config.value);
-					//+'ready' (internal, for editor writer only)
-					_.defer(_.bind(function(){
-						editor.triggerMethodInversed('ready');
-					}, editor));
 				}
 
 			}, this);
@@ -45181,10 +45183,9 @@ Marionette.triggerMethodInversed = (function(){
  * @update 2014.07.28 (+view="@mockup.html" support)
  * @update 2015.11.03 (-form nesting on regions)
  * @update 2015.11.11 (+getViewIn('region'))
- * @update 2015.12.15 (navRegion chaining on region:show instead)
  * @update 2016.02.05 (close*(_cb) for region closing effect sync)
  * @update 2016.12.12 (-'region:load-view' moved to region.js)
- * @update 2017.03.22 (*[region=/view=] pickup after 'show/data-rendered')
+ * @update 2017.03.22 (*[region=/view=] pickup after 'view:data-rendered')
  */
 
 ;(function(app){
@@ -45417,10 +45418,10 @@ Marionette.triggerMethodInversed = (function(){
 			
 			//Automatically shows the region's view="" attr indicated View or @*.html/*.md
 			//Note: call render() to re-render a view will not re-render the regions. use .set() or .show() will.
-			//Note: 'all-region-shown' will sync on 'region:show' which in turn wait on enterEffects before sub-region 'view:show';
-			//Note: 'show' and 'all-region-shown' doesn't mean 'data-rendered' or further 'ready'. Data render only starts after 'show';
-			//Note: [region=] and [view=] pickup happens after 'show' and 'data-rendered', this allows dynamic region/view assignments by data;
-			this.listenTo(this, 'show view:data-rendered', function(){
+			//Note: 'ready' will sync on 'region:show' which in turn wait on enterEffects before sub-region 'view:show';
+			//Note: 'show' doesn't mean 'view:data-rendered' or further 'ready'. Data render only starts after 'show';
+			//Note: [region=] and [view=] pickup happens only after 'view:data-rendered', view without data has a fake 'view:data-rendered' e;
+			this.listenTo(this, 'view:data-rendered', function(){
 				var that = this;
 				//a. named regions (for dynamic navigation)
 				this.$el.find('[region]').each(function(index, el){
@@ -45453,13 +45454,13 @@ Marionette.triggerMethodInversed = (function(){
 						pairs.push({region: r, name: viewName}); 
 				}, this);
 				if(!pairs.length)
-					return this.trigger('view:all-region-shown');
+					return this.triggerMethodInversed('ready');
 
 				var callback = _.after(pairs.length, _.bind(function(){
-					this.trigger('view:all-region-shown');
+					this.triggerMethodInversed('ready');;
 				}, this));
 				_.each(pairs, function(p){
-					this[p.region].on('show', callback);
+					this[p.region].once('ready', callback);
 					this[p.region].trigger('region:load-view', p.name);
 				}, this);
 				
@@ -45687,9 +45688,9 @@ Marionette.triggerMethodInversed = (function(){
 			else 
 				this.collection.set(data, options);
 			//align with normal view's data rendered and ready events notification
-			this.trigger('view:data-rendered');
+			
 			_.defer(_.bind(function(){
-				this.triggerMethodInversed('ready');
+				this.trigger('view:data-rendered');
 			}, this));
 			return this;
 		},
@@ -47071,6 +47072,7 @@ var I18N = {};
 				}
 			},
 
+			//Note: setVal() does not affect internal model of $.val() powered editor view;
 			setVal: function(val, loud){
 				if(this.ui.inputs){
 					//radios/checkboxes

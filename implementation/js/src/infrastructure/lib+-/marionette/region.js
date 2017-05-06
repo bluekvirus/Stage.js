@@ -44,11 +44,9 @@
  * 
  * @author Tim Lauv
  * @updated 2014.03.03
- * @updated 2015.08.10
  * @updated 2015.12.15
- * @updated 2015.02.03
  * @updated 2016.12.12
- * @updated 2017.03.09
+ * @updated 2017.05.05
  */
 
 ;(function(app) {
@@ -177,6 +175,9 @@
             //mark currentView, parentRegion
             this.currentView = view;
             view.parentRegion = this;
+            view.on('ready', function(){
+                this.parentRegion.trigger('ready');
+            }, view);
 
             //inject parent view container through region into the regional views
             if (this.parentCt) {
