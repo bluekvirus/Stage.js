@@ -110,10 +110,6 @@
 	    	app.debug('Datatable navi to', path, vcfg);
 	    },
 
-	    //can only be detected if parentCt is still present.
-	    onNavigateAway: function(){
-	    	app.debug('Datatable navi away', this);
-	    }
 	});	
 
 })(Application);

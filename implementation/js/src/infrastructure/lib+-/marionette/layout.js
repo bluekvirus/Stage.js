@@ -310,22 +310,25 @@
 					//retrieve nav (last in path) view config
 					var viewConfig = app._navViewConfig;
 
+					//last view in the navi chain, the end!
 					if(!pathArray || pathArray.length === 0){
 						if(!old){
 							delete app._navViewConfig;
-							app.coop('navigation-changed', app.navPathArray());
-							this.trigger('view:navigate-to', '', viewConfig);//use this to show the default view
 						}
 						else {
 							if(this.navRegion) this.getRegion(this.navRegion).close();
 						}
+						this.trigger('view:navigate-to', '', viewConfig); //use this to show the default view ([] is true, so we signal '')
+						app.coop('navigation-changed', app.navPathArray());						
 						return;	
 					}
 
+					//no navRegion for putting next view on, stop to chain!
 					if(!this.navRegion){
 						delete app._navViewConfig;
+						this.trigger('view:navigate-to', pathArray, viewConfig);
 						app.coop('navigation-changed', app.navPathArray());
-						return this.trigger('view:navigate-to', pathArray.join('/'), viewConfig);
+						return;
 					}
 
 					if(!this.regions[this.navRegion]){
@@ -341,9 +344,7 @@
 						if(!navRegion.currentView || TargetView.prototype.name !== navRegion.currentView.name){
 							//new
 							var view = TargetView.create();
-							view.trigger('view:before-navigate-to');
-							
-							if(navRegion.currentView) navRegion.currentView.trigger('view:navigate-away');
+							view.trigger('view:before-navigate-to', pathArray);
 							
 							//chain on region:show (instead of view:show to let view finish 'show'ing effects before chaining)
 							view.once('ready', function(){
@@ -356,12 +357,13 @@
 							navRegion.currentView.trigger('view:navigate-chain', pathArray, true);
 						}
 
-
+					//can't find the view to put in navRegion, stop the chain!
 					}else{
 						pathArray.unshift(targetViewName);
 						delete app._navViewConfig;
+						this.trigger('view:navigate-to', pathArray, viewConfig);
 						app.coop('navigation-changed', app.navPathArray());
-						return this.trigger('view:navigate-to', pathArray.join('/'), viewConfig);	
+						return;
 					}
 
 				};

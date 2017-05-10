@@ -170,10 +170,8 @@
 						return;
 					}
 					//allow context to check/do certain stuff before navigated to
-					targetCtx.trigger('view:before-navigate-to');
+					targetCtx.trigger('view:before-navigate-to', path);
 
-					//save your context state within onNavigateAway()
-					if(app.currentContext) app.currentContext.trigger('view:navigate-away'); 
 					//prepare and show this new context					
 					var navRegion = app.config.navRegion || app.config.contextRegion;
 					var targetRegion = app.mainView.getRegion(navRegion);

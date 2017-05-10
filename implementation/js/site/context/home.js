@@ -89,21 +89,13 @@
 			}
 		},
 
-		onBeforeNavigateTo:function(){
-			app.debug('before navi to', this.name);
+		onBeforeNavigateTo:function(path){
+			app.debug('before navi to', path, this.name);
 			return true;
 		},
 
 		onNavigateTo:function(path, vcfg){
 			app.debug('Home navi to', path, vcfg);
-		},
-
-		onNavigateAway: function(){
-			app.debug('before navi away from', this.name);
-			$('body').css({
-				'overflowX': 'hidden',
-				'overflowY': 'auto'
-			});
 		},
 
 		onPollDataAbc: function(data){

@@ -454,7 +454,7 @@ Or, brutally using the actual `window.location` object:
 window.location.hash = '#navigate/ABC/EFG/...';
 ```
 
-There is an `navigate-away` event triggered to call `onNavigateAway` method on a view when the application is switching away from one. Use this listener if you want to store some of the view state and recover later. We recommend that you use the localStorage feature of HTML5 and we have already include a library for you in the framework distribution. (see [store.js](https://github.com/marcuswestin/store.js) for more)
+We recommend that you use the localStorage feature of HTML5 and we have already include a library for you in the framework distribution. (see [store.js](https://github.com/marcuswestin/store.js) for more)
 
 You can pass an additional *silent* argument with the `app:navigate` event to avoid changing the url hash path during the navigation:
 ```
@@ -2032,7 +2032,7 @@ View meta events (trigger()-ed, implicit ones through triggerMethod*()):
 * view:editor-e (e: keyup, focusin/out)
 * view:page-changed (limited to Paginator widget bound view)
 * view:tab-removed/-added/-activated
-* view:navigate-to/-away (also view:before-navigate-to)
+* view:navigate-to (also view:before-navigate-to)
 * view:item-activated/-deactivated
 * view:drag/drop
 * view:sort/sort-change

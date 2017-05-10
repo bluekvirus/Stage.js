@@ -41358,10 +41358,8 @@ Marionette.triggerMethodInversed = (function(){
 						return;
 					}
 					//allow context to check/do certain stuff before navigated to
-					targetCtx.trigger('view:before-navigate-to');
+					targetCtx.trigger('view:before-navigate-to', path);
 
-					//save your context state within onNavigateAway()
-					if(app.currentContext) app.currentContext.trigger('view:navigate-away'); 
 					//prepare and show this new context					
 					var navRegion = app.config.navRegion || app.config.contextRegion;
 					var targetRegion = app.mainView.getRegion(navRegion);
@@ -42541,7 +42539,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.2-1248 build 1494047617257";
+;;app.stagejs = "1.10.2-1249 build 1494392667444";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -45474,22 +45472,25 @@ Marionette.triggerMethodInversed = (function(){
 					//retrieve nav (last in path) view config
 					var viewConfig = app._navViewConfig;
 
+					//last view in the navi chain, the end!
 					if(!pathArray || pathArray.length === 0){
 						if(!old){
 							delete app._navViewConfig;
-							app.coop('navigation-changed', app.navPathArray());
-							this.trigger('view:navigate-to', '', viewConfig);//use this to show the default view
 						}
 						else {
 							if(this.navRegion) this.getRegion(this.navRegion).close();
 						}
+						this.trigger('view:navigate-to', '', viewConfig); //use this to show the default view ([] is true, so we signal '')
+						app.coop('navigation-changed', app.navPathArray());						
 						return;	
 					}
 
+					//no navRegion for putting next view on, stop to chain!
 					if(!this.navRegion){
 						delete app._navViewConfig;
+						this.trigger('view:navigate-to', pathArray, viewConfig);
 						app.coop('navigation-changed', app.navPathArray());
-						return this.trigger('view:navigate-to', pathArray.join('/'), viewConfig);
+						return;
 					}
 
 					if(!this.regions[this.navRegion]){
@@ -45505,9 +45506,7 @@ Marionette.triggerMethodInversed = (function(){
 						if(!navRegion.currentView || TargetView.prototype.name !== navRegion.currentView.name){
 							//new
 							var view = TargetView.create();
-							view.trigger('view:before-navigate-to');
-							
-							if(navRegion.currentView) navRegion.currentView.trigger('view:navigate-away');
+							view.trigger('view:before-navigate-to', pathArray);
 							
 							//chain on region:show (instead of view:show to let view finish 'show'ing effects before chaining)
 							view.once('ready', function(){
@@ -45520,12 +45519,13 @@ Marionette.triggerMethodInversed = (function(){
 							navRegion.currentView.trigger('view:navigate-chain', pathArray, true);
 						}
 
-
+					//can't find the view to put in navRegion, stop the chain!
 					}else{
 						pathArray.unshift(targetViewName);
 						delete app._navViewConfig;
+						this.trigger('view:navigate-to', pathArray, viewConfig);
 						app.coop('navigation-changed', app.navPathArray());
-						return this.trigger('view:navigate-to', pathArray.join('/'), viewConfig);	
+						return;
 					}
 
 				};
