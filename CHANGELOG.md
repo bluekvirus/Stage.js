@@ -15,9 +15,15 @@ Change Log
 10. Removed 'ready' event on `$.val()` powered editors;
 11. Refined svg canvas drawing to happen before 'ready'; (only 'navigate-to', pollings and channels setup happens after 'ready')
 12. Refined DataGrid widget to dynamically load its header and body cells; (just like form view editors)
+13. Removed 'view:navigate-away' meta event; (use 'close' instead)
+14. Refined 'view:before-navigate-to' meta event to have the sub-path array as argument;
+15. Aligned coop e 'navigation-changed' to be after last-view-in-the-chain's ('ready' -->) 'view:navigate-to' (--> 'navigation-changed');
 
 working on ...
 
+* '[tutorial=]', app.tutorial(true/false);
+* app.ee + ['a-->b', 'c-->d'] state machine support (start/stop/reset);
+* view.coop to support {'e': fn, ...} in addition to ['e', ...]; 
 * fix app.locate() debug api to support returning multiple view instances with the same name;
 * add app.submit(url, view/[data, files]) in addition to app.upload(); (align both standalone and normal file editors upload with same auto csrf token inject)
 * Search/IP/Number editors;
