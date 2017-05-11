@@ -42539,7 +42539,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.2-1249 build 1494392667444";
+;;app.stagejs = "1.10.2-1250 build 1494472792411";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -45275,54 +45275,66 @@ Marionette.triggerMethodInversed = (function(){
 		},
 
 		//activate (by tabId) a tab view (other tabbed views are not closed)
-		tab: function(region /*name only*/, View /*or template or name or instance or false for tab remove*/, tabId /*required*/){
-			if(tabId === undefined){
-				tabId = View;
-				View = undefined;
-			}
-			if(tabId === undefined)
-				throw new Error('DEV::Layout+::tab() tabId is required...');
+		tab: function(region /*name only*/ , View /*or template or name or instance or false for tab remove*/ , tabId /*required*/ ) {
+		    if (tabId === undefined) {
+		        tabId = View;
+		        View = undefined;
+		    }
+		    if (tabId === undefined)
+		        throw new Error('DEV::Layout+::tab() tabId is required...');
 
-			var cv = this.getViewIn(region);
-			if(!cv || !cv._tabbedViewWrapper){
-				//create a place-holder parent view containing 1 region (region-tabId)
-				this.show(region, '<span style="display:none;">tabbed regions wrapper view</span>');
-				cv = this.getViewIn(region);
-				cv._tabbedViewWrapper = true;
-				//add getTab api to view
-				this.getViewFromTab = function(tabId){
-					return cv.getViewIn('tab-' + tabId);
-				};
-			}
+		    var cv = this.getViewIn(region);
+		    if (!cv || !cv._tabbedViewWrapper) {
+		        //create a place-holder parent view containing 1 region (region-tabId)
+		        this.show(region, '<span style="display:none;">tabbed regions wrapper view</span>');
+		        cv = this.getViewIn(region);
+		        cv._tabbedViewWrapper = true;
+		        //add getTab api to view
+		        this.getViewFromTab = function(tabId) {
+		            return cv.getViewIn('tab-' + tabId);
+		        };
+		        var that = this;
+		        cv.once('ready', function() {
+		            switchTab(that); //fake 'data-rendered' event for no-data view (cv) will refresh regions, so wait for 'ready'
+		        });
+		    } else
+		        switchTab(this);
 
-			//if View is set to false, remove tab (region & view)
-			if(View === false){
-				cv.removeRegion('tab-' + tabId); //this will in turn close() that tab region
-				this.trigger('view:tab-removed', tabId);
-				return;
-			}
+		    function switchTab(scope) {
+		        //if View is set to false, remove tab (region & view)
+		        if (View === false) {
+		            cv.removeRegion('tab-' + tabId); //this will in turn close() that tab region
+		            scope.trigger('view:tab-removed', tabId);
+		            return;
+		        }
 
-			//if there is no View supplied, activate tab only (hide all first)
-			_.each(cv.regions, function(opt, r){
-				cv.getRegion(r).$el.hide();
-			});
+		        //if there is no View supplied, activate tab only (hide all first)
+		        _.each(cv.regions, function(opt, r) {
+		            cv.getRegion(r).$el.hide();
+		        });
 
-			//see if we have this tabId in the wrapper view already
-			var tabRegion = cv.getRegion('tab-' + tabId);
-			if(!tabRegion){
-				//No, create a tab region using the tabId, then show() the given View on it
-				var rname = 'tab-' + tabId;
-				cv.$el.append('<div region="' + rname + '"></div>');
-				tabRegion = cv.addRegion(rname, {selector: '[region="' + rname + '"]'});
-				tabRegion.ensureEl(this); //rebind tabRegions's parentCt
-				cv.show(rname, View);//view will pick up tabRegion's parentCt
-				this.getViewFromTab(tabId).parentRegion = cv.parentRegion; //then, give up tabRegion as parentRegion.
-				this.trigger('view:tab-added', tabId);
-			}else {
-				//Yes, display the specific tab region (show one later)
-				tabRegion.$el.show();
-			}
-			this.trigger('view:tab-activated', tabId);
+		        //see if we have this tabId in the wrapper view already
+		        var rname = 'tab-' + tabId;
+		        var tabRegion = cv.getRegion(rname);
+		        if (!tabRegion) {
+		            //No, create a tab region using the tabId, then show() the given View on it
+		            cv.$el.append('<div region="' + rname + '"></div>');
+		            tabRegion = cv.addRegion(rname, { selector: '[region="' + rname + '"]' });
+		            tabRegion.ensureEl(scope); //re-bind tabRegions's parentCt
+		            cv.show(rname, View); //view will pick up tabRegion's parentCt
+		            scope.getViewFromTab(tabId).parentRegion = cv.parentRegion; //re-bind tabRegions's parentRegion.
+		            scope.listenToOnce(scope.getViewFromTab(tabId), 'ready', function() {
+		                scope.trigger('view:tab-added', tabId);
+		                scope.trigger('view:tab-activated', tabId);
+		            });
+		        } else {
+		            //Yes, display the specific tab region (show one later)
+		            tabRegion.$el.show();
+		            _.defer(function() {
+		                scope.trigger('view:tab-activated', tabId);
+		            });
+		        }
+		    }
 		},
 
 		//lock or unlock a region with overlayed spin/view (e.g waiting)

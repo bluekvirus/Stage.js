@@ -18,6 +18,8 @@ Change Log
 13. Removed 'view:navigate-away' meta event; (use 'close' instead)
 14. Refined 'view:before-navigate-to' meta event to have the sub-path array as argument;
 15. Aligned coop e 'navigation-changed' to be after last-view-in-the-chain's ('ready' -->) 'view:navigate-to' (--> 'navigation-changed');
+16. Fixed view.tab() tab region modification timing issue caused by hidden container view (fake async 'data-rendered');
+17. Aligned 'view:tab-activated' to be after newly added tab view's 'ready' event;
 
 working on ...
 
