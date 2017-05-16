@@ -42561,7 +42561,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.2-1251 build 1494908236532";
+;;app.stagejs = "1.10.2-1253 build 1494979201299";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -44421,6 +44421,12 @@ Marionette.triggerMethodInversed = (function(){
 						drag: function(e, ui){
 							var $sample = that._cachedDraggableItem; //for better performance
 							that.trigger('view:drag', $(ui.helper).width($sample.width()), ui, e);
+						},
+						start: function(e, ui){
+							that.trigger('view:drag-start', $(ui.helper).width($sample.width()), ui, e);
+						},
+						stop: function(e, ui){
+							that.trigger('view:drag-stop', $(ui.helper).width($sample.width()), ui, e);
 						}
 					};
 					if(_.isString(dnd.drag))
@@ -44439,6 +44445,9 @@ Marionette.triggerMethodInversed = (function(){
 						accept: '.ui-draggable-item',
 						drop: function(e, ui){
 							that.trigger('view:drop', $(ui.draggable), ui, e);
+						},
+						over: function(e, ui){
+							that.trigger('view:drop-over', $(ui.draggable), ui, e);
 						}
 					};
 					if(_.isString(dnd.drop))
@@ -44503,10 +44512,10 @@ Marionette.triggerMethodInversed = (function(){
 						that.trigger('view:item-unselecting', $(ui.unselecting), e);
 					},
 					stop: function(e){ //.ui-selected
-						that.trigger('view:selection-done', that.$el.find('.ui-selected'));
+						that.trigger('view:select-stop', that.$el.find('.ui-selected'));
 					},
 					start: function(e){
-						that.trigger('view:selection-begin');
+						that.trigger('view:select-start');
 					}
 				};
 				if(_.isString(this.selectable))
@@ -45438,7 +45447,7 @@ Marionette.triggerMethodInversed = (function(){
 
 					//replace special html string as nested tpl inserted by $.flexlayout (:#id, :@tpl.html, :@doc.md)
 					$el.find('div').map(function(){
-						var nestedTplId = $(this).text();
+						var nestedTplId = $(this).html();
 						var tplCache;
 						if(nestedTplId){
 							tplCache = app.Util.Tpl.Cache.get(nestedTplId, true);
