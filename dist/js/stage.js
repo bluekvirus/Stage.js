@@ -41407,28 +41407,21 @@ Marionette.triggerMethodInversed = (function(){
 					actions: app.config.actions,
 					layout: app.config.layout,
 				}, true);
-			app.getRegion('region-app').show(app.mainView).$el.css({height: '100%', width: '100%'});
 
 			//b. Create the fixed overlaying regions according to app.config.icings (like a cake, yay!)
-			var icings = {};
-			_.each(_.extend({}, app.config.icings, app.config.curtains), function(cfg, name){
-				if(name === 'app') return;
+			app.mainView.on('render', function(){
+				var icings = {};
+				_.each(_.extend({'default': {top:'30%', left:0, right:0, bottom: '30%', 'overflow-y': 'auto', 'overflow-x': 'hidden'}}, app.config.icings, app.config.curtains), function(cfg, name){
+					if(name === 'app') return;
 
-				var irUID = _.uniqueId('app-icing-');
-				$body.append($('<div id="' + irUID + '" style="position:fixed"></div>').css(cfg).hide()); //default on hidden
-				icings[['icing', 'region', name].join('-')] = '#' + irUID;
+					var irUID = _.uniqueId('app-icing-');
+					app.mainView.$el.append($('<div id="' + irUID + '" style="position:fixed"></div>').css(cfg).hide()); //default on hidden
+					icings[['icing', 'region', name].join('-')] = {selector: '#' + irUID};
+				});
+				_.extend(app.mainView.regions, icings);
 			});
-			app.mainView.addRegions(icings);
-			app.icing = function(name, flag){
-				var ir = app.mainView.getRegion(['icing', 'region', name].join('-'));
-				ir.ensureEl(app.mainView);
-				if(flag === false)
-					ir.$el.hide();
-				else
-					ir.$el.show();
-				return ir;
-			}; 
-			app.curtain = app.icing; //alias: curtain()
+			app.getRegion('region-app').show(app.mainView).$el.css({height: '100%', width: '100%'});
+
 
 			//c. init client page router and start history:
 			var Router = Backbone.Marionette.AppRouter.extend({
@@ -41784,6 +41777,34 @@ Marionette.triggerMethodInversed = (function(){
 				//view
 				return parentCt.show(regionName, View, options); //returns the sub-regional view.
 			
+		},
+
+		icing: function(name, flag, View, options){
+			if(_.isBoolean(name)){
+				options = View;
+				View = flag;
+				flag = name;
+				name = 'default';
+			}
+
+			var regionName = ['icing', 'region', name].join('-');
+			if(!app.mainView.getRegion(regionName) && !_.isBoolean(name)){
+				options = flag;
+				View = name;
+				flag = true;
+				name = 'default';
+			}
+
+			regionName = ['icing', 'region', name].join('-');
+			var ir = app.mainView.getRegion(regionName);
+			if(flag === false){
+				ir.$el.hide();
+				ir.currentView && ir.currentView.close();
+			}
+			else {
+				ir.$el.show();
+				app.mainView.show(regionName, View, options);
+			}
 		},
 
 		coop: function(event){
@@ -42507,6 +42528,7 @@ Marionette.triggerMethodInversed = (function(){
 	//alias
 	app.page = app.context;
 	app.area = app.regional;
+	app.curtain = app.icing;
 
 	/**
 	 * API summary
@@ -42539,7 +42561,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.2-1250 build 1494472792411";
+;;app.stagejs = "1.10.2-1251 build 1494908236532";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -43437,8 +43459,12 @@ Marionette.triggerMethodInversed = (function(){
  *     
  * Through:
  *     a. view="" in the template; (1, 2.1, 2.2, 2.5 only)
- *     b. this.show('region', ...) in a view; (all 1-4)
- *     c. 'region:load-view' on a region; (all 1-4)
+ *     b. this.more('region', ...) in a view; (1, 3 only)
+ *     c. this.show('region', ...) in a view; (all 1-4)
+ *     d. app/this.spray('selector', ...); (all 1-4)
+ *     e. this.tab('region', ...) in a view; (all 1-4)
+ *     f. app.icing/curtain('name', flag, ...); (all 1-4)
+ *     g. 'region:load-view' on a region; (all 1-4)
  *
  *
  * Effect config
@@ -45275,7 +45301,7 @@ Marionette.triggerMethodInversed = (function(){
 		},
 
 		//activate (by tabId) a tab view (other tabbed views are not closed)
-		tab: function(region /*name only*/ , View /*or template or name or instance or false for tab remove*/ , tabId /*required*/ ) {
+		tab: function(region /*name only*/ , View /*or template or name or instance or false for tab remove or tabId for activation*/ , tabId) {
 		    if (tabId === undefined) {
 		        tabId = View;
 		        View = undefined;
@@ -45328,7 +45354,7 @@ Marionette.triggerMethodInversed = (function(){
 		                scope.trigger('view:tab-activated', tabId);
 		            });
 		        } else {
-		            //Yes, display the specific tab region (show one later)
+		            //Yes, display the specific tab region (ignore the View param even if it is given)
 		            tabRegion.$el.show();
 		            _.defer(function() {
 		                scope.trigger('view:tab-activated', tabId);

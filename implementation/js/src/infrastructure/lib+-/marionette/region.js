@@ -22,8 +22,12 @@
  *     
  * Through:
  *     a. view="" in the template; (1, 2.1, 2.2, 2.5 only)
- *     b. this.show('region', ...) in a view; (all 1-4)
- *     c. 'region:load-view' on a region; (all 1-4)
+ *     b. this.more('region', ...) in a view; (1, 3 only)
+ *     c. this.show('region', ...) in a view; (all 1-4)
+ *     d. app/this.spray('selector', ...); (all 1-4)
+ *     e. this.tab('region', ...) in a view; (all 1-4)
+ *     f. app.icing/curtain('name', flag, ...); (all 1-4)
+ *     g. 'region:load-view' on a region; (all 1-4)
  *
  *
  * Effect config

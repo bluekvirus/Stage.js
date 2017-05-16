@@ -219,28 +219,21 @@
 					actions: app.config.actions,
 					layout: app.config.layout,
 				}, true);
-			app.getRegion('region-app').show(app.mainView).$el.css({height: '100%', width: '100%'});
 
 			//b. Create the fixed overlaying regions according to app.config.icings (like a cake, yay!)
-			var icings = {};
-			_.each(_.extend({}, app.config.icings, app.config.curtains), function(cfg, name){
-				if(name === 'app') return;
+			app.mainView.on('render', function(){
+				var icings = {};
+				_.each(_.extend({'default': {top:'30%', left:0, right:0, bottom: '30%', 'overflow-y': 'auto', 'overflow-x': 'hidden'}}, app.config.icings, app.config.curtains), function(cfg, name){
+					if(name === 'app') return;
 
-				var irUID = _.uniqueId('app-icing-');
-				$body.append($('<div id="' + irUID + '" style="position:fixed"></div>').css(cfg).hide()); //default on hidden
-				icings[['icing', 'region', name].join('-')] = '#' + irUID;
+					var irUID = _.uniqueId('app-icing-');
+					app.mainView.$el.append($('<div id="' + irUID + '" style="position:fixed"></div>').css(cfg).hide()); //default on hidden
+					icings[['icing', 'region', name].join('-')] = {selector: '#' + irUID};
+				});
+				_.extend(app.mainView.regions, icings);
 			});
-			app.mainView.addRegions(icings);
-			app.icing = function(name, flag){
-				var ir = app.mainView.getRegion(['icing', 'region', name].join('-'));
-				ir.ensureEl(app.mainView);
-				if(flag === false)
-					ir.$el.hide();
-				else
-					ir.$el.show();
-				return ir;
-			}; 
-			app.curtain = app.icing; //alias: curtain()
+			app.getRegion('region-app').show(app.mainView).$el.css({height: '100%', width: '100%'});
+
 
 			//c. init client page router and start history:
 			var Router = Backbone.Marionette.AppRouter.extend({

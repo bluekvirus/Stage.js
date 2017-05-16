@@ -191,6 +191,34 @@
 			
 		},
 
+		icing: function(name, flag, View, options){
+			if(_.isBoolean(name)){
+				options = View;
+				View = flag;
+				flag = name;
+				name = 'default';
+			}
+
+			var regionName = ['icing', 'region', name].join('-');
+			if(!app.mainView.getRegion(regionName) && !_.isBoolean(name)){
+				options = flag;
+				View = name;
+				flag = true;
+				name = 'default';
+			}
+
+			regionName = ['icing', 'region', name].join('-');
+			var ir = app.mainView.getRegion(regionName);
+			if(flag === false){
+				ir.$el.hide();
+				ir.currentView && ir.currentView.close();
+			}
+			else {
+				ir.$el.show();
+				app.mainView.show(regionName, View, options);
+			}
+		},
+
 		coop: function(event){
 			var args = _.toArray(arguments);
 			args.unshift('app:coop');
@@ -912,6 +940,7 @@
 	//alias
 	app.page = app.context;
 	app.area = app.regional;
+	app.curtain = app.icing;
 
 	/**
 	 * API summary

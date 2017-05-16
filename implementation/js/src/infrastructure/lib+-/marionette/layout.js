@@ -113,7 +113,7 @@
 		},
 
 		//activate (by tabId) a tab view (other tabbed views are not closed)
-		tab: function(region /*name only*/ , View /*or template or name or instance or false for tab remove*/ , tabId /*required*/ ) {
+		tab: function(region /*name only*/ , View /*or template or name or instance or false for tab remove or tabId for activation*/ , tabId) {
 		    if (tabId === undefined) {
 		        tabId = View;
 		        View = undefined;
@@ -166,7 +166,7 @@
 		                scope.trigger('view:tab-activated', tabId);
 		            });
 		        } else {
-		            //Yes, display the specific tab region (show one later)
+		            //Yes, display the specific tab region (ignore the View param even if it is given)
 		            tabRegion.$el.show();
 		            _.defer(function() {
 		                scope.trigger('view:tab-activated', tabId);
