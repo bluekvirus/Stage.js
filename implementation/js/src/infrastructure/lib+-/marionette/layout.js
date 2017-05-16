@@ -250,7 +250,7 @@
 
 					//replace special html string as nested tpl inserted by $.flexlayout (:#id, :@tpl.html, :@doc.md)
 					$el.find('div').map(function(){
-						var nestedTplId = $(this).text();
+						var nestedTplId = $(this).html();
 						var tplCache;
 						if(nestedTplId){
 							tplCache = app.Util.Tpl.Cache.get(nestedTplId, true);

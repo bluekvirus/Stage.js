@@ -675,6 +675,12 @@
 						drag: function(e, ui){
 							var $sample = that._cachedDraggableItem; //for better performance
 							that.trigger('view:drag', $(ui.helper).width($sample.width()), ui, e);
+						},
+						start: function(e, ui){
+							that.trigger('view:drag-start', $(ui.helper).width($sample.width()), ui, e);
+						},
+						stop: function(e, ui){
+							that.trigger('view:drag-stop', $(ui.helper).width($sample.width()), ui, e);
 						}
 					};
 					if(_.isString(dnd.drag))
@@ -693,6 +699,9 @@
 						accept: '.ui-draggable-item',
 						drop: function(e, ui){
 							that.trigger('view:drop', $(ui.draggable), ui, e);
+						},
+						over: function(e, ui){
+							that.trigger('view:drop-over', $(ui.draggable), ui, e);
 						}
 					};
 					if(_.isString(dnd.drop))
@@ -757,10 +766,10 @@
 						that.trigger('view:item-unselecting', $(ui.unselecting), e);
 					},
 					stop: function(e){ //.ui-selected
-						that.trigger('view:selection-done', that.$el.find('.ui-selected'));
+						that.trigger('view:select-stop', that.$el.find('.ui-selected'));
 					},
 					start: function(e){
-						that.trigger('view:selection-begin');
+						that.trigger('view:select-start');
 					}
 				};
 				if(_.isString(this.selectable))
