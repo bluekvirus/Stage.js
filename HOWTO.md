@@ -1635,7 +1635,7 @@ You can also use it in template as a *Handlebars.js* helper:
 ```
 template: [
     '<div>',
-        '{{i18n \'key\'}}', //this will translate whatever string the var 'key' is holding
+        '{{i18n key}}', //this will translate whatever string the var 'key' is holding
     '<div>'
 ]
 ```

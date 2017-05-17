@@ -21,6 +21,7 @@ Change Log
 16. Fixed view.tab() tab region modification timing issue caused by hidden container view (fake async 'data-rendered');
 17. Aligned 'view:tab-activated' to be after newly added tab view's 'ready' event;
 18. Fixed app.icing/curtain api and configure regression due to region construction timing change; (app.icing/curtain can now show views directly)
+19. Added more default event forwarding to view.dnd ability; (drag-start/stop, drop-over, select-start/stop)
 
 working on ...
 
