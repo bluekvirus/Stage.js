@@ -42561,7 +42561,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.2-1253 build 1494979201299";
+;;app.stagejs = "1.10.2-1254 build 1494979624208";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -44423,9 +44423,11 @@ Marionette.triggerMethodInversed = (function(){
 							that.trigger('view:drag', $(ui.helper).width($sample.width()), ui, e);
 						},
 						start: function(e, ui){
+							var $sample = that._cachedDraggableItem; //for better performance
 							that.trigger('view:drag-start', $(ui.helper).width($sample.width()), ui, e);
 						},
 						stop: function(e, ui){
+							var $sample = that._cachedDraggableItem; //for better performance
 							that.trigger('view:drag-stop', $(ui.helper).width($sample.width()), ui, e);
 						}
 					};

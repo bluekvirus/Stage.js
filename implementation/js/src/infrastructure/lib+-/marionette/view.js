@@ -677,9 +677,11 @@
 							that.trigger('view:drag', $(ui.helper).width($sample.width()), ui, e);
 						},
 						start: function(e, ui){
+							var $sample = that._cachedDraggableItem; //for better performance
 							that.trigger('view:drag-start', $(ui.helper).width($sample.width()), ui, e);
 						},
 						stop: function(e, ui){
+							var $sample = that._cachedDraggableItem; //for better performance
 							that.trigger('view:drag-stop', $(ui.helper).width($sample.width()), ui, e);
 						}
 					};
