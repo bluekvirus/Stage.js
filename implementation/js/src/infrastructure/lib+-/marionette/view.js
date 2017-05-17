@@ -939,7 +939,7 @@
 		//Caveat: re-render a static view will not trigger 'ready' again...
 		this.listenToOnce(this, 'show', function(){
 			//call view `ready` (if not waiting for data render after 1st `show`, static and local data view only)
-			if(!this.data && !this.useParentData){
+			if((!this.data || !_.size(this.data)) && !this.useParentData){
 				//e.g manual view life-cycling (very rare)
 				_.defer(_.bind(function(){
 					this.trigger('view:data-rendered');

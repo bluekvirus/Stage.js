@@ -42561,7 +42561,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.2-1254 build 1494979624208";
+;;app.stagejs = "1.10.2-1255 build 1494983944373";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -44685,7 +44685,7 @@ Marionette.triggerMethodInversed = (function(){
 		//Caveat: re-render a static view will not trigger 'ready' again...
 		this.listenToOnce(this, 'show', function(){
 			//call view `ready` (if not waiting for data render after 1st `show`, static and local data view only)
-			if(!this.data && !this.useParentData){
+			if((!this.data || !_.size(this.data)) && !this.useParentData){
 				//e.g manual view life-cycling (very rare)
 				_.defer(_.bind(function(){
 					this.trigger('view:data-rendered');

@@ -22,6 +22,7 @@ Change Log
 17. Aligned 'view:tab-activated' to be after newly added tab view's 'ready' event;
 18. Fixed app.icing/curtain api and configure regression due to region construction timing change; (app.icing/curtain can now show views directly)
 19. Added more default event forwarding to view.dnd ability; (drag-start/stop, drop-over, select-start/stop)
+20. Ensured both no-data and empty-data view's initial ready event by the faked 'data-rendered' event;
 
 working on ...
 
