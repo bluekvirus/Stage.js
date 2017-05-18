@@ -338,7 +338,7 @@
 					//no navRegion for putting next view on, stop to chain!
 					if(!this.navRegion){
 						delete app._navViewConfig;
-						this.trigger('view:navigate-to', pathArray, viewConfig);
+						this.trigger('view:navigate-to', _.clone(pathArray), viewConfig);
 						app.coop('navigation-changed', app.navPathArray());
 						return;
 					}
@@ -357,7 +357,7 @@
 						if(!navRegion.currentView || TargetView.prototype.name !== navRegion.currentView.name){
 							//new
 							var view = TargetView.create();
-							view.trigger('view:before-navigate-to', pathArray);
+							view.trigger('view:before-navigate-to', _.clone(pathArray));
 							
 							//chain on region:show (instead of view:show to let view finish 'show'ing effects before chaining)
 							view.on('ready', function(){
@@ -374,7 +374,7 @@
 					}else{
 						pathArray.unshift(targetViewName);
 						delete app._navViewConfig;
-						this.trigger('view:navigate-to', pathArray, viewConfig);
+						this.trigger('view:navigate-to', _.clone(pathArray), viewConfig);
 						app.coop('navigation-changed', app.navPathArray());
 						return;
 					}

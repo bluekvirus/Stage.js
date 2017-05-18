@@ -41358,7 +41358,7 @@ Marionette.triggerMethodInversed = (function(){
 						return;
 					}
 					//allow context to check/do certain stuff before navigated to
-					targetCtx.trigger('view:before-navigate-to', path);
+					targetCtx.trigger('view:before-navigate-to', _.clone(path));
 
 					//prepare and show this new context					
 					var navRegion = app.config.navRegion || app.config.contextRegion;
@@ -42561,7 +42561,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.2-1256 build 1495079662089";
+;;app.stagejs = "1.10.2-1257 build 1495081410570";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -45533,7 +45533,7 @@ Marionette.triggerMethodInversed = (function(){
 					//no navRegion for putting next view on, stop to chain!
 					if(!this.navRegion){
 						delete app._navViewConfig;
-						this.trigger('view:navigate-to', pathArray, viewConfig);
+						this.trigger('view:navigate-to', _.clone(pathArray), viewConfig);
 						app.coop('navigation-changed', app.navPathArray());
 						return;
 					}
@@ -45552,7 +45552,7 @@ Marionette.triggerMethodInversed = (function(){
 						if(!navRegion.currentView || TargetView.prototype.name !== navRegion.currentView.name){
 							//new
 							var view = TargetView.create();
-							view.trigger('view:before-navigate-to', pathArray);
+							view.trigger('view:before-navigate-to', _.clone(pathArray));
 							
 							//chain on region:show (instead of view:show to let view finish 'show'ing effects before chaining)
 							view.on('ready', function(){
@@ -45569,7 +45569,7 @@ Marionette.triggerMethodInversed = (function(){
 					}else{
 						pathArray.unshift(targetViewName);
 						delete app._navViewConfig;
-						this.trigger('view:navigate-to', pathArray, viewConfig);
+						this.trigger('view:navigate-to', _.clone(pathArray), viewConfig);
 						app.coop('navigation-changed', app.navPathArray());
 						return;
 					}

@@ -170,7 +170,7 @@
 						return;
 					}
 					//allow context to check/do certain stuff before navigated to
-					targetCtx.trigger('view:before-navigate-to', path);
+					targetCtx.trigger('view:before-navigate-to', _.clone(path));
 
 					//prepare and show this new context					
 					var navRegion = app.config.navRegion || app.config.contextRegion;
