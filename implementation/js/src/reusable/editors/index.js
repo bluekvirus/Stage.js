@@ -180,6 +180,7 @@
 					if(!choices.remote)
 						prepareChoices(options.options);
 					else
+						//editor doesn't re-render upon .set(), so once('render') is enough;
 						this.listenToOnce(this, 'render', function(){
 							var that = this;
 							app.remote(choices.remote).done(function(data){

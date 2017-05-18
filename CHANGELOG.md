@@ -1,7 +1,7 @@
 Change Log
 ==========
 
-1.10.3+ (2017-04*)
+1.10.3+ (2017-05*)
 ------------------
 1. labels/tooltips/help/status for editors and editor data options can now use raw html within them; (e.g using `<i>` icon tags together with texts) 
 2. app.preventDefault(e) now allows `<label>` tag default behavior to pass to browser;
@@ -23,6 +23,8 @@ Change Log
 18. Fixed app.icing/curtain api and configure regression due to region construction timing change; (app.icing/curtain can now show views directly)
 19. Added more default event forwarding to view.dnd ability; (drag-start/stop, drop-over, select-start/stop)
 20. Ensured both no-data and empty-data view's initial ready event by the faked 'data-rendered' event;
+21. SVG papers will be drawn after 'view:data-rendered' but always before 'ready';
+22. Ensured 'view:navigate-to' to be always triggered after 'ready' not just once; (so you can refresh views in mid nav-chain with new data)
 
 working on ...
 

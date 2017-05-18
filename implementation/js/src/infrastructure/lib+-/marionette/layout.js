@@ -344,6 +344,7 @@
 					}
 
 					if(!this.regions[this.navRegion]){
+						//TBD: throw new Error() instead of just warn()?
 						console.warn('DEV::Layout+::onNavigateChain()', 'invalid navRegion', this.navRegion, 'in', this._name);
 						return;
 					}
@@ -359,7 +360,7 @@
 							view.trigger('view:before-navigate-to', pathArray);
 							
 							//chain on region:show (instead of view:show to let view finish 'show'ing effects before chaining)
-							view.once('ready', function(){
+							view.on('ready', function(){
 								view.trigger('view:navigate-chain', pathArray);
 							});	
 							navRegion.show(view);

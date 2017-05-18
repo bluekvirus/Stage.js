@@ -178,7 +178,7 @@
 					if(!targetRegion) throw new Error('DEV::Application::navigate() You don\'t have navRegion \'' + navRegion + '\' defined in main.');		
 					
 					//note that 'ready' is guaranteed to happen after region enter/exit effects
-					targetCtx.once('ready', function(){
+					targetCtx.on('ready', function(){
 						app.currentContext = targetCtx;
 						//fire a notification to app as meta-event. (e.g menu view item highlighting)
 						app.trigger('app:context-switched', app.currentContext.name);

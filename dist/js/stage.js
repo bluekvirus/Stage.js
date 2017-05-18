@@ -41366,7 +41366,7 @@ Marionette.triggerMethodInversed = (function(){
 					if(!targetRegion) throw new Error('DEV::Application::navigate() You don\'t have navRegion \'' + navRegion + '\' defined in main.');		
 					
 					//note that 'ready' is guaranteed to happen after region enter/exit effects
-					targetCtx.once('ready', function(){
+					targetCtx.on('ready', function(){
 						app.currentContext = targetCtx;
 						//fire a notification to app as meta-event. (e.g menu view item highlighting)
 						app.trigger('app:context-switched', app.currentContext.name);
@@ -42561,7 +42561,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.2-1255 build 1494983944373";
+;;app.stagejs = "1.10.2-1256 build 1495079662089";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -44578,13 +44578,9 @@ Marionette.triggerMethodInversed = (function(){
 						//hook up the draw() function (_.defer-ed so you have a chance to call $.css upon view 'ready')
 						this.listenTo(this, 'view:data-rendered view:window-resized', function(){
 							_.each(this.paper, function(paper, name){
-								//note that _.defer() does NOT return the function.
-								var that = this;
-								_.defer(function(){
-									paper.clear();
-									that.svg[name] && that.svg[name].call(that, paper); 
-									//so this.get() still accesses view data in draw() fn.
-								});
+								paper.clear();
+								this.svg[name] && this.svg[name].call(this, paper); 
+								//so this.get() still accesses view data in draw() fn.
 							}, this);
 						});
 						this._svgPaperResizeBound = true;
@@ -45543,6 +45539,7 @@ Marionette.triggerMethodInversed = (function(){
 					}
 
 					if(!this.regions[this.navRegion]){
+						//TBD: throw new Error() instead of just warn()?
 						console.warn('DEV::Layout+::onNavigateChain()', 'invalid navRegion', this.navRegion, 'in', this._name);
 						return;
 					}
@@ -45558,7 +45555,7 @@ Marionette.triggerMethodInversed = (function(){
 							view.trigger('view:before-navigate-to', pathArray);
 							
 							//chain on region:show (instead of view:show to let view finish 'show'ing effects before chaining)
-							view.once('ready', function(){
+							view.on('ready', function(){
 								view.trigger('view:navigate-chain', pathArray);
 							});	
 							navRegion.show(view);
@@ -46542,6 +46539,7 @@ var I18N = {};
 					if(!choices.remote)
 						prepareChoices(options.options);
 					else
+						//editor doesn't re-render upon .set(), so once('render') is enough;
 						this.listenToOnce(this, 'render', function(){
 							var that = this;
 							app.remote(choices.remote).done(function(data){

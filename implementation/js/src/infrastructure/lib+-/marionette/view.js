@@ -832,13 +832,9 @@
 						//hook up the draw() function (_.defer-ed so you have a chance to call $.css upon view 'ready')
 						this.listenTo(this, 'view:data-rendered view:window-resized', function(){
 							_.each(this.paper, function(paper, name){
-								//note that _.defer() does NOT return the function.
-								var that = this;
-								_.defer(function(){
-									paper.clear();
-									that.svg[name] && that.svg[name].call(that, paper); 
-									//so this.get() still accesses view data in draw() fn.
-								});
+								paper.clear();
+								this.svg[name] && this.svg[name].call(this, paper); 
+								//so this.get() still accesses view data in draw() fn.
 							}, this);
 						});
 						this._svgPaperResizeBound = true;
