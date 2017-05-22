@@ -1,6 +1,6 @@
 Stage.js
 ===================
-<img src="http://img.shields.io/bower/v/stage.js.svg?style=flat" alt="Current Version"></img> <img src="http://img.shields.io/badge/supports-Cordova-3B4854.svg?style=flat" alt="Supports Cordova"></img>
+<img src="http://img.shields.io/bower/v/stage.js.svg?style=flat" alt="Current Version"></img> <img src="http://img.shields.io/badge/supports-Cordova-3B4854.svg?style=flat" alt="Supports Cordova"></img> <img src="http://img.shields.io/badge/supports-ASGI-44B78B.svg?style=flat" alt="Supports ASGI"></img>
 
 [Change Log](CHANGELOG.md) - What's changed?
 
@@ -118,7 +118,7 @@ tools/build.sh tag
 ```
 
 
-What's next?
+What's in `-ng`?
 ------------
 [:crystal_ball: Preview current progress](https://github.com/bluekvirus/Stage.js-ng/tree/master/libs/vendor/stagejsv2).
 
