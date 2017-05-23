@@ -41359,6 +41359,9 @@ Marionette.triggerMethodInversed = (function(){
 					}
 					//allow context to check/do certain stuff before navigated to
 					targetCtx.trigger('view:before-navigate-to', _.clone(path));
+					targetCtx.once('close', function(){
+						this.trigger('view:navigate-away');
+					});
 
 					//prepare and show this new context					
 					var navRegion = app.config.navRegion || app.config.contextRegion;
@@ -41635,19 +41638,22 @@ Marionette.triggerMethodInversed = (function(){
 			return app.Core.View.get(name);
 		},
 
-		//pass in [name,] options to register (always requires a name)
-		//pass in [name] to get (name can be of path form)
-		context: function(name /*or options*/, options){
-			if(!options) {
-				if(_.isString(name) || !name)
-					return app.Core.Context.get(name);
+			//@deprecated---------------------
+			//pass in [name,] options to register (always requires a name)
+			//pass in [name] to get (name can be of path form)
+			context: function(name /*or options*/, options){
+				if(!options) {
+					if(_.isString(name) || !name)
+						return app.Core.Context.get(name);
+					else
+						options = name;
+				}
 				else
-					options = name;
-			}
-			else
-				_.extend(options, {name: name});
-			return app.Core.Context.register(options);
-		},
+					_.extend(options, {name: name});
+				console.warn('DEV::Application::context() method is deprecated, use .view() instead for', options.name || options /*as an indicator of anonymous view*/);
+				return app.Core.Context.register(options);
+			},
+			//--------------------------------
 
 		//pass in name, factory to register
 		//pass in name, options to create
@@ -42051,33 +42057,71 @@ Marionette.triggerMethodInversed = (function(){
 		    };
 		},
 
-		//-----------------ee/observer----------------
-		ee: function(state, evtmap){ //+on/once, off, +dispose; +listenTo/Once, stopListening; +trigger;
+		//-----------------ee/observer with built-in state-machine----------------
+		//use start('stateB') or trigger('stateA-->stateB') to swap between states
+		ee: function(data, evtmap){ //+on/once, off, +start/stop; +listenTo/Once, stopListening; +trigger*;
 			var dispatcher;
 			if(!evtmap){
-				evtmap = state;
-				state = undefined;
+				evtmap = data;
+				data = undefined;
 			}
-			state = state || {cid: _.uniqueId('ee')};
+			data = _.extend({}, data, {cid: _.uniqueId('ee'), _currentState: ''});
 			evtmap = _.extend({
 				'initialize': _.noop,
+				'finalize': _.noop,
 			}, evtmap);
-			dispatcher = _.extend(state, Backbone.Events);
+			dispatcher = _.extend(data, Backbone.Events);
+			var _oldTriggerFn = dispatcher.trigger;
+
+			//add a state-machine friendly .trigger method;
+			dispatcher.trigger = function(){
+				var changeOfStates = arguments[0] && arguments[0].match('(.*)-->(.*)');
+				if(changeOfStates && changeOfStates.length){
+					var from = _.string.trim(changeOfStates[1]), to = _.string.trim(changeOfStates[2]);
+					this.trigger('leave', {to: to});
+					//unregister event listeners in [from] state
+					_.each(evtmap[from], function(listener, e){
+						dispatcher.off(from + ':' + e);
+					});
+					//register event listeners in [to] state
+					_.each(evtmap[to], function(listener, e){
+						dispatcher.on(to + ':' + e, listener);
+					});
+					this._currentState = to;
+					this.trigger('enter', {from: from});
+				} else {
+					if(evtmap[this._currentState] && evtmap[this._currentState][arguments[0]])
+						arguments[0] = this._currentState + ':' + arguments[0];
+					_oldTriggerFn.apply(this, arguments);
+				}
+				return this;
+			};
+
+			//add a start-up/swap method; (TBI: no state-->state guard atm)
+			dispatcher.start = function(initState){
+				initState = initState || '_default';
+
+				if(this._currentState !== initState)
+					this.trigger(this._currentState + '-->' + initState);
+				
+				return this;
+			}
 
 			//add a clean-up method;
-			dispatcher.dispose = function(){
+			dispatcher.stop = function(){
+				this.trigger('finalize');
 				this.off();
 				this.stopListening();
 			};
 
-			//register event listeners
-			_.each(evtmap, function(listener, e){
-				//TBI: listener is a sub-evtmap, use ee as a state-machine?
-				state.on(e, listener);
+			//mount shared events
+			_.each(evtmap, function(listener, eOrStateName){
+				if(!_.isFunction(listener)) return;
+
+				dispatcher.on(eOrStateName, listener);
 			});
 
-			dispatcher.trigger('initialize');
-
+			this.trigger('initialize');
 			return dispatcher;
 		},
 
@@ -42536,7 +42580,7 @@ Marionette.triggerMethodInversed = (function(){
 	app._apis = [
 		'ee', 'model', 'collection',
 		//view registery
-		'context - @alias:page', 'view', 'widget', 'editor', 'editor.validator - @alias:editor.rule',
+		'view', 'widget', 'editor', 'editor.validator - @alias:editor.rule',
 		//global action locks
 		'lock', 'unlock', 'available', 
 		//utils
@@ -42549,7 +42593,7 @@ Marionette.triggerMethodInversed = (function(){
 		//supportive
 		'debug', 'reload', 'locate', 'profile', 'mark', 'nameToPath', 'pathToName', 'inject.js', 'inject.tpl', 'inject.css',
 		//@deprecated
-		'create - @deprecated', 'regional - @deprecated'
+		'create - @deprecated', 'regional - @deprecated', 'context - @alias:page - @deprecated'
 	];
 
 	/**
@@ -42561,7 +42605,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.2-1257 build 1495081410570";
+;;app.stagejs = "1.10.2-1259 build 1495523806017";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -45553,6 +45597,9 @@ Marionette.triggerMethodInversed = (function(){
 							//new
 							var view = TargetView.create();
 							view.trigger('view:before-navigate-to', _.clone(pathArray));
+							view.once('close', function(){
+								this.trigger('view:navigate-away');
+							});
 							
 							//chain on region:show (instead of view:show to let view finish 'show'ing effects before chaining)
 							view.on('ready', function(){

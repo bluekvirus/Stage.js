@@ -171,6 +171,9 @@
 					}
 					//allow context to check/do certain stuff before navigated to
 					targetCtx.trigger('view:before-navigate-to', _.clone(path));
+					targetCtx.once('close', function(){
+						this.trigger('view:navigate-away');
+					});
 
 					//prepare and show this new context					
 					var navRegion = app.config.navRegion || app.config.contextRegion;

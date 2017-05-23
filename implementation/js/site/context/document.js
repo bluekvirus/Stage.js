@@ -71,6 +71,7 @@
             this.getRegion('doc').$el.data('hljs', {
                 languages: ['javascript', 'html']
             });
+            this.trigger('view:reload-doc'); 
         },
         onReloadDoc: function(){ //meta:event programming
             var that = this;
@@ -100,9 +101,6 @@
             var $topic = this.doc.$el.find('#' + id);
             $window.scrollTop($topic.offset().top - window.innerHeight*0.16);
         },
-        onReady: function(){
-            this.trigger('view:reload-doc'); 
-        }
     });
 
     //Document - Regionals

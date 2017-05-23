@@ -191,16 +191,23 @@ hammer.createFolderStructure({
 	    }
 	}, function(err){
 		if (err) throw err;
-		else console.log('[CSS Sprite]'.yellow, 'done'.green, '==>'.grey, lessFilePath);
+		else {
+			//2.1.post inject "display:inline-block;" for icon/logo/pic <i> to have default spacing in DOM. 
+			var re = /(background-position:)/g;
+			fs.writeFileSync(lessFilePath, fs.readFileSync(lessFilePath, 'utf-8').replace(re, 'display: inline-block; $1'));
+			console.log('[CSS Sprite]'.yellow, 'done'.green, '==>'.grey, lessFilePath);
+		}
 
 		//2.2 scan /texture and merge with img.less
 		glob('**/*.png', {
 			cwd: path.join(imageFolder, 'texture')
 		}, function(err, files){
 			_.each(files, function(t){
-				//iconClassPrefix-texture {
-				//	background-image: url('../img/texture/' + t);
-				//}
+				/*  +++
+				 *	iconClassPrefix-texture-name {
+				 * 		background-image: url('../img/texture/' + t);
+				 *  }
+				 */
 				t = path.sep + t;
 				var name = ['-texture', path.basename(t.split(breakNameRegex).join('-'), '.png')].join('');
 				fs.appendFileSync(lessFilePath, [
@@ -218,9 +225,9 @@ hammer.createFolderStructure({
 
 			//2.4 produce img.html to demo icon usage examples (a table)
 			var html = '<head><link rel="stylesheet" type="text/css" href="img.less"></head>';
-			html += '<body style="background: #DDD;"><h1>Sprite Icons & Textures</h1><table><tr style="text-align:left;"><th>CSS class</th><th>Preview</th><th>Usage <small>(i must be display:block/inline)</small></th></tr>';
+			html += '<body style="background: #DDD;"><h1>Sprite Icons & Textures</h1><table><tr style="text-align:left;"><th>CSS class</th><th>Preview</th><th>Usage <small>(i must be display:block/inline-block)</small></th></tr>';
 			_.each(registry, function(icon){
-				html += '<tr><td>' + icon + '</td><td style="padding:0.5em;"><i style="display:block;' + (/-texture-/.test(icon)?'width: 200px; height: 64px;':'') + '" class="' + icon + '"></td><td>' + _.escape('<i class="'+ icon +'"></i>') + '</td></tr>';
+				html += '<tr><td>' + icon + '</td><td style="padding:0.5em;"><i style="' + (/-texture-/.test(icon)?'width: 200px; height: 64px; display: block;':'') + '" class="' + icon + '"></td><td>' + _.escape('<i class="'+ icon +'"></i>') + '</td></tr>';
 			});
 			html += '</table></body>';
 			fs.writeFile(examplesFilePath, html);

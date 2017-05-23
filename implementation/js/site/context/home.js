@@ -91,7 +91,13 @@
 
 		onBeforeNavigateTo:function(path){
 			app.debug('before navi to', path, this.name);
-			return true;
+			//disable scroll bar in this context.
+			$('body').css('overflow', 'hidden');
+		},
+
+		onNavigateAway: function(){
+			//allow scroll bar in this context.
+			$('body').css('overflow-y', 'auto');
 		},
 
 		onNavigateTo:function(path, vcfg){
@@ -113,8 +119,6 @@
 		},
 
 		onReady: function(){
-			//disable scroll bar in this context.
-			$('body').css('overflow', 'hidden');
 
 			app.debug('Home ready');
 			//title + short desc

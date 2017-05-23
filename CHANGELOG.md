@@ -15,22 +15,22 @@ Change Log
 10. Removed 'ready' event on `$.val()` powered editors;
 11. Refined svg canvas drawing to happen before 'ready'; (only 'navigate-to', pollings and channels setup happens after 'ready')
 12. Refined DataGrid widget to dynamically load its header and body cells; (just like form view editors)
-13. Removed 'view:navigate-away' meta event; (use 'close' instead)
-14. Refined 'view:before-navigate-to' meta event to have the sub-path array as argument;
-15. Aligned coop e 'navigation-changed' to be after last-view-in-the-chain's ('ready' -->) 'view:navigate-to' (--> 'navigation-changed');
-16. Fixed view.tab() tab region modification timing issue caused by hidden container view (fake async 'data-rendered');
-17. Aligned 'view:tab-activated' to be after newly added tab view's 'ready' event;
-18. Fixed app.icing/curtain api and configure regression due to region construction timing change; (app.icing/curtain can now show views directly)
-19. Added more default event forwarding to view.dnd ability; (drag-start/stop, drop-over, select-start/stop)
-20. Ensured both no-data and empty-data view's initial ready event by the faked 'data-rendered' event;
-21. SVG papers will be drawn after 'view:data-rendered' but always before 'ready';
-22. Ensured 'view:navigate-to' to be always triggered after 'ready' not just once; (so you can refresh views in mid nav-chain with new data)
+13. Refined 'view:before-navigate-to' meta event to have the sub-path array as argument;
+14. Aligned coop e 'navigation-changed' to be after last-view-in-the-chain's ('ready' -->) 'view:navigate-to' (--> 'navigation-changed');
+15. Fixed view.tab() tab region modification timing issue caused by hidden container view (fake async 'data-rendered');
+16. Aligned 'view:tab-activated' to be after newly added tab view's 'ready' event;
+17. Fixed app.icing/curtain api and configure regression due to region construction timing change; (app.icing/curtain can now show views directly)
+18. Added more default event forwarding to view.dnd ability; (drag-start/stop, drop-over, select-start/stop)
+19. Ensured both no-data and empty-data view's initial ready event by the faked 'data-rendered' event;
+20. SVG papers will be drawn after 'view:data-rendered' but always before 'ready';
+21. Ensured 'view:navigate-to' to be always triggered after 'ready' not just once; (so you can refresh views in mid nav-chain with new data)
+22. Added 'display:inline-block;' to themeprep-ed 'img.less' file entries automatically;
+23. Aligned 'view:navigate-away' to be upon 'close'; (just as an alias to 'close' but making more sense in our 'nav-chain' terms)
+24. Added app.ee with ['a-->b', 'c-->d'] state machine support; (without state guarding atm)
 
 working on ...
 
 * '[tutorial=]', app.tutorial(true/false);
-* app.ee + ['a-->b', 'c-->d'] state machine support (start/stop/reset);
-* view.coop to support {'e': fn, ...} in addition to ['e', ...]; 
 * fix app.locate() debug api to support returning multiple view instances with the same name;
 * add app.submit(url, view/[data, files]) in addition to app.upload(); (align both standalone and normal file editors upload with same auto csrf token inject)
 * Search/IP/Number editors;

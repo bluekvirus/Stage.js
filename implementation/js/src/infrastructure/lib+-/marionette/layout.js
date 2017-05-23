@@ -358,6 +358,9 @@
 							//new
 							var view = TargetView.create();
 							view.trigger('view:before-navigate-to', _.clone(pathArray));
+							view.once('close', function(){
+								this.trigger('view:navigate-away');
+							});
 							
 							//chain on region:show (instead of view:show to let view finish 'show'ing effects before chaining)
 							view.on('ready', function(){
