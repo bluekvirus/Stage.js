@@ -84,16 +84,15 @@
 			className: 'tree tree-root',
 			tagName: 'ul',
 			initialize: function(options){
-				this._options = options;
-				this.itemView = this._options.itemView || app.view(_.extend({}, nodeViewConfig, _.omit(this._options.node, 'type', 'tagName', 'itemViewContainer', 'itemViewOptions', 'className', 'initialize')));
+				this.itemView = this.options.itemView || app.view(_.extend({}, nodeViewConfig, _.omit(this.options.node, 'type', 'tagName', 'itemViewContainer', 'itemViewOptions', 'className', 'initialize')));
 				this.onSelected = options.onSelected || this.onSelected;
 			},
 			onShow: function(){
-				this.trigger('view:reconfigure', this._options);
+				this.trigger('view:reconfigure', this.options);
 			},
 			onReconfigure: function(options){
-				_.extend(this._options, options);
-				this.trigger('view:render-data', this._options.data); //the default onRenderData() should be suffice.
+				_.extend(this.options, options);
+				this.trigger('view:render-data', this.options.data); //the default onRenderData() should be suffice.
 			},
 			events: {
 				'click .clickable': function(e){

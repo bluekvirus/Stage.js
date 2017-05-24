@@ -149,8 +149,11 @@
 				this.collection.reset(data);
 			else 
 				this.collection.set(data, options);
-			//align with normal view's data rendered and ready events notification
 			
+			//align with normal view's data rendered and ready events notification.
+			//Caveat: currently we don't 100% align with individual ItemView's 'data-rendered' before firing 'view:data-rendered',
+			//if you have ItemViews that have their own remote data url set, the CollectionView's 'ready' might be ahead of those,
+			//however, for local data array this is fine since _.defer() will queue up the 'data-render' correctly.
 			_.defer(_.bind(function(){
 				this.trigger('view:data-rendered');
 			}, this));

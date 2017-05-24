@@ -54,22 +54,22 @@
 				'<tbody region="body"></tbody>'
 			],
 			initialize: function(options){
-				this._options = _.extend({
+				this.options = _.extend({
 					data: [],
 					details: false,
 					columns: []
 				}, options);
 			},
 			onReady: function(){
-				this.trigger('view:reconfigure', _.extend(this._options, {data: this.get('items', [])}));
+				this.trigger('view:reconfigure', _.extend(this.options, {data: this.get('items', [])}));
 			},
 			onReconfigure: function(options){
 				options = options || {};
-				//1-1. reconfigure data and columns into this._options
-				this._options = _.extend(this._options, options);
+				//1-1. reconfigure data and columns into this.options
+				this.options = _.extend(this.options, options);
 
 				//1-2. rebuild header cell options - let it rerender with new column array
-				_.each(this._options.columns, function(column){
+				_.each(this.options.columns, function(column){
 					column.header = column.header || 'string';
 					column.cell = column.cell || column.header || 'string';
 					column.label = column.label || _.string.titleize(column.name);
@@ -77,13 +77,14 @@
 
 				//2. ensure header and body views
 				if(!this.header.currentView)
-					this.header.show(HeaderRow);
+					this.header.show(HeaderRow.create({grid: this}));
 				if(!this.body.currentView){
 					var that = this;
 					var body = Body.create({
 						//el can be css selector string, dom or $(dom)
-						el: this.body.$el 
+						el: this.body.$el, 
 						//Note that a region's el !== $el[0], but a view's el === $el[0] in Marionette.
+						grid: this
 					}).on('all', function(e){
 						//setup page related events forwarding (page-changed, page-not-changed)
 						if(/page-/.test(e))
@@ -93,10 +94,10 @@
 				}
 
 				////////////////Note that the ifs here are for early 'show' --> .set() when using local .data////////////////			
-				this.header.currentView.set(this._options.columns);
-				this.body.currentView._options = this._options;
+				this.header.currentView.set(this.options.columns);
+				this.body.currentView.options = this.options;
 				/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-				this.trigger('view:set-grid-data', this._options.data);
+				this.trigger('view:set-grid-data', this.options.data);
 			},
 			onSetGridData: function(data){
 				//3. rebuild body rows - let it rerender with new data array
@@ -121,7 +122,7 @@
 			itemViewEventPrefix: 'headercell',
 			tagName: 'tr',
 			initialize: function(options){
-				this.grid = this.parentCt || (options && options.grid); //give each row the grid view ref.
+				this.grid = options.grid; //give each row the grid view ref.
 			},
 			//buildItemView - select proper header cell
 			buildItemView: function(item, ItemViewType, itemViewOptions){
@@ -130,7 +131,7 @@
 					model: item,
 					tagName: 'th',
 
-					row: this //link each cell with the row. (use/link it in cell's init())
+					row: this //link each cell (this.options.row) with the row. (use/link it in cell's init())
 				});
 			}
 		});
@@ -152,7 +153,7 @@
 				}
 			},
 			initialize: function(options){
-				this.grid = options.body.parentCt; //give each row the grid view ref.
+				this.grid = options.body.grid; //give each row the grid view ref.
 			},
 			//buildItemView - select proper cell
 			buildItemView: function(item, ItemViewType, itemViewOptions){
@@ -161,7 +162,7 @@
 					tagName: 'td',
 					model: item,
 
-					row: this //link each cell with the row. (use/link it in cell's init())
+					row: this //link each cell (this.options.row) with the row. (use/link it in cell's init())
 				});
 			}			
 		});
@@ -171,9 +172,12 @@
 			forceViewType: true,
 			itemView: Row,
 			itemViewEventPrefix: 'row',
+			initialize: function(options){
+				this.grid = options.grid;
+			},
 			itemViewOptions: function(model, index){
 				return {
-					collection: app.collection(_.map(this._options.columns, function(column){
+					collection: app.collection(_.map(this.options.columns, function(column){
 						return _.extend({
 							value: app.extract(column.name || '', model.attributes),
 							index: index
@@ -427,16 +431,15 @@
 			className: 'tree tree-root',
 			tagName: 'ul',
 			initialize: function(options){
-				this._options = options;
-				this.itemView = this._options.itemView || app.view(_.extend({}, nodeViewConfig, _.omit(this._options.node, 'type', 'tagName', 'itemViewContainer', 'itemViewOptions', 'className', 'initialize')));
+				this.itemView = this.options.itemView || app.view(_.extend({}, nodeViewConfig, _.omit(this.options.node, 'type', 'tagName', 'itemViewContainer', 'itemViewOptions', 'className', 'initialize')));
 				this.onSelected = options.onSelected || this.onSelected;
 			},
 			onShow: function(){
-				this.trigger('view:reconfigure', this._options);
+				this.trigger('view:reconfigure', this.options);
 			},
 			onReconfigure: function(options){
-				_.extend(this._options, options);
-				this.trigger('view:render-data', this._options.data); //the default onRenderData() should be suffice.
+				_.extend(this.options, options);
+				this.trigger('view:render-data', this.options.data); //the default onRenderData() should be suffice.
 			},
 			events: {
 				'click .clickable': function(e){
@@ -510,7 +513,7 @@
 			],
 
 			initialize: function(options){
-				this._options = _.extend({
+				this.options = _.extend({
 					pageWindowSize: 5,
 				},options);
 				//if options.target, link to its 'view:page-changed' event
@@ -522,23 +525,23 @@
 				});
 			},
 			onShow: function(){
-				//this.trigger('view:reconfigure', this._options);
+				//this.trigger('view:reconfigure', this.options);
 			},
 			onReconfigure: function(options){
-				_.extend(this._options, options);
+				_.extend(this.options, options);
 				//use options.currentPage, totalPages to build config data - atFirstPage, atLastPage, pages[{number:..., isCurrent:...}]
 				//calculate currentWindow dynamically
-				this._options.currentWindow = Math.ceil(this._options.currentPage/this._options.pageWindowSize);
+				this.options.currentWindow = Math.ceil(this.options.currentPage/this.options.pageWindowSize);
 				var config = {
-					atFirstPage: this._options.currentPage === 1,
-					atLastPage: this._options.currentPage === this._options.totalPages,
-					atFirstWindow: this._options.currentWindow === 1,
-					atLastWindow: this._options.currentWindow === Math.ceil(this._options.totalPages/this._options.pageWindowSize),
-					pages: _.reduce(_.range(1, this._options.totalPages + 1), function(memo, pNum){
-						if(pNum > (this._options.currentWindow - 1) * this._options.pageWindowSize && pNum <= this._options.currentWindow * this._options.pageWindowSize)
+					atFirstPage: this.options.currentPage === 1,
+					atLastPage: this.options.currentPage === this.options.totalPages,
+					atFirstWindow: this.options.currentWindow === 1,
+					atLastWindow: this.options.currentWindow === Math.ceil(this.options.totalPages/this.options.pageWindowSize),
+					pages: _.reduce(_.range(1, this.options.totalPages + 1), function(memo, pNum){
+						if(pNum > (this.options.currentWindow - 1) * this.options.pageWindowSize && pNum <= this.options.currentWindow * this.options.pageWindowSize)
 							memo.push({
 								number: pNum,
-								isCurrent: pNum === this._options.currentPage
+								isCurrent: pNum === this.options.currentPage
 							});
 						return memo;
 					}, [], this)
@@ -549,7 +552,7 @@
 			actions: {
 				goToPage: function($btn, e){
 					var page = $btn.data('page');
-					if(page === this._options.currentPage) return;
+					if(page === this.options.currentPage) return;
 
 					this.trigger('view:change-page', page);
 				},
@@ -557,44 +560,44 @@
 					this.trigger('view:change-page', 1);
 				},
 				goToLastPage: function($btn, e){
-					this.trigger('view:change-page', this._options.totalPages);
+					this.trigger('view:change-page', this.options.totalPages);
 				},
 				//Skipped atm.../////////////////////////
 				// goToAdjacentPage: function($btn, e){
-				// 	var pNum = this._options.currentPage;
+				// 	var pNum = this.options.currentPage;
 				// 	var op = $btn.data('page');
 				// 	if(op === '+')
 				// 		pNum ++;
 				// 	else
 				// 		pNum --;
 
-				// 	if(pNum < 1 || pNum > this._options.totalPages) return;
-				// 	if(pNum > this._options.currentWindow * this._options.pageWindowSize) this._options.currentWindow ++;
-				// 	if(pNum <= (this._options.currentWindow - 1) * this._options.pageWindowSize) this._options.currentWindow --;
+				// 	if(pNum < 1 || pNum > this.options.totalPages) return;
+				// 	if(pNum > this.options.currentWindow * this.options.pageWindowSize) this.options.currentWindow ++;
+				// 	if(pNum <= (this.options.currentWindow - 1) * this.options.pageWindowSize) this.options.currentWindow --;
 				// 	this.trigger('view:change-page', pNum);
 				// },
 				/////////////////////////////////////////
 				goToAdjacentWindow: function($btn, e){
-					var pWin = this._options.currentWindow;
+					var pWin = this.options.currentWindow;
 					var op = $btn.data('window');
 					if(op === '+')
 						pWin ++;
 					else
 						pWin --;
 
-					if (pWin < 1 || pWin > Math.ceil(this._options.totalPages/this._options.pageWindowSize)) return;
-					this.trigger('view:change-page', (pWin == 1) ? 1 : (pWin-1) * this._options.pageWindowSize + 1);
+					if (pWin < 1 || pWin > Math.ceil(this.options.totalPages/this.options.pageWindowSize)) return;
+					this.trigger('view:change-page', (pWin == 1) ? 1 : (pWin-1) * this.options.pageWindowSize + 1);
 				}
 			},
 			//////Can be overriden in options to add extra params///////
 			onChangePage: function(pNum){
 				//use the overriden version (see the stub impl below for what to override)
-				if(this._options.onChangePage)
-					return this._options.onChangePage.call(this, pNum);
+				if(this.options.onChangePage)
+					return this.options.onChangePage.call(this, pNum);
 
 				//use just a default stub implementation
-				if(this._options.target) 
-					this._options.target.trigger('view:load-page', {
+				if(this.options.target) 
+					this.options.target.trigger('view:load-page', {
 						page: pNum
 						//add more params/querys
 					});

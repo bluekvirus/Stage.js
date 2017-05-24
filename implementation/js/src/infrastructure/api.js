@@ -468,25 +468,56 @@
 
 		//-----------------ee/observer with built-in state-machine----------------
 		//use start('stateB') or trigger('stateA-->stateB') to swap between states
-		ee: function(data, evtmap){ //+on/once, off, +start/stop; +listenTo/Once, stopListening; +trigger*;
+		//use ['stateA-->stateB', 'stateC<-->stateB', 'stateA<--stateC', ...] in edges to constrain state changes.
+		ee: function(data, evtmap, edges){ //+on/once, off, +start/reset/stop/getState/getEdges; +listenTo/Once, stopListening; +trigger*;
 			var dispatcher;
-			if(!evtmap){
-				evtmap = data;
-				data = undefined;
-			}
-			data = _.extend({}, data, {cid: _.uniqueId('ee'), _currentState: ''});
+
+			data = _.extend({}, data, {cid: _.uniqueId('ee')});
 			evtmap = _.extend({
 				'initialize': _.noop,
 				'finalize': _.noop,
 			}, evtmap);
+			edges = _.reduce(edges || {}, function(mem, val, index){
+				var bi = val.match('(.*)<-->(.*)'),
+				left = val.match('(.*)<--(.*)'),
+				right = val.match('(.*)-->(.*)');
+
+				if(bi){
+					mem[bi[1] + '-->' + bi[2]] = true;
+					mem[bi[2] + '-->' + bi[1]] = true;
+				} else if (left)
+					mem[left[2] + '-->' + left[1]] = true;
+				else if (right)
+					mem[val] = true;
+				else
+					console.warn('DEV::Application::ee() illegal edge format: ' + val);
+
+				return mem;
+			}, {});
+			if(!_.size(edges)) edges = undefined;
+
 			dispatcher = _.extend(data, Backbone.Events);
-			var _oldTriggerFn = dispatcher.trigger;
+			var oldTriggerFn = dispatcher.trigger;
+			var currentState = '';
 
 			//add a state-machine friendly .trigger method;
 			dispatcher.trigger = function(){
 				var changeOfStates = arguments[0] && arguments[0].match('(.*)-->(.*)');
 				if(changeOfStates && changeOfStates.length){
 					var from = _.string.trim(changeOfStates[1]), to = _.string.trim(changeOfStates[2]);
+
+					//check edge constraints
+					if(from && to && edges && !edges[arguments[0]]){
+						console.warn('DEV::Application::ee() edge constraint: ' + from + '-x->' + to);
+						return this;
+					}
+
+					//check current state
+					if(from != currentState){
+						console.warn('DEV::Application::ee() current state is ' + (currentState || '\'\'') + ' not ' + from);
+						return this;
+					}
+
 					this.trigger('leave', {to: to});
 					//unregister event listeners in [from] state
 					_.each(evtmap[from], function(listener, e){
@@ -496,24 +527,32 @@
 					_.each(evtmap[to], function(listener, e){
 						dispatcher.on(to + ':' + e, listener);
 					});
-					this._currentState = to;
+					currentState = to;
 					this.trigger('enter', {from: from});
 				} else {
-					if(evtmap[this._currentState] && evtmap[this._currentState][arguments[0]])
-						arguments[0] = this._currentState + ':' + arguments[0];
-					_oldTriggerFn.apply(this, arguments);
+					if(evtmap[currentState] && evtmap[currentState][arguments[0]])
+						arguments[0] = currentState + ':' + arguments[0];
+					oldTriggerFn.apply(this, arguments);
 				}
 				return this;
 			};
 
-			//add a start-up/swap method; (TBI: no state-->state guard atm)
-			dispatcher.start = function(initState){
-				initState = initState || '_default';
-
-				if(this._currentState !== initState)
-					this.trigger(this._currentState + '-->' + initState);
-				
+			//add an internal worker swap method;
+			dispatcher._swap = function(targetState){
+				targetState = targetState || '';
+				this.trigger(currentState + '-->' + targetState);				
 				return this;
+			}
+
+			//add a start method; (start at any state)
+			dispatcher.start = function(targetState){
+				targetState = targetState || currentState;
+				return this._swap(targetState);
+			}
+
+			//add a reset method; (reset to '' state)
+			dispatcher.reset = function(){
+				return this._swap();
 			}
 
 			//add a clean-up method;
@@ -521,6 +560,15 @@
 				this.trigger('finalize');
 				this.off();
 				this.stopListening();
+			};
+
+			//add some getters;
+			dispatcher.getState = function(){
+				return currentState;
+			};
+
+			dispatcher.getEdges = function(){
+				return edges;
 			};
 
 			//mount shared events

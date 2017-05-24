@@ -20,7 +20,7 @@
  * 		|+pick and activate optional ones (b, see below List of view options...)
  * 		|
  * M.View.apply(this)
- * 		|+close, +this.options, +bindUIElements
+ * 		|+close, +this.options (for anything that's not pick()-ed from options into this.*) , +bindUIElements
  * 		|
  * BB.View.prototype.constructor
  * 		|+events, +remove, +picks (a, see below List of view options...)
@@ -603,7 +603,7 @@
 		//------------------------------------------------------------------
 
 		//----------------------fixed view enhancements---------------------
-		//auto-pick live init options
+		//auto-pick live init options in addition to Backbone View options: ['model', 'collection', 'el', 'id', 'attributes', 'className', 'tagName', 'events'];
 		_.extend(this, _.pick(options, ['effect', 'template', 'layout', 'data', 'useParentData', 'useFlatModel', 'coop', 'actions', 'dnd', 'selectable', 'editors', 'tooltips', 'popovers', 'svg', /*'canvas', */, 'pollings', 'channels']));
 
 		//add data-view-name meta attribute to view.$el and also view to view.$el.data('view')
@@ -966,9 +966,11 @@
 			//Note: even though we delay adding regions until another 'view:data-rendered' in Regional (layout) views,
 			//due to class inheritance order, thus the event reg seq, this.region would have already been populated. 
 			if(!this.regions)
-				this.triggerMethodInversed('ready');
+				//if this view have regions, with/without view="", would have already taken care of triggering 'ready' (see layout.js)
+				this.triggerMethodInversed('ready'); //only for no/empty data view and collection views (more, datagrid, paginator)
 		});
 
+		//since Marionette.View = Backbone.View.extend({constructor: ... }) it is the constructor fn gets returned as View.
 		return Backbone.Marionette.View.apply(this, arguments);
 	};
 

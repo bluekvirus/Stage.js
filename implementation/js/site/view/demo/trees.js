@@ -99,7 +99,7 @@
 	    					onSelected: function(meta, $el, e){
 								app.debug(meta.view.model, $el);
 	    					}
-	    				}).$el.hide();
+	    				}).parentRegion.$el.hide();
 	    			},
 	    			actions: {
 	    				toggle: function($btn){

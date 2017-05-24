@@ -42059,25 +42059,56 @@ Marionette.triggerMethodInversed = (function(){
 
 		//-----------------ee/observer with built-in state-machine----------------
 		//use start('stateB') or trigger('stateA-->stateB') to swap between states
-		ee: function(data, evtmap){ //+on/once, off, +start/stop; +listenTo/Once, stopListening; +trigger*;
+		//use ['stateA-->stateB', 'stateC<-->stateB', 'stateA<--stateC', ...] in edges to constrain state changes.
+		ee: function(data, evtmap, edges){ //+on/once, off, +start/reset/stop/getState/getEdges; +listenTo/Once, stopListening; +trigger*;
 			var dispatcher;
-			if(!evtmap){
-				evtmap = data;
-				data = undefined;
-			}
-			data = _.extend({}, data, {cid: _.uniqueId('ee'), _currentState: ''});
+
+			data = _.extend({}, data, {cid: _.uniqueId('ee')});
 			evtmap = _.extend({
 				'initialize': _.noop,
 				'finalize': _.noop,
 			}, evtmap);
+			edges = _.reduce(edges || {}, function(mem, val, index){
+				var bi = val.match('(.*)<-->(.*)'),
+				left = val.match('(.*)<--(.*)'),
+				right = val.match('(.*)-->(.*)');
+
+				if(bi){
+					mem[bi[1] + '-->' + bi[2]] = true;
+					mem[bi[2] + '-->' + bi[1]] = true;
+				} else if (left)
+					mem[left[2] + '-->' + left[1]] = true;
+				else if (right)
+					mem[val] = true;
+				else
+					console.warn('DEV::Application::ee() illegal edge format: ' + val);
+
+				return mem;
+			}, {});
+			if(!_.size(edges)) edges = undefined;
+
 			dispatcher = _.extend(data, Backbone.Events);
-			var _oldTriggerFn = dispatcher.trigger;
+			var oldTriggerFn = dispatcher.trigger;
+			var currentState = '';
 
 			//add a state-machine friendly .trigger method;
 			dispatcher.trigger = function(){
 				var changeOfStates = arguments[0] && arguments[0].match('(.*)-->(.*)');
 				if(changeOfStates && changeOfStates.length){
 					var from = _.string.trim(changeOfStates[1]), to = _.string.trim(changeOfStates[2]);
+
+					//check edge constraints
+					if(from && to && edges && !edges[arguments[0]]){
+						console.warn('DEV::Application::ee() edge constraint: ' + from + '-x->' + to);
+						return this;
+					}
+
+					//check current state
+					if(from != currentState){
+						console.warn('DEV::Application::ee() current state is ' + (currentState || '\'\'') + ' not ' + from);
+						return this;
+					}
+
 					this.trigger('leave', {to: to});
 					//unregister event listeners in [from] state
 					_.each(evtmap[from], function(listener, e){
@@ -42087,24 +42118,32 @@ Marionette.triggerMethodInversed = (function(){
 					_.each(evtmap[to], function(listener, e){
 						dispatcher.on(to + ':' + e, listener);
 					});
-					this._currentState = to;
+					currentState = to;
 					this.trigger('enter', {from: from});
 				} else {
-					if(evtmap[this._currentState] && evtmap[this._currentState][arguments[0]])
-						arguments[0] = this._currentState + ':' + arguments[0];
-					_oldTriggerFn.apply(this, arguments);
+					if(evtmap[currentState] && evtmap[currentState][arguments[0]])
+						arguments[0] = currentState + ':' + arguments[0];
+					oldTriggerFn.apply(this, arguments);
 				}
 				return this;
 			};
 
-			//add a start-up/swap method; (TBI: no state-->state guard atm)
-			dispatcher.start = function(initState){
-				initState = initState || '_default';
-
-				if(this._currentState !== initState)
-					this.trigger(this._currentState + '-->' + initState);
-				
+			//add an internal worker swap method;
+			dispatcher._swap = function(targetState){
+				targetState = targetState || '';
+				this.trigger(currentState + '-->' + targetState);				
 				return this;
+			}
+
+			//add a start method; (start at any state)
+			dispatcher.start = function(targetState){
+				targetState = targetState || currentState;
+				return this._swap(targetState);
+			}
+
+			//add a reset method; (reset to '' state)
+			dispatcher.reset = function(){
+				return this._swap();
 			}
 
 			//add a clean-up method;
@@ -42112,6 +42151,15 @@ Marionette.triggerMethodInversed = (function(){
 				this.trigger('finalize');
 				this.off();
 				this.stopListening();
+			};
+
+			//add some getters;
+			dispatcher.getState = function(){
+				return currentState;
+			};
+
+			dispatcher.getEdges = function(){
+				return edges;
 			};
 
 			//mount shared events
@@ -42605,7 +42653,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.2-1259 build 1495523806017";
+;;app.stagejs = "1.10.2-1260 build 1495603576416";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -43810,7 +43858,7 @@ Marionette.triggerMethodInversed = (function(){
  * 		|+pick and activate optional ones (b, see below List of view options...)
  * 		|
  * M.View.apply(this)
- * 		|+close, +this.options, +bindUIElements
+ * 		|+close, +this.options (for anything that's not pick()-ed from options into this.*) , +bindUIElements
  * 		|
  * BB.View.prototype.constructor
  * 		|+events, +remove, +picks (a, see below List of view options...)
@@ -44393,7 +44441,7 @@ Marionette.triggerMethodInversed = (function(){
 		//------------------------------------------------------------------
 
 		//----------------------fixed view enhancements---------------------
-		//auto-pick live init options
+		//auto-pick live init options in addition to Backbone View options: ['model', 'collection', 'el', 'id', 'attributes', 'className', 'tagName', 'events'];
 		_.extend(this, _.pick(options, ['effect', 'template', 'layout', 'data', 'useParentData', 'useFlatModel', 'coop', 'actions', 'dnd', 'selectable', 'editors', 'tooltips', 'popovers', 'svg', /*'canvas', */, 'pollings', 'channels']));
 
 		//add data-view-name meta attribute to view.$el and also view to view.$el.data('view')
@@ -44756,9 +44804,11 @@ Marionette.triggerMethodInversed = (function(){
 			//Note: even though we delay adding regions until another 'view:data-rendered' in Regional (layout) views,
 			//due to class inheritance order, thus the event reg seq, this.region would have already been populated. 
 			if(!this.regions)
-				this.triggerMethodInversed('ready');
+				//if this view have regions, with/without view="", would have already taken care of triggering 'ready' (see layout.js)
+				this.triggerMethodInversed('ready'); //only for no/empty data view and collection views (more, datagrid, paginator)
 		});
 
+		//since Marionette.View = Backbone.View.extend({constructor: ... }) it is the constructor fn gets returned as View.
 		return Backbone.Marionette.View.apply(this, arguments);
 	};
 

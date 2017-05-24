@@ -26,7 +26,9 @@ Change Log
 21. Ensured 'view:navigate-to' to be always triggered after 'ready' not just once; (so you can refresh views in mid nav-chain with new data)
 22. Added 'display:inline-block;' to themeprep-ed 'img.less' file entries automatically;
 23. Aligned 'view:navigate-away' to be upon 'close'; (just as an alias to 'close' but making more sense in our 'nav-chain' terms)
-24. Added app.ee with ['a-->b', 'c-->d'] state machine support; (without state guarding atm)
+24. Added app.ee with ['a-->b', 'c-->d'] state machine support;
+25. Fixed 'this.options.row.grid' ref in header/body cell views in Datagrid widget;
+26. Aligned all 'this._options' back to 'this.options' in widgets impl;
 
 working on ...
 

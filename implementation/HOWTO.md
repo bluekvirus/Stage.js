@@ -1941,7 +1941,7 @@ Yes, if you need client-side crossdomain ajax calls, you can supply the `xdomain
 $.ajax({
     ...,
     xdomain: {
-        protocal: 'http'/'https',
+        protocol: 'http'/'https',
         host: ...,
         port: ...,
         headers: {

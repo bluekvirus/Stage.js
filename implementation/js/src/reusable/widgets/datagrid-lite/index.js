@@ -54,22 +54,22 @@
 				'<tbody region="body"></tbody>'
 			],
 			initialize: function(options){
-				this._options = _.extend({
+				this.options = _.extend({
 					data: [],
 					details: false,
 					columns: []
 				}, options);
 			},
 			onReady: function(){
-				this.trigger('view:reconfigure', _.extend(this._options, {data: this.get('items', [])}));
+				this.trigger('view:reconfigure', _.extend(this.options, {data: this.get('items', [])}));
 			},
 			onReconfigure: function(options){
 				options = options || {};
-				//1-1. reconfigure data and columns into this._options
-				this._options = _.extend(this._options, options);
+				//1-1. reconfigure data and columns into this.options
+				this.options = _.extend(this.options, options);
 
 				//1-2. rebuild header cell options - let it rerender with new column array
-				_.each(this._options.columns, function(column){
+				_.each(this.options.columns, function(column){
 					column.header = column.header || 'string';
 					column.cell = column.cell || column.header || 'string';
 					column.label = column.label || _.string.titleize(column.name);
@@ -77,13 +77,14 @@
 
 				//2. ensure header and body views
 				if(!this.header.currentView)
-					this.header.show(HeaderRow);
+					this.header.show(HeaderRow.create({grid: this}));
 				if(!this.body.currentView){
 					var that = this;
 					var body = Body.create({
 						//el can be css selector string, dom or $(dom)
-						el: this.body.$el 
+						el: this.body.$el, 
 						//Note that a region's el !== $el[0], but a view's el === $el[0] in Marionette.
+						grid: this
 					}).on('all', function(e){
 						//setup page related events forwarding (page-changed, page-not-changed)
 						if(/page-/.test(e))
@@ -93,10 +94,10 @@
 				}
 
 				////////////////Note that the ifs here are for early 'show' --> .set() when using local .data////////////////			
-				this.header.currentView.set(this._options.columns);
-				this.body.currentView._options = this._options;
+				this.header.currentView.set(this.options.columns);
+				this.body.currentView.options = this.options;
 				/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-				this.trigger('view:set-grid-data', this._options.data);
+				this.trigger('view:set-grid-data', this.options.data);
 			},
 			onSetGridData: function(data){
 				//3. rebuild body rows - let it rerender with new data array
@@ -121,7 +122,7 @@
 			itemViewEventPrefix: 'headercell',
 			tagName: 'tr',
 			initialize: function(options){
-				this.grid = this.parentCt || (options && options.grid); //give each row the grid view ref.
+				this.grid = options.grid; //give each row the grid view ref.
 			},
 			//buildItemView - select proper header cell
 			buildItemView: function(item, ItemViewType, itemViewOptions){
@@ -130,7 +131,7 @@
 					model: item,
 					tagName: 'th',
 
-					row: this //link each cell with the row. (use/link it in cell's init())
+					row: this //link each cell (this.options.row) with the row. (use/link it in cell's init())
 				});
 			}
 		});
@@ -152,7 +153,7 @@
 				}
 			},
 			initialize: function(options){
-				this.grid = options.body.parentCt; //give each row the grid view ref.
+				this.grid = options.body.grid; //give each row the grid view ref.
 			},
 			//buildItemView - select proper cell
 			buildItemView: function(item, ItemViewType, itemViewOptions){
@@ -161,7 +162,7 @@
 					tagName: 'td',
 					model: item,
 
-					row: this //link each cell with the row. (use/link it in cell's init())
+					row: this //link each cell (this.options.row) with the row. (use/link it in cell's init())
 				});
 			}			
 		});
@@ -171,9 +172,12 @@
 			forceViewType: true,
 			itemView: Row,
 			itemViewEventPrefix: 'row',
+			initialize: function(options){
+				this.grid = options.grid;
+			},
 			itemViewOptions: function(model, index){
 				return {
-					collection: app.collection(_.map(this._options.columns, function(column){
+					collection: app.collection(_.map(this.options.columns, function(column){
 						return _.extend({
 							value: app.extract(column.name || '', model.attributes),
 							index: index
