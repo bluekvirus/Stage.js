@@ -30,8 +30,10 @@ Change Log
 25. Fixed 'this.options.row.grid' ref in header/body cell views in Datagrid widget;
 26. Aligned all 'this._options' back to 'this.options' in widgets impl;
 27. Refined app.Util.Tpl.build() to build local templates without adding to html header;
-28. Added .get()/.clear() to app.Util.Tpl for template cache access;
+28. Added .get()/.has()/.clear() to app.Util.Tpl for template cache access;
 29. Added transitionend events to app.ADE for animation and transition sync on $el;
+30. Refined view.layout template caching efficiency;
+31. Remote empty templates now all have default ' ' (1 space) instead of being blank; (this is to kill extra reloading of remote templates)
 
 working on ...
 
