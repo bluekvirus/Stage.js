@@ -27,8 +27,11 @@ Change Log
 22. Added 'display:inline-block;' to themeprep-ed 'img.less' file entries automatically;
 23. Aligned 'view:navigate-away' to be upon 'close'; (just as an alias to 'close' but making more sense in our 'nav-chain' terms)
 24. Added app.ee with ['a-->b', 'c-->d'] state machine support;
-25. Fixed 'this.grid' ref in header/body cell views in Datagrid widget;
+25. Fixed 'this.options.row.grid' ref in header/body cell views in Datagrid widget;
 26. Aligned all 'this._options' back to 'this.options' in widgets impl;
+27. Refined app.Util.Tpl.build() to build local templates without adding to html header;
+28. Added .get()/.clear() to app.Util.Tpl for template cache access;
+29. Added transitionend events to app.ADE for animation and transition sync on $el;
 
 working on ...
 
