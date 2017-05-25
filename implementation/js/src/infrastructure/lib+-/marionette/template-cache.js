@@ -9,7 +9,7 @@
 ;(function(app){
 
 	_.extend(Backbone.Marionette.TemplateCache, {
-		// Get the specified template by id.
+		// Get the specified template by id (OR MAKE IT!)
 		// retrieves the cached tpl obj and load the compiled/text version
 		get: function(templateId, asHTMLText) {
 			if(!templateId)
@@ -77,9 +77,9 @@
 				//fetch from remote: (might need server-side CORS support)
 				//**Caveat: triggering app.inject.tpl() will replace the cache object that triggered this loadTemplate() call.
 
-				//sync mode injecting
+				//sync mode injecting (this will replace THIS cache itself, see template-builder.js)
 				app.inject.tpl(idOrTplString, true).done(function(tpl){
-					rtpl = tpl;
+					rtpl = tpl || ' ';
 				});
 
 				return rtpl;

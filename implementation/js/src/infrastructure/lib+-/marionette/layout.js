@@ -259,8 +259,9 @@
 						}
 					});
 					//assign $el.html() back to .template for proper render() with data
-					var templateId = _.uniqueId('flexlayout-gen-');
-					app.Util.Tpl.build(templateId, $el.html());
+					var templateId = JSON.stringify(this.layout);
+					if(!app.Util.Tpl.has(templateId))
+						app.Util.Tpl.build(templateId, $el.html());
 					this.template = templateId;
 				});
 			

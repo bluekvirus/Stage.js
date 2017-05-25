@@ -13,7 +13,7 @@
  * @create 2013.12.20
  * @updated 2014.10.25
  * @updated 2016.03.24
- * @updated 2017.05.24
+ * @updated 2017.05.25
  */
 
 ;(function(app){
@@ -22,8 +22,12 @@
 	var Template = {
 
 		Cache: Backbone.Marionette.TemplateCache,
+		//Caveat: use .has() instead to check on availability since this is a getOrMake() instead of a pure get();
 		get: function(){
 			return this.Cache.get.apply(this.Cache, arguments);
+		},
+		has: function(templateId){
+			return this.Cache.templateCaches[templateId]? true : false;
 		},
 		clear: function(){
 			return this.Cache.clear.apply(this.Cache, arguments);
@@ -70,7 +74,7 @@
 					async: !sync
 				}).done(function(tpls){
 					_.each(tpls, function(t, n){
-						Template.Cache.make(n, t);
+						Template.Cache.make(n, t || ' ');
 					});
 				});//.json can be empty or missing.
 			}else {
@@ -80,7 +84,7 @@
 					dataType: 'html',
 					async: !sync
 				}).done(function(tpl){
-					Template.Cache.make(originalName, tpl);
+					Template.Cache.make(originalName, tpl || ' ');
 				}).fail(function(){
 					throw new Error('DEV::Util.Tpl::remote() Can not load template...' + url + ', re-check your app.config.viewTemplates setting');
 				});

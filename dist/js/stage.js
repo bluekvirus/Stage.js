@@ -42553,13 +42553,9 @@ Marionette.triggerMethodInversed = (function(){
 			override = override || false;
 			//override old view
 			if(override){
-				//clear template cache in cache
-				app.Util.Tpl.clear(v.template);
-				//un-register the view
-				app.Core[category].remove(name);
 				//re-show the new view
 				try{
-					var view = app.get(name, category).create();
+					var view = app.get(name, category, {override: true}).create();
 					view.once('ready', function(){
 						app.mark(name);
 					});
@@ -42648,12 +42644,14 @@ Marionette.triggerMethodInversed = (function(){
 	 * Statics
 	 */
 	//animation done events used in Animate.css
+	//Caveat: if you use $el.one(app.ADE) but still got 2+ callback calls, the browser is firing the default and prefixed events at the same time...
+	//TBI: +$el.anyone() to fix the problem in using $el.one()
 	app.ADE = 'animationend webkitAnimationEnd MSAnimationEnd oAnimationEnd transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd';
 	//notification template
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.2-1261 build 1495696429474";
+;;app.stagejs = "1.10.2-1262 build 1495741904139";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -42794,7 +42792,7 @@ Marionette.triggerMethodInversed = (function(){
  * @create 2013.12.20
  * @updated 2014.10.25
  * @updated 2016.03.24
- * @updated 2017.05.24
+ * @updated 2017.05.25
  */
 
 ;(function(app){
@@ -42803,8 +42801,12 @@ Marionette.triggerMethodInversed = (function(){
 	var Template = {
 
 		Cache: Backbone.Marionette.TemplateCache,
+		//Caveat: use .has() instead to check on availability since this is a getOrMake() instead of a pure get();
 		get: function(){
 			return this.Cache.get.apply(this.Cache, arguments);
+		},
+		has: function(templateId){
+			return this.Cache.templateCaches[templateId]? true : false;
 		},
 		clear: function(){
 			return this.Cache.clear.apply(this.Cache, arguments);
@@ -42851,7 +42853,7 @@ Marionette.triggerMethodInversed = (function(){
 					async: !sync
 				}).done(function(tpls){
 					_.each(tpls, function(t, n){
-						Template.Cache.make(n, t);
+						Template.Cache.make(n, t || ' ');
 					});
 				});//.json can be empty or missing.
 			}else {
@@ -42861,7 +42863,7 @@ Marionette.triggerMethodInversed = (function(){
 					dataType: 'html',
 					async: !sync
 				}).done(function(tpl){
-					Template.Cache.make(originalName, tpl);
+					Template.Cache.make(originalName, tpl || ' ');
 				}).fail(function(){
 					throw new Error('DEV::Util.Tpl::remote() Can not load template...' + url + ', re-check your app.config.viewTemplates setting');
 				});
@@ -43256,11 +43258,10 @@ Marionette.triggerMethodInversed = (function(){
 					if(!_.isString(name)) throw new Error('DEV::Reusable::register() You must specify a string name to register view in ' + regName + '.');
 
 					if(this.has(name)){
-						//only best effort here to remove old template cache. (not effective if using view.layout)
-					    if(Reusable.prototype.template){
-					        app.Util.Tpl.clear(Reusable.prototype.template);
-					        console.warn('DEV::Overriden::Template::', name);
-					    }
+						//best effort here to remove old template cache.
+					    app.Util.Tpl.clear(this.get(name).prototype.template);
+					    if(this.get(name).prototype.layout)
+					    	app.Util.Tpl.clear(JSON.stringify(this.get(name).prototype.layout));
 					    console.warn('DEV::Overriden::Reusable::' + regName + '.' + name);
 					}
 
@@ -43440,7 +43441,7 @@ Marionette.triggerMethodInversed = (function(){
 ;(function(app){
 
 	_.extend(Backbone.Marionette.TemplateCache, {
-		// Get the specified template by id.
+		// Get the specified template by id (OR MAKE IT!)
 		// retrieves the cached tpl obj and load the compiled/text version
 		get: function(templateId, asHTMLText) {
 			if(!templateId)
@@ -43508,9 +43509,9 @@ Marionette.triggerMethodInversed = (function(){
 				//fetch from remote: (might need server-side CORS support)
 				//**Caveat: triggering app.inject.tpl() will replace the cache object that triggered this loadTemplate() call.
 
-				//sync mode injecting
+				//sync mode injecting (this will replace THIS cache itself, see template-builder.js)
 				app.inject.tpl(idOrTplString, true).done(function(tpl){
-					rtpl = tpl;
+					rtpl = tpl || ' ';
 				});
 
 				return rtpl;
@@ -45556,8 +45557,9 @@ Marionette.triggerMethodInversed = (function(){
 						}
 					});
 					//assign $el.html() back to .template for proper render() with data
-					var templateId = _.uniqueId('flexlayout-gen-');
-					app.Util.Tpl.build(templateId, $el.html());
+					var templateId = JSON.stringify(this.layout);
+					if(!app.Util.Tpl.has(templateId))
+						app.Util.Tpl.build(templateId, $el.html());
 					this.template = templateId;
 				});
 			
