@@ -62,8 +62,9 @@
 					if(!_.isString(name)) throw new Error('DEV::Reusable::register() You must specify a string name to register view in ' + regName + '.');
 
 					if(this.has(name)){
+						//only best effort here to remove old template cache. (not effective if using view.layout)
 					    if(Reusable.prototype.template){
-					        app.Util.Tpl.Cache.clear(Reusable.prototype.template);
+					        app.Util.Tpl.clear(Reusable.prototype.template);
 					        console.warn('DEV::Overriden::Template::', name);
 					    }
 					    console.warn('DEV::Overriden::Reusable::' + regName + '.' + name);

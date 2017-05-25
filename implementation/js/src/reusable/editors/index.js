@@ -79,7 +79,7 @@
 
 		var UI = app.view({
 
-			template: '#editor-basic-tpl',
+			template: 'editor-basic-tpl',
 			className: 'form-group', //this class is suggested to be removed if there is no label in this editor options.
 			type: 'ItemView',
 			forceViewType: true, //supress ItemView type warning by framework.

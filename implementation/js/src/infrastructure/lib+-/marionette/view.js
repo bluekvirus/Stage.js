@@ -89,7 +89,7 @@
 			return $.contains(document.documentElement, ($el || this.$el)[0]);
 		},
 
-		//override to give default empty template
+		//override to give default empty template, also the raw template string
 		getTemplate: function(asHTMLString){
 			if(!asHTMLString)
 				return Marionette.getOption(this, 'template') || (
@@ -97,8 +97,14 @@
 				);
 			else
 				//return the fully resolved HTML template string (not as a cached tpl fn)
-				return app.Util.Tpl.Cache.get(this.getTemplate(), asHTMLString);
+				return app.Util.Tpl.get(this.getTemplate(), asHTMLString);
 		},
+
+		//---permanently change the cached template for this view---
+		//overrideRawTpl: function(rawTplStrings){
+		//	app.Util.Tpl.build(this.getTemplate(), rawTplStrings);
+		//},
+		//----------------------------------------------------------
 
 		//override triggerMethod again to use our version (since it was registered through closure)
 		triggerMethodInversed: Marionette.triggerMethodInversed,

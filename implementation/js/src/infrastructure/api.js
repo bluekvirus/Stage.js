@@ -963,7 +963,7 @@
 			//override old view
 			if(override){
 				//clear template cache in cache
-				app.Util.Tpl.cache.clear(v.template);
+				app.Util.Tpl.clear(v.template);
 				//un-register the view
 				app.Core[category].remove(name);
 				//re-show the new view
@@ -1057,7 +1057,7 @@
 	 * Statics
 	 */
 	//animation done events used in Animate.css
-	app.ADE = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+	app.ADE = 'animationend webkitAnimationEnd MSAnimationEnd oAnimationEnd transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd';
 	//notification template
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 

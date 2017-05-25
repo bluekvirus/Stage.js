@@ -1,8 +1,8 @@
 /**
- * This is the template builder/registry util, making it easier to create new templates for View objects.
+ * This is the template builder util, making it easier to load/create new templates for View objects.
  * (used by M.TemplateCache* in template-cache.js)
  *
- * Note: use build() for local templates and remote() for remote ones
+ * Note: use build() for local templates and remote() for remote ones, both will affect template caches.
  *
  * Usage (name as id)
  * -----
@@ -13,7 +13,7 @@
  * @create 2013.12.20
  * @updated 2014.10.25
  * @updated 2016.03.24
- * @updated 2017.03.02
+ * @updated 2017.05.24
  */
 
 ;(function(app){
@@ -21,41 +21,34 @@
 	var namefix = /[\.\/]/;
 	var Template = {
 
-		//normalize the tpl names so they can be used as html tag ids.
-		normalizeId: function(name){
-			return String(name).split(namefix).join('-');
+		Cache: Backbone.Marionette.TemplateCache,
+		get: function(){
+			return this.Cache.get.apply(this.Cache, arguments);
+		},
+		clear: function(){
+			return this.Cache.clear.apply(this.Cache, arguments);
 		},
 
-		Cache: Backbone.Marionette.TemplateCache,
-
-		//used upon inserting all.json templates (view-less)
-		build: function (name, tplString){
-			if(arguments.length === 1) {
-				tplString = name;
-				name = null;
+		//build a template from string or string array (view-less), cache if got name, used by Cache.loadTemplate().
+		build: function (name, tplStrings){
+			if(!tplStrings){
+				tplStrings = name;
+				name = undefined;
 			}
-			var tpl = _.isArray(tplString)?tplString.join(''):tplString;
+			var tpl = _.isArray(tplStrings) ? tplStrings.join('') : tplStrings;
 
-			if(name) {
-				//process name to be valid id string, use String() to force type conversion before using .split()
-				var id = this.normalizeId(name);
-				var $tag = $('head > script[id="' + id + '"]');
-				if($tag.length > 0) {
-					//override
-					$tag.html(tpl);
-					this.Cache.clear('#' + name);
-					console.warn('DEV::Overriden::Template::', name);
-				}
-				else $('head').append(['<script type="text/tpl" id="', id, '">', tpl, '</script>'].join(''));
-			}
-
+			//only caching named template
+			if(name)
+				this.Cache.make(name, tpl);
+			
 			return tpl;
 		},
 
-		//load all prepared/combined templates from server (*.json without CORS)
+		//load all prepared/combined templates from server (*.json without CORS, like all.json)
 		//or
 		//load individual tpl
-		//all loaded tpl will be stored in cache (app.Util.Tpl.cache.templateCaches)
+		//
+		//all loaded tpl will be stored in cache (app.Util.Tpl.Cache.templateCaches)
 		remote: function(name, sync){
 			var that = this;
 			if(!name) throw new Error('DEV::Util.Tpl::remote() your template name can NOT be empty!');

@@ -253,14 +253,14 @@
 						var nestedTplId = $(this).html();
 						var tplCache;
 						if(nestedTplId){
-							tplCache = app.Util.Tpl.Cache.get(nestedTplId, true);
+							tplCache = app.Util.Tpl.get(nestedTplId, true);
 							if(tplCache)
 								$(this).html(tplCache);
 						}
 					});
 					//assign $el.html() back to .template for proper render() with data
 					var templateId = _.uniqueId('flexlayout-gen-');
-					app.Util.Tpl.Cache.make(templateId, $el.html());
+					app.Util.Tpl.build(templateId, $el.html());
 					this.template = templateId;
 				});
 			

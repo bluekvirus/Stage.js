@@ -42554,7 +42554,7 @@ Marionette.triggerMethodInversed = (function(){
 			//override old view
 			if(override){
 				//clear template cache in cache
-				app.Util.Tpl.cache.clear(v.template);
+				app.Util.Tpl.clear(v.template);
 				//un-register the view
 				app.Core[category].remove(name);
 				//re-show the new view
@@ -42648,12 +42648,12 @@ Marionette.triggerMethodInversed = (function(){
 	 * Statics
 	 */
 	//animation done events used in Animate.css
-	app.ADE = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+	app.ADE = 'animationend webkitAnimationEnd MSAnimationEnd oAnimationEnd transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd';
 	//notification template
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.2-1260 build 1495603576416";
+;;app.stagejs = "1.10.2-1261 build 1495696429474";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -42780,10 +42780,10 @@ Marionette.triggerMethodInversed = (function(){
 
 })(Application);
 ;/**
- * This is the template builder/registry util, making it easier to create new templates for View objects.
+ * This is the template builder util, making it easier to load/create new templates for View objects.
  * (used by M.TemplateCache* in template-cache.js)
  *
- * Note: use build() for local templates and remote() for remote ones
+ * Note: use build() for local templates and remote() for remote ones, both will affect template caches.
  *
  * Usage (name as id)
  * -----
@@ -42794,7 +42794,7 @@ Marionette.triggerMethodInversed = (function(){
  * @create 2013.12.20
  * @updated 2014.10.25
  * @updated 2016.03.24
- * @updated 2017.03.02
+ * @updated 2017.05.24
  */
 
 ;(function(app){
@@ -42802,41 +42802,34 @@ Marionette.triggerMethodInversed = (function(){
 	var namefix = /[\.\/]/;
 	var Template = {
 
-		//normalize the tpl names so they can be used as html tag ids.
-		normalizeId: function(name){
-			return String(name).split(namefix).join('-');
+		Cache: Backbone.Marionette.TemplateCache,
+		get: function(){
+			return this.Cache.get.apply(this.Cache, arguments);
+		},
+		clear: function(){
+			return this.Cache.clear.apply(this.Cache, arguments);
 		},
 
-		Cache: Backbone.Marionette.TemplateCache,
-
-		//used upon inserting all.json templates (view-less)
-		build: function (name, tplString){
-			if(arguments.length === 1) {
-				tplString = name;
-				name = null;
+		//build a template from string or string array (view-less), cache if got name, used by Cache.loadTemplate().
+		build: function (name, tplStrings){
+			if(!tplStrings){
+				tplStrings = name;
+				name = undefined;
 			}
-			var tpl = _.isArray(tplString)?tplString.join(''):tplString;
+			var tpl = _.isArray(tplStrings) ? tplStrings.join('') : tplStrings;
 
-			if(name) {
-				//process name to be valid id string, use String() to force type conversion before using .split()
-				var id = this.normalizeId(name);
-				var $tag = $('head > script[id="' + id + '"]');
-				if($tag.length > 0) {
-					//override
-					$tag.html(tpl);
-					this.Cache.clear('#' + name);
-					console.warn('DEV::Overriden::Template::', name);
-				}
-				else $('head').append(['<script type="text/tpl" id="', id, '">', tpl, '</script>'].join(''));
-			}
-
+			//only caching named template
+			if(name)
+				this.Cache.make(name, tpl);
+			
 			return tpl;
 		},
 
-		//load all prepared/combined templates from server (*.json without CORS)
+		//load all prepared/combined templates from server (*.json without CORS, like all.json)
 		//or
 		//load individual tpl
-		//all loaded tpl will be stored in cache (app.Util.Tpl.cache.templateCaches)
+		//
+		//all loaded tpl will be stored in cache (app.Util.Tpl.Cache.templateCaches)
 		remote: function(name, sync){
 			var that = this;
 			if(!name) throw new Error('DEV::Util.Tpl::remote() your template name can NOT be empty!');
@@ -43263,8 +43256,9 @@ Marionette.triggerMethodInversed = (function(){
 					if(!_.isString(name)) throw new Error('DEV::Reusable::register() You must specify a string name to register view in ' + regName + '.');
 
 					if(this.has(name)){
+						//only best effort here to remove old template cache. (not effective if using view.layout)
 					    if(Reusable.prototype.template){
-					        app.Util.Tpl.Cache.clear(Reusable.prototype.template);
+					        app.Util.Tpl.clear(Reusable.prototype.template);
 					        console.warn('DEV::Overriden::Template::', name);
 					    }
 					    console.warn('DEV::Overriden::Reusable::' + regName + '.' + name);
@@ -43441,7 +43435,7 @@ Marionette.triggerMethodInversed = (function(){
  * @author Tim Lauv
  * @created 2014.02.25
  * @updated 2016.03.24
- * @updated 2017.03.02
+ * @updated 2017.05.24
  */
 ;(function(app){
 
@@ -43449,14 +43443,22 @@ Marionette.triggerMethodInversed = (function(){
 		// Get the specified template by id.
 		// retrieves the cached tpl obj and load the compiled/text version
 		get: function(templateId, asHTMLText) {
+			if(!templateId)
+				return this.templateCaches;
 		    var cachedTemplate = this.templateCaches[templateId] || this.make(templateId);
 		    return cachedTemplate.load(asHTMLText); //-> cache.loadTemplate()
 		},
 
 		//+ split out a make cache function from the original mono get()
-		//used in a. app.inject.tpl/app.Util.Tpl.remote
-		//consulted in b. cache.loadTemplate
+		//used in app.Util.Tpl (template-builder.js)
 		make: function(templateId, rawTemplate) {
+
+			if(!templateId)
+				throw new Error('DEV::TemplateCache.make() empty templateId: ' + templateId);
+
+			if(this.templateCaches[templateId])
+				console.warn('DEV::TemplateCache.make() overriden::Template ', templateId, ' --> ', rawTemplate);
+			
 			var cachedTemplate = new Marionette.TemplateCache(templateId);
 			this.templateCaches[templateId] = cachedTemplate;
 			cachedTemplate.rawTemplate = rawTemplate;
@@ -43494,7 +43496,7 @@ Marionette.triggerMethodInversed = (function(){
 		//1 Override the default raw-template retrieving method 
 		//(invoked by M.TemplateCache.get() by cache.load() if the cache doesn't have cache.compiledTemplate)
 		//We allow both #id or @*.html/.md(remote) and template html string(or string array) as parameter.
-		//This method is only invoked with a template cache miss. So clear your cache if you have changed the template. (app.Util.Tpl.cache.clear(name))
+		//This method is only invoked with a template cache miss. So clear your cache if you have changed the template. (app.Util.Tpl.Cache.clear(name))
 		loadTemplate: function(idOrTplString){
 			//local in-DOM template
 			if(_.string.startsWith(idOrTplString, '#')) 
@@ -43927,7 +43929,7 @@ Marionette.triggerMethodInversed = (function(){
 			return $.contains(document.documentElement, ($el || this.$el)[0]);
 		},
 
-		//override to give default empty template
+		//override to give default empty template, also the raw template string
 		getTemplate: function(asHTMLString){
 			if(!asHTMLString)
 				return Marionette.getOption(this, 'template') || (
@@ -43935,8 +43937,14 @@ Marionette.triggerMethodInversed = (function(){
 				);
 			else
 				//return the fully resolved HTML template string (not as a cached tpl fn)
-				return app.Util.Tpl.Cache.get(this.getTemplate(), asHTMLString);
+				return app.Util.Tpl.get(this.getTemplate(), asHTMLString);
 		},
+
+		//---permanently change the cached template for this view---
+		//overrideRawTpl: function(rawTplStrings){
+		//	app.Util.Tpl.build(this.getTemplate(), rawTplStrings);
+		//},
+		//----------------------------------------------------------
 
 		//override triggerMethod again to use our version (since it was registered through closure)
 		triggerMethodInversed: Marionette.triggerMethodInversed,
@@ -45542,14 +45550,14 @@ Marionette.triggerMethodInversed = (function(){
 						var nestedTplId = $(this).html();
 						var tplCache;
 						if(nestedTplId){
-							tplCache = app.Util.Tpl.Cache.get(nestedTplId, true);
+							tplCache = app.Util.Tpl.get(nestedTplId, true);
 							if(tplCache)
 								$(this).html(tplCache);
 						}
 					});
 					//assign $el.html() back to .template for proper render() with data
 					var templateId = _.uniqueId('flexlayout-gen-');
-					app.Util.Tpl.Cache.make(templateId, $el.html());
+					app.Util.Tpl.build(templateId, $el.html());
 					this.template = templateId;
 				});
 			
@@ -45830,8 +45838,11 @@ Marionette.triggerMethodInversed = (function(){
 				this.collection.reset(data);
 			else 
 				this.collection.set(data, options);
-			//align with normal view's data rendered and ready events notification
 			
+			//align with normal view's data rendered and ready events notification.
+			//Caveat: currently we don't 100% align with individual ItemView's 'data-rendered' before firing 'view:data-rendered',
+			//if you have ItemViews that have their own remote data url set, the CollectionView's 'ready' might be ahead of those,
+			//however, for local data array this is fine since _.defer() will queue up the 'data-render' correctly.
 			_.defer(_.bind(function(){
 				this.trigger('view:data-rendered');
 			}, this));
@@ -46535,7 +46546,7 @@ var I18N = {};
 
 		var UI = app.view({
 
-			template: '#editor-basic-tpl',
+			template: 'editor-basic-tpl',
 			className: 'form-group', //this class is suggested to be removed if there is no label in this editor options.
 			type: 'ItemView',
 			forceViewType: true, //supress ItemView type warning by framework.
