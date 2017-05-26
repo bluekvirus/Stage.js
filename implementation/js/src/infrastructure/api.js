@@ -667,7 +667,7 @@
 				//////////////////////////////////////////////////////////////////////////////////////////////
 				_.delay(function($el){
 					var fxName = effect + ' animated';
-					$el.one(app.ADE, function(){
+					$el.anyone(app.ADE, function(){
 						$el.removeClass(fxName);
 					}).addClass(fxName);
 					///////////////reset opacity immediately, not after ADE///////////////
@@ -1054,7 +1054,7 @@
 	 */
 	//animation done events used in Animate.css
 	//Caveat: if you use $el.one(app.ADE) but still got 2+ callback calls, the browser is firing the default and prefixed events at the same time...
-	//TBI: +$el.anyone() to fix the problem in using $el.one()
+	//use $el.anyone() to fix the problem in using $el.one()
 	app.ADE = 'animationend webkitAnimationEnd MSAnimationEnd oAnimationEnd transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd';
 	//notification template
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');

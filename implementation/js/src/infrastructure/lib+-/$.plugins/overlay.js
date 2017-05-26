@@ -34,13 +34,13 @@
  *
  * Dependencies
  * ------------
- * Handlebars, _, $window, $
+ * Handlebars, Underscore, $
  * 
  * @author Tim Lauv
  * @create 2013.12.26
  */
 
-(function($){
+(function($, _, Handlebars){
 
 	/*===============preparations======================*/
 	var template = Handlebars.compile([
@@ -58,6 +58,8 @@
 			'</div>',
 		'</div>'
 	].join(''));	
+
+	var $window = $(window);
 
 	/*===============the util functions================*/
 
@@ -174,4 +176,4 @@
 		});
 	};
 
-})(jQuery);
+})(jQuery, _, Handlebars);

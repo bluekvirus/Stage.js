@@ -24,7 +24,7 @@
  * @created 2014.03.02
  */
 
-(function($){
+(function($, _){
 
 	/*===============the util functions================*/
 	//build ul/li table-of-content listing
@@ -119,4 +119,4 @@
 		});
 	};
 
-})(jQuery);
+})(jQuery, _);

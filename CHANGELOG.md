@@ -35,6 +35,7 @@ Change Log
 30. Refined view.layout template caching efficiency;
 31. Remote empty templates now all have default ' ' (1 space) instead of being blank; (this is to kill extra reloading of remote templates)
 32. Re-register a View definition will now correctly refresh its template cache;
+33. Added $.fn.anyone() plugin to jQuery for listening on app.ADE (animation/transition end) events;
 
 working on ...
 

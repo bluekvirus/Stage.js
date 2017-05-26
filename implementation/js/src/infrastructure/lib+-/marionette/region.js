@@ -194,7 +194,7 @@
             //play effect (before 'show')
             var enterEffect = (_.isPlainObject(view.effect) ? view.effect.enter : (view.effect ? (view.effect + 'In') : '')) || (this.$el.attr('effect')? (this.$el.attr('effect') + 'In') : '') || this.$el.attr('effect-enter');
             if (enterEffect) {
-                view.$el.addClass(enterEffect + ' animated').one(app.ADE, function() {
+                view.$el.addClass(enterEffect + ' animated').anyone(app.ADE, function() {
                     view.$el.removeClass('animated ' + enterEffect);
                     _cb && _cb();
                 });
@@ -225,7 +225,7 @@
                 var exitEffect = (_.isPlainObject(view.effect) ? view.effect.exit : (view.effect ? (view.effect + 'Out') : '')) || (this.$el.attr('effect')? (this.$el.attr('effect') + 'Out'): '') || this.$el.attr('effect-exit');
                 if (exitEffect) {
                     view.$el.addClass(exitEffect + ' animated')
-                    .one(app.ADE, function(e) {
+                    .anyone(app.ADE, function(e) {
                         e.stopPropagation();
                         view.close(callback);
                     });

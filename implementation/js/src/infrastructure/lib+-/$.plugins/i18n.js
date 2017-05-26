@@ -27,7 +27,7 @@
  *
  * Dependencies
  * ------------
- * jQuery, underscore, [Handlebars] 
+ * jQuery, Underscore, URI, [Handlebars] 
  *
  * 
  * @author Yan Zhu, Tim Lauv
@@ -38,7 +38,7 @@
  * 
  */
 var I18N = {};
-;(function($, _) {
+;(function($, _, URI) {
 	
 	//----------------configure utils------------------
 	var configure = {
@@ -49,7 +49,7 @@ var I18N = {};
 	var locale, resources = {};	
 	I18N.init = function(options){
 		_.extend(configure, options);
-		var params = app.uri(window.location.toString()).search(true);
+		var params = URI(window.location.toString()).search(true);
 		locale = I18N.locale = params.locale || configure.locale || navigator.userLanguage || navigator.language;
 
 		if (locale) {
@@ -246,4 +246,4 @@ var I18N = {};
 	};
 
 
-})(jQuery, _);
+})(jQuery, _, URI);

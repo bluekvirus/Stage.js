@@ -37860,6 +37860,607 @@ if (typeof jQuery === 'undefined') {
 
 })(_, s, jQuery);
 
+;/**
+ * Listen to any event (in given event types) then off() the listener.
+ * (To help with the app.ADE multiple e type firing quirk in some of the *modern* browsers)
+ *
+ * Usage
+ * -----
+ * $el.anyone('e1 e2 e3 ...', function(){
+ * 		...
+ * });
+ *
+ * Unlike $el.
+ *
+ * Dependency
+ * ----------
+ * jQuery, Underscore
+ *
+ * 
+ * @author Tim Lauv
+ * @created 2017.05.25
+ */
+
+(function($, _){
+
+	/*===============the util functions================*/
+	function bind($el, events, listener){
+		events = events.split(' ');
+		function offEveryoneElse(e){
+			_.each(_.without(events, e), function(){
+				$el.off(e, listener);
+			});
+		};
+		_.each(events, function(e){
+			$el.one(e, function(){
+				listener.apply(this, arguments);
+				offEveryoneElse(e);
+			})
+		});
+	};
+
+	/*===============the plugin================*/
+
+	//store table-of-content listing in data-toc
+	$.fn.anyone = function(events, listener){
+		return this.each(function(index, el){
+			var $el = $(el);
+			bind($el, events, listener);
+		});
+	};
+
+})(jQuery, _);
+;/**
+ * i18n plug-in for loading & using localization resource files.
+ *
+ * Config
+ * ------
+ * I18N.init(options) - change the resource folder path or key-trans file name per locale.
+ * 	options:
+ * 		resourcePath: ... - resource folder path without locale
+ * 		translationFile: ... - the file name that holds the key trans pairs for a certain locale.
+ *
+ * 
+ * APIs
+ * ----
+ * .getResourceProperties(flag) -- get all i18n keys and trans rendered in the app in "key" = "val" format;
+ * .getResourceJSON(flag) -- get the above listing in JSON format;
+ *
+ * use flag = true in the above functions if you only want to get un-translated entries;
+ * 
+ * 
+ * Usage
+ * -----
+ * 1. load this i18n.js before any of your modules/widgets
+ * 2. use '...string...'.i18n() instead of just '...string...',
+ * 3. use {{i18n vars/paths or '...string...'}} in templates, {{{...}}} for un-escaped.
+ * 4. use $.i18n(options) to translate html tags with [data-i18n-key] [data-i18n-module] data attributes. 
+ *
+ *
+ * Dependencies
+ * ------------
+ * jQuery, Underscore, URI, [Handlebars] 
+ *
+ * 
+ * @author Yan Zhu, Tim Lauv
+ * @created 2013-08-26
+ * @updated 2014-08-06
+ * @updated 2016.03.24 (I18N.init now returns a jqXHR object)
+ * @updated 2016.12.27 (removed Detectizr)
+ * 
+ */
+var I18N = {};
+;(function($, _, URI) {
+	
+	//----------------configure utils------------------
+	var configure = {
+		resourcePath: 'static/resource',
+		translationFile: 'i18n.json'
+	};
+	
+	var locale, resources = {};	
+	I18N.init = function(options){
+		_.extend(configure, options);
+		var params = URI(window.location.toString()).search(true);
+		locale = I18N.locale = params.locale || configure.locale || navigator.userLanguage || navigator.language;
+
+		if (locale) {
+			// load resources from file
+			/**
+			 * {locale}.json or {locale}/{translationFile}
+			 * {
+			 * 	locale: {locale},
+			 *  trans: {
+			 * 	 key: "" or {
+			 * 	  "_default": "",
+			 *    {ns}: ""
+			 *   }
+			 *  }
+			 * }
+			 */
+			return $.ajax({
+				url: [configure.resourcePath, (configure.translationFile.indexOf('{locale}') >= 0?configure.translationFile.replace('{locale}', locale):[locale, configure.translationFile].join('/'))].join('/'),
+				dataType: 'json',
+				success: function(data, textStatus, jqXHR) {
+					if(!data || !data.trans) throw new Error('RUNTIME::i18n::Malformed ' + locale + ' data...');
+					resources = data.trans;
+				},
+				error: function(jqXHR, textStatus, errorThrown) {
+					console.warn('RUNTIME::i18n::', errorThrown);
+				}
+			});
+		}
+	};
+	//-------------------------------------------------
+	
+	
+	/**
+	 * =============================================================
+	 * String Object plugin
+	 * options:
+	 * 	module - the module/namespace ref-ed translation of the key.
+	 * =============================================================
+	 */
+	String.prototype.i18n = function(options) {
+		var key = $.trim(this);
+		
+		if (!locale || !key) {
+			//console.log('locale', locale, 'is falsy');
+			return key;
+		}
+		
+		var translation = resources[key];
+		if (typeof(translation) === 'undefined') {
+			//console.log('translation', translation, 'is undefined');
+			// report this key
+			resources[key] = '';
+
+			return key;
+		} else if (typeof(translation) === 'object') {
+			//console.log('translation', translation, 'is object');
+			var ns = (_.isString(options) && options) || (options && options.module) || '_default';
+			translation = translation[ns];
+			if (typeof(translation) === 'undefined') {
+				//console.log('translation', translation, 'is undefined');
+				// report this namespace
+				resources[key][ns] = '';
+
+				return key;
+			}
+		}
+		translation = String(translation);
+		if (translation.trim() === '') {
+			return key;
+		}
+		return translation;
+	};
+
+	function getResourceProperties(untransedOnly) {
+		var formatted = [];
+
+		function makeNSLine(ns) {
+			formatted.push('## module: ');
+			formatted.push(ns);
+			formatted.push(' ##');
+			formatted.push('\n');
+		}
+
+		function makeLine(key, value) {
+			key = String(key);
+			value = String(value);
+			formatted.push('"');
+			formatted.push(key.replace(/"/g, '\\"'));
+			formatted.push('"');
+			formatted.push('=');
+			formatted.push(value);
+			formatted.push('\n');
+		}
+
+		_.each(resources, function(value, key) {
+			if(untransedOnly && !value) return;
+
+			if (typeof(value) === 'object') {
+				_.each(value, function(translation, ns) {
+					if (ns !== '_default') {
+						makeNSLine(ns);
+					}
+					makeLine(key, translation);
+				});
+			} else {
+				makeLine(key, value);
+			}
+		});
+
+		var result = formatted.join('');
+		// console.log(result);
+		// TODO: write result to file
+		return result;
+	}
+
+	function getResourceJSON(untransedOnly, encode) {
+		var res = resources;
+		if(untransedOnly){
+			res = _.reject(resources, function(trans, key){
+				if(trans) return true; return false;
+			});
+		}
+		if(_.isUndefined(encode))
+			encode = true;
+		var result = {
+			locale: locale,
+			trans: res
+		};
+
+		if(encode)
+			return JSON.stringify(result, null, '\t');
+		return result;
+	}
+
+	function insertTrans(trans){
+		_.extend(resources, trans);
+	}
+
+	I18N.getResourceProperties = getResourceProperties;
+	I18N.getResourceJSON = getResourceJSON;
+	I18N.insertTrans = insertTrans;
+
+	/**
+	 * =============================================================
+	 * Handlebars helper(s) for displaying text in i18n environment.
+	 * {{i18n \'key\'}}
+	 * =============================================================
+	 */
+	if(Handlebars){
+		Handlebars.registerHelper('i18n', function(key, ns, options) {
+			if(!options) {
+				options = ns;
+				ns = undefined;
+			}
+			if(_.isString(key))
+	  			return key.i18n(ns && {module:ns});
+	  		return key;
+		});
+	}
+
+	/**
+	 * =============================================================
+	 * Jquery plugin for linking html tags with i18n environment.
+	 * 
+	 * data-i18n-key = '*' to use everything in between the selected dom object tag.
+	 * <span data-i18n-key="*">abcd...</span> means to use abcd... as the key.
+	 *
+	 * data-i18n-module = '...' to specify the module/namespace.
+	 *
+	 * options:
+	 * 	1. search, whether or not to use find() to locate i18n tags.
+	 * =============================================================
+	 */
+	function _i18nIterator(index, el) {
+		var $el = $(el);
+		var key = $el.data('i18nKey');
+		var ns = $el.data('i18nModule');
+		if(key === '*') key = $.trim($el.html());
+		$el.html(key.i18n({module:ns}));
+		$el.removeAttr('data-i18n-key');
+	}
+	$.fn.i18n = function(options){
+		options = _.extend({
+			//defaults
+			search: false
+		}, options);
+
+		if(!options.search)
+			return this.filter('[data-i18n-key]').each(_i18nIterator);
+		else {
+			this.find('[data-i18n-key]').each(_i18nIterator);
+			return this;
+		}
+	};
+
+
+})(jQuery, _, URI);
+
+;/**
+ * The Table-Of-Content plugin used with document html pages.
+ *
+ * Usage
+ * -----
+ * $.toc({
+ * 	ignoreRoot: false | true - whether to ignore h1
+ *  headerHTML: html before ul (sibling) - experimental
+ * })
+ *
+ * Document format
+ * ---------------
+ * h1 -- book title
+ * h2 -- chapters
+ * h3 -- sections
+ * ...
+ *
+ * Dependency
+ * ----------
+ * jQuery, Underscore
+ *
+ * 
+ * @author Tim Lauv
+ * @created 2014.03.02
+ */
+
+(function($, _){
+
+	/*===============the util functions================*/
+	//build ul/li table-of-content listing
+	var order = {};
+	for (var i = 1; i <= 6; i++) {
+		order['h' + i] = order['H' + i] = i;
+	}
+	function toc($el, options){
+		//default options
+		options = _.extend({
+
+			ignoreRoot: false,
+			headerHTML: '', //'<h3><i class="glyphicon glyphicon-book"></i> Table of Content</h3>'
+
+		}, options);
+
+		//statistical registry
+		var $headers = [];
+
+		//traverse the document tree
+		var $root = $('<div></div>').append(options.headerHTML).append('<ul></ul>');
+		$root.$children = $root.find('> ul').data('children', []);
+		var $index = $root;
+		var level = options.ignoreRoot ? 1 : 0;
+		$el.find((options.ignoreRoot?'':'h1,') + 'h2,h3,h4,h5,h6').each(function(){
+
+			var $this = $(this);
+			var tag = $this.context.localName; //or tagName which will be uppercased
+			var title = $this.html();
+			var id = $this.attr('id');
+
+			//header in document
+			$headers.push($this);
+
+			//node that represent the header in toc html
+			var $node = $('<li><a href="#" data-id="' + id + '" action="goTo">' + title + '</a><ul></ul></li>'); //like <li> <a>me</a> <ul>children[]</ul> </li>
+			$node.data({
+				title: title,
+				id: id
+			});
+			switch(tag){
+				case 'h2': case 'H2':
+				$node.addClass('chapter');
+				break;
+				case 'h3': case 'H3':
+				$node.addClass('section');
+				break;
+				default:
+				break;
+			}
+			$node.$children = $node.find('> ul').data('children', []);
+
+			var gap = order[tag] - level;
+
+			if(gap > 0) { //drilling in (always 1 lvl down)
+				$node.$parent = $index;
+				$index.$children.append($node).data('children').push($node);
+				level ++;
+			}else if (gap === 0) {
+				//back to same level ul (parent li's ul)
+				$node.$parent = $index.$parent;
+				$index.$parent.$children.append($node).data('children').push($node);
+			}else {
+				while (gap < 0){
+					gap ++;
+					$index = $index.$parent; //back to parent li one lvl up
+					level --;
+				}
+				//now $index points to the targeting level node
+				$node.$parent = $index.$parent;
+				$index.$parent.$children.append($node).data('children').push($node); //insert a same level node besides the found targeting level node
+			}
+			$index = $node; //point $index to this new node
+
+			//link the document $header element with toc node
+			$this.data('toc-node', $node);
+			
+		});
+		$el.data('toc', {
+			html: '<div class="md-toc">' + $root.html() + '</div>',
+			$headers: $headers, //actual document $(header) node refs
+		});
+	}
+
+	/*===============the plugin================*/
+
+	//store table-of-content listing in data-toc
+	$.fn.toc = function(options){
+		return this.each(function(index, el){
+			var $el = $(el);
+			toc($el, options);
+		});
+	};
+
+})(jQuery, _);
+;/**
+ * This is the plug-in that put an div(overlay) on top of selected elements (inner-div style)
+ *
+ * Arguments
+ * ---------
+ * show: true|false show or close the overlay
+ * options: {
+ * 		[class: 'class name strings for styling purposes';]
+ * 		background: if no 'class' in options
+ * 		zIndex: if no 'class' in options
+ * 		effect: 'jquery ui effects string', or specifically: (use 'false' to disable)
+ * 			openEffect: ...,
+ * 			closeEffect: ...,
+ * 		duration:
+ * 			openDuration: ...,
+ * 			closeDuration: ...,
+ * 		easing:
+ * 			openEasing: ...,
+ * 			closeEasing: ...,
+ * 		content: 'text'/html or el or a function($el, $overlay) that returns one of the three.
+ * 		onShow($el, $overlay) - show callback;
+ * 		onClose($el, $overlay) - close callback;
+ * 		move: true|false - whether or not to make the overlay-container draggable through jquery ui.
+ * 		resize: true|false - whether or not to make the overlay-container resizable through jquery ui.
+ * }
+ *
+ * Custom Content
+ * --------------
+ * You can change the content in onShow($el, $overlay) by $overlay.data('content').html(...)
+ * or
+ * You can pass in view.render().$el if you have backbone based view as content. 
+ * Note that in order to prevent *Ghost View* you need to close()/clean-up your view object in onClose callback.
+ * 
+ *
+ * Dependencies
+ * ------------
+ * Handlebars, Underscore, $
+ * 
+ * @author Tim Lauv
+ * @create 2013.12.26
+ */
+
+(function($, _, Handlebars){
+
+	/*===============preparations======================*/
+	var template = Handlebars.compile([
+		'<div class="overlay {{class}}" style="position:absolute; top: 0; left: 0; right: 0; bottom: 0; {{#unless class}}z-index:{{zIndex}};background:{{background}};{{/unless}}">',
+			'<div class="overlay-outer" style="display: table;table-layout: fixed; height: 100%; width: 100%;">',
+				'<div class="overlay-inner" style="display: table-cell;text-align: center;vertical-align: middle; width: 100%;">',
+					'<div class="overlay-content-ct" style="display: inline-block;outline: medium none; position:relative;">',
+						//a. your overlay content will be put here, and it will always be auto-centered.
+						//b. overflow scrolling is not automatic the content's scroll box needs,
+						//	1. a max-height < app.screenSize.h
+						//	2. overflow-y: auto
+						//	to work.
+					'</div>',
+				'</div>',
+			'</div>',
+		'</div>'
+	].join(''));	
+
+	var $window = $(window);
+
+	/*===============the util functions================*/
+
+	/*===============the plugin================*/
+	$.fn.overlay = function(show, options){
+		if($.isPlainObject(show)){
+			options = show;
+			show = true;
+		}
+		if(_.isString(show) || _.isNumber(show)){
+			options = _.extend({content: show}, options);
+			show = true;
+		}
+		if(_.isUndefined(show)) show = false; //$.overlay() closes previous overlay on the element.
+		options = options || {};
+
+		return this.each(function(index, el){
+			var $el = $(this),
+			$overlay;
+
+			if(!show){
+				if(!$el.data('overlay')) return;
+
+				$overlay = $el.data('overlay');
+				options = _.extend({}, $overlay.data('closeOptions'), options);
+				var closeEffect = options.closeEffect || options.effect;
+				if(_.isUndefined(closeEffect))
+					closeEffect = 'clip';
+				if(!closeEffect) //so you can use effect: false
+					options.duration = 0;
+				//**Caveat: $.fn.hide() is from jquery.UI instead of jquery
+				$overlay.hide({
+					effect: closeEffect,
+					duration: options.closeDuration || options.duration,
+					easing: options.closeEasing || options.easing,
+					complete: function(){
+						if(options.onClose)
+							options.onClose($el, $overlay);
+						if($overlay.data('onResize'))
+							//check so we don't remove global 'resize' listeners accidentally
+							$window.off('resize', $overlay.data('onResize'));
+						$overlay.remove();//el, data, and events removed;
+						var recoverCSS = $el.data('recover-css');						
+						$el.css({
+							overflowY: recoverCSS.overflow.y,
+							overflowX: recoverCSS.overflow.x,
+							position: recoverCSS.position
+						});
+						$el.removeData('overlay', 'recover-css');
+					}
+				});
+			}else {
+				if($el.data('overlay')) return;
+
+				//options default (template related):
+				options = _.extend({
+					zIndex: 100,
+					background: (options.content)?'rgba(0, 0, 0, 0.6)':'none',
+					move: false,
+					resize: false
+				}, options);
+
+				$overlay = $(template(options));
+				$el.data('recover-css', {
+					overflow: {
+						x: $el.css('overflowX'),
+						y: $el.css('overflowY')
+					},
+					position: $el.css('position')
+				});				
+				$el.append($overlay).css({
+					'position': 'relative',
+					'overflow': 'hidden'
+				});
+				//fix the overlay height, this also affect the default 'clip' effect
+				if($el[0].tagName === 'BODY') {
+					$overlay.offset({top: $window.scrollTop()});
+					$overlay.height($window.height());
+					$overlay.data('onResize', function(){
+						$overlay.height($window.height());
+						//console.log('test to see if the listener is still there...');
+					});
+					$window.on('resize', $overlay.data('onResize'));
+				}
+				$overlay.hide();
+
+				$el.data('overlay', $overlay);
+				$container = $overlay.find('.overlay-content-ct');
+				if(options.resize) $container.resizable({ containment: "parent" });
+				if(options.move) $container.draggable({ containment: "parent" });
+				$overlay.data({
+					'closeOptions': _.pick(options, 'closeEffect', 'effect', 'closeDuration', 'duration', 'closeEasing', 'easing', 'onClose'),
+					'container': $container
+				});
+				$overlay.data('container').html(_.isFunction(options.content)?options.content($el, $overlay):options.content);
+				var openEffect = options.openEffect || options.effect;
+				if(_.isUndefined(openEffect))
+					openEffect = 'clip';
+				if(!openEffect) //so you can use effect: false
+					options.duration = 0;
+				//**Caveat: $.fn.show() is from jquery.UI instead of jquery
+				$overlay.show({
+					effect: openEffect,
+					duration: options.openDuration || options.duration,
+					easing: options.openEasing || options.easing,
+					complete: function(){
+						if(options.onShow)
+							options.onShow($el, $overlay);
+					}
+				});
+				
+			}
+
+		});
+	};
+
+})(jQuery, _, Handlebars);
 ;/* ========================================================================
  * Bootstrap: tooltip.js v3.3.6
  * http://getbootstrap.com/javascript/#tooltip
@@ -42258,7 +42859,7 @@ Marionette.triggerMethodInversed = (function(){
 				//////////////////////////////////////////////////////////////////////////////////////////////
 				_.delay(function($el){
 					var fxName = effect + ' animated';
-					$el.one(app.ADE, function(){
+					$el.anyone(app.ADE, function(){
 						$el.removeClass(fxName);
 					}).addClass(fxName);
 					///////////////reset opacity immediately, not after ADE///////////////
@@ -42645,13 +43246,13 @@ Marionette.triggerMethodInversed = (function(){
 	 */
 	//animation done events used in Animate.css
 	//Caveat: if you use $el.one(app.ADE) but still got 2+ callback calls, the browser is firing the default and prefixed events at the same time...
-	//TBI: +$el.anyone() to fix the problem in using $el.one()
+	//use $el.anyone() to fix the problem in using $el.one()
 	app.ADE = 'animationend webkitAnimationEnd MSAnimationEnd oAnimationEnd transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd';
 	//notification template
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.2-1262 build 1495741904139";
+;;app.stagejs = "1.10.2-1263 build 1495757982515";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -43726,7 +44327,7 @@ Marionette.triggerMethodInversed = (function(){
             //play effect (before 'show')
             var enterEffect = (_.isPlainObject(view.effect) ? view.effect.enter : (view.effect ? (view.effect + 'In') : '')) || (this.$el.attr('effect')? (this.$el.attr('effect') + 'In') : '') || this.$el.attr('effect-enter');
             if (enterEffect) {
-                view.$el.addClass(enterEffect + ' animated').one(app.ADE, function() {
+                view.$el.addClass(enterEffect + ' animated').anyone(app.ADE, function() {
                     view.$el.removeClass('animated ' + enterEffect);
                     _cb && _cb();
                 });
@@ -43757,7 +44358,7 @@ Marionette.triggerMethodInversed = (function(){
                 var exitEffect = (_.isPlainObject(view.effect) ? view.effect.exit : (view.effect ? (view.effect + 'Out') : '')) || (this.$el.attr('effect')? (this.$el.attr('effect') + 'Out'): '') || this.$el.attr('effect-exit');
                 if (exitEffect) {
                     view.$el.addClass(exitEffect + ' animated')
-                    .one(app.ADE, function(e) {
+                    .anyone(app.ADE, function(e) {
                         e.stopPropagation();
                         view.close(callback);
                     });
@@ -45918,555 +46519,6 @@ Marionette.triggerMethodInversed = (function(){
 	});
 
 })(Application);
-;/**
- * i18n plug-in for loading & using localization resource files.
- *
- * Config
- * ------
- * I18N.init(options) - change the resource folder path or key-trans file name per locale.
- * 	options:
- * 		resourcePath: ... - resource folder path without locale
- * 		translationFile: ... - the file name that holds the key trans pairs for a certain locale.
- *
- * 
- * APIs
- * ----
- * .getResourceProperties(flag) -- get all i18n keys and trans rendered in the app in "key" = "val" format;
- * .getResourceJSON(flag) -- get the above listing in JSON format;
- *
- * use flag = true in the above functions if you only want to get un-translated entries;
- * 
- * 
- * Usage
- * -----
- * 1. load this i18n.js before any of your modules/widgets
- * 2. use '...string...'.i18n() instead of just '...string...',
- * 3. use {{i18n vars/paths or '...string...'}} in templates, {{{...}}} for un-escaped.
- * 4. use $.i18n(options) to translate html tags with [data-i18n-key] [data-i18n-module] data attributes. 
- *
- *
- * Dependencies
- * ------------
- * jQuery, underscore, [Handlebars] 
- *
- * 
- * @author Yan Zhu, Tim Lauv
- * @created 2013-08-26
- * @updated 2014-08-06
- * @updated 2016.03.24 (I18N.init now returns a jqXHR object)
- * @updated 2016.12.27 (removed Detectizr)
- * 
- */
-var I18N = {};
-;(function($, _) {
-	
-	//----------------configure utils------------------
-	var configure = {
-		resourcePath: 'static/resource',
-		translationFile: 'i18n.json'
-	};
-	
-	var locale, resources = {};	
-	I18N.init = function(options){
-		_.extend(configure, options);
-		var params = app.uri(window.location.toString()).search(true);
-		locale = I18N.locale = params.locale || configure.locale || navigator.userLanguage || navigator.language;
-
-		if (locale) {
-			// load resources from file
-			/**
-			 * {locale}.json or {locale}/{translationFile}
-			 * {
-			 * 	locale: {locale},
-			 *  trans: {
-			 * 	 key: "" or {
-			 * 	  "_default": "",
-			 *    {ns}: ""
-			 *   }
-			 *  }
-			 * }
-			 */
-			return $.ajax({
-				url: [configure.resourcePath, (configure.translationFile.indexOf('{locale}') >= 0?configure.translationFile.replace('{locale}', locale):[locale, configure.translationFile].join('/'))].join('/'),
-				dataType: 'json',
-				success: function(data, textStatus, jqXHR) {
-					if(!data || !data.trans) throw new Error('RUNTIME::i18n::Malformed ' + locale + ' data...');
-					resources = data.trans;
-				},
-				error: function(jqXHR, textStatus, errorThrown) {
-					console.warn('RUNTIME::i18n::', errorThrown);
-				}
-			});
-		}
-	};
-	//-------------------------------------------------
-	
-	
-	/**
-	 * =============================================================
-	 * String Object plugin
-	 * options:
-	 * 	module - the module/namespace ref-ed translation of the key.
-	 * =============================================================
-	 */
-	String.prototype.i18n = function(options) {
-		var key = $.trim(this);
-		
-		if (!locale || !key) {
-			//console.log('locale', locale, 'is falsy');
-			return key;
-		}
-		
-		var translation = resources[key];
-		if (typeof(translation) === 'undefined') {
-			//console.log('translation', translation, 'is undefined');
-			// report this key
-			resources[key] = '';
-
-			return key;
-		} else if (typeof(translation) === 'object') {
-			//console.log('translation', translation, 'is object');
-			var ns = (_.isString(options) && options) || (options && options.module) || '_default';
-			translation = translation[ns];
-			if (typeof(translation) === 'undefined') {
-				//console.log('translation', translation, 'is undefined');
-				// report this namespace
-				resources[key][ns] = '';
-
-				return key;
-			}
-		}
-		translation = String(translation);
-		if (translation.trim() === '') {
-			return key;
-		}
-		return translation;
-	};
-
-	function getResourceProperties(untransedOnly) {
-		var formatted = [];
-
-		function makeNSLine(ns) {
-			formatted.push('## module: ');
-			formatted.push(ns);
-			formatted.push(' ##');
-			formatted.push('\n');
-		}
-
-		function makeLine(key, value) {
-			key = String(key);
-			value = String(value);
-			formatted.push('"');
-			formatted.push(key.replace(/"/g, '\\"'));
-			formatted.push('"');
-			formatted.push('=');
-			formatted.push(value);
-			formatted.push('\n');
-		}
-
-		_.each(resources, function(value, key) {
-			if(untransedOnly && !value) return;
-
-			if (typeof(value) === 'object') {
-				_.each(value, function(translation, ns) {
-					if (ns !== '_default') {
-						makeNSLine(ns);
-					}
-					makeLine(key, translation);
-				});
-			} else {
-				makeLine(key, value);
-			}
-		});
-
-		var result = formatted.join('');
-		// console.log(result);
-		// TODO: write result to file
-		return result;
-	}
-
-	function getResourceJSON(untransedOnly, encode) {
-		var res = resources;
-		if(untransedOnly){
-			res = _.reject(resources, function(trans, key){
-				if(trans) return true; return false;
-			});
-		}
-		if(_.isUndefined(encode))
-			encode = true;
-		var result = {
-			locale: locale,
-			trans: res
-		};
-
-		if(encode)
-			return JSON.stringify(result, null, '\t');
-		return result;
-	}
-
-	function insertTrans(trans){
-		_.extend(resources, trans);
-	}
-
-	I18N.getResourceProperties = getResourceProperties;
-	I18N.getResourceJSON = getResourceJSON;
-	I18N.insertTrans = insertTrans;
-
-	/**
-	 * =============================================================
-	 * Handlebars helper(s) for displaying text in i18n environment.
-	 * {{i18n \'key\'}}
-	 * =============================================================
-	 */
-	if(Handlebars){
-		Handlebars.registerHelper('i18n', function(key, ns, options) {
-			if(!options) {
-				options = ns;
-				ns = undefined;
-			}
-			if(_.isString(key))
-	  			return key.i18n(ns && {module:ns});
-	  		return key;
-		});
-	}
-
-	/**
-	 * =============================================================
-	 * Jquery plugin for linking html tags with i18n environment.
-	 * 
-	 * data-i18n-key = '*' to use everything in between the selected dom object tag.
-	 * <span data-i18n-key="*">abcd...</span> means to use abcd... as the key.
-	 *
-	 * data-i18n-module = '...' to specify the module/namespace.
-	 *
-	 * options:
-	 * 	1. search, whether or not to use find() to locate i18n tags.
-	 * =============================================================
-	 */
-	function _i18nIterator(index, el) {
-		var $el = $(el);
-		var key = $el.data('i18nKey');
-		var ns = $el.data('i18nModule');
-		if(key === '*') key = $.trim($el.html());
-		$el.html(key.i18n({module:ns}));
-		$el.removeAttr('data-i18n-key');
-	}
-	$.fn.i18n = function(options){
-		options = _.extend({
-			//defaults
-			search: false
-		}, options);
-
-		if(!options.search)
-			return this.filter('[data-i18n-key]').each(_i18nIterator);
-		else {
-			this.find('[data-i18n-key]').each(_i18nIterator);
-			return this;
-		}
-	};
-
-
-})(jQuery, _);
-
-;/**
- * The Table-Of-Content plugin used with document html pages.
- *
- * Usage
- * -----
- * $.toc({
- * 	ignoreRoot: false | true - whether to ignore h1
- *  headerHTML: html before ul (sibling) - experimental
- * })
- *
- * Document format
- * ---------------
- * h1 -- book title
- * h2 -- chapters
- * h3 -- sections
- * ...
- *
- * Dependency
- * ----------
- * jQuery, Underscore
- *
- * 
- * @author Tim Lauv
- * @created 2014.03.02
- */
-
-(function($){
-
-	/*===============the util functions================*/
-	//build ul/li table-of-content listing
-	var order = {};
-	for (var i = 1; i <= 6; i++) {
-		order['h' + i] = order['H' + i] = i;
-	}
-	function toc($el, options){
-		//default options
-		options = _.extend({
-
-			ignoreRoot: false,
-			headerHTML: '', //'<h3><i class="glyphicon glyphicon-book"></i> Table of Content</h3>'
-
-		}, options);
-
-		//statistical registry
-		var $headers = [];
-
-		//traverse the document tree
-		var $root = $('<div></div>').append(options.headerHTML).append('<ul></ul>');
-		$root.$children = $root.find('> ul').data('children', []);
-		var $index = $root;
-		var level = options.ignoreRoot ? 1 : 0;
-		$el.find((options.ignoreRoot?'':'h1,') + 'h2,h3,h4,h5,h6').each(function(){
-
-			var $this = $(this);
-			var tag = $this.context.localName; //or tagName which will be uppercased
-			var title = $this.html();
-			var id = $this.attr('id');
-
-			//header in document
-			$headers.push($this);
-
-			//node that represent the header in toc html
-			var $node = $('<li><a href="#" data-id="' + id + '" action="goTo">' + title + '</a><ul></ul></li>'); //like <li> <a>me</a> <ul>children[]</ul> </li>
-			$node.data({
-				title: title,
-				id: id
-			});
-			switch(tag){
-				case 'h2': case 'H2':
-				$node.addClass('chapter');
-				break;
-				case 'h3': case 'H3':
-				$node.addClass('section');
-				break;
-				default:
-				break;
-			}
-			$node.$children = $node.find('> ul').data('children', []);
-
-			var gap = order[tag] - level;
-
-			if(gap > 0) { //drilling in (always 1 lvl down)
-				$node.$parent = $index;
-				$index.$children.append($node).data('children').push($node);
-				level ++;
-			}else if (gap === 0) {
-				//back to same level ul (parent li's ul)
-				$node.$parent = $index.$parent;
-				$index.$parent.$children.append($node).data('children').push($node);
-			}else {
-				while (gap < 0){
-					gap ++;
-					$index = $index.$parent; //back to parent li one lvl up
-					level --;
-				}
-				//now $index points to the targeting level node
-				$node.$parent = $index.$parent;
-				$index.$parent.$children.append($node).data('children').push($node); //insert a same level node besides the found targeting level node
-			}
-			$index = $node; //point $index to this new node
-
-			//link the document $header element with toc node
-			$this.data('toc-node', $node);
-			
-		});
-		$el.data('toc', {
-			html: '<div class="md-toc">' + $root.html() + '</div>',
-			$headers: $headers, //actual document $(header) node refs
-		});
-	}
-
-	/*===============the plugin================*/
-
-	//store table-of-content listing in data-toc
-	$.fn.toc = function(options){
-		return this.each(function(index, el){
-			var $el = $(el);
-			toc($el, options);
-		});
-	};
-
-})(jQuery);
-;/**
- * This is the plug-in that put an div(overlay) on top of selected elements (inner-div style)
- *
- * Arguments
- * ---------
- * show: true|false show or close the overlay
- * options: {
- * 		[class: 'class name strings for styling purposes';]
- * 		background: if no 'class' in options
- * 		zIndex: if no 'class' in options
- * 		effect: 'jquery ui effects string', or specifically: (use 'false' to disable)
- * 			openEffect: ...,
- * 			closeEffect: ...,
- * 		duration:
- * 			openDuration: ...,
- * 			closeDuration: ...,
- * 		easing:
- * 			openEasing: ...,
- * 			closeEasing: ...,
- * 		content: 'text'/html or el or a function($el, $overlay) that returns one of the three.
- * 		onShow($el, $overlay) - show callback;
- * 		onClose($el, $overlay) - close callback;
- * 		move: true|false - whether or not to make the overlay-container draggable through jquery ui.
- * 		resize: true|false - whether or not to make the overlay-container resizable through jquery ui.
- * }
- *
- * Custom Content
- * --------------
- * You can change the content in onShow($el, $overlay) by $overlay.data('content').html(...)
- * or
- * You can pass in view.render().$el if you have backbone based view as content. 
- * Note that in order to prevent *Ghost View* you need to close()/clean-up your view object in onClose callback.
- * 
- *
- * Dependencies
- * ------------
- * Handlebars, _, $window, $
- * 
- * @author Tim Lauv
- * @create 2013.12.26
- */
-
-(function($){
-
-	/*===============preparations======================*/
-	var template = Handlebars.compile([
-		'<div class="overlay {{class}}" style="position:absolute; top: 0; left: 0; right: 0; bottom: 0; {{#unless class}}z-index:{{zIndex}};background:{{background}};{{/unless}}">',
-			'<div class="overlay-outer" style="display: table;table-layout: fixed; height: 100%; width: 100%;">',
-				'<div class="overlay-inner" style="display: table-cell;text-align: center;vertical-align: middle; width: 100%;">',
-					'<div class="overlay-content-ct" style="display: inline-block;outline: medium none; position:relative;">',
-						//a. your overlay content will be put here, and it will always be auto-centered.
-						//b. overflow scrolling is not automatic the content's scroll box needs,
-						//	1. a max-height < app.screenSize.h
-						//	2. overflow-y: auto
-						//	to work.
-					'</div>',
-				'</div>',
-			'</div>',
-		'</div>'
-	].join(''));	
-
-	/*===============the util functions================*/
-
-	/*===============the plugin================*/
-	$.fn.overlay = function(show, options){
-		if($.isPlainObject(show)){
-			options = show;
-			show = true;
-		}
-		if(_.isString(show) || _.isNumber(show)){
-			options = _.extend({content: show}, options);
-			show = true;
-		}
-		if(_.isUndefined(show)) show = false; //$.overlay() closes previous overlay on the element.
-		options = options || {};
-
-		return this.each(function(index, el){
-			var $el = $(this),
-			$overlay;
-
-			if(!show){
-				if(!$el.data('overlay')) return;
-
-				$overlay = $el.data('overlay');
-				options = _.extend({}, $overlay.data('closeOptions'), options);
-				var closeEffect = options.closeEffect || options.effect;
-				if(_.isUndefined(closeEffect))
-					closeEffect = 'clip';
-				if(!closeEffect) //so you can use effect: false
-					options.duration = 0;
-				//**Caveat: $.fn.hide() is from jquery.UI instead of jquery
-				$overlay.hide({
-					effect: closeEffect,
-					duration: options.closeDuration || options.duration,
-					easing: options.closeEasing || options.easing,
-					complete: function(){
-						if(options.onClose)
-							options.onClose($el, $overlay);
-						if($overlay.data('onResize'))
-							//check so we don't remove global 'resize' listeners accidentally
-							$window.off('resize', $overlay.data('onResize'));
-						$overlay.remove();//el, data, and events removed;
-						var recoverCSS = $el.data('recover-css');						
-						$el.css({
-							overflowY: recoverCSS.overflow.y,
-							overflowX: recoverCSS.overflow.x,
-							position: recoverCSS.position
-						});
-						$el.removeData('overlay', 'recover-css');
-					}
-				});
-			}else {
-				if($el.data('overlay')) return;
-
-				//options default (template related):
-				options = _.extend({
-					zIndex: 100,
-					background: (options.content)?'rgba(0, 0, 0, 0.6)':'none',
-					move: false,
-					resize: false
-				}, options);
-
-				$overlay = $(template(options));
-				$el.data('recover-css', {
-					overflow: {
-						x: $el.css('overflowX'),
-						y: $el.css('overflowY')
-					},
-					position: $el.css('position')
-				});				
-				$el.append($overlay).css({
-					'position': 'relative',
-					'overflow': 'hidden'
-				});
-				//fix the overlay height, this also affect the default 'clip' effect
-				if($el[0].tagName === 'BODY') {
-					$overlay.offset({top: $window.scrollTop()});
-					$overlay.height($window.height());
-					$overlay.data('onResize', function(){
-						$overlay.height($window.height());
-						//console.log('test to see if the listener is still there...');
-					});
-					$window.on('resize', $overlay.data('onResize'));
-				}
-				$overlay.hide();
-
-				$el.data('overlay', $overlay);
-				$container = $overlay.find('.overlay-content-ct');
-				if(options.resize) $container.resizable({ containment: "parent" });
-				if(options.move) $container.draggable({ containment: "parent" });
-				$overlay.data({
-					'closeOptions': _.pick(options, 'closeEffect', 'effect', 'closeDuration', 'duration', 'closeEasing', 'easing', 'onClose'),
-					'container': $container
-				});
-				$overlay.data('container').html(_.isFunction(options.content)?options.content($el, $overlay):options.content);
-				var openEffect = options.openEffect || options.effect;
-				if(_.isUndefined(openEffect))
-					openEffect = 'clip';
-				if(!openEffect) //so you can use effect: false
-					options.duration = 0;
-				//**Caveat: $.fn.show() is from jquery.UI instead of jquery
-				$overlay.show({
-					effect: openEffect,
-					duration: options.openDuration || options.duration,
-					easing: options.openEasing || options.easing,
-					complete: function(){
-						if(options.onShow)
-							options.onShow($el, $overlay);
-					}
-				});
-				
-			}
-
-		});
-	};
-
-})(jQuery);
 ;/**
  * This is the code template for **basic** <input>, <select>, <textarea> editor.
  *
