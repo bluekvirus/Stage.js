@@ -37884,32 +37884,36 @@ if (typeof jQuery === 'undefined') {
 (function($, _){
 
 	/*===============the util functions================*/
-	function bind($el, events, listener){
-		events = events.split(' ');
-		function offEveryoneElse(e){
-			_.each(_.without(events, e), function(other){
-				$el.off(other, listener);
-			});
-		};
-		_.each(events, function(e){
-			$el.one(e, function(){
-				listener.apply(this, arguments);
-				offEveryoneElse(e);
-			})
-		});
+	function bind($el, events, listener) {
+	    events = events.split(' ');
+
+	    function offEveryoneElse(e) {
+	        _.each(_.without(events, e), function(other) {
+	            $el.off(other, callback);
+	        });
+	    };
+
+	    function callback(e) {
+	        listener.apply(this, arguments);
+	        offEveryoneElse(e);
+	    }
+	    _.each(events, function(e) {
+	        $el.one(e, callback);
+	    });
 	};
 
 	/*===============the plugin================*/
 
 	//store table-of-content listing in data-toc
-	$.fn.anyone = function(events, listener){
-		return this.each(function(index, el){
-			var $el = $(el);
-			bind($el, events, listener);
-		});
+	$.fn.anyone = function(events, listener) {
+	    return this.each(function(index, el) {
+	        var $el = $(el);
+	        bind($el, events, listener);
+	    });
 	};
 
 })(jQuery, _);
+
 ;/**
  * i18n plug-in for loading & using localization resource files.
  *
@@ -43252,7 +43256,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.2-1264 build 1495768454521";
+;;app.stagejs = "1.10.2-1265 build 1495778524429";
 ;/**
  * Util for adding meta-event programming ability to object
  *

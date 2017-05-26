@@ -22,29 +22,32 @@
 (function($, _){
 
 	/*===============the util functions================*/
-	function bind($el, events, listener){
-		events = events.split(' ');
-		function offEveryoneElse(e){
-			_.each(_.without(events, e), function(other){
-				$el.off(other, listener);
-			});
-		};
-		_.each(events, function(e){
-			$el.one(e, function(){
-				listener.apply(this, arguments);
-				offEveryoneElse(e);
-			})
-		});
+	function bind($el, events, listener) {
+	    events = events.split(' ');
+
+	    function offEveryoneElse(e) {
+	        _.each(_.without(events, e), function(other) {
+	            $el.off(other, callback);
+	        });
+	    };
+
+	    function callback(e) {
+	        listener.apply(this, arguments);
+	        offEveryoneElse(e);
+	    }
+	    _.each(events, function(e) {
+	        $el.one(e, callback);
+	    });
 	};
 
 	/*===============the plugin================*/
 
 	//store table-of-content listing in data-toc
-	$.fn.anyone = function(events, listener){
-		return this.each(function(index, el){
-			var $el = $(el);
-			bind($el, events, listener);
-		});
+	$.fn.anyone = function(events, listener) {
+	    return this.each(function(index, el) {
+	        var $el = $(el);
+	        bind($el, events, listener);
+	    });
 	};
 
 })(jQuery, _);
