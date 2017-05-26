@@ -25,8 +25,8 @@
 	function bind($el, events, listener){
 		events = events.split(' ');
 		function offEveryoneElse(e){
-			_.each(_.without(events, e), function(){
-				$el.off(e, listener);
+			_.each(_.without(events, e), function(other){
+				$el.off(other, listener);
 			});
 		};
 		_.each(events, function(e){

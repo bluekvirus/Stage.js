@@ -37887,8 +37887,8 @@ if (typeof jQuery === 'undefined') {
 	function bind($el, events, listener){
 		events = events.split(' ');
 		function offEveryoneElse(e){
-			_.each(_.without(events, e), function(){
-				$el.off(e, listener);
+			_.each(_.without(events, e), function(other){
+				$el.off(other, listener);
 			});
 		};
 		_.each(events, function(e){
@@ -43252,7 +43252,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.2-1263 build 1495757982515";
+;;app.stagejs = "1.10.2-1264 build 1495768454521";
 ;/**
  * Util for adding meta-event programming ability to object
  *
