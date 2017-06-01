@@ -132,8 +132,8 @@ What's in `-ng`?
 * Optional reactive view building; (two-way bindings, like MVVM) (:heavy_check_mark:)
 * WebRTC integration for peer-to-peer data/stream sharing; (in progress)
 * Give View action listeners a choice to go background (Web Worker);
-* Introduce state machine into Views (app.view/actor());
-* Local filter/sort/pagination in Views (v1 has remote version only);
+* Introduce state machine into Views (app.ee(), (:heavy_check_mark:));
+* Local filter/sort/pagination in Views (v1 has remote version only, (:heavy_check_mark:));
 
 
 License
