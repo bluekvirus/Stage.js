@@ -39649,6 +39649,31 @@ var I18N = {};
 	});
 
 })(Handlebars);
+;/**
+ * Added more methods to Backbone.Model
+ *
+ * @author Tim Lauv
+ * @created 2017.06.01
+ */
+
+(function(_, Backbone){
+
+	_.extend(Backbone.Model.prototype, {
+
+		//since there is no {reset: true} in model.set() like in view.set(),
+		//we give it a reset() method like collection.reset().
+		reset: function(data, options){
+			options = options || {silent: false};
+
+			if(!data || !_.size(data))
+				return this.clear(options);
+
+			return this.clear({silent: true}).set(data, options);
+		}
+
+	});
+
+})(_, Backbone);
 ;(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 window.Backbone = window.Backbone || {};
 window.Backbone.DeepModel = require('.');
@@ -43256,7 +43281,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.2-1265 build 1495778524429";
+;;app.stagejs = "1.10.2-1268 build 1496389300267";
 ;/**
  * Util for adding meta-event programming ability to object
  *
