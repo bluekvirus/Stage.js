@@ -43281,7 +43281,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.2-1268 build 1496389300267";
+;;app.stagejs = "1.10.2-1270 build 1496650945789";
 ;/**
  * Util for adding meta-event programming ability to object
  *

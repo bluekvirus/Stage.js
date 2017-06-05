@@ -10,7 +10,7 @@ module.exports = {
 		css: {
 			'default.css':'themes/default/css/main.css'
 		},
-		fonts: 'themes/site/fonts',
+		fonts: 'themes/default/fonts',
 		js: {
 			'modernizr.js': false,
 			'modernizr.min.js': false,
