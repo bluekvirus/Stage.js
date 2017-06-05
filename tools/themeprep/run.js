@@ -50,7 +50,9 @@ hammer = require('../shared/hammer.js'),
 lessc = require('../shared/less-css.js'),
 colors = require('colors'),
 nsg = require('node-sprite-generator'),
+wfg = require('webfonts-generator'),
 glob = require('glob'),
+buildify = require('buildify'),
 os = require('os');
 _.string = require('underscore.string');
 
@@ -144,96 +146,157 @@ hammer.createFolderStructure({
 
 	//2.pre - you might want to resize the images in /logo, /icon and /pic under /img first
 	//2. process the /img folder to produce sprite.png (logo, icons, pics) and img.less (+ texture)
-	console.log('[Tip:'.yellow, 'You might want resize /img/icons folder content before making css-sprite here'.grey,']'.yellow);
+	console.log('[Tip:'.yellow, 'You might want to use resize.js to resize /img/icons folder content before making css-sprite here'.grey,']'.yellow);
+	var imageFolder = path.join(themeFolder, 'img'),
+	partialLessFilePaths = {
+		sprite: path.join(imageFolder, 'sprite.less'),
+		font: path.join(imageFolder, 'font.less'),
+		texture: path.join(imageFolder, 'texture.less'),
+	},
+	lessFilePath = path.join(imageFolder, 'img.less'),
+	jsonFilePath = path.join(imageFolder, 'img.json'),
+	examplesFilePath = path.join(imageFolder, 'index.html'),
+	registry = []; //remember the processed elements 
+
+	//after **/*.png, /texture and **/*.svg we call step 3.
+	var allDoneCompileCSS = _.after(3, function(){
+		//2.4 produce img.json to describe img.less for demo purposes
+		fs.writeFile(jsonFilePath, JSON.stringify(registry));
+
+		//2.5 produce img.html to demo img icon usage examples (a table)
+		var html = '<head><link rel="stylesheet" type="text/css" href="img.less"></head>';
+		html += '<body style="background: #DDD;"><h1>Sprite Icons & Textures</h1><table><tr style="text-align:left;"><th>Preview</th><th>Usage</th></tr>';
+		_.each(registry, function(icon){
+			html += '<tr>';
+			switch(icon.type){
+				case 'texture':
+					html += '<td style="padding:0.5em;width:30%;height:80px;" class="' + icon.class + '"></td>' + '<td>' + _.escape('<div class="'+ icon.class +'"></div>') + '</td>';
+				break;
+				case 'font': case 'sprite':
+					html += '<td style="padding:0.5em;text-align: center;"><i style="font-size:2.5em;" class="' + icon.class + '"></i></td>' + '<td>' + _.escape('<i class="'+ icon.class +'"></i>') + '</td>';
+				break;
+				default:
+				break;
+			}
+			html += '</tr>';
+		});
+		html += '</table></body>';
+		fs.writeFile(examplesFilePath, html);
+
+		//2.6 combine partial *.less files into img.less;
+		buildify().setDir('/').concat(_.values(partialLessFilePaths)).perform(function(content){
+			//remove the partial *.less files;
+			_.each(partialLessFilePaths, function(path){
+				fs.remove(path);
+			});
+			return content;
+		}).save(lessFilePath);
+		console.log('[img.less]'.yellow, '(Don\'t forget to collect img/sprite.png, img/texture and font/custom-iconfont in build!)'.blue);
+
+		//3. build the /css/main.css from /less/main.less
+		lessc(themeFolder, program.main);
+	});
+
 	//2.1 make sprite.png and img.less
-	console.log('[CSS Sprite]'.yellow, 'processing', program.sprites, 'and /texture under /img', '(.png files only)'.yellow);
+	console.log('[img.less]'.yellow, 'processing', program.sprites, '/texture and **/*.svg under /img', '(.png, .svg files only)'.yellow);
+	var iconClassPrefix = 'custom';
 	
-	var iconClassPrefix = 'custom',
-	imageFolder = path.join(themeFolder, 'img'),
-	registry = [], //remember the sprite image elements
-	lessFilePath = path.join(imageFolder, 'img.less');
-	jsonFilePath = path.join(imageFolder, 'img.json');
-	examplesFilePath = path.join(imageFolder, 'index.html');
+	var imgFileGlobs = _.map(program.sprites, function(folder){ return path.join(imageFolder, folder, '**/*.png'); });
 	
-	var imgFolderGlobs = _.map(program.sprites, function(folder){ return path.join(imageFolder, folder, '**/*.png'); });
-	if(_.every(imgFolderGlobs, function(g){
+	//skip if there are no *.png files
+	if(!_.every(imgFileGlobs, function(g){
 		return glob.sync(g).length === 0;
 	})){
-		//jump to 3. build the /css/main.css from /less/main.less
-		lessc(themeFolder, program.main);
-		return;
-	}
+		var breakNameRegex = new RegExp('[\\' + path.sep + '@' + ']');
+		nsg({
+		    src: imgFileGlobs,
+		    spritePath: path.join(imageFolder, 'sprite.png'),
+		    stylesheetPath: partialLessFilePaths.sprite,
+		    layout: 'packed', //> 0.9.0
+		    layoutOptions: {
+		        padding: 5
+		    },
+		    compositor: 'gm', //we use GraphicsMagick
+		    stylesheet: 'css',
+		    stylesheetOptions: {
+		        prefix: iconClassPrefix,
+		        spritePath: '../img/sprite.png',
+		        nameMapping: function(fpath){
+		        	// if(os.type() === 'Windows_NT')
+		        	// 	fpath = fpath.split('/').join(path.sep);
+		        	var name = fpath.replace(imageFolder, '').split(breakNameRegex).join('-');
+		        	name = path.basename(name, '.png');
+		        	registry.push({class: iconClassPrefix + name, type: 'sprite'});
+		        	console.log('found:', '[', name.grey, ']');
+		        	return name;
+		        },
+		        //pixelRatio: 1
+		    }
+		}, function(err){
+			if (err) throw err;
 
-	var breakNameRegex = new RegExp('[\\' + path.sep + '@' + ']');
-	nsg({
-	    src: imgFolderGlobs,
-	    spritePath: path.join(imageFolder, 'sprite.png'),
-	    stylesheetPath: lessFilePath,
-	    layout: 'packed', //> 0.9.0
-	    layoutOptions: {
-	        padding: 5
-	    },
-	    compositor: 'gm', //we use GraphicsMagick
-	    stylesheet: 'css',
-	    stylesheetOptions: {
-	        prefix: iconClassPrefix,
-	        spritePath: '../img/sprite.png',
-	        nameMapping: function(fpath){
-	        	// if(os.type() === 'Windows_NT')
-	        	// 	fpath = fpath.split('/').join(path.sep);
-	        	var name = fpath.replace(imageFolder, '').split(breakNameRegex).join('-');
-	        	name = path.basename(name, '.png');
-	        	registry.push(iconClassPrefix + name);
-	        	console.log('found:', '[', name.grey, ']');
-	        	return name;
-	        },
-	        //pixelRatio: 1
-	    }
-	}, function(err){
-		if (err) throw err;
-		else {
 			//2.1.post inject "display:inline-block;" for icon/logo/pic <i> to have default spacing in DOM. 
 			var re = /(background-position:)/g;
-			fs.writeFileSync(lessFilePath, fs.readFileSync(lessFilePath, 'utf-8').replace(re, 'display: inline-block; $1'));
-			console.log('[CSS Sprite]'.yellow, 'done'.green, '==>'.grey, lessFilePath);
-		}
+			fs.writeFileSync(partialLessFilePaths.sprite, fs.readFileSync(partialLessFilePaths.sprite, 'utf-8').replace(re, 'display: inline-block; $1'));
+			console.log('[img.less]'.yellow, 'done'.green, '==>'.grey, partialLessFilePaths.sprite);
+			allDoneCompileCSS();
+		});
+	} else {allDoneCompileCSS();}
 
-		//2.2 scan /texture and merge with img.less
-		glob('**/*.png', {
-			cwd: path.join(imageFolder, 'texture')
-		}, function(err, files){
-			_.each(files, function(t){
-				/*  +++
-				 *	iconClassPrefix-texture-name {
-				 * 		background-image: url('../img/texture/' + t);
-				 *  }
-				 */
-				t = path.sep + t;
-				var name = ['-texture', path.basename(t.split(breakNameRegex).join('-'), '.png')].join('');
-				fs.appendFileSync(lessFilePath, [
-					'','/*texture*/',
-					['.', iconClassPrefix, name].join('') + ' {',
-					'\tbackground-image: url(\'../img/texture' + t + '\');',
-					'}'
-				].join('\n'));
-				registry.push(iconClassPrefix + name);
-				console.log('found:', '[', name.grey, ']', '(texture)');
-			});
+	//2.2 scan /texture names and merge with img.less 
+	//(do NOT forget to collect your /texture folder during build!!)
+	glob('**/*.png', {
+		cwd: path.join(imageFolder, 'texture')
+	}, function(err, files){
+		if (err) throw err;
 
-			//2.3 produce img.json to describe img.less for demo purposes
-			fs.writeFile(jsonFilePath, JSON.stringify(registry));
+		_.each(files, function(t){
+			/*  +++
+			 *	iconClassPrefix-texture-name {
+			 * 		background-image: url('../img/texture/' + t);
+			 *  }
+			 */
+			t = path.sep + t;
+			var name = ['-texture', path.basename(t.split(breakNameRegex).join('-'), '.png')].join('');
+			fs.appendFileSync(partialLessFilePaths.texture, [
+				'','/*texture*/',
+				['.', iconClassPrefix, name].join('') + ' {',
+				'\tbackground-image: url(\'../img/texture' + t + '\');',
+				'}'
+			].join('\n'));
+			registry.push({class: iconClassPrefix + name, type: 'texture'});
+			console.log('found:', '[', name.grey, ']', '(texture)');
+		});
 
-			//2.4 produce img.html to demo icon usage examples (a table)
-			var html = '<head><link rel="stylesheet" type="text/css" href="img.less"></head>';
-			html += '<body style="background: #DDD;"><h1>Sprite Icons & Textures</h1><table><tr style="text-align:left;"><th>CSS class</th><th>Preview</th><th>Usage <small>(i must be display:block/inline-block)</small></th></tr>';
-			_.each(registry, function(icon){
-				html += '<tr><td>' + icon + '</td><td style="padding:0.5em;"><i style="' + (/-texture-/.test(icon)?'width: 200px; height: 64px; display: block;':'') + '" class="' + icon + '"></td><td>' + _.escape('<i class="'+ icon +'"></i>') + '</td></tr>';
-			});
-			html += '</table></body>';
-			fs.writeFile(examplesFilePath, html);
+		allDoneCompileCSS();
+	});
 
-			//3. build the /css/main.css from /less/main.less
-			lessc(themeFolder, program.main);
-		});			
+	//2.3 scan **/*.svg for svg icon fonts
+	glob('**/*.svg', {
+		cwd: imageFolder,
+		realpath: true,
+	}, function(err, files){
+		wfg({
+			files: files,
+			dest: path.join(themeFolder, 'fonts/custom-iconfont'),
+			types: ['woff2', 'woff', 'ttf'],
+			fontName: 'CustomIconFont',
+			cssDest: partialLessFilePaths.font,
+			cssFontsUrl: '../fonts/custom-iconfont',
+			templateOptions: {
+				classPrefix: iconClassPrefix,
+				baseSelector: '.custom-icon-font',
+			},
+			rename: function(file){
+				var name = file.replace(imageFolder, '').split(path.sep).join('-').replace('.svg', '');
+				registry.push({class: 'custom-icon-font ' + iconClassPrefix + name, type: 'font'});
+				console.log('found:', '[', name.grey, ']', '(svg)');
+				return name;
+			}
+		}, function(err){
+			if (err) throw err;
+
+			allDoneCompileCSS();
+		});
 	});
 });

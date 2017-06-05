@@ -1,5 +1,5 @@
 /**
- * Resize your icon/image files
+ * Resize your icon/image files for your theme to pick-up as css classes.
  *
  * node resize.js <src folder> <dist folder> [--size 64] [--targets png,jpg,jpeg]
  *
