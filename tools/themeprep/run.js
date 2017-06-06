@@ -184,7 +184,12 @@ hammer.createFolderStructure({
 		fs.writeFile(examplesFilePath, html);
 
 		//2.6 combine partial *.less files into img.less;
-		buildify().setDir('/').concat(_.values(partialLessFilePaths)).perform(function(content){
+		buildify().setDir('/').concat(_.compact(_.map(_.values(partialLessFilePaths), function(lfp){
+			//filter out empty/non-existent .less file
+			if(fs.existsSync(lfp))
+				return lfp;
+			return '';
+		}))).perform(function(content){
 			//remove the partial *.less files;
 			_.each(partialLessFilePaths, function(path){
 				fs.remove(path);
