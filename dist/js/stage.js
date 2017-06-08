@@ -43281,7 +43281,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.2-1271 build 1496778002296";
+;;app.stagejs = "1.10.2-1272 build 1496963700226";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -46027,16 +46027,16 @@ Marionette.triggerMethodInversed = (function(){
 			    })); //to support 'action-scroll' in region.
 			    cv = this.getViewIn(region);
 			    cv._moreItems = true; //set parentCt bypass mode for items (see collection-view:buildItemView);
-			    cv.set(d);
 			}
 			if (replace && View)
 			    cv.itemView = _.isString(View) ? app.get(View) : View;
-			if (cv && cv.collection) {
+			if (cv.collection) {
 			    if (replace)
 			        cv.collection.reset(d);
 			    else
 			        cv.collection.add(d);
-			}
+			} else
+				cv.set(d);
 
 		},
 

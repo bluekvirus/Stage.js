@@ -99,16 +99,16 @@
 			    })); //to support 'action-scroll' in region.
 			    cv = this.getViewIn(region);
 			    cv._moreItems = true; //set parentCt bypass mode for items (see collection-view:buildItemView);
-			    cv.set(d);
 			}
 			if (replace && View)
 			    cv.itemView = _.isString(View) ? app.get(View) : View;
-			if (cv && cv.collection) {
+			if (cv.collection) {
 			    if (replace)
 			        cv.collection.reset(d);
 			    else
 			        cv.collection.add(d);
-			}
+			} else
+				cv.set(d);
 
 		},
 
