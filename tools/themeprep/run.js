@@ -281,27 +281,32 @@ hammer.createFolderStructure({
 		cwd: imageFolder,
 		realpath: true,
 	}, function(err, files){
-		wfg({
-			files: files,
-			dest: path.join(themeFolder, 'fonts/custom-iconfont'),
-			types: ['woff2', 'woff', 'ttf'],
-			fontName: 'CustomIconFont',
-			cssDest: partialLessFilePaths.font,
-			cssFontsUrl: '../fonts/custom-iconfont',
-			templateOptions: {
-				classPrefix: iconClassPrefix,
-				baseSelector: '.custom-icon-font',
-			},
-			rename: function(file){
-				var name = file.replace(imageFolder, '').split(path.sep).join('-').replace('.svg', '');
-				registry.push({class: 'custom-icon-font ' + iconClassPrefix + name, type: 'font'});
-				console.log('found:', '[', name.grey, ']', '(svg)');
-				return name;
-			}
-		}, function(err){
-			if (err) throw err;
+		if (err) throw err;
 
+		if(_.size(files))
+			wfg({
+				files: files,
+				dest: path.join(themeFolder, 'fonts/custom-iconfont'),
+				types: ['woff2', 'woff', 'ttf'],
+				fontName: 'CustomIconFont',
+				cssDest: partialLessFilePaths.font,
+				cssFontsUrl: '../fonts/custom-iconfont',
+				templateOptions: {
+					classPrefix: iconClassPrefix,
+					baseSelector: '.custom-icon-font',
+				},
+				rename: function(file){
+					var name = file.replace(imageFolder, '').split(path.sep).join('-').replace('.svg', '');
+					registry.push({class: 'custom-icon-font ' + iconClassPrefix + name, type: 'font'});
+					console.log('found:', '[', name.grey, ']', '(svg)');
+					return name;
+				}
+			}, function(err){
+				if (err) throw err;
+
+				allDoneCompileCSS();
+			});
+		else
 			allDoneCompileCSS();
-		});
 	});
 });
