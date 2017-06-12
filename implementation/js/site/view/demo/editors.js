@@ -211,6 +211,11 @@
                     // valueField: 'y',
                 }
             },
+            //code edtior
+            code: {
+                type: 'code',
+                label: 'Code Editor',
+            },
             //date editors
             date: app.view({
                 className: 'form-group',
