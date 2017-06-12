@@ -75,7 +75,7 @@
     "momentjs": "~2.x.x",
     "marked": "0.3.5",
     "later": "~1.2.x",
-    "faker": "~4.x.x",
+    "Faker": "~4.x.x",
     "animate.css": "~3.x.x",
     "bootswatch": "~3.x.x",
     "fontawesome": "~4.x.x",
@@ -117,7 +117,6 @@
     "ubuntu-fontface": "*"
   },
   "resolutions": {
-    "underscore": "~1.8.x",
-    "handlebars": "~4.x.x"
+    "underscore": "~1.8.x"
   }
 }

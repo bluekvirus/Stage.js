@@ -39,6 +39,8 @@
 		"jquery": "~2.2.x",
 		"underscore": "~1.8.x",
 		"raphael": "~2.2.x",
-		"d3": "~4.8.x"
+		"d3": "~4.8.x",
+		"highlightjs": "~8.x.x",
+		"ace-builds": "~1.2.x"
 	}
 }
