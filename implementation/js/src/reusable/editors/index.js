@@ -230,6 +230,10 @@
 					//specifically for time
 					startTime: options.startTime || (function(){ return new Date().toLocaleTimeString().split(' ')[0];})(), //hh:mm:ss
 					startPeriod: (options.startPeriod && options.startPeriod.toLowerCase()) || (function(){ return new Date().toLocaleTimeString().split(' ')[1];})(), //am or pm
+					//specfically for code
+					language: options.language || 'javascript',
+					theme: options.theme || 'monokai',
+					editorHeight: options.editorHeight || '200px', //default height is 200px
 				}, true);
 				//mark view name to be Basic.type.name (more specific than just Basic)
 				this._name = [this.name, options.type, options.name].join('.');
@@ -705,6 +709,34 @@
 										: (this.$el.find('.time-second-holder .left-number .value').text(Math.floor(second / 10)) && this.$el.find('.time-second-holder .right-number .value').text(second % 10));
 					};
 				}
+				//specified logic for code editor, wired by using ACE editor
+				else if(options.type === 'code'){
+					//check if ace has been included
+					if(ace){
+						//need to configure it in onReady not onRender
+						this.onReady = function(){
+							//get div id
+							var id = this.ui['code-input'].attr('id');
+
+							//honor the height set by user
+							this.ui['code-input'].css({
+								height: this.model.get('editorHeight'),
+								width: '100%'
+							});
+
+							//initialize the code pad
+							this._pad = ace.edit(this.ui['code-input'].attr('id'));
+							//config ace editor, honor user settings
+							this._pad.setTheme('ace/theme/' + this.model.get('theme'));
+							this._pad.setFontSize(14);
+							this._pad.getSession().setMode('ace/mode/' + this.model.get('language'));
+							this._pad.$blockScrolling = Infinity;
+						};
+
+					}else{
+						throw Error('Stage.js::Editor::Code::You have not included ACE Editor yet.');
+					}
+				}
 			},
 
 			isEnabled: function(){
@@ -720,6 +752,9 @@
 						this.ui['input-date'].overlay(false);
 					}else if(this.ui['input-time']){//for date editor
 						this.ui['input-time'].overlay(false);
+					}else if(this.ui['code-input']){//for ace code editor
+						//use readonly property from ACE to prevent editing
+						this._pad.setReadOnly(false);
 					}
 
 				}else {
@@ -745,6 +780,10 @@
 							effect: false,
 							background: 'rgba(0, 0, 0, 0.1)',
 						});
+					}
+					else if(this.ui['code-input']){//for ace code editor
+						//use readonly property from ACE to prevent editing
+						this._pad.setReadOnly(true);
 					}
 					return;
 				}
@@ -886,6 +925,8 @@
 					(period === 'am') ? this.$el.find('.pm-holder').removeClass('active') && this.$el.find('.am-holder').addClass('active') 
 										: this.$el.find('.am-holder').removeClass('active') && this.$el.find('.pm-holder').addClass('active');
 
+				}else if(this.ui['code-input']){//for ace code editor
+						this._pad.setValue(val, 1); //use 1 for moving the cursor to the end of the content.
 				}else {
 					if(this.model.get('type') === 'checkbox'){
 						this.ui.input.prop('checked', val === this.model.get('checked'));
@@ -923,6 +964,8 @@
 					second = this.$el.find('.time-second-holder .left-number .value').text() + this.$el.find('.time-second-holder .right-number .value').text();
 					period = this.$el.find('.single-period-holder.active').text();
 					return hour + ':' + minute + ':' + second + ' ' + period;
+				}else if(this.ui['code-input']){//for ace code editor
+						return this._pad.getValue(); //use 1 for moving the cursor to the end of the content.
 				}else {
 					if(this.model.get('type') === 'checkbox'){
 						return this.ui.input.prop('checked')? (this.model.get('checked') || true) : (this.model.get('unchecked') || false);
@@ -990,6 +1033,7 @@
 			'range': true,
 			'date': true,
 			'time': true,
+			'code': true,
 
 			//not implemented, h5 native only (use Modernizr checks)
 			'search': Modernizr.inputtypes.search,
@@ -1197,7 +1241,11 @@
 													'</div>',
 												'</div>',
 											'{{else}}',
-												'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" class="form-control" type="{{type}}" id="{{uiId}}" placeholder="{{i18n placeholder}}" value="{{value}}"> <!--1 space-->',
+												'{{#is type "code"}}',
+													'<div ui="code-input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" type="{{type}}" id="{{uiId}}"></div>',
+												'{{else}}',
+													'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" class="form-control" type="{{type}}" id="{{uiId}}" placeholder="{{i18n placeholder}}" value="{{value}}"> <!--1 space-->',
+												'{{/is}}',
 											'{{/is}}',
 										'{{/is}}',
 									'{{/is}}',
