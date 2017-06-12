@@ -233,7 +233,6 @@
 					//specfically for code
 					language: options.language || 'javascript',
 					theme: options.theme || 'monokai',
-					editorHeight: options.editorHeight || '200px', //default height is 200px
 				}, true);
 				//mark view name to be Basic.type.name (more specific than just Basic)
 				this._name = [this.name, options.type, options.name].join('.');
@@ -713,28 +712,18 @@
 				else if(options.type === 'code'){
 					//check if ace has been included
 					if(ace){
-						//need to configure it in onReady not onRender
-						this.onReady = function(){
-							//get div id
-							var id = this.ui['code-input'].attr('id');
-
-							//honor the height set by user
-							this.ui['code-input'].css({
-								height: this.model.get('editorHeight'),
-								width: '100%'
-							});
-
+						this.onShow = function(){
 							//initialize the code pad
-							this._pad = ace.edit(this.ui['code-input'].attr('id'));
+							this._codepad = ace.edit(this.ui['codepad'][0]);
 							//config ace editor, honor user settings
-							this._pad.setTheme('ace/theme/' + this.model.get('theme'));
-							this._pad.setFontSize(14);
-							this._pad.getSession().setMode('ace/mode/' + this.model.get('language'));
-							this._pad.$blockScrolling = Infinity;
+							this._codepad.setTheme('ace/theme/' + this.model.get('theme'));
+							this._codepad.setFontSize(14);
+							this._codepad.getSession().setMode('ace/mode/' + this.model.get('language'));
+							this._codepad.$blockScrolling = Infinity;
 						};
 
 					}else{
-						throw Error('Stage.js::Editor::Code::You have not included ACE Editor yet.');
+						throw Error('Dev::Editor.Code::You have not included ACE Editor yet.');
 					}
 				}
 			},
@@ -752,9 +741,9 @@
 						this.ui['input-date'].overlay(false);
 					}else if(this.ui['input-time']){//for date editor
 						this.ui['input-time'].overlay(false);
-					}else if(this.ui['code-input']){//for ace code editor
+					}else if(this.ui['codepad']){//for ace code editor
 						//use readonly property from ACE to prevent editing
-						this._pad.setReadOnly(false);
+						this._codepad.setReadOnly(false);
 					}
 
 				}else {
@@ -781,9 +770,9 @@
 							background: 'rgba(0, 0, 0, 0.1)',
 						});
 					}
-					else if(this.ui['code-input']){//for ace code editor
+					else if(this.ui['codepad']){//for ace code editor
 						//use readonly property from ACE to prevent editing
-						this._pad.setReadOnly(true);
+						this._codepad.setReadOnly(true);
 					}
 					return;
 				}
@@ -925,8 +914,8 @@
 					(period === 'am') ? this.$el.find('.pm-holder').removeClass('active') && this.$el.find('.am-holder').addClass('active') 
 										: this.$el.find('.am-holder').removeClass('active') && this.$el.find('.pm-holder').addClass('active');
 
-				}else if(this.ui['code-input']){//for ace code editor
-						this._pad.setValue(val, 1); //use 1 for moving the cursor to the end of the content.
+				}else if(this.ui['codepad']){//for ace code editor
+						this._codepad.setValue(val, 1); //use 1 for moving the cursor to the end of the content.
 				}else {
 					if(this.model.get('type') === 'checkbox'){
 						this.ui.input.prop('checked', val === this.model.get('checked'));
@@ -964,8 +953,8 @@
 					second = this.$el.find('.time-second-holder .left-number .value').text() + this.$el.find('.time-second-holder .right-number .value').text();
 					period = this.$el.find('.single-period-holder.active').text();
 					return hour + ':' + minute + ':' + second + ' ' + period;
-				}else if(this.ui['code-input']){//for ace code editor
-						return this._pad.getValue(); //use 1 for moving the cursor to the end of the content.
+				}else if(this.ui['codepad']){ //for ace code editor
+						return this._codepad.getValue();
 				}else {
 					if(this.model.get('type') === 'checkbox'){
 						return this.ui.input.prop('checked')? (this.model.get('checked') || true) : (this.model.get('unchecked') || false);
@@ -1081,181 +1070,184 @@
 					'{{/if}}',
 				'</select>',
 			'{{else}}',
-				//2. textarea
+
+				//2-1. textarea
 				'{{#is type "textarea"}}',
 					'<textarea ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" class="form-control" id="{{uiId}}" rows="{{rows}}" placeholder="{{i18n placeholder}}" style="margin-bottom:0"></textarea>',
 				'{{else}}',
-					//3. input
-					//checkboxes/radios
-					'{{#if options}}',
-						'<div ui="inputs">',
-						'{{#each options.data}}',
-							'<div class="{{../type}} {{#if ../options.inline}}{{../type}}-inline{{/if}}">',
-								//note that the {{if}} within a {{each}} will no longer impose +1 level down in the content scope. (after Handlebars v4)
-								'<input id="{{../uiId}}-{{@index}}" ui="input" name="{{#if ../fieldname}}{{../fieldname}}{{else}}{{../name}}{{/if}}{{#is ../type "checkbox"}}[]{{/is}}" type="{{../type}}" value={{value}}> ',
-								'<label for="{{../uiId}}-{{@index}}">{{{i18n label}}}</label>',
-							'</div>',
-						'{{/each}}',
-						'</div>',
-					//single field
+					//2-2. codepad
+					'{{#is type "code"}}',
+						'<div ui="codepad" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" type="{{type}}" id="{{uiId}}"></div>',
 					'{{else}}',
-						'<div class="{{type}}">',
-						'{{#is type "checkbox"}}',
-							//single checkbox
-							'<input id="{{uiId}}" ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" type="checkbox" value="{{value}}"> ',
-							'<label for="{{uiId}}">{{{i18n boxLabel}}}</label>',
+
+						//3. input
+						//checkboxes/radios
+						'{{#if options}}',
+							'<div ui="inputs">',
+							'{{#each options.data}}',
+								'<div class="{{../type}} {{#if ../options.inline}}{{../type}}-inline{{/if}}">',
+									//note that the {{if}} within a {{each}} will no longer impose +1 level down in the content scope. (after Handlebars v4)
+									'<input id="{{../uiId}}-{{@index}}" ui="input" name="{{#if ../fieldname}}{{../fieldname}}{{else}}{{../name}}{{/if}}{{#is ../type "checkbox"}}[]{{/is}}" type="{{../type}}" value={{value}}> ',
+									'<label for="{{../uiId}}-{{@index}}">{{{i18n label}}}</label>',
+								'</div>',
+							'{{/each}}',
+							'</div>',
+						//single field
 						'{{else}}',
-							//normal field
-							'{{#is type "ro"}}',//read-only
-								'<div ui="input-ro" data-value="{{{value}}}" class="form-control-static">{{value}}</div>',
+							'<div class="{{type}}">',
+							'{{#is type "checkbox"}}',
+								//single checkbox
+								'<input id="{{uiId}}" ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" type="checkbox" value="{{value}}"> ',
+								'<label for="{{uiId}}">{{{i18n boxLabel}}}</label>',
 							'{{else}}',
-								'{{#is type "range"}}',
-									'<div class="clearfix">',
-										'{{#if label}}',
-											'<span ui="currentVal"></span><span ui="currentValPostfix" class="text-muted"></span>',
-										'{{/if}}',
-										'<input id="{{uiId}}" ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" type="range" value="{{value}}" min="{{min}}" max="{{max}}" step="{{step}}">',
-										'<span class="pull-left">{{min}}{{unitLabel}}</span>',
-										'<span class="pull-right">{{max}}{{unitLabel}}</span>',
-									'</div>',
+								//normal field
+								'{{#is type "ro"}}',//read-only
+									'<div ui="input-ro" data-value="{{{value}}}" class="form-control-static">{{value}}</div>',
 								'{{else}}',
-									'{{#is type "file"}}',
+									'{{#is type "range"}}',
 										'<div class="clearfix">',
-											'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" style="display:inline;" type="{{type}}" id="{{uiId}}" placeholder="{{i18n placeholder}}" value="{{value}}" {{#if multiple}}multiple{{/if}}> <!--1 space-->',
-											'<span action="upload" class="hidden file-upload-action-trigger" ui="upload" style="cursor:pointer;"><i class="glyphicon glyphicon-upload"></i> <!--1 space--></span>',
-											'<span action="clear" class="hidden file-upload-action-trigger" ui="clearfile"  style="cursor:pointer;"><i class="glyphicon glyphicon-remove-circle"></i></span>',
-										'</div>',
-										'<div class="hidden {{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}-progress-bar progress progress-striped active">',
-											'<div class="progress-bar"></div>',
+											'{{#if label}}',
+												'<span ui="currentVal"></span><span ui="currentValPostfix" class="text-muted"></span>',
+											'{{/if}}',
+											'<input id="{{uiId}}" ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" type="range" value="{{value}}" min="{{min}}" max="{{max}}" step="{{step}}">',
+											'<span class="pull-left">{{min}}{{unitLabel}}</span>',
+											'<span class="pull-right">{{max}}{{unitLabel}}</span>',
 										'</div>',
 									'{{else}}',
-										'{{#is type "date"}}',
-											'<div ui="input-date" id="{{uiId}}" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" class="date-editor-holder">',
-												'<div ui="date-currentvalue" class="date-currentvalue form-control"><span></span></div>',//form control is for same appearance as other editors
-												'<div class="date-arrow-holder {{#if hidden}}hidden{{/if}}">',
-													'<div class="date-arrow"></div>',
-												'</div>',
-												'<div class="date-selector {{#if hidden}}hidden{{/if}}">',
-													'<div class="row">',
-														'<div class="date-selector-year col-xs-6 text-center">',
-															'<span action="year-decrease" class="left-arrow"><i class="fa fa-caret-left"></i></span>',
-															'<span ui="year" class="year-value"></span>',
-															'<span action="year-increase" class="right-arrow"><i class="fa fa-caret-right"></i></span>',
-														'</div>',
-														'<div class="date-selector-month col-xs-6 text-center">',
-															'<span action="month-decrease" class="left-arrow"><i class="fa fa-caret-left"></i></span>',
-															'<span ui="month" class="month-value"></span>',
-															'<span action="month-increase" class="right-arrow"><i class="fa fa-caret-right"></i></span>',
-														'</div>',
-													'</div>',
-													'<div ui="days" class="date-selector-days">',
-														'<div class="weekday-holder clearfix">',
-															'<div class="day-holder day-name">Sun.</div>',
-															'<div class="day-holder day-name">Mon.</div>',
-															'<div class="day-holder day-name">Tue.</div>',
-															'<div class="day-holder day-name">Wed.</div>',
-															'<div class="day-holder day-name">Thu.</div>',
-															'<div class="day-holder day-name">Fri.</div>',
-															'<div class="day-holder day-name">Sat.</div>',
-														'</div>',
-														'<div class="days-holder clearfix"></div>',
-													'</div>',
-												'</div>',
+										'{{#is type "file"}}',
+											'<div class="clearfix">',
+												'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" style="display:inline;" type="{{type}}" id="{{uiId}}" placeholder="{{i18n placeholder}}" value="{{value}}" {{#if multiple}}multiple{{/if}}> <!--1 space-->',
+												'<span action="upload" class="hidden file-upload-action-trigger" ui="upload" style="cursor:pointer;"><i class="glyphicon glyphicon-upload"></i> <!--1 space--></span>',
+												'<span action="clear" class="hidden file-upload-action-trigger" ui="clearfile"  style="cursor:pointer;"><i class="glyphicon glyphicon-remove-circle"></i></span>',
+											'</div>',
+											'<div class="hidden {{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}-progress-bar progress progress-striped active">',
+												'<div class="progress-bar"></div>',
 											'</div>',
 										'{{else}}',
-											'{{#is type "time"}}',
-												'<div ui="input-time" class="time-editor-holder clearfix" id="{{uiId}}" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}">',
-													'<div class="time-hour-holder wrapper-horizontal">',
-														'<div class="upper-arrow-holder text-center">',
-															'<span action="hour-increase"><i class="fa fa-caret-up"></i></span>',
-														'</div>',
-														'<div class="number-holder clearfix">',
-															'<div class="left-number">',
-																'<div class="value">',
-																	'<span>-</span>',
-																'</div>',
-															'</div>',
-															'<div class="right-number">',
-																'<div class="value">',
-																	'<span>-</span>',
-																'</div>',
-															'</div>',
-														'</div>',
-														'<div class="lower-arrow-holder text-center">',
-															'<span action="hour-decrease"><i class="fa fa-caret-down"></i></span>',
-														'</div>',
+											'{{#is type "date"}}',
+												'<div ui="input-date" id="{{uiId}}" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" class="date-editor-holder">',
+													'<div ui="date-currentvalue" class="date-currentvalue form-control"><span></span></div>',//form control is for same appearance as other editors
+													'<div class="date-arrow-holder {{#if hidden}}hidden{{/if}}">',
+														'<div class="date-arrow"></div>',
 													'</div>',
-													'<div class="colon-divider">',
-														'<span>:</span>',
-													'</div>',
-													'<div class="time-minute-holder wrapper-horizontal">',
-														'<div class="upper-arrow-holder text-center">',
-															'<span action="minute-increase"><i class="fa fa-caret-up"></i></span>',
-														'</div>',
-														'<div class="number-holder clearfix">',
-															'<div class="left-number">',
-																'<div class="value">',
-																	'<span>-</span>',
-																'</div>',
+													'<div class="date-selector {{#if hidden}}hidden{{/if}}">',
+														'<div class="row">',
+															'<div class="date-selector-year col-xs-6 text-center">',
+																'<span action="year-decrease" class="left-arrow"><i class="fa fa-caret-left"></i></span>',
+																'<span ui="year" class="year-value"></span>',
+																'<span action="year-increase" class="right-arrow"><i class="fa fa-caret-right"></i></span>',
 															'</div>',
-															'<div class="right-number">',
-																'<div class="value">',
-																	'<span>-</span>',
-																'</div>',
+															'<div class="date-selector-month col-xs-6 text-center">',
+																'<span action="month-decrease" class="left-arrow"><i class="fa fa-caret-left"></i></span>',
+																'<span ui="month" class="month-value"></span>',
+																'<span action="month-increase" class="right-arrow"><i class="fa fa-caret-right"></i></span>',
 															'</div>',
 														'</div>',
-														'<div class="lower-arrow-holder text-center">',
-															'<span action="minute-decrease"><i class="fa fa-caret-down"></i></span>',
-														'</div>',
-													'</div>',
-													'<div class="colon-divider">',
-														'<span>:</span>',
-													'</div>',
-													'<div class="time-second-holder wrapper-horizontal">',
-														'<div class="upper-arrow-holder text-center">',
-															'<span action="second-increase"><i class="fa fa-caret-up"></i></span>',
-														'</div>',
-														'<div class="number-holder clearfix">',
-															'<div class="left-number">',
-																'<div class="value">',
-																	'<span>-</span>',
-																'</div>',
+														'<div ui="days" class="date-selector-days">',
+															'<div class="weekday-holder clearfix">',
+																'<div class="day-holder day-name">Sun.</div>',
+																'<div class="day-holder day-name">Mon.</div>',
+																'<div class="day-holder day-name">Tue.</div>',
+																'<div class="day-holder day-name">Wed.</div>',
+																'<div class="day-holder day-name">Thu.</div>',
+																'<div class="day-holder day-name">Fri.</div>',
+																'<div class="day-holder day-name">Sat.</div>',
 															'</div>',
-															'<div class="right-number">',
-																'<div class="value">',
-																	'<span>-</span>',
-																'</div>',
-															'</div>',
-														'</div>',
-														'<div class="lower-arrow-holder text-center">',
-															'<span action="second-decrease"><i class="fa fa-caret-down"></i></span>',
-														'</div>',
-													'</div>',
-													'<div class="time-period-holder wrapper-horizontal">',
-														'<div class="am-holder single-period-holder" action="select-am">',
-															'<div class="text"><span>AM</span></div>',
-														'</div>',
-														'<div class="pm-holder single-period-holder" action="select-pm">',
-															'<div class="text"><span>PM</span></div>',
+															'<div class="days-holder clearfix"></div>',
 														'</div>',
 													'</div>',
 												'</div>',
 											'{{else}}',
-												'{{#is type "code"}}',
-													'<div ui="code-input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" type="{{type}}" id="{{uiId}}"></div>',
-												'{{else}}',
+												'{{#is type "time"}}',
+													'<div ui="input-time" class="time-editor-holder clearfix" id="{{uiId}}" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}">',
+														'<div class="time-hour-holder wrapper-horizontal">',
+															'<div class="upper-arrow-holder text-center">',
+																'<span action="hour-increase"><i class="fa fa-caret-up"></i></span>',
+															'</div>',
+															'<div class="number-holder clearfix">',
+																'<div class="left-number">',
+																	'<div class="value">',
+																		'<span>-</span>',
+																	'</div>',
+																'</div>',
+																'<div class="right-number">',
+																	'<div class="value">',
+																		'<span>-</span>',
+																	'</div>',
+																'</div>',
+															'</div>',
+															'<div class="lower-arrow-holder text-center">',
+																'<span action="hour-decrease"><i class="fa fa-caret-down"></i></span>',
+															'</div>',
+														'</div>',
+														'<div class="colon-divider">',
+															'<span>:</span>',
+														'</div>',
+														'<div class="time-minute-holder wrapper-horizontal">',
+															'<div class="upper-arrow-holder text-center">',
+																'<span action="minute-increase"><i class="fa fa-caret-up"></i></span>',
+															'</div>',
+															'<div class="number-holder clearfix">',
+																'<div class="left-number">',
+																	'<div class="value">',
+																		'<span>-</span>',
+																	'</div>',
+																'</div>',
+																'<div class="right-number">',
+																	'<div class="value">',
+																		'<span>-</span>',
+																	'</div>',
+																'</div>',
+															'</div>',
+															'<div class="lower-arrow-holder text-center">',
+																'<span action="minute-decrease"><i class="fa fa-caret-down"></i></span>',
+															'</div>',
+														'</div>',
+														'<div class="colon-divider">',
+															'<span>:</span>',
+														'</div>',
+														'<div class="time-second-holder wrapper-horizontal">',
+															'<div class="upper-arrow-holder text-center">',
+																'<span action="second-increase"><i class="fa fa-caret-up"></i></span>',
+															'</div>',
+															'<div class="number-holder clearfix">',
+																'<div class="left-number">',
+																	'<div class="value">',
+																		'<span>-</span>',
+																	'</div>',
+																'</div>',
+																'<div class="right-number">',
+																	'<div class="value">',
+																		'<span>-</span>',
+																	'</div>',
+																'</div>',
+															'</div>',
+															'<div class="lower-arrow-holder text-center">',
+																'<span action="second-decrease"><i class="fa fa-caret-down"></i></span>',
+															'</div>',
+														'</div>',
+														'<div class="time-period-holder wrapper-horizontal">',
+															'<div class="am-holder single-period-holder" action="select-am">',
+																'<div class="text"><span>AM</span></div>',
+															'</div>',
+															'<div class="pm-holder single-period-holder" action="select-pm">',
+																'<div class="text"><span>PM</span></div>',
+															'</div>',
+														'</div>',
+													'</div>',
+												'{{else}}', //text, password, hidden
 													'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" class="form-control" type="{{type}}" id="{{uiId}}" placeholder="{{i18n placeholder}}" value="{{value}}"> <!--1 space-->',
-												'{{/is}}',
-											'{{/is}}',
-										'{{/is}}',
-									'{{/is}}',
-								'{{/is}}',
-							'{{/is}}',
-						'{{/is}}',
-						'</div>',
-					'{{/if}}',
-				'{{/is}}',
-			'{{/is}}',
+												'{{/is}}', //time
+											'{{/is}}', //date
+										'{{/is}}', //file
+									'{{/is}}', //range
+								'{{/is}}', //ro (read only)
+							'{{/is}}', //checkbox
+							'</div>',
+						'{{/if}}', //checkboxes/radios
+					'{{/is}}', //codepad
+				'{{/is}}', //textarea
+			'{{/is}}', //select
 
 			//msg & help
 			'{{#if help}}<span class="help-block editor-help-text" style="margin-bottom:0"><small>{{{i18n help}}}</small></span>{{/if}}',

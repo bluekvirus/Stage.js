@@ -39,24 +39,23 @@
     "jquery": "~2.2.x",
     "underscore": "~1.8.x",
     "raphael": "~2.2.x",
-    "d3": "~4.8.x"
+    "d3": "~4.8.x",
+    "highlightjs": "~8.x.x",
+    "ace-builds": "~1.2.x"
   },
   "kitDevDependencies": {
     "stage": "*",
-    "bootstrap": "~3.x.x",
+    "bootswatch": "~3.x.x",
     "fontawesome": "~4.x.x",
     "open-sans-fontface": "*"
   },
   "siteDependencies": {
     "nprogress": "~0.2.x",
-    "highlightjs": "~8.x.x",
     "mockjs": "~0.1.x",
-    "ace-builds": "~1.2.x",
-    "bootswatch": "~3.x.x",
     "Snap.svg": "~0.5.x"
   },
   "devDependencies": {
-    "modernizr": "~2.8.x",
+    "stage-unideck": "~0.9.x",
     "underscore.string": "~3.x.x",
     "loadcss": "~0.2.x",
     "fastclick": "~1.x.x",
@@ -68,7 +67,7 @@
     "flexlayout": "~0.3.x",
     "selectn": "~0.10.x",
     "validator-js": "~4.x.x",
-    "backbone": "~1.3.x",
+    "backbone": "~1.1.x",
     "marionette": "~1.8.x",
     "handlebars": "~4.x.x",
     "uri.js": "~1.x.x",
@@ -76,15 +75,13 @@
     "momentjs": "~2.x.x",
     "marked": "0.3.5",
     "later": "~1.2.x",
-    "bootstrap": "~3.x.x",
+    "faker": "~4.x.x",
     "animate.css": "~3.x.x",
+    "bootswatch": "~3.x.x",
     "fontawesome": "~4.x.x",
     "open-sans-fontface": "*",
     "nprogress": "~0.2.x",
-    "highlightjs": "~8.x.x",
     "mockjs": "~0.1.x",
-    "ace-builds": "~1.2.x",
-    "bootswatch": "~3.x.x",
     "Snap.svg": "~0.5.x"
   },
   "monitored": {
@@ -93,30 +90,26 @@
     "gridster": "*",
     "MasonJS": "*",
     "scrollreveal": "*",
-    "crossfilter": "*",
+    "fullpage.js": "*",
     "victor": "*",
     "spinkit": "*",
     "nprogress": "*",
     "owl.carousel": "*",
     "colorbox": "*",
     "switchery": "*",
-    "ace-builds": "*",
-    "highlightjs": "*",
     "Snap.svg": "*",
     "paper": "*",
     "EaselJS": "*",
     "Chart.js": "*",
     "peity": "*",
     "c3": "*",
-    "topojson": "*",
+    "leaflet": "*",
     "soundmanager": "*",
     "video.js": "*",
     "reveal.js": "*",
-    "mockjs": "*",
     "mocha": "*",
     "chai": "*",
     "lesshat": "*",
-    "bootswatch": "*",
     "bootstrap-material-design": "*",
     "material-design-lite": "*",
     "material-design-icons": "*",
@@ -125,7 +118,6 @@
   },
   "resolutions": {
     "underscore": "~1.8.x",
-    "handlebars": "~4.x.x",
-    "backbone": "~1.1.2"
+    "handlebars": "~4.x.x"
   }
 }

@@ -54,11 +54,21 @@
     <!--========Infrastructure Space: the framework======================================================-->
 
     <!--Deps-->
-    <script src="bower_components/underscore/underscore.js"></script>
-    <script src="bower_components/jquery/dist/jquery.js"></script>
-    <script src="bower_components/raphael/raphael.js"></script>
-    <!-- <script src="bower_components/Snap.svg/dist/snap.svg.js"></script> -->
-    <script src="bower_components/d3/d3.js"></script>
+    <script src="bower_components/underscore/underscore.js" include="site"></script>
+    <script src="bower_components/jquery/dist/jquery.js" include="site"></script>
+    <script src="bower_components/raphael/raphael.js" include="site"></script>
+    <!-- <script src="bower_components/Snap.svg/dist/snap.svg.js" include="site"></script> -->
+    <script src="bower_components/d3/d3.js" include="site"></script>
+    <script src="bower_components/highlightjs/highlight.pack.js" include="site"></script>
+    <!-- ACE spell-check (webworkers) can NOT be minified with ACE modes and themes, need to remain external scripts -->
+    <script src="bower_components/ace-builds/src-noconflict/ace.js" include="site"></script>
+    <script src="bower_components/ace-builds/src-noconflict/theme-github.js" include="site"></script>
+    <script src="bower_components/ace-builds/src-noconflict/theme-monokai.js" include="site"></script>
+    <script src="bower_components/ace-builds/src-noconflict/mode-html.js" include="site"></script>
+    <script src="bower_components/ace-builds/src-noconflict/mode-javascript.js" include="site"></script>
+    <script src="bower_components/ace-builds/src-noconflict/mode-less.js" include="site"></script>
+    <script src="bower_components/ace-builds/src-noconflict/mode-markdown.js" include="site"></script>
+    <script src="bower_components/ace-builds/src-noconflict/mode-json.js" include="site"></script>
     <!--Libs-->
     <script src="bower_components/underscore.string/dist/underscore.string.js" target="js/stage.js"></script>
     <script src="bower_components/loadcss/loadCSS.js"></script>
@@ -135,17 +145,10 @@
     <!--=================================================================================================-->
 
     <!--Project Spec Libs: e.g
-        <script type="text/javascript" src="bower_components/d3/d3.js"></script>
+        <script type="text/javascript" src="bower_components/nprogress/nprogress.js"></script>
     -->
     <script src="bower_components/mockjs/dist/mock.js" target="js/site.js" include="site"></script>
-    <script src="bower_components/highlightjs/highlight.pack.js" include="site"></script>
     <script src="bower_components/nprogress/nprogress.js" include="site"></script>
-    <script src="bower_components/ace-builds/src-noconflict/ace.js" include="site"></script>
-    <script src="bower_components/ace-builds/src-noconflict/theme-github.js" include="site"></script>
-    <script src="bower_components/ace-builds/src-noconflict/theme-monokai.js" include="site"></script>
-    <script src="bower_components/ace-builds/src-noconflict/mode-javascript.js" include="site"></script>
-    <script src="bower_components/ace-builds/src-noconflict/mode-json.js" include="site"></script>
-    <!-- ACE spell-check (webworkers) can NOT be minified with ACE modes and themes, need to remain external scripts -->
 
     <!--main.js-->
     <script src="js/site/main.js" include="site"></script>
@@ -156,7 +159,7 @@
     </script>
 
     <!-- Google Analytics 
-    <script>
+    <script include="NONE" persist="true">
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
         (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
         m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)

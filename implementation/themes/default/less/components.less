@@ -526,16 +526,24 @@
  * =================================================
  */
 
-.has-error {
-    label,
-    .checkbox,
-    .radio,
-    .radio-inline,
-    .checkbox-inline {
-        color: @brand-danger;
+.editor {
+
+    [type="code"] {
+        min-height: @font-size-base * 10;
+        height: 100%;
+        width: 100%;
+    }
+
+    .has-error {
+        label,
+        .checkbox,
+        .radio,
+        .radio-inline,
+        .checkbox-inline {
+            color: @brand-danger;
+        }
     }
 }
-
 
 /**
  * =================================================

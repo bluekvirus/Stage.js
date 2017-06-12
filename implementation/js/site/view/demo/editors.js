@@ -63,7 +63,7 @@
                 }
             },
             area: {
-                label: 'Codes',
+                label: 'Text',
                 type: 'textarea',
                 validate: {
                     required: true
