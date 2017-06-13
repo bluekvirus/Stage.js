@@ -262,7 +262,6 @@ Go to your `main.js` and setup the application by using `Application.setup()`:
 //main.js
 Application.setup({
     /*----------------------configure-----------------------*/
-    fullScreen: //false | true,
     curtains: //fixed overlay regions,
     defaultView: //your default 1st lvl view name to show in main navRegion,
     baseAjaxURI: //your base url for using with Application.remote(),
@@ -274,11 +273,14 @@ Application.setup({
     dataPollingDelay: //for default data polling interval
     timeout: //default data (ajax) operation timeout in ms,
     /*----------------------mainView-----------------------*/
-    template: //same as view template property,
-    layout: //same as view layout property, (if not using template)
-    navRegion: //your region used for navigation chain,
-    data: //same as view data property,
-    actions: //same as view actions property,
+    template: //same as in a view but for app.mainView,
+    layout: //..
+    navRegion: //..
+    data: //..
+    actions: //..
+    svg: //..
+    pollings: //..
+    channels: //..
 }).run();
 ```
 The configure variables have sensible defaults, you can safely skip configuring them here, however, there is one you might want to change now -- `template`.
@@ -1905,16 +1907,9 @@ Read more about this cli tool [here](https://www.npmjs.com/package/stage-devtool
 
 `/resource` should contain static resources per locale. (per xx-XX folder, `/default` for locale independent)
 
-### Developing for Full-Screen?
+### Developing for App full-screen?
 
-To develop your app to be full-screen, first setup the application to be in full-screen mode:
-```
-Application.setup({
-    fullScreen: true,
-    ...
-});
-```
-This will keep the `<body>` tag to be 100% on both its width and height to the browser window and set its `overflow-y/x` to `hidden`.
+By default, your `app.mainView` is going to be of CSS class `.frame` as introduced by the **stage-unideck** package, this will give it full-screen sizing by default. Use `display:flex` or `display:grid` helper provided by our **stage-unideck** project to style your full-screen app layout in `app.mainView` will be fine. If you put more stacked content into `.frame`, it will automatically scroll like a `<body>` in normal website.
 
 ### View size measurement error?
 
@@ -2140,8 +2135,8 @@ Global co-op events: (need to specify in .coop:[])
 * 'poll-data-[e]'
 * 'reusable-registered'
 * 'navigation-changed'
-* 'window-resized'
-* 'window-scroll'
+* 'window-resized' (in .coop[] by default for views)
+* 'app-scroll'
 
 HTML (template) shortcut attributes:
 * region=""
@@ -2165,6 +2160,7 @@ Application meta events: (less likely to use, see co-op e first)
 * app:mainview-ready
 * app:navigate
 * app:context-guard-error
+* app:context-switched
 * app:navigation-aborted
 * app:ajax - change global ajax options here
 * app:ajax-success - single progress
@@ -2177,6 +2173,8 @@ Application meta events: (less likely to use, see co-op e first)
 * app:remote-pre-change - fine grind op stub
 * app:locked
 * app:coop
+* app:resized
+* app:scroll
 * app:error - limited to hybrid mode only
 
 Use `app:e` only when you want to extend certain part of the framework, like putting in a progress bar or notifications. All of the global co-op events also have an `app:e` version (not re-listed here though) on the `Application` object.
