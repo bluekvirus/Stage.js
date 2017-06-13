@@ -249,8 +249,8 @@
 				//window events:
 				// load [use $(ready-fn) instead],
 				// unload, 
-				// resize [use coop 'window-resized'], 
-				// scroll [use coop 'window-scroll'],
+				// resize [use coop 'window-resized'],
+				// scroll,
 
 			});
 			this.actions = this.actions || {}; 	

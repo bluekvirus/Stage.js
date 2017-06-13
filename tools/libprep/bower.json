@@ -56,6 +56,8 @@
   },
   "devDependencies": {
     "stage-unideck": "~0.9.x",
+    "backbone": "~1.1.x",
+    "marionette": "~1.8.x",
     "underscore.string": "~3.x.x",
     "loadcss": "~0.2.x",
     "fastclick": "~1.x.x",
@@ -67,8 +69,6 @@
     "flexlayout": "~0.3.x",
     "selectn": "~0.10.x",
     "validator-js": "~4.x.x",
-    "backbone": "~1.1.x",
-    "marionette": "~1.8.x",
     "handlebars": "~4.x.x",
     "uri.js": "~1.x.x",
     "store.js": "~1.x.x",

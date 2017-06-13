@@ -1014,6 +1014,9 @@
 
 		// later.js (schedule repeated workers, e.g poll RESTful data)
 		later: later,
+
+		// faker.js
+		faker: faker,
 	});
 
 	//editor rules

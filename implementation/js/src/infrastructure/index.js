@@ -10,9 +10,6 @@
  * 
  * Suggested additional events are:
  *   	app:error - app.onError ==> window.onerror in hybrid mode.
- *    	app:login - app.onLogin [not-defined]
- *     	app:logout - app.onLogout [not-defined]
- *      app:server-push - app.onServerPush [not-defined]
  * You can define them in a fn through app.addInitializer(fn(options));
  * 
  * 
@@ -32,13 +29,14 @@
  * 'reusable-registered'
  * 'navigation-changed'
  * 'window-resized'
- * 'window-scroll'
+ * 'app-scroll'
  * 
  *
  * @author Tim Lauv
  * @created 2014.02.17
  * @updated 2015.08.03
  * @updated 2016.03.31
+ * @updated 2017.06.13
  */
 
 ;(function(app){
@@ -58,7 +56,7 @@
 			//------------------------------------------app.mainView-------------------------------------------
 			//mainView has limited ability as a generic view (supports data/action, but can not be form, canvas or having co-ops)
 			template: undefined,
-			layout: undefined, //honored only if template is undefined, also indicates app.config.fullScreen = true
+			layout: undefined, //flexLayout plugin layout, honored before .template
 			//e.g:: have a unified layout as template.
 			/**
 			 * ------------------------
@@ -77,12 +75,14 @@
 			 */
 			data: undefined,
 			actions: undefined,
+			svg: undefined,
+			pollings: undefined,
+			channels: undefined,
 			navRegion: 'contexts', //alias: contextRegion
 			//---------------------------------------------------------------------------------------------
 			defaultView: undefined, //alias: defaultContext, this is the context (name) the application will sit on upon loading.
 			icings: {}, //various fixed overlaying regions for visual prompts ('name': {top, bottom, height, left, right, width})
-						//alias -- curtains			
-			fullScreen: false, //this will put <body> to be full screen sized (window.innerHeight).
+						//alias -- curtains
 	        defaultWebsocket: undefined, //websocket path to initialize with (single path with multi-channel/stream prefered).
 	        baseAjaxURI: '', //modify this to fit your own backend apis. e.g index.php?q= or '/api',
 			csrftoken: {
@@ -207,21 +207,23 @@
 			//Warning: calling ensureEl() on the app region will not work like regions in layouts.
 			//(Bug??: the additional <div> under the app region is somehow inevitable atm...)
 			app.trigger('app:before-mainview-ready');
-			if(app.config.template || !app.config.layout)
-				app.mainView = app.mainView || app.view({
-					name: 'Main',
-					data: app.config.data,
-					actions: app.config.actions,
-					//put default template here so we can squeeze in app.config.navRegion as a region dynamically.
-					template: app.config.template || ('<div region="' + (app.config.navRegion || app.config.contextRegion) + '"></div>'),
-				}, true);
-			else
-				app.mainView = app.mainView || app.view({
-					name: 'Main',
-					data: app.config.data,
-					actions: app.config.actions,
-					layout: app.config.layout,
-				}, true);
+			app.mainView = app.mainView || app.view({
+				name: 'Main',
+				className: 'frame',
+				data: app.config.data,
+				actions: app.config.actions,
+				svg: app.config.svg,
+				pollings: app.config.pollings,
+				channels: app.config.channels,
+				//put default template here so we can squeeze in app.config.navRegion as a region dynamically.
+				template: app.config.template || ('<div region="' + (app.config.navRegion || app.config.contextRegion) + '"></div>'),
+				layout: app.config.layout,
+			}, true);
+			app.mainView.$el.on('scroll', app.throttle(function trackScroll(){
+				var top = app.mainView.$el.scrollTop();
+				app.trigger('app:scroll', top);
+				app.coop('app-scroll', top);
+			}));
 
 			//b. Create the fixed overlaying regions according to app.config.icings (like a cake, yay!)
 			app.mainView.on('render', function(){
@@ -291,10 +293,6 @@
 				////////////////cache the screen size/////////////
 				app.screenSize = screenSize;
 				//////////////////////////////////////////////////
-				if(app.config.fullScreen){
-					$body.height(screenSize.h);
-					$body.width(screenSize.w);
-				}
 				if(!silent){
 					app.trigger('app:resized', screenSize);
 					app.coop('window-resized', screenSize);
@@ -310,39 +308,21 @@
 				if(!app.screenSize) _.delay(app._ensureScreenSize, app.config.rapidEventDelay/4, done);
 				else done();
 			};
-			//align $body with screen size if app.config.fullScreen = true
-			if(app.config.layout)
-				app.config.fullScreen = true;
-			if(app.config.fullScreen){
-				$body.css({
-					overflow: 'hidden',
-					margin: 0,
-					padding: 0					
-				});
-			}
 
-			//3. Track window scroll
-			function trackScroll(){
-				var top = $window.scrollTop();
-				app.trigger('app:scroll', top);
-				app.coop('window-scroll', top);
-			}
-			$window.on('scroll', app.throttle(trackScroll));
-
-			//4 Load Theme css & View templates & i18n translations
+			//3 Load Theme css & View templates & i18n translations
 			var theme = app.uri(window.location.toString()).search(true).theme || app.config.theme;
-			//4.0 Dynamic theme (skipped)
+			//3.0 Dynamic theme (skipped)
 			if(theme){
 				console.warn('DEV::Application::theme is now deprecated, please use theme css directly in <head>');
 			}
 
-			//4.1 Inject template pack
+			//3.1 Inject template pack
 			app.addInitializer(function(){
 				//based on path in app.config.viewTemplates
 				return app.inject.tpl('all.json');
 			});
 
-			//4.2 Activate i18n
+			//3.2 Activate i18n
 			app.addInitializer(function(){
 				return I18N.init({
 					locale: app.config.i18nLocale,
@@ -351,13 +331,13 @@
 				});
 			});
 
-			//5 Register default websocket
+			//4 Register default websocket
 			app.addInitializer(function(){
 				if(app.config.defaultWebsocket)
 					return app.ws(app.config.defaultWebsocket);
 			});
 
-			//6. Start the app --> pre init --> initializers --> post init(router setup)
+			//5. Start the app --> pre init --> initializers --> post init(router setup)
 			app._ensureScreenSize(function(){
 				app.start();				
 			});

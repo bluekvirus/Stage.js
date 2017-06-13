@@ -23,7 +23,7 @@
                     this.breadcrumbs.$el.hide();
                     return;
                 }
-                var stop = false, $result, viewportH = $window.height();
+                var stop = false, $result, viewportH = app.mainView.$el.height();
 
                 _.each(this.$headers, function($h, index){
                     if(stop) return;
@@ -99,7 +99,7 @@
         onGoToTopic: function(id){
             if(!id) return;
             var $topic = this.doc.$el.find('#' + id);
-            $window.scrollTop($topic.offset().top - window.innerHeight*0.16);
+            app.mainView.$el.scrollTop(app.mainView.$el.scrollTop() + $topic.offset().top); //$el.offset() is relative to current viewport.
         },
     });
 
@@ -133,7 +133,7 @@
             _bubble: true,
 
             goTop: function(){
-                $window.scrollTop(0);
+                app.mainView.$el.scrollTop(0);
             },
             goTo: function($btn, e){
                 e.preventDefault();
