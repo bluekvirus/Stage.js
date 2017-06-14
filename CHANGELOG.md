@@ -43,22 +43,22 @@ Change Log
 38. Removed app.config.fullScreen option;
 39. Added app.config.svg/pollings/channels options;
 40. Replaced 'window-scroll' with 'app-scroll' global coop; (based on app.mainView now)
+41. Added pre/postfix buttons/icons to input (text, password) editor;
 
 working on ...
 
-* pre/postfix buttons/icons to input editor;
 * app.mock(); (faker.js)
+* app.docs(); (*.md folder [index.json, ...], topic lvl, collaboration domain => view)
 * '[tutorial=]', app.tutorial(true/false);
 * '[role=/permission=]', app.user (hidden, lock);
 * app.subscribe() Server-Sent-Event;
 * app.worker() WebWorker;
-* fix app.locate() debug api to support returning multiple view instances with the same name;
+* fix app.locate() and related debug apis to support returning multiple view instances with the same name;
 * add app.submit(url, view/[data, files]) in addition to app.upload(); (align both standalone and normal file editors upload with same auto csrf token inject)
-* Cheatsheet;
-* Make docs and tests collaborative;
-* Breaking down 'Basic' editors?
-* Backbone*(+d3, -jQueryv2/3.0, -Marionettev1.8), elements(-Bootstrapv3/4.0)?
-* More unit tests in demos;
+* make tests collaborative;
+* cheatsheet;
+* breaking down 'Basic' editors?
+* kick out jQueryv2/3.0 and -Marionettev1.8;
 
 
 1.10.2 (2017-04-21)
