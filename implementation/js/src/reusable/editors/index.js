@@ -211,6 +211,7 @@
 					label: options.label || '', //optional
 					placeholder: options.placeholder || '', //optional
 
+					buttons: options.buttons ? (_.isArray(options.buttons) ? {postfix: options.buttons} : options.buttons ) : undefined, //optional only for text, password and hidden
 					help: options.help || '', //optional
 					tooltip: (_.isString(options.tooltip) && options.tooltip) || '', //optional
 					options: options.options || undefined, //optional {inline: true|false, data:[{label:'l', val:'v', ...}, {label:'ll', val:'vx', ...}] or ['v', 'v1', ...], labelField:..., valueField:...}
@@ -289,6 +290,12 @@
 							this.validate(true);
 					});
 
+				}
+
+				//check whether buttons will be honored by the given type
+				if(options.buttons && !(options.type === 'text' || options.type === 'password' || options.type === 'hidden')){
+					//buttons will only be honored on type text, password and hidden
+					console.warn('Dev::Editor.' + options.type + '::' + options.type + ' does not support buttons configuration.');
 				}
 
 				//prep fileupload if type === 'file'
@@ -1236,7 +1243,27 @@
 														'</div>',
 													'</div>',
 												'{{else}}', //text, password, hidden
-													'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" class="form-control" type="{{type}}" id="{{uiId}}" placeholder="{{i18n placeholder}}" value="{{value}}"> <!--1 space-->',
+													'{{#if buttons}}',//with buttons
+														'<div class="input-group">',
+															'{{#if buttons.prefix}}',//prefix buttons
+																'<span class="input-group-btn">',
+        															'{{#each buttons.prefix}}',
+        																'<button class="btn btn-{{type}}" type="button" action="{{action}}">{{{html}}}</button>',
+        															'{{/each}}',
+      															'</span>',
+															'{{/if}}',
+															'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" class="form-control" type="{{type}}" id="{{uiId}}" placeholder="{{i18n placeholder}}" value="{{value}}">',
+															'{{#if buttons.postfix}}',//postfix buttons
+																'<span class="input-group-btn">',
+        															'{{#each buttons.postfix}}',
+        																'<button class="btn btn-{{type}}" type="button" action="{{action}}">{{{html}}}</button>',
+        															'{{/each}}',
+      															'</span>',
+															'{{/if}}',
+														'</div>',
+													'{{else}}',//without buttons
+														'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" class="form-control" type="{{type}}" id="{{uiId}}" placeholder="{{i18n placeholder}}" value="{{value}}"> <!--1 space-->',
+													'{{/if}}',
 												'{{/is}}', //time
 											'{{/is}}', //date
 										'{{/is}}', //file

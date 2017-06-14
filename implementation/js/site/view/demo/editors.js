@@ -52,7 +52,17 @@
         actions: {
             testb: function(){
                 app.debug('test action ct clicked...');
-            }
+            },
+            search: function(){
+                var content = this.get('twoSidesButtons');
+                app.notify('SEARCH', 'searched for ' + (content || 'nothing'), 'info');
+            },
+            danger: function(){
+                app.notify('DANGER', 'NO........', 'error', {icon: 'fa fa-reddit-alien'});
+            },
+            upload: function(){
+                app.notify('SUBMIT', 'Submitted to the server', 'ok', {icon: 'fa fa-fort-awesome'});
+            },
         },
         editors: {
             _global: {
@@ -68,6 +78,25 @@
                 validate: {
                     required: true
                 }
+            },
+            onSideButtons: {
+                type: 'text',
+                label: 'One Side Buttons',
+                buttons: [
+                    {type: 'primary', html: '<i class="fa fa-check"></i> SUBMIT', action: 'upload'},
+                ],
+            },
+            twoSidesButtons: {
+                type: 'text',
+                label: 'Two Sides Buttons',
+                buttons: {
+                    prefix: [
+                        {type: 'danger', html: '<i class="fa fa-exclamation-circle"></i>', action: 'danger'}
+                    ],
+                    postfix: [
+                        {type: 'info', html: '<i class="fa fa-search"></i>', action: 'search'},
+                    ],
+                },
             },
             readonly: {
                 label: 'RO',
