@@ -606,6 +606,10 @@
 			return selectn(keypath, from);
 		},
 
+		mock: function(schema){
+			return app.Util.mock(schema);
+		},
+
 		//----------------url params---------------------------------
 		param: function(key, defaultVal){
 			var params = URI.parseQuery(app.uri(window.location.href).search()) || {};
@@ -1034,7 +1038,7 @@
 	 * API summary
 	 */
 	app._apis = [
-		'ee', 'model', 'collection',
+		'ee', 'model', 'collection', 'mock',
 		//view registery
 		'view', 'widget', 'editor', 'editor.validator - @alias:editor.rule',
 		//global action locks
@@ -1045,7 +1049,7 @@
 		'remote', 'download', 'upload', 'ws', 'poll',
 		//3rd-party lib short-cut
 		'extract', 'markdown', 'notify', 'prompt', //wraps
-		'cookie', 'store', 'moment', 'uri', 'validator', 'later', //direct refs
+		'cookie', 'store', 'moment', 'uri', 'validator', 'later', 'faker', //direct refs
 		//supportive
 		'debug', 'reload', 'locate', 'profile', 'mark', 'nameToPath', 'pathToName', 'inject.js', 'inject.tpl', 'inject.css',
 		//@deprecated
