@@ -383,8 +383,8 @@
 		poll: function(url /*or {options} for app.remote()*/, occurrence, coopEvent /*or callback*/) {
 		    //stop everything
 		    if (url === false)
-		        return _.each(this._polls, function(card) {
-		            card.cancel();
+		        return _.map(this._polls, function(card) {
+		            return card.cancel();
 		        });
 
 		    var schedule;
@@ -425,9 +425,10 @@
 		        _key: key,
 		        url: url,
 		        eof: coopEvent,
-		        timerId: 'unknown',
+		        timerId: undefined,
 		        failed: 0,
 		        valid: true,
+		        occurrence: occurrence, //info only
 		    };
 		    this._polls[key] = card;
 
@@ -452,18 +453,20 @@
 		    };
 		    //+timerType
 		    card.timerType = (call === window.setTimeout) ? 'native' : 'later.js';
-		    //+timerId
-		    card.timerId = call(worker, schedule);
 		    //+cancel()
 		    var that = this;
 		    card.cancel = function() {
+		    	this.valid = false;
 		        if (this.timerType === 'native')
-		            window.clearTimeout(this.timerId);
+		            !_.isUndefined(this.timerId) && window.clearTimeout(this.timerId);
 		        else
-		            this.timerId.clear();
-		        this.valid = false;
+		            !_.isUndefined(this.timerId) && this.timerId.clear();
 		        delete that._polls[this._key];
+		        return this;
 		    };
+
+		    //make the 1st call (eagerly)
+		    worker();
 		},
 
 		//-----------------ee/observer with built-in state-machine----------------
@@ -606,8 +609,8 @@
 			return selectn(keypath, from);
 		},
 
-		mock: function(schema){
-			return app.Util.mock(schema);
+		mock: function(schema, provider){
+			return app.Util.mock(schema, provider);
 		},
 
 		//----------------url params---------------------------------

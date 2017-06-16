@@ -113240,8 +113240,8 @@ Marionette.triggerMethodInversed = (function(){
 		poll: function(url /*or {options} for app.remote()*/, occurrence, coopEvent /*or callback*/) {
 		    //stop everything
 		    if (url === false)
-		        return _.each(this._polls, function(card) {
-		            card.cancel();
+		        return _.map(this._polls, function(card) {
+		            return card.cancel();
 		        });
 
 		    var schedule;
@@ -113282,9 +113282,10 @@ Marionette.triggerMethodInversed = (function(){
 		        _key: key,
 		        url: url,
 		        eof: coopEvent,
-		        timerId: 'unknown',
+		        timerId: undefined,
 		        failed: 0,
 		        valid: true,
+		        occurrence: occurrence, //info only
 		    };
 		    this._polls[key] = card;
 
@@ -113309,18 +113310,20 @@ Marionette.triggerMethodInversed = (function(){
 		    };
 		    //+timerType
 		    card.timerType = (call === window.setTimeout) ? 'native' : 'later.js';
-		    //+timerId
-		    card.timerId = call(worker, schedule);
 		    //+cancel()
 		    var that = this;
 		    card.cancel = function() {
+		    	this.valid = false;
 		        if (this.timerType === 'native')
-		            window.clearTimeout(this.timerId);
+		            !_.isUndefined(this.timerId) && window.clearTimeout(this.timerId);
 		        else
-		            this.timerId.clear();
-		        this.valid = false;
+		            !_.isUndefined(this.timerId) && this.timerId.clear();
 		        delete that._polls[this._key];
+		        return this;
 		    };
+
+		    //make the 1st call (eagerly)
+		    worker();
 		},
 
 		//-----------------ee/observer with built-in state-machine----------------
@@ -113463,8 +113466,8 @@ Marionette.triggerMethodInversed = (function(){
 			return selectn(keypath, from);
 		},
 
-		mock: function(schema){
-			return app.Util.mock(schema);
+		mock: function(schema, provider){
+			return app.Util.mock(schema, provider);
 		},
 
 		//----------------url params---------------------------------
@@ -113924,7 +113927,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.2-1280 build 1497510132459";
+;;app.stagejs = "1.10.2-1281 build 1497576696290";
 ;/**
  * Util for adding meta-event programming ability to object
  *

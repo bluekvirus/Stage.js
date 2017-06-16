@@ -45,6 +45,7 @@ Change Log
 40. Replaced 'window-scroll' with 'app-scroll' global coop; (based on app.mainView now)
 41. Added pre/postfix buttons/icons to input (text, password) editor;
 42. Added app.mock(); (default provider faker.js)
+43. Refined app.poll() to be eagerly working upon 1st call;
 
 working on ...
 
