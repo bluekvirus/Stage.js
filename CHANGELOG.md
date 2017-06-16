@@ -44,11 +44,12 @@ Change Log
 39. Added app.config.svg/pollings/channels options;
 40. Replaced 'window-scroll' with 'app-scroll' global coop; (based on app.mainView now)
 41. Added pre/postfix buttons/icons to input (text, password) editor;
+42. Added app.mock(); (default provider faker.js)
+43. Refined app.poll() to be eagerly working upon 1st call;
 
 working on ...
 
-* app.mock(); (faker.js)
-* app.docs(); (*.md folder [index.json, ...], topic lvl, collaboration domain => view)
+* app.docs(); (*.md folder [index.json(toc, flow), ...], topic lvl, collaboration domain => view)
 * '[tutorial=]', app.tutorial(true/false);
 * '[role=/permission=]', app.user (hidden, lock);
 * app.subscribe() Server-Sent-Event;

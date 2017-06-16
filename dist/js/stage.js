@@ -113240,8 +113240,8 @@ Marionette.triggerMethodInversed = (function(){
 		poll: function(url /*or {options} for app.remote()*/, occurrence, coopEvent /*or callback*/) {
 		    //stop everything
 		    if (url === false)
-		        return _.each(this._polls, function(card) {
-		            card.cancel();
+		        return _.map(this._polls, function(card) {
+		            return card.cancel();
 		        });
 
 		    var schedule;
@@ -113282,9 +113282,10 @@ Marionette.triggerMethodInversed = (function(){
 		        _key: key,
 		        url: url,
 		        eof: coopEvent,
-		        timerId: 'unknown',
+		        timerId: undefined,
 		        failed: 0,
 		        valid: true,
+		        occurrence: occurrence, //info only
 		    };
 		    this._polls[key] = card;
 
@@ -113309,18 +113310,20 @@ Marionette.triggerMethodInversed = (function(){
 		    };
 		    //+timerType
 		    card.timerType = (call === window.setTimeout) ? 'native' : 'later.js';
-		    //+timerId
-		    card.timerId = call(worker, schedule);
 		    //+cancel()
 		    var that = this;
 		    card.cancel = function() {
+		    	this.valid = false;
 		        if (this.timerType === 'native')
-		            window.clearTimeout(this.timerId);
+		            !_.isUndefined(this.timerId) && window.clearTimeout(this.timerId);
 		        else
-		            this.timerId.clear();
-		        this.valid = false;
+		            !_.isUndefined(this.timerId) && this.timerId.clear();
 		        delete that._polls[this._key];
+		        return this;
 		    };
+
+		    //make the 1st call (eagerly)
+		    worker();
 		},
 
 		//-----------------ee/observer with built-in state-machine----------------
@@ -113461,6 +113464,10 @@ Marionette.triggerMethodInversed = (function(){
 		//selectn (dotted.key.path.val.extraction from any obj)
 		extract: function(keypath, from){
 			return selectn(keypath, from);
+		},
+
+		mock: function(schema, provider){
+			return app.Util.mock(schema, provider);
 		},
 
 		//----------------url params---------------------------------
@@ -113891,7 +113898,7 @@ Marionette.triggerMethodInversed = (function(){
 	 * API summary
 	 */
 	app._apis = [
-		'ee', 'model', 'collection',
+		'ee', 'model', 'collection', 'mock',
 		//view registery
 		'view', 'widget', 'editor', 'editor.validator - @alias:editor.rule',
 		//global action locks
@@ -113902,7 +113909,7 @@ Marionette.triggerMethodInversed = (function(){
 		'remote', 'download', 'upload', 'ws', 'poll',
 		//3rd-party lib short-cut
 		'extract', 'markdown', 'notify', 'prompt', //wraps
-		'cookie', 'store', 'moment', 'uri', 'validator', 'later', //direct refs
+		'cookie', 'store', 'moment', 'uri', 'validator', 'later', 'faker', //direct refs
 		//supportive
 		'debug', 'reload', 'locate', 'profile', 'mark', 'nameToPath', 'pathToName', 'inject.js', 'inject.tpl', 'inject.css',
 		//@deprecated
@@ -113920,7 +113927,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.2-1279 build 1497407097028";
+;;app.stagejs = "1.10.2-1281 build 1497576696290";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -114185,6 +114192,95 @@ Marionette.triggerMethodInversed = (function(){
 	};
 
 })(Application);
+;/**
+ * This util function takes a schema object and produces mock data.
+ *
+ * Config
+ * ------
+ * app.config.mockProvider: faker (default with I18N.locale)
+ *
+ * Schema
+ * ------
+ * {
+ *    'key [ | number of record]' : '@gen.fn.from.provider [ | arg1, ..., argN]',
+ *    'key [ | number of record]' : {
+ *    	...sub schema..
+ *    }
+ * }
+ * 
+ *
+ * @author Tim Lauv
+ * @created 2017.06.14
+ */
+
+;(function(app){
+
+	function mock(schema, provider){
+		provider = provider || app.config.mockProvider || (faker && (faker.locale = I18N.locale.replace('-', '_')) && faker);
+
+		if(!provider) throw new Error('DEV::Util.mock() you have to specify a mock data provider...');
+
+		var result = {}, q = [{parent: result, index: 'return', schema: schema}];
+		while(q.length){
+			var job = q.pop();
+
+			//schema is a single val or gen-fn, can be resolved directly;
+			var args = undefined, hit = undefined; //reset hit gen-fn or it will hold last know provider fn!
+			if(!_.isPlainObject(job.schema)){
+				//generate data using provider (@dotted.key.path... as gen-fn pointer)
+				if((_.isString(job.schema) && _.string.startsWith(job.schema, '@'))){
+					var tmp = _.map(job.schema.split('|'), function(v){return _.string.trim(v);});
+					args = tmp[1];
+					args && (args = _.map(args.split(','), function(v){
+						v = _.string.trim(v);
+						if(_.isNaN(Number(v))){
+							if(v == 'true' || v == 'false')
+								return JSON.parse(v);
+							return v;
+						}
+						else
+							return Number(v);
+					}));
+					hit = app.extract(tmp[0].slice(1), provider);
+				}
+
+				//use data as is (gen-fn or data or fn result)
+				job.parent[job.index] = _.isFunction(hit)? hit.apply(provider, args) : _.result({val: job.schema}, 'val');
+
+				continue;
+
+			}
+
+			job.parent[job.index] = job.parent[job.index] || {};
+			//schema is an obj or real schema obj
+			_.each(job.schema, function(sub, key){
+				var tmp = _.map(key.split('|'), function(v){return _.string.trim(v);});
+				if(tmp[1]) tmp[1] = parseInt(tmp[1]); // e.g 'key|50'
+
+				//generate an array
+				if(tmp[1] > 0){
+					job.parent[job.index][tmp[0]] = new Array(tmp[1]);
+					while(tmp[1] > 0){
+						q.push({parent:job.parent[job.index][tmp[0]], index: tmp[1] - 1, schema: sub});
+						tmp[1]--;
+					}
+					return;
+				}
+
+				//generate an object
+				q.push({parent:job.parent[job.index], index: tmp[0], schema: sub});
+
+			});
+		}
+
+		return result.return;
+
+	}
+
+	app.Util.mock = mock;
+
+})(Application);
+
 ;/*
  * This is the Remote data interfacing core module of this application framework.
  * (Replacing the old Data API module)
