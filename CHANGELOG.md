@@ -46,6 +46,7 @@ Change Log
 41. Added pre/postfix buttons/icons to input (text, password) editor;
 42. Added app.mock(); (default provider faker.js)
 43. Refined app.poll() to be eagerly working upon 1st call;
+44. Added app.worker() WebWorker support;
 
 working on ...
 
@@ -53,7 +54,6 @@ working on ...
 * '[tutorial=]', app.tutorial(true/false);
 * '[role=/permission=]', app.user (hidden, lock);
 * app.subscribe() Server-Sent-Event;
-* app.worker() WebWorker;
 * fix app.locate() and related debug apis to support returning multiple view instances with the same name;
 * add app.submit(url, view/[data, files]) in addition to app.upload(); (align both standalone and normal file editors upload with same auto csrf token inject)
 * make tests collaborative;

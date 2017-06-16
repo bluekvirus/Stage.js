@@ -687,8 +687,8 @@
 		},
 
 		//Built-in web worker utility, bridged from app.Util.worker.
-		worker: function(name/*web worker's name*/){
-			return app.Util.worker(name);
+		worker: function(name/*web worker's name*/, coopEOrCallback){
+			return app.Util.worker(name, coopEOrCallback);
 		},
 		
 		//----------------config.rapidEventDelay wrapped util--------------------
