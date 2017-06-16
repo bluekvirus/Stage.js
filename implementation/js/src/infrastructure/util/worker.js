@@ -38,7 +38,10 @@
 		//function to send message to worker thread
 		var run = _.bind(function(data/*data send to worker through postMessage*/, coopEvent/*or onmessage callback function*/){
 			
-			//if there is only one argument, it should be considered as data
+			//NOTE:
+			//If there is only one argument, it should be considered as data.
+			//Since user might just register one onmessage callback function and reuse it for different data.
+			
 			//check whether there is a data or not
 			if(data){
 				this.postMessage(data);
