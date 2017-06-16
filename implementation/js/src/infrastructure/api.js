@@ -685,6 +685,12 @@
 				}, i * stagger, $el);
 			});
 		},
+
+		//Built-in web worker utility, bridged from app.Util.worker.
+		worker: function(name/*web worker's name*/){
+			return app.Util.worker(name);
+		},
+		
 		//----------------config.rapidEventDelay wrapped util--------------------
 		//**Caveat**: if using cached version, pass `this` and other upper scope vars into fn as arguments, else
 		//these in fn will be cached forever and might no longer exist or point to the right thing when called...
