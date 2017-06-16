@@ -11,7 +11,7 @@
 
 ;(function(app){
 
-	var webWorker = function(name/*web worker's name*/, coopEvent/*or callback function*/, workerEventListener/*object {onmessage: fn, onerror: fn}*/){
+	var webWorker = function(name/*web worker's name*/){
 		
 		//check whether browser supports webworker
 		if(!Modernizr.webworkers)
@@ -31,56 +31,46 @@
 		try{
 			//fetch javascript from given path and name
 			worker = new Worker(path + '/' + fileName + '.js');
-
-			//after successfully created worker trigger a app.coop event or trigger a callback function
-			if(coopEvent){
-				//callback function
-				if(_.isFunction(coopEvent)){
-					coopEvent(worker);
-				}
-				//coop event
-				else if(_.isString(coopEvent)){
-					//trigger coop event with worker as data
-					app.coop('web-worker-' + coopEvent, worker);
-				}
-				//plain object, then consider coopEvent is actucally workerEventListener
-				else if(_.isPlainObject(coopEvent)){
-					//make workerEventListener equals to coopEvent
-					workerEventListener = coopEvent;
-				}
-				//type is not right
-				else{
-					console.warn('DEV::Application::Util::worker(): The coopEvent or callback function you give is not right.');
-				}
-			}
-
-			//register onmessage and onerror callback here if user chooses to do so
-			if(workerEventListener){
-
-				//onmessage event listener
-				if(workerEventListener.onmessage){
-					//check whether callback is a function, otherwise issue warning
-					if(_.isFunction(workerEventListener.onmessage))
-						worker.onmessage = workerEventListener.onmessage;
-					else
-						console.warn('DEV::Application::Util::worker(): The onmessage callback is not a function!!');
-				}
-
-				//onerror event listener
-				if(workerEventListener.onerror){
-					//check whether callback is a function, otherwise issue warning
-					if(_.isFunction(workerEventListener.onerror))
-						worker.onerror = workerEventListener.onerror;
-					else
-						console.warn('DEV::Application::Util::worker(): The onerror callback is not a function!!');
-				}
-			}
-
 		}catch(e){
 			throw Error('DEV::Application::Util::worker(): Web worker create error. Please check your worker name and workerSrc!');
 		}
 		
-		return worker;
+		//function to send message to worker thread
+		var run = _.bind(function(data/*data send to worker through postMessage*/, coopEvent/*or onmessage callback function*/){
+			
+			//if there is only one argument, it should be considered as data
+			//check whether there is a data or not
+			if(data){
+				this.postMessage(data);
+			}
+
+			//honor coopEvent based on the type of the argument
+			if(coopEvent) {
+				//onmessage callback function
+				if(_.isFunction(coopEvent)){
+					this.onmessage = coopEvent;
+				}
+				//coop event
+				else if(_.isString(coopEvent)){
+					//trigger coop event with worker as data
+					app.coop('ww-data-' + coopEvent, this);
+				}
+				//type is not right
+				else
+					console.warn('DEV::Application::Util::worker(): The coopEvent or callback function you give is not right.');
+			}
+
+		}, worker);
+
+		var terminate = _.bind(function(){
+			this.terminate();
+		}, worker);
+
+		return {
+			_worker: worker,
+			terminate: terminate,
+			run: run,
+		};
 
 	};
 
