@@ -1998,7 +1998,7 @@ enhanced:
 * 'data' - 'url string', {} or []
 * 'useParentData'
 * 'useFlatModel' 
-* 'poll'
+* 'pollings'
 * 'channels'
 * 'editors' - see available editors below
 * 'svg'
@@ -2075,6 +2075,7 @@ App data handling helpers:
 * Application.remote (options) - ajax restful api
 * Application.poll () - ajax polling
 * Application.ws () - websocket
+* Application.worker () - webworker
 * Application.download (url, or +params) - download as attachment
 * Application.upload (url, or +data)
 * Application.cookie.*
@@ -2109,6 +2110,7 @@ App utils:
 * _.deepClone ()
 
 App dev support:
+* Application.mock ()
 * Application.debug ()
 * Application.reload ()
 * Application.locate ()
@@ -2119,6 +2121,7 @@ Form Editors (type):
 * 'ro'
 * 'text'
 * 'textarea'
+* 'code'
 * 'select'
 * 'file'
 * 'checkboxes'
@@ -2133,6 +2136,7 @@ Form Editors (type):
 Global co-op events: (need to specify in .coop:[])
 * 'ws-data-[channel]'
 * 'poll-data-[e]'
+* 'worker-data-[e]'
 * 'reusable-registered'
 * 'navigation-changed'
 * 'window-resized' (in .coop[] by default for views)
