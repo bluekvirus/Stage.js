@@ -721,7 +721,7 @@
 					if(ace){
 						this.onShow = function(){
 							//initialize the code pad
-							this._codepad = ace.edit(this.ui['codepad'][0]);
+							this._codepad = ace.edit(this.ui['codepad'][0]); //TBD: put ACE options in app.config.ace?
 							//config ace editor, honor user settings
 							this._codepad.setTheme('ace/theme/' + this.model.get('theme'));
 							this._codepad.setFontSize(14);

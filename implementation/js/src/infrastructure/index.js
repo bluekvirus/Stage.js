@@ -26,6 +26,7 @@
  * ------------
  * 'ws-data-[channel]'
  * 'poll-data-[e]'
+ * 'worker-data-[e]'
  * 'reusable-registered'
  * 'navigation-changed'
  * 'window-resized'
@@ -90,7 +91,8 @@
 				cookie: 'csrftoken' //cookie name to look for the csrftoken val
 			},	        
 	        viewTemplates: 'static/template', //this is assisted by the build tool, combining all the *.html handlebars templates into one big json.
-			viewSrcs: undefined, //set this to enable reusable view dynamic loading.
+			viewSrcs: undefined, //set this to enable reusable view dynamic loading. (default is off)
+			workerSrcs: 'js/worker', //change this to use a different loading path of Web Workers; (can NOT be pre-loaded like view js)
 			i18nResources: 'static/resource', //this the the default location where our I18N plugin looks for locale translations.
 			i18nTransFile: 'i18n.json', //can be {locale}.json
 			i18nLocale: '', //if you really want to force the app to certain locale other than browser preference. (Still override-able by ?locale=.. in url)

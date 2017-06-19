@@ -112500,6 +112500,7 @@ Marionette.triggerMethodInversed = (function(){
  * ------------
  * 'ws-data-[channel]'
  * 'poll-data-[e]'
+ * 'worker-data-[e]'
  * 'reusable-registered'
  * 'navigation-changed'
  * 'window-resized'
@@ -112564,7 +112565,8 @@ Marionette.triggerMethodInversed = (function(){
 				cookie: 'csrftoken' //cookie name to look for the csrftoken val
 			},	        
 	        viewTemplates: 'static/template', //this is assisted by the build tool, combining all the *.html handlebars templates into one big json.
-			viewSrcs: undefined, //set this to enable reusable view dynamic loading.
+			viewSrcs: undefined, //set this to enable reusable view dynamic loading. (default is off)
+			workerSrcs: 'js/worker', //change this to use a different loading path of Web Workers; (can NOT be pre-loaded like view js)
 			i18nResources: 'static/resource', //this the the default location where our I18N plugin looks for locale translations.
 			i18nTransFile: 'i18n.json', //can be {locale}.json
 			i18nLocale: '', //if you really want to force the app to certain locale other than browser preference. (Still override-able by ?locale=.. in url)
@@ -113933,7 +113935,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.2-1283 build 1497600185574";
+;;app.stagejs = "1.10.2-1284 build 1497845268027";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -114237,8 +114239,8 @@ Marionette.triggerMethodInversed = (function(){
 		if(!name || !_.isString(name))
 			throw Error('DEV::Application::Util::worker(): Web Worker\'s name is not a string or is not provided.');
 
-		//setup the root path for workers
-		var path = app.config.workerSrc || 'js/worker',
+		//consult the root path for web workers js files
+		var path = app.config.workerSrcs,
 		//translate name to the file name by using app.nameToPath()
 			fileName = app.nameToPath(name),
 			_worker;
@@ -118111,7 +118113,7 @@ Marionette.triggerMethodInversed = (function(){
 					if(ace){
 						this.onShow = function(){
 							//initialize the code pad
-							this._codepad = ace.edit(this.ui['codepad'][0]);
+							this._codepad = ace.edit(this.ui['codepad'][0]); //TBD: put ACE options in app.config.ace?
 							//config ace editor, honor user settings
 							this._codepad.setTheme('ace/theme/' + this.model.get('theme'));
 							this._codepad.setFontSize(14);

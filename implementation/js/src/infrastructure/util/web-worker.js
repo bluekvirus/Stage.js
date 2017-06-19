@@ -37,8 +37,8 @@
 		if(!name || !_.isString(name))
 			throw Error('DEV::Application::Util::worker(): Web Worker\'s name is not a string or is not provided.');
 
-		//setup the root path for workers
-		var path = app.config.workerSrc || 'js/worker',
+		//consult the root path for web workers js files
+		var path = app.config.workerSrcs,
 		//translate name to the file name by using app.nameToPath()
 			fileName = app.nameToPath(name),
 			_worker;
