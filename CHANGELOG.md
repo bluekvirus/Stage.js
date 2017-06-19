@@ -50,6 +50,7 @@ Change Log
 
 working on ...
 
+* app.mock()+ recognize {} and {{}} in @fn params;
 * app.docs(); (*.md folder [index.json(toc, flow), ...], topic lvl, collaboration domain => view)
 * add app.submit(url, view/[data, files]) in addition to app.upload(); (align both standalone and normal file editors upload with same auto csrf token inject)
 * app.subscribe() Server-Sent-Event;

@@ -131,7 +131,7 @@ What's in `-ng`?
 * Optional ECMAScript6 (2015-2016) support; (:heavy_check_mark:)
 * Optional reactive view building; (two-way bindings, like MVVM) (:heavy_check_mark:)
 * WebRTC integration for peer-to-peer data/stream sharing; (in progress)
-* Give View action listeners a choice to go background (Web Worker);
+* Give View action listeners a choice to go background (Web Worker) (:heavy_check_mark:));
 * Introduce state machine into Views (app.ee(), (:heavy_check_mark:));
 * Local filter/sort/pagination in Views (v1 has remote version only, (:heavy_check_mark:));
 
