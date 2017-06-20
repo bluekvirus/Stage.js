@@ -60,4 +60,20 @@ module.exports = function(server){
 		next(new Error('error!'));
 	});
 
+	//d. sse
+	router.get('/sse', function(req, res, next){
+		var counter = 0;
+		console.log(req.route);
+		//set interval to send data periodically
+		var interval = setInterval(function(){
+			if(server.sse['/sample/sse']._client.length)
+				server.sse['/sample/sse'].broadcast({msg: "This is the data send from SSE /sample/sse"}, {
+					//==== all optional parameters for SSE ====//
+					//retry: 5000, //retry time out
+					//event: 'some event name', //event name
+					id: ++counter, //message id
+				});
+		}, 1000);
+
+	});
 };

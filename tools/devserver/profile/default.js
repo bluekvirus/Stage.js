@@ -68,6 +68,12 @@ module.exports = {
 		'/dev/ws'
 	],
 
+	//sse for server-sent events
+	//only for urls that registered here, the server will response to the sse request.(white list)
+	sse: [
+		'/sample/sse',
+	],
+
 	//use enabled: false to turn off LESS monitor.
 	//only 1 webroot can be monitored
 	lesswatch: {
