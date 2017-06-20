@@ -79,6 +79,9 @@ module.exports = function(server){
 						//function for broadcasting data to all the clients
 						//options could contain id(message id), event(event name), retry(retry timeout in ms) ...
 						broadcast: function(data, options){
+							//no _clients stored, return
+							if(!this._clients.length) return;
+
 							var str = '';
 							//honor options
 							_.each(options, function(opt, key){
