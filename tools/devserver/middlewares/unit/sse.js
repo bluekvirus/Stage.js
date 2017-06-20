@@ -6,7 +6,6 @@
  * 	2). use server.sse[<url-name>].broadcast(<data>, {options<retry, event, id>}) to send message to all the listeners.
  * 	2).	in the deveserver/routers, just use router.get('<url>') to send message to the client.
  * 	3).	connection will be automatically closed once a close call initiated from client.
- * 	4). use server.sse[<url-name>].terminate() to forcely turn off all connections on a certain url.
  *
  * @author Patrick Zhu
  * @created 2017.06.19
@@ -94,18 +93,6 @@ module.exports = function(server){
 							_.each(this._clients, function(response){
 								response.write(str);
 							});
-						},
-						//function for closing all the connection from the server side.
-						//*NOT Recommended*. After closing from the server side, browser attempts to reconnect in about every 3 seconds(default).
-						//You can specify retry timeout in the options of broadcast function.
-						terminate: function(){
-							_.each(this._clients, function(response){
-								response.end();
-							});
-
-							delete server.sse[path];
-							//log to warn
-							console.log('All connection to SSE ' + path + ' has been terminated...'.red);
 						},
 					};
 				}
