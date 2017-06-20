@@ -9,6 +9,8 @@
  * ------
  * {
  *    'key [ | number of record]' : '@gen.fn.from.provider [ | arg1, ..., argN]',
+ *    'key [ | number of record]' : '@gen.fn.from.provider [ | {{ ... }} tpl {{ ... }}]',
+ *    'key [ | number of record]' : '@gen.fn.from.provider [ | {JSON} or [JSON]]',
  *    'key [ | number of record]' : {
  *    	...sub schema..
  *    }
@@ -37,21 +39,33 @@
 				if((_.isString(job.schema) && _.string.startsWith(job.schema, '@'))){
 					var tmp = _.map(job.schema.split('|'), function(v){return _.string.trim(v);});
 					args = tmp[1];
-					args && (args = _.map(args.split(','), function(v){
-						v = _.string.trim(v);
-						if(_.isNaN(Number(v))){
-							if(v == 'true' || v == 'false')
-								return JSON.parse(v);
-							return v;
-						}
+					if(args){
+						//{{ ... }} tpl {{ ... }}
+						if (/{{.*?}}/.test(args))
+							args = [args];
+						//{JSON}
+						else if(/^{.*}$/.test(args))
+							args = [JSON.parse(args)];
+						else if(/^\[.*\]$/.test(args))
+							args = [JSON.parse(args)];
+						//[, , ,]
 						else
-							return Number(v);
-					}));
+							args = _.map(args.split(','), function(v){
+								v = _.string.trim(v);
+								if(_.isNaN(Number(v))){
+									if(v == 'true' || v == 'false')
+										return JSON.parse(v);
+									return v;
+								}
+								else
+									return Number(v);
+							});
+					}
 					hit = app.extract(tmp[0].slice(1), provider);
 				}
 
 				//use data as is (gen-fn or data or fn result)
-				job.parent[job.index] = _.isFunction(hit)? hit.apply(provider, args) : _.result({val: job.schema}, 'val');
+				job.parent[job.index] = _.isFunction(hit)? hit.apply(provider, app.debug('mock fn args', args)) : _.result({val: job.schema}, 'val');
 
 				continue;
 
