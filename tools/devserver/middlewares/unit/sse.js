@@ -1,5 +1,12 @@
 /**
- * Server-sent events...
+ * Custom middleware script for Server-sent events(SSE).
+ *
+ * Usage:
+ * 	1). register SSE url in the configuration of server (/devserver/profile/<profile>)
+ * 	2). use server.sse[<url-name>].broadcast(<data>, {options<retry, event, id>}) to send message to all the listeners.
+ * 	2).	in the deveserver/routers, just use router.get('<url>') to send message to the client.
+ * 	3).	connection will be automatically closed once a close call initiated from client.
+ * 	4). use server.sse[<url-name>].terminate() to forcely turn off all connections on a certain url.
  *
  * @author Patrick Zhu
  * @created 2017.06.19
@@ -37,6 +44,9 @@ module.exports = function(server){
 			//only register if user registered the SSE in the server config
 			if(sseConfig && _.contains(sseConfig, path)){
 
+				//give it an uniqe id for later reference
+				_.extend(res, {__sseuid: _.uniqueId('stagejs-sse-')});
+
 				//response immediately to hold the connection
 				res.writeHead(200, {
 					'Content-Type': 'text/event-stream', 
@@ -49,22 +59,23 @@ module.exports = function(server){
 					//end transmission
 					res.end();
 					//delete handler
+					server.sse[path]._clients = _.without(server.sse[path]._clients, function(client){ return client.__sseuid === res.__sseuid; });
 
-					console.log('connection ' + path.yellow +' closed.');
+					console.log('SSE connection ' + path.yellow +' closed.');
 				});
 
 				//store the response handler to the global server object
 				if(server.sse[path]){
 
-					//sse object already exists
-					server.sse[path]._client.push(res);
+					//sse object already exists, give it an uniqe id for later reference
+					server.sse[path]._clients.push(res);
 
 				}else{
 
 					//newly added path, create object and give a broadcast function
 					server.sse[path] = {
 						//array to store all the response handlers that calls this sse
-						_client: [res],
+						_clients: [res],
 						//function for broadcasting data to all the clients
 						//options could contain id(message id), event(event name), retry(retry timeout in ms) ...
 						broadcast: function(data, options){
@@ -77,7 +88,7 @@ module.exports = function(server){
 							str += 'data: ' + (_.isString(data) ? data : JSON.stringify(data)) + '\n\n'; // two '\n's for data
 
 							//send message
-							_.each(this._client, function(response){
+							_.each(this._clients, function(response){
 								response.write(str);
 							});
 						},
@@ -85,9 +96,11 @@ module.exports = function(server){
 						//*NOT Recommended*. After closing from the server side, browser attempts to reconnect in about every 3 seconds(default).
 						//You can specify retry timeout in the options of broadcast function.
 						terminate: function(){
-							_.each(this._client, function(response){
+							_.each(this._clients, function(response){
 								response.end();
 							});
+
+							delete server.sse[path];
 							//log to warn
 							console.log('All connection to SSE ' + path + ' has been terminated...'.red);
 						},

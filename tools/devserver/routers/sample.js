@@ -63,17 +63,35 @@ module.exports = function(server){
 	//d. sse
 	router.get('/sse', function(req, res, next){
 		var counter = 0;
-		console.log(req.route);
-		//set interval to send data periodically
-		var interval = setInterval(function(){
-			if(server.sse['/sample/sse']._client.length)
-				server.sse['/sample/sse'].broadcast({msg: "This is the data send from SSE /sample/sse"}, {
+
+		var setTimeout_1 = function(){
+			setTimeout(function(){
+				server.sse['/sample/sse'].broadcast("This is the data send from SSE /sample/sse", {
 					//==== all optional parameters for SSE ====//
 					//retry: 5000, //retry time out
 					//event: 'some event name', //event name
 					id: ++counter, //message id
 				});
-		}, 1000);
+				setTimeout_1();
+
+			}, 1000);
+		};
+
+		var setTimeout_2 = function(){
+			setTimeout(function(){
+				server.sse['/sample/sse'].broadcast({msg: "This is the data send from SSE for customEvent /sample/sse"}, {
+					//==== all optional parameters for SSE ====//
+					//retry: 5000, //retry time out
+					event: 'customEvent', //event name
+					id: ++counter, //message id
+				});
+				setTimeout_2();
+
+			}, 5000);
+		};
+
+		setTimeout_1();
+		setTimeout_2();
 
 	});
 };

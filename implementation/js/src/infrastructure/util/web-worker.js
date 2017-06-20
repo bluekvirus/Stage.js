@@ -3,7 +3,7 @@
  *
  * Usage
  * -----
- * app.worker(name, fn(data, e, worker)/coop event) => worker.receive(data)
+ * app.worker(name, fn(data, e, worker)/coop event/object{onmessage/onerror: fn(data, e, worker)...) => worker.receive(data)
  * app.worker(false) to terminate all workers
  *
  *
@@ -20,7 +20,7 @@
 ;(function(app){
 
 	app._workers = {};
-	var webWorker = function(name/*web worker's name*/, coopEvent/*or onmessage callback function*/){
+	var webWorker = function(name/*web worker's name*/, coopEvent/*or onmessage callback function or object contains both onmessage and onerror callback*/){
 		
 		//check whether browser supports webworker
 		if(!Modernizr.webworkers)
@@ -64,6 +64,15 @@
 					coopEvent(e.data, e, worker);
 				};
 			}
+			//object, contains both onmessage callback function and onerror callback function
+			else if(_.isPlainObject(coopEvent)){
+				//traverse through object to register callback events
+				_.each(coopEvent, function(fn, eventName){
+					worker._worker[eventName] = function(e){
+						fn(e.data, e, worker);
+					};
+				});
+			}
 			//coop event
 			else if(_.isString(coopEvent)){
 				//trigger coop event with worker as data
@@ -74,7 +83,7 @@
 			}
 			//type is not right
 			else
-				console.warn('DEV::Application::Util::worker(): The coopEvent or callback function you give is not right.');
+				console.warn('DEV::Application::Util::worker(): The coopEvent or callback function or callbacks\' object you give is not right.');
 		}
 
 		//function to inform worker thread with data

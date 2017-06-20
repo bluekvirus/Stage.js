@@ -687,8 +687,13 @@
 		},
 
 		//Built-in web worker utility, bridged from app.Util.worker.
-		worker: function(name/*web worker's name*/, coopEOrCallback){
-			return app.Util.worker(name, coopEOrCallback);
+		worker: function(name/*web worker's name*/, coopEOrCallbackOrObj){
+			return app.Util.worker(name, coopEOrCallbackOrObj);
+		},
+
+		//Built-in Server-Sent Event(SSE) utility, bridged from app.Util.sse
+		sse: function(url/*sse's url*/, coopEOrCallbackOrObj){
+			return app.Util.sse(url, coopEOrCallbackOrObj);
 		},
 		
 		//----------------config.rapidEventDelay wrapped util--------------------
