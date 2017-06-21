@@ -62,6 +62,9 @@ module.exports = function(server){
 		
 		//respond content as file through ?asfile=[local filename]
 		server.use(server.middlewares.unit.replyAsFile());
+
+		//server sent event
+		server.use(server.middlewares.unit.sse());
 		
 		//+server.use(server.middlewares.unit.your-middleware-factory())
 		//...
