@@ -3,7 +3,7 @@
  *
  * Usage
  * -----
- * app.worker(name, fn(data, e, worker)/coop event/object{onmessage/onerror: fn(data, e, worker)...) => worker.receive(data)
+ * app.worker(name, fn(data, e, worker)/coop event/options{onmessage/onerror: fn(data, e, worker)...) => worker.receive(data)
  * app.worker(false) to terminate all workers
  *
  *
@@ -68,9 +68,11 @@
 			else if(_.isPlainObject(coopEvent)){
 				//traverse through object to register callback events
 				_.each(coopEvent, function(fn, eventName){
-					worker._worker[eventName] = function(e){
-						fn(e.data, e, worker);
-					};
+					//guard event. there is no custom event for web worker
+					if(_.contains(['onmessage', 'onerror'], eventName))
+						worker._worker[eventName] = function(e){
+							fn(e.data, e, worker);
+						};
 				});
 			}
 			//coop event

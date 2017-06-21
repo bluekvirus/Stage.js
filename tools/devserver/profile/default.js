@@ -72,6 +72,7 @@ module.exports = {
 	//only for urls that registered here, the server will response to the sse request.(white list)
 	sse: [
 		'/sample/sse',
+		'/dev/sample/sse',
 	],
 
 	//use enabled: false to turn off LESS monitor.

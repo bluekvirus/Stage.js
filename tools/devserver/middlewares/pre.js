@@ -64,9 +64,7 @@ module.exports = function(server){
 		server.use(server.middlewares.unit.replyAsFile());
 
 		//server sent event
-		_.each(profile.clients, function(filePath, uriName){
-			server.use(uriName, server.middlewares.unit.sse());
-		});
+		server.use(uriName, server.middlewares.unit.sse());
 		
 		//+server.use(server.middlewares.unit.your-middleware-factory())
 		//...

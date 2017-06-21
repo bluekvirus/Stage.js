@@ -687,13 +687,13 @@
 		},
 
 		//Built-in web worker utility, bridged from app.Util.worker.
-		worker: function(name/*web worker's name*/, coopEOrCallbackOrObj){
-			return app.Util.worker(name, coopEOrCallbackOrObj);
+		worker: function(name/*web worker's name*/, coopEOrCallbackOrOpts){
+			return app.Util.worker(name, coopEOrCallbackOrOpts);
 		},
 
 		//Built-in Server-Sent Event(SSE) utility, bridged from app.Util.sse
-		sse: function(url/*sse's url*/, coopEOrCallbackOrObj){
-			return app.Util.sse(url, coopEOrCallbackOrObj);
+		sse: function(url/*sse's url*/, coopEOrCallbackOrOpts){
+			return app.Util.sse(url, coopEOrCallbackOrOpts);
 		},
 		
 		//----------------config.rapidEventDelay wrapped util--------------------

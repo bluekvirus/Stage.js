@@ -3,7 +3,7 @@
  *
  * Usage
  * -----
- * app.sse(name, fn(data, e, sse)/coop event/object{eventName: fn(data, e, sse)...})
+ * app.sse(name, fn(data, e, sse)/coop event/options{eventName: fn(data, e, sse)...})
  * app.sse(false) to terminate all SSE connections.
  *
  * var sse = app.sse(.......);
@@ -70,7 +70,7 @@
 						sse._eventSource[eventName] = function(e){
 							fn(e.data, e, sse);
 						};
-					//custom events
+					//custom events, defined by backend server
 					else
 						sse._eventSource.addEventListener(eventName, function(e){
 							fn(e.data, e, sse);

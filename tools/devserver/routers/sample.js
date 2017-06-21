@@ -72,7 +72,10 @@ module.exports = function(server){
 					//event: 'some event name', //event name
 					id: ++counter, //message id
 				});
-				setTimeout_1();
+
+				//maximum 10 times
+				if(counter <= 10)
+					setTimeout_1();
 
 			}, 1000);
 		};
@@ -85,7 +88,10 @@ module.exports = function(server){
 					event: 'customEvent', //event name
 					id: ++counter, //message id
 				});
-				setTimeout_2();
+
+				//maximum 11 times, save the last one for custom event
+				if(counter <= 11)
+					setTimeout_2();
 
 			}, 5000);
 		};
