@@ -85,7 +85,7 @@
 			}
 			//type is not right
 			else
-				console.warn('DEV::Application::Util::worker(): The coopEvent or callback function or callbacks\' object you give is not right.');
+				console.warn('DEV::Application::Util::worker(): The coopEvent or callback function or callbacks\' options you give is not right.');
 		}
 
 		//function to inform worker thread with data

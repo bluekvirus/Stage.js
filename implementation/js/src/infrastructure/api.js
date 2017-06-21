@@ -312,7 +312,7 @@
 		 * websocket path ends with '+' will be reconnecting websocket when created. 
 		 * 
 		 */
-		ws: function(socketPath){
+		ws: function(socketPath, coopEvent /*or callback or options*/){
 			if(!Modernizr.websockets) throw new Error('DEV::Application::ws() Websocket is not supported by your browser!');
 			socketPath = socketPath || app.config.defaultWebsocket || '/ws';
 			var reconnect = false;
@@ -371,6 +371,38 @@
 						console.warn('DEV::Application::ws() Websocket is getting non-default {channel: ..., payload: ...} json contract strings...');
 					}
 				};
+
+				//register coopEvent or callback function or callback options
+				if(coopEvent){
+					//onmessage callback function
+					if(_.isFunction(coopEvent)){
+						//overwrite onmessage callback function defined by framework
+						app._websockets[socketPath].onmessage = function(e){
+							coopEvent(e.data, e, app._websockets[socketPath]);
+						};
+					}
+					//object may contain onmessage, onerror, since onopen and onclose is done by the framework
+					else if(_.isPlainObject(coopEvent)){
+						//traverse through object to register all callback events
+						_.each(coopEvent, function(fn, eventName){
+							//guard events
+							if(_.contains(['onmessage', 'onerror'], eventName))
+								app._websockets[socketPath][eventName] = function(e){
+									fn(e.data, e, app._websockets[socketPath]);
+								};
+						});
+					}
+					//app coop event
+					else if(_.isString(coopEvent)){
+						//trigger coop event with data from sse's onmessage callback
+						 app._websockets[socketPath].onmessage = function(e){
+							app.coop('ws-data-' + coopEvent, e.data, e, app._websockets[socketPath]);
+						};
+					}
+					//type is not right
+					else
+						console.warn('DEV::Application::ws() The coopEvent or callback function or callbacks\' options you give is not right.');
+				}
 				
 			}else
 				d.resolve(app._websockets[socketPath]);
@@ -380,7 +412,7 @@
 		//data polling 
 		//(through later.js) and emit data events/or invoke callback
 		_polls: {},
-		poll: function(url /*or {options} for app.remote()*/, occurrence, coopEvent /*or callback*/) {
+		poll: function(url /*or {options} for app.remote()*/, occurrence, coopEvent /*or callback or options*/) {
 		    //stop everything
 		    if (url === false)
 		        return _.map(this._polls, function(card) {
@@ -433,6 +465,23 @@
 		    this._polls[key] = card;
 
 		    var call = _.isNumber(schedule) ? window.setTimeout : app.later.setTimeout;
+
+		    //if coopEvent is an object. register options events before calling app.remote
+		    if(_.isPlainObject(coopEvent)){
+		    	//save url
+		    	var temp = url;
+		    	
+		    	//build url as an object for app.remote
+		    	url = {
+		    		url: temp
+		    	};
+		    	_.each(coopEvent, function(fn, eventName){
+		    		//guard for only allowing $.ajax events
+		    		if(_.contains(['beforeSend', 'error', 'dataFilter', 'success', 'complete'], eventName))
+		    			url[eventName] = fn(data, card);
+		    	});
+		    }
+
 		    var worker = function() {
 		        app.remote(url).done(function(data) {
 		            //callback
