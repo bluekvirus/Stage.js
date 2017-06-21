@@ -58,7 +58,7 @@
                 app.notify('SEARCH', 'searched for ' + (content || 'nothing'), 'info');
             },
             danger: function(){
-                app.notify('DANGER', 'NO........', 'error', {icon: 'fa fa-reddit-alien'});
+                app.notify('DANGER', 'NOooo...', 'error', {icon: 'fa fa-reddit-alien'});
             },
             upload: function(){
                 app.notify('SUBMIT', 'Submitted to the server', 'ok', {icon: 'fa fa-fort-awesome'});

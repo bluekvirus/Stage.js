@@ -96,13 +96,10 @@ module.exports = function(server){
 						},
 					};
 				}
-
-				//next
-				next();
-			}else{
-				//path has not been registered
-				console.log('[middleware sse]', ('SSE.' + path + 'has not been registered').grey);
 			}
+
+			//next
+			next();
 
 		};
 

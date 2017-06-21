@@ -849,9 +849,13 @@
 						//svg="" tagged canvas are always auto adjusted upon window resizing.
 					}
 				}
-				//no draw function (single canvas this.paper, manual ready and coop window-resized hook up)
-				else
+				//no draw function (single canvas this.paper, assumes draw in onReady)
+				else {
 					this._enableSVG(_.isBoolean(this.svg)? '' : this.svg /*selector str*/);
+					this.listenTo(this, 'view:window-resized', function(){
+						this.triggerMethodInversed('ready');
+					});
+				}
 
 			});
 		}

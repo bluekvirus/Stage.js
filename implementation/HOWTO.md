@@ -2076,6 +2076,7 @@ App data handling helpers:
 * Application.poll () - ajax polling
 * Application.ws () - websocket
 * Application.worker () - webworker
+* Application.sse () - server sent event
 * Application.download (url, or +params) - download as attachment
 * Application.upload (url, or +data)
 * Application.cookie.*

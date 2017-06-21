@@ -113171,7 +113171,7 @@ Marionette.triggerMethodInversed = (function(){
 		 * websocket path ends with '+' will be reconnecting websocket when created. 
 		 * 
 		 */
-		ws: function(socketPath){
+		ws: function(socketPath, coopEvent /*or callback or options*/){
 			if(!Modernizr.websockets) throw new Error('DEV::Application::ws() Websocket is not supported by your browser!');
 			socketPath = socketPath || app.config.defaultWebsocket || '/ws';
 			var reconnect = false;
@@ -113230,6 +113230,38 @@ Marionette.triggerMethodInversed = (function(){
 						console.warn('DEV::Application::ws() Websocket is getting non-default {channel: ..., payload: ...} json contract strings...');
 					}
 				};
+
+				//register coopEvent or callback function or callback options
+				if(coopEvent){
+					//onmessage callback function
+					if(_.isFunction(coopEvent)){
+						//overwrite onmessage callback function defined by framework
+						app._websockets[socketPath].onmessage = function(e){
+							coopEvent(e.data, e, app._websockets[socketPath]);
+						};
+					}
+					//object may contain onmessage, onerror, since onopen and onclose is done by the framework
+					else if(_.isPlainObject(coopEvent)){
+						//traverse through object to register all callback events
+						_.each(coopEvent, function(fn, eventName){
+							//guard events
+							if(_.contains(['onmessage', 'onerror'], eventName))
+								app._websockets[socketPath][eventName] = function(e){
+									fn(e.data, e, app._websockets[socketPath]);
+								};
+						});
+					}
+					//app coop event
+					else if(_.isString(coopEvent)){
+						//trigger coop event with data from sse's onmessage callback
+						 app._websockets[socketPath].onmessage = function(e){
+							app.coop('ws-data-' + coopEvent, e.data, e, app._websockets[socketPath]);
+						};
+					}
+					//type is not right
+					else
+						console.warn('DEV::Application::ws() The coopEvent or callback function or callbacks\' options you give is not right.');
+				}
 				
 			}else
 				d.resolve(app._websockets[socketPath]);
@@ -113239,7 +113271,7 @@ Marionette.triggerMethodInversed = (function(){
 		//data polling 
 		//(through later.js) and emit data events/or invoke callback
 		_polls: {},
-		poll: function(url /*or {options} for app.remote()*/, occurrence, coopEvent /*or callback*/) {
+		poll: function(url /*or {options} for app.remote()*/, occurrence, coopEvent /*or callback or options*/) {
 		    //stop everything
 		    if (url === false)
 		        return _.map(this._polls, function(card) {
@@ -113292,6 +113324,23 @@ Marionette.triggerMethodInversed = (function(){
 		    this._polls[key] = card;
 
 		    var call = _.isNumber(schedule) ? window.setTimeout : app.later.setTimeout;
+
+		    //if coopEvent is an object. register options events before calling app.remote
+		    if(_.isPlainObject(coopEvent)){
+		    	//save url
+		    	var temp = url;
+		    	
+		    	//build url as an object for app.remote
+		    	url = {
+		    		url: temp
+		    	};
+		    	_.each(coopEvent, function(fn, eventName){
+		    		//guard for only allowing $.ajax events
+		    		if(_.contains(['beforeSend', 'error', 'dataFilter', 'success', 'complete'], eventName))
+		    			url[eventName] = fn;
+		    	});
+		    }
+
 		    var worker = function() {
 		        app.remote(url).done(function(data) {
 		            //callback
@@ -113404,18 +113453,18 @@ Marionette.triggerMethodInversed = (function(){
 				targetState = targetState || '';
 				this.trigger(currentState + '-->' + targetState);				
 				return this;
-			}
+			};
 
 			//add a start method; (start at any state)
 			dispatcher.start = function(targetState){
 				targetState = targetState || currentState;
 				return this._swap(targetState);
-			}
+			};
 
 			//add a reset method; (reset to '' state)
 			dispatcher.reset = function(){
 				return this._swap();
-			}
+			};
 
 			//add a clean-up method;
 			dispatcher.stop = function(){
@@ -113546,8 +113595,13 @@ Marionette.triggerMethodInversed = (function(){
 		},
 
 		//Built-in web worker utility, bridged from app.Util.worker.
-		worker: function(name/*web worker's name*/, coopEOrCallback){
-			return app.Util.worker(name, coopEOrCallback);
+		worker: function(name/*web worker's name*/, coopEOrCallbackOrOpts){
+			return app.Util.worker(name, coopEOrCallbackOrOpts);
+		},
+
+		//Built-in Server-Sent Event(SSE) utility, bridged from app.Util.sse
+		sse: function(url/*sse's url*/, coopEOrCallbackOrOpts){
+			return app.Util.sse(url, coopEOrCallbackOrOpts);
 		},
 		
 		//----------------config.rapidEventDelay wrapped util--------------------
@@ -113591,7 +113645,7 @@ Marionette.triggerMethodInversed = (function(){
 			e.preventDefault();
 		},
 
-		//wait until all targets fires e (asynchronously) then call the callback with targets (e.g [this.show(), ...], ready)
+		//wait until all targets fires e (asynchronously) then call the callback with targets (e.g [this.show(), ...], 'ready')
 		until: function(targets, e, callback){
 			targets = _.compact(targets);
 			cb = _.after(targets.length, function(){
@@ -113914,7 +113968,7 @@ Marionette.triggerMethodInversed = (function(){
 		//utils
 		'has', 'get', 'spray', 'coop', 'navigate', 'navPathArray', 'icing/curtain', 'i18n', 'param', 'animation', 'animateItems', 'throttle', 'debounce', 'preventDefaultE', 'until',
 		//com
-		'remote', 'download', 'upload', 'ws', 'poll',
+		'remote', 'download', 'upload', 'ws', 'poll', 'worker', 'sse',
 		//3rd-party lib short-cut
 		'extract', 'markdown', 'notify', 'prompt', //wraps
 		'cookie', 'store', 'moment', 'uri', 'validator', 'later', 'faker', //direct refs
@@ -113935,7 +113989,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.2-1286 build 1497915992764";
+;;app.stagejs = "1.10.2-1288 build 1498030189691";
 ;/**
  * Util for adding meta-event programming ability to object
  *
@@ -114205,7 +114259,7 @@ Marionette.triggerMethodInversed = (function(){
  *
  * Usage
  * -----
- * app.worker(name, fn(data, e, worker)/coop event) => worker.receive(data)
+ * app.worker(name, fn(data, e, worker)/coop event/options{onmessage/onerror: fn(data, e, worker)...) => worker.receive(data)
  * app.worker(false) to terminate all workers
  *
  *
@@ -114222,7 +114276,7 @@ Marionette.triggerMethodInversed = (function(){
 ;(function(app){
 
 	app._workers = {};
-	var webWorker = function(name/*web worker's name*/, coopEvent/*or onmessage callback function*/){
+	var webWorker = function(name/*web worker's name*/, coopEvent/*or onmessage callback function or object contains both onmessage and onerror callback*/){
 		
 		//check whether browser supports webworker
 		if(!Modernizr.webworkers)
@@ -114266,6 +114320,17 @@ Marionette.triggerMethodInversed = (function(){
 					coopEvent(e.data, e, worker);
 				};
 			}
+			//object, contains both onmessage callback function and onerror callback function
+			else if(_.isPlainObject(coopEvent)){
+				//traverse through object to register callback events
+				_.each(coopEvent, function(fn, eventName){
+					//guard event. there is no custom event for web worker
+					if(_.contains(['onmessage', 'onerror'], eventName))
+						worker._worker[eventName] = function(e){
+							fn(e.data, e, worker);
+						};
+				});
+			}
 			//coop event
 			else if(_.isString(coopEvent)){
 				//trigger coop event with worker as data
@@ -114276,7 +114341,7 @@ Marionette.triggerMethodInversed = (function(){
 			}
 			//type is not right
 			else
-				console.warn('DEV::Application::Util::worker(): The coopEvent or callback function you give is not right.');
+				console.warn('DEV::Application::Util::worker(): The coopEvent or callback function or callbacks\' options you give is not right.');
 		}
 
 		//function to inform worker thread with data
@@ -114402,6 +114467,116 @@ Marionette.triggerMethodInversed = (function(){
 
 })(Application);
 
+;/**
+ * Application Server-Sent Events(SSE)
+ *
+ * Usage
+ * -----
+ * app.sse(name, fn(data, e, sse)/coop event/options{eventName: fn(data, e, sse)...})
+ * app.sse(false) to terminate all SSE connections.
+ *
+ * var sse = app.sse(.......);
+ * sse.close() to close connection.
+ *	
+ * 
+ * @author Patrick Zhu
+ * @created 2017.06.20
+ */
+
+;(function(app){
+
+	app._sses = app._sses || {};
+	var sse = function(url/*SSE's url*/, coopEvent/*or onmessage callback function or object contains all the callbacks(onopen, onmessage, onerror and <custom events>)*/){
+
+		//check whether browser supports Sever Sent Event
+		if(!Modernizr.eventsource)
+			throw Error('DEV::Application::Util::sse(): Sever-Sent Events(SSE) is not supported by your browser!');
+
+		//if url is false, clean up all the SSE handler
+		if(url === false){
+			return _.each(Object.keys(app._sses), function(handlerKey){
+				//close the connection from server
+				app._sses[handlerKey].close();
+				//remove handlder from global object
+				delete app._sses[handlerKey];
+			});
+		}
+
+		//check whether url is valid
+		if(!url || !_.isString(url))
+			throw Error('DEV::Application::Util::sse(): The url for Sever-Sent Events(SSE) is not a string or is not provided.');
+
+		var _eventSource;
+
+		//try to create new event source
+		try{
+			//use url provided by user
+			_eventSource = new EventSource(url);
+		}catch(e){
+			throw Error('DEV::Application::Util::sse(): Server-Sent Events(SSE) create error. Please check your SSE\'s url!');
+		}
+
+		//wrapper object
+		var sse = {
+			_eventSource: _eventSource,
+		};
+
+		//honor coopEvent or callbacks based on the type of arguments
+		if(coopEvent){
+			//onmessage callback function
+			if(_.isFunction(coopEvent)){
+				//register onmessage callback for sse
+				sse._eventSource.onmessage = function(e){
+					coopEvent(e.data, e, sse);
+				};
+			}
+			//object may contain onopen, onmessage, onerror and all the other callbacks for custom events
+			else if(_.isPlainObject(coopEvent)){
+				//traverse through object to register all callback events
+				_.each(coopEvent, function(fn, eventName){
+					//system events
+					if(_.contains(['onmessage', 'onerror', 'onopen'], eventName))
+						sse._eventSource[eventName] = function(e){
+							fn(e.data, e, sse);
+						};
+					//custom events, defined by backend server
+					else
+						sse._eventSource.addEventListener(eventName, function(e){
+							fn(e.data, e, sse);
+						});
+				});
+			}
+			//app coop event
+			else if(_.isString(coopEvent)){
+				//trigger coop event with data from sse's onmessage callback
+				sse._eventSource.onmessage = function(e){
+					app.coop('sse-data-' + coopEvent, e.data, e, sse);
+				};
+			}
+			//type is not right
+			else
+				console.warn('DEV::Application::Util::sse(): The coopEvent or callback function or callbacks\' options you give is not right.');
+		}
+
+		//function to close sse link
+		sse.close = function(){
+			this._eventSource.close();
+		};
+
+		//assign a unique key to the wrapper object
+		sse._key = _.uniqueId('sse-');
+		
+		//store globally
+		app._sses[sse._key] = sse;
+		
+		//return wrapper to user
+		return sse;
+	};
+
+	//assign to app.Util.sse
+	app.Util.sse = sse;
+
+})(Application);
 ;/*
  * This is the Remote data interfacing core module of this application framework.
  * (Replacing the old Data API module)
@@ -116176,9 +116351,13 @@ Marionette.triggerMethodInversed = (function(){
 						//svg="" tagged canvas are always auto adjusted upon window resizing.
 					}
 				}
-				//no draw function (single canvas this.paper, manual ready and coop window-resized hook up)
-				else
+				//no draw function (single canvas this.paper, assumes draw in onReady)
+				else {
 					this._enableSVG(_.isBoolean(this.svg)? '' : this.svg /*selector str*/);
+					this.listenTo(this, 'view:window-resized', function(){
+						this.triggerMethodInversed('ready');
+					});
+				}
 
 			});
 		}

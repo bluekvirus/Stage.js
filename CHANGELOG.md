@@ -47,18 +47,19 @@ Change Log
 42. Added app.mock(); (default provider faker.js)
 43. Refined app.poll() to be eagerly working upon 1st call;
 44. Added app.worker() WebWorker support;
+45. Added app.sse() Server-Sent-Event support;
+46. Single svg view will now assume drawing in onReady() and have 'view:window-resized' event auto-wired to trigger 'ready' again;
 
 working on ...
 
 * app.docs(); (*.md folder [index.json(toc, flow), ...], topic lvl, collaboration domain => view)
-* add app.submit(url, view/[data, files]) in addition to app.upload(); (align both standalone and normal file editors upload with same auto csrf token inject)
-* app.subscribe() Server-Sent-Event;
-* '[tutorial=]', app.tutorial(true/false);
-* '[role=/permission=]', app.user (hidden, lock);
+* app.submit(url, view/[data, files]) in addition to app.upload(); (align both standalone and normal file editors upload with same auto csrf token inject)
+* app.pack(); (opposite to app.extract, set val to obj by 'dotted.path.key')
 * fix app.locate() and related debug apis to support returning multiple view instances with the same name;
+* view.markers{m1: {'e': fn/fnName/coopE}, ...}; ([m1=...], do/prep upon 'e')
 * make tests collaborable;
 * breaking down 'Basic' editors?
-* kick out jQueryv2/3.0 and -Marionettev1.8;
+* remove jQueryv2/3.0 and -Marionettev1.8;
 
 
 1.10.2 (2017-04-21)

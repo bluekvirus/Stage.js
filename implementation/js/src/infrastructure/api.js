@@ -478,7 +478,7 @@
 		    	_.each(coopEvent, function(fn, eventName){
 		    		//guard for only allowing $.ajax events
 		    		if(_.contains(['beforeSend', 'error', 'dataFilter', 'success', 'complete'], eventName))
-		    			url[eventName] = fn(data, card);
+		    			url[eventName] = fn;
 		    	});
 		    }
 
@@ -594,18 +594,18 @@
 				targetState = targetState || '';
 				this.trigger(currentState + '-->' + targetState);				
 				return this;
-			}
+			};
 
 			//add a start method; (start at any state)
 			dispatcher.start = function(targetState){
 				targetState = targetState || currentState;
 				return this._swap(targetState);
-			}
+			};
 
 			//add a reset method; (reset to '' state)
 			dispatcher.reset = function(){
 				return this._swap();
-			}
+			};
 
 			//add a clean-up method;
 			dispatcher.stop = function(){
@@ -786,7 +786,7 @@
 			e.preventDefault();
 		},
 
-		//wait until all targets fires e (asynchronously) then call the callback with targets (e.g [this.show(), ...], ready)
+		//wait until all targets fires e (asynchronously) then call the callback with targets (e.g [this.show(), ...], 'ready')
 		until: function(targets, e, callback){
 			targets = _.compact(targets);
 			cb = _.after(targets.length, function(){
@@ -1109,7 +1109,7 @@
 		//utils
 		'has', 'get', 'spray', 'coop', 'navigate', 'navPathArray', 'icing/curtain', 'i18n', 'param', 'animation', 'animateItems', 'throttle', 'debounce', 'preventDefaultE', 'until',
 		//com
-		'remote', 'download', 'upload', 'ws', 'poll',
+		'remote', 'download', 'upload', 'ws', 'poll', 'worker', 'sse',
 		//3rd-party lib short-cut
 		'extract', 'markdown', 'notify', 'prompt', //wraps
 		'cookie', 'store', 'moment', 'uri', 'validator', 'later', 'faker', //direct refs
