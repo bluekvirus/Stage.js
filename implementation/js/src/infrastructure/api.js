@@ -478,7 +478,9 @@
 		    	_.each(coopEvent, function(fn, eventName){
 		    		//guard for only allowing $.ajax events
 		    		if(_.contains(['beforeSend', 'error', 'dataFilter', 'success', 'complete'], eventName))
-		    			url[eventName] = fn(data, card);
+		    			url[eventName] = function(data){
+		    				fn(data, card);
+		    			};
 		    	});
 		    }
 
