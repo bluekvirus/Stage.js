@@ -64,7 +64,7 @@ module.exports = function(server){
 		server.use(server.middlewares.unit.replyAsFile());
 
 		//server sent event
-		server.use(uriName, server.middlewares.unit.sse());
+		server.use(server.middlewares.unit.sse());
 		
 		//+server.use(server.middlewares.unit.your-middleware-factory())
 		//...
