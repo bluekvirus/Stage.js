@@ -53,7 +53,8 @@ Change Log
 working on ...
 
 * app.docs(); (*.md folder [index.json(toc, flow), ...], topic lvl, collaboration domain => view)
-* add app.submit(url, view/[data, files]) in addition to app.upload(); (align both standalone and normal file editors upload with same auto csrf token inject)
+* app.submit(url, view/[data, files]) in addition to app.upload(); (align both standalone and normal file editors upload with same auto csrf token inject)
+* app.pack(); (opposite to app.extract, set val to obj by 'dotted.path.key')
 * fix app.locate() and related debug apis to support returning multiple view instances with the same name;
 * view.markers{m1: {'e': fn/fnName/coopE}, ...}; ([m1=...], do/prep upon 'e')
 * make tests collaborable;
