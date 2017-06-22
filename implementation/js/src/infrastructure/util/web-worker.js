@@ -70,9 +70,7 @@
 				_.each(coopEvent, function(fn, eventName){
 					//guard event. there is no custom event for web worker
 					if(_.contains(['onmessage', 'onerror'], eventName))
-						worker._worker[eventName] = function(e){
-							fn(e.data, e, worker);
-						};
+						worker._worker[eventName] = fn;
 				});
 			}
 			//coop event
