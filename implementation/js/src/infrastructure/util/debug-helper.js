@@ -191,7 +191,6 @@
 					v.refresh();
 				}
 			}
-			//return this;
 		},
 	};
 

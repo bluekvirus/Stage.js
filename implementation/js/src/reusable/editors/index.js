@@ -1031,20 +1031,20 @@
 			'time': true,
 			'code': true,
 
-			//not implemented, h5 native only (use Modernizr checks)
-			'search': Modernizr.inputtypes.search,
-			'color': Modernizr.inputtypes.color,
-			'number': Modernizr.inputtypes.number,
-			//'range': Modernizr.inputtypes.range,
-			'email': Modernizr.inputtypes.email,
-			'tel': Modernizr.inputtypes.tel,
-			'url': Modernizr.inputtypes.url,
-			//'time': Modernizr.inputtypes.time,
-			//'date': Modernizr.inputtypes.date,
-			'datetime': Modernizr.inputtypes.datetime,
-			'datetime-local': Modernizr.inputtypes['datetime-local'],
-			'month': Modernizr.inputtypes.month,
-			'week': Modernizr.inputtypes.week,
+			//not implemented, h5 native only (use app.detect() checks)
+			'search': app.detect('inputtypes.search'),
+			'color': app.detect('inputtypes.color'),
+			'number': app.detect('inputtypes.number'),
+			//'range': app.detect('inputtypes.range'),
+			'email': app.detect('inputtypes.email'),
+			'tel': app.detect('inputtypes.tel'),
+			'url': app.detect('inputtypes.url'),
+			//'time': app.detect('inputtypes.time'),
+			//'date': app.detect('inputtypes.date'),
+			'datetime': app.detect('inputtypes.datetime'),
+			'datetime-local': app.detect('inputtypes.datetime-local'),
+			'month': app.detect('inputtypes.month'),
+			'week': app.detect('inputtypes.week'),
 		};
 
 		return UI;

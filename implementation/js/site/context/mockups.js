@@ -17,7 +17,7 @@
 
 				//boxes
 				{tpl: 'boxes.html', onReady: function(){
-					if(Modernizr.chrome){
+					if(app.detect('chrome')){
 						this.$el.find('[warning="chrome"]').removeClass('hidden');
 					}
 				}},

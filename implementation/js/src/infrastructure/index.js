@@ -30,7 +30,7 @@
  * 'reusable-registered'
  * 'navigation-changed'
  * 'window-resized'
- * 'app-scroll'
+ * 'viewport-scroll'
  * 
  *
  * @author Tim Lauv
@@ -202,7 +202,9 @@
 		//4 Put up Main View and activate Routing (href = #navigate/...) AFTER running all the initializers user has defined.
 		app.on("app:initialized", function(options){
 
-			//a. Put main template into position.
+			//a. Put mainView into position.
+			if(!$('[region=app]').length)
+				$body.prepend('<div region="app" class="frame"></div>');
 			app.addRegions({
 				'region-app': '[region="app"]'
 			});
@@ -211,7 +213,6 @@
 			app.trigger('app:before-mainview-ready');
 			app.mainView = app.mainView || app.view({
 				name: 'Main',
-				className: 'frame',
 				data: app.config.data,
 				actions: app.config.actions,
 				svg: app.config.svg,
@@ -221,13 +222,8 @@
 				template: app.config.template || ('<div region="' + (app.config.navRegion || app.config.contextRegion) + '"></div>'),
 				layout: app.config.layout,
 			}, true);
-			app.mainView.$el.on('scroll', app.throttle(function trackScroll(){
-				var top = app.mainView.$el.scrollTop();
-				app.trigger('app:scroll', top);
-				app.coop('app-scroll', top);
-			}));
 
-			//b. Create the fixed overlaying regions according to app.config.icings (like a cake, yay!)
+			//insert the fixed overlaying regions according to app.config.icings (like a cake, yay!)
 			app.mainView.on('render', function(){
 				var icings = {};
 				_.each(_.extend({'default': {top:'30%', left:0, right:0, bottom: '30%', 'overflow-y': 'auto', 'overflow-x': 'hidden'}}, app.config.icings, app.config.curtains), function(cfg, name){
@@ -239,10 +235,16 @@
 				});
 				_.extend(app.mainView.regions, icings);
 			});
-			app.getRegion('region-app').show(app.mainView).$el.css({height: '100%', width: '100%'});
 
+			//show mainView in 'region-app' and mark region's $el as global $viewport
+			app.getRegion('region-app').show(app.mainView).$el.on('scroll', app.throttle(function trackScroll(e){
+				var $viewport = $(e.currentTarget);
+				var top = $viewport.scrollTop();
+				app.trigger('app:scroll', top, $viewport);
+				app.coop('viewport-scroll', top, $viewport);
+			}));
 
-			//c. init client page router and start history:
+			//b. init client page router and start history:
 			var Router = Backbone.Marionette.AppRouter.extend({
 				appRoutes: {
 					'navigate/*path' : 'navigateTo', //navigate to a context and signal it about *module (can be a path for further navigation within)
@@ -284,7 +286,7 @@
 		function kickstart(){
 
 			//1. Check if we need 'fast-click' on mobile plateforms
-			if(Modernizr.mobile)
+			if(app.detect('mobile'))
 				FastClick.attach(document.body);
 
 			//2. Track window resize

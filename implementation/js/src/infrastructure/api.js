@@ -313,7 +313,7 @@
 		 * 
 		 */
 		ws: function(socketPath, coopEvent /*or callback or options*/){
-			if(!Modernizr.websockets) throw new Error('DEV::Application::ws() Websocket is not supported by your browser!');
+			if(!app.detect('websockets')) throw new Error('DEV::Application::ws() Websocket is not supported by your browser!');
 			socketPath = socketPath || app.config.defaultWebsocket || '/ws';
 			var reconnect = false;
 			if(_.string.endsWith(socketPath, '+')){
@@ -656,7 +656,7 @@
 			return selectn(keypath, from);
 		},
 
-		mock: function(schema, provider){
+		mock: function(schema, provider/*optional*/){
 			return app.Util.mock(schema, provider);
 		},
 
@@ -893,7 +893,7 @@
 		
 		//bridge app.debug()
 		debug: function(){
-			return app.Util.debugHelper.debug();
+			return app.Util.debugHelper.debug.apply(null, arguments);
 		},
 
 		//bridge app.locate()
@@ -930,6 +930,12 @@
 			}
 		},
 
+		detect: function(feature, provider/*optional*/){
+			if(!provider)
+				provider = Modernizr;
+			return app.extract(feature, provider) || false;
+		},
+
 		//--------3rd party lib pass-through---------
 		
 		// js-cookie (former jquery-cookie)
@@ -940,19 +946,19 @@
 		//.set(), .get(), .getAll(), .remove(), .clear()
 		store: store.enabled && store,
 
-		// validator.js (form data type,val,deps validation)
+		// validator.js (var type and val validation, e.g form editor validation)
 		validator: validator,
 
 		// moment.js (date and time)
 		moment: moment,
 
-		// URI.js (uri,query and hash in the url)
+		// URI.js (uri,query and hash in the url, e.g in app.param())
 		uri: URI,
 
-		// later.js (schedule repeated workers, e.g poll RESTful data)
+		// later.js (schedule repeated workers, e.g in app.poll())
 		later: later,
 
-		// faker.js
+		// faker.js (mock data generator, e.g in app.mock())
 		faker: faker,
 	});
 
@@ -984,7 +990,7 @@
 		'extract', 'markdown', 'notify', 'prompt', //wraps
 		'cookie', 'store', 'moment', 'uri', 'validator', 'later', 'faker', //direct refs
 		//supportive
-		'debug', 'reload', 'locate', 'profile', 'mark', 'nameToPath', 'pathToName', 'inject.js', 'inject.tpl', 'inject.css',
+		'debug', 'detect', 'reload', 'locate', 'profile', 'mark', 'nameToPath', 'pathToName', 'inject.js', 'inject.tpl', 'inject.css',
 		//@deprecated
 		'create - @deprecated', 'regional - @deprecated', 'context - @alias:page - @deprecated'
 	];

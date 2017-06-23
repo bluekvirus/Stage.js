@@ -23,7 +23,7 @@
 	var webWorker = function(name/*web worker's name*/, coopEvent/*or onmessage callback function or object contains both onmessage and onerror callback*/){
 		
 		//check whether browser supports webworker
-		if(!Modernizr.webworkers)
+		if(!app.detect('webworkers'))
 			throw Error('DEV::Application::Util::worker(): Web Worker is not supported by your browser!');
 
 		//cleanup: use .worker(false) to stop all

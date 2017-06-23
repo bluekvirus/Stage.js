@@ -20,7 +20,7 @@
 	var sse = function(url/*SSE's url*/, coopEvent/*or onmessage callback function or object contains all the callbacks(onopen, onmessage, onerror and <custom events>)*/){
 
 		//check whether browser supports Sever Sent Event
-		if(!Modernizr.eventsource)
+		if(!app.detect('eventsource'))
 			throw Error('DEV::Application::Util::sse(): Sever-Sent Events(SSE) is not supported by your browser!');
 
 		//if url is false, clean up all the SSE handler

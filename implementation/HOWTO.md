@@ -1429,7 +1429,7 @@ this.show('body', 'Tree', {
     data: [...],
     onSelected: function(meta, $el, e){
         e.preventDefault();
-        console.debug(meta.view.model, $el);
+        app.debug(meta.view.model, $el);
     }
 });
 ...
@@ -2112,6 +2112,7 @@ App utils:
 
 App dev support:
 * Application.mock ()
+* Application.detect ()
 * Application.debug ()
 * Application.reload ()
 * Application.locate ()
@@ -2141,7 +2142,7 @@ Global co-op events: (need to specify in .coop:[])
 * 'reusable-registered'
 * 'navigation-changed'
 * 'window-resized' (in .coop[] by default for views)
-* 'app-scroll'
+* 'viewport-scroll'
 
 HTML (template) shortcut attributes:
 * region=""

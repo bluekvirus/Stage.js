@@ -18,16 +18,17 @@
             '</div>'
         ],
         initialize: function(){
-            this.listenTo(app, 'app:scroll', function(offset){
+            this.listenTo(app, 'app:scroll', function(offset, $viewport){
                 if(!this.$headers || offset < 150) {
                     this.breadcrumbs.$el.hide();
                     return;
                 }
-                var stop = false, $result, viewportH = app.mainView.$el.height();
+                this.$viewport = $viewport;
+                var stop = false, $result, viewportH = this.$viewport.height();
 
                 _.each(this.$headers, function($h, index){
                     if(stop) return;
-                    if($h.offset().top > offset + viewportH * 0.35) {
+                    if($h.offset().top > viewportH * 0.1) { //$el.offset() is always relative to edge of screen, not parent $el top.
                         $result = this.$headers[index-1];
                         stop = true;
                     }
@@ -87,7 +88,6 @@
                     template: that.doc.$el.data('toc').html,
                     actions: {
                         goTo: function($btn, e){
-                            e.preventDefault();
                             that.trigger('view:go-to-topic', $btn.data('id'));
                         }
                     }
@@ -97,9 +97,11 @@
             });
         },
         onGoToTopic: function(id){
-            if(!id) return;
+            if(!id) {
+                return this.$viewport.scrollTop(0);
+            }
             var $topic = this.doc.$el.find('#' + id);
-            app.mainView.$el.scrollTop(app.mainView.$el.scrollTop() + $topic.offset().top); //$el.offset() is relative to current viewport.
+            this.$viewport.scrollTop(this.$viewport.scrollTop() + $topic.offset().top); //$el.offset() is relative to current viewport.
         },
     });
 
@@ -109,7 +111,7 @@
         className: 'breadcrumb',
         template: [
             '<li>',
-                '<i class="btn btn-primary btn-xs fa fa-arrow-up" action="goTop"></i> ',
+                '<i class="btn btn-primary btn-xs fa fa-arrow-up" action="goTo"></i> ', //goTo nothing means go top!
                 '<i class="btn btn-warning btn-xs fa fa-refresh" action="refresh"></i> ',
             '</li>',
             '{{#each path}}',
@@ -132,11 +134,7 @@
         actions: {
             _bubble: true,
 
-            goTop: function(){
-                app.mainView.$el.scrollTop(0);
-            },
             goTo: function($btn, e){
-                e.preventDefault();
                 this.parentCt.trigger('view:go-to-topic', $btn.data('id'));
             },
             showSubItems: function($item){
