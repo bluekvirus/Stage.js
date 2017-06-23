@@ -67,14 +67,10 @@
 				_.each(coopEvent, function(fn, eventName){
 					//system events
 					if(_.contains(['onmessage', 'onerror', 'onopen'], eventName))
-						sse._eventSource[eventName] = function(e){
-							fn(e.data, e, sse);
-						};
+						sse._eventSource[eventName] = fn;
 					//custom events, defined by backend server
 					else
-						sse._eventSource.addEventListener(eventName, function(e){
-							fn(e.data, e, sse);
-						});
+						sse._eventSource.addEventListener(eventName, fn);
 				});
 			}
 			//app coop event

@@ -387,9 +387,7 @@
 						_.each(coopEvent, function(fn, eventName){
 							//guard events
 							if(_.contains(['onmessage', 'onerror'], eventName))
-								app._websockets[socketPath][eventName] = function(e){
-									fn(e.data, e, app._websockets[socketPath]);
-								};
+								app._websockets[socketPath][eventName] = fn;
 						});
 					}
 					//app coop event
@@ -892,158 +890,30 @@
 		},
 
 		//----------------debug----------------------
-		//Note: debug() will always return the last argument as return val. (for non-intrusive inline debug printing)
+		
+		//bridge app.debug()
 		debug: function(){
-			var fn = console.debug || console.log;
-			if(app.param('debug') === 'true')
-				fn.apply(console, arguments);
-			return arguments.length && arguments[arguments.length - 1];
+			return app.Util.debugHelper.debug();
 		},
 
-		//find a view instance by name or its DOM element.
+		//bridge app.locate()
 		locate: function(name /*el or $el*/){
-			//el, $el for *contained* view names only
-			if(!_.isString(name)){
-				var all;
-				if(name)
-					all = $(name).find('[data-view-name]');
-				else
-					all = $('[data-view-name]');
-
-				all = all.map(function(index, el){
-					return $(el).attr('data-view-name');
-				}).get();
-				return all;
-			}
-
-			//name string, find the view instance and sub-view names
-			//Caveat: only the first instance of the same-named view on screen will be returned atm...
-			var view = $('[data-view-name="' + name + '"]').data('view');
-			return view && {view: view, 'sub-views': app.locate(view.$el)};
+			return app.Util.debugHelper.locate(name);
 		},
 
-		//output performance related meta info so far for a view by name or its DOM element.
+		//bridge app.profile()
 		profile: function(name /*el or $el*/){
-			//el, $el for *contained* views total count and rankings
-			if(!_.isString(name)){
-				var all;
-				if(name)
-				 	all = $(name).find('[data-render-count]');
-				else
-					all = $('[data-render-count]');
-
-				all = all.map(function(index, el){
-					var $el = $(el);
-					return {name: $el.data('view-name'), 'render-count': Number($el.data('render-count')), $el: $el};
-				}).get();
-				return {total: _.reduce(all, function(memo, num){ return memo + num['render-count']; }, 0), rankings: _.sortBy(all, 'render-count').reverse()};
-			}
-
-			//name string, profile the specific view and its sub-views
-			var result = app.locate(name), view;
-			if(result) view = result.view;
-			return view && {name: view.$el.data('view-name'), 'render-count': view.$el.data('render-count'), $el: view.$el, 'sub-views': app.profile(view.$el)};
+			return app.Util.debugHelper.profile(name);
 		},
 
-		//mark views on screen. (hard-coded style, experimental with no clean-up upon navigate)
+		//bridge app.mark()
 		mark: function(name /*el or $el*/){
-			var nameTagPairing = [], $body;
-			if(_.isString(name)){
-				var result = app.locate(name);
-				if(!result) return;
-				$body = result.view.parentRegion && result.view.parentRegion.$el;
-			}else if(name){
-				$body = $(name);
-			}else
-				$body = $('body');
-			//else abort
-			if(!$body) return;
-
-			//clear all name tag
-			$body.find('.dev-support-view-name-tag').remove();
-			//round-1: generate border and name tags
-			_.each(app.locate($body), function(v){
-				var result = app.locate(v), $container;
-				//add a container style
-				if(result.view.category !== 'Editor')
-					$container = result.view.parentRegion && result.view.parentRegion.$el;
-				else
-					$container = result.view.$el;
-				//else return;
-				if(!$container) return;
-
-				$container.css({
-					'padding': '1.5em', 
-					'border': '1px dashed black'
-				});
-				//add a name tag (and live position it to container's top left)
-				var $nameTag = $('<span class="label label-default dev-support-view-name-tag" style="position:absolute;">' + result.view.$el.data('view-name') + '</span>');
-				//add click event to $nameTag
-				$nameTag.css({cursor: 'pointer'})
-				.on('click', function(){
-					app.reload(result.view.$el.data('view-name'), true);
-				});
-				$body.append($nameTag);
-				nameTagPairing.push({$tag: $nameTag, $ct: $container, view: result.view});
-			});
-			//round-2: position the name tags
-			$window.trigger('resize');//trigger a possible resizing globally.
-			_.defer(function(){
-				_.each(nameTagPairing, function(pair){
-					pair.$tag.position({
-						my: 'left top',
-						at: 'left top',
-						of: pair.$ct
-					});
-					pair.view.on('close', function(){
-						pair.$tag.remove();
-					});
-				});
-			});
+			return app.Util.debugHelper.mark(name);
 		},
 
-		//reload everything, or override a view with newer version.
+		//bridge app.reload()
 		reload: function(name, override/*optional*/){
-			//reload globally
-			if(!name)
-				return window.location.reload();
-
-			var result = app.locate(name);
-			if(!result){
-				app.mark();//highlight available views.
-				throw new Error('DEV::app.reload():: Can NOT find view with given name: ' + name);
-			}
-
-			var v = result.view,
-				region = v.parentRegion,
-				category;
-			//get type of the named object
-			_.each(app.get(), function(data, key){
-				if(data.indexOf(name) >= 0){
-					category = key;
-					return;
-				}
-			});
-			if(!category)
-				throw new Error('DEV::app.reload():: No category can be found with given view: ' + name);
-			override = override || false;
-			//override old view
-			if(override){
-				//re-show the new view
-				try{
-					var view = app.get(name, category, {override: true}).create();
-					view.once('ready', function(){
-						app.mark(name);
-					});
-					region.show(view);
-				}catch(e){
-					console.warn('DEV::app.reload()::Abort, this', name, 'view is not defined alone, you need to find its source.', e);
-				}
-			}else{
-				//re-render the view
-				v.refresh();
-			}
-			//return this;
+			return app.Util.debugHelper.reload(name, override);
 		},
 
 		inject: {
