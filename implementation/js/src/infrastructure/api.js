@@ -651,9 +651,14 @@
 			return new Backbone.Collection(data);
 		},
 
-		//selectn (dotted.key.path.val.extraction from any obj)
+		//bridge extract from app.Util.deepObjectKeys
 		extract: function(keypath, from){
-			return selectn(keypath, from);
+			return app.Util.deepObjectKeys.extract(keypath, from);
+		},
+
+		//bridge pack from app.Util.deepObjectKeys
+		pack: function(keypathObj, to){
+			return app.Util.deepObjectKeys.pack(keypathObj, to);
 		},
 
 		mock: function(schema, provider/*optional*/){
