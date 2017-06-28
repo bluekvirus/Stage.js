@@ -24,14 +24,19 @@
 		pack: function(keypathObj/*{keypath: vale, ...}*/, to){
 
 			//guard to see if keypathObj is an plain object
-			if(!to || !(_.isPlainObject(to) || _.isArray(to)))
-				throw Error('DEV::Application::Util::pack(): the second argument should be an plain object or an array!');
+			if(!to || !_.isObject(to))
+				throw Error('DEV::Application::Util::pack(): the second argument should be an object, which includes a plain object, an array and a function!');
+
+			//sort the keys in keypathObj since browers do not necessarily sort the object by the order of keys
+			var sortedKeys = _.sortBy(_.keys(keypathObj)); //_.sortBy sorts in natural alphabetical order(number is less than letter), if not specified.
 
 			//traverse all the keypaths and modified the object accordingly
-			_.each(keypathObj, function(val, keypath){
+			_.each(sortedKeys, function(key){
 
+				//get the value from original keypathObj
+				var val = keypathObj[key],
 				//key path array
-				var keypathArr = keypath.split('.'),
+					keypathArr = key.split('.'),
 				//make a reference
 					tempObj = to; 
 
@@ -41,7 +46,7 @@
 					//2). current key only has a single value but keypath is deeper
 					if(
 						!tempObj[keypathArr[0]] || 
-						(tempObj[keypathArr[0]] && !(_.isArray(tempObj[keypathArr[0]]) || _.isPlainObject(tempObj[keypathArr[0]])) && keypathArr[1])
+						(tempObj[keypathArr[0]] && !_.isObject(tempObj[keypathArr[0]]) && keypathArr[1])
 					){
 						//no need to check next key if this is the last one
 						if(keypathArr.length > 1){
