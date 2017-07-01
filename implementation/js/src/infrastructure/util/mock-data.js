@@ -23,10 +23,33 @@
 
 ;(function(app){
 
-	function mock(schema, provider){
+	function mock(schema, provider, url){
+		//check whether provider is a string, then url is provider and provider is undefined.
+		if(_.isString(provider)){
+			url = provider;
+			provider = undefined;
+		}
+
 		provider = provider || app.config.mockProvider || (faker && (faker.locale = I18N.locale.replace('-', '_')) && faker);
 
 		if(!provider) throw new Error('DEV::Util.mock() you have to specify a mock data provider...');
+
+		//check whether url is provided, if yes store the schema and provider into global object
+		if(url){
+			//check whether the type of url is a string
+			if(_.isString(url)){
+				//initialize
+				app._mockSchema = app._mockSchema || {};
+				//set value
+				app._mockSchema[url] = {
+					provider: provider,
+					schema: schema
+				};
+
+			}else{
+				console.warn('DEV::Util.mock() the third argument(url) must be a string...');
+			}
+		}
 
 		var result = {}, q = [{parent: result, index: 'return', schema: schema}];
 		while(q.length){

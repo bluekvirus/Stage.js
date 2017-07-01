@@ -661,8 +661,8 @@
 			return app.Util.deepObjectKeys.pack(keypathObj, to);
 		},
 
-		mock: function(schema, provider/*optional*/){
-			return app.Util.mock(schema, provider);
+		mock: function(schema, provider/*optional*/, url/*optional*/){
+			return app.Util.mock(schema, provider, url);
 		},
 
 		//----------------url params---------------------------------
