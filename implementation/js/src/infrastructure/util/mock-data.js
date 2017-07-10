@@ -15,7 +15,15 @@
  *    	...sub schema..
  *    }
  * }
- * 
+ *
+ * URL
+ * ---
+ * <url> -- this means all http methods use the schema if ?mock=true
+ * GET <url> 
+ * POST <url>
+ * PUT <url>
+ * PATCH <url>
+ * DELETE <url>
  *
  * @author Tim Lauv
  * @created 2017.06.14
@@ -40,8 +48,15 @@
 			if(_.isString(url)){
 				//initialize
 				app._mockSchema = app._mockSchema || {};
-				//set value
-				app._mockSchema[url] = {
+				
+				//check http method
+				var tmp = url.split(' '), method = '*';
+				if(tmp.length == 2){
+					method = tmp[0];
+					url = tmp[1];
+				}
+				app._mockSchema[url] = app._mockSchema[url] || {};
+				app._mockSchema[url][method] = {
 					provider: provider,
 					schema: schema
 				};
@@ -56,7 +71,7 @@
 			var job = q.pop();
 
 			//schema is a single val or gen-fn, can be resolved directly;
-			var args = undefined, hit = undefined; //reset hit gen-fn or it will hold last know provider fn!
+			var args, hit; //reset hit gen-fn or it will hold last know provider fn!
 			if(!_.isPlainObject(job.schema)){
 				//generate data using provider (@dotted.key.path... as gen-fn pointer)
 				if((_.isString(job.schema) && _.string.startsWith(job.schema, '@'))){
