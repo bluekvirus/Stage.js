@@ -16,6 +16,8 @@ module.exports = {
 			'modernizr.min.js': false,
 			'stage.js': false,
 			'stage.min.js': false,
+			'stage-editors.js': false,
+			'stage-editors.min.js': false,
 			'stage-widgets.js': false,
 			'stage-widgets.min.js': false
 		},					

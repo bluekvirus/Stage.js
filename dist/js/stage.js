@@ -113938,7 +113938,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.2-1295 build 1500068193235";
+;;app.stagejs = "1.10.2-1296 build 1500069596833";
 ;/**
  * App debug helpers, extracted from api.js
  *
@@ -117085,7 +117085,7 @@ Marionette.triggerMethodInversed = (function(){
 
 					//1. instantiate
 					config.type = config.type || 'text'; 
-					Editor = (app.Core.Editor.map.Basic.supported[config.type] && app.Core.Editor.map.Basic) || app.get(config.type, 'Editor');
+					Editor = (app.Core.Editor.map.Basic && app.Core.Editor.map.Basic.supported[config.type] && app.Core.Editor.map.Basic) || app.get(config.type, 'Editor');
 					
 					//Tempo Fix: remove type so it won't confuse View init with Item/Collection/CompositeView types.
 					if(Editor !== app.Core.Editor.map.Basic)

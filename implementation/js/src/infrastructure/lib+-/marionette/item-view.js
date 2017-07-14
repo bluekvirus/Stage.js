@@ -340,7 +340,7 @@
 
 					//1. instantiate
 					config.type = config.type || 'text'; 
-					Editor = (app.Core.Editor.map.Basic.supported[config.type] && app.Core.Editor.map.Basic) || app.get(config.type, 'Editor');
+					Editor = (app.Core.Editor.map.Basic && app.Core.Editor.map.Basic.supported[config.type] && app.Core.Editor.map.Basic) || app.get(config.type, 'Editor');
 					
 					//Tempo Fix: remove type so it won't confuse View init with Item/Collection/CompositeView types.
 					if(Editor !== app.Core.Editor.map.Basic)
