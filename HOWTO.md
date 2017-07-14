@@ -158,19 +158,17 @@ We also maintain a list of 3rd party libraries for the developers to choose from
 
 **(-)**: This folder is empty initially, it is created as a suggestion.
 
-Use the project-kit distribution whenever you want to start a production level web application project.
+Use the project-kit distribution whenever you want to start a production level web application project with build, theming and backend support.
 
 #### Release pack
 
+> * /css
+>     - default.css
+> * /fonts 
 > * /js
->     - /lib
->         + dependencies.min.js
->         + dependencies.json
 >     - stage.js
 >     - stage.min.js
-> * CHANGELOG.md
-> * LICENSE
-> * README.md
+> * index.html
 
 This distribution is designed to be simple and doesn't have tools and theme packages for production level development. The release-pack folder is serve-able out of the box.
 

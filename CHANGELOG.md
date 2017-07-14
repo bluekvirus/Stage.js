@@ -1,7 +1,7 @@
 Change Log
 ==========
 
-1.10.3+ (2017-06*)
+1.10.3+ (2017-07*)
 ------------------
 1. labels/tooltips/help/status for editors and editor data options can now use raw html within them; (e.g using `<i>` icon tags together with texts) 
 2. app.preventDefault(e) now allows `<label>` tag default behavior to pass to browser;
@@ -51,17 +51,19 @@ Change Log
 46. Single svg view will now assume drawing in onReady() and have 'view:window-resized' event auto-wired to trigger 'ready' again;
 47. Refined app.locate() and related debug apis to support multiple view targets with the same name;
 48. Added app.detect() api for browser feature detections;
-49. 'region-app' will now be automatically prepended into '<body>';
+49. 'region-app' will now be automatically prepended into `<body>`;
+50. Added app.pack(); (opposite to app.extract, set val to obj by 'dotted.path.key')
 
 working on ...
 
+* ?mock=true to intercept app.mock() registered urls;
 * app.docs(); (*.md folder [index.json(toc, flow), ...], topic lvl, collaboration domain => view)
-* app.submit(url, view/[data, files]) in addition to app.upload(); (align both standalone and normal file editors upload with same auto csrf token inject)
-* app.pack(); (opposite to app.extract, set val to obj by 'dotted.path.key')
-* view.markers{m1: {'e': fn/fnName/coopE}, ...}; ([m1=...], do/prep upon 'e')
+* app.config.jwttoken; (support for JSON Web Token)
+* view.submit(url, editors[data, files]) in addition to app.upload(); (align both standalone and normal file editors upload with same auto csrf token inject?)
 * make tests collaborable;
-* breaking down 'Basic' editors?
-* remove jQueryv2/3.0 and -Marionettev1.8;
+* breaking down 'Basic' editors;
+* view.markers{m1: {'e': fn/fnName/coopE}, ...}; ([m1=...], do/prep upon 'e')
+* remove jQueryv2/3.0 and Marionettev1.8 deps and related code;
 
 
 1.10.2 (2017-04-21)
