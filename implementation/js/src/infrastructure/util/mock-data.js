@@ -71,7 +71,7 @@
 			var job = q.pop();
 
 			//schema is a single val or gen-fn, can be resolved directly;
-			var args, hit; //reset hit gen-fn or it will hold last know provider fn!
+			var args = undefined, hit = undefined; //reset hit gen-fn or it will hold last know provider fn!
 			if(!_.isPlainObject(job.schema)){
 				//generate data using provider (@dotted.key.path... as gen-fn pointer)
 				if((_.isString(job.schema) && _.string.startsWith(job.schema, '@'))){

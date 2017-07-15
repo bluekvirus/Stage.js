@@ -113938,7 +113938,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.2-1296 build 1500069596833";
+;;app.stagejs = "1.10.2-1297 build 1500088512743";
 ;/**
  * App debug helpers, extracted from api.js
  *
@@ -114581,7 +114581,7 @@ Marionette.triggerMethodInversed = (function(){
 			var job = q.pop();
 
 			//schema is a single val or gen-fn, can be resolved directly;
-			var args, hit; //reset hit gen-fn or it will hold last know provider fn!
+			var args = undefined, hit = undefined; //reset hit gen-fn or it will hold last know provider fn!
 			if(!_.isPlainObject(job.schema)){
 				//generate data using provider (@dotted.key.path... as gen-fn pointer)
 				if((_.isString(job.schema) && _.string.startsWith(job.schema, '@'))){
