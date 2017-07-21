@@ -112629,7 +112629,12 @@ Marionette.triggerMethodInversed = (function(){
 			csrftoken: {
 				header: 'X-CSRFToken', //http header to use to include the csrftoken val
 				cookie: 'csrftoken' //cookie name to look for the csrftoken val
-			},	        
+			},
+			jwttoken: {
+				header: 'Authorization',
+				schema: 'Bearer',
+				value: undefined
+			},
 	        viewTemplates: 'static/template', //this is assisted by the build tool, combining all the *.html handlebars templates into one big json.
 			viewSrcs: undefined, //set this to enable reusable view dynamic loading. (default is off)
 			workerSrcs: 'js/worker', //change this to use a different loading path of Web Workers; (can NOT be pre-loaded like view js)
@@ -113938,7 +113943,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.2-1297 build 1500088512743";
+;;app.stagejs = "1.10.2-1298 build 1500626958488";
 ;/**
  * App debug helpers, extracted from api.js
  *
@@ -114541,6 +114546,9 @@ Marionette.triggerMethodInversed = (function(){
 
 ;(function(app){
 
+	//global mock schema registery (consulted by app.remote() if app.param('mock') is true)
+	app._mockSchema = app._mockSchema || {};	
+
 	function mock(schema, provider, url){
 		//check whether provider is a string, then url is provider and provider is undefined.
 		if(_.isString(provider)){
@@ -114556,13 +114564,11 @@ Marionette.triggerMethodInversed = (function(){
 		if(url){
 			//check whether the type of url is a string
 			if(_.isString(url)){
-				//initialize
-				app._mockSchema = app._mockSchema || {};
 				
 				//check http method
 				var tmp = url.split(' '), method = '*';
 				if(tmp.length == 2){
-					method = tmp[0];
+					method = tmp[0].toUpperCase();
 					url = tmp[1];
 				}
 				app._mockSchema[url] = app._mockSchema[url] || {};
@@ -114613,7 +114619,7 @@ Marionette.triggerMethodInversed = (function(){
 				}
 
 				//use data as is (gen-fn or data or fn result)
-				job.parent[job.index] = _.isFunction(hit)? hit.apply(provider, app.debug('mock fn args', args)) : _.result({val: job.schema}, 'val');
+				job.parent[job.index] = _.isFunction(hit)? hit.apply(provider, args) : _.result({val: job.schema}, 'val');
 
 				continue;
 
@@ -114654,10 +114660,10 @@ Marionette.triggerMethodInversed = (function(){
  *
  * Usage
  * -----
- * app.sse(name, fn(data, e, sse)/coop event/options{eventName: fn(data, e, sse)...})
+ * app.sse(url, fn(data, e, sse)/coop event/options{eventName: fn(data, e, sse)...})
  * app.sse(false) to terminate all SSE connections.
  *
- * var sse = app.sse(.......);
+ * var sse = app.sse();
  * sse.close() to close connection.
  *	
  * 
@@ -114841,10 +114847,12 @@ Marionette.triggerMethodInversed = (function(){
  * a. url string
  * or 
  * b. object:
- * 	1. + _entity[_id][_method] - string
- *  2. + params(alias:querys) - object
- *  3. + payload - object (payload._id overrides _id)
- *  4. $.ajax options (without -data, -type, -processData, -contentType)
+ *  1. + params(alias:querys) - object
+ *  2. + payload - object (payload.id determines non GET call types)
+ *  3. $.ajax options (without -data, -type, -processData, -contentType)
+ *  	- headers - object (custom http headers)
+ *  	- async - boolean
+ *  	- success/error/complete - fn (you should be using .done/fail/always() after .remote())
  *
  *  Global CROSSDOMAIN Settings - *Deprecated*: set this in a per-request base or use server side proxy
  *  see MDN - https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS
@@ -114854,10 +114862,8 @@ Marionette.triggerMethodInversed = (function(){
  *  	protocol: '', //https or not? default: '' -> http
  *   	host: '127.0.0.1', 
  *   	port: '5000',
- *   	headers: {
- *   		'Credential': 'user:pwd'/'token',
- *   		...
- *  }
+ *  } 
+ *  Put additional headers for xdomain just in options.headers (same lvl as options.xdomain).
  *  Again, it is always better to use server side proxy/forwarding instead of client side x-domain.
  *
  * events:
@@ -114874,6 +114880,7 @@ Marionette.triggerMethodInversed = (function(){
  * 
  * @author Tim Lauv
  * @created 2014.03.24
+ * @updated 2017.07.20
  */ 
 
 ;(function(app, _, $){
@@ -114900,22 +114907,10 @@ Marionette.triggerMethodInversed = (function(){
 			//-------------------------------------------------------------------------------------------
 		});
 
-		//process _entity[_id][_method] and strip off options.querys(alias:params)
-		if(options.entity || options._entity){
-			var entity = options.entity || options._entity;
-			options.url = entity;
-		}
-		if(options.payload && options.payload._id){
-			options._id = options.payload._id;
-		}
-		if(options._id || options._method){
-			var url = app.uri(options.url);
-			options.url = url.path(_.compact([url.path(), options._id, options._method]).join('/')).toString();
-		}
+		//fix url?query params (merge with alias querys, +payload.id as ?id=)
 		options.params = _.extend(options.params || {}, options.querys);
-		if(options.params){
-			options.url = (app.uri(options.url)).search(options.params).toString();
-		}
+		if(options.payload && options.payload.id) options.params.id = options.payload.id;
+		options.url = (app.uri(options.url)).search(options.params).toString();
 
 		//app.config.baseAjaxURI
 		if(app.config.baseAjaxURI)
@@ -114929,40 +114924,61 @@ Marionette.triggerMethodInversed = (function(){
 			options.xhrFields = _.extend(options.xhrFields || {}, {
 				withCredentials: true //persists session cookies.
 			});
-			options.headers = _.extend(options.headers || {}, crossdomain.headers);
 			// Using another way of setting withCredentials flag to skip FF error in sycned CORS ajax - no cookies tho...:(
 			// options.beforeSend = function(xhr) {
 			// 	xhr.withCredentials = true;
 			// };
 		}
 
+		//+ header: csrf token (standard: Django, for ajax calls to pass through since they already had same origin sandbox check in client browser) 
 		//get csrftoken value from cookie and set to header. (don't forget to set for $.fileupload editor x2 as well)
 		options.headers = options.headers || {};
 		if(app.config.csrftoken && !options.headers[app.config.csrftoken.header])
 			options.headers[app.config.csrftoken.header] = app.cookie.get(app.config.csrftoken.cookie) || 'NOTOKEN';
+
+		//+ header: jwt token (standard: https://jwt.io/introduction)
+		//honor app.config.jwttoken.value as is.
+		if(app.config.jwttoken && !options.headers[app.config.jwttoken.header]){
+			options.headers[app.config.jwttoken.header] = app.config.jwttoken.schema + ' ' + (app.config.jwttoken.value || 'NOTOKEN');
+		}
 
 		app.trigger('app:ajax', options);		
 		return options;
 	}
 
 	_.extend(definition, {
+		//MOCK check
+		mock: function(options){
+			//intercept by ?mock=true in app
+			if(app.param('mock') !== 'true') return;
+
+			var schema = app._mockSchema[options.url.split('?')[0]];
+			if(schema){ //url lvl schemas
+				schema = schema[options.type] || schema['*']; //http method lvl schema record
+				return $.Deferred().resolve(app.mock(schema.schema, schema.provider));
+			}
+		},
 
 		//GET
 		get: function(options, restOpt){
 			options = fixOptions(options, restOpt);
 			options.type = 'GET';
+
 			app.trigger('app:remote-pre-get', options);
-			return $.ajax(options);
+			return this.mock(options) || $.ajax(options);
 		},
 
-		//POST(no payload._id)/PUT/DELETE(payload = {_id: ...})
+		//POST(no payload.id)
+		//PUT(payload = {id: , ...}
+		//DELETE(payload = {id:})
 		change: function(options, restOpt){
 			options = fixOptions(options, restOpt);
 			if(!options.payload) throw new Error('DEV::Core.Remote::payload empty, please use GET');
-			if(options.payload._id && _.size(options.payload) === 1) options.type = 'DELETE';
+
+			if(options.payload.id && _.size(options.payload) === 1) options.type = 'DELETE';
 			else {
 				if(!_.isObject(options.payload)) options.payload = { payload: options.payload };
-				if(!options.payload._id) options.type = 'POST';
+				if(!options.payload.id) options.type = 'POST';
 				else options.type = 'PUT';
 			}
 
@@ -114972,7 +114988,7 @@ Marionette.triggerMethodInversed = (function(){
 			}
 
 			app.trigger('app:remote-pre-change', options);
-			return $.ajax(options);
+			return this.mock(options) || $.ajax(options);
 		}
 
 	});

@@ -618,28 +618,27 @@ Application.remote('abc', null, {params/querys: {x: 1, y: 2}});
 
 //GET: /user/1/details
 Application.remote('user/1/details');
-Application.remote('user', null, {_id: 1, _method: 'details'});
 
 //POST: /user
 Application.remote({
     url: 'user',
-    payload: {...} //without _id
+    payload: {...} //without id
 });
-Application.remote('user', {...payload w/o _id...});
+Application.remote('user', {...payload w/o id...});
 
-//PUT: /user/1
+//PUT: /user?id=1
 Application.remote({
     url: 'user',
-    payload: { _id: 1, ...} //non-empty + _id
+    payload: { id: 1, ...} //non-empty + id
 });
-Application.remote('user', {...payload w/ _id...});
+Application.remote('user', {...payload w/ id...});
 
-//DELETE: /user/1
+//DELETE: /user?id=1
 Application.remote({
     url: 'user',
-    payload: { _id: 1 } //just _id
+    payload: { id: 1 } //just id
 });
-Application.remote('user', {_id: 1});
+Application.remote('user', {id: 1});
 
 ```
 It is recommended to handle the callbacks through promises on the returned jqXHR object:
@@ -1242,7 +1241,7 @@ this.show('region', 'Datagrid', {
     data: Mock.mock(mockDataTpl).data, //optional, you can put data into the grid later.
     columns: [
         {
-            name: '_id',
+            name: 'id',
             label: '#',
             cell: 'seq'
         },

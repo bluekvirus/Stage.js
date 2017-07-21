@@ -53,13 +53,17 @@ Change Log
 48. Added app.detect() api for browser feature detections;
 49. 'region-app' will now be automatically prepended into `<body>`;
 50. Added app.pack(); (opposite to app.extract, set val to obj by 'dotted.path.key')
+51. Removed _id (use id instead), _method, _entity in app.remote() call options;
+52. Refined payload.id in app.remote() options to affect only query params;
+53. Added app.config.jwttoken to honor JSON Web Token in app.remote();
+54. Removed .headers in app.remote() options.xdomain, use options.headers directly instead;
+55. Added app param ?mock=true support to intercept app.mock() registered urls in app.remote();
 
 working on ...
 
-* ?mock=true to intercept app.mock() registered urls;
 * app.docs(); (*.md folder [index.json(toc, flow), ...], topic lvl, collaboration domain => view)
-* app.config.jwttoken; (support for JSON Web Token)
 * view.submit(url, editors[data, files]) in addition to app.upload(); (align both standalone and normal file editors upload with same auto csrf token inject?)
+* view.sses wiring with app.sse(); 
 * make tests collaborable;
 * breaking down 'Basic' editors;
 * view.markers{m1: {'e': fn/fnName/coopE}, ...}; ([m1=...], do/prep upon 'e')

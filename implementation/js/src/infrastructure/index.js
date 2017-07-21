@@ -89,7 +89,12 @@
 			csrftoken: {
 				header: 'X-CSRFToken', //http header to use to include the csrftoken val
 				cookie: 'csrftoken' //cookie name to look for the csrftoken val
-			},	        
+			},
+			jwttoken: {
+				header: 'Authorization',
+				schema: 'Bearer',
+				value: undefined
+			},
 	        viewTemplates: 'static/template', //this is assisted by the build tool, combining all the *.html handlebars templates into one big json.
 			viewSrcs: undefined, //set this to enable reusable view dynamic loading. (default is off)
 			workerSrcs: 'js/worker', //change this to use a different loading path of Web Workers; (can NOT be pre-loaded like view js)

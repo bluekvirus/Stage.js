@@ -3,10 +3,10 @@
  *
  * Usage
  * -----
- * app.sse(name, fn(data, e, sse)/coop event/options{eventName: fn(data, e, sse)...})
+ * app.sse(url, fn(data, e, sse)/coop event/options{eventName: fn(data, e, sse)...})
  * app.sse(false) to terminate all SSE connections.
  *
- * var sse = app.sse(.......);
+ * var sse = app.sse();
  * sse.close() to close connection.
  *	
  * 

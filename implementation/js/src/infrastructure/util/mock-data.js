@@ -31,6 +31,9 @@
 
 ;(function(app){
 
+	//global mock schema registery (consulted by app.remote() if app.param('mock') is true)
+	app._mockSchema = app._mockSchema || {};	
+
 	function mock(schema, provider, url){
 		//check whether provider is a string, then url is provider and provider is undefined.
 		if(_.isString(provider)){
@@ -46,13 +49,11 @@
 		if(url){
 			//check whether the type of url is a string
 			if(_.isString(url)){
-				//initialize
-				app._mockSchema = app._mockSchema || {};
 				
 				//check http method
 				var tmp = url.split(' '), method = '*';
 				if(tmp.length == 2){
-					method = tmp[0];
+					method = tmp[0].toUpperCase();
 					url = tmp[1];
 				}
 				app._mockSchema[url] = app._mockSchema[url] || {};
@@ -103,7 +104,7 @@
 				}
 
 				//use data as is (gen-fn or data or fn result)
-				job.parent[job.index] = _.isFunction(hit)? hit.apply(provider, app.debug('mock fn args', args)) : _.result({val: job.schema}, 'val');
+				job.parent[job.index] = _.isFunction(hit)? hit.apply(provider, args) : _.result({val: job.schema}, 'val');
 
 				continue;
 
