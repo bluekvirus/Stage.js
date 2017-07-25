@@ -100,4 +100,26 @@ module.exports = function(server){
 		setTimeout_2();
 
 	});
+
+	//e. sample JSON Web Token login
+	//user provide username and password, and server checks whether username and password is valid or not.
+	//if yes, return token, encrypted by server.jwt. if not return 403.
+	router.post('/jwt/login', function(req, res, next){
+
+		//fetch username and password in payload
+		var username = req.body.username,
+			password = req.body.password;
+
+		//check username and password
+		//hard coded for demo purpose
+		if(username === 'admin' && password === '123'){
+			//valid
+			var token = server.jwt({username: username, password: password});
+			return res.status(200).json({jwttoken: token});
+
+		}else{
+			//invlaid, return 403
+			return res.status(403).json({msg: 'username or password is incorrect...'});
+		}
+	});
 };
