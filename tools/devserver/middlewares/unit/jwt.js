@@ -8,7 +8,7 @@
  * 		If the token is valid, it allows the request to continue; otherwise it returns a 403 error.
  * 		
  * 	NOTE: In order to accommodate stage.js, currently assume the schema is Bearer. 
- * 		  If you change the schema in the front end, you might need to change the verify here.
+ * 		  If you change the schema in the front end, you might need to change the verification process here.
  *
  * @author Patrick Zhu
  * @created 2017.07.24
@@ -75,7 +75,7 @@ module.exports = function(server){
 				}				
 			}
 
-			//continue for successful decoding or jwt situation
+			//continue for successful decoding or no jwt situation
 			next();
 		};
 
