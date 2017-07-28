@@ -43,10 +43,10 @@ module.exports = function(server){
 					'dBptgx+HK0idsoQV8kTtol/XY16rrvqrbx8f1VKelRrUlgs116Ii0+cCAwEAAQ==\n' +
 					'-----END PUBLIC KEY-----\n';
 
-	//server.jwt for decrypting the token
-	server.jwt = function(authInfo){
+	//server.jwt for encrypting the token
+	server.jwt = function(claim){
 		//generate json web token 
-		var token = jwt.sign(authInfo, privateKey, {algorithm: 'RS256'});
+		var token = jwt.sign(claim, privateKey, {algorithm: 'RS256'});
 		return token;
 	};
 
@@ -59,21 +59,28 @@ module.exports = function(server){
 		return function(req, res, next){
 			var validFlag = true,
 				authorization = req.header('Authorization'),
-				bearerToken = req.header('Authorization').split(" ")[1];//Brearer schema has a "Bearer" at string at the beginning of the token, ignore it when verify.
+				decoded;
+
+			//get token, if there is authorization
+			if(authorization){
+				bearerToken = req.header('Authorization').split(" ")[1];//Bearer schema has a "Bearer" at string at the beginning of the token, ignore it when verify.
+			}
 
 			//decrypt the token to see if it is valid or not.
 			//check whether the request has a "Authorization" property in header(default in stage.js)
 			if( authorization && bearerToken && bearerToken !== 'NOTOKEN'){
-
 				//Caveat: Do NOT use callback function provided by "jsonwebtoken", it is asynchronous.
 				//Use catch and try to provide synchronous operation.
 				//Reference: https://github.com/auth0/node-jsonwebtoken.
 				try{
-					jwt.verify(bearerToken, publicKey, { algorithms: ['RS256'] });
+					decoded = jwt.verify(bearerToken, publicKey, { algorithms: ['RS256'] });
 				}catch(err){
 					res.status(403).json({msg: 'Unathorized user for JSON web token....'});
-				}				
+				}
 			}
+
+			//give the decoded information to the request
+			req.decodedToken = decoded;
 
 			//continue for successful decoding or no jwt situation
 			next();
