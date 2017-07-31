@@ -115,11 +115,9 @@ module.exports = function(server){
 			password = req.body.password;		
 
 		//check username and password match any of configured user
-		_.each(users, function(info, name){
-			if(username === name && password === info.password){
-				validFlag = true;
-			}
-		});
+		if(users[username] && ( users[username].password === password )){
+			validFlag = true;
+		}
 
 		//check what kind of information will be returned
 		//valid
@@ -128,7 +126,8 @@ module.exports = function(server){
 				iss: 'stage.js', //issuer
 				iat: parseInt((new Date()).getTime() / 1000), //issue time in seconds, not ms
 				jti: 'stage.js-jwt-' + (new Date()).getTime(), //json web token id
-				user: username //private claim, give username back to front end
+				user: username, //private claim, give username back to front end
+				permissions: users[username].permissions || [], //private claim, embed permission in the token
 			});
 			return res.status(200).json({jwttoken: token});
 		}
@@ -142,15 +141,7 @@ module.exports = function(server){
 	//f. sample JSON Web Token touch
 	//once user passed the jwt token check
 	//echo back the payload to user as a confirmation
-	router.get('/jwt/touch', function(req, res, next){
-		//check whether there is a decoded token in the req
-		if(req.decodedToken){
-			//echo back the user information
-			return res.status(200).json(req.decodedToken);
-		}
-		//not jwt token authenticated
-		else{
-			return res.status(200).json({msg: 'You are not authenticated by JSON web token. There is no information for you.'});
-		}
+	router.get('/jwt/touch', router.permission('read') ,function(req, res, next){
+		return res.status(200).json({msg: 'If you see this message you are an authenticated "reading privilege" user. '});
 	});
 };

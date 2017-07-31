@@ -80,7 +80,7 @@ module.exports = function(server){
 			}
 
 			//give the decoded information to the request
-			req.decodedToken = decoded;
+			req.token = decoded;
 
 			//continue for successful decoding or no jwt situation
 			next();
