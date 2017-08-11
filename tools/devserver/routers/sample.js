@@ -100,4 +100,48 @@ module.exports = function(server){
 		setTimeout_2();
 
 	});
+
+	//e. sample JSON Web Token login
+	//user provide username and password, and server checks whether username and password is valid or not.
+	//if yes, return token, encrypted by server.jwt. if not return 403.
+	router.post('/jwt/login', function(req, res, next){
+		
+		//get authentication info from server configuration
+		var users = server.locals.settings.profile.auth.users,
+			validFlag = false;
+
+		//fetch username and password in payload
+		var username = req.body.username,
+			password = req.body.password;		
+
+		//check username and password match any of configured user
+		if(users[username] && ( users[username].password === password )){
+			validFlag = true;
+		}
+
+		//check what kind of information will be returned
+		//valid
+		if(validFlag){
+			var token = server.jwt({
+				iss: 'stage.js', //issuer
+				iat: parseInt((new Date()).getTime() / 1000), //issue time in seconds, not ms
+				jti: 'stage.js-jwt-' + (new Date()).getTime(), //json web token id
+				user: username, //private claim, give username back to front end
+				permissions: users[username].permissions || [], //private claim, embed permission in the token
+			});
+			return res.status(200).json({jwttoken: token});
+		}
+		//invalid, return 403.
+		else{
+			return res.status(403).json({msg: 'username or password is incorrect...'});
+		}
+
+	});
+
+	//f. sample JSON Web Token touch
+	//once user passed the jwt token check
+	//echo back the payload to user as a confirmation
+	router.get('/jwt/touch', router.permission('read') ,function(req, res, next){
+		return res.status(200).json({msg: 'If you see this message you are an authenticated "reading privilege" user. '});
+	});
 };

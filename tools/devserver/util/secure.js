@@ -55,7 +55,7 @@ module.exports = function(server){
 	//by calling this, the router (entity) tokens will appear in the global access token map
 	server.secure = function(router, interpretations){
 		interpretations = interpretations || {}; //allow { 'token': fn(req){ return true/false; }, ...} customized checking.
-
+		
 		//give router a token checker to be used when defining the routes (apis)
 		//e.g router.get('url..', router.token(...), function(req, res, next){...});
 		router.token = function(/*token1, token2, ...*/){
@@ -63,28 +63,41 @@ module.exports = function(server){
 
 			var tokens = _.toArray(arguments);
 			return function(req, res, next){
-				if(req.session && req.session.username){
-					if(req.session.permissions === 'all') return next();
-					if(req.session.permissions === 'none' || !req.session.permissions || _.isEmpty(req.session.permissions)) return res.status(403).json({msg: 'Unauthorized'});
-
-					var pass = true;
-					if(_.isArray(req.session.permissions))
-						req.session.permissions = _.object(req.session.permissions, req.session.permissions);
-					for(var t in tokens){
-						if(!req.session.permissions[tokens[t]]) {
-							pass = false;
-							break;
-						}
-						if(interpretations[tokens[t]] && !interpretations[tokens[t]](req)) {
-							pass = false;
-							break;
-						}
-					}
-					if(pass) return next();
-					return res.status(403).json({msg: 'Unauthorized'}); 
-				}else {
+				var permissions;
+				//fetch permissions from req.token or req.session
+				//fetch from token
+				if(req.token){
+					permissions = req.token.permissions;
+				}
+				//fetch from session
+				else if(req.session && req.session.username){
+					permissions = req.session.permissions;
+				}
+				//unauthenticated
+				else{
 					return res.status(401).json({msg: 'Unauthenticated'});
 				}
+				
+				//check permissions scope
+				//with permissions, check permission of the user
+				if(permissions === 'all') return next();
+				if(permissions === 'none' || !permissions || _.isEmpty(permissions)) return res.status(403).json({msg: 'Unauthorized'});
+
+				var pass = true;
+				if(_.isArray(permissions))
+					permissions = _.object(permissions, permissions);
+				for(var t in tokens){
+					if(!permissions[tokens[t]]) {
+						pass = false;
+						break;
+					}
+					if(interpretations[tokens[t]] && !interpretations[tokens[t]](req)) {
+						pass = false;
+						break;
+					}
+				}
+				if(pass) return next();
+				return res.status(403).json({msg: 'Unauthorized'});
 			};
 		};
 		//alias: router.permission()

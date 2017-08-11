@@ -27,6 +27,7 @@
     "gm": "^1.16.0",
     "http-proxy": "^1.1.6",
     "js-beautify": "~1.6.x",
+    "jsonwebtoken": "~7.4.x",
     "less": "~2.5.x",
     "less-plugin-glob": "~1.1.x",
     "merge-dirs": "0.0.2",

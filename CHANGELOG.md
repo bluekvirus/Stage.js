@@ -1,7 +1,7 @@
 Change Log
 ==========
 
-1.10.3+ (2017-07*)
+1.10.3+ (2017-08*)
 ------------------
 1. labels/tooltips/help/status for editors and editor data options can now use raw html within them; (e.g using `<i>` icon tags together with texts) 
 2. app.preventDefault(e) now allows `<label>` tag default behavior to pass to browser;
@@ -61,10 +61,18 @@ Change Log
 
 working on ...
 
-* app.docs(); (*.md folder [index.json(toc, flow), ...], topic lvl, collaboration domain => view)
+* secured websocket support in channels;
+* app.remote() url query params merging;
+* merge svg="", widget="", editor="" with view="" and reconfigure="key in view's model";
+* add tabs="" with tab="", list="" and remove activate="";
+* merge lock into action="(name/onMetaEvent):lock topic"; (wait on named actions which return promises)
+* docs folder through app.widget('ToC');
+* app.prompt() + $.fn.underlay();
+* view.sses/topics wiring with app.sse(); (align pollings/channels/topics)
 * view.submit(url, editors[data, files]) in addition to app.upload(); (align both standalone and normal file editors upload with same auto csrf token inject?)
-* view.sses wiring with app.sse(); 
-* make tests collaborable;
+* make view.template implicit; (component based view folders, default on Main view)
+* separate config js to use for both app and build; (remove Main view properties from app config)
+* make tests public and collaborable;
 * breaking down 'Basic' editors;
 * view.markers{m1: {'e': fn/fnName/coopE}, ...}; ([m1=...], do/prep upon 'e')
 * remove jQueryv2/3.0 and Marionettev1.8 deps and related code;
