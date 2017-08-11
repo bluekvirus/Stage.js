@@ -66,6 +66,9 @@ module.exports = function(server){
 		//server sent event
 		server.use(server.middlewares.unit.sse());
 		
+		//json web token
+		server.use(server.middlewares.unit.jwt());
+
 		//+server.use(server.middlewares.unit.your-middleware-factory())
 		//...
 
