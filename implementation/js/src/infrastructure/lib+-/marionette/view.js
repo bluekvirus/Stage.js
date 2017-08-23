@@ -940,6 +940,61 @@
 			});
 		}
 
+		//SSE(server-sent event) topics
+        //{'ssePath': true/'coopEvent'/fn(data, coopEvent)/{'server-event': fn(data)}}
+        if(this.topics){
+            //if 'ssePath': true, setup a default operation
+            var defaultSseOp = function(data){
+            	this.set(data);
+            };
+            //listen to ready event
+            this.listenToOnce(this, 'ready', function(){
+                _.each(this.topics, function(coopEventOrCallbackOrObject, ssePath){
+                    
+                    var meta = coopEventOrCallbackOrObject;
+                    //string, coopEvent
+                    if(_.isString(meta)){
+                    	//check whether the string corresponds a local method or a global app event
+                    	//local methods need to be defined in the view definition
+                    	if(this[meta]){//defiend, else just keep the meta
+                    		if(_.isFunction(this[meta])){
+                    			meta = _.bind(this[meta], this);
+                    		}else{
+                    			throw new Error('View::' + this.name + '::topics::' + ssePath + '::this[' + meta + '] needs to be a function.' );
+                    		}
+                    	}else{
+                    		//enable global event
+                    		this._enableGlobalCoopEvent('sse-topic' + meta); //notify this view and others as well (coop e)
+                    	}
+                    }
+                    else if(_.isFunction(meta)){//function
+                    	//bind this
+                    	meta = _.bind(meta, this);
+                    }
+                    else if(_.isPlainObject(meta)){//plain object
+                    	//bind this for every function
+                    	_.each(meta, function(fn, name){
+                    		meta[name] = _.bind(fn, this);
+                    	});
+                    }
+                    //true default op
+                    else if(meta === true){
+                    	meta = _.bind(defaultSseOp, this);
+                    }
+                    //invalid parameter
+                    else{
+                    	throw new Error('View::' + this.name + '::topics::' + ssePath + '::invalid parameter type...');
+                    }
+
+                    //give the reference back to the view
+                    this[ssePath] = app.sse(ssePath, meta);
+                    //trigger hocked up event
+                    this.trigger('view:topic-hooked', this[ssePath]);
+
+                }, this);
+            });
+		}
+
 		//--------------------+ready event---------------------------
 		//ensure a ready event for static views (align with data and form views)
 		//Caveat: re-render a static view will not trigger 'ready' again...
