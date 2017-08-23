@@ -63,12 +63,15 @@ working on ...
 
 * secured websocket support in channels;
 * app.remote() url query params merging;
-* make view.template implicit; (component based view folders, default on Main view)
-* separate config js to use for both app and build; (remove Main view properties from app config)
-* docs folder through app.widget('ToC'); (configurable views with reconfigure="key in view's model")
-* merge lock into action="name:lock/onMetaEvent()"; (wait on named actions which return promises)
+* merge svg="", widget="", editor="" with view="" and reconfigure="key in view's model";
+* add tabs="" with tab="", list="" and remove activate="";
+* merge lock into action="(name/onMetaEvent):lock topic"; (wait on named actions which return promises)
+* docs folder through app.widget('ToC');
+* app.prompt() + $.fn.underlay();
 * view.sses/topics wiring with app.sse(); (align pollings/channels/topics)
 * view.submit(url, editors[data, files]) in addition to app.upload(); (align both standalone and normal file editors upload with same auto csrf token inject?)
+* make view.template implicit; (component based view folders, default on Main view)
+* separate config js to use for both app and build; (remove Main view properties from app config)
 * make tests public and collaborable;
 * breaking down 'Basic' editors;
 * view.markers{m1: {'e': fn/fnName/coopE}, ...}; ([m1=...], do/prep upon 'e')
