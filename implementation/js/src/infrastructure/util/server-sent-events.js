@@ -59,6 +59,7 @@
 				//register onmessage callback for sse
 				sse._eventSource.onmessage = function(e){
 					coopEvent(e.data, e, sse);
+					app.coop('sse-data-' + url, e.data, e, sse);
 				};
 			}
 			//object may contain onopen, onmessage, onerror and all the other callbacks for custom events

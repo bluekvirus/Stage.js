@@ -920,16 +920,16 @@
 					var meta = optOrF;
 					if(_.isFunction(meta))
 						meta = {callback: meta};
-					else if (_.isString(meta))
+					else if(_.isString(meta))
 						meta = {callback: this[meta] || defaultOp};
-					else if (_.isPlainObject(meta)){ //<---very important { here
+					else if(_.isPlainObject(meta)){ //<---very important { here
 						if(_.isString(meta.callback))
 							meta.callback = this[meta.callback] || defaultOp;
 					} //<---very important } here
 					else
 						meta = {callback: defaultOp};
 
-					app.ws(meta.websocket).done(_.bind(function(websocket){
+					app.ws(meta.websocket, meta).done(_.bind(function(websocket){
 						this._enableGlobalCoopEvent('ws-data-' + channelName, function(data, wschannel){
 							meta.callback.apply(this, arguments);
 						});
@@ -941,7 +941,7 @@
 		}
 
 		//SSE(server-sent event) topics
-        //{'ssePath': true/'coopEvent'/fn(data, coopEvent)/{'server-event': fn(data)}}
+        //{'ssePath': true/m/fn(data, e)/{sse: 'path', callback: m/fn(data, e)}}
         if(this.topics){
             //if 'ssePath': true, setup a default operation
             var defaultSseOp = function(data){
@@ -950,44 +950,39 @@
             //listen to ready event
             this.listenToOnce(this, 'ready', function(){
                 _.each(this.topics, function(coopEventOrCallbackOrObject, ssePath){
-                    
                     var meta = coopEventOrCallbackOrObject;
-                    //string, coopEvent
-                    if(_.isString(meta)){
-                    	//check whether the string corresponds a local method or a global app event
-                    	//local methods need to be defined in the view definition
-                    	if(this[meta]){//defiend, else just keep the meta
-                    		if(_.isFunction(this[meta])){
-                    			meta = _.bind(this[meta], this);
-                    		}else{
-                    			throw new Error('View::' + this.name + '::topics::' + ssePath + '::this[' + meta + '] needs to be a function.' );
-                    		}
+                    //check the type of meta
+                    if(_.isFunction(meta)){
+                    	//make it callback
+                    	meta = {callback: meta};
+                    }else if(_.isString(meta)){
+                    	if(_.isFunction(this[meta])){
+                    		meta = {callback: this[meta] || defaultSseOp};	
                     	}else{
-                    		//enable global event
-                    		this._enableGlobalCoopEvent('sse-topic' + meta); //notify this view and others as well (coop e)
+                    		throw new Error('View::' + this.name + '::topics::' + ssePath + '::this[' + meta + '] needs to be a function.' );
                     	}
-                    }
-                    else if(_.isFunction(meta)){//function
-                    	//bind this
-                    	meta = _.bind(meta, this);
-                    }
-                    else if(_.isPlainObject(meta)){//plain object
-                    	//bind this for every function
-                    	_.each(meta, function(fn, name){
-                    		meta[name] = _.bind(fn, this);
-                    	});
-                    }
-                    //true default op
-                    else if(meta === true){
-                    	meta = _.bind(defaultSseOp, this);
-                    }
-                    //invalid parameter
-                    else{
+                    }else if(_.isPlainObject(meta)){
+                    	if(_.isString(meta.callback)){
+                    		if(_.isFunction(this[meta.callback])){
+                    			meta.callback = this[meta.callback] || defaultSseOp;
+                    		}else{
+                    			throw new Error('View::' + this.name + '::topics::' + ssePath + '::this[' + meta.callback + '] needs to be a function.' );
+                    		}
+                    	}
+                    }else if(meta === true){
+                    	meta = {callback: defaultSseOp};
+                    }else{
                     	throw new Error('View::' + this.name + '::topics::' + ssePath + '::invalid parameter type...');
                     }
 
                     //give the reference back to the view
-                    this[ssePath] = app.sse(ssePath, meta);
+                    this[ssePath] = app.sse(ssePath);
+
+                    //trigger callback based on callback
+                    this._enableGlobalCoopEvent('sse-data-' + ssePath, function(data, e, sseObj){
+						meta.callback.apply(this, arguments);
+					});
+
                     //trigger hocked up event
                     this.trigger('view:topic-hooked', this[ssePath]);
 
