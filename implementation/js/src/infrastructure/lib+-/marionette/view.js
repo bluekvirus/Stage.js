@@ -929,7 +929,7 @@
 					else
 						meta = {callback: defaultOp};
 
-					app.ws(meta.websocket, meta).done(_.bind(function(websocket){
+					app.ws(meta.websocket).done(_.bind(function(websocket){
 						this._enableGlobalCoopEvent('ws-data-' + channelName, function(data, wschannel){
 							meta.callback.apply(this, arguments);
 						});
@@ -956,15 +956,16 @@
                     	//make it callback
                     	meta = {callback: meta};
                     }else if(_.isString(meta)){
+                    	//check whether the this[meta] is a function
                     	if(_.isFunction(this[meta])){
-                    		meta = {callback: this[meta] || defaultSseOp};	
+                    		meta = {callback: this[meta]};
                     	}else{
                     		throw new Error('View::' + this.name + '::topics::' + ssePath + '::this[' + meta + '] needs to be a function.' );
                     	}
                     }else if(_.isPlainObject(meta)){
                     	if(_.isString(meta.callback)){
                     		if(_.isFunction(this[meta.callback])){
-                    			meta.callback = this[meta.callback] || defaultSseOp;
+                    			meta.callback = this[meta.callback];
                     		}else{
                     			throw new Error('View::' + this.name + '::topics::' + ssePath + '::this[' + meta.callback + '] needs to be a function.' );
                     		}
@@ -972,7 +973,7 @@
                     }else if(meta === true){
                     	meta = {callback: defaultSseOp};
                     }else{
-                    	throw new Error('View::' + this.name + '::topics::' + ssePath + '::invalid parameter type...');
+                    	throw new Error('View::' + this.name + '::topics::' + ssePath + '::invalid parameter configuration...');
                     }
 
                     //give the reference back to the view

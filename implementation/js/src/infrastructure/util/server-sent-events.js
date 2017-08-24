@@ -59,7 +59,6 @@
 				//register onmessage callback for sse
 				sse._eventSource.onmessage = function(e){
 					coopEvent(e.data, e, sse);
-					app.coop('sse-data-' + url, e.data, e, sse);
 				};
 			}
 			//object may contain onopen, onmessage, onerror and all the other callbacks for custom events
@@ -84,6 +83,11 @@
 			//type is not right
 			else
 				console.warn('DEV::Application::Util::sse(): The coopEvent or callback function or callbacks\' options you give is not right.');
+		}else{
+			//trigger a global event if there is no options
+			sse._eventSource.onmessage = function(e){
+				app.coop('sse-data-' + url, e.data, e, sse);
+			};
 		}
 
 		//function to close sse link
