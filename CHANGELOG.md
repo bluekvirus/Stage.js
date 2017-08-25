@@ -1,7 +1,7 @@
 Change Log
 ==========
 
-1.10.3+ (2017-07*)
+1.10.3+ (2017-08*)
 ------------------
 1. labels/tooltips/help/status for editors and editor data options can now use raw html within them; (e.g using `<i>` icon tags together with texts) 
 2. app.preventDefault(e) now allows `<label>` tag default behavior to pass to browser;
@@ -58,13 +58,21 @@ Change Log
 53. Added app.config.jwttoken to honor JSON Web Token in app.remote();
 54. Removed .headers in app.remote() options.xdomain, use options.headers directly instead;
 55. Added app param ?mock=true support to intercept app.mock() registered urls in app.remote();
+56. Added secured websocket support (wss://) in channels;
+57. Fixed app.remote() url query params merging error;
 
 working on ...
 
-* app.docs(); (*.md folder [index.json(toc, flow), ...], topic lvl, collaboration domain => view)
+* docs folder through app.widget('ToC') or ('Tree');
+* merge lock into action="(name/onMetaEvent):lock topic"; (wait on named actions which return promises)
+* merge svg="", widget="", editor="" with view="" and reconfigure="key in view's model";
+* add tabs="" with tab="", list="" and remove activate="";
+* app.prompt() + $.fn.underlay();
+* view.sses/topics wiring with app.sse(); (align pollings/channels/topics)
 * view.submit(url, editors[data, files]) in addition to app.upload(); (align both standalone and normal file editors upload with same auto csrf token inject?)
-* view.sses wiring with app.sse(); 
-* make tests collaborable;
+* make view.template implicit; (component based view folders, default on Main view)
+* separate config js to use for both app and build; (remove Main view properties from app config)
+* make tests public and collaborable;
 * breaking down 'Basic' editors;
 * view.markers{m1: {'e': fn/fnName/coopE}, ...}; ([m1=...], do/prep upon 'e')
 * remove jQueryv2/3.0 and Marionettev1.8 deps and related code;
