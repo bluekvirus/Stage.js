@@ -36,7 +36,7 @@
 				delete app._sses[handlerKey];
 			});
 		}else{
-			url = url || app.config.defaultSse || '/sse';
+			url = url || app.config.defaultSse || '/sse'; //make sure that url exits
 		}
 
 		//check whether topics is given
@@ -50,15 +50,7 @@
 
 		if(topics === true){//subscribe all topics
 
-			//try to create new event source
-			try{
-				//use url provided by user
-				_eventSource = new EventSource(url);
-			}catch(e){
-				throw Error('DEV::Application::Util::sse(): Server-Sent Events(SSE) create error. Please check your SSE\'s url!');
-			}
-
-			return registerTopic(_eventSource);
+			return registerTopic(url);
 
 		}else{//loop through all topics
 
@@ -66,15 +58,7 @@
 			var sseObjects = [];
 			//loop through 
 			_.each(topics, function(topic, index){
-				//try to create new event source
-				try{
-					//use url provided by user
-					_eventSource = new EventSource(url + '?topic=' + topic);
-				}catch(e){
-					throw Error('DEV::Application::Util::sse(): Server-Sent Events(SSE) create error. Please check your SSE\'s url!');
-				}
-
-				sseObjects.push(registerTopic(_eventSource));
+				sseObjects.push(registerTopic(url, topic));
 
 			});
 
@@ -83,10 +67,20 @@
 		}		
 
 		//function for registering single topic
-		function registerTopic(eventsource){
+		function registerTopic(url, topic){
+			var _eventSource;
+
+			//try to create new event source
+			try{
+				//use url provided by user
+				_eventSource = new EventSource(url + (topic ? ('?topic=' + topic) : ''));
+			}catch(e){
+				throw Error('DEV::Application::Util::sse(): Server-Sent Events(SSE) create error. Please check your SSE\'s url!');
+			}
+
 			//wrapper object
 			var sse = {
-				_eventSource: eventSource,
+				_eventSource: _eventSource,
 			};
 
 			//default onmessage callback
@@ -96,7 +90,7 @@
 				//global coop event 'sse-data-[topic]'
 				try {
 					var data = JSON.parse(e.data);
-					app.coop('sse-data-' + data.topic, data.payload, e, sse);
+					app.coop('sse-data-' + data.topic, data.payload, e, sse); //assume return data has a topic property
 				}catch(error){
 					console.warn('DEV::Application::sse() Server-Sent Event cannot parse string to JSON...');
 				}
