@@ -49,7 +49,7 @@
 
 	function fixOptions(options, restOpt){
 		if(!options) throw new Error('DEV::Core.Remote::options empty, you need to pass in at least a url string');
-		if(_.isString(options)) 
+		if(_.isString(options))
 			options	= _.extend(restOpt || {}, { 
 				url: options
 			});
@@ -70,7 +70,7 @@
 		//fix url?query params (merge with alias querys, +payload.id as ?id=)
 		options.params = _.extend(options.params || {}, options.querys);
 		if(options.payload && options.payload.id) options.params.id = options.payload.id;
-		options.url = (app.uri(options.url)).search(options.params).toString();
+		options.url = app.uri(options.url).addSearch(options.params).toString();
 
 		//app.config.baseAjaxURI
 		if(app.config.baseAjaxURI)
