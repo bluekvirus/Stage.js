@@ -58,15 +58,15 @@ Change Log
 53. Added app.config.jwttoken to honor JSON Web Token in app.remote();
 54. Removed .headers in app.remote() options.xdomain, use options.headers directly instead;
 55. Added app param ?mock=true support to intercept app.mock() registered urls in app.remote();
+56. Added secured websocket support (wss://) in channels;
+57. Fixed app.remote() url query params merging error;
 
 working on ...
 
-* secured websocket support in channels;
-* app.remote() url query params merging;
+* docs folder through app.widget('ToC') or ('Tree');
+* merge lock into action="(name/onMetaEvent):lock topic"; (wait on named actions which return promises)
 * merge svg="", widget="", editor="" with view="" and reconfigure="key in view's model";
 * add tabs="" with tab="", list="" and remove activate="";
-* merge lock into action="(name/onMetaEvent):lock topic"; (wait on named actions which return promises)
-* docs folder through app.widget('ToC');
 * app.prompt() + $.fn.underlay();
 * view.sses/topics wiring with app.sse(); (align pollings/channels/topics)
 * view.submit(url, editors[data, files]) in addition to app.upload(); (align both standalone and normal file editors upload with same auto csrf token inject?)

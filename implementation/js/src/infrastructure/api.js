@@ -323,7 +323,7 @@
 			var d = $.Deferred();
 			if(!app._websockets[socketPath]) { 
 
-				app._websockets[socketPath] = new WebSocket("ws://" + location.host + socketPath);
+				app._websockets[socketPath] = new WebSocket(location.protocol.replace('http', 'ws') + '//' + location.host + socketPath);
 				app._websockets[socketPath].path = socketPath;
 				app._websockets[socketPath].reconnect = reconnect;
 				//events: 'open', 'error', 'close', 'message' = e.data
@@ -667,7 +667,7 @@
 
 		//----------------url params---------------------------------
 		param: function(key, defaultVal){
-			var params = URI.parseQuery(app.uri(window.location.href).search()) || {};
+			var params = app.uri(window.location.href).search(true) || {};
 			if(key) return params[key] || defaultVal;
 			return params;
 		},

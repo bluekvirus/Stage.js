@@ -113255,7 +113255,7 @@ Marionette.triggerMethodInversed = (function(){
 			var d = $.Deferred();
 			if(!app._websockets[socketPath]) { 
 
-				app._websockets[socketPath] = new WebSocket("ws://" + location.host + socketPath);
+				app._websockets[socketPath] = new WebSocket(location.protocol.replace('http', 'ws') + '//' + location.host + socketPath);
 				app._websockets[socketPath].path = socketPath;
 				app._websockets[socketPath].reconnect = reconnect;
 				//events: 'open', 'error', 'close', 'message' = e.data
@@ -113599,7 +113599,7 @@ Marionette.triggerMethodInversed = (function(){
 
 		//----------------url params---------------------------------
 		param: function(key, defaultVal){
-			var params = URI.parseQuery(app.uri(window.location.href).search()) || {};
+			var params = app.uri(window.location.href).search(true) || {};
 			if(key) return params[key] || defaultVal;
 			return params;
 		},
@@ -113943,7 +113943,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.2-1298 build 1500626958488";
+;;app.stagejs = "1.10.2-1301 build 1503628985771";
 ;/**
  * App debug helpers, extracted from api.js
  *
@@ -114889,7 +114889,7 @@ Marionette.triggerMethodInversed = (function(){
 
 	function fixOptions(options, restOpt){
 		if(!options) throw new Error('DEV::Core.Remote::options empty, you need to pass in at least a url string');
-		if(_.isString(options)) 
+		if(_.isString(options))
 			options	= _.extend(restOpt || {}, { 
 				url: options
 			});
@@ -114910,7 +114910,7 @@ Marionette.triggerMethodInversed = (function(){
 		//fix url?query params (merge with alias querys, +payload.id as ?id=)
 		options.params = _.extend(options.params || {}, options.querys);
 		if(options.payload && options.payload.id) options.params.id = options.payload.id;
-		options.url = (app.uri(options.url)).search(options.params).toString();
+		options.url = app.uri(options.url).addSearch(options.params).toString();
 
 		//app.config.baseAjaxURI
 		if(app.config.baseAjaxURI)
