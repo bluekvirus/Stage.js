@@ -941,51 +941,51 @@
 		}
 
 		//SSE(server-sent event) topics
-        //{'ssePath': true/m/fn(data, e)/{sse: 'path', callback: m/fn(data, e)}}
+        //{'topic': true/m/fn(data, e)/{sse: 'path', callback: m/fn(data, e)}}
         if(this.topics){
-            //if 'ssePath': true, setup a default operation
+            //if 'topic': true, setup a default operation
             var defaultSseOp = function(data){
             	this.set(data);
             };
             //listen to ready event
             this.listenToOnce(this, 'ready', function(){
-                _.each(this.topics, function(coopEventOrCallbackOrObject, ssePath){
+                _.each(this.topics, function(coopEventOrCallbackOrObject, topic){
                     var meta = coopEventOrCallbackOrObject;
                     //check the type of meta
                     if(_.isFunction(meta)){
                     	//make it callback
-                    	meta = {callback: meta};
+                    	meta = {sse: app.config.defaultSse, callback: meta};
                     }else if(_.isString(meta)){
                     	//check whether the this[meta] is a function
                     	if(_.isFunction(this[meta])){
-                    		meta = {callback: this[meta]};
+                    		meta = {sse: app.config.defaultSse, callback: this[meta]};
                     	}else{
-                    		throw new Error('View::' + this.name + '::topics::' + ssePath + '::this[' + meta + '] needs to be a function.' );
+                    		throw new Error('View::' + this.name + '::topics::' + topic + '::this[' + meta + '] needs to be a function.' );
                     	}
                     }else if(_.isPlainObject(meta)){
                     	if(_.isString(meta.callback)){
                     		if(_.isFunction(this[meta.callback])){
                     			meta.callback = this[meta.callback];
                     		}else{
-                    			throw new Error('View::' + this.name + '::topics::' + ssePath + '::this[' + meta.callback + '] needs to be a function.' );
+                    			throw new Error('View::' + this.name + '::topics::' + topic + '::this[' + meta.callback + '] needs to be a function.' );
                     		}
                     	}
                     }else if(meta === true){
-                    	meta = {callback: defaultSseOp};
+                    	meta = {sse: app.config.defaultSse, callback: defaultSseOp};
                     }else{
-                    	throw new Error('View::' + this.name + '::topics::' + ssePath + '::invalid parameter configuration...');
+                    	throw new Error('View::' + this.name + '::topics::' + topic + '::invalid parameter configuration...');
                     }
 
                     //give the reference back to the view
-                    this[ssePath] = app.sse(ssePath);
+                    this[topic] = app.sse(meta.sse, topic);
 
                     //trigger callback based on callback
-                    this._enableGlobalCoopEvent('sse-data-' + ssePath, function(data, e, sseObj){
+                    this._enableGlobalCoopEvent('sse-data-' + topic, function(data, e, sseObj){
 						meta.callback.apply(this, arguments);
 					});
 
                     //trigger hocked up event
-                    this.trigger('view:topic-hooked', this[ssePath]);
+                    this.trigger('view:topic-hooked', this[topic]);
 
                 }, this);
             });
