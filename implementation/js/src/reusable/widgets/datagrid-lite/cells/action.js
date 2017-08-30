@@ -1,7 +1,7 @@
 /**
  * This is the ActionCell definition 
  *
- * options
+ * Options
  * -------
  * passed down by this.model.get('actions')
  * 

@@ -8,11 +8,13 @@
 ;(function(app){
 
 	app.widget('SeqCell', function(){
+
 		var UI = app.view({
 			template: '{{index}}'
 		});
 
 		return UI;
+		
 	});
 
 })(Application);

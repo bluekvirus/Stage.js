@@ -60,13 +60,14 @@ Change Log
 55. Added app param ?mock=true support to intercept app.mock() registered urls in app.remote();
 56. Added secured websocket support (wss://) in channels;
 57. Fixed app.remote() url query params merging error;
+58. Added app.widget('ToC'); (help signaling paths from *.md pieces)
 
 working on ...
 
-* docs folder through app.widget('ToC') or ('Tree');
-* merge lock into action="(name/onMetaEvent):lock topic"; (wait on named actions which return promises)
-* merge svg="", widget="", editor="" with view="" and reconfigure="key in view's model";
-* add tabs="" with tab="", list="" and remove activate="";
+* merge lock into action="(name/onMetaEvent):lock topic"; (wait on named actions which return promises then auto unlock, also align action,activate,coop config block, general/specific metaMethod callings)
+* give widget="", view="" the support of reconfigure="key to view's properties";
+* add tabs="" with tab="", list="" and enhance activate="group:class";
+* add dnd="" with dnd-target="" supporting easier dnd and sorting setup;
 * app.prompt() + $.fn.underlay();
 * view.sses/topics wiring with app.sse(); (align pollings/channels/topics)
 * view.submit(url, editors[data, files]) in addition to app.upload(); (align both standalone and normal file editors upload with same auto csrf token inject?)
