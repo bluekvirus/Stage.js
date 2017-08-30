@@ -37,7 +37,7 @@
  *
  * View life-cycle:
  * ---------------
- * new View(cfg) --> render()* +$el with template, events and enhancements --> show()* +DOM, data --> ready() call onReady(), +navigation-chain, svg, pollings, channels upon re-rendered with data.
+ * new View(cfg) --> render()* +$el with template, events and enhancements --> show()* +DOM, set(data) --> render()* again --> ready() call onReady(), +navigation-chain, svg, pollings, channels upon re-rendered with data.
  * 
  * Fixed enhancement:
  * ---------------

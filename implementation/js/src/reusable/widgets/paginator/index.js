@@ -1,18 +1,18 @@
 /**
  * Passive Paginator widget used with lists (CollectionView instances)
  *
- * options
+ * Options
  * -------
  * 0. target [opt] - target list view instance
  * 1. currentPage
  * 2. totalPages
  * 3. pageWindowSize - 3 means [1,2,3,...,] or [...,4,5,6,...] or [...,7,8,9] - default on 5
  *
- * format
- * ------
+ * UI format
+ * ---------
  * << [1,2,...] >>
  *
- * link with lists
+ * Link with lists
  * ---------------
  * trigger('view:change-page', page number)
  * 
@@ -27,6 +27,7 @@
 ;(function(app){
 
 	app.widget('Paginator', function(){
+
 		var UI = app.view({
 
 			className: 'pagination',

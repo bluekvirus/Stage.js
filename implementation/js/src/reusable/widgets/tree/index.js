@@ -11,7 +11,7 @@
  * 	...
  * </ul>
  *
- * options
+ * Options
  * -------
  * 1. data - [{
  * 		val: ...
@@ -22,7 +22,7 @@
  *
  * 3. onSelected: callback
  *
- * override node view
+ * Override node view
  * ------------------
  * a. just template (e.g val attr used in template)
  * use node: {template: [...]}; don't forget <ul></ul> at the end of tpl string.
@@ -34,7 +34,7 @@
  * 		}
  * }
  *
- * note
+ * Note
  * ----
  * support search and expand a path (use $parent in node/leaf onSelected()'s first argument)
  *
