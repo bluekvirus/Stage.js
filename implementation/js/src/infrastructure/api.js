@@ -744,8 +744,8 @@
 		},
 
 		//Built-in Server-Sent Event(SSE) utility, bridged from app.Util.sse
-		sse: function(url/*sse's url*/, coopEOrCallbackOrOpts){
-			return app.Util.sse(url, coopEOrCallbackOrOpts);
+		sse: function(url/*sse's url*/, topics/*['...', '...']*/, coopEOrCallbackOrOpts){
+			return app.Util.sse(url, topics, coopEOrCallbackOrOpts);
 		},
 		
 		//----------------config.rapidEventDelay wrapped util--------------------

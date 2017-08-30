@@ -43,48 +43,40 @@
 		if(!_.isArray(topics)){
 			//if not array topics is coopEvent
 			coopEvent = topics;
-			topics = true; //topcis = true, means subscribe all topics
+			topics = []; //make topics an empty array. there will be no query after url, and it will subscribe to all topics.
 		}
 
-		var _eventSource;
+		//check whether the url+ ':' + [topics] combination has already been subscribed
+		//sort topics first. since when store topics, it is always sorted.
+		topics = _.sortBy(topics);
+		
+		//There are two situations if app._sses[url + ':' + topics.toString()] exists
+		//1). the path is still "OPEN", then just return the handle object
+		//2). the path has already been "CLOSED", then re-register and override the stored object.
+		//NOTE: SSE.readyState can be used to check the state of the SSE connection.
+		//0: connecting, 1: open, 2: closed.
+		if(
+			app._sses[url + ':' + topics.toString()] && 
+			(app._sses[url + ':' + topics.toString()].readyState === 0 || app._sses[url + ':' + topics.toString()].readyState === 1)
+		){//exist and "OPEN"
 
-		if(topics === true){//subscribe all topics
+			//return SSE handler object
+			return app._sses[url + ':' + topics.toString()];
+				
+		}else {//exists and "CLOSED" or does not exist
 
-			return registerTopic(url);
-
-		}else{//loop through all topics
-
-			//array to store all the sse handlers
-			var sseObjects = [];
-			//loop through 
-			_.each(topics, function(topic, index){
-				sseObjects.push(registerTopic(url, topic));
-
-			});
-
-			return sseObjects;
-
-		}		
-
-		//function for registering single topic
-		function registerTopic(url, topic){
 			var _eventSource;
 
 			//try to create new event source
 			try{
 				//use url provided by user
-				_eventSource = new EventSource(url + (topic ? ('?topic=' + topic) : ''));
+				_eventSource = new EventSource(app.uri(url).addQuery('topic', topics).toString()); //one event source for multiple topics
 			}catch(e){
 				throw Error('DEV::Application::Util::sse(): Server-Sent Events(SSE) create error. Please check your SSE\'s url!');
 			}
 
-			//wrapper object
-			var sse = {
-				_eventSource: _eventSource,
-			};
-
-			//default onmessage callback
-			sse._eventSource.onmessage = function(e){
+			//default onmessage callback, can be overriden by user
+			_eventSource.onmessage = function(e){
 				//trigger a "sse-data" global event
 				app.trigger('app:sse-data', {sse: sse, raw: e.data});
 				//global coop event 'sse-data-[topic]'
@@ -101,7 +93,7 @@
 				//onmessage callback function
 				if(_.isFunction(coopEvent)){
 					//register onmessage callback for sse
-					sse._eventSource.onmessage = function(e){
+					_eventSource.onmessage = function(e){
 						coopEvent(e.data, e, sse);
 					};
 				}
@@ -111,16 +103,16 @@
 					_.each(coopEvent, function(fn, eventName){
 						//system events
 						if(_.contains(['onmessage', 'onerror', 'onopen'], eventName))
-							sse._eventSource[eventName] = fn;
+							_eventSource[eventName] = fn;
 						//custom events, defined by backend server
 						else
-							sse._eventSource.addEventListener(eventName, fn);
+							_eventSource.addEventListener(eventName, fn);
 					});
 				}
 				//app coop event
 				else if(_.isString(coopEvent)){
 					//trigger coop event with data from sse's onmessage callback
-					sse._eventSource.onmessage = function(e){
+					_eventSource.onmessage = function(e){
 						app.coop('sse-data-' + coopEvent, e.data, e, sse);
 					};
 				}
@@ -129,19 +121,14 @@
 					console.warn('DEV::Application::Util::sse(): The coopEvent or callback function or callbacks\' options you give is not right.');
 			}
 
-			//function to close sse link
-			sse.close = function(){
-				this._eventSource.close();
-			};
-
 			//assign a unique key to the wrapper object
-			sse._key = _.uniqueId('sse-');
+			_eventSource._key = _.uniqueId('sse-');
 			
-			//store globally
-			app._sses[sse._key] = sse;
+			//store globally, use url:topics as key
+			app._sses[url + ':' + topics.toString()] = _eventSource;
 			
-			//return wrapper to user
-			return sse;
+			//return event source object to user
+			return _eventSource;
 		}
 	};
 
