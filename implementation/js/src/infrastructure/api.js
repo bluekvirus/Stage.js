@@ -411,11 +411,16 @@
 		//(through later.js) and emit data events/or invoke callback
 		_polls: {},
 		poll: function(url /*or {options} for app.remote()*/, occurrence, coopEvent /*or callback or options*/) {
+			
 		    //stop everything
-		    if (url === false)
-		        return _.map(this._polls, function(card) {
+		    if (url === false){
+		    	return _.map(this._polls, function(card) {
 		            return card.cancel();
 		        });
+		    }else{
+		    	//align with app.sse and app.ws, there is suppose to be a default url defined in app.config.defaultPollingUrl
+		    	url = url || app.config.defaultPollingUrl || '/poll';
+		    }
 
 		    var schedule;
 		    if (_.isString(occurrence) && !Number.parseInt(occurrence)) {

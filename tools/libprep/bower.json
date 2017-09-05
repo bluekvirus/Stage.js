@@ -81,7 +81,9 @@
     "fontawesome": "~4.x.x",
     "open-sans-fontface": "*",
     "nprogress": "~0.2.x",
-    "mockjs": "~0.1.x"
+    "mockjs": "~0.1.x",
+    "mocha": "~3.5.x",
+    "chai": "~4.1.x"
   },
   "monitored": {
     "velocity": "*",
@@ -106,8 +108,6 @@
     "soundmanager": "*",
     "video.js": "*",
     "reveal.js": "*",
-    "mocha": "*",
-    "chai": "*",
     "lesshat": "*",
     "bootstrap-material-design": "*",
     "material-design-lite": "*",

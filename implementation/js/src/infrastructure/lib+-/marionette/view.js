@@ -864,45 +864,76 @@
 		//true, 'every 5 sec [| onFooBar/coop e]', 250, '250 [|onFooBar/coop e]' fn, or {'url1': 'occurance[|coop e or fn name]'/fn, ...}
 		//Caveat: there is no 'every 0.5 sec'.
 		if(this.pollings){
+			//if pollings is "true", then this is the default operation: set data into the model
+			var defaultPollingsOp = function(data){
+				this.set(data);
+			};
+
 			this.listenToOnce(this, 'ready', function(){
+				
+				//convert polling to an object, if polling is not an object and data is an remote url
 				if(!_.isPlainObject(this.pollings) && _.isString(this.data)){
 					var tmp = this.pollings;
 					this.pollings = {};
 					this.pollings[this.data] = _.isBoolean(tmp)? app.config.dataPollingDelay : tmp;
 				}
+
+				//loop through all the pollings objects
 				_.each(this.pollings, function(occurrenceAndEoMorF, url){
 					var occurrence, eomorf;
+
+					//string, either is callback function name or occurence description
 					if(_.isString(occurrenceAndEoMorF)){
-						var tmp = occurrenceAndEoMorF.split('|');
-						occurrence = _.string.trim(tmp[0]);
-						eomorf = _.string.trim(tmp[1]); //eom
-					} else {
-						if(_.isFunction(occurrenceAndEoMorF)){
-							occurrence = app.config.dataPollingDelay;
-							eomorf = occurrenceAndEoMorF; //f
-						} else {
-							occurrence = occurrenceAndEoMorF;//occur only
+
+						//check whether this[occurrenceAndEoMorF] exists,
+						//if yes, callback function, otherwise occurence description
+						if(this[occurrenceAndEoMorF]){
+
+							//valid definition
+							if(_.isFunction(this[occurrenceAndEoMorF])){
+								occurrence = app.config.dataPollingDelay;
+								eomorf = occurrenceAndEoMorF;	
+							}else{
+								throw new Error('View::' + this.name + '::pollings::' + url + '::this[' + occurrenceAndEoMorF + '] needs to be a function.' );	
+							}
+							
+						}else{//description
+							var tmp = occurrenceAndEoMorF.split('|');
+							occurrence = _.string.trim(tmp[0]);
+							eomorf = _.string.trim(tmp[1]); //eom, string
 						}
+					} 
+					//function, callback function
+					else if(_.isFunction(occurrenceAndEoMorF)){
+						occurrence = app.config.dataPollingDelay;
+						eomorf = occurrenceAndEoMorF; //fn
+					}
+					//true, means polling from url with default occurence, and callback is default operation
+					else if(occurrenceAndEoMorF === true){
+						occurrence = app.config.dataPollingDelay;
+						eomorf = defaultPollingsOp;//fn
+					}
+					//else, occurence and default operation
+					else{
+						occurrence = occurrenceAndEoMorF;
+						eomorf = defaultPollingsOp;//fn
 					}
 
 					if(_.isFunction(eomorf)) //f
 						eomorf = _.bind(eomorf, this);
-					else if (eomorf && _.isFunction(this[eomorf])) //m
-						eomorf = _.bind(this[eomorf], this);
 					else if (eomorf){ //e
 						this._enableGlobalCoopEvent('poll-data-' + eomorf); //notify this view and others as well (coop e)
 					}
-					else //otherwise, use default f, which sets view's model data.
-						eomorf = _.bind(function(data, card){
-							this.set(data);
-						}, this);
 
+					//call app.poll
 					app.poll(url, occurrence, eomorf);
+
 				}, this);
 			});
 
+			//close all the pollings once view is closed.
 			this.listenTo(this, 'close', function(){
-				_.each(this.pollings, function(occurrenceAndEoMoF, url){
+				_.each(this.pollings, function(occurrenceAndEoMorF, url){
 					app.poll(url, false);
 				}, this);
 			});

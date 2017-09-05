@@ -32,8 +32,6 @@
 		"soundmanager": "*",
 		"video.js": "*",
 		"reveal.js": "*",
-		"mocha": "*",
-		"chai": "*",
 		"lesshat": "*",
 		"bootstrap-material-design": "*",
 		"material-design-lite": "*",
