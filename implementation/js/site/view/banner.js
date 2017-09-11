@@ -74,6 +74,7 @@
                     '<li><a href="#navigate/Demo/Demo.MoreData">More Data</a></li>',
                     '<li><a href="#navigate/Demo/Demo.Editors">Editors/Form</a></li>',
                     // '<li><a href="#">Terminal</a></li>',
+                    '<li><a href="#navigate/Demo/Demo.Test">Tests</a></li>', //test view, added for unit testing apis
                   '</ul>',
                 '</li>',
               '</ul>',
