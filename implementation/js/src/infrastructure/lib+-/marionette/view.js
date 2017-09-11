@@ -978,14 +978,17 @@
             var defaultSseOp = function(data){
             	this.set(data);
             };
+            
             //listen to ready event
             this.listenToOnce(this, 'ready', function(){
                 _.each(this.topics, function(coopEventOrCallbackOrObject, topic){
-                    var meta = coopEventOrCallbackOrObject;
+                    var meta = coopEventOrCallbackOrObject,
+                    	temp;
                     //check the type of meta
                     if(_.isFunction(meta)){
+                    	temp = _.bind(meta, this);
                     	//make it callback
-                    	meta = {sse: app.config.defaultSse, callback: meta};
+                    	meta = {sse: app.config.defaultSse, callback: temp};
                     }else if(_.isString(meta)){
                     	//check whether the this[meta] is a function
                     	if(_.isFunction(this[meta])){
@@ -1000,6 +1003,12 @@
                     		}else{
                     			throw new Error('View::' + this.name + '::topics::' + topic + '::this[' + meta.callback + '] needs to be a function.' );
                     		}
+                    	}else if(_.isFunction(meta.callback)){
+                    		meta.callback = _.bind(meta.callback, this); //bind this to view
+                    	}else if(_.isPlainObject(meta.callback)){
+                    		_.each(meta.callback, function(fn, name){
+                    			meta.callback[name] = _.bind(fn, this); //bind this to view
+                    		}, this);
                     	}
                     }else if(meta === true){
                     	meta = {sse: app.config.defaultSse, callback: defaultSseOp};
@@ -1008,7 +1017,7 @@
                     }
 
                     //give the reference back to the view
-                    this[topic] = app.sse(meta.sse, topic);
+                    this.topics[topic] = app.sse(meta.sse, [topic]/*app.sse takes an array*/, meta.callback);
 
                     //trigger callback based on callback
                     this._enableGlobalCoopEvent('sse-data-' + topic, function(data, e, sseObj){
@@ -1019,6 +1028,13 @@
                     this.trigger('view:topic-hooked', this[topic]);
 
                 }, this);
+            });
+            
+            //listen to close event, close all the server-sent event for this view
+            this.listenTo(this, 'close', function(){
+            	_.each(this.topics, function(obj, topic){
+            		obj.close();
+            	});
             });
 		}
 

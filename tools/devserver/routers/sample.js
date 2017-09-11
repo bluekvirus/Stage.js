@@ -63,42 +63,59 @@ module.exports = function(server){
 	//d. sse
 	router.get('/sse', function(req, res, next){
 		var counter = 0,
-			topics = _.isArray(req.query.topic) ? req.query.topic : [req.query.topic];
+			topics = _.isArray(req.query.topic) ? req.query.topic : [req.query.topic],
+			flag = true;
 
-		//loop 10 times to avoid using timer
-		for(var i = 0; i < 10; i++){
-			//send message to all the query topics
-			_.each(topics, function(topic){
-				
-				//use Math.random to randomly send message to the front end
-				if(Math.random() < 0.5){//50% chance
-					server.topic(topic, '/sample/sse', {
-						data: topic + "... This is the data send from SSE /sample/sse", 
-						options: {
-							//==== all optional parameters for SSE ====//
-							//retry: 5000, //retry time out
-							//event: 'some event name', //event name
-							id: ++counter, //message id
-						}
-					});
-				}
+		req.on('close', function(err){
+			flag = false;
+		});
 
-				//use Math.random to randomly send custom event message to the front end
-				if(Math.random() < 0.2){//20% chance
-					server.topic(topic, '/sample/sse', {
-						data: {msg: topic + "... This is the data send from SSE for customEvent /sample/sse"}, 
-						options: {
-							//==== all optional parameters for SSE ====//
-							//retry: 5000, //retry time out
-							event: 'customEvent', //event name
-							id: ++counter, //message id
-						}
-					});
-				}
+		_.each(topics, function(topic){
+			var setTimeout_1 = function(){
+				setTimeout(function(){
+					if(flag){
+						server.topic(topic, '/sample/sse', {
+							data: topic + "... This is the data send from SSE /sample/sse", 
+							options: {
+								//==== all optional parameters for SSE ====//
+								//retry: 5000, //retry time out
+								//event: 'some event name', //event name
+								id: ++counter, //message id
+							}
+						});
 
-			});
-		}
+						//maximum 10 times
+						//if(counter <= 10)
+						setTimeout_1();
+					}
 
+				}, 1500);
+			};
+
+			var setTimeout_2 = function(){
+				setTimeout(function(){
+					if(flag){
+						server.topic(topic, '/sample/sse', {
+							data: {msg: topic + "... This is the data send from SSE for customEvent /sample/sse"}, 
+							options: {
+								//==== all optional parameters for SSE ====//
+								//retry: 5000, //retry time out
+								event: 'customEvent', //event name
+								id: ++counter, //message id
+							}
+						});
+
+						//maximum 11 times, save the last one for custom event
+						//if(counter <= 11)
+						setTimeout_2();
+					}
+
+				}, 3000);
+			};
+
+			setTimeout_1();
+			setTimeout_2();
+		});	
 	});
 
 	//e. sample JSON Web Token login

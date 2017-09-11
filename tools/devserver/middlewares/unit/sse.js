@@ -39,13 +39,14 @@ module.exports = function(server){
 			
 			//fetch path and topics
 			var path = req.path,
-				topics = req.query.topic ? (_.isString(req.query.topic) ? [req.query.topic] : req.query.topic) : true/*true means subscribe all*/; 
+				topics = req.query.topic ? (_.isString(req.query.topic) ? [req.query.topic] : req.query.topic) : true/*true means subscribe all*/,
+				uniqeId = _.uniqueId('stagejs-sse-');
 
 			//only register if user registered the SSE in the server config
 			if(sseConfig && _.contains(sseConfig, path)){
 
 				//give it an uniqe id for later reference
-				_.extend(res, {__sseuid: _.uniqueId('stagejs-sse-')});
+				_.extend(res, {__sseuid: uniqeId});
 
 				//response immediately to hold the connection
 				res.writeHead(200, {
@@ -58,8 +59,13 @@ module.exports = function(server){
 				req.on('close', function(){
 					//end transmission
 					res.end();
-					//delete handler
-					server.sse[path]._clients = _.without(server.sse[path]._clients, function(client){ return client.__sseuid === res.__sseuid; });
+
+					//search through every topics
+					_.each(topics, function(topic){
+						//delete handler
+						var index = _.findIndex(server.sse[path][topic]._clients, function(client){ return client.__sseuid === uniqeId; });	
+						server.sse[path][topic]._clients.splice(index, 1);
+					});
 
 					console.log('SSE connection ' + path.yellow +' closed.');
 				});
