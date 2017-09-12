@@ -10,6 +10,9 @@
 		attributes: {
 			style: 'padding:15px;',
 		},
+		onClose: function(){
+			mocha.suite.suites = []; //caveat: clean up the test suites on close, otherwise mocha will load the same tests for multiple times.
+		},
 		onReady: function(){
 			var that = this,
 				expect = chai.expect;
