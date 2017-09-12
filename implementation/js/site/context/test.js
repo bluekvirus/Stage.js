@@ -1,12 +1,15 @@
 ;(function(app){
 
-	app.view('Demo.Test', {
+	app.context('Test', {
 		template: [
 			'<h3>Unit Test for Stage.js APIs</h3>',
 			'<div id="mocha" style="position:relative;"></div>', //add mocha div for framework request
 			'<div region="sse-hidden-view-1" class="hidden"></div>',
 			'<div region="sse-hidden-view-2" class="hidden"></div>',
 		],
+		attributes: {
+			style: 'padding:15px;',
+		},
 		onReady: function(){
 			var that = this,
 				expect = chai.expect;
