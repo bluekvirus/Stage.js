@@ -66,17 +66,13 @@ working on ...
 
 * merge lock into action="(name/onMetaEvent):lock topic"; (wait on named actions which return promises then auto unlock, also align action,activate,coop config block, general/specific metaMethod callings)
 * give widget="", view="" the support of reconfigure="key to view's properties";
-* add tabs="" with tab="", list="" and enhance activate="group:class";
-* add dnd="" with dnd-target="" supporting easier dnd and sorting setup;
+* add action-dnd with dnd-target="" supporting easier dnd and sorting setup;
 * app.prompt() + $.fn.underlay();
 * view.sses/topics wiring with app.sse(); (align pollings/channels/topics)
 * view.submit(url, editors[data, files]) in addition to app.upload(); (align both standalone and normal file editors upload with same auto csrf token inject?)
-* make view.template implicit; (component based view folders, default on Main view)
-* separate config js to use for both app and build; (remove Main view properties from app config)
 * make tests public and collaborable;
 * breaking down 'Basic' editors;
-* view.markers{m1: {'e': fn/fnName/coopE}, ...}; ([m1=...], do/prep upon 'e')
-* remove jQueryv2/3.0 and Marionettev1.8 deps and related code;
+* view.markers{m1: {'e': fn/fnName/coopE}, ...} generalization; ([m1=...], do/prep upon 'e')
 
 
 1.10.2 (2017-04-21)
