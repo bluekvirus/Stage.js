@@ -54,6 +54,7 @@
                     '<li class="dropdown-header">Ready-made Widgets</li>',                    
                     '<li><a href="#navigate/Demo/Demo.Datatable">Datagrid</a></li>',
                     '<li><a href="#navigate/Demo/Demo.Datatable">Paginator</a></li>',
+                    '<li><a href="#navigate/Demo/Demo.InfiniteGrid">Infinite Grid</a></li>',
                     '<li><a href="#navigate/Demo/Demo.Trees"">Tree</a></li>',
                     '<li class="divider"></li>',
                     '<li class="dropdown-header">View Plus</li>',

@@ -18,6 +18,7 @@
 	};
 
 	app.view('Demo.Datatable', {
+		
 	    template: [
 	    	'<div ui="spin"><i class="fa fa-cog fa-spin"></i> Loading...</div>',
 	    	'<div region="grid"></div>',
