@@ -8,7 +8,8 @@
  */
 var _ = require('underscore'),
 path = require('path'),
-fs = require('fs-extra');
+fs = require('fs-extra'),
+Mock = require('mockjs');
 
 module.exports = function(server){
 
@@ -143,5 +144,26 @@ module.exports = function(server){
 	//echo back the payload to user as a confirmation
 	router.get('/jwt/touch', router.permission('read') ,function(req, res, next){
 		return res.status(200).json({msg: 'If you see this message you are an authenticated "reading privilege" user. '});
+	});
+
+	//g. sample infinite grid data
+	//one must provide total count of data entries in order to use inifinite grid
+	router.get('/infinite', function(req, res, next){
+		//mock template for a cluster of computers
+		var temp = Mock.mock({
+			'payload|100': [{
+				'name': '@pick(["Private", "Captain", "General"])' + '-' + '@integer(1, 100)',
+				'ip': '@ip()',
+				'threads': '@integer(4, 32)',
+				'memory': '@integer(8, 128)',
+				'storage': '@integer(512, 8192)',
+				'load': '@integer(0, 100)',
+			}],
+			total: 1000,
+		});
+
+		temp = temp.payload;
+
+		return res.status(200).json(temp);
 	});
 };

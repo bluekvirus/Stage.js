@@ -1,26 +1,43 @@
 ;(function(app){
 
-	//mock template for a cluster of computers
-	var _dataTemplate = {
-		'payload|50': [{
-			'name': '@pick(["Private", "Sergeant", "Chief", "Lieutenant", "Captain", "Major", "General"])' + '-' + '@integer(1, 100)',
-			'ip': '@ip()',
-			'threads': '@integer(4, 32)',
-			'memory': '@integer(8, 128)',
-			'storage': '@integer(512, 8192)',
-			'load': '@integer(0, 100)',
-		}],
-		total: 5000,
-	};
+	
 
 	app.view('Demo.InfiniteGrid', {
 		
 		template: [
-			'infinite grid',
+			'<div region="test" style="height: 500px;"></div>', //need to give a height for the container
 		],
 
 		onReady: function(){
-			console.log(Mock.mock(_dataTemplate));
+
+			//create grid definition
+			var InfiGrid = app.widget('InfiniteGrid')
+								.create({
+									data: '/sample/infinite',
+ 									columns: [
+ 										'name', 
+ 										{name: 'ip', label: 'IP'}, 
+ 										'threads', 
+ 										{name: 'memory', label: 'Memory(GB)'}, 
+ 										{name: 'storage', label: 'Storage(GB)'}, 
+ 										{name: 'load', label: 'Load(%)'}, 
+ 										{
+						    				cell: 'action',
+						    				//label: 'Ops',
+						    				icon: 'fa fa-cog',
+						    				actions: {
+						    					edit: {
+						    						fn: function(){
+						    							//record, columns since action listeners are bound to the current row view
+						    							app.debug(this.model, this.collection, this.grid);
+						    						}
+						    					}, 
+						    					delete: {}
+						    				}
+	    								}],
+								});
+
+			this.show('test', InfiGrid);
 		},
 	});
 
