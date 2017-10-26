@@ -149,20 +149,38 @@ module.exports = function(server){
 	//g. sample infinite grid data
 	//one must provide total count of data entries in order to use inifinite grid
 	router.get('/infinite', function(req, res, next){
-		//mock template for a cluster of computers
-		var temp = Mock.mock({
-			'payload|100': [{
-				'name': '@pick(["Private", "Captain", "General"])' + '-' + '@integer(1, 100)',
-				'ip': '@ip()',
-				'threads': '@integer(4, 32)',
-				'memory': '@integer(8, 128)',
-				'storage': '@integer(512, 8192)',
-				'load': '@integer(0, 100)',
-			}],
-			total: 1000,
-		});
+		//define fake total
+		var fakeTotal = 1000;
 
-		temp = temp.payload;
+		//get index and size
+		var startIndex = req.query.start || 0,
+			size = req.query.size || 100;
+
+		// if(!size || (startIndex !== 0 && !startIndex) || !startIndex){
+		// 	return res.status(500).json({msg: 'You need to provide size and start index...'});
+		// }
+
+		//mock data template, mimics individual computer node on a large computer monitoring network
+		var template = {
+			'name': '@pick(["Private", "Captain", "General"])' + '-' + '@integer(1, 100)',
+			'ip': '@ip()',
+			'threads': '@integer(4, 32)',
+			'memory': '@integer(8, 128)',
+			'storage': '@integer(512, 8192)',
+			'load': '@integer(0, 100)',
+		};
+
+		var temp  = {}, single;
+		temp.payload = [];
+
+		//generate mock data
+		for(var i = 0; i < size; i++){
+			single = Mock.mock(template);
+			temp.payload.push(single);
+		}
+
+		//give total
+		temp.total = fakeTotal;
 
 		return res.status(200).json(temp);
 	});
