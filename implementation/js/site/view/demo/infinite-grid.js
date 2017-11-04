@@ -5,7 +5,6 @@
 	app.view('Demo.InfiniteGrid', {
 		
 		template: [
-			'<div class="table-header">header...TBI</div>',
 			'<div region="test" style="height: 500px;"></div>', //need to give a height for the container
 		],
 
@@ -15,6 +14,7 @@
 			var InfiGrid = app.widget('InfiniteGrid')
 								.create({
  									columns: [
+ 										'id',
  										'name', 
  										{key: 'ip'}, 
  										'threads', 

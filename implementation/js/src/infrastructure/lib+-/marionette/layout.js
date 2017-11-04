@@ -109,7 +109,6 @@
 			        cv.collection.add(d);
 			} else
 				cv.set(d);
-
 		},
 
 		//activate (by tabId) a tab view (other tabbed views are not closed)

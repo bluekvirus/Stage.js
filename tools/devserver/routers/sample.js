@@ -162,6 +162,7 @@ module.exports = function(server){
 
 		//mock data template, mimics individual computer node on a large computer monitoring network
 		var template = {
+			'id|+1': 1,
 			'name': '@pick(["Private", "Captain", "General"])' + '-' + '@integer(1, 100)',
 			'ip': '@ip()',
 			'threads': '@integer(4, 32)',

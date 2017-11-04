@@ -32,10 +32,11 @@
 			className: 'infinite-grid',
 
 			//template
-			//use two identical table, one for thead(invisible tbody, z-index 1), one for tbody(invisible tbody, z-index 0)
 			template: [
 				'<div class="outer-container">',
-					'<div region="contents"></div>',
+					'<div class="top-space-holder"></div>',
+					'<div class="contents"></div>',
+					'<div class="bottom-space-holder"></div>',
 				'</div>',
 			],
 
@@ -48,6 +49,7 @@
 				//trim user options
 				this.options = _.extend({
 					className: '',
+					rowHeight: 40, //fixed row height in px
 					data: [{default: 'no data given'}],
 					columns: [{key: 'default'}],
 					totalKey: 'total',
@@ -115,35 +117,43 @@
 					//TBI: check whether total to determine this is an infinite grid or infinite scroll
 
 					//show one line of record to get the height
-					that.more('contents', [content.shift()], Row);
+					//that.more('contents', [content.shift()], Row);
 
-					//.more takes defer
-					_.defer(function(){
-						//calculate and setup the height of outer container
-						var singleHeight = that.$el.find('.infinite-grid-row').height(),
-							totalHeight = singleHeight * total;
+					//calculate and setup the height of outer container
+					var singleHeight = that.options.rowHeight,
+						totalHeight = singleHeight * total;
 
-						that.$el.find('.outer-container').css({height: totalHeight});
+					that.$el.find('.outer-container').css({height: totalHeight});
 
-						//store values locally
-						that._startIndex = that.options.initialIndex;
-						that._size = Math.ceil(that.$el.height() / singleHeight); //how many records can be shown in one window
+					//store values locally for later use
+					that._startIndex = that.options.initialIndex;
+					that._total = total;
+					that._singleHeight = singleHeight;
+					that._size = Math.ceil(that.$el.height() / singleHeight); //how many records can be shown in one window
+
+					//after knowing the number of records in the viewport, 
+
+					//fullfill first batch of the grid
+					app.remote({
+						url: that.options.dataUrl + '?' + that.options.indexKey + '=' + that.options.initialIndex + '&' + that.options.sizeKey + '=' + that._size,
+					}).done(function(data){
+						//temporary for testing
+						_.each(data, function(d, index){
+
+						});
 					});
+
+				}).fail(function(data){
+					throw new Error('Stage.js::Widget::InfiniteGrid: error fetch data from url ' + that.options.dataUrl + '...');
 				});
 			},
 
-			fullfillGrid: function(){
+			fullfillGrid: function(state){
 				var that = this,
 					viewPortHeight = this.$el.height(),
 					el = this.$el[0];
 
-				//use scrollHeight, scrollTop and scrollTopMax to check if top, bottom or normal
-				//check if first screen or not
-				if(scrollTop === 0){
-					//	
-				}
-				//check if last scrren or not
-				//normal
+
 			},
 
 			//view:ready
@@ -155,8 +165,32 @@
 
 				//register scroll event
 				this.$el.on('scroll', _.throttle(function(e){
-					console.log(this);
-					that.fullfillGrid();
+
+					// var viewPortHeight = that.$el.height(),
+					// 	el = that.$el[0];
+					
+					// //use scrollHeight and scrollTop to check if top, bottom or normal
+					// //Caveat: scrollTopMax only supported by FF, not supported by Chrome, IE, Opera and Safari
+
+
+					
+
+					// //check if first screen or not
+					// if(el.scrollTop === 0){
+					// 	app.remote({
+					// 		url: this.options.dataUrl + '?' + this.options.indexKey + '=' + this.options.initialIndex + '&' + this.options.sizeKey + '=' + this._size,
+					// 	}).done(function(data){
+					// 		that.more('contents', [{items: data[that.options.dataKey]}], Block, true);
+					// 	});
+					// }
+					// //check if last scrren or not
+					// if(el.scrollTop >= el.scrollHeight - (this.total % this.size * this._singleHeight)/*last batch height*/){
+
+					// }
+					// //normal
+					// else{
+
+					// }
 				}, 200));
 
 				// //alias
@@ -245,16 +279,39 @@
 
 		});
 
+		// var Block = app.view({
+
+		// 	//default tag name
+		// 	tagName: 'div',
+
+		// 	//default class name
+		// 	className: 'infinite-grid-block',
+
+		// 	//template, show needed rows in this view
+		// 	template: '<div region="rows"></div>',
+
+		// 	initialize: function(options){},
+
+		// 	//view:ready
+		// 	onReady: function(){
+		// 		var that = this;
+		// 		console.log('block data...', this.get());
+		// 		//append rows to to region rows based on given data
+		// 		this.more('rows', this.get('items'), Row);
+		// 	},
+
+		// });
+
 		var Row = app.view({
 
 			//default tag name
-			tagName: 'div',
+			tagName: 'tr',
 
 			//default class name
 			className: 'infinite-grid-row',
 
 			//template
-			template: '<div region="content"></div>',
+			template: '<div region="row"></div>',
 
 			initialize: function(options){
 				
@@ -264,9 +321,9 @@
 			onReady: function(){
 				var that = this;
 
-				//append columns to region contents based on the order from columns
+				//append columns to region row based on the order from columns
 				_.each(_columns, function(col, index){
-					that.more('content', [that.get(col.key)], app.view({tagName: 'span', template: '{{value}}'}));
+					that.more('row', [that.get(col.key)], app.view({tagName: 'td', template: '{{value}}'}));
 				});
 			},
 
