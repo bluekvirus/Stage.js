@@ -111,6 +111,41 @@
 				cv.set(d);
 		},
 
+		less: function(region /*name only*/, start /*start index for removing*/, size /*total number of records to delete*/){
+
+			//check whether region is provided
+			if(!region || !_.isString(region)){
+				throw new Error('DEV::Layout+::less() region is not provided or region is not a string...');
+			}
+
+			//check whether start and size both exists
+			if((start !== 0 && !start) && !size){
+				throw new Error('DEV::Layout+::less() You must provide at least the size of the records you want to delete...');
+			}
+
+			//if there is only one number, consider it as size and start from index 0
+			if(!size){
+				size = start;
+				start = 0;
+			}
+
+			//check whether start and size are numbers
+			if(!_.isNumber(start) || !_.isNumber(size)){
+				throw new Error('DEV::Layout+::less() start and size must all in the form of numbers');
+			}
+
+			//get view from the given region
+			var cv = this.getViewIn(region);
+
+			if(!cv){
+				console.warn('DEV::Layout+::less() there is no collection view in the given region...');
+				return;
+			}else{
+				
+			}
+
+		},
+
 		//activate (by tabId) a tab view (other tabbed views are not closed)
 		tab: function(region /*name only*/ , View /*or template or name or instance or false for tab remove or tabId for activation*/ , tabId) {
 		    if (tabId === undefined) {

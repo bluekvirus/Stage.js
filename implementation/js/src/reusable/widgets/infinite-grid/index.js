@@ -50,13 +50,14 @@
 				this.options = _.extend({
 					className: '',
 					rowHeight: 40, //fixed row height in px
+					rowView: '<div>this is the content</div>', //view name or definition
 					data: [{default: 'no data given'}],
 					columns: [{key: 'default'}],
 					totalKey: 'total',
 					dataKey: 'payload',
 					details: false, //TBI
 					initialIndex: 0,
-					//query parameter
+					//default query parameter
 					dataUrl: '/sample/infinite',
 					indexKey: 'start',
 					sizeKey: 'size',
@@ -130,41 +131,92 @@
 					that._total = total;
 					that._singleHeight = singleHeight;
 					that._size = Math.ceil(that.$el.height() / singleHeight); //how many records can be shown in one window
+					that._contentHeight = that._singleHeight * that._size * 5; //top 2 batch, bottom 2 batch and 1 batch for real content. total 5 batch
+					that._totalHeight = totalHeight;
+
+					//test, insert fake contents
+					
+					//setup content 'div' height
+					that.$el.find('.contents').css({height: that._contentHeight});
+
+					for(var i = 0; i < (that._size * 5); i++){
+						that.$el.find('.contents').append('<div style="height:40px;">' + i + ' some content</div>');
+					}
 
 					//after knowing the number of records in the viewport, 
 
 					//fullfill first batch of the grid
-					app.remote({
-						url: that.options.dataUrl + '?' + that.options.indexKey + '=' + that.options.initialIndex + '&' + that.options.sizeKey + '=' + that._size,
-					}).done(function(data){
-						//temporary for testing
-						_.each(data, function(d, index){
+					// app.remote({
+					// 	url: that.options.dataUrl + '?' + that.options.indexKey + '=' + that.options.initialIndex + '&' + that.options.sizeKey + '=' + (that._size * 5),
+					// }).done(function(data){
 
-						});
-					});
+
+
+					// 	//temporary for testing
+					// 	_.each(data, function(d, index){
+
+					// 	});
+					// });
 
 				}).fail(function(data){
 					throw new Error('Stage.js::Widget::InfiniteGrid: error fetch data from url ' + that.options.dataUrl + '...');
 				});
 			},
 
-			fullfillGrid: function(state){
-				var that = this,
-					viewPortHeight = this.$el.height(),
-					el = this.$el[0];
-
-
+			fullfillGrid: function(batch){
+				
 			},
 
 			//view:ready
 			onReady: function(){
-				var that = this;
+				var that = this,
+					_currentBatch = 0;
 
 				//initial setup of the grid
 				this.setupGrid();
 
 				//register scroll event
 				this.$el.on('scroll', _.throttle(function(e){
+
+					
+
+					//console.log(this.scrollTop % Math.ceil(that.$el.height()));
+
+					//test on scroll
+					//if(this.scrollTop % Math.ceil(that.$el.height()) <= tolerance){
+
+					//use floor to make sure batch should be integer
+					var batch = Math.floor(this.scrollTop / Math.ceil(that.$el.height()));
+
+					if(batch === _currentBatch){
+						return;
+					}
+
+					var topHeight = batch * that.$el.height(),
+						contentHeight = that.$el.height(),
+						bottomHeight = that._totalHeight - (batch * that.$el.height()) - that.$el.height();
+
+					console.log(topHeight, contentHeight, bottomHeight);
+
+					//setup top container height
+					that.$el.find('.top-space-holder').css({height: topHeight});
+					that.$el.find('.contents').css({height: contentHeight});
+					that.$el.find('.bottom-space-holder').css({height: bottomHeight});
+
+						// app.remote({
+						// 	url: that.options.dataUrl + '?' + that.options.indexKey + '=' + that.options.initialIndex + '&' + that.options.sizeKey + '=' + (that._size * 5),
+						// }).done(function(data){
+
+
+
+						// 	//temporary for testing
+						// 	_.each(data, function(d, index){
+
+						// 	});
+						// });
+
+					//}
+
 
 					// var viewPortHeight = that.$el.height(),
 					// 	el = that.$el[0];

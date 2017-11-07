@@ -150,7 +150,7 @@ module.exports = function(server){
 	//one must provide total count of data entries in order to use inifinite grid
 	router.get('/infinite', function(req, res, next){
 		//define fake total
-		var fakeTotal = 1000;
+		var fakeTotal = 10000;
 
 		//get index and size
 		var startIndex = req.query.start || 0,
