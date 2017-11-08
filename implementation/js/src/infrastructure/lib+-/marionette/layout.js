@@ -111,7 +111,7 @@
 				cv.set(d);
 		},
 
-		less: function(region /*name only*/, start /*start index for removing*/, size /*total number of records to delete*/){
+		less: function(region /*name only*/, start /*start index for removing*/, size /*total number of records to remove*/){
 
 			//check whether region is provided
 			if(!region || !_.isString(region)){
@@ -141,7 +141,20 @@
 				console.warn('DEV::Layout+::less() there is no collection view in the given region...');
 				return;
 			}else{
-				
+
+				//fetch data in the current model
+				var current = cv.get();
+
+				//check if start and size are valid
+				if( (start + size) > current.length ){
+					throw new Error('DEV::Layout+::less() start and size excceeds the length of the current data...');
+				}
+
+				//Caveat: cannot use Array.prototype.slice() here, since it only returns a shallow copy of the object elements.
+				var modified = _.compact(_.map(current, function(d, index){ if(index >= start && index < start + size ) return false; else return d; }));
+
+				//reset collectview's data
+				cv.set(modified);
 			}
 
 		},

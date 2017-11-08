@@ -35,7 +35,7 @@
 			template: [
 				'<div class="outer-container">',
 					'<div class="top-space-holder"></div>',
-					'<div class="contents"></div>',
+					'<div class="contents" region="contents"></div>',
 					'<div class="bottom-space-holder"></div>',
 				'</div>',
 			],
@@ -44,21 +44,22 @@
 			initialize: function(options){
 				var that = this;
 
-				//locally stored value for 
-
 				//trim user options
 				this.options = _.extend({
 					className: '',
-					rowHeight: 40, //fixed row height in px
-					rowView: '<div>this is the content</div>', //view name or definition
+					rowHeight: 25, //fixed row height in px
+
+					//temporary
+					rowView: app.view({template: '<span>{{id}}</span> <span>{{ip}}</span>', attributes: {style: 'height: 40px;'}}), //view name or definition
+					
+
 					data: [{default: 'no data given'}],
 					columns: [{key: 'default'}],
 					totalKey: 'total',
 					dataKey: 'payload',
-					details: false, //TBI
 					initialIndex: 0,
 					//default query parameter
-					dataUrl: '/sample/infinite',
+					dataUrl: 'sample/infinite',
 					indexKey: 'start',
 					sizeKey: 'size',
 				}, options);
@@ -102,46 +103,36 @@
 			setupGrid: function(){
 				var that = this;
 
+				//store the viewport height
+				this._viewportHeight = this.$el.height();
+
+				//calculate how many records can be shown in one viewport
+				this._batchSize = Math.ceil(this._viewportHeight / this.options.rowHeight);
+
 				//load first record in order to calculate height
 				app.remote({
-					url: this.options.dataUrl + '?' + this.options.indexKey + '=' + this.options.initialIndex + '&' + this.options.sizeKey + '=1',
+					url: this.options.dataUrl + '?' + this.options.indexKey + '=' + this.options.initialIndex + '&' + this.options.sizeKey + '=' + (this._batchSize * 3),
 				}).done(function(data){
 					//get content and total number of records
 					var content = data[that.options.dataKey],
 						total = data[that.options.totalKey];
+
+					//store total height locally
+					that._totalHeight = that.options.rowHeight * data[that.options.totalKey];
 
 					//check if data exists
 					if(!content){
 						throw new Error('Stage.js::Widget::InfiniteGrid: there is no data provided...');
 					}
 
-					//TBI: check whether total to determine this is an infinite grid or infinite scroll
+					//setup the height of outer-container
+					that.$el.find('.outer-container').css({height: that._totalHeight});
 
-					//show one line of record to get the height
-					//that.more('contents', [content.shift()], Row);
+					//setup the contents view height
+					that.$el.find('.contents').css({height: that._viewportHeight * 5});
 
-					//calculate and setup the height of outer container
-					var singleHeight = that.options.rowHeight,
-						totalHeight = singleHeight * total;
-
-					that.$el.find('.outer-container').css({height: totalHeight});
-
-					//store values locally for later use
-					that._startIndex = that.options.initialIndex;
-					that._total = total;
-					that._singleHeight = singleHeight;
-					that._size = Math.ceil(that.$el.height() / singleHeight); //how many records can be shown in one window
-					that._contentHeight = that._singleHeight * that._size * 5; //top 2 batch, bottom 2 batch and 1 batch for real content. total 5 batch
-					that._totalHeight = totalHeight;
-
-					//test, insert fake contents
-					
-					//setup content 'div' height
-					that.$el.find('.contents').css({height: that._contentHeight});
-
-					for(var i = 0; i < (that._size * 5); i++){
-						that.$el.find('.contents').append('<div style="height:40px;">' + i + ' some content</div>');
-					}
+					//more all the first batch views
+					that.more('contents', content, that.options.rowView);
 
 					//after knowing the number of records in the viewport, 
 
@@ -186,22 +177,46 @@
 					//if(this.scrollTop % Math.ceil(that.$el.height()) <= tolerance){
 
 					//use floor to make sure batch should be integer
-					var batch = Math.floor(this.scrollTop / Math.ceil(that.$el.height()));
+					var batch = Math.ceil(this.scrollTop / Math.ceil(that.$el.height()));
 
-					if(batch === _currentBatch){
+					if(batch === _currentBatch || this.scrollTop <= (that._batchSize * that.options.rowHeight * 3)){
+						return;
+					}
+					else{
+						_currentBatch = batch;
+					}
+
+					var topHeight = (batch - 2) * that._viewportHeight,
+						contentHeight = that._viewportHeight,
+						bottomHeight = that._totalHeight - (batch * that._viewportHeight) - that._viewportHeight;
+
+					if(bottomHeight <= that._viewportHeight){
 						return;
 					}
 
-					var topHeight = batch * that.$el.height(),
-						contentHeight = that.$el.height(),
-						bottomHeight = that._totalHeight - (batch * that.$el.height()) - that.$el.height();
-
 					console.log(topHeight, contentHeight, bottomHeight);
+
+					console.log('start-index...', ((batch + 3) * that._batchSize + 1));
 
 					//setup top container height
 					that.$el.find('.top-space-holder').css({height: topHeight});
-					that.$el.find('.contents').css({height: contentHeight});
 					that.$el.find('.bottom-space-holder').css({height: bottomHeight});
+
+					//test
+					app.remote({
+						url: that.options.dataUrl + '?' + that.options.indexKey + '=' + ((batch + 3) * that._batchSize + 1) + '&' + that.options.sizeKey + '=' + that._batchSize,
+					}).done(function(data){
+
+						var content = data[that.options.dataKey];
+
+						
+						that.less('contents', 0, that._batchSize);
+						that.more('contents', content, that.options.rowView);
+
+						
+
+						
+					});
 
 						// app.remote({
 						// 	url: that.options.dataUrl + '?' + that.options.indexKey + '=' + that.options.initialIndex + '&' + that.options.sizeKey + '=' + (that._size * 5),

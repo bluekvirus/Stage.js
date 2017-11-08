@@ -148,6 +148,9 @@ module.exports = function(server){
 
 	//g. sample infinite grid data
 	//one must provide total count of data entries in order to use inifinite grid
+	
+	//global counter
+	var infiniteCounter = 1;
 	router.get('/infinite', function(req, res, next){
 		//define fake total
 		var fakeTotal = 10000;
@@ -156,13 +159,14 @@ module.exports = function(server){
 		var startIndex = req.query.start || 0,
 			size = req.query.size || 100;
 
+		infiniteCounter = startIndex;
+
 		// if(!size || (startIndex !== 0 && !startIndex) || !startIndex){
 		// 	return res.status(500).json({msg: 'You need to provide size and start index...'});
 		// }
 
 		//mock data template, mimics individual computer node on a large computer monitoring network
 		var template = {
-			'id|+1': 1,
 			'name': '@pick(["Private", "Captain", "General"])' + '-' + '@integer(1, 100)',
 			'ip': '@ip()',
 			'threads': '@integer(4, 32)',
@@ -177,6 +181,7 @@ module.exports = function(server){
 		//generate mock data
 		for(var i = 0; i < size; i++){
 			single = Mock.mock(template);
+			single.id = infiniteCounter++;
 			temp.payload.push(single);
 		}
 
