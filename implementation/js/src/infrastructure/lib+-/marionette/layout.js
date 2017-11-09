@@ -96,6 +96,7 @@
 			        forceViewType: true,
 			        type: 'CollectionView',
 			        itemView: _.isString(View) ? app.get(View) : View, //if !View then Error: An `itemView` must be specified
+			        childView: _.isString(View) ? app.get(View) : View
 			    })); //to support 'action-scroll' in region.
 			    cv = this.getViewIn(region);
 			    cv._moreItems = true; //set parentCt bypass mode for items (see collection-view:buildItemView);
@@ -151,10 +152,10 @@
 				}
 
 				//Caveat: cannot use Array.prototype.slice() here, since it only returns a shallow copy of the object elements.
-				var modified = _.compact(_.map(current, function(d, index){ if(index >= start && index < start + size ) return false; else return d; }));
+				var modified = _.compact(_.map(current, function(d, index){ if(index >= start && index < start + size ){ cv.removeChildView(cv.children.findByIndex(index)); return false; } else return d; }));
 
-				//reset collectview's data
-				cv.set(modified);
+				//reset collectview's data with silent true for not having the view re-render again
+				cv.set(modified, {silent: true});
 			}
 
 		},
