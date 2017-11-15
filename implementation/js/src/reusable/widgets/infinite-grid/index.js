@@ -25,6 +25,9 @@
 		//save a local copy for later use
 		var _columns = [];
 
+		//
+		var _prevScrollTop = 0;
+
 		//definition of widget
 		var UI = app.view({
 
@@ -33,10 +36,12 @@
 
 			//template
 			template: [
-				'<div class="outer-container">',
-					'<div class="top-space-holder"></div>',
-					'<div class="contents" region="contents"></div>',
-					'<div class="bottom-space-holder"></div>',
+				'<div class="outer-container" action-scroll="test-scroll">',
+					'<div class="container">',
+						'<div class="top-space-holder"></div>',
+						'<div class="contents" region="contents"></div>',
+						'<div class="bottom-space-holder"></div>',
+					'</div>',
 				'</div>',
 			],
 
@@ -50,7 +55,7 @@
 					rowHeight: 25, //fixed row height in px
 
 					//temporary
-					rowView: app.view({template: '<span>{{id}}</span> <span>{{ip}}</span>', attributes: {style: 'height: 40px;'}}), //view name or definition
+					rowView: app.view({template: '<span>{{id}}</span> <span>{{ip}}</span>', attributes: {style: 'height: 25px;'}}), //view name or definition
 					
 
 					data: [{default: 'no data given'}],
@@ -104,14 +109,15 @@
 				var that = this;
 
 				//store the viewport height
-				this._viewportHeight = this.$el.height();
+				this._viewportHeight = this.$el.find('.outer-container').height();
 
 				//calculate how many records can be shown in one viewport
 				this._batchSize = Math.ceil(this._viewportHeight / this.options.rowHeight);
 
 				//load first record in order to calculate height
+				//initially load five batches of data
 				app.remote({
-					url: this.options.dataUrl + '?' + this.options.indexKey + '=' + this.options.initialIndex + '&' + this.options.sizeKey + '=' + (this._batchSize * 3),
+					url: this.options.dataUrl + '?' + this.options.indexKey + '=' + this.options.initialIndex + '&' + this.options.sizeKey + '=' + (this._batchSize * 5),
 				}).done(function(data){
 					//get content and total number of records
 					var content = data[that.options.dataKey],
@@ -126,10 +132,11 @@
 					}
 
 					//setup the height of outer-container
-					that.$el.find('.outer-container').css({height: that._totalHeight});
+					that.$el.find('.container').css({height: that._totalHeight});
 
 					//setup the contents view height
-					that.$el.find('.contents').css({height: that._viewportHeight * 5});
+					//use single row height to calculate not the batchsize and viewport height for better smoother rendering
+					that.$el.find('.contents').css({height: that.options.rowHeight * that._batchSize * 5});
 
 					//more all the first batch views
 					that.more('contents', content, that.options.rowView);
@@ -140,8 +147,6 @@
 					// app.remote({
 					// 	url: that.options.dataUrl + '?' + that.options.indexKey + '=' + that.options.initialIndex + '&' + that.options.sizeKey + '=' + (that._size * 5),
 					// }).done(function(data){
-
-
 
 					// 	//temporary for testing
 					// 	_.each(data, function(d, index){
@@ -154,8 +159,22 @@
 				});
 			},
 
-			fullfillGrid: function(batch){
-				
+			actions: {
+				'test-scroll': _.throttle(function($self, e){
+					var el = $self[0];
+
+					if(_prevScrollTop < el.scrollTop){
+
+						console.log('down');
+
+					}else{
+
+						console.log('up');
+
+					}
+
+					_prevScrollTop = el.scrollTop;
+				}, 100),
 			},
 
 			//view:ready
@@ -166,99 +185,104 @@
 				//initial setup of the grid
 				this.setupGrid();
 
-				//register scroll event
-				this.$el.on('scroll', _.throttle(function(e){
+				// //register scroll event
+				// this.$el.on('scroll', _.throttle(function(e){
+
+				// 	//console.log('element...', this.scrollTop, Math.ceil(this.scrollTop / that.options.rowHeight ),  Math.floor(this.scrollTop / that.options.rowHeight ));
+
+				// 	//console.log('jquery', $(this).scrollTop(), Math.ceil($(this).scrollTop() / that.options.rowHeight ),  Math.floor($(this).scrollTop() / that.options.rowHeight ));
+
+				// 	//console.log(this.scrollTop % Math.ceil(that.$el.height()));
+
+				// 	//test on scroll
+				// 	//if(this.scrollTop % Math.ceil(that.$el.height()) <= tolerance){
+
+				// 	//use floor to make sure batch should be integer
+				// 	//batch now only be used as second layer of throttling the checking process
+				// 	var batch = Math.ceil(this.scrollTop / Math.ceil(that.$el.height()));
+					
+				// 	//calculate how many records should have been shown
+				// 	//use Math.floor to calculate the number of records
+				// 	var numOfRecords = Math.floor(this.scrollTop / that.options.rowHeight);
+
+				// 	//throttle calculating process
+				// 	if(batch === _currentBatch || this.scrollTop <= (that._batchSize * that.options.rowHeight * 3)){
+				// 		return;
+				// 	}
+				// 	else{
+				// 		_currentBatch = batch;
+				// 	}
+
+				// 	//calculate height of the placeholders
+				// 	var topHeight = (numOfRecords - that._batchSize * 2) * that.options.rowHeight,
+				// 		bottomHeight = that._totalHeight - (that.$el.find('.contents').height()) - that._viewportHeight;
+
+				// 	if(bottomHeight <= that._viewportHeight * 2){
+				// 		return;
+				// 	}
+
+				// 	console.log(topHeight, bottomHeight);
+
+				// 	//setup top container height
+					
+					
+
+				// 	//test
+				// 	app.remote({
+				// 		url: that.options.dataUrl + '?' + that.options.indexKey + '=' + (numOfRecords + 2 * that._batchSize + 1) + '&' + that.options.sizeKey + '=' + that._batchSize,
+				// 	}).done(function(data){
+
+
+				// 		var content = data[that.options.dataKey];
+
+				// 		that.$el.find('.bottom-space-holder').css({height: bottomHeight});
+				// 		that.less('contents', 0, that._batchSize);
+				// 		that.$el.find('.top-space-holder').css({height: topHeight});
+				// 		that.more('contents', content, that.options.rowView);
+						
+				// 	});
+
+				// 		// app.remote({
+				// 		// 	url: that.options.dataUrl + '?' + that.options.indexKey + '=' + that.options.initialIndex + '&' + that.options.sizeKey + '=' + (that._size * 5),
+				// 		// }).done(function(data){
+
+
+
+				// 		// 	//temporary for testing
+				// 		// 	_.each(data, function(d, index){
+
+				// 		// 	});
+				// 		// });
+
+				// 	//}
+
+
+				// 	// var viewPortHeight = that.$el.height(),
+				// 	// 	el = that.$el[0];
+					
+				// 	// //use scrollHeight and scrollTop to check if top, bottom or normal
+				// 	// //Caveat: scrollTopMax only supported by FF, not supported by Chrome, IE, Opera and Safari
+
 
 					
 
-					//console.log(this.scrollTop % Math.ceil(that.$el.height()));
+				// 	// //check if first screen or not
+				// 	// if(el.scrollTop === 0){
+				// 	// 	app.remote({
+				// 	// 		url: this.options.dataUrl + '?' + this.options.indexKey + '=' + this.options.initialIndex + '&' + this.options.sizeKey + '=' + this._size,
+				// 	// 	}).done(function(data){
+				// 	// 		that.more('contents', [{items: data[that.options.dataKey]}], Block, true);
+				// 	// 	});
+				// 	// }
+				// 	// //check if last scrren or not
+				// 	// if(el.scrollTop >= el.scrollHeight - (this.total % this.size * this._singleHeight)/*last batch height*/){
 
-					//test on scroll
-					//if(this.scrollTop % Math.ceil(that.$el.height()) <= tolerance){
+				// 	// }
+				// 	// //normal
+				// 	// else{
 
-					//use floor to make sure batch should be integer
-					var batch = Math.ceil(this.scrollTop / Math.ceil(that.$el.height()));
-
-					if(batch === _currentBatch || this.scrollTop <= (that._batchSize * that.options.rowHeight * 3)){
-						return;
-					}
-					else{
-						_currentBatch = batch;
-					}
-
-					var topHeight = (batch - 2) * that._viewportHeight,
-						contentHeight = that._viewportHeight,
-						bottomHeight = that._totalHeight - (batch * that._viewportHeight) - that._viewportHeight;
-
-					if(bottomHeight <= that._viewportHeight){
-						return;
-					}
-
-					console.log(topHeight, contentHeight, bottomHeight);
-
-					console.log('start-index...', ((batch + 3) * that._batchSize + 1));
-
-					//setup top container height
-					that.$el.find('.top-space-holder').css({height: topHeight});
-					that.$el.find('.bottom-space-holder').css({height: bottomHeight});
-
-					//test
-					app.remote({
-						url: that.options.dataUrl + '?' + that.options.indexKey + '=' + ((batch + 3) * that._batchSize + 1) + '&' + that.options.sizeKey + '=' + that._batchSize,
-					}).done(function(data){
-
-						var content = data[that.options.dataKey];
-
-						
-						that.less('contents', 0, that._batchSize);
-						that.more('contents', content, that.options.rowView);
-
-						
-
-						
-					});
-
-						// app.remote({
-						// 	url: that.options.dataUrl + '?' + that.options.indexKey + '=' + that.options.initialIndex + '&' + that.options.sizeKey + '=' + (that._size * 5),
-						// }).done(function(data){
-
-
-
-						// 	//temporary for testing
-						// 	_.each(data, function(d, index){
-
-						// 	});
-						// });
-
-					//}
-
-
-					// var viewPortHeight = that.$el.height(),
-					// 	el = that.$el[0];
-					
-					// //use scrollHeight and scrollTop to check if top, bottom or normal
-					// //Caveat: scrollTopMax only supported by FF, not supported by Chrome, IE, Opera and Safari
-
-
-					
-
-					// //check if first screen or not
-					// if(el.scrollTop === 0){
-					// 	app.remote({
-					// 		url: this.options.dataUrl + '?' + this.options.indexKey + '=' + this.options.initialIndex + '&' + this.options.sizeKey + '=' + this._size,
-					// 	}).done(function(data){
-					// 		that.more('contents', [{items: data[that.options.dataKey]}], Block, true);
-					// 	});
-					// }
-					// //check if last scrren or not
-					// if(el.scrollTop >= el.scrollHeight - (this.total % this.size * this._singleHeight)/*last batch height*/){
-
-					// }
-					// //normal
-					// else{
-
-					// }
-				}, 200));
+				// 	// }
+				// }, 100));
 
 				// //alias
 				// var data = this.get(this.options.contentKey),
