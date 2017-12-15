@@ -150,7 +150,7 @@
 				if( (start + size) > current.length ){
 					throw new Error('DEV::Layout+::less() start and size excceeds the length of the current data...');
 				}
-
+				
 				//Caveat: cannot use Array.prototype.slice() here, since it only returns a shallow copy of the object elements.
 				var modified = _.compact(_.map(current, function(d, index){ if(index >= start && index < start + size ){ cv.removeChildView(cv.children.findByIndex(index)); return false; } else return d; }));
 
