@@ -22,6 +22,7 @@
  * @update 2016.02.05 (close*(_cb) for region closing effect sync)
  * @update 2016.12.12 (-'region:load-view' moved to region.js)
  * @update 2017.03.22 (*[region=/view=] pickup after 'view:data-rendered')
+ * @update 2017.10.30 (onNavigateTo only triggers once after the first 'view:data-rendered'/'ready' now)
  */
 
 ;(function(app){
@@ -379,16 +380,22 @@
 						else {
 							if(this.navRegion) this.getRegion(this.navRegion).close();
 						}
-						this.trigger('view:navigate-to', '', viewConfig); //use this to show the default view ([] is true, so we signal '')
-						app.coop('navigation-changed', app.navPathArray());						
+						if(!this._onNavigateToTriggered){
+							this.trigger('view:navigate-to', '', viewConfig); //use this to show the default view ([] is true, so we signal '')
+							app.coop('navigation-changed', app.navPathArray());
+							this._onNavigateToTriggered = true;
+						}						
 						return;	
 					}
 
-					//no navRegion for putting next view on, stop to chain!
+					//no navRegion for putting next view on, stop the chain!
 					if(!this.navRegion){
 						delete app._navViewConfig;
-						this.trigger('view:navigate-to', _.clone(pathArray), viewConfig);
-						app.coop('navigation-changed', app.navPathArray());
+						if(!this._onNavigateToTriggered){
+							this.trigger('view:navigate-to', _.clone(pathArray), viewConfig);
+							app.coop('navigation-changed', app.navPathArray());
+							this._onNavigateToTriggered = true;
+						}
 						return;
 					}
 
@@ -426,8 +433,11 @@
 					}else{
 						pathArray.unshift(targetViewName);
 						delete app._navViewConfig;
-						this.trigger('view:navigate-to', _.clone(pathArray), viewConfig);
-						app.coop('navigation-changed', app.navPathArray());
+						if(!this._onNavigateToTriggered){
+							this.trigger('view:navigate-to', _.clone(pathArray), viewConfig);
+							app.coop('navigation-changed', app.navPathArray());
+							this._onNavigateToTriggered = true;
+						}
 						return;
 					}
 
