@@ -53,13 +53,17 @@ Fork/Clone the project and tweak the code locally, then contribute by making a p
 ### Prepare
 After cloning the project, you should go to `/tools` and run these commands:
 ```
-0. Check your development environment (yes, you can still use the cli tool in this step)
+0. Check your development environment (yes, you can use our stage-devtools cli in this step)
 
 stagejs env
 
-1. Prepare npm packages
+(you might need to npm install -g bower forever, also install graphicsmagick on system)
+
+1. Prepare npm packages (node.js v4)
 
 npm install
+
+(canvas@1.2.3 will complain No package 'cairo' found, so you need to install libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev build-essential g++ on system)
 
 2. Prepare bower packages
 
