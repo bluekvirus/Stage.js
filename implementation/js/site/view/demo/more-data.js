@@ -23,8 +23,7 @@
 				this.more('items', ['bluetooth', 'edge', 'shopping-basket']);
 			},
 			reset: function(){
-				//this.more('items', ['bluetooth', 'edge', 'shopping-basket', 'bluetooth', 'edge', 'shopping-basket'], true);
-				this.less('items', 1, 1);
+				this.more('items', ['bluetooth', 'edge', 'shopping-basket', 'bluetooth', 'edge', 'shopping-basket'], true);
 			}
 		}
 
