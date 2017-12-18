@@ -153,7 +153,7 @@ module.exports = function(server){
 	var infiniteCounter = 1;
 	router.get('/infinite', function(req, res, next){
 		//define fake total
-		var fakeTotal = 10000;
+		var fakeTotal = 1000;
 
 		//get index and size
 		var startIndex = req.query.start || 0,
