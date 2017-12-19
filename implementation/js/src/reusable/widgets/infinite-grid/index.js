@@ -129,7 +129,7 @@
 
 			actions: {
 				//main action function for scrolling grid, use throttle to control event triggering
-				'scroll-grid': function($self, e){
+				'scroll-grid': _.throttle(function($self, e){
 					var el = $self[0],
 						that = this,
 						content;
@@ -182,7 +182,7 @@
 
 					//update scrollTop for future reference
 					this._prevScrollTop = el.scrollTop;
-				},
+				}, 16), //16ms means 60 frames per second, should be sufficient for normal use
 			},
 
 			//view:ready
