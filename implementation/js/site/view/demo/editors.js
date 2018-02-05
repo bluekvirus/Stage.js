@@ -79,6 +79,14 @@
                     required: true
                 }
             },
+            search: {
+                label: 'Search',
+                type: 'search',
+                event: 'search-triggered',
+                callback: function(){
+                    
+                },
+            },
             onSideButtons: {
                 type: 'text',
                 label: 'One Side Buttons',
@@ -94,7 +102,7 @@
                         {type: 'danger', html: '<i class="fa fa-exclamation-circle"></i>', action: 'danger'}
                     ],
                     postfix: [
-                        {type: 'info', html: '<i class="fa fa-search"></i>', action: 'search'},
+                        {type: 'info', html: '<i class="fa fa-check"></i>', action: 'search'},
                     ],
                 },
             },

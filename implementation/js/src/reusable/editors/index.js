@@ -733,6 +733,35 @@
 						throw Error('Dev::Editor.Code::You have not included ACE Editor yet.');
 					}
 				}
+				//specified logic for search editor, wired "return" key
+				else if(options.type === 'search'){
+				
+					//enable action tags
+					this._enableActionTags('Editor.Search');
+
+					//bind listening event on "return" key on rendering
+					this.onRender = function(){
+						console.log(options);
+						this.$el.find('input').on('keypress', function(e){
+							if(e.keyCode === 13){
+								//trigger search event if enter pressed
+								console.log('huhuhu');
+							}
+						});
+					};
+
+					//extend actions
+					_.extend(this.actions, {
+						search: function(){
+							console.log(this.getVal());
+						}
+					});
+
+					//function for triggering triggering search event on view
+					var _searchEventEmitter = function(){
+
+					};
+				}
 			},
 
 			isEnabled: function(){
@@ -1030,9 +1059,10 @@
 			'date': true,
 			'time': true,
 			'code': true,
+			'search': true,
 
 			//not implemented, h5 native only (use app.detect() checks)
-			'search': app.detect('inputtypes.search'),
+			//'search': app.detect('inputtypes.search'),
 			'color': app.detect('inputtypes.color'),
 			'number': app.detect('inputtypes.number'),
 			//'range': app.detect('inputtypes.range'),
@@ -1242,28 +1272,35 @@
 															'</div>',
 														'</div>',
 													'</div>',
-												'{{else}}', //text, password, hidden
-													'{{#if buttons}}',//with buttons
+												'{{else}}', 
+													'{{#is type "search"}}', //search editor
 														'<div class="input-group">',
-															'{{#if buttons.prefix}}',//prefix buttons
-																'<span class="input-group-btn">',
-        															'{{#each buttons.prefix}}',
-        																'<button class="btn btn-{{type}}" type="button" action="{{action}}">{{{html}}}</button>',
-        															'{{/each}}',
-      															'</span>',
-															'{{/if}}',
 															'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" class="form-control" type="{{type}}" id="{{uiId}}" placeholder="{{i18n placeholder}}" value="{{value}}">',
-															'{{#if buttons.postfix}}',//postfix buttons
-																'<span class="input-group-btn">',
-        															'{{#each buttons.postfix}}',
-        																'<button class="btn btn-{{type}}" type="button" action="{{action}}">{{{html}}}</button>',
-        															'{{/each}}',
-      															'</span>',
-															'{{/if}}',
+															'<span class="input-group-btn"><button class="btn btn-default" type="button" action="search"><i class="fa fa-search"></i></button></span>',
 														'</div>',
-													'{{else}}',//without buttons
-														'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" class="form-control" type="{{type}}" id="{{uiId}}" placeholder="{{i18n placeholder}}" value="{{value}}"> <!--1 space-->',
-													'{{/if}}',
+													'{{else}}', //text, password, hidden
+														'{{#if buttons}}',//with buttons
+															'<div class="input-group">',
+																'{{#if buttons.prefix}}',//prefix buttons
+																	'<span class="input-group-btn">',
+	        															'{{#each buttons.prefix}}',
+	        																'<button class="btn btn-{{type}}" type="button" action="{{action}}">{{{html}}}</button>',
+	        															'{{/each}}',
+	      															'</span>',
+																'{{/if}}',
+																'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" class="form-control" type="{{type}}" id="{{uiId}}" placeholder="{{i18n placeholder}}" value="{{value}}">',
+																'{{#if buttons.postfix}}',//postfix buttons
+																	'<span class="input-group-btn">',
+	        															'{{#each buttons.postfix}}',
+	        																'<button class="btn btn-{{type}}" type="button" action="{{action}}">{{{html}}}</button>',
+	        															'{{/each}}',
+	      															'</span>',
+																'{{/if}}',
+															'</div>',
+														'{{else}}',//without buttons
+															'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" class="form-control" type="{{type}}" id="{{uiId}}" placeholder="{{i18n placeholder}}" value="{{value}}"> <!--1 space-->',
+														'{{/if}}',
+													'{{/is}}',
 												'{{/is}}', //time
 											'{{/is}}', //date
 										'{{/is}}', //file
