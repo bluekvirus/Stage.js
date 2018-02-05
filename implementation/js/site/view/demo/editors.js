@@ -64,6 +64,14 @@
                 app.notify('SUBMIT', 'Submitted to the server', 'ok', {icon: 'fa fa-fort-awesome'});
             },
         },
+        //grab 'keyup' event on inputs and textareas
+        onEditorKeyup: function(editorName, editorObj){
+            console.log('general keyup...', arguments);
+        },
+        //grab 'keyup' for 'enter/return' key on inputs and textareas
+        onEditorEnter: function(editorName, editorObj){
+            console.log('\"enter\" keyup...', arguments);
+        },
         editors: {
             _global: {
                 appendTo: '[action="testb"]',

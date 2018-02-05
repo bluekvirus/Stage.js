@@ -100,10 +100,19 @@
 				//host.trigger('editor:' + e.type + ':' + this.model.get('name'), this);
 
 				if(this.parentCt){
-					if(e.type == 'change')
+					if(e.type == 'change'){
 						this.parentCt.trigger('view:editor-changed', this.model.get('name'), this);
-					else
+					}
+					else{
+						//check if 'enter' being pressed
+						if(e.type === 'keyup' && e.keyCode === 13){
+							//trigger an additional event for 'enter' key called editor-enter
+							this.parentCt.trigger('view:editor-enter', this.model.get('name'), this);							
+						}
+
+						//general event trigger
 						this.parentCt.trigger('view:editor-' + e.type, this.model.get('name'), this);
+					}
 				}
 			},
 
