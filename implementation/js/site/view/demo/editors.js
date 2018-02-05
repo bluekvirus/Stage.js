@@ -64,8 +64,8 @@
                 app.notify('SUBMIT', 'Submitted to the server', 'ok', {icon: 'fa fa-fort-awesome'});
             },
         },
-        onSearchTriggered: function(name, edtior){
-            console.log('search-triggered', arguments, this);
+        onSearchContent: function(name, edtior){
+            console.log('search-content', arguments, this);
         },
         editors: {
             _global: {
@@ -85,7 +85,8 @@
             search: {
                 label: 'Search',
                 type: 'search',
-                event: 'search-triggered', //could either be a string or a function
+                buttonClass: 'btn-warning', //for easier styling
+                event: 'search-content', //could either be a string or a function
                 // event: function(){
                 //     console.log('event function...', arguments, this);
                 // }

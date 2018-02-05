@@ -234,6 +234,8 @@
 					//specfically for code
 					language: options.language || 'javascript',
 					theme: options.theme || 'monokai',
+					//specifically for search
+					buttonClass: options.buttonClass || 'btn-default',
 				}, true);
 				//mark view name to be Basic.type.name (more specific than just Basic)
 				this._name = [this.name, options.type, options.name].join('.');
@@ -739,27 +741,29 @@
 					//enable action tags
 					this._enableActionTags('Editor.Search');
 
+					//always emit a default event, if user did not defined it.
+					options.event = options.event || 'search-triggered';
+
 					//definition of function for triggering search event on view
 					var _searchEditorEventEmitter = _.bind(function(){
 
 						//check the type of options.event.
 						//if it is a string, emit an event with name as that string.
 						//if it is a function, execute the function.
-						if(options.event){
-							if(_.isString(options.event)){
+						if(_.isString(options.event)){
 
-								//trigger event
-								this.parentCt.trigger('view:' + options.event, arguments);
+							//trigger event
+							this.parentCt.trigger('view:' + options.event, arguments);
 
-							}else if(_.isFunction(options.event)){
+						}else if(_.isFunction(options.event)){
 
-								//execute function defined by user
-								(_.bind(options.event, this.parentCt))(arguments);
+							//execute function defined by user
+							(_.bind(options.event, this.parentCt))(arguments);
 
-							}else{
-								console.warn('Dev::Editor.Search::Your "event" configuration is not correct. It should either be a string or a function.');
-							}
+						}else{
+							console.warn('Dev::Editor.Search::Your "event" configuration is not correct. It should either be a string or a function.');
 						}
+						
 
 					}, this);
 
@@ -1294,7 +1298,7 @@
 													'{{#is type "search"}}', //search editor
 														'<div class="input-group">',
 															'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" class="form-control" type="{{type}}" id="{{uiId}}" placeholder="{{i18n placeholder}}" value="{{value}}">',
-															'<span class="input-group-btn"><button class="btn btn-default" type="button" action="search"><i class="fa fa-search"></i></button></span>',
+															'<span class="input-group-btn"><button class="btn {{buttonClass}}" type="button" action="search"><i class="fa fa-search"></i></button></span>',
 														'</div>',
 													'{{else}}', //text, password, hidden
 														'{{#if buttons}}',//with buttons
