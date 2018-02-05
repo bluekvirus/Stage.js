@@ -758,6 +758,8 @@
 						}else if(_.isFunction(options.event)){
 
 							//execute function defined by user
+							//Note: Here binding 'this' to parentCt is because events are triggered by the parentCt. 
+							//In the callback function 'this' is parentCt. We need to maintain the consistence for users.
 							(_.bind(options.event, this.parentCt))(arguments);
 
 						}else{
