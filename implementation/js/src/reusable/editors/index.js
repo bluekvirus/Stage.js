@@ -739,13 +739,36 @@
 					//enable action tags
 					this._enableActionTags('Editor.Search');
 
+					//definition of function for triggering search event on view
+					var _searchEditorEventEmitter = _.bind(function(){
+
+						//check the type of options.event.
+						//if it is a string, emit an event with name as that string.
+						//if it is a function, execute the function.
+						if(options.event){
+							if(_.isString(options.event)){
+
+								//trigger event
+								this.parentCt.trigger('view:' + options.event, arguments);
+
+							}else if(_.isFunction(options.event)){
+
+								//execute function defined by user
+								(_.bind(options.event, this.parentCt))(arguments);
+
+							}else{
+								console.warn('Dev::Editor.Search::Your "event" configuration is not correct. It should either be a string or a function.');
+							}
+						}
+
+					}, this);
+
 					//bind listening event on "return" key on rendering
 					this.onRender = function(){
-						console.log(options);
 						this.$el.find('input').on('keypress', function(e){
 							if(e.keyCode === 13){
 								//trigger search event if enter pressed
-								console.log('huhuhu');
+								_searchEditorEventEmitter(that.model.get('name'), that);
 							}
 						});
 					};
@@ -753,14 +776,9 @@
 					//extend actions
 					_.extend(this.actions, {
 						search: function(){
-							console.log(this.getVal());
+							_searchEditorEventEmitter(this.model.get('name'), this);
 						}
 					});
-
-					//function for triggering triggering search event on view
-					var _searchEventEmitter = function(){
-
-					};
 				}
 			},
 

@@ -64,6 +64,9 @@
                 app.notify('SUBMIT', 'Submitted to the server', 'ok', {icon: 'fa fa-fort-awesome'});
             },
         },
+        onSearchTriggered: function(name, edtior){
+            console.log('search-triggered', arguments, this);
+        },
         editors: {
             _global: {
                 appendTo: '[action="testb"]',
@@ -82,10 +85,10 @@
             search: {
                 label: 'Search',
                 type: 'search',
-                event: 'search-triggered',
-                callback: function(){
-                    
-                },
+                event: 'search-triggered', //could either be a string or a function
+                // event: function(){
+                //     console.log('event function...', arguments, this);
+                // }
             },
             onSideButtons: {
                 type: 'text',
