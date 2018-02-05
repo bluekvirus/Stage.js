@@ -102,8 +102,7 @@
 				if(this.parentCt){
 					if(e.type == 'change'){
 						this.parentCt.trigger('view:editor-changed', this.model.get('name'), this);
-					}
-					else{
+					}else{
 						//check if 'enter' being pressed
 						if(e.type === 'keyup' && e.keyCode === 13){
 							//trigger an additional event for 'enter' key called editor-enter
