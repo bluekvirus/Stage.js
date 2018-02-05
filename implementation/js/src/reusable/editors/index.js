@@ -234,6 +234,8 @@
 					//specfically for code
 					language: options.language || 'javascript',
 					theme: options.theme || 'monokai',
+					//specifically for search
+					buttonClass: options.buttonClass || 'btn-default',
 				}, true);
 				//mark view name to be Basic.type.name (more specific than just Basic)
 				this._name = [this.name, options.type, options.name].join('.');
@@ -733,6 +735,57 @@
 						throw Error('Dev::Editor.Code::You have not included ACE Editor yet.');
 					}
 				}
+				//specified logic for search editor, wired "return" key
+				else if(options.type === 'search'){
+				
+					//enable action tags
+					this._enableActionTags('Editor.Search');
+
+					//always emit a default event, if user did not defined it.
+					options.event = options.event || 'search-triggered';
+
+					//definition of function for triggering search event on view
+					var _searchEditorEventEmitter = _.bind(function(){
+
+						//check the type of options.event.
+						//if it is a string, emit an event with name as that string.
+						//if it is a function, execute the function.
+						if(_.isString(options.event)){
+
+							//trigger event
+							this.parentCt.trigger('view:' + options.event, arguments);
+
+						}else if(_.isFunction(options.event)){
+
+							//execute function defined by user
+							//Note: Here binding 'this' to parentCt is because events are triggered by the parentCt. 
+							//In the callback function 'this' is parentCt. We need to maintain the consistence for users.
+							(_.bind(options.event, this.parentCt))(arguments);
+
+						}else{
+							console.warn('Dev::Editor.Search::Your "event" configuration is not correct. It should either be a string or a function.');
+						}
+						
+
+					}, this);
+
+					//bind listening event on "return" key on rendering
+					this.onRender = function(){
+						this.$el.find('input').on('keypress', function(e){
+							if(e.keyCode === 13){
+								//trigger search event if enter pressed
+								_searchEditorEventEmitter(that.model.get('name'), that);
+							}
+						});
+					};
+
+					//extend actions
+					_.extend(this.actions, {
+						search: function(){
+							_searchEditorEventEmitter(this.model.get('name'), this);
+						}
+					});
+				}
 			},
 
 			isEnabled: function(){
@@ -1030,9 +1083,10 @@
 			'date': true,
 			'time': true,
 			'code': true,
+			'search': true,
 
 			//not implemented, h5 native only (use app.detect() checks)
-			'search': app.detect('inputtypes.search'),
+			//'search': app.detect('inputtypes.search'),
 			'color': app.detect('inputtypes.color'),
 			'number': app.detect('inputtypes.number'),
 			//'range': app.detect('inputtypes.range'),
@@ -1242,28 +1296,35 @@
 															'</div>',
 														'</div>',
 													'</div>',
-												'{{else}}', //text, password, hidden
-													'{{#if buttons}}',//with buttons
+												'{{else}}', 
+													'{{#is type "search"}}', //search editor
 														'<div class="input-group">',
-															'{{#if buttons.prefix}}',//prefix buttons
-																'<span class="input-group-btn">',
-        															'{{#each buttons.prefix}}',
-        																'<button class="btn btn-{{type}}" type="button" action="{{action}}">{{{html}}}</button>',
-        															'{{/each}}',
-      															'</span>',
-															'{{/if}}',
 															'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" class="form-control" type="{{type}}" id="{{uiId}}" placeholder="{{i18n placeholder}}" value="{{value}}">',
-															'{{#if buttons.postfix}}',//postfix buttons
-																'<span class="input-group-btn">',
-        															'{{#each buttons.postfix}}',
-        																'<button class="btn btn-{{type}}" type="button" action="{{action}}">{{{html}}}</button>',
-        															'{{/each}}',
-      															'</span>',
-															'{{/if}}',
+															'<span class="input-group-btn"><button class="btn {{buttonClass}}" type="button" action="search"><i class="fa fa-search"></i></button></span>',
 														'</div>',
-													'{{else}}',//without buttons
-														'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" class="form-control" type="{{type}}" id="{{uiId}}" placeholder="{{i18n placeholder}}" value="{{value}}"> <!--1 space-->',
-													'{{/if}}',
+													'{{else}}', //text, password, hidden
+														'{{#if buttons}}',//with buttons
+															'<div class="input-group">',
+																'{{#if buttons.prefix}}',//prefix buttons
+																	'<span class="input-group-btn">',
+	        															'{{#each buttons.prefix}}',
+	        																'<button class="btn btn-{{type}}" type="button" action="{{action}}">{{{html}}}</button>',
+	        															'{{/each}}',
+	      															'</span>',
+																'{{/if}}',
+																'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" class="form-control" type="{{type}}" id="{{uiId}}" placeholder="{{i18n placeholder}}" value="{{value}}">',
+																'{{#if buttons.postfix}}',//postfix buttons
+																	'<span class="input-group-btn">',
+	        															'{{#each buttons.postfix}}',
+	        																'<button class="btn btn-{{type}}" type="button" action="{{action}}">{{{html}}}</button>',
+	        															'{{/each}}',
+	      															'</span>',
+																'{{/if}}',
+															'</div>',
+														'{{else}}',//without buttons
+															'<input ui="input" name="{{#if fieldname}}{{fieldname}}{{else}}{{name}}{{/if}}" class="form-control" type="{{type}}" id="{{uiId}}" placeholder="{{i18n placeholder}}" value="{{value}}"> <!--1 space-->',
+														'{{/if}}',
+													'{{/is}}',
 												'{{/is}}', //time
 											'{{/is}}', //date
 										'{{/is}}', //file

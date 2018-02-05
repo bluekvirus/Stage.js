@@ -64,6 +64,9 @@
                 app.notify('SUBMIT', 'Submitted to the server', 'ok', {icon: 'fa fa-fort-awesome'});
             },
         },
+        onSearchContent: function(name, edtior){
+            console.log('search-content', arguments, this);
+        },
         editors: {
             _global: {
                 appendTo: '[action="testb"]',
@@ -78,6 +81,15 @@
                 validate: {
                     required: true
                 }
+            },
+            search: {
+                label: 'Search',
+                type: 'search',
+                buttonClass: 'btn-warning', //for easier styling
+                event: 'search-content', //could either be a string or a function
+                // event: function(){
+                //     console.log('event function...', arguments, this);
+                // }
             },
             onSideButtons: {
                 type: 'text',
@@ -94,7 +106,7 @@
                         {type: 'danger', html: '<i class="fa fa-exclamation-circle"></i>', action: 'danger'}
                     ],
                     postfix: [
-                        {type: 'info', html: '<i class="fa fa-search"></i>', action: 'search'},
+                        {type: 'info', html: '<i class="fa fa-check"></i>', action: 'search'},
                     ],
                 },
             },
