@@ -1,7 +1,18 @@
 /**
  * Register Server-Sent Event
  *
- * Patrick, 8/28/2017.......
+ * Usage: server.topic(topics, subscriptionPath, op);
+ *
+ *     -- topics: true //subscribe to all topics
+ *                ['foo', 'bar', ...] //subscribe to specified topics
+ *
+ *     -- subsciprtionPath: 'string' //subscribe to a specified url path
+ *                          true //subscribe to all possible SSE paths
+ *
+ *     -- op: {} //options for Server-Sent Event
+ *
+ * @author Patrick Zhu
+ * @created 8/28/2017
  */
 
 var _ = require('underscore');
@@ -10,8 +21,9 @@ module.exports = function(server){
 
     
 
-    server.topic = function(topics/*true or ['...', '...']*/, subscriptionPath, op/*{data: ..., {options for sse}}*/){
+    server.topic = function(topics/*true or ['foo', 'bar', ...]*/, subscriptionPath, op/*{data: ..., {options for sse}}*/){
         
+        //check whether subscriptionPath has been given
         if(!subscriptionPath || !_.isString(subscriptionPath)){
             op = subscriptionPath;
             subscriptionPath = true;

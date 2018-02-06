@@ -418,8 +418,7 @@
 		            return card.cancel();
 		        });
 		    }else{
-		    	//align with app.sse and app.ws, there is suppose to be a default url defined in app.config.defaultPollingUrl
-		    	url = url || app.config.defaultPollingUrl || '/poll';
+				url = url || '/poll';
 		    }
 
 		    var schedule;
