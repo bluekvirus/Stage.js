@@ -11,7 +11,6 @@
 		totalKey: 'total', //the key for giving total number of records
 		dataKey: 'payload', //the key contains data
 		initialIndex: 0, //starting index
-		dataUrl: 'sample/infinite', //data url to query from backend
 		indexKey: 'start', //index param to give to backend
 		sizeKey: 'size', //size param to give to backend
  * }
@@ -54,7 +53,12 @@
 			//initialize widget
 			initialize: function(options){
 				var that = this;
-				
+
+				//check whether user has defined data attribute
+				if(!this.data){
+					throw Error('Widget::InfiniteGrid::You need to specify the data attribute for infinite grid view...');
+				}
+
 				//used for setting up scroll later	
 				this._prevScrollTop = 0;
 				this._scrolldownThreshold = 0;
@@ -68,7 +72,6 @@
 					dataKey: 'payload',
 					initialIndex: 0,
 					//default query parameter
-					dataUrl: 'sample/infinite',
 					indexKey: 'start',
 					sizeKey: 'size',
 				}, options);
@@ -90,7 +93,7 @@
 				//load first record in order to calculate height
 				//initially load five batches of data
 				app.remote({
-					url: this.options.dataUrl + '?' + this.options.indexKey + '=' + this.options.initialIndex + '&' + this.options.sizeKey + '=' + (this._batchSize * 5),
+					url: this.data + '?' + this.options.indexKey + '=' + this.options.initialIndex + '&' + this.options.sizeKey + '=' + (this._batchSize * 5),
 				}).done(function(data){
 					//get content and total number of records
 					var content = that.options.dataKey ? data[that.options.dataKey] : data,
@@ -118,7 +121,7 @@
 					that.more('contents', content, that.options.rowView);
 
 				}).fail(function(data){
-					throw new Error('Stage.js::Widget::InfiniteGrid: error fetch data from url ' + that.options.dataUrl + '...');
+					throw new Error('Stage.js::Widget::InfiniteGrid: error fetch data from url ' + that.data + '...');
 				});
 			},
 
@@ -158,7 +161,7 @@
 						//update the data in the grid
 						//take out the current last batch and attach a batch at the top of the content
 						app.remote({
-							url: this.options.dataUrl + '?' + this.options.indexKey + '=' + ((this._scrolldownThreshold / this._viewportHeight - 2) * this._batchSize + this.options.initialIndex) + '&' + that.options.sizeKey + '=' + (this._batchSize * 5),
+							url: this.data + '?' + this.options.indexKey + '=' + ((this._scrolldownThreshold / this._viewportHeight - 2) * this._batchSize + this.options.initialIndex) + '&' + that.options.sizeKey + '=' + (this._batchSize * 5),
 							async: false, //disable async for consistent performance
 						}).done(function(data){
 
