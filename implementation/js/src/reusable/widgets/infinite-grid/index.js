@@ -77,14 +77,14 @@
 				}, options);
 			},
 
-			reconfigGrid: function(){
+			onReconfigure: function(options){
 				var that = this;
 
 				//store the viewport height
 				this._viewportHeight = this.$el.find('.outer-container').height();
 
 				//calculate how many records can be shown in one viewport
-				this._batchSize = Math.ceil(this._viewportHeight / this.options.rowHeight);
+				this._batchSize = Math.ceil(this._viewportHeight / options.rowHeight);
 
 				//setup initial threshold for updating scroll
 				this._scrolldownThreshold = this._viewportHeight * 2;
@@ -93,7 +93,7 @@
 				//load first record in order to calculate height
 				//initially load five batches of data
 				app.remote({
-					url: this.data + '?' + this.options.indexKey + '=' + this.options.initialIndex + '&' + this.options.sizeKey + '=' + (this._batchSize * 5),
+					url: this.data + '?' + options.indexKey + '=' + options.initialIndex + '&' + options.sizeKey + '=' + (this._batchSize * 5),
 				}).done(function(data){
 					//get content and total number of records
 					var content = that.options.dataKey ? data[that.options.dataKey] : data,
@@ -185,8 +185,7 @@
 
 			//view:ready
 			onReady: function(){
-				//initial setup of the grid
-				this.reconfigGrid();
+				this.trigger('view:reconfigure', this.options);
 			}
 
 		});
