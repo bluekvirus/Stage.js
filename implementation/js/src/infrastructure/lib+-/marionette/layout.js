@@ -97,7 +97,6 @@
 			        forceViewType: true,
 			        type: 'CollectionView',
 			        itemView: _.isString(View) ? app.get(View) : View, //if !View then Error: An `itemView` must be specified
-			        childView: _.isString(View) ? app.get(View) : View
 			    })); //to support 'action-scroll' in region.
 			    cv = this.getViewIn(region);
 			    cv._moreItems = true; //set parentCt bypass mode for items (see collection-view:buildItemView);
@@ -148,7 +147,7 @@
 				var current = cv.get();
 
 				//check if start and size are valid
-				if( (start + size) > current.length ){
+				if((start + size) > current.length){
 					throw new Error('DEV::Layout+::less() start and size excceeds the length of the current data...');
 				}
 				

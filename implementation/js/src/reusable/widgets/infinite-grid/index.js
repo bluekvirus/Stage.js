@@ -6,7 +6,6 @@
  * This widget is highly customizable. Following are all the options currently taken by the widget.
  * 
  * {
- * 		className: '', //customized class name for easy styling
 		rowHeight: 25, //fixed row height in px, must given!
 		rowView: {obj}, //view definition, NOT instance
 		totalKey: 'total', //the key for giving total number of records
@@ -63,7 +62,6 @@
 
 				//trim user options
 				this.options = _.extend({
-					className: '',
 					rowHeight: 25, //fixed row height in px
 					rowView: app.view({template: '<span>ID: {{id}}</span> <span>IP: {{id}}.{{id}}.{{id}}.{{id}}</span>', attributes: {style: 'height: 25px;width:100%;'}}), //view name or definition
 					totalKey: 'total',
@@ -74,12 +72,9 @@
 					indexKey: 'start',
 					sizeKey: 'size',
 				}, options);
-
-				//add class name to this view
-				this.$el.addClass(this.options.className);
 			},
 
-			setupGrid: function(){
+			reconfigGrid: function(){
 				var that = this;
 
 				//store the viewport height
@@ -188,7 +183,7 @@
 			//view:ready
 			onReady: function(){
 				//initial setup of the grid
-				this.setupGrid();
+				this.reconfigGrid();
 			}
 
 		});
