@@ -37,7 +37,12 @@
 	    	_.extend(ticket, options);
 	    }
 
-	    $drone.attr('src', (app.uri(ticket.url || '/').addQuery(ticket.params)).toString());
+	    //1). now honors baseAjaxURI in app.config url does not start with a '/'
+	    //2). ticket.params needs to be an object, cannot be undefined.
+	    ticket.url = ticket.url ? ( (ticket.url.charAt(0) !== '/') ? [app.config.baseAjaxURI, ticket.url].join('/') : ticket.url ) 
+	    						: '/';
+
+	    $drone.attr('src', (app.uri(ticket.url).addQuery(ticket.params || {})).toString());
 	}
 
 	app.Util.download = downloader;

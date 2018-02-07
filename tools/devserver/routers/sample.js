@@ -8,7 +8,8 @@
  */
 var _ = require('underscore'),
 path = require('path'),
-fs = require('fs-extra');
+fs = require('fs-extra'),
+Mock = require('mockjs');
 
 module.exports = function(server){
 
@@ -143,5 +144,50 @@ module.exports = function(server){
 	//echo back the payload to user as a confirmation
 	router.get('/jwt/touch', router.permission('read') ,function(req, res, next){
 		return res.status(200).json({msg: 'If you see this message you are an authenticated "reading privilege" user. '});
+	});
+
+	//g. sample infinite grid data
+	//one must provide total count of data entries in order to use inifinite grid
+	
+	//global counter
+	var infiniteCounter = 1;
+	router.get('/infinite', function(req, res, next){
+		//define fake total
+		var fakeTotal = 1000;
+
+		//get index and size
+		var startIndex = req.query.start || 0,
+			size = req.query.size || 100;
+
+		infiniteCounter = startIndex;
+
+		// if(!size || (startIndex !== 0 && !startIndex) || !startIndex){
+		// 	return res.status(500).json({msg: 'You need to provide size and start index...'});
+		// }
+
+		//mock data template, mimics individual computer node on a large computer monitoring network
+		var template = {
+			'name': '@pick(["Private", "Captain", "General"])' + '-' + '@integer(1, 100)',
+			'ip': '@ip()',
+			'threads': '@integer(4, 32)',
+			'memory': '@integer(8, 128)',
+			'storage': '@integer(512, 8192)',
+			'load': '@integer(0, 100)',
+		};
+
+		var temp  = {}, single;
+		temp.payload = [];
+
+		//generate mock data
+		for(var i = 0; i < size; i++){
+			single = Mock.mock(template);
+			single.id = infiniteCounter++;
+			temp.payload.push(single);
+		}
+
+		//give total
+		temp.total = fakeTotal;
+
+		return res.status(200).json(temp);
 	});
 };

@@ -110,6 +110,53 @@
 			        cv.collection.add(d);
 			} else
 				cv.set(d);
+		},
+
+		less: function(region /*name only*/, start /*start index for removing*/, size /*total number of records to remove*/){
+
+			//check whether region is provided
+			if(!region || !_.isString(region)){
+				throw new Error('DEV::Layout+::less() region is not provided or region is not a string...');
+			}
+
+			//check whether start and size both exists
+			if((start !== 0 && !start) && !size){
+				throw new Error('DEV::Layout+::less() You must provide at least the size of the records you want to delete...');
+			}
+
+			//if there is only one number, consider it as size and start from index 0
+			if(!size){
+				size = start;
+				start = 0;
+			}
+
+			//check whether start and size are numbers
+			if(!_.isNumber(start) || !_.isNumber(size)){
+				throw new Error('DEV::Layout+::less() start and size must all in the form of numbers');
+			}
+
+			//get view from the given region
+			var cv = this.getViewIn(region);
+
+			if(!cv){
+				console.warn('DEV::Layout+::less() there is no collection view in the given region...');
+				return;
+			}else{
+
+				//fetch data in the current model
+				var current = cv.get();
+
+				//check if start and size are valid
+				if((start + size) > current.length){
+					throw new Error('DEV::Layout+::less() start and size excceeds the length of the current data...');
+				}
+				
+				//Caveat: cannot use Array.prototype.slice() here, since it only returns a shallow copy of the object elements.
+				var modified = _.compact(_.map(current, function(d, index){ if(index >= start && index < start + size ){ cv.removeChildView(cv.children.findByIndex(index)); return false; } else return d; }));
+
+				//reset collectview's data with silent true for not having the view re-render again
+				cv.set(modified, {silent: true});
+			}
 
 		},
 
