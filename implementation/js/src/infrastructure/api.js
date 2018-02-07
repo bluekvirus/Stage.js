@@ -417,8 +417,6 @@
 		    	return _.map(this._polls, function(card) {
 		            return card.cancel();
 		        });
-		    }else{
-				url = url || '/poll';
 		    }
 
 		    var schedule;
