@@ -24,9 +24,6 @@
 
 	app.widget('InfiniteGrid', function(){
 
-		//save a local copy for later use
-		var _columns = [];
-
 		//definition of widget
 		var UI = app.view({
 
