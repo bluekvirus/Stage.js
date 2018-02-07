@@ -84,10 +84,10 @@
               // '</form>',
 
               '<ul class="nav navbar-nav navbar-right">', //3
+                '<li><a href="#navigate/Test">UNIT TESTS</a></li>', //test view, added for unit testing apis
                 '<li class="dropdown" action-mouseenter="showSubMenu" action-mouseleave="closeSubMenu">',
                     '<a data-toggle="dropdown" class="dropdown-toggle" href="#">DOWNLOAD <b class="caret"></b></a>',
                     '<ul class="dropdown-menu">',
-
                         '<li><a href="static/resource/default/download/stagejs-starter-kit.tar.gz"><i class="fa fa-arrow-circle-o-down"></i> Start New (project-kit)</a></li>',
                         '<li><a href="static/resource/default/download/stagejs-edge.tar.gz"><i class="fa fa-arrow-circle-o-down"></i> Update (edge build)</a></li>',
 

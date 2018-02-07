@@ -50,10 +50,6 @@
     "fontawesome": "~4.x.x",
     "open-sans-fontface": "*"
   },
-  "siteDependencies": {
-    "nprogress": "~0.2.x",
-    "mockjs": "~0.1.x"
-  },
   "devDependencies": {
     "backbone": "~1.1.x",
     "marionette": "~1.8.x",
@@ -81,7 +77,15 @@
     "fontawesome": "~4.x.x",
     "open-sans-fontface": "*",
     "nprogress": "~0.2.x",
-    "mockjs": "~0.1.x"
+    "mockjs": "~0.1.x",
+    "mocha": "~3.5.x",
+    "chai": "~4.1.x"
+  },
+  "siteDependencies": {
+    "nprogress": "~0.2.x",
+    "mockjs": "~0.1.x",
+    "mocha": "~3.5.x",
+    "chai": "~4.1.x"
   },
   "monitored": {
     "velocity": "*",

@@ -63,43 +63,60 @@ module.exports = function(server){
 
 	//d. sse
 	router.get('/sse', function(req, res, next){
-		var counter = 0;
+		var counter = 0,
+			topics = _.isArray(req.query.topic) ? req.query.topic : [req.query.topic],
+			flag = true;
 
-		var setTimeout_1 = function(){
-			setTimeout(function(){
-				server.sse['/sample/sse'].broadcast("This is the data send from SSE /sample/sse", {
-					//==== all optional parameters for SSE ====//
-					//retry: 5000, //retry time out
-					//event: 'some event name', //event name
-					id: ++counter, //message id
-				});
+		req.on('close', function(err){
+			flag = false;
+		});
 
-				//maximum 10 times
-				if(counter <= 10)
-					setTimeout_1();
+		_.each(topics, function(topic){
+			var setTimeout_1 = function(){
+				setTimeout(function(){
+					if(flag){
+						server.topic(topic, '/sample/sse', {
+							data: topic + "... This is the data send from SSE /sample/sse", 
+							options: {
+								//==== all optional parameters for SSE ====//
+								//retry: 5000, //retry time out
+								//event: 'some event name', //event name
+								id: ++counter, //message id
+							}
+						});
 
-			}, 1000);
-		};
+						//maximum 10 times
+						//if(counter <= 10)
+						setTimeout_1();
+					}
 
-		var setTimeout_2 = function(){
-			setTimeout(function(){
-				server.sse['/sample/sse'].broadcast({msg: "This is the data send from SSE for customEvent /sample/sse"}, {
-					//==== all optional parameters for SSE ====//
-					//retry: 5000, //retry time out
-					event: 'customEvent', //event name
-					id: ++counter, //message id
-				});
+				}, 1500);
+			};
 
-				//maximum 11 times, save the last one for custom event
-				if(counter <= 11)
-					setTimeout_2();
+			var setTimeout_2 = function(){
+				setTimeout(function(){
+					if(flag){
+						server.topic(topic, '/sample/sse', {
+							data: {msg: topic + "... This is the data send from SSE for customEvent /sample/sse"}, 
+							options: {
+								//==== all optional parameters for SSE ====//
+								//retry: 5000, //retry time out
+								event: 'customEvent', //event name
+								id: ++counter, //message id
+							}
+						});
 
-			}, 5000);
-		};
+						//maximum 11 times, save the last one for custom event
+						//if(counter <= 11)
+						setTimeout_2();
+					}
 
-		setTimeout_1();
-		setTimeout_2();
+				}, 3000);
+			};
 
+			setTimeout_1();
+			setTimeout_2();
+		});	
 	});
 
 	//e. sample JSON Web Token login

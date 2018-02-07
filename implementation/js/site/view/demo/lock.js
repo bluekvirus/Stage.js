@@ -19,7 +19,11 @@
 				this.flag = !this.flag;
 				this.lock('view-lock', this.flag, Test);
 			}
-		}
+		},
+		onReady: function(){
+			//mocha.setup('bdd');
+			mocha.run();
+		},
 	});
 
 	app.view('View-lock', {

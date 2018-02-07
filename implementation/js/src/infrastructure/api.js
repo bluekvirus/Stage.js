@@ -411,11 +411,13 @@
 		//(through later.js) and emit data events/or invoke callback
 		_polls: {},
 		poll: function(url /*or {options} for app.remote()*/, occurrence, coopEvent /*or callback or options*/) {
+			
 		    //stop everything
-		    if (url === false)
-		        return _.map(this._polls, function(card) {
+		    if (url === false){
+		    	return _.map(this._polls, function(card) {
 		            return card.cancel();
 		        });
+		    }
 
 		    var schedule;
 		    if (_.isString(occurrence) && !Number.parseInt(occurrence)) {
@@ -744,8 +746,8 @@
 		},
 
 		//Built-in Server-Sent Event(SSE) utility, bridged from app.Util.sse
-		sse: function(url/*sse's url*/, coopEOrCallbackOrOpts){
-			return app.Util.sse(url, coopEOrCallbackOrOpts);
+		sse: function(url/*sse's url*/, topics/*['...', '...']*/, coopEOrCallbackOrOpts){
+			return app.Util.sse(url, topics, coopEOrCallbackOrOpts);
 		},
 		
 		//----------------config.rapidEventDelay wrapped util--------------------

@@ -37,14 +37,16 @@ module.exports = function(server){
 			//this is the registration part, it only stores all the response handler and a broadcast function.
 			//users' script will call the broadcast function to send data to every client.
 			
-			//fetch path
-			var path = req.path;
+			//fetch path and topics
+			var path = req.path,
+				topics = req.query.topic ? (_.isString(req.query.topic) ? [req.query.topic] : req.query.topic) : true/*true means subscribe all*/,
+				uniqeId = _.uniqueId('stagejs-sse-');
 
 			//only register if user registered the SSE in the server config
 			if(sseConfig && _.contains(sseConfig, path)){
 
 				//give it an uniqe id for later reference
-				_.extend(res, {__sseuid: _.uniqueId('stagejs-sse-')});
+				_.extend(res, {__sseuid: uniqeId});
 
 				//response immediately to hold the connection
 				res.writeHead(200, {
@@ -57,52 +59,74 @@ module.exports = function(server){
 				req.on('close', function(){
 					//end transmission
 					res.end();
-					//delete handler
-					server.sse[path]._clients = _.without(server.sse[path]._clients, function(client){ return client.__sseuid === res.__sseuid; });
+
+					//search through every topics
+					_.each(topics, function(topic){
+						//delete handler
+						var index = _.findIndex(server.sse[path][topic]._clients, function(client){ return client.__sseuid === uniqeId; });	
+						server.sse[path][topic]._clients.splice(index, 1);
+					});
 
 					console.log('SSE connection ' + path.yellow +' closed.');
 				});
 
 				//store the response handler to the global server object
-				if(server.sse[path]){
+				
+				//create an object for the path, if have not been created.
+				if(!server.sse[path]) server.sse[path] = {};
+				
+				//check whether to subscribe all topic or specific topics
+				if(topics === true){//all
 
-					//sse object already exists, give it an uniqe id for later reference
-					server.sse[path]._clients.push(res);
+					//loop through all topics to add the response handler
+					_.each(server.sse[path], function(topic, name){
+						topic._clients.push(res);
+					});
 
-				}else{
+				}else{//specific
 
-					//newly added path, create object and give a broadcast function
-					server.sse[path] = {
-						//array to store all the response handlers that calls this sse
-						_clients: [res],
-						//function for broadcasting data to all the clients
-						//options could contain id(message id), event(event name), retry(retry timeout in ms) ...
-						broadcast: function(data, options){
-							//no _clients stored, return
-							if(!this._clients.length) return;
+					//store based on [url][topic], loop through topics object
+					_.each(topics, function(topic){
 
-							var str = '';
-							//honor options
-							_.each(options, function(opt, key){
-								str += key + ': ' + opt + '\n'; //single '\n' for options
-							});
-							//honor data
-							str += 'data: ' + (_.isString(data) ? data : JSON.stringify(data)) + '\n\n'; // two '\n's for data
+						//check whether [url][topic] already exists
+						if(server.sse[path][topic]){//exists
 
-							//send message
-							_.each(this._clients, function(response){
-								response.write(str);
-							});
-						},
-					};
+							//push the response handler
+							server.sse[path][topic]._clients.push(res);
+
+						}else{//does not exist
+
+							//newly added path, create object and give a broadcast function
+							server.sse[path][topic] = {
+								//array to store all the response handlers that calls this sse
+								_clients: [res],
+								//function for broadcasting data to all the clients
+								//options could contain id(message id), event(event name), retry(retry timeout in ms) ...
+								broadcast: function(data, options){
+									//no _clients stored, return
+									if(!this._clients.length) return;
+
+									var str = '';
+									//honor options
+									_.each(options, function(opt, key){
+										str += key + ': ' + opt + '\n'; //single '\n' for options
+									});
+									//honor data
+									str += 'data: ' + (_.isString(data) ? data : JSON.stringify(data)) + '\n\n'; // two '\n's for data
+
+									//send message
+									_.each(this._clients, function(response){
+										response.write(str);
+									});
+								},
+							};
+						}
+					});
 				}
 			}
-
+			
 			//next
 			next();
-
 		};
-
 	};
-
 };
