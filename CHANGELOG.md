@@ -1,7 +1,22 @@
 Change Log
 ==========
 
-1.10.3+ (2017-10*)
+1.11+ (2018-02*)
+----------------
+
+working on ...
+
+* merge lock into action="(name/onMetaEvent):lock topic"; (wait on named actions which return promises then auto unlock, also align action,activate,coop config block, general/specific metaMethod callings: {block-key: fn, ...}, onAction, onActivation, onCoop, onChannel, onTopic, onData, onJob)
+* give widget="", view="" the support of template="" and data="dotted.key/url:/channel:/topic:";
+* add action-dnd with target="" supporting easier dnd and sorting setup;
+* app.prompt() + $.fn.underlay() x 4 directions;
+* view.submit(url, editors[data, files]) in addition to app.upload(); (align both standalone and normal file editors upload with same auto csrf token inject?)
+* make tests public and collaborable;
+* breaking down 'Basic' editors;
+* view.markers{m1: {'e': fn/fnName/coopE}, ...} generalization; ([m1=...], do/prep upon 'e')
+
+
+1.10.3 (2018-02-06)
 ------------------
 1. labels/tooltips/help/status for editors and editor data options can now use raw html within them; (e.g using `<i>` icon tags together with texts) 
 2. app.preventDefault(e) now allows `<label>` tag default behavior to pass to browser;
@@ -62,18 +77,9 @@ Change Log
 57. Fixed app.remote() url query params merging error;
 58. Added app.widget('ToC'); (help signaling paths from *.md pieces)
 59. Fixed double 'navigate-to' error upon mutiple ready events;
-
-working on ...
-
-* merge lock into action="(name/onMetaEvent):lock topic"; (wait on named actions which return promises then auto unlock, also align action,activate,coop config block, general/specific metaMethod callings: {block-key: fn, ...}, onAction, onActivation, onCoop, onChannel, onTopic, onData, onJob)
-* give widget="", view="" the support of template="" and data="dotted.key/url:/channel:/topic:";
-* add action-dnd with target="" supporting easier dnd and sorting setup;
-* app.prompt() + $.fn.underlay() x 4 directions;
-* view.sses/topics wiring with app.sse(); (align pollings/channels/topics)
-* view.submit(url, editors[data, files]) in addition to app.upload(); (align both standalone and normal file editors upload with same auto csrf token inject?)
-* make tests public and collaborable;
-* breaking down 'Basic' editors;
-* view.markers{m1: {'e': fn/fnName/coopE}, ...} generalization; ([m1=...], do/prep upon 'e')
+60. Added infinite scrolling grid widget;
+61. Aligned view.sses/topics wiring with app.sse(); (align pollings/channels/topics)
+62. Added view.less API to work as inverse operation of view.more;
 
 
 1.10.2 (2017-04-21)
