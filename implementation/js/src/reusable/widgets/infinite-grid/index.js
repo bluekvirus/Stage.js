@@ -120,8 +120,8 @@
 				}).done(function(data) {
 
 					//get content and total number of records
-					var content = that.options.dataKey ? data[that.options.dataKey] : data,
-						total = data[that.options.totalKey];
+					var content = that.options.dataKey ? that._extactValue(data, that.options.dataKey) : data,
+						total = that._extactValue(data, that.options.totalKey);
 
 					//check whether total exists, total could be 0 means there is no data meet the query.
 					if (total !== 0 && !total) {
@@ -145,7 +145,7 @@
 					//initial setup, needs to setup dimension for the containers
 					if (initialSetup) {
 						//calculate the total height and setup height of inner container
-						that._totalHeight = that.options.rowHeight * data[that.options.totalKey];
+						that._totalHeight = that.options.rowHeight * that._extactValue(data, that.options.totalKey);
 						that.$el.find('.inner-container').css({ height: that._totalHeight });
 
 						//store total number of batches
@@ -282,7 +282,7 @@
 						async: false, //disable async for consistent performance
 					}).done(function(data) {
 						//fetch content
-						content = that.options.dataKey ? data[that.options.dataKey] : data;
+						content = that.options.dataKey ? that._extactValue(data, that.options.dataKey) : data;
 
 						//update content
 						//close the top view contains the first batch
@@ -308,7 +308,7 @@
 						async: false, //disable async for consistent performance
 					}).done(function(data) {
 						//fetch content
-						content = that.options.dataKey ? data[that.options.dataKey] : data;
+						content = that.options.dataKey ? that._extactValue(data, that.options.dataKey) : data;
 
 						//update content
 						//close the bottom view contains the last batch
@@ -354,6 +354,23 @@
 				var index = _.findIndex(this._batches, function(obj) { return scrollTop >= obj.scrollTop && scrollTop < obj.scrollLimit; });
 				return index;
 			},
+
+			//function to extact values from an object
+			_extactValue: function(obj, key){
+				var arr = key.split('.'),
+					current = obj;
+
+				for(var i = 0; i < arr.length; i++){
+					if(current[arr[i]] === undefined){
+						current = undefined;
+						break;
+					}else{
+						current = current[arr[i]];
+					}
+				}
+
+				return current;
+			}
 		});
 
 		//return definiton
