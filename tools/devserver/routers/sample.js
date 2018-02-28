@@ -199,6 +199,9 @@ module.exports = function(server){
 		for(var i = 0; i < size; i++){
 			single = Mock.mock(template);
 			single.id = infiniteCounter++;
+			if(single.id >= 1000){
+				break; //make sure it only returns 1000 records
+			}
 			temp.payload.push(single);
 		}
 
