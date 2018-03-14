@@ -11,7 +11,7 @@
 			//create grid definition
 			var InfiGrid = app.widget('InfiniteGrid').create({
 				//data attribute for a view
-				data: 'sample/infinite',
+				dataUrl: '/sample/infinite',
 				/*Customized options, if necessary.*/
 				// rowHeight: 25, //fixed row height in px
 				// rowView: app.view({template: '<span>ID: {{id}}</span> <span>IP: {{id}}.{{id}}.{{id}}.{{id}}</span>', attributes: {style: 'height: 25px;width:100%;'}}), //view name or definition

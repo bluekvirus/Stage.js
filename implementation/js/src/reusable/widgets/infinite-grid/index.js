@@ -53,14 +53,15 @@
 				var that = this;
 
 				//check whether user has defined data attribute
-				if (!this.data) {
-					throw Error('Widget::InfiniteGrid::You need to specify the data attribute for infinite grid view...');
+				if (!this.options.dataUrl) {
+					console.warn('Widget::InfiniteGrid::You need to specify the data attribute for infinite grid view...');
 				}
 
 				//trim user options
 				this.options = _.extend({
 					rowHeight: 25, //fixed row height in px
 					rowView: app.view({ template: '<span>ID: {{id}}</span> <span>IP: {{id}}.{{id}}.{{id}}.{{id}}</span>', attributes: { style: 'height: 25px;width:100%;' } }), //view name or definition
+					dataUrl: '/sample/infinite',
 					totalKey: 'total',
 					dataKey: 'payload',
 					initialIndex: 0,
@@ -115,7 +116,7 @@
 				//load first record in order to calculate height
 				//initially load five batches of data
 				app.remote({
-					url: this.data + '?' + this.options.indexKey + '=' + obj.index + '&' + this.options.sizeKey + '=' + (obj.size || (this._batchSize * 5)) + this._paramStr,
+					url: this.options.dataUrl + '?' + this.options.indexKey + '=' + obj.index + '&' + this.options.sizeKey + '=' + (obj.size || (this._batchSize * 5)) + this._paramStr,
 					async: false,
 				}).done(function(data) {
 
@@ -173,6 +174,9 @@
 						if (obj.scrollTop) {
 							obj.el.scrollTop = obj.scrollTop;
 							that._prevScrollTop = obj.scrollTop;
+						}else {
+							obj.el.scrollTop = obj.el.scrollTop + 2 * that._viewportHeight; //reset scrollTop to give cushion for scrolling up
+							that._prevScrollTop = obj.el.scrollTop;
 						}
 					}
 
@@ -276,7 +280,7 @@
 				if (orientation === 'down') {
 					//if orientation is down, then delete first batch and append a new batch at the bottom
 					app.remote({
-						url: this.data + '?' + this.options.indexKey + '=' + this._batches[lastBatchIndex + 1].index +
+						url: this.options.dataUrl + '?' + this.options.indexKey + '=' + this._batches[lastBatchIndex + 1].index +
 							'&' + that.options.sizeKey + '=' + this._batchSize +
 							this._paramStr,
 						async: false, //disable async for consistent performance
@@ -302,7 +306,7 @@
 
 					//if orientation is up, then delete last batch and insert a new batch at the top
 					app.remote({
-						url: this.data + '?' + this.options.indexKey + '=' + this._batches[firstBatchIndex - 1].index +
+						url: this.options.dataUrl + '?' + this.options.indexKey + '=' + this._batches[firstBatchIndex - 1].index +
 							'&' + that.options.sizeKey + '=' + this._batchSize +
 							this._paramStr,
 						async: false, //disable async for consistent performance
