@@ -34,17 +34,20 @@
 
 			//style attributes for the widgets, position relative is for setting absolute position on content block
 			attributes: {
-				style: 'height:100%; width:100%; position:relative;',
+				style: 'height:100%; width:100%; position:relative; z-index:0;',
 			},
 
 			//template
 			template: [
 				//register action on the outer container, and make it scrollable
 				'<div class="outer-container" action-scroll="scroll-grid" style="height:100%; width:100%; overflow-y:auto;">',
-				'<div class="inner-container">',
-				'<div class="top-space-holder"></div>',
-				'<div class="contents" region="contents"></div>',
+					'<div class="inner-container">',
+						'<div class="top-space-holder"></div>',
+						'<div class="contents" region="contents"></div>',
+					'</div>',
 				'</div>',
+				'<div class="infinite-grid-loading-icon hidden" style="position:absolute;top:0;bottom:0;left:0;right:0;z-index:1;text-align:center;background-color:rgba(155,155,155, 0.2);">',
+					'<i class="fa fa-3x fa-spin fa-spinner" style="position:absolute;top:40%;"></i>',
 				'</div>',
 			],
 
@@ -77,6 +80,8 @@
 				this._batches = [];
 				//parse parameters into a string
 				this._paramStr = _.reduce(_.pairs(this.options.params), function(memo, arr) { return memo + '&' + arr.join('='); }, '');
+				//flag of showing the loading spinning font
+				this._showSpin = false;
 
 				//Definition for view to hold a single batch.
 				//Infinite grid holds five of this at one time.
@@ -178,6 +183,9 @@
 							obj.el.scrollTop = obj.el.scrollTop + 2 * that._viewportHeight; //reset scrollTop to give cushion for scrolling up
 							that._prevScrollTop = obj.el.scrollTop;
 						}
+
+						//add the hidden class for spin
+						that.$el.find('.infinite-grid-loading-icon').addClass('hidden');
 					}
 
 					//split content into five batches based on the indices
@@ -187,8 +195,14 @@
 					//Caveat: Do NOT pass two dimensional array into view.more(). Convert them into an array of objects first.
 					_.map(content, function(val, index) { content[index] = { items: val, batchIndex: obj.batchIndex + index }; });
 
+					//remove everything that is in content view to avoid more(,true) not cleaning up bug
+					if(that.getViewIn('contents')){
+						that.getViewIn('contents').$el.empty();
+					}
+
 					//show data in batches, use defer to make sure previous render has complete to avoid unexpected results
 					_.defer(function() {
+						//set new data
 						that.more('contents', content, that._SingleBatchView, true);
 					});
 
@@ -205,6 +219,13 @@
 						that = this;
 					//clear previous time out
 					clearTimeout(this._timer);
+
+					//check whether already scroll past the content portion
+					//if yes, show the loading mask
+					if(el.scrollTop >= this._prevScrollTop + 2 * this._viewportHeight ){
+						this.$el.find('.infinite-grid-loading-icon').removeClass('hidden');
+					}
+
 					//setup new timeout
 					this._timer = setTimeout(function() {
 						that._scroll(el);
