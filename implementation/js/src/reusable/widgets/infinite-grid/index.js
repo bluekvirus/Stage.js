@@ -222,7 +222,7 @@
 
 					//check whether already scroll past the content portion
 					//if yes, show the loading mask
-					if(el.scrollTop >= this._prevScrollTop + 2 * this._viewportHeight ){
+					if((el.scrollTop >= this._prevScrollTop + 2 * this._viewportHeight) || (el.scrollTop <= this._prevScrollTop - 2 * this._viewportHeight)){
 						this.$el.find('.infinite-grid-loading-icon').removeClass('hidden');
 					}
 
