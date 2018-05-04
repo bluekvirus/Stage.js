@@ -23,6 +23,9 @@
 			return $.ajax({
 				url: url,
 				async: !sync,
+				data: $.param({
+					'_': app.buildTimestamp || 'cached'
+				}),
 				dataType: 'script'
 			});
 		else

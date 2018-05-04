@@ -71,9 +71,9 @@
 				return $.ajax({
 					url: url,
 					dataType: 'json', //force return data type.
-					params: {
+					data: $.param({
 						'_': app.buildTimestamp || 'cached'
-					},
+					}),
 					async: !sync
 				}).done(function(tpls){
 					_.each(tpls, function(t, n){
@@ -85,9 +85,9 @@
 				return $.ajax({
 					url: url,
 					dataType: 'html',
-					params: {
+					data: $.param({
 						'_': app.buildTimestamp || 'cached'
-					},
+					}),
 					async: !sync
 				}).done(function(tpl){
 					Template.Cache.make(originalName, tpl || ' ');

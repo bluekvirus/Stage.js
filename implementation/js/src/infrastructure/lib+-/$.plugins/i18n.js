@@ -69,9 +69,9 @@ var I18N = {};
 			return $.ajax({
 				url: [configure.resourcePath, (configure.translationFile.indexOf('{locale}') >= 0?configure.translationFile.replace('{locale}', locale):[locale, configure.translationFile].join('/'))].join('/'),
 				dataType: 'json',
-				params: {
+				data: $.param({
 					'_': app.buildTimestamp || 'cached'
-				},
+				}),
 				success: function(data, textStatus, jqXHR) {
 					if(!data || !data.trans) throw new Error('RUNTIME::i18n::Malformed ' + locale + ' data...');
 					resources = data.trans;
