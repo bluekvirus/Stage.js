@@ -1,12 +1,14 @@
 Change Log
 ==========
 
-1.11+ (2018-02*)
+1.10.4+ (2018-05*)
 ----------------
+1. Added app.buildTimestamp in build. i18n, tpl and js injecting all honors it. (to kill browser cache between builds)
+2. Refined InfiniteGrid widget.
 
 working on ...
 
-* merge lock into action="(name/onMetaEvent):lock topic"; (wait on named actions which return promises then auto unlock, also align action,activate,coop config block, general/specific metaMethod callings: {block-key: fn, ...}, onAction, onActivation, onCoop, onChannel, onTopic, onData, onJob)
+* merge lock into action="(name/onMetaEvent):lock topic"; (wait on named actions which return promises then auto unlock, also align action,activate,coop config block, general/specific metaMethod callings: {block-key: fn, ...}, onAction, onActivation, onCoop, onChannel, onTopic, onAjax, onJob)
 * give widget="", view="" the support of template="" and data="dotted.key/url:/channel:/topic:";
 * add action-dnd with target="" supporting easier dnd and sorting setup;
 * app.prompt() + $.fn.underlay() x 4 directions;

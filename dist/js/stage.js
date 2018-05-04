@@ -141402,7 +141402,7 @@ Marionette.triggerMethodInversed = (function(){
 	app.NOTIFYTPL = Handlebars.compile('<div class="alert alert-dismissable alert-{{type}}"><button data-dismiss="alert" class="close" type="button">×</button><strong>{{title}}</strong> {{{message}}}</div>');
 
 })(Application);
-;;app.stagejs = "1.10.3-1310 build 1525396178497";
+;;app.stagejs = "1.10.3-1313 build 1525400068612";
 ;/**
  * App debug helpers, extracted from api.js
  *
