@@ -136095,6 +136095,9 @@ var I18N = {};
 			return $.ajax({
 				url: [configure.resourcePath, (configure.translationFile.indexOf('{locale}') >= 0?configure.translationFile.replace('{locale}', locale):[locale, configure.translationFile].join('/'))].join('/'),
 				dataType: 'json',
+				params: {
+					'_': app.buildTimestamp || 'cached'
+				},
 				success: function(data, textStatus, jqXHR) {
 					if(!data || !data.trans) throw new Error('RUNTIME::i18n::Malformed ' + locale + ' data...');
 					resources = data.trans;
@@ -141800,6 +141803,9 @@ Marionette.triggerMethodInversed = (function(){
 				return $.ajax({
 					url: url,
 					dataType: 'json', //force return data type.
+					params: {
+						'_': app.buildTimestamp || 'cached'
+					},
 					async: !sync
 				}).done(function(tpls){
 					_.each(tpls, function(t, n){
@@ -141811,6 +141817,9 @@ Marionette.triggerMethodInversed = (function(){
 				return $.ajax({
 					url: url,
 					dataType: 'html',
+					params: {
+						'_': app.buildTimestamp || 'cached'
+					},
 					async: !sync
 				}).done(function(tpl){
 					Template.Cache.make(originalName, tpl || ' ');

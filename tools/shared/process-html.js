@@ -86,13 +86,12 @@ module.exports = {
 
 		//parse html		
 		var $ = cheerio.load(content);
+		var $i = $('#_entrypoint');
+		if (!$i.length)
+			$i = $('body > script').last();
 
 		//inject dynamically loaded scripts into the html (before last script tag which has app.run())
 		if(options.js.dynamic){
-			var $i = $('#_entrypoint');
-			if(!$i.length) 
-				$i = $('body > script').last();
-
 			//check whether options.js.dynamic is a string
 			if(_.isString(options.js.dynamic)) options.js.dynamic = [options.js.dynamic];
 
@@ -106,20 +105,24 @@ module.exports = {
 			});
 		}
 
+		//inject build version as app.build
+		var buildTimestamp = Date.now() // cheap!
+		$i.before('<script>;Application.buildTimestamp = ' + buildTimestamp + ';</script>')
+
 		var result;
 		//process srcipt tags in head
 		result = createJSTargets(result, $, 'head > script', 'js/all-head.js', options);
 		//process script tags in body
 		result = createJSTargets(result, $, 'body > script', 'js/all-body.js', options);
 
-		//enhance [src=] and [href=] tags with ?_=Date.now() for killing browser or proxy caches.
+		//enhance [src=] and [href=] tags with ?_=buildTimestamp for killing browser or proxy caches.
 		$('[src], [href]').each(function(index, el){
 			var $el = $(el);
 			var path = $el.attr('src') || $el.attr('href');
 			if(path.indexOf('?') !== -1)
-				path = path + '&_=' + Date.now(); //do NOT panic when you see this translates to &amp; in index.html;
+				path = path + '&_=' + buildTimestamp; //do NOT panic when you see this translates to &amp; in index.html;
 			else
-				path = path + '?_=' + Date.now();
+				path = path + '?_=' + buildTimestamp;
 			if($el.attr('src'))
 				$el.attr('src', path);
 			else
