@@ -1,10 +1,8 @@
 Change Log
 ==========
 
-1.10.4+ (2018-05*)
+1.11+ (2018-05*)
 ----------------
-1. Added app.buildTimestamp in build. i18n, tpl and js injecting all honors it. (to kill browser cache between builds)
-2. Refined InfiniteGrid widget.
 
 working on ...
 
@@ -16,6 +14,12 @@ working on ...
 * make tests public and collaborable;
 * breaking down 'Basic' editors;
 * view.markers{m1: {'e': fn/fnName/coopE}, ...} generalization; ([m1=...], do/prep upon 'e')
+
+
+1.10.4 (2018-05-04)
+----------------
+1. Added app.buildTimestamp in build. i18n, tpl and js injecting all honors it. (to kill browser cache between builds)
+2. Refined InfiniteGrid widget.
 
 
 1.10.3 (2018-02-06)

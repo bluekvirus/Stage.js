@@ -2,7 +2,7 @@
 	"name": "my.project",
 	"private": true,
 	"devDependencies": {
-		"stage": "^1.10.2",
+		"stage": "^1.10.4",
 		"stage-unideck": "~0.9.x",
 		"bootswatch": "~3.x.x",
 		"fontawesome": "~4.x.x",
